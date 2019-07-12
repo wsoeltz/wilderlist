@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictFunctionTypes": false,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "preserve",
+    "noEmitHelpers": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "target": "es5",
+    "module": "commonjs",
+    "lib": ["dom", "ES2016", "ES2017"],
+    "removeComments": false,
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "importHelpers": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    // Without this setting, TS will default to 'classic' resolution mode, leading
+    // it to not find `tslib` module necessary for `importHelpers` option to work.
+    "moduleResolution": "node",
+    "baseUrl": "types",
+    "outDir": "dist",
+    "typeRoots": ["types"],
+    "plugins": [
+      {
+        "name": "typescript-styled-plugin"
+      }
+    ]
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}
