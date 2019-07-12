@@ -24,7 +24,7 @@
     "moduleResolution": "node",
     "baseUrl": "types",
     "outDir": "dist",
-    "typeRoots": ["types"],
+    "typeRoots": ["node_modules/@types"],
     "plugins": [
       {
         "name": "typescript-styled-plugin"
