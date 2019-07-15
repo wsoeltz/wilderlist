@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect
+} from 'react';
 import axios from 'axios';
 import logo from './logo.svg';
 import './App.css';
 
 
 const App: React.FC = () => {
-  const [data, setData] = useState<any>(null);
-
+  const [message, setMessage] = useState<string | null>(null);
   const fetchData = async () => {
-    await setData(axios.get('http://localhost:5000/test'))
-    console.log(data);
+    const res = await axios.get('http://localhost:5000/api/test');
+    setMessage(res.data.message);
   }
 
   useEffect(() => {
@@ -21,7 +23,6 @@ const App: React.FC = () => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
         </p>
         <a
           className="App-link"
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         >
           Learn React
         </a>
+        <p>{message}</p>
       </header>
     </div>
   );
