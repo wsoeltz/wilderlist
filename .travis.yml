@@ -1,13 +1,13 @@
 language: nodejs
 node_js:
-  - "11.11.0"
+  - "stable"
 script:
-- npm i
-- npm run build:server
 - cd client
 - npm i
 - npm run build
 - cd ..
+- npm i
+- npm run build:server
 - npm run test
 after_script:
 - rimraf node_modules
