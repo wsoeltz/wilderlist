@@ -10,7 +10,8 @@ import './App.css';
 const App: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const fetchData = async () => {
-    const res = await axios.get('/api/test');
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/api/test`);
     setMessage(res.data.message);
   }
 
