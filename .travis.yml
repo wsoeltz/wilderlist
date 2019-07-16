@@ -1,11 +1,13 @@
 language: nodejs
 node_js:
   - "11.11.0"
-before_script:
-- npm install
-- npm install --prefix client
-- npm run build
 script:
+- npm i
+- npm run build:server
+- cd client
+- npm i
+- npm run build
+- cd ..
 - npm run test
 after_script:
 - rimraf node_modules
