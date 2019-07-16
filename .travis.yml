@@ -1,6 +1,9 @@
-language: nodejs
+language: node_js
+
 node_js:
+  - "lts/*"
   - "stable"
+
 script:
 - cd client
 - npm i
@@ -9,9 +12,11 @@ script:
 - npm i
 - npm run build:server
 - npm run test
+
 after_script:
 - rimraf node_modules
 - rimraf node_modules --prefix client
+
 deploy:
   provider: heroku
   api_key:
