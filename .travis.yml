@@ -2,9 +2,13 @@ language: nodejs
 node_js:
   - "11.11.0"
 before_script:
+- npm install
 - npm run build
 script:
 - npm run test
+after_script:
+- rimraf node_modules
+- rimraf node_modules --prefix client
 deploy:
   provider: heroku
   api_key:
