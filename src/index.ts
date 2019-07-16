@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 app.get('/api/test', (req, res, next) => {
-  res.send({message: 'Welcome to Notches'});
+  res.send({message: 'Notches build'});
 });
 
 

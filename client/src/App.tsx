@@ -33,7 +33,7 @@ const App: React.FC = () => {
         >
           Learn React
         </a>
-        <p>{message}</p>
+        <h1 style={{color: 'salmon'}}>{message}</h1>
       </header>
     </div>
   );
