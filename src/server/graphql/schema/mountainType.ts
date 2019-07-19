@@ -2,7 +2,6 @@ import {
   GraphQLID,
   GraphQLObjectType,
   GraphQLString,
-  // GraphQLList,
 } from 'graphql';
 import mongoose from 'mongoose';
 import StateType from './stateType';

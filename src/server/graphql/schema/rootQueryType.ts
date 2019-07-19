@@ -8,10 +8,12 @@ import mongoose from 'mongoose';
 import MountainType from './mountainType';
 import RegionType from './regionType';
 import StateType from './stateType';
+import ListType from './listType';
 
 const Mountain = mongoose.model('mountain');
 const State = mongoose.model('state');
 const Region = mongoose.model('region');
+const List = mongoose.model('list');
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -32,6 +34,12 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(RegionType),
       resolve() {
         return Region.find({});
+      },
+    },
+    lists: {
+      type: new GraphQLList(ListType),
+      resolve() {
+        return List.find({});
       },
     },
     mountain: {

@@ -14,3 +14,9 @@ export interface Mountain {
   name: string;
   state: State;
 }
+
+export interface List {
+  id: string;
+  name: string;
+  items: Mountain[];
+}
