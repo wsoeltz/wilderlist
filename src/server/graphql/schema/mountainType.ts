@@ -1,5 +1,6 @@
 import {
   GraphQLID,
+  GraphQLList,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
@@ -17,6 +18,12 @@ const MountainType = new GraphQLObjectType({
       type: StateType,
       resolve(parentValue) {
         return Mountain.findState(parentValue.id);
+      },
+    },
+    lists:  {
+      type: new GraphQLList(StateType),
+      resolve(parentValue) {
+        return Mountain.findLists(parentValue.id);
       },
     },
   }),

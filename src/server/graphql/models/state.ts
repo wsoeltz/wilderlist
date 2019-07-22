@@ -7,12 +7,22 @@ const StateSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'region',
   }],
+  mountains: [{
+    type: Schema.Types.ObjectId,
+    ref: 'mountain',
+  }],
 });
 
-StateSchema.statics.findRegion = function(id: string) {
+StateSchema.statics.findRegions = function(id: string) {
   return this.findById(id)
     .populate('regions')
     .then((state: State) => state.regions);
+};
+
+StateSchema.statics.findMountains = function(id: string) {
+  return this.findById(id)
+    .populate('mountains')
+    .then((state: State) => state.mountains);
 };
 
 mongoose.model('state', StateSchema);
