@@ -22,6 +22,7 @@ export interface List {
   id: string;
   name: string;
   items: Mountain[];
+  users: User[];
 }
 
 export interface User {
