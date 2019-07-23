@@ -7,7 +7,11 @@ import {
 import mongoose from 'mongoose';
 import StateType from './stateType';
 
-const Mountain: any = mongoose.model('mountain');
+import { MountainSchemaType } from '../models/mountain';
+
+export type MountainModelType = mongoose.Model<MountainSchemaType> & MountainSchemaType;
+
+export const Mountain: MountainModelType = mongoose.model<MountainModelType, any>('mountain');
 
 const MountainType = new GraphQLObjectType({
   name:  'MountainType',

@@ -7,9 +7,13 @@ import {
 import mongoose from 'mongoose';
 import StateType from './stateType';
 
-const Region: any = mongoose.model('region');
+import { RegionSchemaType } from '../models/region';
 
-const RegionType: any = new GraphQLObjectType({
+export type RegionModelType = mongoose.Model<RegionSchemaType> & RegionSchemaType;
+
+export const Region: RegionModelType = mongoose.model<RegionModelType, any>('region');
+
+const RegionType = new GraphQLObjectType({
   name:  'RegionType',
   fields: () => ({
     id: { type: GraphQLID },

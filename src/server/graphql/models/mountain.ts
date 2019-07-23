@@ -1,6 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 import { Mountain } from '../graphQLTypes';
 
+export type MountainSchemaType = mongoose.Document & Mountain & {
+  findState: (id: string) => any;
+  findLists: (id: string) => any;
+};
+
 const MountainSchema = new Schema({
   name: { type: String },
   state: {

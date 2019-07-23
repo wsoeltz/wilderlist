@@ -4,18 +4,11 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql';
-import mongoose from 'mongoose';
-import ListType from './listType';
-import MountainType from './mountainType';
-import RegionType from './regionType';
-import StateType from './stateType';
-import UserType from './userType';
-
-const Mountain = mongoose.model('mountain');
-const State = mongoose.model('state');
-const Region = mongoose.model('region');
-const List = mongoose.model('list');
-const User = mongoose.model('user');
+import ListType, { List } from './listType';
+import MountainType, { Mountain } from './mountainType';
+import RegionType, { Region } from './regionType';
+import StateType, { State } from './stateType';
+import UserType, { User } from './userType';
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',

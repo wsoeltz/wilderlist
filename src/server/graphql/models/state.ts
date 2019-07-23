@@ -1,6 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 import { State } from '../graphQLTypes';
 
+export type StateSchemaType = mongoose.Document & State & {
+  findRegions: (id: string) => any;
+  findMountains: (id: string) => any;
+};
+
 const StateSchema = new Schema({
   name: { type: String },
   regions: [{

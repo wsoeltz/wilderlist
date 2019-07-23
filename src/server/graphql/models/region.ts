@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { Region } from '../graphQLTypes';
 
+export type RegionSchemaType = mongoose.Document & Region & {
+  findStates: (id: string) => any;
+};
+
 const RegionSchema: Schema = new Schema({
   name: { type: String },
   states: [{
@@ -15,4 +19,4 @@ RegionSchema.statics.findStates = function(id: string) {
     .then((region: Region) => region.states);
 };
 
-mongoose.model('region', RegionSchema);
+mongoose.model<RegionSchemaType>('region', RegionSchema);

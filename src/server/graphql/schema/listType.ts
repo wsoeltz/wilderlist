@@ -8,7 +8,11 @@ import mongoose from 'mongoose';
 import MountainType from './mountainType';
 import UserType from './userType';
 
-const List: any = mongoose.model('list');
+import { ListSchemaType } from '../models/list';
+
+export type ListModelType = mongoose.Model<ListSchemaType> & ListSchemaType;
+
+export const List: ListModelType = mongoose.model<ListModelType, any>('list');
 
 const ListType = new GraphQLObjectType({
   name:  'ListType',

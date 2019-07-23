@@ -1,6 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 import { List } from '../graphQLTypes';
 
+export type ListSchemaType = mongoose.Document & List & {
+  findMountains: (id: string) => any;
+  findUsers: (id: string) => any;
+};
+
 const ListSchema = new Schema({
   name: { type: String },
   items: [{
