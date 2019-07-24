@@ -6,7 +6,8 @@ import {
 } from 'graphql';
 import mongoose from 'mongoose';
 import RegionType, { Region } from './regionType';
-import { State } from './stateType';
+import StateType, { State } from './stateType';
+// import { Mountain } from './mountainType';
 
 mongoose.set('useFindAndModify', false);
 
@@ -55,6 +56,50 @@ const mutation = new GraphQLObjectType({
             }
         });
         return region;
+      },
+    },
+    addState: {
+      type: StateType,
+      args: {
+        name: { type: GraphQLString },
+        regions: { type: new GraphQLList(GraphQLID)},
+      },
+      resolve(parentValue, { name, states, regions }) {
+        const newState = new State({ name, regions });
+        regions.forEach((id: string[]) => {
+          Region.findByIdAndUpdate(id,
+            { $push: {states: newState.id} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+        });
+        return newState.save();
+      },
+    },
+    deleteState: {
+      type: StateType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      async resolve(parentValue, { id }) {
+        const state = await State.findByIdAndDelete(id)
+          .select({regions: true})
+          .exec(function(err: any, doc: any) {
+            if (err) {
+              console.error(err);
+            } else if (doc) {
+              doc.regions.forEach(async (regionId: string) => {
+                // tslint:disable-next-line:await-promise
+                await Region.findByIdAndUpdate(regionId, {
+                  $pull: { states: id},
+                });
+              });
+            }
+        });
+        return state;
       },
     },
   },
