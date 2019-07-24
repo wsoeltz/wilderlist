@@ -4,11 +4,11 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql';
-import ListType, { List } from './listType';
-import MountainType, { Mountain } from './mountainType';
-import RegionType, { Region } from './regionType';
-import StateType, { State } from './stateType';
-import UserType, { User } from './userType';
+import ListType, { List } from './queryTypes/listType';
+import MountainType, { Mountain } from './queryTypes/mountainType';
+import RegionType, { Region } from './queryTypes/regionType';
+import StateType, { State } from './queryTypes/stateType';
+import UserType, { User } from './queryTypes/userType';
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',

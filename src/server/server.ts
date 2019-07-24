@@ -1,11 +1,10 @@
-require('./graphql/models');
 require('dotenv').config();
 
 import bodyParser from 'body-parser';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
-import schema from './graphql/schema/schema';
+import schema from './graphql/schema';
 
 const app = express();
 
