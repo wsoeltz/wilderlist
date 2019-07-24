@@ -5,9 +5,8 @@ import {
   GraphQLString,
 } from 'graphql';
 import mongoose from 'mongoose';
-// import { State as StateInterface } from '../graphQLTypes';
 import RegionType, { Region } from './regionType';
-import /*StateType,*/ { State } from './stateType';
+import { State } from './stateType';
 
 mongoose.set('useFindAndModify', false);
 
@@ -35,22 +34,29 @@ const mutation = new GraphQLObjectType({
         return newRegion.save();
       },
     },
-    // deleteRegion: {
-    //   type: RegionType,
-    //   args: {
-    //     id: { type: GraphQLID },
-    //   },
-    //   resolve(parentValue, { id }) {
-    //     State.updateMany(
-    //       { $elemMatch: {regions: id} },
-    //       { $pull: {regions: id} },
-    //       (err, raw) => {
-    //         console.log({err, raw});
-    //       }
-    //     );
-    //     return Region.findByIdAndDelete(id);
-    //   },
-    // },
+    deleteRegion: {
+      type: RegionType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      async resolve(parentValue, { id }) {
+        const region = await Region.findByIdAndDelete(id)
+          .select({states: true})
+          .exec(function(err: any, doc: any) {
+            if (err) {
+              console.error(err);
+            } else if (doc) {
+              doc.states.forEach(async (stateId: string) => {
+                // tslint:disable-next-line:await-promise
+                await State.findByIdAndUpdate(stateId, {
+                  $pull: { regions: id},
+                });
+              });
+            }
+        });
+        return region;
+      },
+    },
   },
 });
 
