@@ -2,6 +2,7 @@ import {
   GraphQLObjectType,
 } from 'graphql';
 import mongoose from 'mongoose';
+import listMutations from './mutations/listMutations';
 import mountainMutations from './mutations/mountainMutations';
 import regionMutations from './mutations/regionMutations';
 import stateMutations from './mutations/stateMutations';
@@ -14,6 +15,7 @@ const mutation = new GraphQLObjectType({
     ...regionMutations,
     ...stateMutations,
     ...mountainMutations,
+    ...listMutations,
   },
 });
 

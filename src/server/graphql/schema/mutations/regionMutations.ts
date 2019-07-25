@@ -18,16 +18,18 @@ const regionMutations: any = {
     },
     resolve(_unused: any, { name, states }: {name: string, states: IState[]}) {
       const newRegion = new Region({ name, states });
-      states.forEach((id) => {
-        State.findByIdAndUpdate(id,
-          { $push: {regions: newRegion.id} },
-          function(err, model) {
-            if (err) {
-              console.error(err);
-            }
-          },
-        );
-      });
+      if (states !== undefined) {
+        states.forEach((id) => {
+          State.findByIdAndUpdate(id,
+            { $push: {regions: newRegion.id} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+        });
+      }
       return newRegion.save();
     },
   },
