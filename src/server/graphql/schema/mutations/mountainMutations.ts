@@ -2,6 +2,7 @@
 import {
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
 import {
@@ -16,7 +17,7 @@ const mountainMutations: any = {
   addMountain: {
     type: MountainType,
     args: {
-      name: { type: GraphQLString },
+      name: { type: GraphQLNonNull(GraphQLString) },
       state: { type: GraphQLID },
       lists: { type: new GraphQLList(GraphQLID)},
     },
@@ -43,7 +44,7 @@ const mountainMutations: any = {
   deleteMountain: {
     type: MountainType,
     args: {
-      id: { type: GraphQLID },
+      id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
       const mountain = await Mountain.findByIdAndDelete(id)
@@ -75,8 +76,8 @@ const mountainMutations: any = {
   addMountainToState: {
     type: MountainType,
     args: {
-      mountainId: { type: GraphQLID },
-      stateId: { type: GraphQLID },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {mountainId, stateId}: {mountainId: string, stateId: string}) {
       try {

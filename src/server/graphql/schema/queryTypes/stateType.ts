@@ -17,7 +17,7 @@ type StateSchemaType = mongoose.Document & IState & {
 export type StateModelType = mongoose.Model<StateSchemaType> & StateSchemaType;
 
 const StateSchema = new Schema({
-  name: { type: String },
+  name: { type: String, required: true },
   regions: [{
     type: Schema.Types.ObjectId,
     ref: 'region',

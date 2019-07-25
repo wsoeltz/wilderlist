@@ -17,7 +17,7 @@ type MountainSchemaType = mongoose.Document & IMountain & {
 export type MountainModelType = mongoose.Model<MountainSchemaType> & MountainSchemaType;
 
 const MountainSchema = new Schema({
-  name: { type: String },
+  name: { type: String, required: true },
   state: {
     type: Schema.Types.ObjectId,
     ref: 'state',

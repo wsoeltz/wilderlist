@@ -17,7 +17,7 @@ type ListSchemaType = mongoose.Document & IList & {
 export type ListModelType = mongoose.Model<ListSchemaType> & ListSchemaType;
 
 const ListSchema = new Schema({
-  name: { type: String },
+  name: { type: String, required: true },
   items: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',

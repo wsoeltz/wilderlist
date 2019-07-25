@@ -2,6 +2,7 @@
 import {
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
 import { Region as IRegion } from '../../graphQLTypes';
@@ -12,7 +13,7 @@ const stateMutations: any = {
   addState: {
     type: StateType,
     args: {
-      name: { type: GraphQLString },
+      name: { type: GraphQLNonNull(GraphQLString) },
       regions: { type: new GraphQLList(GraphQLID)},
     },
     resolve(_unused: any, { name, regions }: {name: string, regions: IRegion[]}) {
@@ -33,7 +34,7 @@ const stateMutations: any = {
   deleteState: {
     type: StateType,
     args: {
-      id: { type: GraphQLID },
+      id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
       const state = await State.findByIdAndDelete(id)

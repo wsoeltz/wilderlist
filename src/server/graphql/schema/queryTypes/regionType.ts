@@ -14,7 +14,7 @@ type RegionSchemaType = mongoose.Document & IRegion & {
 export type RegionModelType = mongoose.Model<RegionSchemaType> & RegionSchemaType;
 
 const RegionSchema: Schema = new Schema({
-  name: { type: String },
+  name: { type: String, required: true },
   states: [{
     type: Schema.Types.ObjectId,
     ref: 'state',

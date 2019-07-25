@@ -2,6 +2,7 @@
 import {
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
 import { State as IState } from '../../graphQLTypes';
@@ -12,7 +13,7 @@ const regionMutations: any = {
   addRegion: {
     type: RegionType,
     args: {
-      name: { type: GraphQLString },
+      name: { type: GraphQLNonNull(GraphQLString) },
       states: { type: new GraphQLList(GraphQLID)},
     },
     resolve(_unused: any, { name, states }: {name: string, states: IState[]}) {
@@ -33,7 +34,7 @@ const regionMutations: any = {
   deleteRegion: {
     type: RegionType,
     args: {
-      id: { type: GraphQLID },
+      id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
       const region = await Region.findByIdAndDelete(id)
@@ -55,8 +56,8 @@ const regionMutations: any = {
   addStateToRegion: {
     type: RegionType,
     args: {
-      regionId: { type: GraphQLID },
-      stateId: { type: GraphQLID },
+      regionId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
       try {
@@ -95,8 +96,8 @@ const regionMutations: any = {
   removeStateFromRegion: {
     type: RegionType,
     args: {
-      regionId: { type: GraphQLID },
-      stateId: { type: GraphQLID },
+      regionId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
       try {
