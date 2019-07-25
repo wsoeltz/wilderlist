@@ -1,3 +1,4 @@
+/* tslint:disable:await-promise */
 import {
   GraphQLID,
   GraphQLList,
@@ -42,7 +43,6 @@ const regionMutations: any = {
             console.error(err);
           } else if (doc) {
             doc.states.forEach(async (stateId: string) => {
-              // tslint:disable-next-line:await-promise
               await State.findByIdAndUpdate(stateId, {
                 $pull: { regions: id},
               });
@@ -50,6 +50,46 @@ const regionMutations: any = {
           }
       });
       return region;
+    },
+  },
+  addStateToRegion: {
+    type: RegionType,
+    args: {
+      regionId: { type: GraphQLID },
+      stateId: { type: GraphQLID },
+    },
+    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
+      try {
+        const region = await Region.findById(regionId);
+        const state = await State.findById(stateId);
+        if (region !== null && state !== null) {
+          await State.findOneAndUpdate({
+              _id: stateId,
+              regions: { $ne: regionId },
+            },
+            { $push: {regions: regionId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await Region.findOneAndUpdate({
+              _id: regionId,
+              states: { $ne: stateId },
+            },
+            { $push: {states: stateId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return region;
+        }
+      } catch (err) {
+        return err;
+      }
     },
   },
 };

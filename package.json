@@ -11,6 +11,7 @@
     "start": "node dist/index.js",
     "dev:start": "npm run build && node dist/index.js",
     "server": "node node_modules/nodemon/bin/nodemon.js",
+    "debug": "npm run build && node --inspect-brk dist/index.js",
     "client": "npm run start --prefix client",
     "build:server": "npm run clean && tsc",
     "build:client": "npm run build --prefix client",

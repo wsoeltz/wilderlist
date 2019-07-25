@@ -1,3 +1,4 @@
+/* tslint:disable:await-promise */
 import {
   GraphQLID,
   GraphQLList,
@@ -42,7 +43,6 @@ const stateMutations: any = {
             console.error(err);
           } else if (doc) {
             doc.regions.forEach(async (regionId: string) => {
-              // tslint:disable-next-line:await-promise
               await Region.findByIdAndUpdate(regionId, {
                 $pull: { states: id},
               });
