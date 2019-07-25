@@ -6,6 +6,7 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { Mountain as IMountain } from '../../graphQLTypes';
+import ListType from './listType';
 import StateType from './stateType';
 
 type MountainSchemaType = mongoose.Document & IMountain & {
@@ -41,7 +42,7 @@ MountainSchema.statics.findLists = function(id: string) {
 
 export const Mountain: MountainModelType = mongoose.model<MountainModelType, any>('mountain', MountainSchema);
 
-const MountainType = new GraphQLObjectType({
+const MountainType: any = new GraphQLObjectType({
   name:  'MountainType',
   fields: () => ({
     id: { type: GraphQLID },
@@ -53,7 +54,7 @@ const MountainType = new GraphQLObjectType({
       },
     },
     lists:  {
-      type: new GraphQLList(StateType),
+      type: new GraphQLList(ListType),
       resolve(parentValue) {
         return Mountain.findLists(parentValue.id);
       },

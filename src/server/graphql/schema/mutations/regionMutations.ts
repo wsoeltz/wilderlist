@@ -92,6 +92,44 @@ const regionMutations: any = {
       }
     },
   },
+  removeStateFromRegion: {
+    type: RegionType,
+    args: {
+      regionId: { type: GraphQLID },
+      stateId: { type: GraphQLID },
+    },
+    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
+      try {
+        const region = await Region.findById(regionId);
+        const state = await State.findById(stateId);
+        if (region !== null && state !== null) {
+          await State.findOneAndUpdate({
+              _id: stateId,
+            },
+            { $pull: {regions: regionId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await Region.findOneAndUpdate({
+              _id: regionId,
+            },
+            { $pull: {states: stateId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return region;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
 };
 
 export default regionMutations;
