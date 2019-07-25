@@ -55,84 +55,84 @@ const listMutations: any = {
       return list;
     },
   },
-  // addItemToList: {
-  //   type: ListType,
-  //   args: {
-  //     listId: { type: GraphQLNonNull(GraphQLID) },
-  //     stateId: { type: GraphQLNonNull(GraphQLID) },
-  //   },
-  //   async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string}) {
-  //     try {
-  //       const list = await List.findById(listId);
-  //       const state = await State.findById(stateId);
-  //       if (list !== null && state !== null) {
-  //         await State.findOneAndUpdate({
-  //             _id: stateId,
-  //             lists: { $ne: listId },
-  //           },
-  //           { $push: {lists: listId} },
-  //           function(err, model) {
-  //             if (err) {
-  //               console.error(err);
-  //             }
-  //           },
-  //         );
-  //         await List.findOneAndUpdate({
-  //             _id: listId,
-  //             states: { $ne: stateId },
-  //           },
-  //           { $push: {states: stateId} },
-  //           function(err, model) {
-  //             if (err) {
-  //               console.error(err);
-  //             }
-  //           },
-  //         );
-  //         return list;
-  //       }
-  //     } catch (err) {
-  //       return err;
-  //     }
-  //   },
-  // },
-  // removeItemFromList: {
-  //   type: ListType,
-  //   args: {
-  //     listId: { type: GraphQLNonNull(GraphQLID) },
-  //     stateId: { type: GraphQLNonNull(GraphQLID) },
-  //   },
-  //   async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string}) {
-  //     try {
-  //       const list = await List.findById(listId);
-  //       const state = await State.findById(stateId);
-  //       if (list !== null && state !== null) {
-  //         await State.findOneAndUpdate({
-  //             _id: stateId,
-  //           },
-  //           { $pull: {lists: listId} },
-  //           function(err, model) {
-  //             if (err) {
-  //               console.error(err);
-  //             }
-  //           },
-  //         );
-  //         await List.findOneAndUpdate({
-  //             _id: listId,
-  //           },
-  //           { $pull: {states: stateId} },
-  //           function(err, model) {
-  //             if (err) {
-  //               console.error(err);
-  //             }
-  //           },
-  //         );
-  //         return list;
-  //       }
-  //     } catch (err) {
-  //       return err;
-  //     }
-  //   },
-  // },
+  addItemToList: {
+    type: ListType,
+    args: {
+      listId: { type: GraphQLNonNull(GraphQLID) },
+      itemId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+      try {
+        const list = await List.findById(listId);
+        const item = await Mountain.findById(itemId);
+        if (list !== null && item !== null) {
+          await Mountain.findOneAndUpdate({
+              _id: itemId,
+              lists: { $ne: listId },
+            },
+            { $push: {lists: listId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await List.findOneAndUpdate({
+              _id: listId,
+              items: { $ne: itemId },
+            },
+            { $push: {items: itemId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return list;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeItemFromList: {
+    type: ListType,
+    args: {
+      listId: { type: GraphQLNonNull(GraphQLID) },
+      itemId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+      try {
+        const list = await List.findById(listId);
+        const item = await Mountain.findById(itemId);
+        if (list !== null && item !== null) {
+          await Mountain.findOneAndUpdate({
+              _id: itemId,
+            },
+            { $pull: {lists: listId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await List.findOneAndUpdate({
+              _id: listId,
+            },
+            { $pull: {items: itemId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return list;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
 };
 
 export default listMutations;
