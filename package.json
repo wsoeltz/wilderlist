@@ -18,7 +18,9 @@
     "build": "npm run build:server && npm run build:client",
     "clean": "rimraf dist",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "lint:fix": "tslint --project tsconfig.json --config tslint.json --fix",
+    "lint:server": "tslint --project tsconfig.json --config tslint.json --fix",
+    "lint:client": "npm run lint:fix --prefix client",
+    "lint:fix": "npm run lint:server && npm run lint:client",
     "test": "jest",
     "test:watch": "jest --watch"
   },
