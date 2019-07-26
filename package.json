@@ -24,7 +24,7 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
-  "author": "",
+  "author": "Kyle Soeltz",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.0",
