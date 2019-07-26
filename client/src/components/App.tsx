@@ -3,9 +3,10 @@ import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import AdminPanel from './adminPanel';
 
-const client = new ApolloClient({
-  uri: `${process.env.REACT_APP_API_BASE_URL}/graphql`,
-});
+const BASE_URL = process.env.REACT_APP_API_BASE_URL
+const uri = BASE_URL === undefined ? '/graphql' : `${BASE_URL}/graphql`;
+
+const client = new ApolloClient({ uri });
 
 const App: React.FC = () => {
   return (
