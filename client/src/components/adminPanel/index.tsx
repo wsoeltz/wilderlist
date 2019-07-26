@@ -35,7 +35,7 @@ interface SuccessResponse {
   }>;
 }
 
-type Result = QueryResult<SuccessResponse, Variables>;
+type Result = QueryResult<SuccessResponse>;
 
 const AdminPanel = () => {
   const renderProp = (result: Result) => {
