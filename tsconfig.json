@@ -33,7 +33,7 @@
   },
   "exclude": [
     "dist",
-    "client",
+    "client/build",
     "node_modules"
   ]
 }

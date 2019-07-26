@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
@@ -8,13 +9,9 @@ import schema from './graphql/schema';
 
 const app = express();
 
-if (process.env.NODE_ENV !== 'production') {
-  // Set this to allow cross origin access on dev
-  app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-  });
+if (process.env.NODE_ENV === 'development') {
+  // Allow all cors requests on development
+  app.use(cors());
 }
 
 ///// Setup MongoDb connection
