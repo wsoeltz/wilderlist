@@ -6,8 +6,14 @@ import express from 'express';
 import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
 import schema from './graphql/schema';
+import googleAuth from './auth/google';
+
+require('./auth/passport');
 
 const app = express();
+
+// Setup OAuth with Google
+googleAuth(app);
 
 if (process.env.NODE_ENV === 'development') {
   // Allow all cors requests on development
