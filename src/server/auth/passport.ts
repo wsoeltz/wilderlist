@@ -1,6 +1,8 @@
+/* tslint:disable:await-promise */
 require('dotenv').config();
 import passport from 'passport';
 import { Strategy as GoogleStrategy} from 'passport-google-oauth20';
+import { User } from '../graphql/schema/queryTypes/userType';
 
 // Setup Google OAuth
 if (process.env.GOOGLE_CLIENT_ID === undefined) {
@@ -14,7 +16,13 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: '/auth/google/callback',
-  }, (accessToken, refreshToken, profile, done) => {
-    console.log({accessToken, refreshToken, profile, done});
-  })
+  }, async (accessToken, refreshToken, profile, done) => {
+    const existingUser = await User.findOne({ googleId: profile.id });
+    if (existingUser) {
+      done(undefined, existingUser);
+    } else {
+      const user = await new User({ googleId: profile.id }).save();
+      done(undefined, user);
+    }
+  }),
 );

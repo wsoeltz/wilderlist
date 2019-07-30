@@ -5,8 +5,8 @@ import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
-import schema from './graphql/schema';
 import googleAuth from './auth/google';
+import schema from './graphql/schema';
 
 require('./auth/passport');
 

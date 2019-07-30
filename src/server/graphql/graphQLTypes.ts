@@ -27,6 +27,7 @@ export interface List {
 
 export interface User {
   id: string;
+  googleId: string;
   name: string;
   friends: User[];
   lists: List[];

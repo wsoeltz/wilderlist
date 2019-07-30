@@ -14,6 +14,7 @@ type UserSchemaType = mongoose.Document & IUser & {
 };
 
 const UserSchema = new Schema({
+  googleId: { type: String},
   name: { type: String },
   friends: [{
     type: Schema.Types.ObjectId,
