@@ -1,16 +1,32 @@
 require('dotenv').config();
 
 import bodyParser from 'body-parser';
+import cookieSession from 'cookie-session';
 import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
+import passport from 'passport';
 import googleAuth from './auth/google';
 import schema from './graphql/schema';
 
 require('./auth/passport');
 
 const app = express();
+
+if (!process.env.COOKIE_KEY) {
+  throw new Error('You must provide a COOKIE_KEY');
+}
+
+app.use(
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [process.env.COOKIE_KEY],
+  }),
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Setup OAuth with Google
 googleAuth(app);
