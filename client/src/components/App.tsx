@@ -14,10 +14,7 @@ import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const uri = BASE_URL === undefined ? '/graphql' : `${BASE_URL}/graphql`;
-
-const client = new ApolloClient({ uri });
+const client = new ApolloClient({ uri: '/graphql' });
 
 const App: React.FC = () => {
   return (
