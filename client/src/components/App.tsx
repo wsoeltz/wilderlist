@@ -1,42 +1,60 @@
 import ApolloClient from 'apollo-boost';
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { ApolloProvider } from 'react-apollo';
 import {
   BrowserRouter as Router,
-  Link,
   Route,
 } from 'react-router-dom';
 import { Routes } from '../routing/routes';
+import { User } from '../types/graphQLTypes';
 import AdminPanel from './adminPanel';
 import AdminLists from './adminPanel/AdminLists';
 import AdminMountains from './adminPanel/AdminMountains';
 import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
+import Header from './sharedComponents/Header';
 
 const client = new ApolloClient({ uri: '/graphql' });
+export const UserContext = React.createContext<User | null>(null);
 
 const App: React.FC = () => {
+  const [user, setUser] = useState<User| null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get('/api/current_user');
+        setUser(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUser();
+  }, []);
+  // if (user) {
+  //   console.log(user);
+  // } else {
+  //   console.log('logged out');
+  // }
+
   return (
-    <ApolloProvider client={client}>
-      <Router>
-        <div>
-          <h1>Wilderlist Dev</h1>
-          <nav>
-            <ul>
-              <li><Link to={Routes.Dashboard}>Dashboard</Link></li>
-              <li><Link to={Routes.Admin}>Admin Panel</Link></li>
-            </ul>
-          </nav>
-          <Route path={Routes.Admin} component={AdminPanel} />
-          <Route exact path={Routes.AdminStates} component={AdminStates} />
-          <Route exact path={Routes.AdminLists} component={AdminLists} />
-          <Route exact path={Routes.AdminMountains} component={AdminMountains} />
-          <Route exact path={Routes.AdminRegions} component={AdminRegions} />
-          <Route exact path={Routes.AdminUsers} component={AdminUsers} />
-        </div>
-      </Router>
-    </ApolloProvider>
+    <UserContext.Provider value={user}>
+      <ApolloProvider client={client}>
+        <Router>
+          <div>
+            <Header />
+            <Route path={Routes.Admin} component={AdminPanel} />
+            <Route exact path={Routes.AdminStates} component={AdminStates} />
+            <Route exact path={Routes.AdminLists} component={AdminLists} />
+            <Route exact path={Routes.AdminMountains} component={AdminMountains} />
+            <Route exact path={Routes.AdminRegions} component={AdminRegions} />
+            <Route exact path={Routes.AdminUsers} component={AdminUsers} />
+          </div>
+        </Router>
+      </ApolloProvider>
+    </UserContext.Provider>
   );
 };
 
