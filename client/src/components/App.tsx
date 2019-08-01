@@ -33,11 +33,17 @@ const App: React.FC = () => {
     };
     fetchUser();
   }, []);
-  // if (user) {
-  //   console.log(user);
-  // } else {
-  //   console.log('logged out');
-  // }
+
+  const routes = (user) ? (
+      <>
+        <Route path={Routes.Admin} component={AdminPanel} />
+        <Route exact path={Routes.AdminStates} component={AdminStates} />
+        <Route exact path={Routes.AdminLists} component={AdminLists} />
+        <Route exact path={Routes.AdminMountains} component={AdminMountains} />
+        <Route exact path={Routes.AdminRegions} component={AdminRegions} />
+        <Route exact path={Routes.AdminUsers} component={AdminUsers} />
+      </>
+    ) : null;
 
   return (
     <UserContext.Provider value={user}>
@@ -45,12 +51,7 @@ const App: React.FC = () => {
         <Router>
           <div>
             <Header />
-            <Route path={Routes.Admin} component={AdminPanel} />
-            <Route exact path={Routes.AdminStates} component={AdminStates} />
-            <Route exact path={Routes.AdminLists} component={AdminLists} />
-            <Route exact path={Routes.AdminMountains} component={AdminMountains} />
-            <Route exact path={Routes.AdminRegions} component={AdminRegions} />
-            <Route exact path={Routes.AdminUsers} component={AdminUsers} />
+            {routes}
           </div>
         </Router>
       </ApolloProvider>
