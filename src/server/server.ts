@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import googleAuth from './auth/google';
 import schema from './graphql/schema';
+import requireLogin from './middleware/requireLogin';
 
 require('./auth/passport');
 
@@ -56,7 +57,7 @@ mongoose.connection
     .on('error', error => console.log('Error connecting to MongoLab:', error));
 
 app.use(bodyParser.json());
-app.use('/graphql', expressGraphQL({
+app.use('/graphql', requireLogin, expressGraphQL({
   schema,
   graphiql: true,
 }));
