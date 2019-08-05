@@ -68,7 +68,7 @@ const AdminPanel = () => {
       });
       out = (
         <>
-          <h3>Lists -</h3>
+          <h3>Lists</h3>
           {listElms}
         </>
       );
