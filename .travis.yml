@@ -26,5 +26,6 @@ deploy:
 - provider: gae
   keyfile: client-secret.json
   project: wilderlist-prod
+  skip_cleanup: true
   on:
     branch: master
