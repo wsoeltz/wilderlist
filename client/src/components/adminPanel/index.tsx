@@ -5,7 +5,7 @@ import { Routes } from '../../routing/routes';
 const AdminPanel = () => {
   return (
     <div>
-      <h2>Admin Panel</h2>
+      <h2>Admin Panel - Master</h2>
       <p>Please select an option</p>
       <nav>
         <ul>

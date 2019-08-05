@@ -6,4 +6,4 @@ build
 client/.env.development
 client/.env.production
 
-wilderlist-prod-ed3a9675b228.json
+client-secret.json
