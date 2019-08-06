@@ -30,7 +30,7 @@ const Header = () => {
   };
   return (
     <div>
-      <h1>Wilderlist</h1>
+      <h1>Wilderlist Dev</h1>
       <UserContext.Consumer
         children={renderProp}
       />
