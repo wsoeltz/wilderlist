@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "engines": {
-    "node": "10.x.x",
+    "node": "11.11.0",
     "npm": "6.7.0"
   },
   "scripts": {
