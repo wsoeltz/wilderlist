@@ -1,13 +1,12 @@
-import gql from 'graphql-tag';
 import React from 'react';
-import {
-  Query,
-  QueryResult,
-} from 'react-apollo';
+import gql from 'graphql-tag';
 import { Region, State } from '../../types/graphQLTypes';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import ListRegions from './regions/ListRegions';
+import AddRegion from './regions/AddRegion';
 
-const query = gql`
-  query AdminPanel{
+const GET_REGIONS = gql`
+  query ListRegions{
     regions {
       id
       name
@@ -19,7 +18,28 @@ const query = gql`
   }
 `;
 
-interface SuccessResponse {
+const ADD_REGION = gql`
+  mutation($name: String!) {
+    addRegion(name: $name) {
+      id
+      name
+      states {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const DELETE_REGION = gql`
+  mutation($id: ID!) {
+    deleteRegion(id: $id) {
+      id
+    }
+  }
+`;
+
+export interface SuccessResponse {
   regions: Array<{
     id: Region['id'];
     name: Region['name'];
@@ -30,51 +50,45 @@ interface SuccessResponse {
   }>;
 }
 
-type Result = QueryResult<SuccessResponse>;
-
 const AdminPanel = () => {
-  const renderProp = (result: Result) => {
-    const {loading, error, data} = result;
-    let out: React.ReactElement<any> | null;
-    if (loading === true) {
-      out = null;
-    } else if (error !== undefined) {
-      console.error(error);
-      out = null;
-    } else if (data !== undefined) {
-      const { regions } = data;
-      const regionElms = regions.map(region => {
-        const mountainElms = region.states.map(state => {
-          return (
-            <li key={state.id}>
-              {state.name}
-            </li>
-          );
+  const {loading, error, data} = useQuery<SuccessResponse>(GET_REGIONS);
+
+  const [deleteRegion] = useMutation(DELETE_REGION, {
+    update: (cache, { data: { deleteRegion } }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_REGIONS });
+      if (response !== null && response.regions !== null) {
+        cache.writeQuery({
+          query: GET_REGIONS,
+          data: { regions: response.regions.filter(({id}) => id !== deleteRegion.id) },
         });
-        return (
-          <li key={region.id}>
-            {region.name}
-            <ul>
-              {mountainElms}
-            </ul>
-          </li>
-        );
-      });
-      out = (
-        <>
-          {regionElms}
-        </>
-      );
-    } else {
-      out = null;
+      }
     }
-    return out;
-  };
+  });
+
+  const [addRegion] = useMutation(ADD_REGION, {
+    update: (cache, { data: { addRegion } }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_REGIONS });
+      if (response !== null && response.regions !== null) {
+        cache.writeQuery({
+          query: GET_REGIONS,
+          data: { regions: response.regions.concat([addRegion]) },
+        });
+      }
+    }
+  });
+
   return (
-    <Query
-      query={query}
-      children={renderProp}
-    />
+    <>
+      <ListRegions
+        loading={loading}
+        error={error}
+        data={data}
+        deleteRegion={(id: string) => deleteRegion({ variables: { id } })}
+      />
+      <AddRegion
+        addRegion={(name: string) => addRegion({ variables: { name } })}
+      />
+    </>
   );
 };
 

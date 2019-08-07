@@ -1,7 +1,7 @@
 import ApolloClient from 'apollo-boost';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider } from '@apollo/react-hooks';
 import {
   BrowserRouter as Router,
   Route,
@@ -16,7 +16,7 @@ import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
 import Header from './sharedComponents/Header';
 
-const client = new ApolloClient({ uri: '/graphql' });
+const client = new ApolloClient();
 export const UserContext = React.createContext<User | null>(null);
 
 const App: React.FC = () => {

@@ -39,7 +39,7 @@ const regionMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      const region = await Region.findByIdAndDelete(id)
+      await Region.findById(id)
         .select({states: true})
         .exec(function(err: any, doc: any) {
           if (err) {
@@ -52,7 +52,7 @@ const regionMutations: any = {
             });
           }
       });
-      return region;
+      return Region.findByIdAndDelete(id)
     },
   },
   addStateToRegion: {
