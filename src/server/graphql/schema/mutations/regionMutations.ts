@@ -52,7 +52,7 @@ const regionMutations: any = {
             });
           }
       });
-      return Region.findByIdAndDelete(id)
+      return Region.findByIdAndDelete(id);
     },
   },
   addStateToRegion: {
@@ -131,6 +131,21 @@ const regionMutations: any = {
       } catch (err) {
         return err;
       }
+    },
+  },
+  changeRegionName: {
+    type: RegionType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newName: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, { id, newName }: { id: string , newName: string}) {
+      const region = await Region.findOneAndUpdate({
+        _id: id,
+      },
+      { name: newName },
+      {new: true});
+      return region;
     },
   },
 };

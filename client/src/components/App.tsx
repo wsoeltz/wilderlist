@@ -1,7 +1,7 @@
+import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { ApolloProvider } from '@apollo/react-hooks';
 import {
   BrowserRouter as Router,
   Route,

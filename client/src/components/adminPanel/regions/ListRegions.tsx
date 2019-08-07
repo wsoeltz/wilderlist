@@ -1,16 +1,27 @@
-import React from 'react';
 import { ApolloError } from 'apollo-boost';
+import React from 'react';
+import styled from 'styled-components';
 import { SuccessResponse } from '../AdminRegions';
+
+const RegionName = styled.a`
+  color: blue;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+`;
 
 interface Props {
   loading: boolean;
   error: ApolloError | undefined;
   data: SuccessResponse | undefined;
-  deleteRegion: (name: string) => void;
+  deleteRegion: (id: string) => void;
+  editRegion: (id: string) => void;
 }
 
 const ListRegions = (props: Props) => {
-  const {loading, error, data, deleteRegion} = props;
+  const {loading, error, data, deleteRegion, editRegion} = props;
 
   if (loading === true) {
     return (<p>Loading</p>);
@@ -23,8 +34,9 @@ const ListRegions = (props: Props) => {
       const stateElms = region.states.map(({name}) => name + ', ');
       return (
         <li key={region.id}>
-          <strong>{region.name}</strong>
-          <button>Edit</button>
+          <strong><RegionName
+            onClick={() => editRegion(region.id)}
+          >{region.name}</RegionName></strong>
           <button
             onClick={() => deleteRegion(region.id)}
           >
