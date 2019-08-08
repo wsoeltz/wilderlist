@@ -113,7 +113,7 @@ const AddRegion = (props: Props) => {
             {states}
           </ul>
         </fieldset>
-        <button type='submit'>Add Region</button>
+        <button type='submit' disabled={name === ''}>Add Region</button>
       </form>
     </div>
   );

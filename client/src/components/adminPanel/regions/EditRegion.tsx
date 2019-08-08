@@ -159,7 +159,7 @@ const EditRegion = (props: Props) => {
         <>
         <form onSubmit={handleSubmit}>
           <input value={inputNameValue} onChange={(e) => setInputNameValue(e.target.value)} />
-          <button type='submit'>Update</button>
+          <button type='submit' disabled={inputNameValue === ''}>Update</button>
         </form>
         <button onClick={() => setEditingName(false)}>Cancel</button>
         </>

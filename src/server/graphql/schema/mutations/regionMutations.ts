@@ -18,7 +18,7 @@ const regionMutations: any = {
     },
     resolve(_unused: any, { name, states }: {name: string, states: IState[]}) {
       const newRegion = new Region({ name, states });
-      if (states !== undefined) {
+      if (states !== undefined && name !== '') {
         states.forEach((id) => {
           State.findByIdAndUpdate(id,
             { $push: {regions: newRegion.id} },
