@@ -6,22 +6,22 @@ import {
   GraphQLString,
 } from 'graphql';
 import { Mountain as IMountain } from '../../graphQLTypes';
-import ListType, { List } from '../queryTypes/listType';
 import { Mountain } from '../queryTypes/mountainType';
+import PeakListType, { PeakList } from '../queryTypes/peakListType';
 
 const listMutations: any = {
-  addList: {
-    type: ListType,
+  addPeakList: {
+    type: PeakListType,
     args: {
       name: { type: GraphQLNonNull(GraphQLString) },
-      items: { type: new GraphQLList(GraphQLID)},
+      mountains: { type: new GraphQLList(GraphQLID)},
     },
-    resolve(_unused: any, { name, items }: {name: string, items: IMountain[]}) {
-      const newList = new List({ name, items });
-      if (items !== undefined && name !== '') {
-        items.forEach((id) => {
+    resolve(_unused: any, { name, mountains }: {name: string, mountains: IMountain[]}) {
+      const newPeakList = new PeakList({ name, mountains });
+      if (mountains !== undefined && name !== '') {
+        mountains.forEach((id) => {
           Mountain.findByIdAndUpdate(id,
-            { $push: {lists: newList.id} },
+            { $push: {lists: newPeakList.id} },
             function(err, model) {
               if (err) {
                 console.error(err);
@@ -30,40 +30,40 @@ const listMutations: any = {
           );
         });
       }
-      return newList.save();
+      return newPeakList.save();
     },
   },
-  deleteList: {
-    type: ListType,
+  deletePeakList: {
+    type: PeakListType,
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await List.findById(id)
-        .select({items: true})
+      await PeakList.findById(id)
+        .select({mountains: true})
         .exec(function(err: any, doc: any) {
           if (err) {
             console.error(err);
           } else if (doc) {
-            doc.items.forEach(async (itemId: string) => {
+            doc.mountains.forEach(async (itemId: string) => {
               await Mountain.findByIdAndUpdate(itemId, {
                 $pull: { lists: id},
               });
             });
           }
       });
-      return List.findByIdAndDelete(id);
+      return PeakList.findByIdAndDelete(id);
     },
   },
-  addItemToList: {
-    type: ListType,
+  addItemToPeakList: {
+    type: PeakListType,
     args: {
       listId: { type: GraphQLNonNull(GraphQLID) },
       itemId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
       try {
-        const list = await List.findById(listId);
+        const list = await PeakList.findById(listId);
         const item = await Mountain.findById(itemId);
         if (list !== null && item !== null) {
           await Mountain.findOneAndUpdate({
@@ -77,11 +77,11 @@ const listMutations: any = {
               }
             },
           );
-          await List.findOneAndUpdate({
+          await PeakList.findOneAndUpdate({
               _id: listId,
-              items: { $ne: itemId },
+              mountains: { $ne: itemId },
             },
-            { $push: {items: itemId} },
+            { $push: {mountains: itemId} },
             function(err, model) {
               if (err) {
                 console.error(err);
@@ -95,15 +95,15 @@ const listMutations: any = {
       }
     },
   },
-  removeItemFromList: {
-    type: ListType,
+  removeItemFromPeakList: {
+    type: PeakListType,
     args: {
       listId: { type: GraphQLNonNull(GraphQLID) },
       itemId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
       try {
-        const list = await List.findById(listId);
+        const list = await PeakList.findById(listId);
         const item = await Mountain.findById(itemId);
         if (list !== null && item !== null) {
           await Mountain.findOneAndUpdate({
@@ -116,10 +116,10 @@ const listMutations: any = {
               }
             },
           );
-          await List.findOneAndUpdate({
+          await PeakList.findOneAndUpdate({
               _id: listId,
             },
-            { $pull: {items: itemId} },
+            { $pull: {mountains: itemId} },
             function(err, model) {
               if (err) {
                 console.error(err);

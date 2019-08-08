@@ -4,7 +4,7 @@ import {
   Query,
   QueryResult,
 } from 'react-apollo';
-import { List, Mountain, State } from '../../types/graphQLTypes';
+import { Mountain, PeakList, State } from '../../types/graphQLTypes';
 
 const query = gql`
   query AdminPanel{
@@ -24,8 +24,8 @@ const query = gql`
 
 interface SuccessResponse {
   lists: Array<{
-    id: List['id'];
-    name: List['name'];
+    id: PeakList['id'];
+    name: PeakList['name'];
     items: Array<{
       id: Mountain['id'];
       name: Mountain['name'];

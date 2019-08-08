@@ -4,8 +4,8 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql';
-import ListType, { List } from './queryTypes/listType';
 import MountainType, { Mountain } from './queryTypes/mountainType';
+import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
 import UserType, { User } from './queryTypes/userType';
@@ -32,9 +32,9 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     lists: {
-      type: new GraphQLList(ListType),
+      type: new GraphQLList(PeakListType),
       resolve() {
-        return List.find({});
+        return PeakList.find({});
       },
     },
     users: {
@@ -65,10 +65,10 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     list: {
-      type: ListType,
+      type: PeakListType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parnetValue, { id }) {
-        return List.findById(id);
+        return PeakList.findById(id);
       },
     },
     user: {

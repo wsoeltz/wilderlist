@@ -6,7 +6,7 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { User as IUser } from '../../graphQLTypes';
-import ListType from './listType';
+import PeakListType from './peakListType';
 
 type UserSchemaType = mongoose.Document & IUser & {
   findFriends: (id: string) => any;
@@ -16,11 +16,12 @@ type UserSchemaType = mongoose.Document & IUser & {
 const UserSchema = new Schema({
   googleId: { type: String},
   name: { type: String },
+  permissions: { type: String },
   friends: [{
     type: Schema.Types.ObjectId,
     ref: 'user',
   }],
-  lists: [{
+  peakLists: [{
     type: Schema.Types.ObjectId,
     ref: 'list',
   }],
@@ -34,8 +35,8 @@ UserSchema.statics.findFriends = function(id: string) {
 
 UserSchema.statics.findLists = function(id: string) {
   return this.findById(id)
-    .populate('lists')
-    .then((user: IUser) => user.lists);
+    .populate('peakLists')
+    .then((user: IUser) => user.peakLists);
 };
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
@@ -47,14 +48,15 @@ const UserType: any = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
+    permissions: { type: GraphQLString },
     friends: {
       type: new GraphQLList(UserType),
       resolve(parentValue) {
         return User.findFriends(parentValue.id);
       },
     },
-    lists: {
-      type: new GraphQLList(ListType),
+    peakLists: {
+      type: new GraphQLList(PeakListType),
       resolve(parentValue) {
         return User.findLists(parentValue.id);
       },

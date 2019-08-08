@@ -5,20 +5,20 @@ import {
   GraphQLString,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
-import { List as IList } from '../../graphQLTypes';
+import { PeakList as IPeakList } from '../../graphQLTypes';
 import MountainType from './mountainType';
 import UserType from './userType';
 
-type ListSchemaType = mongoose.Document & IList & {
+type PeakListSchemaType = mongoose.Document & IPeakList & {
   findMountains: (id: string) => any;
   findUsers: (id: string) => any;
 };
 
-export type ListModelType = mongoose.Model<ListSchemaType> & ListSchemaType;
+export type PeakListModelType = mongoose.Model<PeakListSchemaType> & PeakListSchemaType;
 
-const ListSchema = new Schema({
+const PeakListSchema = new Schema({
   name: { type: String, required: true },
-  items: [{
+  mountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
   }],
@@ -28,38 +28,38 @@ const ListSchema = new Schema({
   }],
 });
 
-ListSchema.statics.findMountains = function(id: string) {
+PeakListSchema.statics.findMountains = function(id: string) {
   return this.findById(id)
-    .populate('items')
-    .then((list: IList) => list.items);
+    .populate('mountains')
+    .then((list: IPeakList) => list.mountains);
 };
 
-ListSchema.statics.findUsers = function(id: string) {
+PeakListSchema.statics.findUsers = function(id: string) {
   return this.findById(id)
     .populate('users')
-    .then((list: IList) => list.users);
+    .then((list: IPeakList) => list.users);
 };
 
-export const List: ListModelType = mongoose.model<ListModelType, any>('list', ListSchema);
+export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
 
-const ListType = new GraphQLObjectType({
-  name:  'ListType',
+const PeakListType = new GraphQLObjectType({
+  name:  'PeakListType',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    items:  {
+    mountains:  {
       type: new GraphQLList(MountainType),
       resolve(parentValue) {
-        return List.findMountains(parentValue.id);
+        return PeakList.findMountains(parentValue.id);
       },
     },
     users:  {
       type: new GraphQLList(UserType),
       resolve(parentValue) {
-        return List.findUsers(parentValue.id);
+        return PeakList.findUsers(parentValue.id);
       },
     },
   }),
 });
 
-export default ListType;
+export default PeakListType;

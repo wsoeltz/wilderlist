@@ -2,7 +2,7 @@
 require('dotenv').config();
 import passport from 'passport';
 import { Strategy as GoogleStrategy} from 'passport-google-oauth20';
-import { User as IUser } from '../graphql/graphQLTypes';
+import { PermissionTypes, User as IUser } from '../graphql/graphQLTypes';
 import { User } from '../graphql/schema/queryTypes/userType';
 
 // Setup Google OAuth
@@ -31,7 +31,7 @@ passport.use(new GoogleStrategy({
     if (existingUser) {
       done(undefined, existingUser);
     } else {
-      const user = await new User({ googleId: profile.id }).save();
+      const user = await new User({ googleId: profile.id, permissions: PermissionTypes.standard }).save();
       done(undefined, user);
     }
   }),

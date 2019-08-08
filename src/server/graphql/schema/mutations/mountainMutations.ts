@@ -9,8 +9,8 @@ import {
 import {
   Mountain as IMountain,
 } from '../../graphQLTypes';
-import { List } from '../queryTypes/listType';
 import MountainType, { Mountain } from '../queryTypes/mountainType';
+import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 
 const mountainMutations: any = {
@@ -31,9 +31,9 @@ const mountainMutations: any = {
       if ( name !== '') {
         if (lists !== undefined) {
           lists.forEach(async (id) => {
-            await List.findOneAndUpdate(
-              { _id: id, items: { $ne: newMountain.id} },
-              { $push: {items: newMountain.id} },
+            await PeakList.findOneAndUpdate(
+              { _id: id, mountains: { $ne: newMountain.id} },
+              { $push: {mountains: newMountain.id} },
               function(err, model) {
                 if (err) {
                   console.error(err);
@@ -61,8 +61,8 @@ const mountainMutations: any = {
             console.error(err);
           } else if (doc) {
             doc.lists.forEach(async (listId: string) => {
-              await List.findByIdAndUpdate(listId, {
-                $pull: { items: id},
+              await PeakList.findByIdAndUpdate(listId, {
+                $pull: { mountains: id},
               });
             });
           }

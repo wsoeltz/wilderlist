@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../../routing/routes';
-import { User } from '../../types/graphQLTypes';
+import { PermissionTypes, User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
 
 const Header = () => {
@@ -9,13 +9,15 @@ const Header = () => {
     if (user === null) {
       return null;
     } else if (user) {
+      const adminPanel = user.permissions === PermissionTypes.admin
+        ? <li><Link to={Routes.Admin}>Admin Panel</Link></li> : null;
       return (
         <>
           <a href='/api/logout'>Logout</a>
           <nav>
             <ul>
               <li><Link to={Routes.Dashboard}>Dashboard</Link></li>
-              <li><Link to={Routes.Admin}>Admin Panel</Link></li>
+              {adminPanel}
             </ul>
           </nav>
         </>

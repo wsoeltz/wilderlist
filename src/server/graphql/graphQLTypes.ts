@@ -20,14 +20,26 @@ export interface Mountain {
   longitude: number;
   elevation: number;
   prominence: number | null;
-  lists: List[];
+  lists: PeakList[];
 }
 
-export interface List {
+export interface PeakList {
   id: string;
   name: string;
-  items: Mountain[];
+  shortName: string;
+  variants: {
+    standard: boolean;
+    winter: boolean;
+    fourSeason: boolean;
+    grid: boolean;
+  };
+  mountains: Mountain[];
   users: User[];
+}
+
+export enum PermissionTypes {
+  standard = 'standard',
+  admin = 'admin',
 }
 
 export interface User {
@@ -35,5 +47,6 @@ export interface User {
   googleId: string;
   name: string;
   friends: User[];
-  lists: List[];
+  peakLists: PeakList[];
+  permissions: PermissionTypes;
 }

@@ -7,10 +7,10 @@ import {
   Route,
 } from 'react-router-dom';
 import { Routes } from '../routing/routes';
-import { User } from '../types/graphQLTypes';
+import { PermissionTypes, User } from '../types/graphQLTypes';
 import AdminPanel from './adminPanel';
-import AdminLists from './adminPanel/AdminLists';
 import AdminMountains from './adminPanel/AdminMountains';
+import AdminPeakLists from './adminPanel/AdminPeakLists';
 import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
@@ -34,11 +34,11 @@ const App: React.FC = () => {
     fetchUser();
   }, []);
 
-  const routes = (user) ? (
+  const routes = (user && user.permissions === PermissionTypes.admin) ? (
       <>
         <Route path={Routes.Admin} component={AdminPanel} />
         <Route exact path={Routes.AdminStates} component={AdminStates} />
-        <Route exact path={Routes.AdminLists} component={AdminLists} />
+        <Route exact path={Routes.AdminPeakLists} component={AdminPeakLists} />
         <Route exact path={Routes.AdminMountains} component={AdminMountains} />
         <Route exact path={Routes.AdminRegions} component={AdminRegions} />
         <Route exact path={Routes.AdminUsers} component={AdminUsers} />

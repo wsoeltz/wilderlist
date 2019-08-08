@@ -5,6 +5,6 @@ export enum Routes {
   AdminRegions = '/admin/regions',
   AdminStates = '/admin/states',
   AdminMountains = '/admin/mountains',
-  AdminLists = '/admin/lists',
+  AdminPeakLists = '/admin/lists',
   AdminUsers = '/admin/users',
 }

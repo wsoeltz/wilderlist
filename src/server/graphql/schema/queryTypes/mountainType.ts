@@ -7,12 +7,12 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { Mountain as IMountain } from '../../graphQLTypes';
-import ListType from './listType';
+import PeakListType from './peakListType';
 import StateType from './stateType';
 
 type MountainSchemaType = mongoose.Document & IMountain & {
   findState: (id: string) => any;
-  findLists: (id: string) => any;
+  findPeakLists: (id: string) => any;
 };
 
 export type MountainModelType = mongoose.Model<MountainSchemaType> & MountainSchemaType;
@@ -39,7 +39,7 @@ MountainSchema.statics.findState = function(id: string) {
     .then((mountain: IMountain) => mountain.state);
 };
 
-MountainSchema.statics.findLists = function(id: string) {
+MountainSchema.statics.findPeakLists = function(id: string) {
   return this.findById(id)
     .populate('lists')
     .then((mountain: IMountain) => mountain.lists);
@@ -63,9 +63,9 @@ const MountainType: any = new GraphQLObjectType({
       },
     },
     lists:  {
-      type: new GraphQLList(ListType),
+      type: new GraphQLList(PeakListType),
       resolve(parentValue) {
-        return Mountain.findLists(parentValue.id);
+        return Mountain.findPeakLists(parentValue.id);
       },
     },
   }),
