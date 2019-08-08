@@ -1,5 +1,6 @@
 /* tslint:disable:await-promise */
 import {
+  GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
@@ -9,28 +10,57 @@ import { Mountain as IMountain } from '../../graphQLTypes';
 import { Mountain } from '../queryTypes/mountainType';
 import PeakListType, { PeakList } from '../queryTypes/peakListType';
 
-const listMutations: any = {
+interface AddPeakListVariables {
+  name: string;
+  shortName: string;
+  standardVariant: boolean;
+  winterVariant: boolean;
+  fourSeasonVariant: boolean;
+  gridVariant: boolean;
+  mountains: IMountain[];
+}
+
+const peakListMutations: any = {
   addPeakList: {
     type: PeakListType,
     args: {
       name: { type: GraphQLNonNull(GraphQLString) },
+      shortName: { type: GraphQLNonNull(GraphQLString) },
+      standardVariant: {type: GraphQLNonNull(GraphQLBoolean) },
+      winterVariant: {type: GraphQLNonNull(GraphQLBoolean) },
+      fourSeasonVariant: {type: GraphQLNonNull(GraphQLBoolean) },
+      gridVariant: {type: GraphQLNonNull(GraphQLBoolean) },
       mountains: { type: new GraphQLList(GraphQLID)},
     },
-    resolve(_unused: any, { name, mountains }: {name: string, mountains: IMountain[]}) {
-      const newPeakList = new PeakList({ name, mountains });
-      if (mountains !== undefined && name !== '') {
-        mountains.forEach((id) => {
-          Mountain.findByIdAndUpdate(id,
-            { $push: {lists: newPeakList.id} },
-            function(err, model) {
-              if (err) {
-                console.error(err);
-              }
-            },
-          );
+    resolve(_unused: any, input: AddPeakListVariables) {
+      const {
+        name, shortName, standardVariant, winterVariant, fourSeasonVariant, gridVariant, mountains,
+      } = input;
+      if (name !== '' && shortName !== ''
+        && standardVariant !== null && winterVariant !== null
+        && fourSeasonVariant !== null && gridVariant !== null) {
+        const newPeakList = new PeakList({
+          name, shortName, mountains,
+          variants: {
+            standard: standardVariant, winter: winterVariant,
+            fourSeason: fourSeasonVariant, grid: gridVariant,
+          },
         });
+        if (mountains !== undefined) {
+          mountains.forEach((id) => {
+            Mountain.findByIdAndUpdate(id,
+              { $push: {lists: newPeakList.id} },
+              function(err, model) {
+                PeakList.update({ $push: { mountains: id } });
+                if (err) {
+                  console.error(err);
+                }
+              },
+            );
+          });
+        }
+        return newPeakList.save();
       }
-      return newPeakList.save();
     },
   },
   deletePeakList: {
@@ -135,4 +165,4 @@ const listMutations: any = {
   },
 };
 
-export default listMutations;
+export default peakListMutations;

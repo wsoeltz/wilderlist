@@ -31,7 +31,7 @@ const RootQuery = new GraphQLObjectType({
         return Region.find({});
       },
     },
-    lists: {
+    peakLists: {
       type: new GraphQLList(PeakListType),
       resolve() {
         return PeakList.find({});
@@ -64,7 +64,7 @@ const RootQuery = new GraphQLObjectType({
         return Region.findById(id);
       },
     },
-    list: {
+    peakList: {
       type: PeakListType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parnetValue, { id }) {

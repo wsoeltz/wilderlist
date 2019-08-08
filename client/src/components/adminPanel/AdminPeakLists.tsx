@@ -1,87 +1,221 @@
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React from 'react';
-import {
-  Query,
-  QueryResult,
-} from 'react-apollo';
-import { Mountain, PeakList, State } from '../../types/graphQLTypes';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { Mountain, PeakList } from '../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../Utils';
+import AddPeakList from './peakLists/AddPeakList';
+// import EditPeakList from './peakLists/EditPeakList';
+import ListPeakLists from './peakLists/ListPeakLists';
 
-const query = gql`
-  query AdminPanel{
-    lists {
+const Root = styled.div`
+  display: grid;
+  grid-template-columns: 5fr 3fr;
+  column-gap: 2rem;
+`;
+
+const PeakListListColumn = styled.div`
+  grid-column: 1;
+`;
+
+const PeakListEditColumn = styled.div`
+  grid-column: 2;
+`;
+
+export const GET_PEAK_LISTS = gql`
+  query ListPeakLists {
+    peakLists {
       id
       name
-      items {
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
         id
         name
-        state {
-          name
-        }
       }
     }
   }
 `;
 
-interface SuccessResponse {
-  lists: Array<{
+const ADD_PEAK_LIST = gql`
+  mutation(
+    $name: String!,
+    $shortName: String!,
+    $standardVariant: Boolean!,
+    $winterVariant: Boolean!,
+    $fourSeasonVariant: Boolean!,
+    $gridVariant: Boolean!,
+    $mountains: [ID],
+  ) {
+    addPeakList(
+      name: $name,
+      shortName: $shortName,
+      standardVariant: $standardVariant,
+      winterVariant: $winterVariant,
+      fourSeasonVariant: $fourSeasonVariant,
+      gridVariant: $gridVariant,
+      mountains: $mountains,
+    ) {
+      id
+      name
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export interface AddPeakListVariables {
+  name: string;
+  shortName: string;
+  standardVariant: boolean;
+  winterVariant: boolean;
+  fourSeasonVariant: boolean;
+  gridVariant: boolean;
+  mountains: string[];
+}
+
+const DELETE_PEAK_LIST = gql`
+  mutation($id: ID!) {
+    deletePeakList(id: $id) {
+      id
+    }
+  }
+`;
+
+export interface SuccessResponse {
+  peakLists: Array<{
     id: PeakList['id'];
     name: PeakList['name'];
-    items: Array<{
+    shortName: PeakList['shortName'];
+    variants: PeakList['variants'];
+    mountains: Array<{
       id: Mountain['id'];
       name: Mountain['name'];
-      state: {
-        name: State['name'];
-      }
     }>
   }>;
 }
 
-type Result = QueryResult<SuccessResponse>;
+enum EditPeakListPanelEnum {
+  Empty,
+  New,
+  Update,
+}
 
 const AdminPanel = () => {
-  const renderProp = (result: Result) => {
-    const {loading, error, data} = result;
-    let out: React.ReactElement<any> | null;
-    if (loading === true) {
-      out = null;
-    } else if (error !== undefined) {
-      console.error(error);
-      out = null;
-    } else if (data !== undefined) {
-      const { lists } = data;
-      const listElms = lists.map(list => {
-        const mountainElms = list.items.map(mountain => {
-          return (
-            <li key={mountain.id}>
-              {mountain.name}, {mountain.state.name}
-            </li>
-          );
-        });
-        return (
-          <li key={list.id}>
-            {list.name}
-            <ul>
-              {mountainElms}
-            </ul>
-          </li>
-        );
-      });
-      out = (
-        <>
-          <h3>Lists</h3>
-          {listElms}
-        </>
-      );
-    } else {
-      out = null;
-    }
-    return out;
+  const {loading, error, data} = useQuery<SuccessResponse>(GET_PEAK_LISTS);
+  const [editPeakListPanel, setEditPeakListPanel] = useState<EditPeakListPanelEnum>(EditPeakListPanelEnum.Empty);
+  const [peakListToEdit, setPeakListToEdit] = useState<string | null>(null);
+  const clearEditPeakListPanel = () => {
+    setEditPeakListPanel(EditPeakListPanelEnum.Empty);
+    setPeakListToEdit(null);
   };
+
+  const [deletePeakListMutation] = useMutation(DELETE_PEAK_LIST, {
+    update: (cache, { data: successData }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_PEAK_LISTS });
+      if (response !== null && response.peakLists !== null) {
+        cache.writeQuery({
+          query: GET_PEAK_LISTS,
+          data: { peakLists: response.peakLists.filter(({id}) => id !== successData.deletePeakList.id) },
+        });
+      }
+    },
+  });
+
+  const [addPeakList] = useMutation<any, AddPeakListVariables>(ADD_PEAK_LIST, {
+    update: (cache, { data: successData }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_PEAK_LISTS });
+      if (response !== null && response.peakLists !== null) {
+        cache.writeQuery({
+          query: GET_PEAK_LISTS,
+          data: { peakLists: response.peakLists.concat([successData.addPeakList]) },
+        });
+      }
+    },
+  });
+
+  let editPanel: React.ReactElement<any> | null;
+  if (editPeakListPanel === EditPeakListPanelEnum.Empty) {
+    const createNewButtonClick = () => {
+      setPeakListToEdit(null);
+      setEditPeakListPanel(EditPeakListPanelEnum.New);
+    };
+    editPanel = (
+      <button onClick={createNewButtonClick}>
+        Create new peak list
+      </button>
+    );
+  } else if (editPeakListPanel === EditPeakListPanelEnum.New) {
+    editPanel = (
+      <>
+        <AddPeakList
+          addPeakList={
+            (input: AddPeakListVariables) =>
+              addPeakList({ variables: { ...input } })
+          }
+          cancel={clearEditPeakListPanel}
+        />
+      </>
+    );
+  } else if (editPeakListPanel === EditPeakListPanelEnum.Update) {
+    if (peakListToEdit !== null) {
+      // editPanel = (
+      //   <>
+      //     <EditPeakList
+      //       stateId={peakListToEdit}
+      //       cancel={clearEditPeakListPanel}
+      //     />
+      //   </>
+      // );
+      editPanel = null;
+    } else {
+      editPanel = null;
+    }
+  } else {
+    failIfValidOrNonExhaustive(editPeakListPanel, 'Invalid value for editPeakListPanel ' + editPeakListPanel);
+    editPanel = null;
+  }
+
+  const editPeakList = (id: string) => {
+    setEditPeakListPanel(EditPeakListPanelEnum.Update);
+    setPeakListToEdit(id);
+  };
+
+  const deletePeakList = (id: string) => {
+    deletePeakListMutation({ variables: { id } });
+    clearEditPeakListPanel();
+  };
+
   return (
-    <Query
-      query={query}
-      children={renderProp}
-    />
+    <Root>
+      <h2>Mountains</h2>
+      <PeakListListColumn>
+        <ListPeakLists
+          loading={loading}
+          error={error}
+          data={data}
+          deletePeakList={deletePeakList}
+          editPeakList={editPeakList}
+        />
+      </PeakListListColumn>
+      <PeakListEditColumn>
+        {editPanel}
+      </PeakListEditColumn>
+    </Root>
   );
 };
 
