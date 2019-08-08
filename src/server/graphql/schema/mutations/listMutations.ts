@@ -18,7 +18,7 @@ const listMutations: any = {
     },
     resolve(_unused: any, { name, items }: {name: string, items: IMountain[]}) {
       const newList = new List({ name, items });
-      if (items !== undefined) {
+      if (items !== undefined && name !== '') {
         items.forEach((id) => {
           Mountain.findByIdAndUpdate(id,
             { $push: {lists: newList.id} },
@@ -39,7 +39,7 @@ const listMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      const list = await List.findByIdAndDelete(id)
+      await List.findById(id)
         .select({items: true})
         .exec(function(err: any, doc: any) {
           if (err) {
@@ -52,7 +52,7 @@ const listMutations: any = {
             });
           }
       });
-      return list;
+      return List.findByIdAndDelete(id);
     },
   },
   addItemToList: {

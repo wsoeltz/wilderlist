@@ -1,17 +1,34 @@
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React from 'react';
-import {
-  Query,
-  QueryResult,
-} from 'react-apollo';
-import { Mountain, State } from '../../types/graphQLTypes';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { Region, State } from '../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../Utils';
+import { GET_REGIONS } from './AdminRegions';
+import AddState from './states/AddState';
+import EditState from './states/EditState';
+import ListStates from './states/ListStates';
 
-const query = gql`
-  query AdminStates{
+const Root = styled.div`
+  display: grid;
+  grid-template-columns: 5fr 3fr;
+  column-gap: 2rem;
+`;
+
+const StateListColumn = styled.div`
+  grid-column: 1;
+`;
+
+const StateEditColumn = styled.div`
+  grid-column: 2;
+`;
+
+export const GET_STATES = gql`
+  query ListStates {
     states {
       id
       name
-      mountains {
+      regions {
         id
         name
       }
@@ -19,63 +36,143 @@ const query = gql`
   }
 `;
 
-interface SuccessResponse {
+const ADD_STATE = gql`
+  mutation($name: String!, $regions: [ID]) {
+    addState(name: $name, regions: $regions) {
+      id
+      name
+      regions {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const DELETE_STATE = gql`
+  mutation($id: ID!) {
+    deleteState(id: $id) {
+      id
+    }
+  }
+`;
+
+export interface SuccessResponse {
   states: Array<{
-    id: State['id'];
-    name: State['name'];
-    mountains: Array<{
-      id: Mountain['id'];
-      name: Mountain['name'];
+    id: Region['id'];
+    name: Region['name'];
+    regions: Array<{
+      id: State['id'];
+      name: State['name'];
     }>
   }>;
 }
 
-type Result = QueryResult<SuccessResponse>;
+enum EditStatePanelEnum {
+  Empty,
+  New,
+  Update,
+}
 
 const AdminPanel = () => {
-  const renderProp = (result: Result) => {
-    const {loading, error, data} = result;
-    let out: React.ReactElement<any> | null;
-    if (loading === true) {
-      out = null;
-    } else if (error !== undefined) {
-      console.error(error);
-      out = null;
-    } else if (data !== undefined) {
-      const { states } = data;
-      const stateElms = states.map(state => {
-        const mountainElms = state.mountains.map(mountain => {
-          return (
-            <li key={mountain.id}>
-              {mountain.name}
-            </li>
-          );
+  const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES);
+  const [editStatePanel, setEditStatePanel] = useState<EditStatePanelEnum>(EditStatePanelEnum.Empty);
+  const [regionToEdit, setRegionToEdit] = useState<string | null>(null);
+  const clearEditStatePanel = () => {
+    setEditStatePanel(EditStatePanelEnum.Empty);
+    setRegionToEdit(null);
+  };
+
+  const [deleteStateMutation] = useMutation(DELETE_STATE, {
+    update: (cache, { data: successData }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_STATES });
+      if (response !== null && response.states !== null) {
+        cache.writeQuery({
+          query: GET_STATES,
+          data: { states: response.states.filter(({id}) => id !== successData.deleteState.id) },
         });
-        return (
-          <li key={state.id}>
-            {state.name}
-            <ul>
-              {mountainElms}
-            </ul>
-          </li>
-        );
-      });
-      out = (
+      }
+    },
+    refetchQueries: () => [{query: GET_REGIONS}],
+  });
+
+  const [addState] = useMutation(ADD_STATE, {
+    update: (cache, { data: successData }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_STATES });
+      if (response !== null && response.states !== null) {
+        cache.writeQuery({
+          query: GET_STATES,
+          data: { states: response.states.concat([successData.addState]) },
+        });
+      }
+    },
+    refetchQueries: () => [{query: GET_REGIONS}],
+  });
+
+  let editPanel: React.ReactElement<any> | null;
+  if (editStatePanel === EditStatePanelEnum.Empty) {
+    const createNewButtonClick = () => {
+      setRegionToEdit(null);
+      setEditStatePanel(EditStatePanelEnum.New);
+    };
+    editPanel = (
+      <button onClick={createNewButtonClick}>
+        Create new state
+      </button>
+    );
+  } else if (editStatePanel === EditStatePanelEnum.New) {
+    editPanel = (
+      <>
+        <AddState
+          addState={(name: string, regions: Array<State['id']>) => addState({ variables: { name, regions } })}
+          cancel={clearEditStatePanel}
+        />
+      </>
+    );
+  } else if (editStatePanel === EditStatePanelEnum.Update) {
+    if (regionToEdit !== null) {
+      editPanel = (
         <>
-          <h3>States</h3>
-          {stateElms}
+          <EditState
+            stateId={regionToEdit}
+            cancel={clearEditStatePanel}
+          />
         </>
       );
     } else {
-      out = null;
+      editPanel = null;
     }
-    return out;
+  } else {
+    failIfValidOrNonExhaustive(editStatePanel, 'Invalid value for editStatePanel ' + editStatePanel);
+    editPanel = null;
+  }
+
+  const editState = (id: string) => {
+    setEditStatePanel(EditStatePanelEnum.Update);
+    setRegionToEdit(id);
   };
+
+  const deleteState = (id: string) => {
+    deleteStateMutation({ variables: { id } });
+    clearEditStatePanel();
+  };
+
   return (
-    <Query
-      query={query}
-      children={renderProp}
-    />
+    <Root>
+      <h2>Regions</h2>
+      <StateListColumn>
+        <ListStates
+          loading={loading}
+          error={error}
+          data={data}
+          deleteState={deleteState}
+          editState={editState}
+        />
+      </StateListColumn>
+      <StateEditColumn>
+        {editPanel}
+      </StateEditColumn>
+    </Root>
   );
 };
 

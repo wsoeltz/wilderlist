@@ -18,7 +18,7 @@ const stateMutations: any = {
     },
     resolve(_unused: any, { name, regions }: {name: string, regions: IRegion[]}) {
       const newState = new State({ name, regions });
-      if (regions !== undefined) {
+      if (regions !== undefined && name !== '') {
         regions.forEach((id) => {
           Region.findByIdAndUpdate(id,
             { $push: {states: newState.id} },
@@ -39,7 +39,7 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      const state = await State.findByIdAndDelete(id)
+      await State.findById(id)
         .select({regions: true})
         .exec(function(err: any, doc: any) {
           if (err) {
@@ -52,7 +52,100 @@ const stateMutations: any = {
             });
           }
       });
+      return State.findByIdAndDelete(id);
+    },
+  },
+  changeStateName: {
+    type: StateType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newName: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, { id, newName }: { id: string , newName: string}) {
+      const state = await State.findOneAndUpdate({
+        _id: id,
+      },
+      { name: newName },
+      {new: true});
       return state;
+    },
+  },
+  addRegionToState: {
+    type: StateType,
+    args: {
+      regionId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
+      try {
+        const region = await Region.findById(regionId);
+        const state = await State.findById(stateId);
+        if (region !== null && state !== null) {
+          await State.findOneAndUpdate({
+              _id: stateId,
+              regions: { $ne: regionId },
+            },
+            { $push: {regions: regionId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await Region.findOneAndUpdate({
+              _id: regionId,
+              states: { $ne: stateId },
+            },
+            { $push: {states: stateId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return state;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeRegionFromState: {
+    type: StateType,
+    args: {
+      regionId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
+      try {
+        const region = await Region.findById(regionId);
+        const state = await State.findById(stateId);
+        if (region !== null && state !== null) {
+          await State.findOneAndUpdate({
+              _id: stateId,
+            },
+            { $pull: {regions: regionId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await Region.findOneAndUpdate({
+              _id: regionId,
+            },
+            { $pull: {states: stateId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return state;
+        }
+      } catch (err) {
+        return err;
+      }
     },
   },
 };

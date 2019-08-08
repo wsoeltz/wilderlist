@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
 import ListRegions from './regions/ListRegions';
@@ -22,7 +23,7 @@ const RegionEditColumn = styled.div`
   grid-column: 2;
 `;
 
-const GET_REGIONS = gql`
+export const GET_REGIONS = gql`
   query ListRegions{
     regions {
       id
@@ -92,6 +93,7 @@ const AdminPanel = () => {
         });
       }
     },
+    refetchQueries: () => [{query: GET_STATES}],
   });
 
   const [addRegion] = useMutation(ADD_REGION, {
@@ -104,6 +106,7 @@ const AdminPanel = () => {
         });
       }
     },
+    refetchQueries: () => [{query: GET_STATES}],
   });
 
   let editPanel: React.ReactElement<any> | null;
@@ -156,6 +159,7 @@ const AdminPanel = () => {
 
   return (
     <Root>
+      <h2>Regions</h2>
       <RegionListColumn>
         <ListRegions
           loading={loading}

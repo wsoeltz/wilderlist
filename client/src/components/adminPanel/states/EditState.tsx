@@ -2,54 +2,54 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Region, State } from '../../../types/graphQLTypes';
-import { GET_STATES } from '../AdminStates';
+import { GET_REGIONS } from '../AdminRegions';
 
-const GET_REGION_AND_ALL_STATES = gql`
-  query GetRegionAndAllStates($id: ID!) {
-    region(id: $id) {
+const GET_STATE_AND_ALL_REGIONS = gql`
+  query GetStateAndAllRegions($id: ID!) {
+    state(id: $id) {
       id
       name
-      states {
+      regions {
         id
       }
     }
-    states {
+    regions {
       id
       name
     }
   }
 `;
 
-const REMOVE_STATE_FROM_REGION = gql`
+const REMOVE_REGION_FROM_STATE = gql`
   mutation($regionId: ID!, $stateId: ID!) {
-    removeStateFromRegion(regionId: $regionId, stateId: $stateId) {
+    removeRegionFromState(regionId: $regionId, stateId: $stateId) {
       id
       name
-      states {
+      regions {
         id
       }
     }
   }
 `;
 
-const ADD_STATE_TO_REGION = gql`
+const ADD_REGION_TO_STATE = gql`
   mutation($regionId: ID!, $stateId: ID!) {
-    addStateToRegion(regionId: $regionId, stateId: $stateId) {
+    addRegionToState(regionId: $regionId, stateId: $stateId) {
       id
       name
-      states {
+      regions {
         id
       }
     }
   }
 `;
 
-const CHANGE_REGION_NAME = gql`
+const CHANGE_STATE_NAME = gql`
   mutation($id: ID!, $newName: String!) {
-    changeRegionName(id: $id, newName: $newName) {
+    changeStateName(id: $id, newName: $newName) {
       id
       name
-      states {
+      regions {
         id
       }
     }
@@ -57,14 +57,14 @@ const CHANGE_REGION_NAME = gql`
 `;
 
 interface SuccessResponse {
-  region: {
-    id: Region['id'];
-    name: Region['name'];
-    states: Region['states'];
-  };
-  states: Array<{
+  state: {
     id: State['id'];
     name: State['name'];
+    regions: State['regions'];
+  };
+  regions: Array<{
+    id: Region['id'];
+    name: Region['name'];
   }>;
 }
 
@@ -76,14 +76,14 @@ interface CheckboxProps {
   name: string;
   id: string;
   defaultChecked: boolean;
-  removeStateFromRegion: (stateId: string) => void;
-  addStateToRegion: (stateId: string) => void;
+  removeRegionFromState: (stateId: string) => void;
+  addRegionToState: (stateId: string) => void;
 }
 
 const Checkbox = (props: CheckboxProps) => {
   const {
     name, id, defaultChecked,
-    removeStateFromRegion, addStateToRegion,
+    removeRegionFromState, addRegionToState,
   } = props;
   const [checked, setChecked] = useState<boolean>(defaultChecked);
 
@@ -91,9 +91,9 @@ const Checkbox = (props: CheckboxProps) => {
     const checkedWillBe = !checked;
     setChecked(checkedWillBe);
     if (checkedWillBe === true) {
-      addStateToRegion(id);
+      addRegionToState(id);
     } else if (checkedWillBe === false) {
-      removeStateFromRegion(id);
+      removeRegionFromState(id);
     }
   };
 
@@ -113,26 +113,26 @@ const Checkbox = (props: CheckboxProps) => {
 };
 
 interface Props {
-  regionId: string;
+  stateId: string;
   cancel: () => void;
 }
 
 const EditRegion = (props: Props) => {
-  const { regionId, cancel } = props;
+  const { stateId, cancel } = props;
   const [editingName, setEditingName] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_REGION_AND_ALL_STATES, {
-    variables: { id: regionId },
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATE_AND_ALL_REGIONS, {
+    variables: { id: stateId },
   });
-  const [removeStateFromRegion] = useMutation(REMOVE_STATE_FROM_REGION, {
-    refetchQueries: () => [{query: GET_STATES}],
+  const [removeRegionFromState] = useMutation(REMOVE_REGION_FROM_STATE, {
+    refetchQueries: () => [{query: GET_REGIONS}],
   });
-  const [addStateToRegion] = useMutation(ADD_STATE_TO_REGION, {
-    refetchQueries: () => [{query: GET_STATES}],
+  const [addRegionToState] = useMutation(ADD_REGION_TO_STATE, {
+    refetchQueries: () => [{query: GET_REGIONS}],
   });
-  const [changeRegionName] = useMutation(CHANGE_REGION_NAME, {
-    refetchQueries: () => [{query: GET_STATES}],
+  const [changeStateName] = useMutation(CHANGE_STATE_NAME, {
+    refetchQueries: () => [{query: GET_REGIONS}],
   });
 
   let name: React.ReactElement | null;
@@ -148,18 +148,18 @@ const EditRegion = (props: Props) => {
     if (editingName === false) {
       const setEditToTrue = () => {
         setEditingName(true);
-        setInputNameValue(data.region.name);
+        setInputNameValue(data.state.name);
       };
       name = (
         <>
-          <h3>{data.region.name}</h3>
+          <h3>{data.state.name}</h3>
           <button onClick={setEditToTrue}>Edit Name</button>
         </>
       );
     } else if (editingName === true) {
       const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        changeRegionName({variables: { id: regionId, newName: inputNameValue}});
+        changeStateName({variables: { id: stateId, newName: inputNameValue}});
         setEditingName(false);
       };
       name = (
@@ -174,15 +174,15 @@ const EditRegion = (props: Props) => {
     } else {
       name = null;
     }
-    const stateList = data.states.map(state => {
+    const stateList = data.regions.map(region => {
       return (
-        <li key={state.id}>
+        <li key={region.id}>
           <Checkbox
-            id={state.id}
-            name={state.name}
-            defaultChecked={(data.region.states.filter(regionState => regionState.id === state.id).length > 0)}
-            removeStateFromRegion={(stateId) => removeStateFromRegion({ variables: {regionId, stateId}}) }
-            addStateToRegion={(stateId) => addStateToRegion({ variables: {regionId, stateId}}) }
+            id={region.id}
+            name={region.name}
+            defaultChecked={(data.state.regions.filter(stateRegion => stateRegion.id === region.id).length > 0)}
+            removeRegionFromState={(regionId) => removeRegionFromState({ variables: {regionId, stateId}}) }
+            addRegionToState={(regionId) => addRegionToState({ variables: {regionId, stateId}}) }
           />
         </li>
       );

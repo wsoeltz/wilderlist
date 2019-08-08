@@ -23,21 +23,23 @@ const mountainMutations: any = {
     },
     async resolve(_unused: any, { name, state, lists }: {name: string, state: IState, lists: IList[]}) {
       const newMountain = new Mountain({ name, state, lists });
-      if (lists !== undefined) {
-        lists.forEach(async (id) => {
-          await List.findOneAndUpdate(
-            { _id: id, items: { $ne: newMountain.id} },
-            { $push: {items: newMountain.id} },
-            function(err, model) {
-              if (err) {
-                console.error(err);
-              }
-            },
-          );
-        });
+      if ( name !== '') {
+        if (lists !== undefined) {
+          lists.forEach(async (id) => {
+            await List.findOneAndUpdate(
+              { _id: id, items: { $ne: newMountain.id} },
+              { $push: {items: newMountain.id} },
+              function(err, model) {
+                if (err) {
+                  console.error(err);
+                }
+              },
+            );
+          });
+        }
+        await State.findByIdAndUpdate(state,
+          { $push: {mountains: newMountain.id} });
       }
-      await State.findByIdAndUpdate(state,
-        { $push: {mountains: newMountain.id} });
       return newMountain.save();
     },
   },
@@ -47,7 +49,7 @@ const mountainMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      const mountain = await Mountain.findByIdAndDelete(id)
+      await Mountain.findById(id)
         .select({lists: true})
         .exec(function(err: any, doc: any) {
           if (err) {
@@ -70,7 +72,7 @@ const mountainMutations: any = {
           },
         );
       });
-      return mountain;
+      return Mountain.findByIdAndDelete(id);
     },
   },
   addMountainToState: {
