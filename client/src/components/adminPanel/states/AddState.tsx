@@ -50,7 +50,7 @@ const Checkbox = ({name, id, toggleItem}: CheckboxProps) => {
 };
 
 interface Props {
-  addState: (name: string, states: Array<Region['id']>) => void;
+  addState: (name: string, abbreviation: string, states: Array<Region['id']>) => void;
   cancel: () => void;
 }
 
@@ -58,11 +58,12 @@ const AddState = (props: Props) => {
   const { addState, cancel } = props;
 
   const [name, setName] = useState<string>('');
+  const [abbreviation, setAbbreviation] = useState<string>('');
   const [selectedStates, setSelectedStates] = useState<Array<Region['id']>>([]);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    addState(name, selectedStates);
+    addState(name, abbreviation, selectedStates);
     cancel();
   };
 
@@ -107,13 +108,19 @@ const AddState = (props: Props) => {
         <input
           value={name}
           onChange={e => setName(e.target.value)}
+          placeholder='Name'
+        />
+        <input
+          value={abbreviation}
+          onChange={e => setAbbreviation(e.target.value)}
+          placeholder='abbreviation'
         />
         <fieldset>
           <ul>
             {states}
           </ul>
         </fieldset>
-        <button type='submit' disabled={name === ''}>Add State</button>
+        <button type='submit' disabled={name === '' || abbreviation === ''}>Add State</button>
       </form>
     </div>
   );

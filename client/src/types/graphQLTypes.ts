@@ -7,6 +7,7 @@ export interface Region {
 export interface State {
   id: string;
   name: string;
+  abbreviation: string;
   regions: Region[];
   mountains: Mountain[];
 }
@@ -27,6 +28,7 @@ export interface List {
 
 export interface User {
   id: string;
+  googleId: string;
   name: string;
   friends: User[];
   lists: List[];

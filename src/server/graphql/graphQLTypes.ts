@@ -7,6 +7,7 @@ export interface Region {
 export interface State {
   id: string;
   name: string;
+  abbreviation: string;
   regions: Region[];
   mountains: Mountain[];
 }

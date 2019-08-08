@@ -5,7 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { Region as IRegion } from '../../graphQLTypes';
+import { State as IState } from '../../graphQLTypes';
 import { Region } from '../queryTypes/regionType';
 import StateType, { State } from '../queryTypes/stateType';
 
@@ -14,10 +14,11 @@ const stateMutations: any = {
     type: StateType,
     args: {
       name: { type: GraphQLNonNull(GraphQLString) },
+      abbreviation: { type: GraphQLNonNull(GraphQLString) },
       regions: { type: new GraphQLList(GraphQLID)},
     },
-    resolve(_unused: any, { name, regions }: {name: string, regions: IRegion[]}) {
-      const newState = new State({ name, regions });
+    resolve(_unused: any, { name, regions, abbreviation }: IState) {
+      const newState = new State({ name, regions, abbreviation });
       if (regions !== undefined && name !== '') {
         regions.forEach((id) => {
           Region.findByIdAndUpdate(id,
@@ -66,6 +67,21 @@ const stateMutations: any = {
         _id: id,
       },
       { name: newName },
+      {new: true});
+      return state;
+    },
+  },
+  changeStateAbbreviation: {
+    type: StateType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newAbbreviation: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, { id, newAbbreviation }: { id: string , newAbbreviation: string}) {
+      const state = await State.findOneAndUpdate({
+        _id: id,
+      },
+      { abbreviation: newAbbreviation },
       {new: true});
       return state;
     },

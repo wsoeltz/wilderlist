@@ -18,6 +18,7 @@ export type StateModelType = mongoose.Model<StateSchemaType> & StateSchemaType;
 
 const StateSchema = new Schema({
   name: { type: String, required: true },
+  abbreviation: { type: String, required: true },
   regions: [{
     type: Schema.Types.ObjectId,
     ref: 'region',
@@ -47,6 +48,7 @@ const StateType: any = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
+    abbreviation: { type: GraphQLString },
     regions: {
       type: new GraphQLList(RegionType),
       resolve(parentValue) {

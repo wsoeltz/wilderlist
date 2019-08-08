@@ -28,6 +28,7 @@ export const GET_STATES = gql`
     states {
       id
       name
+      abbreviation
       regions {
         id
         name
@@ -37,10 +38,11 @@ export const GET_STATES = gql`
 `;
 
 const ADD_STATE = gql`
-  mutation($name: String!, $regions: [ID]) {
-    addState(name: $name, regions: $regions) {
+  mutation($name: String!, $abbreviation: String!, $regions: [ID]) {
+    addState(name: $name, abbreviation: $abbreviation, regions: $regions) {
       id
       name
+      abbreviation
       regions {
         id
         name
@@ -48,6 +50,12 @@ const ADD_STATE = gql`
     }
   }
 `;
+
+interface AddStateVariables {
+  name: string;
+  abbreviation: string;
+  regions: string[];
+}
 
 const DELETE_STATE = gql`
   mutation($id: ID!) {
@@ -59,11 +67,12 @@ const DELETE_STATE = gql`
 
 export interface SuccessResponse {
   states: Array<{
-    id: Region['id'];
-    name: Region['name'];
+    id: State['id'];
+    name: State['name'];
+    abbreviation: State['abbreviation'];
     regions: Array<{
-      id: State['id'];
-      name: State['name'];
+      id: Region['id'];
+      name: Region['name'];
     }>
   }>;
 }
@@ -96,7 +105,7 @@ const AdminPanel = () => {
     refetchQueries: () => [{query: GET_REGIONS}],
   });
 
-  const [addState] = useMutation(ADD_STATE, {
+  const [addState] = useMutation<any, AddStateVariables>(ADD_STATE, {
     update: (cache, { data: successData }) => {
       const response: SuccessResponse | null = cache.readQuery({ query: GET_STATES });
       if (response !== null && response.states !== null) {
@@ -124,7 +133,10 @@ const AdminPanel = () => {
     editPanel = (
       <>
         <AddState
-          addState={(name: string, regions: Array<State['id']>) => addState({ variables: { name, regions } })}
+          addState={
+            (name: string, abbreviation: string, regions: Array<State['id']>) =>
+              addState({ variables: { name, abbreviation, regions } })
+          }
           cancel={clearEditStatePanel}
         />
       </>

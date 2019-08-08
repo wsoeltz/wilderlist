@@ -36,7 +36,7 @@ const ListStates = (props: Props) => {
         <li key={state.id}>
           <strong><StateName
             onClick={() => editState(state.id)}
-          >{state.name}</StateName></strong>
+          >{state.name} ({state.abbreviation})</StateName></strong>
           <button
             onClick={() => deleteState(state.id)}
           >
