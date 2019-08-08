@@ -1,4 +1,5 @@
 import {
+  GraphQLFloat,
   GraphQLID,
   GraphQLList,
   GraphQLObjectType,
@@ -18,6 +19,10 @@ export type MountainModelType = mongoose.Model<MountainSchemaType> & MountainSch
 
 const MountainSchema = new Schema({
   name: { type: String, required: true },
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+  elevation: { type: Number, required: true },
+  prominence: { type: Number },
   state: {
     type: Schema.Types.ObjectId,
     ref: 'state',
@@ -47,6 +52,10 @@ const MountainType: any = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
+    latitude: { type: GraphQLFloat },
+    longitude: { type: GraphQLFloat },
+    elevation: { type: GraphQLFloat },
+    prominence: { type: GraphQLFloat },
     state: {
       type: StateType,
       resolve(parentValue) {

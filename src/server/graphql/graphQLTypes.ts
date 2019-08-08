@@ -16,6 +16,10 @@ export interface Mountain {
   id: string;
   name: string;
   state: State;
+  latitude: number;
+  longitude: number;
+  elevation: number;
+  prominence: number | null;
   lists: List[];
 }
 
