@@ -84,7 +84,9 @@ const EditMountain = (props: Props) => {
         setLongitude(mountain.longitude);
         setElevation(mountain.elevation);
         setProminence(mountain.prominence);
-        setSelectedState(mountain.state.id);
+        if (mountain.state) {
+          setSelectedState(mountain.state.id);
+        }
       }
     }
   }, [data]);

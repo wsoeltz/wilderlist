@@ -7,6 +7,7 @@ import { failIfValidOrNonExhaustive } from '../../Utils';
 import AddMountain from './mountains/AddMountain';
 import EditMountain from './mountains/EditMountain';
 import ListMountains from './mountains/ListMountains';
+import { GET_PEAK_LISTS } from './AdminPeakLists';
 
 const Root = styled.div`
   display: grid;
@@ -152,6 +153,7 @@ const AdminPanel = () => {
         });
       }
     },
+    refetchQueries: () => [{query: GET_PEAK_LISTS}],
   });
 
   const [addMountain] = useMutation<any, AddMountainVariables>(ADD_MOUNTAIN, {
@@ -164,6 +166,7 @@ const AdminPanel = () => {
         });
       }
     },
+    refetchQueries: () => [{query: GET_PEAK_LISTS}],
   });
 
   const [updateMountain] = useMutation<any, EditMountainVariables>(EDIT_MOUNTAIN);

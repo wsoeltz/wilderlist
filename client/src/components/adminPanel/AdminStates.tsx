@@ -8,6 +8,7 @@ import { GET_REGIONS } from './AdminRegions';
 import AddState from './states/AddState';
 import EditState from './states/EditState';
 import ListStates from './states/ListStates';
+import { GET_MOUNTAINS } from './AdminMountains';
 
 const Root = styled.div`
   display: grid;
@@ -102,7 +103,7 @@ const AdminPanel = () => {
         });
       }
     },
-    refetchQueries: () => [{query: GET_REGIONS}],
+    refetchQueries: () => [{query: GET_REGIONS}, {query: GET_MOUNTAINS}],
   });
 
   const [addState] = useMutation<any, AddStateVariables>(ADD_STATE, {
@@ -115,7 +116,7 @@ const AdminPanel = () => {
         });
       }
     },
-    refetchQueries: () => [{query: GET_REGIONS}],
+    refetchQueries: () => [{query: GET_REGIONS}, {query: GET_MOUNTAINS}],
   });
 
   let editPanel: React.ReactElement<any> | null;

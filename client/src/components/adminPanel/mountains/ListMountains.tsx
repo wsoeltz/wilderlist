@@ -31,6 +31,7 @@ const ListMountains = (props: Props) => {
   } else if (data !== undefined) {
     const { mountains } = data;
     const mountainElms = mountains.map(mountain => {
+      const { state } = mountain;
       return (
         <li key={mountain.id}>
           <strong><MountainName
@@ -47,7 +48,7 @@ const ListMountains = (props: Props) => {
               Latitude: {mountain.latitude},
               Longitude: {mountain.longitude},
               Prominence: {mountain.prominence},
-              State: {mountain.state.name},
+              State: {state !== null ? state.name : 'N/A'},
             </small>
           </div>
         </li>

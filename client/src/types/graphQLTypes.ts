@@ -15,7 +15,7 @@ export interface State {
 export interface Mountain {
   id: string;
   name: string;
-  state: State;
+  state: State | null;
   latitude: number;
   longitude: number;
   elevation: number;
