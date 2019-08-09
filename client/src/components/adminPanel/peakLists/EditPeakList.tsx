@@ -3,10 +3,6 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { PeakList, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 
-// 
-// Refetch queries when mountains and states are deleted and created!
-// 
-
 const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
   query GetPeakListAndAllMountains($id: ID!) {
     peakList(id: $id) {

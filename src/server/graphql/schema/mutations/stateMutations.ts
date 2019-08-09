@@ -9,6 +9,7 @@ import { State as IState } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Region } from '../queryTypes/regionType';
 import StateType, { State } from '../queryTypes/stateType';
+import { Mountain } from '../queryTypes/mountainType';
 
 const stateMutations: any = {
   addState: {
@@ -41,6 +42,9 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
+      await Mountain.findOneAndUpdate({ state: { $eq: id } },
+        { state: null }, function(error, model) {
+          if (error) { console.error(error); } } );
       await removeConnections(State, id, 'regions', Region);
       return State.findByIdAndDelete(id);
     },
