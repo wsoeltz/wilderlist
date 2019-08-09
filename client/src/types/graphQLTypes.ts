@@ -23,6 +23,13 @@ export interface Mountain {
   lists: PeakList[];
 }
 
+export enum PeakListVariants {
+  standard = 'standard',
+  winter = 'winter',
+  fourSeason = 'fourSeason',
+  grid = 'grid',
+}
+
 export interface PeakList {
   id: string;
   name: string;

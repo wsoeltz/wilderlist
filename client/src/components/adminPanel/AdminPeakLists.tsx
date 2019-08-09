@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Mountain, PeakList } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import AddPeakList from './peakLists/AddPeakList';
-// import EditPeakList from './peakLists/EditPeakList';
+import EditPeakList from './peakLists/EditPeakList';
 import ListPeakLists from './peakLists/ListPeakLists';
 
 const Root = styled.div`
@@ -173,15 +173,14 @@ const AdminPanel = () => {
     );
   } else if (editPeakListPanel === EditPeakListPanelEnum.Update) {
     if (peakListToEdit !== null) {
-      // editPanel = (
-      //   <>
-      //     <EditPeakList
-      //       stateId={peakListToEdit}
-      //       cancel={clearEditPeakListPanel}
-      //     />
-      //   </>
-      // );
-      editPanel = null;
+      editPanel = (
+        <>
+          <EditPeakList
+            peakListId={peakListToEdit}
+            cancel={clearEditPeakListPanel}
+          />
+        </>
+      );
     } else {
       editPanel = null;
     }

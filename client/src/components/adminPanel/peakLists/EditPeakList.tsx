@@ -1,72 +1,120 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import { Region, State } from '../../../types/graphQLTypes';
-import { GET_REGIONS } from '../AdminRegions';
+import { PeakList, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 
-const GET_STATE_AND_ALL_REGIONS = gql`
-  query GetStateAndAllRegions($id: ID!) {
-    state(id: $id) {
+const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
+  query GetPeakListAndAllMountains($id: ID!) {
+    peakList(id: $id) {
       id
       name
-      abbreviation
-      regions {
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
         id
       }
     }
-    regions {
+    mountains {
       id
       name
     }
   }
 `;
 
-const REMOVE_REGION_FROM_STATE = gql`
-  mutation($regionId: ID!, $stateId: ID!) {
-    removeRegionFromState(regionId: $regionId, stateId: $stateId) {
+const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    removeItemFromPeakList(listId: $listId, itemId: $itemId) {
       id
       name
-      abbreviation
-      regions {
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
         id
       }
     }
   }
 `;
 
-const ADD_REGION_TO_STATE = gql`
-  mutation($regionId: ID!, $stateId: ID!) {
-    addRegionToState(regionId: $regionId, stateId: $stateId) {
+const ADD_MOUNTAIN_TO_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    addItemToPeakList(listId: $listId, itemId: $itemId) {
       id
       name
-      abbreviation
-      regions {
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
         id
       }
     }
   }
 `;
 
-const CHANGE_STATE_NAME = gql`
+const CHANGE_PEAK_LIST_NAME = gql`
   mutation($id: ID!, $newName: String!) {
-    changeStateName(id: $id, newName: $newName) {
+    changePeakListName(id: $id, newName: $newName) {
       id
       name
-      abbreviation
-      regions {
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
         id
       }
     }
   }
 `;
 
-const CHANGE_STATE_ABBREVIATION = gql`
-  mutation($id: ID!, $newAbbreviation: String!) {
-    changeStateAbbreviation(id: $id, newAbbreviation: $newAbbreviation) {
+const CHANGE_PEAK_LIST_SHORT_NAME = gql`
+  mutation($id: ID!, $newShortName: String!) {
+    changePeakListShortName(id: $id, newShortName: $newShortName) {
       id
       name
-      abbreviation
-      regions {
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
+        id
+      }
+    }
+  }
+`;
+
+const CHANGE_PEAK_LIST_VARIANT = gql`
+  mutation($id: ID!, $variant: String!, $value: Boolean!) {
+    adjustPeakListVariant(id: $id, variant: $variant, value: $value) {
+      id
+      name
+      shortName
+      variants {
+        standard
+        winter
+        fourSeason
+        grid
+      }
+      mountains {
         id
       }
     }
@@ -74,16 +122,19 @@ const CHANGE_STATE_ABBREVIATION = gql`
 `;
 
 interface SuccessResponse {
-  state: {
-    id: State['id'];
-    name: State['name'];
-    abbreviation: State['abbreviation'];
-    regions: State['regions'];
-  };
-  regions: Array<{
-    id: Region['id'];
-    name: Region['name'];
-  }>;
+  peakList: {
+    id: PeakList['id'];
+    name: PeakList['name'];
+    shortName: PeakList['shortName'];
+    variants: PeakList['variants'];
+    mountains: Array<{
+      id: Mountain['id'];
+    }>
+  }
+  mountains: Array<{
+    id: Mountain['id'];
+    name: Mountain['name'];
+  }>
 }
 
 interface Variables {
@@ -94,14 +145,14 @@ interface CheckboxProps {
   name: string;
   id: string;
   defaultChecked: boolean;
-  removeRegionFromState: (stateId: string) => void;
-  addRegionToState: (stateId: string) => void;
+  removeItemFromPeakList: (itemId: string) => void;
+  addItemToPeakList: (itemId: string) => void;
 }
 
 const Checkbox = (props: CheckboxProps) => {
   const {
     name, id, defaultChecked,
-    removeRegionFromState, addRegionToState,
+    removeItemFromPeakList, addItemToPeakList,
   } = props;
   const [checked, setChecked] = useState<boolean>(defaultChecked);
 
@@ -109,9 +160,9 @@ const Checkbox = (props: CheckboxProps) => {
     const checkedWillBe = !checked;
     setChecked(checkedWillBe);
     if (checkedWillBe === true) {
-      addRegionToState(id);
+      addItemToPeakList(id);
     } else if (checkedWillBe === false) {
-      removeRegionFromState(id);
+      removeItemFromPeakList(id);
     }
   };
 
@@ -131,61 +182,57 @@ const Checkbox = (props: CheckboxProps) => {
 };
 
 interface Props {
-  stateId: string;
+  peakListId: string;
   cancel: () => void;
 }
 
 const EditRegion = (props: Props) => {
-  const { stateId, cancel } = props;
+  const { peakListId, cancel } = props;
   const [editingName, setEditingName] = useState<boolean>(false);
-  const [editingAbbreviation, setEditingAbbreviation] = useState<boolean>(false);
+  const [editingShortName, setEditingShortName] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
-  const [inputAbbreviationValue, setInputAbbreviationValue] = useState<string>('');
+  const [inputShortNameValue, setInputShortNameValue] = useState<string>('');
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATE_AND_ALL_REGIONS, {
-    variables: { id: stateId },
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
+    variables: { id: peakListId },
   });
-  const [removeRegionFromState] = useMutation(REMOVE_REGION_FROM_STATE, {
-    refetchQueries: () => [{query: GET_REGIONS}],
-  });
-  const [addRegionToState] = useMutation(ADD_REGION_TO_STATE, {
-    refetchQueries: () => [{query: GET_REGIONS}],
-  });
-  const [changeStateName] = useMutation(CHANGE_STATE_NAME, {
-    refetchQueries: () => [{query: GET_REGIONS}],
-  });
-  const [changeStateAbbreviation] = useMutation(CHANGE_STATE_ABBREVIATION, {
-    refetchQueries: () => [{query: GET_REGIONS}],
-  });
+  const [removeItemFromPeakList] = useMutation(REMOVE_MOUNTAIN_FROM_PEAK_LIST);
+  const [addItemToPeakList] = useMutation(ADD_MOUNTAIN_TO_PEAK_LIST);
+  const [changePeakListName] = useMutation(CHANGE_PEAK_LIST_NAME);
+  const [changePeakListShortName] = useMutation(CHANGE_PEAK_LIST_SHORT_NAME);
+  const [adjustPeakListVariant] = useMutation(CHANGE_PEAK_LIST_VARIANT);
 
   let name: React.ReactElement | null;
-  let abbreviation: React.ReactElement | null;
-  let states: React.ReactElement | null;
+  let shortName: React.ReactElement | null;
+  let mountains: React.ReactElement | null;
+  let variants: React.ReactElement | null;
   if (loading === true) {
     name = null;
-    abbreviation = null;
-    states = (<p>Loading</p>);
+    shortName = null;
+    mountains = (<p>Loading</p>);
+    variants = null;
   } else if (error !== undefined) {
     name = null;
-    abbreviation = null;
-    states = null;
+    shortName = null;
+    mountains = null;
+    variants = null;
     console.error(error);
   } else if (data !== undefined) {
     if (editingName === false) {
       const setEditNameToTrue = () => {
         setEditingName(true);
-        setInputNameValue(data.state.name);
+        setInputNameValue(data.peakList.name);
       };
       name = (
         <>
-          <h3>{data.state.name}</h3>
+          <h3>{data.peakList.name}</h3>
           <button onClick={setEditNameToTrue}>Edit Name</button>
         </>
       );
     } else if (editingName === true) {
       const handleNameSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        changeStateName({variables: { id: stateId, newName: inputNameValue}});
+        changePeakListName({variables: { id: peakListId, newName: inputNameValue}});
         setEditingName(false);
       };
       name = (
@@ -200,63 +247,116 @@ const EditRegion = (props: Props) => {
     } else {
       name = null;
     }
-    if (editingAbbreviation === false) {
-      const setEditAbbreviationToTrue = () => {
-        setEditingAbbreviation(true);
-        setInputAbbreviationValue(data.state.abbreviation);
+    if (editingShortName === false) {
+      const setEditShortNameToTrue = () => {
+        setEditingShortName(true);
+        setInputShortNameValue(data.peakList.shortName);
       };
-      abbreviation = (
+      shortName = (
         <>
-          <h4>{data.state.abbreviation}</h4>
-          <button onClick={setEditAbbreviationToTrue}>Edit Abbreviation</button>
+          <h4>{data.peakList.shortName}</h4>
+          <button onClick={setEditShortNameToTrue}>Edit ShortName</button>
         </>
       );
-    } else if (editingAbbreviation === true) {
-      const handleAbbreviationSubmit = (e: React.SyntheticEvent) => {
+    } else if (editingShortName === true) {
+      const handleShortNameSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        changeStateAbbreviation({variables: { id: stateId, newAbbreviation: inputAbbreviationValue}});
-        setEditingAbbreviation(false);
+        changePeakListShortName({variables: { id: peakListId, newShortName: inputShortNameValue}});
+        setEditingShortName(false);
       };
-      abbreviation = (
+      shortName = (
         <>
-        <form onSubmit={handleAbbreviationSubmit}>
-          <input value={inputAbbreviationValue} onChange={(e) => setInputAbbreviationValue(e.target.value)} />
-          <button type='submit' disabled={inputAbbreviationValue === ''}>Update</button>
+        <form onSubmit={handleShortNameSubmit}>
+          <input value={inputShortNameValue} onChange={(e) => setInputShortNameValue(e.target.value)} />
+          <button type='submit' disabled={inputShortNameValue === ''}>Update</button>
         </form>
-        <button onClick={() => setEditingAbbreviation(false)}>Cancel</button>
+        <button onClick={() => setEditingShortName(false)}>Cancel</button>
         </>
       );
     } else {
-      abbreviation = null;
+      shortName = null;
     }
-    const stateList = data.regions.map(region => {
+    const mountainList = data.mountains.map(mountain => {
       return (
-        <li key={region.id}>
+        <li key={mountain.id}>
           <Checkbox
-            id={region.id}
-            name={region.name}
-            defaultChecked={(data.state.regions.filter(stateRegion => stateRegion.id === region.id).length > 0)}
-            removeRegionFromState={(regionId) => removeRegionFromState({ variables: {regionId, stateId}}) }
-            addRegionToState={(regionId) => addRegionToState({ variables: {regionId, stateId}}) }
+            id={mountain.id}
+            name={mountain.name}
+            defaultChecked={(data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)}
+            removeItemFromPeakList={(itemId) => removeItemFromPeakList({ variables: {listId: peakListId, itemId}}) }
+            addItemToPeakList={(itemId) => addItemToPeakList({ variables: {listId: peakListId, itemId}}) }
           />
         </li>
       );
     });
-    states = <>{stateList}</>;
+    mountains = <>{mountainList}</>;
+    const {
+      peakList: {
+        variants: {
+          standard, winter, fourSeason, grid,
+        }
+      }
+    } = data;
+    variants = (
+      <>
+        <li key={'peakList-variant-' + PeakListVariants.standard}>
+          <Checkbox
+            id={PeakListVariants.standard}
+            name={PeakListVariants.standard}
+            defaultChecked={standard}
+            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
+            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+          />
+        </li>
+        <li key={'peakList-variant-' + PeakListVariants.winter}>
+          <Checkbox
+            id={PeakListVariants.winter}
+            name={PeakListVariants.winter}
+            defaultChecked={winter}
+            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
+            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+          />
+        </li>
+        <li key={'peakList-variant-' + PeakListVariants.fourSeason}>
+          <Checkbox
+            id={PeakListVariants.fourSeason}
+            name={PeakListVariants.fourSeason}
+            defaultChecked={fourSeason}
+            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
+            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+          />
+        </li>
+        <li key={'peakList-variant-' + PeakListVariants.grid}>
+          <Checkbox
+            id={PeakListVariants.grid}
+            name={PeakListVariants.grid}
+            defaultChecked={grid}
+            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
+            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+          />
+        </li>
+      </>
+    );
   } else {
     name = null;
-    abbreviation = null;
-    states = null;
+    shortName = null;
+    mountains = null;
+    variants = null;
   }
 
   return (
     <div>
       <button onClick={cancel}>Close</button>
         {name}
-        {abbreviation}
+        {shortName}
         <fieldset>
           <ul>
-            {states}
+            {variants}
+          </ul>
+        </fieldset>
+        <fieldset>
+          <ul>
+            {mountains}
           </ul>
         </fieldset>
     </div>

@@ -21,6 +21,28 @@ interface AddPeakListVariables {
   mountains: IMountain[];
 }
 
+export const updateVariant = (id: string, variant: string, value: boolean) => {
+  return new Promise((resolve, reject) => {
+    PeakList.findOne({ _id: id }, {new: true})
+      .select({ variants: true })
+      .exec(async (err, doc: any) => {
+        if (err) {
+          console.error(err);
+        } else if (doc) {
+          try {
+            doc.variants[variant] = value;
+            await doc.save();
+            resolve(true);
+          } catch (err) {
+            reject(err);
+          }
+        }
+      });
+    }
+  );
+};
+
+
 const peakListMutations: any = {
   addPeakList: {
     type: PeakListType,
@@ -152,6 +174,48 @@ const peakListMutations: any = {
       }
     },
   },
+  changePeakListName: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newName: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, { id, newName }: { id: string , newName: string}) {
+      const peakList = await PeakList.findOneAndUpdate({
+        _id: id,
+      },
+      { name: newName },
+      {new: true});
+      return peakList;
+    },
+  },
+  changePeakListShortName: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newShortName: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, { id, newShortName }: { id: string , newShortName: string}) {
+      const peakList = await PeakList.findOneAndUpdate({
+        _id: id,
+      },
+      { shortName: newShortName },
+      {new: true});
+      return peakList;
+    },
+  },
+  adjustPeakListVariant: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      variant: { type: GraphQLNonNull(GraphQLString) },
+      value: { type: GraphQLNonNull(GraphQLBoolean) },
+    },
+    async resolve(_unused: any, { id, variant, value }: { id: string , variant: string, value: boolean}) {
+      await updateVariant(id, variant, value);
+      return PeakList.findOne({ _id: id });
+    }
+  }
 };
 
 export default peakListMutations;
