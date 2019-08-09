@@ -6,6 +6,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { State as IState } from '../../graphQLTypes';
+import { removeConnections } from '../../Utils';
 import { Region } from '../queryTypes/regionType';
 import StateType, { State } from '../queryTypes/stateType';
 
@@ -40,19 +41,7 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await State.findById(id)
-        .select({regions: true})
-        .exec(function(err: any, doc: any) {
-          if (err) {
-            console.error(err);
-          } else if (doc) {
-            doc.regions.forEach(async (regionId: string) => {
-              await Region.findByIdAndUpdate(regionId, {
-                $pull: { states: id},
-              });
-            });
-          }
-      });
+      await removeConnections(State, id, 'regions', Region);
       return State.findByIdAndDelete(id);
     },
   },

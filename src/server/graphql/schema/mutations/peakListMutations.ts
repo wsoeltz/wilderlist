@@ -7,6 +7,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { Mountain as IMountain } from '../../graphQLTypes';
+import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
 import PeakListType, { PeakList } from '../queryTypes/peakListType';
 
@@ -69,19 +70,7 @@ const peakListMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await PeakList.findById(id)
-        .select({mountains: true})
-        .exec(function(err: any, doc: any) {
-          if (err) {
-            console.error(err);
-          } else if (doc) {
-            doc.mountains.forEach(async (itemId: string) => {
-              await Mountain.findByIdAndUpdate(itemId, {
-                $pull: { lists: id},
-              });
-            });
-          }
-      });
+      await removeConnections(PeakList, id, 'mountains', Mountain);
       return PeakList.findByIdAndDelete(id);
     },
   },

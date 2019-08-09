@@ -9,6 +9,7 @@ import {
 import {
   Mountain as IMountain,
 } from '../../graphQLTypes';
+import { removeConnections } from '../../Utils';
 import MountainType, { Mountain } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
@@ -54,29 +55,10 @@ const mountainMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await Mountain.findById(id)
-        .select({lists: true})
-        .exec(function(err: any, doc: any) {
-          if (err) {
-            console.error(err);
-          } else if (doc) {
-            doc.lists.forEach(async (listId: string) => {
-              await PeakList.findByIdAndUpdate(listId, {
-                $pull: { mountains: id},
-              });
-            });
-          }
-          State.findOneAndUpdate({
-            mountains: { $eq: id },
-          },
-          { $pull: {mountains: id} },
-          function(error, model) {
-            if (error) {
-              console.error(err);
-            }
-          },
-        );
-      });
+      await State.findOneAndUpdate({ mountains: { $eq: id } },
+        { $pull: {mountains: id} }, function(error, model) {
+          if (error) { console.error(error); } } );
+      await removeConnections(Mountain, id, 'lists', PeakList);
       return Mountain.findByIdAndDelete(id);
     },
   },
