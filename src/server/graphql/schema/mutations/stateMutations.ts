@@ -7,9 +7,9 @@ import {
 } from 'graphql';
 import { State as IState } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
+import { Mountain } from '../queryTypes/mountainType';
 import { Region } from '../queryTypes/regionType';
 import StateType, { State } from '../queryTypes/stateType';
-import { Mountain } from '../queryTypes/mountainType';
 
 const stateMutations: any = {
   addState: {

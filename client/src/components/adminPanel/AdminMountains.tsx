@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Mountain } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';
 import EditMountain from './mountains/EditMountain';
 import ListMountains from './mountains/ListMountains';
-import { GET_PEAK_LISTS } from './AdminPeakLists';
 
 const Root = styled.div`
   display: grid;

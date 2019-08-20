@@ -1,16 +1,7 @@
 import { ApolloError } from 'apollo-boost';
 import React from 'react';
-import styled from 'styled-components';
+import { LinkButton } from '../../../styling/styleUtils';
 import { SuccessResponse } from '../AdminPeakLists';
-
-const PeakListName = styled.a`
-  color: blue;
-
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
 
 interface Props {
   loading: boolean;
@@ -35,9 +26,9 @@ const ListStates = (props: Props) => {
       const mountainElms = peakList.mountains.map(({name}) => name + ', ');
       return (
         <li key={peakList.id}>
-          <strong><PeakListName
+          <strong><LinkButton
             onClick={() => editPeakList(peakList.id)}
-          >{peakList.name} ({peakList.shortName})</PeakListName></strong>
+          >{peakList.name} ({peakList.shortName})</LinkButton></strong>
           <button
             onClick={() => deletePeakList(peakList.id)}
           >

@@ -1,16 +1,7 @@
 import { ApolloError } from 'apollo-boost';
 import React from 'react';
-import styled from 'styled-components';
+import { LinkButton } from '../../../styling/styleUtils';
 import { SuccessResponse } from '../AdminStates';
-
-const StateName = styled.a`
-  color: blue;
-
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
 
 interface Props {
   loading: boolean;
@@ -34,9 +25,9 @@ const ListStates = (props: Props) => {
       const regionElms = state.regions.map(({name}) => name + ', ');
       return (
         <li key={state.id}>
-          <strong><StateName
+          <strong><LinkButton
             onClick={() => editState(state.id)}
-          >{state.name} ({state.abbreviation})</StateName></strong>
+          >{state.name} ({state.abbreviation})</LinkButton></strong>
           <button
             onClick={() => deleteState(state.id)}
           >

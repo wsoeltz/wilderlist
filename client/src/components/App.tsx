@@ -1,12 +1,15 @@
 import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
 import axios from 'axios';
+import 'normalize.css';
 import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
 import { Routes } from '../routing/routes';
+import '../styling/fonts/fonts.css';
+import GlobalStyles from '../styling/GlobalStyles';
 import { PermissionTypes, User } from '../types/graphQLTypes';
 import AdminPanel from './adminPanel';
 import AdminMountains from './adminPanel/AdminMountains';
@@ -48,6 +51,7 @@ const App: React.FC = () => {
   return (
     <UserContext.Provider value={user}>
       <ApolloProvider client={client}>
+        <GlobalStyles />
         <Router>
           <div>
             <Header />

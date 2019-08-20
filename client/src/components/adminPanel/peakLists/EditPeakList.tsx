@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import { PeakList, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakList, PeakListVariants } from '../../../types/graphQLTypes';
 
 const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
   query GetPeakListAndAllMountains($id: ID!) {
@@ -130,11 +130,11 @@ interface SuccessResponse {
     mountains: Array<{
       id: Mountain['id'];
     }>
-  }
+  };
   mountains: Array<{
     id: Mountain['id'];
     name: Mountain['name'];
-  }>
+  }>;
 }
 
 interface Variables {
@@ -282,7 +282,9 @@ const EditRegion = (props: Props) => {
           <Checkbox
             id={mountain.id}
             name={mountain.name}
-            defaultChecked={(data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)}
+            defaultChecked={
+              (data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
+            }
             removeItemFromPeakList={(itemId) => removeItemFromPeakList({ variables: {listId: peakListId, itemId}}) }
             addItemToPeakList={(itemId) => addItemToPeakList({ variables: {listId: peakListId, itemId}}) }
           />
@@ -294,8 +296,8 @@ const EditRegion = (props: Props) => {
       peakList: {
         variants: {
           standard, winter, fourSeason, grid,
-        }
-      }
+        },
+      },
     } = data;
     variants = (
       <>
@@ -304,8 +306,12 @@ const EditRegion = (props: Props) => {
             id={PeakListVariants.standard}
             name={PeakListVariants.standard}
             defaultChecked={standard}
-            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
-            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+            removeItemFromPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
+            }
+            addItemToPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
+            }
           />
         </li>
         <li key={'peakList-variant-' + PeakListVariants.winter}>
@@ -313,8 +319,12 @@ const EditRegion = (props: Props) => {
             id={PeakListVariants.winter}
             name={PeakListVariants.winter}
             defaultChecked={winter}
-            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
-            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+            removeItemFromPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
+            }
+            addItemToPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
+            }
           />
         </li>
         <li key={'peakList-variant-' + PeakListVariants.fourSeason}>
@@ -322,8 +332,12 @@ const EditRegion = (props: Props) => {
             id={PeakListVariants.fourSeason}
             name={PeakListVariants.fourSeason}
             defaultChecked={fourSeason}
-            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
-            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+            removeItemFromPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
+            }
+            addItemToPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
+            }
           />
         </li>
         <li key={'peakList-variant-' + PeakListVariants.grid}>
@@ -331,8 +345,12 @@ const EditRegion = (props: Props) => {
             id={PeakListVariants.grid}
             name={PeakListVariants.grid}
             defaultChecked={grid}
-            removeItemFromPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}}) }
-            addItemToPeakList={(itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}}) }
+            removeItemFromPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
+            }
+            addItemToPeakList={
+              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
+            }
           />
         </li>
       </>

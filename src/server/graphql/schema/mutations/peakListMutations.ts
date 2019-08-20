@@ -38,10 +38,9 @@ export const updateVariant = (id: string, variant: string, value: boolean) => {
           }
         }
       });
-    }
+    },
   );
 };
-
 
 const peakListMutations: any = {
   addPeakList: {
@@ -214,8 +213,8 @@ const peakListMutations: any = {
     async resolve(_unused: any, { id, variant, value }: { id: string , variant: string, value: boolean}) {
       await updateVariant(id, variant, value);
       return PeakList.findOne({ _id: id });
-    }
-  }
+    },
+  },
 };
 
 export default peakListMutations;

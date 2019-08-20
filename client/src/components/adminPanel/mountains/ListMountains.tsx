@@ -1,16 +1,7 @@
 import { ApolloError } from 'apollo-boost';
 import React from 'react';
-import styled from 'styled-components';
+import { LinkButton } from '../../../styling/styleUtils';
 import { SuccessResponse } from '../AdminMountains';
-
-const MountainName = styled.a`
-  color: blue;
-
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
 
 interface Props {
   loading: boolean;
@@ -34,9 +25,9 @@ const ListMountains = (props: Props) => {
       const { state } = mountain;
       return (
         <li key={mountain.id}>
-          <strong><MountainName
+          <strong><LinkButton
             onClick={() => editMountain(mountain.id)}
-          >{mountain.name}</MountainName></strong>
+          >{mountain.name}</LinkButton></strong>
           <button
             onClick={() => deleteMountain(mountain.id)}
           >
