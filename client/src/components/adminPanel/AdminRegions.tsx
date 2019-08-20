@@ -1,27 +1,18 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import {
+  ContentBody,
+  ContentHeader,
+  ContentLeftLarge as RegionListColumn,
+  ContentRightSmall as RegionEditColumn,
+} from '../../styling/Grid';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
 import ListRegions from './regions/ListRegions';
-
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 5fr 3fr;
-  column-gap: 2rem;
-`;
-
-const RegionListColumn = styled.div`
-  grid-column: 1;
-`;
-
-const RegionEditColumn = styled.div`
-  grid-column: 2;
-`;
 
 export const GET_REGIONS = gql`
   query ListRegions{
@@ -158,21 +149,27 @@ const AdminPanel = () => {
   };
 
   return (
-    <Root>
-      <h2>Regions</h2>
+    <>
       <RegionListColumn>
-        <ListRegions
-          loading={loading}
-          error={error}
-          data={data}
-          deleteRegion={deleteRegion}
-          editRegion={editRegion}
-        />
+        <ContentHeader>
+          <h2>Regions</h2>
+        </ContentHeader>
+        <ContentBody>
+          <ListRegions
+            loading={loading}
+            error={error}
+            data={data}
+            deleteRegion={deleteRegion}
+            editRegion={editRegion}
+          />
+        </ContentBody>
       </RegionListColumn>
       <RegionEditColumn>
+        <ContentBody>
         {editPanel}
+        </ContentBody>
       </RegionEditColumn>
-    </Root>
+    </>
   );
 };
 

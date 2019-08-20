@@ -10,6 +10,7 @@ import {
 import { Routes } from '../routing/routes';
 import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
+import { Root } from '../styling/Grid';
 import { PermissionTypes, User } from '../types/graphQLTypes';
 import AdminPanel from './adminPanel';
 import AdminMountains from './adminPanel/AdminMountains';
@@ -53,10 +54,10 @@ const App: React.FC = () => {
       <ApolloProvider client={client}>
         <GlobalStyles />
         <Router>
-          <div>
+          <Root>
             <Header />
             {routes}
-          </div>
+          </Root>
         </Router>
       </ApolloProvider>
     </UserContext.Provider>

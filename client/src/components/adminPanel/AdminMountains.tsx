@@ -1,27 +1,18 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import {
+  ContentBody,
+  ContentHeader,
+  ContentLeftLarge as MountainListColumn,
+  ContentRightSmall as MountainEditColumn,
+} from '../../styling/Grid';
 import { Mountain } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';
 import EditMountain from './mountains/EditMountain';
 import ListMountains from './mountains/ListMountains';
-
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 5fr 3fr;
-  column-gap: 2rem;
-`;
-
-const MountainListColumn = styled.div`
-  grid-column: 1;
-`;
-
-const MountainEditColumn = styled.div`
-  grid-column: 2;
-`;
 
 export const GET_MOUNTAINS = gql`
   query ListMountains {
@@ -221,21 +212,27 @@ const AdminPanel = () => {
   };
 
   return (
-    <Root>
-      <h2>Mountains</h2>
+    <>
       <MountainListColumn>
-        <ListMountains
-          loading={loading}
-          error={error}
-          data={data}
-          deleteMountain={deleteMountain}
-          editMountain={editMountain}
-        />
+        <ContentHeader>
+          <h2>Mountains</h2>
+        </ContentHeader>
+        <ContentBody>
+          <ListMountains
+            loading={loading}
+            error={error}
+            data={data}
+            deleteMountain={deleteMountain}
+            editMountain={editMountain}
+          />
+        </ContentBody>
       </MountainListColumn>
       <MountainEditColumn>
+        <ContentBody>
         {editPanel}
+        </ContentBody>
       </MountainEditColumn>
-    </Root>
+    </>
   );
 };
 

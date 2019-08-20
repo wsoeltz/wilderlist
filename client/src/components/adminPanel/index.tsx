@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../../routing/routes';
+import { PreContentHeaderFull } from '../../styling/Grid';
 
 const AdminPanel = () => {
   return (
-    <div>
+    <PreContentHeaderFull>
       <h2>Admin Panel - Dev</h2>
       <p>Please select an option</p>
       <nav>
@@ -16,7 +17,7 @@ const AdminPanel = () => {
           <li><Link to={Routes.AdminUsers}>Users</Link></li>
         </ul>
       </nav>
-    </div>
+    </PreContentHeaderFull>
   );
 };
 

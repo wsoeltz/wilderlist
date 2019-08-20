@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../../routing/routes';
+import { HeaderContainer } from '../../styling/Grid';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
 
@@ -31,12 +32,12 @@ const Header = () => {
     }
   };
   return (
-    <div>
+    <HeaderContainer>
       <h1>Wilderlist Dev</h1>
       <UserContext.Consumer
         children={renderProp}
       />
-    </div>
+    </HeaderContainer>
   );
 };
 

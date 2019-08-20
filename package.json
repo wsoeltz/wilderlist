@@ -39,10 +39,6 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.0.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.21",
-    "@fortawesome/free-brands-svg-icons": "^5.10.1",
-    "@fortawesome/free-solid-svg-icons": "^5.10.1",
-    "@fortawesome/react-fontawesome": "^0.1.4",
     "@types/body-parser": "^1.17.0",
     "@types/cookie-session": "^2.0.37",
     "@types/cors": "^2.8.5",
@@ -66,7 +62,6 @@
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.14",
     "mongoose": "^5.6.5",
-    "normalize.css": "^8.0.1",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^2.0.0",
     "rimraf": "^2.6.3"

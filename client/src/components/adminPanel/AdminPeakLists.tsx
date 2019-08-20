@@ -1,26 +1,17 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import {
+  ContentBody,
+  ContentHeader,
+  ContentLeftLarge as PeakListListColumn,
+  ContentRightSmall as PeakListEditColumn,
+} from '../../styling/Grid';
 import { Mountain, PeakList } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import AddPeakList from './peakLists/AddPeakList';
 import EditPeakList from './peakLists/EditPeakList';
 import ListPeakLists from './peakLists/ListPeakLists';
-
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 5fr 3fr;
-  column-gap: 2rem;
-`;
-
-const PeakListListColumn = styled.div`
-  grid-column: 1;
-`;
-
-const PeakListEditColumn = styled.div`
-  grid-column: 2;
-`;
 
 export const GET_PEAK_LISTS = gql`
   query ListPeakLists {
@@ -200,21 +191,27 @@ const AdminPanel = () => {
   };
 
   return (
-    <Root>
-      <h2>Mountains</h2>
+    <>
       <PeakListListColumn>
-        <ListPeakLists
-          loading={loading}
-          error={error}
-          data={data}
-          deletePeakList={deletePeakList}
-          editPeakList={editPeakList}
-        />
+        <ContentHeader>
+          <h2>Peak Lists</h2>
+        </ContentHeader>
+        <ContentBody>
+          <ListPeakLists
+            loading={loading}
+            error={error}
+            data={data}
+            deletePeakList={deletePeakList}
+            editPeakList={editPeakList}
+          />
+        </ContentBody>
       </PeakListListColumn>
       <PeakListEditColumn>
+        <ContentBody>
         {editPanel}
+        </ContentBody>
       </PeakListEditColumn>
-    </Root>
+    </>
   );
 };
 

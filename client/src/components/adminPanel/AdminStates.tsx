@@ -1,7 +1,12 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import {
+  ContentBody,
+  ContentHeader,
+  ContentLeftLarge as StateListColumn,
+  ContentRightSmall as StateEditColumn,
+} from '../../styling/Grid';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import { GET_MOUNTAINS } from './AdminMountains';
@@ -9,20 +14,6 @@ import { GET_REGIONS } from './AdminRegions';
 import AddState from './states/AddState';
 import EditState from './states/EditState';
 import ListStates from './states/ListStates';
-
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 5fr 3fr;
-  column-gap: 2rem;
-`;
-
-const StateListColumn = styled.div`
-  grid-column: 1;
-`;
-
-const StateEditColumn = styled.div`
-  grid-column: 2;
-`;
 
 export const GET_STATES = gql`
   query ListStates {
@@ -171,21 +162,27 @@ const AdminPanel = () => {
   };
 
   return (
-    <Root>
-      <h2>Regions</h2>
+    <>
       <StateListColumn>
-        <ListStates
-          loading={loading}
-          error={error}
-          data={data}
-          deleteState={deleteState}
-          editState={editState}
-        />
+        <ContentHeader>
+          <h2>States</h2>
+        </ContentHeader>
+        <ContentBody>
+          <ListStates
+            loading={loading}
+            error={error}
+            data={data}
+            deleteState={deleteState}
+            editState={editState}
+          />
+        </ContentBody>
       </StateListColumn>
       <StateEditColumn>
+        <ContentBody>
         {editPanel}
+        </ContentBody>
       </StateEditColumn>
-    </Root>
+    </>
   );
 };
 
