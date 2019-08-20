@@ -169,6 +169,7 @@ const AdminPanel = () => {
           <EditPeakList
             peakListId={peakListToEdit}
             cancel={clearEditPeakListPanel}
+            key={peakListToEdit}
           />
         </>
       );

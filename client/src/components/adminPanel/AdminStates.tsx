@@ -78,10 +78,10 @@ enum EditStatePanelEnum {
 const AdminPanel = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES);
   const [editStatePanel, setEditStatePanel] = useState<EditStatePanelEnum>(EditStatePanelEnum.Empty);
-  const [regionToEdit, setRegionToEdit] = useState<string | null>(null);
+  const [stateToEdit, setStateToEdit] = useState<string | null>(null);
   const clearEditStatePanel = () => {
     setEditStatePanel(EditStatePanelEnum.Empty);
-    setRegionToEdit(null);
+    setStateToEdit(null);
   };
 
   const [deleteStateMutation] = useMutation(DELETE_STATE, {
@@ -113,7 +113,7 @@ const AdminPanel = () => {
   let editPanel: React.ReactElement<any> | null;
   if (editStatePanel === EditStatePanelEnum.Empty) {
     const createNewButtonClick = () => {
-      setRegionToEdit(null);
+      setStateToEdit(null);
       setEditStatePanel(EditStatePanelEnum.New);
     };
     editPanel = (
@@ -134,12 +134,13 @@ const AdminPanel = () => {
       </>
     );
   } else if (editStatePanel === EditStatePanelEnum.Update) {
-    if (regionToEdit !== null) {
+    if (stateToEdit !== null) {
       editPanel = (
         <>
           <EditState
-            stateId={regionToEdit}
+            stateId={stateToEdit}
             cancel={clearEditStatePanel}
+            key={stateToEdit}
           />
         </>
       );
@@ -153,7 +154,7 @@ const AdminPanel = () => {
 
   const editState = (id: string) => {
     setEditStatePanel(EditStatePanelEnum.Update);
-    setRegionToEdit(id);
+    setStateToEdit(id);
   };
 
   const deleteState = (id: string) => {

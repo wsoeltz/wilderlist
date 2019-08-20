@@ -190,6 +190,7 @@ const AdminPanel = () => {
             mountainId={mountainToEdit}
             editMountain={(variables: EditMountainVariables) => updateMountain({ variables: { ...variables } })}
             cancel={clearEditMountainPanel}
+            key={mountainToEdit}
           />
         </>
       );

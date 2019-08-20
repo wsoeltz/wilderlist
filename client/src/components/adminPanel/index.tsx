@@ -1,23 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import { Routes } from '../../routing/routes';
 import { PreContentHeaderFull } from '../../styling/Grid';
+import { standardContainerPadding } from '../../styling/styleUtils';
+
+const Root = styled(PreContentHeaderFull)`
+  padding: ${standardContainerPadding};
+`;
+
+const AdminNav = styled.nav`
+  display: flex;
+`;
+
+const NavItem = styled(Link)`
+  margin-right: 1rem;
+`;
 
 const AdminPanel = () => {
   return (
-    <PreContentHeaderFull>
-      <h2>Admin Panel - Dev</h2>
-      <p>Please select an option</p>
-      <nav>
-        <ul>
-          <li><Link to={Routes.AdminStates}>States</Link></li>
-          <li><Link to={Routes.AdminPeakLists}>Peak Lists</Link></li>
-          <li><Link to={Routes.AdminMountains}>Mountains</Link></li>
-          <li><Link to={Routes.AdminRegions}>Regions</Link></li>
-          <li><Link to={Routes.AdminUsers}>Users</Link></li>
-        </ul>
-      </nav>
-    </PreContentHeaderFull>
+    <Root>
+      <h2>Admin Panel</h2>
+      <AdminNav>
+        <NavItem to={Routes.AdminRegions}>Regions</NavItem>
+        <NavItem to={Routes.AdminStates}>States</NavItem>
+        <NavItem to={Routes.AdminMountains}>Mountains</NavItem>
+        <NavItem to={Routes.AdminPeakLists}>Peak Lists</NavItem>
+        <NavItem to={Routes.AdminUsers}>Users</NavItem>
+      </AdminNav>
+    </Root>
   );
 };
 

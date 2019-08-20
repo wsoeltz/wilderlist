@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { standardContainerPadding } from './styleUtils';
 
 const gridLines = {
   // Horizontal Grid Lines
@@ -29,7 +30,7 @@ const gridLines = {
   pageRight: 'wilderListGlobalGridPageRight',
 };
 
-const headerHeight = 200; // in px
+const headerHeight = 80; // in px
 
 const Grid = styled.div`
   height: 100vh;
@@ -85,11 +86,13 @@ const BaseContentElement = styled.div`
 
 export const ContentHeader = styled.div`
   grid-row: ${contentGridLines.header};
+  padding: 0 ${standardContainerPadding};
   position: relative;
 `;
 export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};
   position: relative;
+  padding: ${standardContainerPadding};
   overflow: auto;
 `;
 

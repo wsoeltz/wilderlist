@@ -4,3 +4,10 @@
 export function failIfValidOrNonExhaustive(_variable: never, message: string): never {
   throw new Error(message);
 }
+
+export interface DOMMeasurement {
+  width: number;
+  height: number;
+  topOffset: number;
+  leftOffset: number;
+}

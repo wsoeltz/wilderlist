@@ -127,6 +127,7 @@ const AdminPanel = () => {
           <EditRegion
             regionId={regionToEdit}
             cancel={clearEditRegionPanel}
+            key={regionToEdit}
           />
         </>
       );
