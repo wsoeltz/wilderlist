@@ -15,12 +15,19 @@ export interface State {
 export interface Mountain {
   id: string;
   name: string;
-  state: State;
+  state: State | null;
   latitude: number;
   longitude: number;
   elevation: number;
   prominence: number | null;
   lists: PeakList[];
+}
+
+export enum PeakListVariants {
+  standard = 'standard',
+  winter = 'winter',
+  fourSeason = 'fourSeason',
+  grid = 'grid',
 }
 
 export interface PeakList {
@@ -46,6 +53,8 @@ export interface User {
   id: string;
   googleId: string;
   name: string;
+  email: string;
+  profilePictureUrl: string;
   friends: User[];
   peakLists: PeakList[];
   permissions: PermissionTypes;

@@ -53,6 +53,8 @@ export interface User {
   id: string;
   googleId: string;
   name: string;
+  email: string;
+  profilePictureUrl: string;
   friends: User[];
   peakLists: PeakList[];
   permissions: PermissionTypes;

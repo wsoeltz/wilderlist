@@ -16,6 +16,8 @@ type UserSchemaType = mongoose.Document & IUser & {
 const UserSchema = new Schema({
   googleId: { type: String},
   name: { type: String },
+  email: { type: String },
+  profilePictureUrl: { type: String },
   permissions: { type: String },
   friends: [{
     type: Schema.Types.ObjectId,
@@ -47,8 +49,11 @@ const UserType: any = new GraphQLObjectType({
   name:  'UserType',
   fields: () => ({
     id: { type: GraphQLID },
-    name: { type: GraphQLString },
     permissions: { type: GraphQLString },
+    googleId: { type: GraphQLString},
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    profilePictureUrl: { type: GraphQLString },
     friends: {
       type: new GraphQLList(UserType),
       resolve(parentValue) {

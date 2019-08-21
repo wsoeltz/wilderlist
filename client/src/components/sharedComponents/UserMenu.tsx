@@ -36,6 +36,8 @@ const UserButton = styled.button`
   font-size: 1.15rem;
   padding: 1rem;
   font-weight: ${lightFontWeight};
+  display: flex;
+  align-items: center;
 
   &:focus {
     outline: none;
@@ -79,6 +81,13 @@ const UserMenuLink = styled(Link)`
 
 const UserMenuAnchor = styled.a`
   ${userMenuLinkStyles}
+`;
+
+const UserImage = styled.img`
+  display: inline-block;
+  margin-right: 1rem;
+  border-radius: 1000px;
+  max-width: 30px;
 `;
 
 const Caret = styled(FontAwesomeIcon)`
@@ -149,7 +158,8 @@ const UserMenuComponent = (props: UserMenuComponentProps) => {
         ref={userMenuButtonEl}
         onClick={() => setUserMenuOpen(!userMenuOpen)}
       >
-        Kyle Soeltz
+        <UserImage src={user.profilePictureUrl} />
+        {user.name}
         <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
       </UserButton>
       {userMenuList}
