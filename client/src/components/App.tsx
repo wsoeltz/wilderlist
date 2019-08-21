@@ -18,6 +18,7 @@ import AdminPeakLists from './adminPanel/AdminPeakLists';
 import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
+import PeakListPage from './peakLists';
 import Header from './sharedComponents/Header';
 
 const client = new ApolloClient();
@@ -38,7 +39,13 @@ const App: React.FC = () => {
     fetchUser();
   }, []);
 
-  const routes = (user && user.permissions === PermissionTypes.admin) ? (
+  const userRoutes = (user) ? (
+    <>
+      <Route exact path={Routes.Lists} component={PeakListPage} />
+    </>
+  ) : null;
+
+  const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (
       <>
         <Route path={Routes.Admin} component={AdminPanel} />
         <Route exact path={Routes.AdminStates} component={AdminStates} />
@@ -56,7 +63,8 @@ const App: React.FC = () => {
         <Router>
           <Root>
             <Header />
-            {routes}
+            {adminRoutes}
+            {userRoutes}
           </Root>
         </Router>
       </ApolloProvider>

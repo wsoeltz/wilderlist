@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const baseColor = '#333333'; // dark gray/black color for text
 export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and contextual information
+export const placeholderColor = '#a7a7a7'; // light gray color for placeholder text
 export const lightBorderColor = '#dcdcdc'; // really light gray color for subtle borders between elements
 
 export const primaryColor = '#668434'; // primary green color for buttons and other highlighted elements

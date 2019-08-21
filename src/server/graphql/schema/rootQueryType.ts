@@ -3,6 +3,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
 } from 'graphql';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
@@ -35,6 +36,13 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(PeakListType),
       resolve() {
         return PeakList.find({});
+      },
+    },
+    peakListsSearch: {
+      type: new GraphQLList(PeakListType),
+      args: { searchQuery: { type: new GraphQLNonNull(GraphQLString) } },
+      resolve(parentValue, { searchQuery }) {
+        return PeakList.find({ name: { $regex: searchQuery, $options: 'i' } });
       },
     },
     users: {
