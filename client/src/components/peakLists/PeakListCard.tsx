@@ -32,22 +32,37 @@ const ListInfo = styled.h3`
   margin: 0;
 `;
 
+interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  regions: Array<{
+    id: Region['id'];
+    name: Region['name'];
+    states: Array<{
+      id: State['id'],
+    }>
+  }>
+};
+
 interface MountainList {
   id: Mountain['id'];
-  state: {
-    id: State['id'];
-    name: State['name'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-      states: Array<{
-        id: State['id'],
-      }>
-    }>
-  };
+  state: StateDatum;
 }
 
 const getStatesOrRegion = (mountains: MountainList[]) => {
+  // If there are 3 or less states, just show the states
+  const states: StateDatum[] = [];
+  mountains.forEach(({state}) => {
+    if (states.filter(({name}) => name === state.name).length === 0) {
+      states.push(state);
+    }
+  });
+  if (states.length === 1) {
+    return states[0].name;
+  }
+  // Else if they all belong to the same region, show that region
+    // If they all belong to more then one region, show the more exclusive one
+  // Else list all the regions
   return <>{mountains[0].state.regions[0].name}</>;
 };
 
