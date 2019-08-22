@@ -23,7 +23,7 @@ const regionMutations: any = {
         states.forEach((id) => {
           State.findByIdAndUpdate(id,
             { $push: {regions: newRegion.id} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -60,7 +60,7 @@ const regionMutations: any = {
               regions: { $ne: regionId },
             },
             { $push: {regions: regionId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -71,7 +71,7 @@ const regionMutations: any = {
               states: { $ne: stateId },
             },
             { $push: {states: stateId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -99,7 +99,7 @@ const regionMutations: any = {
               _id: stateId,
             },
             { $pull: {regions: regionId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -109,7 +109,7 @@ const regionMutations: any = {
               _id: regionId,
             },
             { $pull: {states: stateId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }

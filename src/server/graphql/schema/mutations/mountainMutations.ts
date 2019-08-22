@@ -35,7 +35,7 @@ const mountainMutations: any = {
             await PeakList.findOneAndUpdate(
               { _id: id, mountains: { $ne: newMountain.id} },
               { $push: {mountains: newMountain.id} },
-              function(err, model) {
+              function(err: any, model: any) {
                 if (err) {
                   console.error(err);
                 }
@@ -56,8 +56,8 @@ const mountainMutations: any = {
     },
     async resolve(_unused: any, { id }: { id: string }) {
       await State.findOneAndUpdate({ mountains: { $eq: id } },
-        { $pull: {mountains: id} }, function(error, model) {
-          if (error) { console.error(error); } } );
+        { $pull: {mountains: id} }, function(err: any, model: any) {
+          if (err) { console.error(err); } } );
       await removeConnections(Mountain, id, 'lists', PeakList);
       return Mountain.findByIdAndDelete(id);
     },
@@ -77,7 +77,7 @@ const mountainMutations: any = {
               mountains: { $eq: mountainId },
             },
             { $pull: {mountains: mountainId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -88,7 +88,7 @@ const mountainMutations: any = {
               mountains: { $ne: mountainId },
             },
             { $push: {mountains: mountainId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -98,7 +98,7 @@ const mountainMutations: any = {
               _id: mountainId,
             },
             { state: stateId },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -132,7 +132,7 @@ const mountainMutations: any = {
             mountains: { $eq: id },
           },
           { $pull: {mountains: id} },
-          function(err, model) {
+          function(err: any, model: any) {
             if (err) {
               console.error(err);
             }
@@ -143,7 +143,7 @@ const mountainMutations: any = {
             mountains: { $ne: id },
           },
           { $push: {mountains: id} },
-          function(err, model) {
+          function(err: any, model: any) {
             if (err) {
               console.error(err);
             }

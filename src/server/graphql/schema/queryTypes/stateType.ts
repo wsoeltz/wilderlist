@@ -9,11 +9,7 @@ import { State as IState } from '../../graphQLTypes';
 import MountainType from './mountainType';
 import RegionType from './regionType';
 
-type StateSchemaType = mongoose.Document & IState & {
-  findRegions: (id: string) => any;
-  findMountains: (id: string) => any;
-};
-
+type StateSchemaType = mongoose.Document & IState;
 export type StateModelType = mongoose.Model<StateSchemaType> & StateSchemaType;
 
 const StateSchema = new Schema({
@@ -29,18 +25,6 @@ const StateSchema = new Schema({
   }],
 });
 
-StateSchema.statics.findRegions = function(id: string) {
-  return this.findById(id)
-    .populate('regions')
-    .then((state: IState) => state.regions);
-};
-
-StateSchema.statics.findMountains = function(id: string) {
-  return this.findById(id)
-    .populate('mountains')
-    .then((state: IState) => state.mountains);
-};
-
 export const State: StateModelType = mongoose.model<StateModelType, any>('state', StateSchema);
 
 const StateType: any = new GraphQLObjectType({
@@ -51,14 +35,14 @@ const StateType: any = new GraphQLObjectType({
     abbreviation: { type: GraphQLString },
     regions: {
       type: new GraphQLList(RegionType),
-      resolve(parentValue) {
-        return State.findRegions(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {regionLoader}}) {
+        return await regionLoader.loadMany(parentValue.regions);
       },
     },
     mountains: {
       type: new GraphQLList(MountainType),
-      resolve(parentValue) {
-        return State.findMountains(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        return await mountainLoader.loadMany(parentValue.mountains);
       },
     },
   }),

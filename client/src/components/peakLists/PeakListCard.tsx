@@ -41,8 +41,8 @@ interface StateDatum {
     states: Array<{
       id: State['id'],
     }>
-  }>
-};
+  }>;
+}
 
 interface MountainList {
   id: Mountain['id'];

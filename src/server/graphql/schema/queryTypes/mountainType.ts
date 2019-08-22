@@ -10,10 +10,7 @@ import { Mountain as IMountain } from '../../graphQLTypes';
 import PeakListType from './peakListType';
 import StateType from './stateType';
 
-type MountainSchemaType = mongoose.Document & IMountain & {
-  findState: (id: string) => any;
-  findPeakLists: (id: string) => any;
-};
+type MountainSchemaType = mongoose.Document & IMountain;
 
 export type MountainModelType = mongoose.Model<MountainSchemaType> & MountainSchemaType;
 
@@ -33,18 +30,6 @@ const MountainSchema = new Schema({
   }],
 });
 
-MountainSchema.statics.findState = function(id: string) {
-  return this.findById(id)
-    .populate('state')
-    .then((mountain: IMountain) => mountain.state);
-};
-
-MountainSchema.statics.findPeakLists = function(id: string) {
-  return this.findById(id)
-    .populate('lists')
-    .then((mountain: IMountain) => mountain.lists);
-};
-
 export const Mountain: MountainModelType = mongoose.model<MountainModelType, any>('mountain', MountainSchema);
 
 const MountainType: any = new GraphQLObjectType({
@@ -58,14 +43,14 @@ const MountainType: any = new GraphQLObjectType({
     prominence: { type: GraphQLFloat },
     state: {
       type: StateType,
-      resolve(parentValue) {
-        return Mountain.findState(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
+        return await stateLoader.load(parentValue.state);
       },
     },
     lists:  {
       type: new GraphQLList(PeakListType),
-      resolve(parentValue) {
-        return Mountain.findPeakLists(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        return await peakListLoader.loadMany(parentValue.lists);
       },
     },
   }),

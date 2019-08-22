@@ -10,10 +10,7 @@ import { PeakList as IPeakList } from '../../graphQLTypes';
 import MountainType from './mountainType';
 import UserType from './userType';
 
-type PeakListSchemaType = mongoose.Document & IPeakList & {
-  findMountains: (id: string) => any;
-  findUsers: (id: string) => any;
-};
+type PeakListSchemaType = mongoose.Document & IPeakList;
 
 export type PeakListModelType = mongoose.Model<PeakListSchemaType> & PeakListSchemaType;
 
@@ -36,18 +33,6 @@ const PeakListSchema = new Schema({
   }],
 });
 
-PeakListSchema.statics.findMountains = function(id: string) {
-  return this.findById(id)
-    .populate('mountains')
-    .then((list: IPeakList) => list.mountains);
-};
-
-PeakListSchema.statics.findUsers = function(id: string) {
-  return this.findById(id)
-    .populate('users')
-    .then((list: IPeakList) => list.users);
-};
-
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
 
 const PeakListVariantsType = new GraphQLObjectType({
@@ -69,14 +54,14 @@ const PeakListType = new GraphQLObjectType({
     variants: { type: PeakListVariantsType },
     mountains:  {
       type: new GraphQLList(MountainType),
-      resolve(parentValue) {
-        return PeakList.findMountains(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        return await mountainLoader.loadMany(parentValue.mountains);
       },
     },
     users:  {
       type: new GraphQLList(UserType),
-      resolve(parentValue) {
-        return PeakList.findUsers(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        return await userLoader.loadMany(parentValue.users);
       },
     },
   }),
