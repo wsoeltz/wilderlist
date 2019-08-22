@@ -7,8 +7,8 @@ export const lightBorderColor = '#dcdcdc'; // really light gray color for subtle
 
 export const primaryColor = '#668434'; // primary green color for buttons and other highlighted elements
 export const secondaryColor = '#696969'; // gray color for use with buttons or other clickable items
-export const primaryHoverColor = '#668434'; // hover variant of primaryColor
-export const secondaryHoverColor = '#696969'; // hover variant of secondaryColor
+export const primaryHoverColor = '#86a651'; // hover variant of primaryColor
+export const secondaryHoverColor = '#908d8d'; // hover variant of secondaryColor
 
 export const tertiaryColor = '#f3f3f3'; // really light gray color for use as a hover background color on cards
 
@@ -79,29 +79,41 @@ export const linkStyles = `
 `;
 
 export const LinkButton = styled.button`
-  border: none;
   margin: 0;
   padding: 0;
-  width: auto;
-  overflow: visible;
-  text-align: inherit;
   background: transparent;
 
-  /* Normalize 'line-height'. Cannot be changed from 'normal' in Firefox 4+. */
-  line-height: normal;
-
-  /* Corrects font smoothing for webkit */
-  -webkit-font-smoothing: inherit;
-  -moz-osx-font-smoothing: inherit;
-
-  /* Corrects inability to style clickable 'input' types in iOS */
-  -webkit-appearance: none;
-
-  /* Remove excess padding and border in Firefox 4+ */
-  &::-moz-focus-inner {
-      border: 0;
-      padding: 0;
-  }
-
   ${linkStyles}
+`;
+
+export const Card = styled.div`
+  padding: 1rem;
+  border: solid 1px ${lightBorderColor};
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+  margin-bottom: 2rem;
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${tertiaryColor};
+  }
+`;
+
+export const borderRadius = 6; // in px
+
+const ButtonBase = styled.button`
+  padding: 0.6rem;
+  text-transform: uppercase;
+  color: #fff;
+  text-align: center;
+  border-radius: ${borderRadius}px;
+  font-weight: ${semiBoldFontBoldWeight};
+  font-size: 0.95rem;
+`;
+
+export const ButtonPrimary = styled(ButtonBase)`
+  background-color: ${primaryColor};
+
+  &:hover {
+    background-color: ${primaryHoverColor};
+  }
 `;

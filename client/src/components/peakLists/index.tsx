@@ -9,8 +9,9 @@ import {
   ContentRightSmall,
 } from '../../styling/Grid';
 import { standardContainerPadding } from '../../styling/styleUtils';
-import { PeakList } from '../../types/graphQLTypes';
 import StandardSearch from '../sharedComponents/StandardSearch';
+import ListPeakLists from './ListPeakLists';
+import { PeakListDatum } from './ListPeakLists';
 
 const SearchContainer = styled(ContentHeader)`
   padding: ${standardContainerPadding};
@@ -18,18 +19,29 @@ const SearchContainer = styled(ContentHeader)`
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists($searchQuery: String!) {
-    peakListsSearch(searchQuery: $searchQuery) {
+    peakLists: peakListsSearch(searchQuery: $searchQuery) {
       id
       name
+      mountains {
+        id
+        state {
+          id
+          name
+          regions {
+            id
+            name
+            states {
+              id
+            }
+          }
+        }
+      }
     }
   }
 `;
 
 interface SuccessResponse {
-  peakListsSearch: Array<{
-    id: PeakList['id'];
-    name: PeakList['name'];
-  }>;
+  peakLists: PeakListDatum[];
 }
 
 interface Variables {
@@ -45,17 +57,14 @@ const PeakListPage = () => {
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
-    list = null;
+    list = <>Loading</>;
   } else if (error !== undefined) {
     console.error(error);
     list = (<p>There was an error</p>);
   } else if (data !== undefined) {
-    const { peakListsSearch } = data;
-    const peaks = peakListsSearch.map(({name, id}) => <li key={id}>{name}</li>);
+    const { peakLists } = data;
     list = (
-      <ul>
-        {peaks}
-      </ul>
+      <ListPeakLists peakListData={peakLists} />
     );
   } else {
     list = null;

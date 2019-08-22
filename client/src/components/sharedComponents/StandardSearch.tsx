@@ -60,6 +60,7 @@ const PeakListSearch = (props: Props) => {
       <SearchIcon icon='search' />
       <SearchBar
         ref={searchEl}
+        type='text'
         placeholder={placeholder}
         onChange={onChange}
       />
