@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Mountain, PeakList, PeakListVariants } from '../../../types/graphQLTypes';
+import { GET_PEAK_LISTS } from '../AdminPeakLists';
 
 const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
   query GetPeakListAndAllMountains($id: ID!) {
@@ -196,8 +197,12 @@ const EditRegion = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
     variables: { id: peakListId },
   });
-  const [removeItemFromPeakList] = useMutation(REMOVE_MOUNTAIN_FROM_PEAK_LIST);
-  const [addItemToPeakList] = useMutation(ADD_MOUNTAIN_TO_PEAK_LIST);
+  const [removeItemFromPeakList] = useMutation(REMOVE_MOUNTAIN_FROM_PEAK_LIST, {
+    refetchQueries: () => [{query: GET_PEAK_LISTS}],
+  });
+  const [addItemToPeakList] = useMutation(ADD_MOUNTAIN_TO_PEAK_LIST, {
+    refetchQueries: () => [{query: GET_PEAK_LISTS}],
+  });
   const [changePeakListName] = useMutation(CHANGE_PEAK_LIST_NAME);
   const [changePeakListShortName] = useMutation(CHANGE_PEAK_LIST_SHORT_NAME);
   const [adjustPeakListVariant] = useMutation(CHANGE_PEAK_LIST_VARIANT);

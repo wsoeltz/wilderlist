@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Region, State } from '../../../types/graphQLTypes';
+import { GET_REGIONS } from '../AdminRegions';
 import { GET_STATES } from '../AdminStates';
 
 const GET_REGION_AND_ALL_STATES = gql`
@@ -126,13 +127,13 @@ const EditRegion = (props: Props) => {
     variables: { id: regionId },
   });
   const [removeStateFromRegion] = useMutation(REMOVE_STATE_FROM_REGION, {
-    refetchQueries: () => [{query: GET_STATES}],
+    refetchQueries: () => [{query: GET_STATES}, {query: GET_REGIONS}],
   });
   const [addStateToRegion] = useMutation(ADD_STATE_TO_REGION, {
-    refetchQueries: () => [{query: GET_STATES}],
+    refetchQueries: () => [{query: GET_STATES}, {query: GET_REGIONS}],
   });
   const [changeRegionName] = useMutation(CHANGE_REGION_NAME, {
-    refetchQueries: () => [{query: GET_STATES}],
+    refetchQueries: () => [{query: GET_STATES}, {query: GET_REGIONS}],
   });
 
   let name: React.ReactElement | null;

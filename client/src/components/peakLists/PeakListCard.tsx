@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import {
@@ -38,16 +39,18 @@ const LogoContainer = styled.div`
   grid-column: 1;
 `;
 
+interface RegionDatum {
+  id: Region['id'];
+  name: Region['name'];
+  states: Array<{
+    id: State['id'],
+  }>;
+}
+
 interface StateDatum {
   id: State['id'];
   name: State['name'];
-  regions: Array<{
-    id: Region['id'];
-    name: Region['name'];
-    states: Array<{
-      id: State['id'],
-    }>
-  }>;
+  regions: RegionDatum[];
 }
 
 interface MountainList {
@@ -57,19 +60,58 @@ interface MountainList {
 
 const getStatesOrRegion = (mountains: MountainList[]) => {
   // If there are 3 or less states, just show the states
-  const states: StateDatum[] = [];
+  const statesArray: StateDatum[] = [];
   mountains.forEach(({state}) => {
-    if (states.filter(({name}) => name === state.name).length === 0) {
-      states.push(state);
+    if (statesArray.filter(({id}) => id === state.id).length === 0) {
+      statesArray.push(state);
     }
   });
-  if (states.length === 1) {
-    return states[0].name;
+  if (statesArray.length === 1) {
+    return statesArray[0].name;
+  } else if (statesArray.length === 2) {
+    return statesArray[0].name + ' & ' + statesArray[1].name;
+  } else if (statesArray.length === 3) {
+    return statesArray[0].name + ', ' + statesArray[1].name + ' & ' + statesArray[2].name;
+  } else if (statesArray.length > 2) {
+    const regionsArray: RegionDatum[] = [];
+    statesArray.forEach(({regions}) => {
+      regions.forEach(region => {
+        if (regionsArray.filter(({id}) => id === region.id).length === 0) {
+          regionsArray.push(region);
+        }
+      });
+    });
+    // Else if they all belong to the same region, show that region
+    if (regionsArray.length === 0) {
+      return <>Asgard</>;
+    } else if (regionsArray.length === 1) {
+      return regionsArray[0].name;
+    } else {
+      const inclusiveRegions = regionsArray.filter(
+        (region) => statesArray.every(({regions}) => regions.includes(region)));
+      if (inclusiveRegions.length === 1) {
+        return inclusiveRegions[0].name;
+      } else if (inclusiveRegions.length > 1) {
+        // If they all belong to more than one region, show the more exclusive one
+        const exclusiveRegions = sortBy(regionsArray, ({states}) => states.length );
+        return exclusiveRegions[0].name;
+      } else if (inclusiveRegions.length === 0) {
+        // if there are no inclusive regions
+        if (regionsArray.length === 2) {
+          // if only 2 regions, show them both
+          return regionsArray[0].name + ' & ' + regionsArray[1].name;
+        } else if (regionsArray.length === 3) {
+          // if only 3 regions, show them all
+          return regionsArray[0].name + ', ' + regionsArray[1].name + ' & ' + regionsArray[2].name;
+        } else {
+          // otherwise just say Across the US
+          return 'Across the US';
+        }
+      }
+    }
   }
-  // Else if they all belong to the same region, show that region
-    // If they all belong to more then one region, show the more exclusive one
   // Else list all the regions
-  return <>{mountains[0].state.regions[0].name}</>;
+  return <>Asgard</>;
 };
 
 interface Props {

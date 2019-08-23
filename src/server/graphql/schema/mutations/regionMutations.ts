@@ -128,12 +128,15 @@ const regionMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
       newName: { type: GraphQLNonNull(GraphQLString) },
     },
-    async resolve(_unused: any, { id, newName }: { id: string , newName: string}) {
+    async resolve(_unused: any,
+                  { id, newName }: { id: string , newName: string},
+                  {dataloaders}: {dataloaders: any}) {
       const region = await Region.findOneAndUpdate({
         _id: id,
       },
       { name: newName },
       {new: true});
+      dataloaders.regionLoader.clear(id).prime(id, region);
       return region;
     },
   },

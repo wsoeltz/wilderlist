@@ -39,7 +39,6 @@ MountainSchema.statics.findState = function(id: string) {
     .then((mountain: IMountain) => mountain.state);
 };
 
-
 export const Mountain: MountainModelType = mongoose.model<MountainModelType, any>('mountain', MountainSchema);
 
 const MountainType: any = new GraphQLObjectType({

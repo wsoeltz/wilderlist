@@ -179,12 +179,15 @@ const peakListMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
       newName: { type: GraphQLNonNull(GraphQLString) },
     },
-    async resolve(_unused: any, { id, newName }: { id: string , newName: string}) {
+    async resolve(_unused: any,
+                  { id, newName }: { id: string , newName: string},
+                  {dataloaders}: {dataloaders: any}) {
       const peakList = await PeakList.findOneAndUpdate({
         _id: id,
       },
       { name: newName },
       {new: true});
+      dataloaders.peakListLoader.clear(id).prime(id, peakList);
       return peakList;
     },
   },
@@ -194,12 +197,15 @@ const peakListMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
       newShortName: { type: GraphQLNonNull(GraphQLString) },
     },
-    async resolve(_unused: any, { id, newShortName }: { id: string , newShortName: string}) {
+    async resolve(_unused: any,
+                  { id, newShortName }: { id: string , newShortName: string},
+                  {dataloaders}: {dataloaders: any}) {
       const peakList = await PeakList.findOneAndUpdate({
         _id: id,
       },
       { shortName: newShortName },
       {new: true});
+      dataloaders.peakListLoader.clear(id).prime(id, peakList);
       return peakList;
     },
   },

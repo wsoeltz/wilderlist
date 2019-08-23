@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Region, State } from '../../../types/graphQLTypes';
 import { GET_REGIONS } from '../AdminRegions';
+import { GET_STATES } from '../AdminStates';
 
 const GET_STATE_AND_ALL_REGIONS = gql`
   query GetStateAndAllRegions($id: ID!) {
@@ -146,10 +147,10 @@ const EditRegion = (props: Props) => {
     variables: { id: stateId },
   });
   const [removeRegionFromState] = useMutation(REMOVE_REGION_FROM_STATE, {
-    refetchQueries: () => [{query: GET_REGIONS}],
+    refetchQueries: () => [{query: GET_STATES}, {query: GET_REGIONS}],
   });
   const [addRegionToState] = useMutation(ADD_REGION_TO_STATE, {
-    refetchQueries: () => [{query: GET_REGIONS}],
+    refetchQueries: () => [{query: GET_STATES}, {query: GET_REGIONS}],
   });
   const [changeStateName] = useMutation(CHANGE_STATE_NAME, {
     refetchQueries: () => [{query: GET_REGIONS}],

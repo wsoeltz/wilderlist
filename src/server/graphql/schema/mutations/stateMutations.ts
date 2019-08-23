@@ -55,12 +55,15 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
       newName: { type: GraphQLNonNull(GraphQLString) },
     },
-    async resolve(_unused: any, { id, newName }: { id: string , newName: string}) {
+    async resolve(_unused: any,
+                  { id, newName }: { id: string , newName: string},
+                  {dataloaders}: {dataloaders: any}) {
       const state = await State.findOneAndUpdate({
         _id: id,
       },
       { name: newName },
       {new: true});
+      dataloaders.stateLoader.clear(id).prime(id, state);
       return state;
     },
   },
@@ -70,12 +73,15 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
       newAbbreviation: { type: GraphQLNonNull(GraphQLString) },
     },
-    async resolve(_unused: any, { id, newAbbreviation }: { id: string , newAbbreviation: string}) {
+    async resolve(_unused: any,
+                  { id, newAbbreviation }: { id: string , newAbbreviation: string},
+                  {dataloaders}: {dataloaders: any}) {
       const state = await State.findOneAndUpdate({
         _id: id,
       },
       { abbreviation: newAbbreviation },
       {new: true});
+      dataloaders.stateLoader.clear(id).prime(id, state);
       return state;
     },
   },
