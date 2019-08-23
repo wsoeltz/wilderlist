@@ -22,6 +22,7 @@ const SEARCH_PEAK_LISTS = gql`
     peakLists: peakListsSearch(searchQuery: $searchQuery) {
       id
       name
+      shortName
       mountains {
         id
         state {

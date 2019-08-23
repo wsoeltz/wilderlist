@@ -6,6 +6,7 @@ import {
 } from '../../styling/styleUtils';
 import { Mountain, Region, State } from '../../types/graphQLTypes';
 import { PeakListDatum } from './ListPeakLists';
+import MountainLogo from './mountainLogo';
 
 const Root = styled(Card)`
   display: grid;
@@ -30,6 +31,11 @@ const ListInfo = styled.h3`
   display: flex;
   justify-content: space-between;
   margin: 0;
+`;
+
+const LogoContainer = styled.div`
+  grid-row: 1 / span 3;
+  grid-column: 1;
 `;
 
 interface StateDatum {
@@ -72,19 +78,19 @@ interface Props {
 
 const ListPeakLists = (props: Props) => {
   const {
-    peakList,
+    peakList: {id, name, mountains, shortName},
   } = props;
   return (
     <Root>
       <Title>
-        {peakList.name}
+        {name}
       </Title>
       <ListInfo>
         <span>
-          {peakList.mountains.length} Peaks
+          {mountains.length} Peaks
         </span>
         <span>
-          {getStatesOrRegion(peakList.mountains)}
+          {getStatesOrRegion(mountains)}
         </span>
       </ListInfo>
       <BeginListButtonContainer>
@@ -92,6 +98,14 @@ const ListPeakLists = (props: Props) => {
           Begin List
         </ButtonPrimary>
       </BeginListButtonContainer>
+      <LogoContainer>
+        <MountainLogo
+          id={id}
+          title={name}
+          shortName={shortName}
+          variant={'standard'}
+        />
+      </LogoContainer>
     </Root>
   );
 };

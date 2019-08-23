@@ -5,6 +5,7 @@ import PeakListCard from './PeakListCard';
 export interface PeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
+  shortName: PeakList['shortName'];
   mountains: Array<{
     id: Mountain['id'];
     state: {
