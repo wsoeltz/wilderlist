@@ -1,33 +1,41 @@
-// https://sayasuhendra.github.io/graphql-js/7-using-data-loaders/
+// Modified from https://sayasuhendra.github.io/graphql-js/7-using-data-loaders/
+// Fixed incorrect IDS with https://github.com/graphql/dataloader/issues/65
 import DataLoader from 'dataloader';
+import { Mountain } from './graphql/schema/queryTypes/mountainType';
+import { PeakList } from './graphql/schema/queryTypes/peakListType';
+import { Region } from './graphql/schema/queryTypes/regionType';
+import { State } from './graphql/schema/queryTypes/stateType';
+import { User } from './graphql/schema/queryTypes/userType';
 
-// 1
-async function batchState(Model: any, keys: any) {
-  return await Model.find({_id: {$in: keys}}).exec();
-}
-
-// 2
-export default ({State, Region, Mountain, PeakList, User}:
-  {State: any, Region: any, Mountain: any, PeakList: any, User: any}) => ({
-  // 3
+export default () => ({
   stateLoader: new DataLoader(
-    keys => batchState(State, keys),
+    async keys => Promise.all(
+      keys.map(key => State.findOne({_id: key})),
+    ),
     {cacheKeyFn: key => key.toString()},
   ),
   regionLoader: new DataLoader(
-    keys => batchState(Region, keys),
+    async keys => Promise.all(
+      keys.map(key => Region.findOne({_id: key})),
+    ),
     {cacheKeyFn: key => key.toString()},
   ),
   mountainLoader: new DataLoader(
-    keys => batchState(Mountain, keys),
+    async keys => Promise.all(
+      keys.map(key => Mountain.findOne({_id: key})),
+    ),
     {cacheKeyFn: key => key.toString()},
   ),
   peakListLoader: new DataLoader(
-    keys => batchState(PeakList, keys),
+    async keys => Promise.all(
+      keys.map(key => PeakList.findOne({_id: key})),
+    ),
     {cacheKeyFn: key => key.toString()},
   ),
   userLoader: new DataLoader(
-    keys => batchState(User, keys),
+    async keys => Promise.all(
+      keys.map(key => User.findOne({_id: key})),
+    ),
     {cacheKeyFn: key => key.toString()},
   ),
 });

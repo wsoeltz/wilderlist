@@ -10,7 +10,10 @@ import { Mountain as IMountain } from '../../graphQLTypes';
 import PeakListType from './peakListType';
 import StateType from './stateType';
 
-type MountainSchemaType = mongoose.Document & IMountain;
+type MountainSchemaType = mongoose.Document & IMountain & {
+  findState: (id: string) => any;
+  findPeakLists: (id: string) => any;
+};
 
 export type MountainModelType = mongoose.Model<MountainSchemaType> & MountainSchemaType;
 
@@ -30,6 +33,13 @@ const MountainSchema = new Schema({
   }],
 });
 
+MountainSchema.statics.findState = function(id: string) {
+  return this.findById(id)
+    .populate('state')
+    .then((mountain: IMountain) => mountain.state);
+};
+
+
 export const Mountain: MountainModelType = mongoose.model<MountainModelType, any>('mountain', MountainSchema);
 
 const MountainType: any = new GraphQLObjectType({
@@ -44,7 +54,11 @@ const MountainType: any = new GraphQLObjectType({
     state: {
       type: StateType,
       async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
-        return await stateLoader.load(parentValue.state);
+        const res = await stateLoader.load(parentValue.state);
+        if (res._id.toString() !== parentValue.state.toString()) {
+          throw new Error('IDs do not match' + res);
+        }
+        return res;
       },
     },
     lists:  {

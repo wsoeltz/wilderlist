@@ -81,7 +81,7 @@ const MountainLogo = (props: Props) => {
           href={`#${titleId}`}
           className='mountainLogoTitleText'
           startOffset='50%'
-          text-anchor='middle'
+          textAnchor='middle'
         >
           {title}
         </textPath>

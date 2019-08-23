@@ -10,11 +10,6 @@ import passport from 'passport';
 import googleAuth from './auth/google';
 import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
-import { Mountain } from './graphql/schema/queryTypes/mountainType';
-import { PeakList } from './graphql/schema/queryTypes/peakListType';
-import { Region } from './graphql/schema/queryTypes/regionType';
-import { State } from './graphql/schema/queryTypes/stateType';
-import { User } from './graphql/schema/queryTypes/userType';
 import requireLogin from './middleware/requireLogin';
 
 require('./auth/passport');
@@ -67,7 +62,7 @@ app.use('/graphql', requireLogin, expressGraphQL({
   schema,
   graphiql: true,
   context: {
-    dataloaders: buildDataloaders({State, Region, Mountain, PeakList, User}),
+    dataloaders: buildDataloaders(),
   },
 }));
 ///// End MongoDb Connection Setup
