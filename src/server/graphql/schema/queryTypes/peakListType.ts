@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
@@ -31,6 +32,7 @@ const PeakListSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'user',
   }],
+  numUsers: { type: Number, required: true },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -64,6 +66,7 @@ const PeakListType = new GraphQLObjectType({
         return await userLoader.loadMany(parentValue.users);
       },
     },
+    numUsers: { type: GraphQLInt },
   }),
 });
 

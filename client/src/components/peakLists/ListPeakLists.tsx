@@ -30,6 +30,7 @@ const ListPeakLists = (props: Props) => {
   const {
     peakListData,
   } = props;
+
   if (peakListData.length === 0) {
     return <>No results found</>;
   }

@@ -117,3 +117,11 @@ export const ButtonPrimary = styled(ButtonBase)`
     background-color: ${primaryHoverColor};
   }
 `;
+
+export const ButtonSecondary = styled(ButtonBase)`
+  background-color: ${secondaryColor};
+
+  &:hover {
+    background-color: ${secondaryHoverColor};
+  }
+`;

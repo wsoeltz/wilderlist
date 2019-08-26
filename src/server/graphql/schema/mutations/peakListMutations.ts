@@ -67,6 +67,7 @@ const peakListMutations: any = {
             standard: standardVariant, winter: winterVariant,
             fourSeason: fourSeasonVariant, grid: gridVariant,
           },
+          numUsers: 0,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {

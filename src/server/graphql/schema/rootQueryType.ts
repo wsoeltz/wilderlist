@@ -1,5 +1,6 @@
 import {
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -40,9 +41,17 @@ const RootQuery = new GraphQLObjectType({
     },
     peakListsSearch: {
       type: new GraphQLList(PeakListType),
-      args: { searchQuery: { type: new GraphQLNonNull(GraphQLString) } },
-      resolve(parentValue, { searchQuery }) {
-        return PeakList.find({ name: { $regex: searchQuery, $options: 'i' } });
+      args: {
+        searchQuery: { type: new GraphQLNonNull(GraphQLString) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+        pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+        return PeakList
+          .find({ name: { $regex: searchQuery, $options: 'i' } })
+          .limit(nPerPage)
+          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+          .sort({ numUsers: -1, name: 1 });
       },
     },
     users: {

@@ -9,6 +9,9 @@ import {
   ContentRightSmall,
 } from '../../styling/Grid';
 import { standardContainerPadding } from '../../styling/styleUtils';
+import {
+  ButtonSecondary,
+} from '../../styling/styleUtils';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import ListPeakLists from './ListPeakLists';
 import { PeakListDatum } from './ListPeakLists';
@@ -17,9 +20,22 @@ const SearchContainer = styled(ContentHeader)`
   padding: ${standardContainerPadding};
 `;
 
+const Next = styled(ButtonSecondary)`
+`;
+const Prev = styled(ButtonSecondary)`
+`;
+
 const SEARCH_PEAK_LISTS = gql`
-  query SearchPeakLists($searchQuery: String!) {
-    peakLists: peakListsSearch(searchQuery: $searchQuery) {
+  query SearchPeakLists(
+    $searchQuery: String!,
+    $pageNumber: Int!,
+    $nPerPage: Int!,
+  ) {
+    peakLists: peakListsSearch(
+      searchQuery: $searchQuery,
+      pageNumber: $pageNumber,
+      nPerPage: $nPerPage,
+    ) {
       id
       name
       shortName
@@ -47,13 +63,18 @@ interface SuccessResponse {
 
 interface Variables {
   searchQuery: string;
+  pageNumber: number;
+  nPerPage: number;
 }
 
 const PeakListPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const incrementPageNumber = () => setPageNumber(pageNumber + 1);
+  const decrementPageNumber = () => setPageNumber(pageNumber - 1);
+  const nPerPage = 5;
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS, {
-    variables: { searchQuery },
+    variables: { searchQuery, pageNumber, nPerPage },
   });
 
   let list: React.ReactElement<any> | null;
@@ -64,8 +85,22 @@ const PeakListPage = () => {
     list = (<p>There was an error</p>);
   } else if (data !== undefined) {
     const { peakLists } = data;
+    const nextBtn = peakLists.length === nPerPage ? (
+      <Next onClick={incrementPageNumber}>
+        Next {'>'}
+      </Next> ) : null;
+    const prevBtn = pageNumber > 1 ? (
+      <Prev onClick={decrementPageNumber}>
+        {'<'} Previous
+      </Prev> ) : null;
     list = (
-      <ListPeakLists peakListData={peakLists} />
+      <>
+        <ListPeakLists
+          peakListData={peakLists}
+        />
+        {prevBtn}
+        {nextBtn}
+      </>
     );
   } else {
     list = null;

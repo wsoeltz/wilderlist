@@ -42,6 +42,7 @@ export interface PeakList {
   };
   mountains: Mountain[];
   users: User[];
+  numUsers: number;
 }
 
 export enum PermissionTypes {
