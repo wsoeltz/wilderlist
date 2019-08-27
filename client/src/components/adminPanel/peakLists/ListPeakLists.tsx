@@ -22,8 +22,13 @@ const ListStates = (props: Props) => {
   } else if (data !== undefined) {
     const { peakLists } = data;
     const peakListElms = peakLists.map(peakList => {
-      const { type } = peakList;
-      const mountainElms = peakList.mountains.map(({name}) => name + ', ');
+      const { type, parent } = peakList;
+      let mountainElms;
+      if (parent !== null) {
+        mountainElms = `Parent list: ${parent.name}`;
+      } else {
+        mountainElms = peakList.mountains.map(({name}) => name + ', ');
+      }
       return (
         <li key={peakList.id}>
           <strong><LinkButton

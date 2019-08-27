@@ -2,7 +2,10 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Mountain, PeakList, PeakListVariants } from '../../../types/graphQLTypes';
-import { GET_PEAK_LISTS } from '../AdminPeakLists';
+import {
+  GET_PEAK_LISTS,
+  SuccessResponse as PeakListDatum,
+} from '../AdminPeakLists';
 
 const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
   query GetPeakListAndAllMountains($id: ID!) {
@@ -13,6 +16,10 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       type
       mountains {
         id
+      }
+      parent {
+        id
+        name
       }
     }
     mountains {
@@ -88,6 +95,26 @@ const CHANGE_PEAK_LIST_VARIANT = gql`
       mountains {
         id
       }
+      parent {
+        id
+      }
+    }
+  }
+`;
+
+const CHANGE_PEAK_LIST_PARENT = gql`
+  mutation($id: ID!, $parent: ID) {
+    changePeakListParent(id: $id, parent: $parent) {
+      id
+      name
+      shortName
+      type
+      mountains {
+        id
+      }
+      parent {
+        id
+      }
     }
   }
 `;
@@ -101,6 +128,7 @@ interface SuccessResponse {
     mountains: Array<{
       id: Mountain['id'];
     }>
+    parent: PeakList['parent'] | null;
   };
   mountains: Array<{
     id: Mountain['id'];
@@ -130,6 +158,11 @@ interface ChangeShortNameVariables {
 interface ChangeVariantVariables {
   id: string;
   type: PeakListVariants;
+}
+
+interface ChangeParentVariables {
+  id: string;
+  parent: string | null;
 }
 
 interface CheckboxProps {
@@ -173,12 +206,13 @@ const Checkbox = (props: CheckboxProps) => {
 };
 
 interface Props {
+  listDatum: PeakListDatum | undefined;
   peakListId: string;
   cancel: () => void;
 }
 
 const EditRegion = (props: Props) => {
-  const { peakListId, cancel } = props;
+  const { listDatum, peakListId, cancel } = props;
   const [editingName, setEditingName] = useState<boolean>(false);
   const [editingShortName, setEditingShortName] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
@@ -197,21 +231,25 @@ const EditRegion = (props: Props) => {
   const [changePeakListName] = useMutation<SuccessResponse, ChangeNameVariables>(CHANGE_PEAK_LIST_NAME);
   const [changePeakListShortName] = useMutation<SuccessResponse, ChangeShortNameVariables>(CHANGE_PEAK_LIST_SHORT_NAME);
   const [adjustPeakListVariant] = useMutation<SuccessResponse, ChangeVariantVariables>(CHANGE_PEAK_LIST_VARIANT);
+  const [changePeakListParent] = useMutation<SuccessResponse, ChangeParentVariables>(CHANGE_PEAK_LIST_PARENT);
 
   let name: React.ReactElement | null;
   let shortName: React.ReactElement | null;
   let mountains: React.ReactElement | null;
   let type: React.ReactElement | null;
+  let parent: React.ReactElement | null;
   if (loading === true) {
     name = null;
     shortName = null;
     mountains = (<p>Loading</p>);
     type = null;
+    parent = null;
   } else if (error !== undefined) {
     name = null;
     shortName = null;
     mountains = null;
     type = null;
+    parent = null;
     console.error(error);
   } else if (data !== undefined) {
     if (editingName === false) {
@@ -307,21 +345,47 @@ const EditRegion = (props: Props) => {
       adjustPeakListVariant({variables: {id: peakList.id, type: newType}});
     };
     type = (
-      <select
-        value={`${peakList.type || ''}`}
-        onChange={e => updateType(e.target.value)}
-      >
-        <option value={PeakListVariants.standard}>{PeakListVariants.standard}</option>
-        <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
-        <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
-        <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
-      </select>
+      <div>
+        <select
+          value={`${peakList.type || ''}`}
+          onChange={e => updateType(e.target.value)}
+        >
+          <option value={PeakListVariants.standard}>{PeakListVariants.standard}</option>
+          <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
+          <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
+          <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
+        </select>
+      </div>
+    );
+    const initialParent = peakList.parent === null ? '' : peakList.parent.id;
+    const setPeakListParent = (value: string) => {
+      if (value === '') {
+        changePeakListParent({ variables: {id: peakListId, parent: null} });
+      } else {
+        changePeakListParent({ variables: {id: peakListId, parent: value} });
+      }
+    };
+    const parentOptions = listDatum !== undefined ? listDatum.peakLists.map(list => (
+        <option value={list.id} key={list.id}>{list.name}</option>
+      ),
+    ) : null;
+    parent = (
+      <div>
+        <select
+          value={`${initialParent}`}
+          onChange={e => setPeakListParent(e.target.value)}
+        >
+          <option value=''>Parent (none)</option>
+          {parentOptions}
+        </select>
+      </div>
     );
   } else {
     name = null;
     shortName = null;
     mountains = null;
     type = null;
+    parent = null;
   }
 
   return (
@@ -330,6 +394,7 @@ const EditRegion = (props: Props) => {
         {name}
         {shortName}
         {type}
+        {parent}
         <fieldset>
           <ul>
             {mountains}

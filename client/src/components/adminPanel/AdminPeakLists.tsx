@@ -24,6 +24,10 @@ export const GET_PEAK_LISTS = gql`
         id
         name
       }
+      parent {
+        id
+        name
+      }
     }
   }
 `;
@@ -34,18 +38,24 @@ const ADD_PEAK_LIST = gql`
     $shortName: String!,
     $type: PeakListVariants!,
     $mountains: [ID],
+    $parent: ID,
   ) {
     addPeakList(
       name: $name,
       shortName: $shortName,
       type: $type,
       mountains: $mountains,
+      parent: $parent,
     ) {
       id
       name
       shortName
       type
       mountains {
+        id
+        name
+      }
+      parent {
         id
         name
       }
@@ -58,6 +68,7 @@ export interface AddPeakListVariables {
   shortName: string;
   type: PeakListVariants;
   mountains: string[];
+  parent: string | null;
 }
 
 const DELETE_PEAK_LIST = gql`
@@ -68,17 +79,23 @@ const DELETE_PEAK_LIST = gql`
   }
 `;
 
-export interface SuccessResponse {
-  peakLists: Array<{
+interface PeakListDatum {
+  id: PeakList['id'];
+  name: PeakList['name'];
+  shortName: PeakList['shortName'];
+  type: PeakList['type'];
+  mountains: Array<{
+    id: Mountain['id'];
+    name: Mountain['name'];
+  }>;
+  parent: {
     id: PeakList['id'];
     name: PeakList['name'];
-    shortName: PeakList['shortName'];
-    type: PeakList['type'];
-    mountains: Array<{
-      id: Mountain['id'];
-      name: Mountain['name'];
-    }>
-  }>;
+  };
+}
+
+export interface SuccessResponse {
+  peakLists: PeakListDatum[];
 }
 
 enum EditPeakListPanelEnum {
@@ -135,6 +152,7 @@ const AdminPanel = () => {
     editPanel = (
       <>
         <AddPeakList
+          listDatum={data}
           addPeakList={
             (input: AddPeakListVariables) =>
               addPeakList({ variables: { ...input } })
@@ -148,6 +166,7 @@ const AdminPanel = () => {
       editPanel = (
         <>
           <EditPeakList
+            listDatum={data}
             peakListId={peakListToEdit}
             cancel={clearEditPeakListPanel}
             key={peakListToEdit}

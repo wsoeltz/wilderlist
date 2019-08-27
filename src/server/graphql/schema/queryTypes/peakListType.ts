@@ -28,6 +28,7 @@ const PeakListSchema = new Schema({
     ref: 'user',
   }],
   numUsers: { type: Number, required: true },
+  parent: { type: Schema.Types.ObjectId },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -50,7 +51,7 @@ export const PeakListVariants = new GraphQLEnumType({
   },
 });
 
-const PeakListType = new GraphQLObjectType({
+const PeakListType: any = new GraphQLObjectType({
   name:  'PeakListType',
   fields: () => ({
     id: { type: GraphQLID },
@@ -70,6 +71,16 @@ const PeakListType = new GraphQLObjectType({
       },
     },
     numUsers: { type: GraphQLInt },
+    parent: {
+      type: PeakListType,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        if (parentValue.parent) {
+          return await peakListLoader.load(parentValue.parent);
+        } else {
+          return null;
+        }
+      },
+    },
   }),
 });
 

@@ -2,7 +2,10 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { PeakListVariants, Region } from '../../../types/graphQLTypes';
-import { AddPeakListVariables } from '../AdminPeakLists';
+import {
+  AddPeakListVariables,
+  SuccessResponse as PeakListDatum,
+} from '../AdminPeakLists';
 
 const GET_MOUNTAINS = gql`
   query ListMountains{
@@ -52,24 +55,26 @@ const Checkbox = ({name, id, toggleItem, startChecked}: CheckboxProps) => {
 };
 
 interface Props {
+  listDatum: PeakListDatum | undefined;
   addPeakList: (input: AddPeakListVariables) => void;
   cancel: () => void;
 }
 
 const AddPeakList = (props: Props) => {
-  const { addPeakList, cancel } = props;
+  const { listDatum, addPeakList, cancel } = props;
 
   const [name, setName] = useState<string>('');
   const [shortName, setShortName] = useState<string>('');
   const [selectedMountains, setSelectedMountains] = useState<Array<Region['id']>>([]);
   const [type, setType] = useState<PeakListVariants | null>(null);
+  const [parent, setParent] = useState<string | null>(null);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (type !== null) {
       addPeakList({
         name, shortName, mountains: selectedMountains,
-        type,
+        type, parent,
       });
     }
     cancel();
@@ -120,6 +125,17 @@ const AddPeakList = (props: Props) => {
   } else {
     mountains = null;
   }
+  const parentOptions = listDatum !== undefined ? listDatum.peakLists.map(peakList => (
+      <option value={peakList.id} key={peakList.id}>{peakList.name}</option>
+    ),
+  ) : null;
+  const setParentFromString = (value: string) => {
+    if (value === '') {
+      setParent(null);
+    } else {
+      setParent(value);
+    }
+  };
   return (
     <div>
       <button onClick={cancel}>Cancel</button>
@@ -136,16 +152,26 @@ const AddPeakList = (props: Props) => {
           onChange={e => setShortName(e.target.value)}
           placeholder='shortName'
         />
-
-        <select
-          value={`${type || ''}`}
-          onChange={e => setStringToPeakListVariant(e.target.value)}
-        >
-          <option value={PeakListVariants.standard}>{PeakListVariants.standard}</option>
-          <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
-          <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
-          <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
-        </select>
+        <div>
+          <select
+            value={`${type || ''}`}
+            onChange={e => setStringToPeakListVariant(e.target.value)}
+          >
+            <option value={PeakListVariants.standard}>{PeakListVariants.standard}</option>
+            <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
+            <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
+            <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
+          </select>
+        </div>
+        <div>
+          <select
+            value={`${parent || ''}`}
+            onChange={e => setParentFromString(e.target.value)}
+          >
+            <option value=''>Parent (none)</option>
+            {parentOptions}
+          </select>
+        </div>
         <fieldset>
           Mountains
           <ul>

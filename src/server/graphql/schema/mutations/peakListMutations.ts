@@ -16,6 +16,7 @@ interface AddPeakListVariables {
   shortName: string;
   type: IPeakList['type'];
   mountains: IMountain[];
+  parent: IPeakList;
 }
 
 const peakListMutations: any = {
@@ -26,16 +27,17 @@ const peakListMutations: any = {
       shortName: { type: GraphQLNonNull(GraphQLString) },
       type: {type: GraphQLNonNull(PeakListVariants) },
       mountains: { type: new GraphQLList(GraphQLID)},
+      parent: {type: GraphQLID },
     },
     resolve(_unused: any, input: AddPeakListVariables) {
       const {
-        name, shortName, type, mountains,
+        name, shortName, type, mountains, parent,
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
         const newPeakList = new PeakList({
           name, shortName, mountains,
-          type, numUsers: 0,
+          type, parent, numUsers: 0,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -191,6 +193,24 @@ const peakListMutations: any = {
         _id: id,
       },
       { type },
+      {new: true});
+      dataloaders.peakListLoader.clear(id).prime(id, peakList);
+      return peakList;
+    },
+  },
+  changePeakListParent: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      parent: { type: GraphQLID },
+    },
+    async resolve(_unused: any,
+                  { id, parent }: { id: string , parent: string | null },
+                  {dataloaders}: {dataloaders: any}) {
+      const peakList = await PeakList.findOneAndUpdate({
+        _id: id,
+      },
+      { parent },
       {new: true});
       dataloaders.peakListLoader.clear(id).prime(id, peakList);
       return peakList;
