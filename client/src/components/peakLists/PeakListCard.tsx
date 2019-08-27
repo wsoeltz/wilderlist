@@ -120,8 +120,16 @@ interface Props {
 
 const ListPeakLists = (props: Props) => {
   const {
-    peakList: {id, name, mountains, shortName},
+    peakList: {id, name, shortName, parent, type}, peakList,
   } = props;
+  let mountains: MountainList[];
+  if (parent !== null && parent.mountains !== null) {
+    mountains = parent.mountains;
+  } else if (peakList.mountains !== null) {
+    mountains = peakList.mountains;
+  } else {
+    mountains = [];
+  }
   return (
     <Root>
       <Title>
@@ -145,7 +153,7 @@ const ListPeakLists = (props: Props) => {
           id={id}
           title={name}
           shortName={shortName}
-          variant={'standard'}
+          variant={type}
         />
       </LogoContainer>
     </Root>

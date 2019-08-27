@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { PeakListVariants } from '../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../Utils';
 
 export const baseColor = '#333333'; // dark gray/black color for text
 export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and contextual information
@@ -16,7 +18,7 @@ export const linkColor = '#2b5b37'; // greenish blue color for use with links
 export const linkHoverColor = '#3dad15'; // hover color for links, light green
 export const warningColor = '#b9161a'; // bright red for warning buttons
 
-interface ColorSet {
+export interface ColorSet {
   primary: string;
   secondary: string;
   tertiary: string;
@@ -50,6 +52,21 @@ export const colorSetGray: ColorSet = {
   primary: '#c4c4c4',
   secondary: '#cecece',
   tertiary: '#dddddd',
+};
+
+export const getColorSetFromVariant = (variant: PeakListVariants) => {
+  if (variant === PeakListVariants.standard) {
+    return colorSetGreen;
+  } else if (variant === PeakListVariants.winter) {
+    return colorSetBlue;
+  } else if (variant === PeakListVariants.fourSeason) {
+    return colorSetOrange;
+  } else if (variant === PeakListVariants.grid) {
+    return colorSetBlack;
+  } else {
+    failIfValidOrNonExhaustive(variant, 'Invalid variant ' + variant);
+    return colorSetGray;
+  }
 };
 
 export const primaryFont = `

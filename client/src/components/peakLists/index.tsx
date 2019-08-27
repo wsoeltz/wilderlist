@@ -39,6 +39,7 @@ const SEARCH_PEAK_LISTS = gql`
       id
       name
       shortName
+      type
       mountains {
         id
         state {
@@ -49,6 +50,23 @@ const SEARCH_PEAK_LISTS = gql`
             name
             states {
               id
+            }
+          }
+        }
+      }
+      parent {
+        id
+        mountains {
+          id
+          state {
+            id
+            name
+            regions {
+              id
+              name
+              states {
+                id
+              }
             }
           }
         }
@@ -73,6 +91,12 @@ const PeakListPage = () => {
   const incrementPageNumber = () => setPageNumber(pageNumber + 1);
   const decrementPageNumber = () => setPageNumber(pageNumber - 1);
   const nPerPage = 5;
+
+  const searchPeakLists = (value: string) => {
+    setSearchQuery(value);
+    setPageNumber(1);
+  };
+
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS, {
     variables: { searchQuery, pageNumber, nPerPage },
   });
@@ -112,7 +136,7 @@ const PeakListPage = () => {
         <SearchContainer>
           <StandardSearch
             placeholder='Search lists'
-            setSearchQuery={setSearchQuery}
+            setSearchQuery={searchPeakLists}
           />
         </SearchContainer>
         <ContentBody>
