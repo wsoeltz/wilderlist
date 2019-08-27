@@ -1,8 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import { Region } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
+import { PeakListVariants, Region } from '../../../types/graphQLTypes';
 import { AddPeakListVariables } from '../AdminPeakLists';
 
 const GET_MOUNTAINS = gql`
@@ -19,13 +18,6 @@ interface SuccessResponse {
     id: Region['id'];
     name: Region['name'];
   }>;
-}
-
-enum VariantEnum {
-  Standard = 'Standard',
-  Winter = 'Winter',
-  FourSeason = 'FourSeason',
-  Grid = 'Grid',
 }
 
 interface CheckboxProps {
@@ -70,18 +62,29 @@ const AddPeakList = (props: Props) => {
   const [name, setName] = useState<string>('');
   const [shortName, setShortName] = useState<string>('');
   const [selectedMountains, setSelectedMountains] = useState<Array<Region['id']>>([]);
-  const [standardVariant, setStandardVariant] = useState<boolean>(true);
-  const [winterVariant, setWinterVariant] = useState<boolean>(true);
-  const [fourSeasonVariant, setFourSeasonVariant] = useState<boolean>(true);
-  const [gridVariant, setGridVariant] = useState<boolean>(true);
+  const [type, setType] = useState<PeakListVariants | null>(null);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    addPeakList({
-      name, shortName, mountains: selectedMountains,
-      standardVariant, winterVariant, fourSeasonVariant, gridVariant,
-    });
+    if (type !== null) {
+      addPeakList({
+        name, shortName, mountains: selectedMountains,
+        type,
+      });
+    }
     cancel();
+  };
+
+  const setStringToPeakListVariant = (value: string) => {
+    if (value === 'standard') {
+      setType(PeakListVariants.standard);
+    } else if (value === 'winter') {
+      setType(PeakListVariants.winter);
+    } else if (value === 'fourSeason') {
+      setType(PeakListVariants.fourSeason);
+    } else if (value === 'grid') {
+      setType(PeakListVariants.grid);
+    }
   };
 
   const toggleMountainListItem = (id: string, checked: boolean) => {
@@ -89,20 +92,6 @@ const AddPeakList = (props: Props) => {
       setSelectedMountains([...selectedMountains, id]);
     } else if (checked === false) {
       setSelectedMountains(selectedMountains.filter(idInList => idInList !== id));
-    }
-  };
-
-  const toggleVariantType = (id: VariantEnum, checked: boolean) => {
-    if (id === VariantEnum.Standard) {
-      setStandardVariant(checked);
-    } else if (id === VariantEnum.Winter) {
-      setWinterVariant(checked);
-    } else if (id === VariantEnum.FourSeason) {
-      setFourSeasonVariant(checked);
-    } else if (id === VariantEnum.Grid) {
-      setGridVariant(checked);
-    } else {
-      failIfValidOrNonExhaustive(id, 'Invalid variant enum ' + id);
     }
   };
 
@@ -147,43 +136,16 @@ const AddPeakList = (props: Props) => {
           onChange={e => setShortName(e.target.value)}
           placeholder='shortName'
         />
-        <fieldset>
-          Variants
-          <ul>
-            <li key={VariantEnum.Standard}>
-              <Checkbox
-                id={VariantEnum.Standard}
-                name={VariantEnum.Standard}
-                toggleItem={toggleVariantType}
-                startChecked={true}
-              />
-            </li>
-            <li key={VariantEnum.Winter}>
-              <Checkbox
-                id={VariantEnum.Winter}
-                name={VariantEnum.Winter}
-                toggleItem={toggleVariantType}
-                startChecked={true}
-              />
-            </li>
-            <li key={VariantEnum.FourSeason}>
-              <Checkbox
-                id={VariantEnum.FourSeason}
-                name={VariantEnum.FourSeason}
-                toggleItem={toggleVariantType}
-                startChecked={true}
-              />
-            </li>
-            <li key={VariantEnum.Grid}>
-              <Checkbox
-                id={VariantEnum.Grid}
-                name={VariantEnum.Grid}
-                toggleItem={toggleVariantType}
-                startChecked={true}
-              />
-            </li>
-          </ul>
-        </fieldset>
+
+        <select
+          value={`${type || ''}`}
+          onChange={e => setStringToPeakListVariant(e.target.value)}
+        >
+          <option value={PeakListVariants.standard}>{PeakListVariants.standard}</option>
+          <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
+          <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
+          <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
+        </select>
         <fieldset>
           Mountains
           <ul>

@@ -1,46 +1,22 @@
 /* tslint:disable:await-promise */
 import {
-  GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
 import { Mountain as IMountain } from '../../graphQLTypes';
+import { PeakList as IPeakList } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
-import PeakListType, { PeakList } from '../queryTypes/peakListType';
+import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
 
 interface AddPeakListVariables {
   name: string;
   shortName: string;
-  standardVariant: boolean;
-  winterVariant: boolean;
-  fourSeasonVariant: boolean;
-  gridVariant: boolean;
+  type: IPeakList['type'];
   mountains: IMountain[];
 }
-
-export const updateVariant = (id: string, variant: string, value: boolean) => {
-  return new Promise((resolve, reject) => {
-    PeakList.findOne({ _id: id }, {new: true})
-      .select({ variants: true })
-      .exec(async (err, doc: any) => {
-        if (err) {
-          console.error(err);
-        } else if (doc) {
-          try {
-            doc.variants[variant] = value;
-            await doc.save();
-            resolve(true);
-          } catch (err) {
-            reject(err);
-          }
-        }
-      });
-    },
-  );
-};
 
 const peakListMutations: any = {
   addPeakList: {
@@ -48,26 +24,18 @@ const peakListMutations: any = {
     args: {
       name: { type: GraphQLNonNull(GraphQLString) },
       shortName: { type: GraphQLNonNull(GraphQLString) },
-      standardVariant: {type: GraphQLNonNull(GraphQLBoolean) },
-      winterVariant: {type: GraphQLNonNull(GraphQLBoolean) },
-      fourSeasonVariant: {type: GraphQLNonNull(GraphQLBoolean) },
-      gridVariant: {type: GraphQLNonNull(GraphQLBoolean) },
+      type: {type: GraphQLNonNull(PeakListVariants) },
       mountains: { type: new GraphQLList(GraphQLID)},
     },
     resolve(_unused: any, input: AddPeakListVariables) {
       const {
-        name, shortName, standardVariant, winterVariant, fourSeasonVariant, gridVariant, mountains,
+        name, shortName, type, mountains,
       } = input;
       if (name !== '' && shortName !== ''
-        && standardVariant !== null && winterVariant !== null
-        && fourSeasonVariant !== null && gridVariant !== null) {
+        && type !== null) {
         const newPeakList = new PeakList({
           name, shortName, mountains,
-          variants: {
-            standard: standardVariant, winter: winterVariant,
-            fourSeason: fourSeasonVariant, grid: gridVariant,
-          },
-          numUsers: 0,
+          type, numUsers: 0,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -214,12 +182,18 @@ const peakListMutations: any = {
     type: PeakListType,
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
-      variant: { type: GraphQLNonNull(GraphQLString) },
-      value: { type: GraphQLNonNull(GraphQLBoolean) },
+      type: { type: GraphQLNonNull(PeakListVariants) },
     },
-    async resolve(_unused: any, { id, variant, value }: { id: string , variant: string, value: boolean}) {
-      await updateVariant(id, variant, value);
-      return PeakList.findOne({ _id: id });
+    async resolve(_unused: any,
+                  { id, type }: { id: string , type: IPeakList['type'] },
+                  {dataloaders}: {dataloaders: any}) {
+      const peakList = await PeakList.findOneAndUpdate({
+        _id: id,
+      },
+      { type },
+      {new: true});
+      dataloaders.peakListLoader.clear(id).prime(id, peakList);
+      return peakList;
     },
   },
 };

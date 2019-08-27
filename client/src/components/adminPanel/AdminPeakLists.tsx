@@ -7,7 +7,7 @@ import {
   ContentLeftLarge as PeakListListColumn,
   ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
-import { Mountain, PeakList } from '../../types/graphQLTypes';
+import { Mountain, PeakList, PeakListVariants } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import AddPeakList from './peakLists/AddPeakList';
 import EditPeakList from './peakLists/EditPeakList';
@@ -19,12 +19,7 @@ export const GET_PEAK_LISTS = gql`
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
         name
@@ -37,30 +32,19 @@ const ADD_PEAK_LIST = gql`
   mutation(
     $name: String!,
     $shortName: String!,
-    $standardVariant: Boolean!,
-    $winterVariant: Boolean!,
-    $fourSeasonVariant: Boolean!,
-    $gridVariant: Boolean!,
+    $type: PeakListVariants!,
     $mountains: [ID],
   ) {
     addPeakList(
       name: $name,
       shortName: $shortName,
-      standardVariant: $standardVariant,
-      winterVariant: $winterVariant,
-      fourSeasonVariant: $fourSeasonVariant,
-      gridVariant: $gridVariant,
+      type: $type,
       mountains: $mountains,
     ) {
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
         name
@@ -72,10 +56,7 @@ const ADD_PEAK_LIST = gql`
 export interface AddPeakListVariables {
   name: string;
   shortName: string;
-  standardVariant: boolean;
-  winterVariant: boolean;
-  fourSeasonVariant: boolean;
-  gridVariant: boolean;
+  type: PeakListVariants;
   mountains: string[];
 }
 
@@ -92,7 +73,7 @@ export interface SuccessResponse {
     id: PeakList['id'];
     name: PeakList['name'];
     shortName: PeakList['shortName'];
-    variants: PeakList['variants'];
+    type: PeakList['type'];
     mountains: Array<{
       id: Mountain['id'];
       name: Mountain['name'];

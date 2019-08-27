@@ -22,7 +22,7 @@ const ListStates = (props: Props) => {
   } else if (data !== undefined) {
     const { peakLists } = data;
     const peakListElms = peakLists.map(peakList => {
-      const { variants: { standard, winter, grid, fourSeason } } = peakList;
+      const { type } = peakList;
       const mountainElms = peakList.mountains.map(({name}) => name + ', ');
       return (
         <li key={peakList.id}>
@@ -39,10 +39,7 @@ const ListStates = (props: Props) => {
           </div>
           <div>
             <small>
-              {standard && 'standard'},
-              {winter && 'winter'},
-              {fourSeason && 'fourSeason'},
-              {grid && 'grid'}
+              {type},
             </small>
           </div>
         </li>

@@ -1,5 +1,5 @@
 import {
-  GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -18,12 +18,7 @@ export type PeakListModelType = mongoose.Model<PeakListSchemaType> & PeakListSch
 const PeakListSchema = new Schema({
   name: { type: String, required: true },
   shortName: { type: String, required: true },
-  variants: {
-    standard: {type: Boolean, required: true},
-    winter: {type: Boolean, required: true},
-    fourSeason: {type: Boolean, required: true},
-    grid: {type: Boolean, required: true},
-  },
+  type: { type: String, required: true},
   mountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
@@ -37,14 +32,22 @@ const PeakListSchema = new Schema({
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
 
-const PeakListVariantsType = new GraphQLObjectType({
-  name: 'PeakListVariantsType',
-  fields: () => ({
-    standard: {type: GraphQLBoolean },
-    winter: {type: GraphQLBoolean },
-    fourSeason: {type: GraphQLBoolean },
-    grid: {type: GraphQLBoolean },
-  }),
+export const PeakListVariants = new GraphQLEnumType({
+  name: 'PeakListVariants',
+  values: {
+    standard: {
+      value: 'standard',
+    },
+    winter: {
+      value: 'winter',
+    },
+    fourSeason: {
+      value: 'fourSeason',
+    },
+    grid: {
+      value: 'grid',
+    },
+  },
 });
 
 const PeakListType = new GraphQLObjectType({
@@ -53,7 +56,7 @@ const PeakListType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     shortName: { type: GraphQLString },
-    variants: { type: PeakListVariantsType },
+    type: { type: PeakListVariants },
     mountains:  {
       type: new GraphQLList(MountainType),
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {

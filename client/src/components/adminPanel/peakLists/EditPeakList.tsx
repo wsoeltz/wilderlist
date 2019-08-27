@@ -10,12 +10,7 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
       }
@@ -33,12 +28,7 @@ const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
       }
@@ -52,12 +42,7 @@ const ADD_MOUNTAIN_TO_PEAK_LIST = gql`
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
       }
@@ -71,12 +56,7 @@ const CHANGE_PEAK_LIST_NAME = gql`
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
       }
@@ -90,12 +70,7 @@ const CHANGE_PEAK_LIST_SHORT_NAME = gql`
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
       }
@@ -104,17 +79,12 @@ const CHANGE_PEAK_LIST_SHORT_NAME = gql`
 `;
 
 const CHANGE_PEAK_LIST_VARIANT = gql`
-  mutation($id: ID!, $variant: String!, $value: Boolean!) {
-    adjustPeakListVariant(id: $id, variant: $variant, value: $value) {
+  mutation($id: ID!, $type: PeakListVariants!) {
+    adjustPeakListVariant(id: $id, type: $type) {
       id
       name
       shortName
-      variants {
-        standard
-        winter
-        fourSeason
-        grid
-      }
+      type
       mountains {
         id
       }
@@ -127,7 +97,7 @@ interface SuccessResponse {
     id: PeakList['id'];
     name: PeakList['name'];
     shortName: PeakList['shortName'];
-    variants: PeakList['variants'];
+    type: PeakList['type'];
     mountains: Array<{
       id: Mountain['id'];
     }>
@@ -138,8 +108,28 @@ interface SuccessResponse {
   }>;
 }
 
-interface Variables {
+interface QueryVariables {
   id: string;
+}
+
+interface AdjustMountainVariables {
+  listId: string;
+  itemId: string;
+}
+
+interface ChangeNameVariables {
+  id: string;
+  newName: string;
+}
+
+interface ChangeShortNameVariables {
+  id: string;
+  newShortName: string;
+}
+
+interface ChangeVariantVariables {
+  id: string;
+  type: PeakListVariants;
 }
 
 interface CheckboxProps {
@@ -194,33 +184,34 @@ const EditRegion = (props: Props) => {
   const [inputNameValue, setInputNameValue] = useState<string>('');
   const [inputShortNameValue, setInputShortNameValue] = useState<string>('');
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
+  const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
     variables: { id: peakListId },
   });
-  const [removeItemFromPeakList] = useMutation(REMOVE_MOUNTAIN_FROM_PEAK_LIST, {
+  const [removeItemFromPeakList] = useMutation<SuccessResponse, AdjustMountainVariables>
+    (REMOVE_MOUNTAIN_FROM_PEAK_LIST, {
+      refetchQueries: () => [{query: GET_PEAK_LISTS}],
+    });
+  const [addItemToPeakList] = useMutation<SuccessResponse, AdjustMountainVariables>(ADD_MOUNTAIN_TO_PEAK_LIST, {
     refetchQueries: () => [{query: GET_PEAK_LISTS}],
   });
-  const [addItemToPeakList] = useMutation(ADD_MOUNTAIN_TO_PEAK_LIST, {
-    refetchQueries: () => [{query: GET_PEAK_LISTS}],
-  });
-  const [changePeakListName] = useMutation(CHANGE_PEAK_LIST_NAME);
-  const [changePeakListShortName] = useMutation(CHANGE_PEAK_LIST_SHORT_NAME);
-  const [adjustPeakListVariant] = useMutation(CHANGE_PEAK_LIST_VARIANT);
+  const [changePeakListName] = useMutation<SuccessResponse, ChangeNameVariables>(CHANGE_PEAK_LIST_NAME);
+  const [changePeakListShortName] = useMutation<SuccessResponse, ChangeShortNameVariables>(CHANGE_PEAK_LIST_SHORT_NAME);
+  const [adjustPeakListVariant] = useMutation<SuccessResponse, ChangeVariantVariables>(CHANGE_PEAK_LIST_VARIANT);
 
   let name: React.ReactElement | null;
   let shortName: React.ReactElement | null;
   let mountains: React.ReactElement | null;
-  let variants: React.ReactElement | null;
+  let type: React.ReactElement | null;
   if (loading === true) {
     name = null;
     shortName = null;
     mountains = (<p>Loading</p>);
-    variants = null;
+    type = null;
   } else if (error !== undefined) {
     name = null;
     shortName = null;
     mountains = null;
-    variants = null;
+    type = null;
     console.error(error);
   } else if (data !== undefined) {
     if (editingName === false) {
@@ -298,73 +289,39 @@ const EditRegion = (props: Props) => {
     });
     mountains = <>{mountainList}</>;
     const {
-      peakList: {
-        variants: {
-          standard, winter, fourSeason, grid,
-        },
-      },
+      peakList,
     } = data;
-    variants = (
-      <>
-        <li key={'peakList-variant-' + PeakListVariants.standard}>
-          <Checkbox
-            id={PeakListVariants.standard}
-            name={PeakListVariants.standard}
-            defaultChecked={standard}
-            removeItemFromPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
-            }
-            addItemToPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
-            }
-          />
-        </li>
-        <li key={'peakList-variant-' + PeakListVariants.winter}>
-          <Checkbox
-            id={PeakListVariants.winter}
-            name={PeakListVariants.winter}
-            defaultChecked={winter}
-            removeItemFromPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
-            }
-            addItemToPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
-            }
-          />
-        </li>
-        <li key={'peakList-variant-' + PeakListVariants.fourSeason}>
-          <Checkbox
-            id={PeakListVariants.fourSeason}
-            name={PeakListVariants.fourSeason}
-            defaultChecked={fourSeason}
-            removeItemFromPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
-            }
-            addItemToPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
-            }
-          />
-        </li>
-        <li key={'peakList-variant-' + PeakListVariants.grid}>
-          <Checkbox
-            id={PeakListVariants.grid}
-            name={PeakListVariants.grid}
-            defaultChecked={grid}
-            removeItemFromPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: false}})
-            }
-            addItemToPeakList={
-              (itemId) => adjustPeakListVariant({ variables: {id: peakListId, variant: itemId, value: true}})
-            }
-          />
-        </li>
-      </>
+    const updateType = (value: string) => {
+      let newType: PeakListVariants;
+      if (value === 'standard') {
+        newType = PeakListVariants.standard;
+      } else if (value === 'winter') {
+        newType = PeakListVariants.winter;
+      } else if (value === 'fourSeason') {
+        newType = PeakListVariants.fourSeason;
+      } else if (value === 'grid') {
+        newType = PeakListVariants.grid;
+      } else {
+        return;
+      }
+      adjustPeakListVariant({variables: {id: peakList.id, type: newType}});
+    };
+    type = (
+      <select
+        value={`${peakList.type || ''}`}
+        onChange={e => updateType(e.target.value)}
+      >
+        <option value={PeakListVariants.standard}>{PeakListVariants.standard}</option>
+        <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
+        <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
+        <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
+      </select>
     );
   } else {
     name = null;
     shortName = null;
     mountains = null;
-    variants = null;
+    type = null;
   }
 
   return (
@@ -372,11 +329,7 @@ const EditRegion = (props: Props) => {
       <button onClick={cancel}>Close</button>
         {name}
         {shortName}
-        <fieldset>
-          <ul>
-            {variants}
-          </ul>
-        </fieldset>
+        {type}
         <fieldset>
           <ul>
             {mountains}

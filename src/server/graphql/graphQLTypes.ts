@@ -34,12 +34,8 @@ export interface PeakList {
   id: string;
   name: string;
   shortName: string;
-  variants: {
-    standard: boolean;
-    winter: boolean;
-    fourSeason: boolean;
-    grid: boolean;
-  };
+  type: PeakListVariants;
+  parent: PeakList | null;
   mountains: Mountain[];
   users: User[];
   numUsers: number;
