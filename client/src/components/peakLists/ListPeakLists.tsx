@@ -31,20 +31,25 @@ export interface PeakListDatum {
 
 interface Props {
   peakListData: PeakListDatum[];
+  userListData: Array<PeakList['id']>;
+  beginList: (peakListId: string) => void;
 }
 
 const ListPeakLists = (props: Props) => {
   const {
-    peakListData,
+    peakListData, userListData, beginList,
   } = props;
 
   if (peakListData.length === 0) {
     return <>No results found</>;
   }
   const peakLists = peakListData.map(peakList => {
+    const active = userListData.includes(peakList.id);
     return (
       <PeakListCard
         peakList={peakList}
+        active={active}
+        beginList={beginList}
         key={peakList.id}
       />
     );

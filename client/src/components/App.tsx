@@ -41,7 +41,9 @@ const App: React.FC = () => {
 
   const userRoutes = (user) ? (
     <>
-      <Route exact path={Routes.Lists} component={PeakListPage} />
+      <Route exact path={Routes.Lists}
+        render={(props) => <PeakListPage {...props} userId={user._id} />}
+      />
     </>
   ) : null;
 

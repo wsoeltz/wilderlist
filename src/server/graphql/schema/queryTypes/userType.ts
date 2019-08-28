@@ -6,12 +6,10 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { User as IUser } from '../../graphQLTypes';
+import MountainType from './mountainType';
 import PeakListType from './peakListType';
 
-type UserSchemaType = mongoose.Document & IUser & {
-  findFriends: (id: string) => any;
-  findLists: (id: string) => any;
-};
+type UserSchemaType = mongoose.Document & IUser;
 
 const UserSchema = new Schema({
   googleId: { type: String},
@@ -27,19 +25,11 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'list',
   }],
+  mountains: [{
+    type: Schema.Types.ObjectId,
+    ref: 'mountain',
+  }],
 });
-
-UserSchema.statics.findFriends = function(id: string) {
-  return this.findById(id)
-    .populate('friends')
-    .then((user: IUser) => user.friends);
-};
-
-UserSchema.statics.findLists = function(id: string) {
-  return this.findById(id)
-    .populate('peakLists')
-    .then((user: IUser) => user.peakLists);
-};
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
 
@@ -56,14 +46,20 @@ const UserType: any = new GraphQLObjectType({
     profilePictureUrl: { type: GraphQLString },
     friends: {
       type: new GraphQLList(UserType),
-      resolve(parentValue) {
-        return User.findFriends(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        return await userLoader.loadMany(parentValue.friends);
       },
     },
-    peakLists: {
+    peakLists:  {
       type: new GraphQLList(PeakListType),
-      resolve(parentValue) {
-        return User.findLists(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        return await peakListLoader.loadMany(parentValue.peakLists);
+      },
+    },
+    mountains:  {
+      type: new GraphQLList(MountainType),
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        return await mountainLoader.loadMany(parentValue.mountains);
       },
     },
   }),

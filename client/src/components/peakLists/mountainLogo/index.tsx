@@ -86,6 +86,16 @@ const VariantName = styled.svg<StyleProps>`
   }
 `;
 
+const variantEnumToString = (variantEnum: PeakListVariants) => {
+  if (variantEnum === PeakListVariants.standard) {
+    return '';
+  } else if (variantEnum === PeakListVariants.fourSeason) {
+    return '4-season';
+  } else {
+    return variantEnum;
+  }
+};
+
 interface Props {
   id: string;
   title: string;
@@ -102,11 +112,11 @@ const MountainLogo = (props: Props) => {
   const variantName = variant === PeakListVariants.standard ? null : (
     <VariantName
       colorSet={colorSet}
-      viewBox="0 0 56 18"
+      viewBox='0 0 56 18'
       textAnchor='middle'
     >
-      <text x="50%" y="90%">
-        {variant}
+      <text x='50%' y='90%'>
+        {variantEnumToString(variant)}
       </text>
     </VariantName>
   );
@@ -137,12 +147,12 @@ const MountainLogo = (props: Props) => {
       </SVG>
       <ShortName
         colorSet={colorSet}
-        viewBox="0 0 56 18"
+        viewBox='0 0 56 18'
         textAnchor='middle'
         shortNameSize={shortNameSize}
         shortNameStroke={shortNameStroke}
       >
-        <text x="50%" y="70%">
+        <text x='50%' y='70%'>
           {shortName}
         </text>
       </ShortName>

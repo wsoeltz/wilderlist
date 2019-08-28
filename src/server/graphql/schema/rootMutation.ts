@@ -6,6 +6,7 @@ import mountainMutations from './mutations/mountainMutations';
 import peakListMutations from './mutations/peakListMutations';
 import regionMutations from './mutations/regionMutations';
 import stateMutations from './mutations/stateMutations';
+import userMutations from './mutations/userMutations';
 
 mongoose.set('useFindAndModify', false);
 
@@ -16,6 +17,7 @@ const mutation = new GraphQLObjectType({
     ...stateMutations,
     ...mountainMutations,
     ...peakListMutations,
+    ...userMutations,
   },
 });
 

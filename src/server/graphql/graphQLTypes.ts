@@ -47,12 +47,14 @@ export enum PermissionTypes {
 }
 
 export interface User {
+  _id: string;
   id: string;
   googleId: string;
   name: string;
   email: string;
   profilePictureUrl: string;
-  friends: User[];
-  peakLists: PeakList[];
+  friends: User[] | null;
+  peakLists: PeakList[] | null;
+  mountains: Mountain[] | null;
   permissions: PermissionTypes;
 }

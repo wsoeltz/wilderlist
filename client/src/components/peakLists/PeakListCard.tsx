@@ -83,7 +83,7 @@ const getStatesOrRegion = (mountains: MountainList[]) => {
     });
     // Else if they all belong to the same region, show that region
     if (regionsArray.length === 0) {
-      return <>Asgard</>;
+      return null;
     } else if (regionsArray.length === 1) {
       return regionsArray[0].name;
     } else {
@@ -111,16 +111,18 @@ const getStatesOrRegion = (mountains: MountainList[]) => {
     }
   }
   // Else list all the regions
-  return <>Asgard</>;
+  return null;
 };
 
 interface Props {
   peakList: PeakListDatum;
+  active: boolean;
+  beginList: (peakListId: string) => void;
 }
 
 const ListPeakLists = (props: Props) => {
   const {
-    peakList: {id, name, shortName, parent, type}, peakList,
+    peakList: {id, name, shortName, parent, type}, peakList, active, beginList,
   } = props;
   let mountains: MountainList[];
   if (parent !== null && parent.mountains !== null) {
@@ -130,6 +132,12 @@ const ListPeakLists = (props: Props) => {
   } else {
     mountains = [];
   }
+  const beginButton = active === false ? (
+    <BeginListButtonContainer>
+      <ButtonPrimary onClick={() => beginList(id)}>
+        Begin List
+      </ButtonPrimary>
+    </BeginListButtonContainer> ) : null;
   return (
     <Root>
       <Title>
@@ -143,11 +151,7 @@ const ListPeakLists = (props: Props) => {
           {getStatesOrRegion(mountains)}
         </span>
       </ListInfo>
-      <BeginListButtonContainer>
-        <ButtonPrimary>
-          Begin List
-        </ButtonPrimary>
-      </BeginListButtonContainer>
+      {beginButton}
       <LogoContainer>
         <MountainLogo
           id={id}
