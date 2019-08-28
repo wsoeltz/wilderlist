@@ -18,6 +18,7 @@ import AdminPeakLists from './adminPanel/AdminPeakLists';
 import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
+import PeakListDetailPage from './peakListDetail';
 import PeakListPage from './peakLists';
 import Header from './sharedComponents/Header';
 
@@ -43,6 +44,9 @@ const App: React.FC = () => {
     <>
       <Route exact path={Routes.Lists}
         render={(props) => <PeakListPage {...props} userId={user._id} />}
+      />
+      <Route exact path={Routes.ListDetail}
+        render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
       />
     </>
   ) : null;

@@ -1,6 +1,8 @@
 import { sortBy } from 'lodash';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { listDetailLink } from '../../routing/Utils';
 import {
   ButtonPrimary,
   Card,
@@ -8,6 +10,18 @@ import {
 import { Mountain, Region, State } from '../../types/graphQLTypes';
 import { PeakListDatum } from './ListPeakLists';
 import MountainLogo from './mountainLogo';
+
+const LinkWrapper = styled(Link)`
+  display: block;
+  color: inherit;
+  text-decoration: inherit;
+  grid-row: span 3;
+  grid-column: span 2;
+
+  &:hover {
+    color: inherit;
+  }
+`;
 
 const Root = styled(Card)`
   display: grid;
@@ -132,35 +146,43 @@ const ListPeakLists = (props: Props) => {
   } else {
     mountains = [];
   }
+  const beginButtonOnClick = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    beginList(id);
+  };
   const beginButton = active === false ? (
     <BeginListButtonContainer>
-      <ButtonPrimary onClick={() => beginList(id)}>
+      <ButtonPrimary onClick={beginButtonOnClick}>
         Begin List
       </ButtonPrimary>
     </BeginListButtonContainer> ) : null;
   return (
-    <Root>
-      <Title>
-        {name}
-      </Title>
-      <ListInfo>
-        <span>
-          {mountains.length} Peaks
-        </span>
-        <span>
-          {getStatesOrRegion(mountains)}
-        </span>
-      </ListInfo>
-      {beginButton}
-      <LogoContainer>
-        <MountainLogo
-          id={id}
-          title={name}
-          shortName={shortName}
-          variant={type}
-        />
-      </LogoContainer>
-    </Root>
+    <LinkWrapper to={listDetailLink(id)}>
+      <Root>
+        <Title>
+          {name}
+        </Title>
+        <ListInfo>
+          <span>
+            {mountains.length} Peaks
+          </span>
+          <span>
+            {getStatesOrRegion(mountains)}
+          </span>
+        </ListInfo>
+        <LogoContainer>
+          <MountainLogo
+            id={id}
+            title={name}
+            shortName={shortName}
+            variant={type}
+          />
+        </LogoContainer>
+        {beginButton}
+      </Root>
+    </LinkWrapper>
   );
 };
 

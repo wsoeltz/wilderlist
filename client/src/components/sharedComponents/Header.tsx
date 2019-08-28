@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { withRouter } from 'react-router';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Logo from '../../assets/logo/Logo';
@@ -78,7 +77,13 @@ const Header = (props: RouteComponentProps) => {
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 
   const createLink = (route: Routes, label: string) => {
-    const Container = route === pathname ? ActiveNavLink : InactiveNavLink;
+    let normalizedPathname: string;
+    if (pathname.includes(Routes.ListDetail.split(':id')[0])) {
+      normalizedPathname = Routes.Lists;
+    } else {
+      normalizedPathname = pathname;
+    }
+    const Container = route === normalizedPathname ? ActiveNavLink : InactiveNavLink;
     return <Container to={route}>{label}</Container>;
   };
 
