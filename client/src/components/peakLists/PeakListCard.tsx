@@ -67,12 +67,12 @@ interface StateDatum {
   regions: RegionDatum[];
 }
 
-interface MountainList {
+export interface MountainList {
   id: Mountain['id'];
   state: StateDatum;
 }
 
-const getStatesOrRegion = (mountains: MountainList[]) => {
+export const getStatesOrRegion = (mountains: MountainList[]) => {
   // If there are 3 or less states, just show the states
   const statesArray: StateDatum[] = [];
   mountains.forEach(({state}) => {

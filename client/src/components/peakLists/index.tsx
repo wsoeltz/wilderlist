@@ -100,7 +100,7 @@ interface Variables {
   nPerPage: number;
 }
 
-const ADD_PEAK_LIST_TO_USER = gql`
+export const ADD_PEAK_LIST_TO_USER = gql`
   mutation addPeakListToUser($userId: ID!, $peakListId: ID!) {
     addPeakListToUser(userId: $userId, peakListId: $peakListId) {
       id
@@ -111,14 +111,14 @@ const ADD_PEAK_LIST_TO_USER = gql`
   }
 `;
 
-interface AddPeakListSuccessRespone {
+export interface AddRemovePeakListSuccessResponse {
   id: User['id'];
   peakLists: {
     id: PeakList['id'];
   };
 }
 
-interface AddPeakListVariables {
+export interface AddRemovePeakListVariables {
   userId: string;
   peakListId: string;
 }
@@ -143,9 +143,8 @@ const PeakListPage = ({userId}: Props) => {
     variables: { searchQuery, pageNumber, nPerPage, userId },
   });
 
-  const [addPeakListToUser] = useMutation<AddPeakListSuccessRespone, AddPeakListVariables>(ADD_PEAK_LIST_TO_USER, {
-    // refetchQueries: () => [{query: GET_PEAK_LISTS}],
-  });
+  const [addPeakListToUser] =
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
   const beginList = (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}});
 
   let list: React.ReactElement<any> | null;
