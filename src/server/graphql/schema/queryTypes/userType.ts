@@ -3,6 +3,7 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  // GraphQLInt,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { User as IUser } from '../../graphQLTypes';
@@ -26,14 +27,41 @@ const UserSchema = new Schema({
     ref: 'list',
   }],
   mountains: [{
-    type: Schema.Types.ObjectId,
-    ref: 'mountain',
+    mountain: {
+      type: Schema.Types.ObjectId,
+      ref: 'mountain',
+    },
+    dates: [{ type: String }],
   }],
 });
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
 
 export const User: UserModelType = mongoose.model<UserModelType, any>('user', UserSchema);
+
+// const DayMonthYearType = new GraphQLObjectType({
+//   name: 'DayMonthYearType',
+//   fields: () => ({
+//     day: { type: GraphQLInt},
+//     month: { type: GraphQLInt},
+//     year: { type: GraphQLInt},
+//   }),
+// });
+
+const CompletedMountainsType = new GraphQLObjectType({
+  name: 'CompletedMountainsType',
+  fields: () => ({
+    mountain: {
+      type: MountainType,
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        return await mountainLoader.load(parentValue.mountain);
+      },
+    },
+    dates: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+});
 
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
@@ -50,18 +78,13 @@ const UserType: any = new GraphQLObjectType({
         return await userLoader.loadMany(parentValue.friends);
       },
     },
-    peakLists:  {
+    peakLists: {
       type: new GraphQLList(PeakListType),
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         return await peakListLoader.loadMany(parentValue.peakLists);
       },
     },
-    mountains:  {
-      type: new GraphQLList(MountainType),
-      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
-        return await mountainLoader.loadMany(parentValue.mountains);
-      },
-    },
+    mountains: { type: new GraphQLList(CompletedMountainsType) },
   }),
 });
 

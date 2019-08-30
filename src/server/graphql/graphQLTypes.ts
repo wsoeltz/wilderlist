@@ -46,6 +46,11 @@ export enum PermissionTypes {
   admin = 'admin',
 }
 
+export interface CompletedMountain {
+  mountain: Mountain;
+  dates: string;
+}
+
 export interface User {
   _id: string;
   id: string;
@@ -55,6 +60,6 @@ export interface User {
   profilePictureUrl: string;
   friends: User[] | null;
   peakLists: PeakList[] | null;
-  mountains: Mountain[] | null;
+  mountains: CompletedMountain[] | null;
   permissions: PermissionTypes;
 }

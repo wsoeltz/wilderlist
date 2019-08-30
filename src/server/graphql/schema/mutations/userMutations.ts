@@ -2,10 +2,17 @@
 import {
   GraphQLID,
   GraphQLNonNull,
+  GraphQLString,
 } from 'graphql';
 import { PeakList } from '../queryTypes/peakListType';
 // import { removeConnections } from '../../Utils';
 import UserType, { User } from '../queryTypes/userType';
+
+interface CompletedMountainMutationArgs {
+  userId: string;
+  mountainId: string;
+  date: string;
+}
 
 const userMutations: any = {
   addPeakListToUser: {
@@ -90,6 +97,54 @@ const userMutations: any = {
       } catch (err) {
         return err;
       }
+    },
+  },
+  addMountainCompletion: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      date: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: CompletedMountainMutationArgs) {
+      const { userId, mountainId, date } = args;
+      await User.findOneAndUpdate({
+        '_id': userId,
+        'mountains.mountain': { $ne: mountainId },
+      }, {
+        $addToSet: { mountains: {mountain: mountainId} },
+      });
+      await User.findOneAndUpdate({
+        '_id': userId,
+        'mountains.mountain': mountainId,
+      }, {
+        $addToSet: { 'mountains.$.dates': date },
+      });
+      return await User.findOne({_id: userId});
+    },
+  },
+  removeMountainCompletion: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      date: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: CompletedMountainMutationArgs) {
+      const { userId, mountainId, date } = args;
+      await User.findOneAndUpdate({
+        '_id': userId,
+        'mountains.mountain': { $ne: mountainId },
+      }, {
+        $addToSet: { mountains: {mountain: mountainId} },
+      });
+      await User.findOneAndUpdate({
+        '_id': userId,
+        'mountains.mountain': mountainId,
+      }, {
+        $pull: { 'mountains.$.dates': date },
+      });
+      return await User.findOne({_id: userId});
     },
   },
 };

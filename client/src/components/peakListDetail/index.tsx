@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { sortBy } from 'lodash';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
@@ -54,6 +55,39 @@ const ListInfo = styled.h3`
 const LogoContainer = styled.div`
   grid-row: 2;
   grid-column: 1;
+`;
+
+const MountainTable = styled.div`
+  display: grid;
+`;
+
+const MountainName = styled.div`
+  grid-column: 1;
+`;
+
+const MountainElevation = styled.div`
+  grid-column: 2;
+`;
+
+const MountainProminence = styled.div`
+  grid-column: 3;
+`;
+
+const MountainButton = styled.div`
+  grid-column: 4;
+`;
+
+const MountainColumnTitleName = styled(MountainName)`
+
+`;
+const MountainColumnTitleElevation = styled(MountainElevation)`
+
+`;
+const MountainColumnTitleProminence = styled(MountainProminence)`
+
+`;
+const MountainColumnTitleButton = styled(MountainButton)`
+
 `;
 
 const GET_PEAK_LIST = gql`
@@ -205,6 +239,19 @@ const PeakListDetailPage = (props: Props) => {
     } else {
       mountains = [];
     }
+    const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
+    const mountainRows = mountainsByElevation.map(mountain => (
+      <React.Fragment key={mountain.id}>
+        <MountainName>{mountain.name}</MountainName>
+        <MountainElevation>{mountain.elevation}</MountainElevation>
+        <MountainProminence>{mountain.prominence}</MountainProminence>
+        <MountainButton>
+          <ButtonSecondary>
+            Mark done
+          </ButtonSecondary>
+        </MountainButton>
+      </React.Fragment>
+    ));
     const usersLists = user.peakLists.map((list) => list.id);
     const active = usersLists.includes(peakList.id);
     const beginRemoveButton = active === false ? (
@@ -242,6 +289,13 @@ const PeakListDetailPage = (props: Props) => {
                 {beginRemoveButton}
               </BeginRemoveListButtonContainer>
             </Header>
+            <MountainTable>
+              <MountainColumnTitleName>Mountain</MountainColumnTitleName>
+              <MountainColumnTitleElevation>Elevation</MountainColumnTitleElevation>
+              <MountainColumnTitleProminence>Prominence</MountainColumnTitleProminence>
+              <MountainColumnTitleButton>Completed</MountainColumnTitleButton>
+              {mountainRows}
+            </MountainTable>
           </ContentBody>
         </ContentLeftLarge>
         <ContentRightSmall>
