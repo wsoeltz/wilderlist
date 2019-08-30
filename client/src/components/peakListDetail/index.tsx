@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { sortBy } from 'lodash';
-import React from 'react';
+import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
 import {
@@ -12,6 +12,7 @@ import {
 import {
   ButtonPrimary,
   ButtonSecondary,
+  InputBase,
 } from '../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../types/graphQLTypes';
 import {
@@ -21,6 +22,8 @@ import {
 } from '../peakLists';
 import MountainLogo from '../peakLists/mountainLogo';
 import { getStatesOrRegion } from '../peakLists/PeakListCard';
+import Modal from '../sharedComponents/Modal';
+import { convertFieldsToDate } from '../../Utils';
 
 const Header = styled.div`
   display: grid;
@@ -90,6 +93,25 @@ const MountainColumnTitleButton = styled(MountainButton)`
 
 `;
 
+const DateInputContainer = styled.div`
+  display: grid;
+  grid-template-columns: 5fr 5fr 7fr;
+  grid-column-gap: 1rem;
+`;
+
+const DayInput = styled(InputBase)`
+  grid-column: 2;
+  text-align: center;
+`;
+const MonthInput = styled(InputBase)`
+  grid-column: 1;
+  text-align: center;
+`;
+const YearInput = styled(InputBase)`
+  grid-column: 3;
+  text-align: center;
+`;
+
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID!) {
     peakList(id: $id) {
@@ -144,6 +166,12 @@ const GET_PEAK_LIST = gql`
       peakLists {
         id
       }
+      mountains {
+        mountain {
+          id
+        }
+        dates
+      }
     }
   }
 `;
@@ -157,6 +185,59 @@ const REMOVE_PEAK_LIST_FROM_USER = gql`
     }
   }
 `;
+const ADD_MOUNTAIN_COMPLETION = gql`
+  mutation addMountainCompletion(
+    $userId: ID!,
+    $mountainId: ID!,
+    $date: String!
+    ) {
+    addMountainCompletion(
+      userId: $userId,
+      mountainId: $mountainId,
+      date: $date
+    ) {
+      id
+      mountains {
+        mountain {
+          id
+        }
+        dates
+      }
+    }
+  }
+`;
+// const REMOVE_MOUNTAIN_COMPLETION = gql`
+//   mutation removeMountainCompletion(
+//     $userId: ID!,
+//     $mountainId: ID!,
+//     $date: String!
+//     ) {
+//     removeMountainCompletion(
+//       userId: $userId,
+//       mountainId: $mountainId,
+//       date: $date
+//     ) {
+//       id
+//       mountains {
+//         mountain {
+//           id
+//         }
+//         dates
+//       }
+//     }
+//   }
+// `;
+
+interface MountainCompletionSuccessResponse {
+  id: User['id'];
+  mountains: User['mountains'];
+}
+
+interface MountainCompletionVariables {
+  userId: string;
+  mountainId: string;
+  date: string;
+}
 
 interface MountainDatum {
   id: Mountain['id'];
@@ -197,6 +278,7 @@ interface SuccessResponse {
     peakLists: Array<{
       id: PeakList['id'];
     }>;
+    mountains: User['mountains'];
   };
 }
 
@@ -216,6 +298,14 @@ const PeakListDetailPage = (props: Props) => {
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
   const [removePeakListFromUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
+  const [addMountainCompletion] =
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+  // const [removeMountainCompletion] =
+    // useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
+   const [completionDay, setCompletionDay] = useState<string>('');
+   const [completionMonth, setCompletionMonth] = useState<string>('');
+   const [completionYear, setCompletionYear] = useState<string>('');
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
@@ -230,7 +320,6 @@ const PeakListDetailPage = (props: Props) => {
       peakList: {name, parent, shortName, type},
       peakList, user,
     } = data;
-
     let mountains: MountainDatum[];
     if (parent !== null && parent.mountains !== null) {
       mountains = parent.mountains;
@@ -240,18 +329,96 @@ const PeakListDetailPage = (props: Props) => {
       mountains = [];
     }
     const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
-    const mountainRows = mountainsByElevation.map(mountain => (
-      <React.Fragment key={mountain.id}>
-        <MountainName>{mountain.name}</MountainName>
-        <MountainElevation>{mountain.elevation}</MountainElevation>
-        <MountainProminence>{mountain.prominence}</MountainProminence>
-        <MountainButton>
-          <ButtonSecondary>
-            Mark done
-          </ButtonSecondary>
-        </MountainButton>
-      </React.Fragment>
-    ));
+    const mountainRows = mountainsByElevation.map(mountain => {
+      let peakCompletedContent: React.ReactElement<any> | null;
+      if (user !== undefined && user !== null) {
+        if (user.mountains !== undefined && user.mountains !== null) {
+          const isCompleted = user.mountains.find((completedMountain) => completedMountain.mountain.id === mountain.id);
+          if (isCompleted === undefined) {
+            peakCompletedContent = (
+              <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
+                Mark done
+              </ButtonSecondary>
+            );
+          } else {
+            peakCompletedContent = (
+              <em>Completed on {isCompleted.dates[0]}</em>
+            );
+          }
+        } else {
+          peakCompletedContent = (
+            <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
+              Mark done
+            </ButtonSecondary>
+          );
+        }
+      } else {
+        peakCompletedContent = null;
+      }
+
+      return (
+        <React.Fragment key={mountain.id}>
+          <MountainName>{mountain.name}</MountainName>
+          <MountainElevation>{mountain.elevation}</MountainElevation>
+          <MountainProminence>{mountain.prominence}</MountainProminence>
+          <MountainButton>
+            {peakCompletedContent}
+          </MountainButton>
+        </React.Fragment>
+      );
+    });
+
+    const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
+      const year = convertFieldsToDate(completionDay, completionMonth, completionYear);
+      if (year.error !== undefined) {
+        console.error(year.error);
+      } else {
+        addMountainCompletion({ variables: {userId, mountainId, date: year.date}});
+        closeEditMountainModalModal();
+      }
+    }
+
+    const closeEditMountainModalModal = () => {
+      setEditMountainId(null)
+      setCompletionDay('');
+      setCompletionMonth('');
+      setCompletionYear('');
+    };
+    const editMountainModal = editMountainId === null ? null : (
+      <Modal
+        onClose={closeEditMountainModalModal}
+        width={'300px'}
+        height={'300px'}
+      >
+        <DateInputContainer>
+          <MonthInput
+            placeholder='MM'
+            value={completionMonth}
+            onChange={e => setCompletionMonth(e.target.value)}
+            type='number'
+          />
+          <DayInput
+            placeholder='DD'
+            value={completionDay}
+            onChange={e => setCompletionDay(e.target.value)}
+            type='number'
+          />
+          <YearInput
+            placeholder='YYYY'
+            value={completionYear}
+            onChange={e => setCompletionYear(e.target.value)}
+            type='number'
+          />
+        </DateInputContainer>
+        <ButtonSecondary onClick={closeEditMountainModalModal}>
+          Cancel
+        </ButtonSecondary>
+        <ButtonPrimary onClick={() => validateAndAddMountainCompletion(editMountainId)}>
+          Mark Complete
+        </ButtonPrimary>
+      </Modal>
+    );
+
     const usersLists = user.peakLists.map((list) => list.id);
     const active = usersLists.includes(peakList.id);
     const beginRemoveButton = active === false ? (
@@ -303,6 +470,8 @@ const PeakListDetailPage = (props: Props) => {
             selected mountain content
           </ContentBody>
         </ContentRightSmall>
+
+        {editMountainModal}
       </>
     );
   } else {

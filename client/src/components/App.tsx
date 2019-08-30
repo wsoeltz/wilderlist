@@ -21,6 +21,7 @@ import AdminUsers from './adminPanel/AdminUsers';
 import PeakListDetailPage from './peakListDetail';
 import PeakListPage from './peakLists';
 import Header from './sharedComponents/Header';
+import { overlayPortalContainerId } from '../Utils';
 
 const client = new ApolloClient();
 export const UserContext = React.createContext<User | null>(null);
@@ -71,6 +72,7 @@ const App: React.FC = () => {
             <Header />
             {adminRoutes}
             {userRoutes}
+            <div id={overlayPortalContainerId} />
           </Root>
         </Router>
       </ApolloProvider>

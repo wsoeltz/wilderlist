@@ -142,3 +142,16 @@ export const ButtonSecondary = styled(ButtonBase)`
     background-color: ${secondaryHoverColor};
   }
 `;
+
+export const InputBase = styled.input`
+  padding: 8px;
+  box-sizing: border-box;
+  border: solid 1px ${lightBorderColor};
+  font-size: 1rem;
+  font-weight: ${lightFontWeight};
+  width: 100%;
+
+  &::placeholder {
+    color: ${placeholderColor};
+  }
+`;
