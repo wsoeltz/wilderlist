@@ -12,6 +12,7 @@ import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
 import { Root } from '../styling/Grid';
 import { PermissionTypes, User } from '../types/graphQLTypes';
+import { overlayPortalContainerId } from '../Utils';
 import AdminPanel from './adminPanel';
 import AdminMountains from './adminPanel/AdminMountains';
 import AdminPeakLists from './adminPanel/AdminPeakLists';
@@ -21,7 +22,6 @@ import AdminUsers from './adminPanel/AdminUsers';
 import PeakListDetailPage from './peakListDetail';
 import PeakListPage from './peakLists';
 import Header from './sharedComponents/Header';
-import { overlayPortalContainerId } from '../Utils';
 
 const client = new ApolloClient();
 export const UserContext = React.createContext<User | null>(null);

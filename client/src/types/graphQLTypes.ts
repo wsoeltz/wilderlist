@@ -48,7 +48,7 @@ export enum PermissionTypes {
 
 export interface CompletedMountain {
   mountain: Mountain;
-  dates: string;
+  dates: string[];
 }
 
 export interface User {

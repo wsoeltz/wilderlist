@@ -5,35 +5,28 @@ export function failIfValidOrNonExhaustive(_variable: never, message: string): n
   throw new Error(message);
 }
 
-export interface DOMMeasurement {
-  width: number;
-  height: number;
-  topOffset: number;
-  leftOffset: number;
-}
-
 export const overlayPortalContainerId = 'overlayPortalContainerId';
 
-const numberAs2DigitString = (number: number) => {
-  if (number < 10) {
-    return '0' + number;
+const numberAs2DigitString = (num: number) => {
+  if (num < 10) {
+    return '0' + num;
   }
-  return number.toString();
-}
+  return num.toString();
+};
 
 const getMonth = (month: string) => {
   if (month === '') {
     return 'XX';
   }
-  const monthInt = parseInt(month);
+  const monthInt = parseInt(month, 10);
   if (isNaN(monthInt)) {
     return null;
   }
-  if (monthInt > 0 && monthInt < 12) {
+  if (monthInt > 0 && monthInt < 13) {
     return numberAs2DigitString(monthInt);
   }
   return null;
-}
+};
 
 const getYear = (year: string) => {
   if (year === '') {
@@ -42,7 +35,7 @@ const getYear = (year: string) => {
   if (year.length !== 4) {
     return null;
   }
-  const yearInt = parseInt(year);
+  const yearInt = parseInt(year, 10);
   if (isNaN(yearInt)) {
     return null;
   }
@@ -51,7 +44,7 @@ const getYear = (year: string) => {
     return yearInt.toString();
   }
   return null;
-}
+};
 
 const monthsWith30Days = [9, 4, 6, 11];
 
@@ -59,7 +52,7 @@ const getDay = (day: string, month: number, year: number) => {
   if (day === '') {
     return 'XX';
   }
-  const dayInt = parseInt(day);
+  const dayInt = parseInt(day, 10);
   if (isNaN(dayInt)) {
     return null;
   }
@@ -85,7 +78,7 @@ const getDay = (day: string, month: number, year: number) => {
     }
   }
   return null;
-}
+};
 
 export const convertFieldsToDate = (day: string, month: string, year: string) => {
   // Check if valid month
@@ -96,12 +89,17 @@ export const convertFieldsToDate = (day: string, month: string, year: string) =>
     return {error: 'Invalid month or year', date: undefined};
   }
   // Check if valid day for the month and year
-  const validDay = getDay(day, parseInt(validMonth), parseInt(validYear));
+  const validDay = getDay(day, parseInt(validMonth, 10), parseInt(validYear, 10));
   if (validDay === null) {
     return {error: 'Invalid day', date: undefined};
   }
   // Ignore time for now, keeping it in in case of need for it later
   // If all valid, return YYYY-MM-DD-HH-MM string. Use X for any part of the date that is empty
   return {error: undefined, date: `${validYear}-${validMonth}-${validDay}-XX-XX`};
-}
+};
 
+export const formatNumberWithCommas = (num: number) => {
+    const parts = num.toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+};

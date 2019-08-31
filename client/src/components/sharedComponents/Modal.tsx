@@ -1,8 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
-import { overlayPortalContainerId } from '../../Utils';
 import { borderRadius } from '../../styling/styleUtils';
+import { overlayPortalContainerId } from '../../Utils';
 
 const Root = styled.div`
   position: fixed;
@@ -71,6 +71,6 @@ const Modal = (props: Props) => {
   }
 
   return modal;
-}
+};
 
 export default Modal;
