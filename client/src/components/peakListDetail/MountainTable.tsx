@@ -15,6 +15,7 @@ import {
 import {
   formatDate,
   getStandardCompletion,
+  getWinterCompletion,
 } from '../peakLists/Utils';
 import {
   MountainDatum,
@@ -117,43 +118,38 @@ const MountainTable = (props: Props) => {
 
   const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
   const mountainRows = mountainsByElevation.map((mountain, index) => {
-    let peakCompletedContent: React.ReactElement<any> | null;
+    let peakCompletedContent: React.ReactElement<any | null> = (
+      <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
+        Mark done
+      </ButtonSecondary>
+    );
     if (user !== undefined && user !== null) {
       if (user.mountains !== undefined && user.mountains !== null) {
         const completedDates = user.mountains.find(
           (completedMountain) => completedMountain.mountain.id === mountain.id);
 
-        if (completedDates === undefined) {
-          peakCompletedContent = (
-            <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
-              Mark done
-            </ButtonSecondary>
-          );
-        } else {
+        if (completedDates !== undefined) {
           if (type === PeakListVariants.standard) {
             const completedDate = getStandardCompletion(completedDates);
-            if (completedDate !== null) {
+            if (completedDate !== null && completedDate !== undefined) {
               const formattedDate = formatDate(completedDate);
               peakCompletedContent = <em>{formattedDate}</em>;
-            } else {
-              peakCompletedContent = null;
             }
           } else if (type === PeakListVariants.winter) {
-            peakCompletedContent = null;
+            const completedDate = getWinterCompletion(completedDates);
+            if (completedDate !== null && completedDate !== undefined) {
+              const formattedDate = formatDate(completedDate);
+              peakCompletedContent = <em>{formattedDate}</em>;
+            }
           } else if (type === PeakListVariants.fourSeason) {
-            peakCompletedContent = null;
+            peakCompletedContent = <>four season</>;
           } else if (type === PeakListVariants.grid) {
-            peakCompletedContent = null;
+            peakCompletedContent = <>grid</>;
           } else {
             failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
-            peakCompletedContent = null;
           }
         }
-      } else {
-        peakCompletedContent = null;
       }
-    } else {
-      peakCompletedContent = null;
     }
     const elevation = mountain.elevation !== null ? formatNumberWithCommas(mountain.elevation) + ' ft' : 'N/A';
     const prominence = mountain.prominence !== null ? formatNumberWithCommas(mountain.prominence) + ' ft' : 'N/A';

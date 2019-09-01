@@ -1,3 +1,7 @@
+import {
+  getSeasonUtility,
+  getSolsticeAndEquinoxUtility,
+} from './utilities/getSeason';
 // Errors out at compile time if a discriminating `switch` doesn't catch all cases
 // of an enum and at run time if for some reason an invalid enum value is passed.
 // See https://basarat.gitbooks.io/typescript/content/docs/types/discriminated-unions.html
@@ -102,4 +106,32 @@ export const formatNumberWithCommas = (num: number) => {
     const parts = num.toString().split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return parts.join('.');
+};
+
+export enum Seasons {
+  summer = 'summer',
+  spring = 'spring',
+  winter = 'winter',
+  fall = 'fall',
+}
+
+export const getSeason = (year: number, month: number, day: number): Seasons | undefined => {
+  const season = getSeasonUtility(year, month, day);
+  if (season === 'summer') {
+    return Seasons.summer;
+  }
+  if (season === 'spring') {
+    return Seasons.spring;
+  }
+  if (season === 'winter') {
+    return Seasons.winter;
+  }
+  if (season === 'fall') {
+    return Seasons.fall;
+  }
+  return undefined;
+};
+
+export const getSolsticeAndEquinox = (year: number) => {
+  return getSolsticeAndEquinoxUtility(year);
 };
