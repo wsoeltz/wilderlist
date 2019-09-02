@@ -2,65 +2,30 @@ import { sortBy } from 'lodash';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
-  ButtonSecondary,
-  lightBaseColor,
   lightBorderColor,
   semiBoldFontBoldWeight,
 } from '../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../types/graphQLTypes';
-import {
-  failIfValidOrNonExhaustive,
-  formatNumberWithCommas,
-} from '../../Utils';
-import {
-  formatDate,
-  getStandardCompletion,
-  getWinterCompletion,
-} from '../peakLists/Utils';
+import { failIfValidOrNonExhaustive } from '../../Utils';
+import { Months, Seasons } from '../../Utils';
 import {
   MountainDatum,
   UserDatum,
 } from './index';
 import MountainCompletionModal from './MountainCompletionModal';
+import MountainRow from './MountainRow';
+import {
+  buttonColumn,
+  elevationColumn,
+  horizontalPadding,
+  monthColumns,
+  nameColumn,
+  prominenceColumn,
+  seasonColumns,
+} from './MountainRow';
 
 const Root = styled.div`
   display: grid;
-`;
-
-const nameColumn = 1;
-const elevationColumn = 2;
-const prominenceColumn = 3;
-const buttonColumn = 4;
-
-const horizontalPadding = 0.6; // in rem
-
-const TableCellBase = styled.div`
-  font-weight: ${semiBoldFontBoldWeight};
-  padding: 0.8rem ${horizontalPadding}rem;
-  display: flex;
-  align-items: center;
-`;
-
-const MountainName = styled(TableCellBase)`
-  grid-column: ${nameColumn};
-  font-size: 1.2rem;
-`;
-
-const MountainElevation = styled(TableCellBase)`
-  grid-column: ${elevationColumn};
-  justify-content: center;
-  color: ${lightBaseColor};
-`;
-
-const MountainProminence = styled(TableCellBase)`
-  grid-column: ${prominenceColumn};
-  justify-content: center;
-  color: ${lightBaseColor};
-`;
-
-const MountainButton = styled(TableCellBase)`
-  grid-column: ${buttonColumn};
-  justify-content: flex-end;
 `;
 
 const TitleBase = styled.div`
@@ -75,23 +40,16 @@ const TitleBase = styled.div`
 const MountainColumnTitleName = styled(TitleBase)`
   grid-column: ${nameColumn};
   font-size: 1.3rem;
-
 `;
-const MountainColumnTitleElevation = styled(TitleBase)`
-  grid-column: ${elevationColumn};
+
+const TitleCell = styled(TitleBase)`
   justify-content: center;
-
 `;
-const MountainColumnTitleProminence = styled(TitleBase)`
-  grid-column: ${prominenceColumn};
-  justify-content: center;
 
-`;
 const MountainColumnTitleButton = styled(TitleBase)`
   grid-column: ${buttonColumn};
   font-size: 1.3rem;
   justify-content: flex-end;
-
 `;
 
 interface Props {
@@ -116,62 +74,64 @@ const MountainTable = (props: Props) => {
     />
   );
 
+  const userMountains = (user && user.mountains) ? user.mountains : [];
   const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
-  const mountainRows = mountainsByElevation.map((mountain, index) => {
-    let peakCompletedContent: React.ReactElement<any | null> = (
-      <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
-        Mark done
-      </ButtonSecondary>
-    );
-    if (user !== undefined && user !== null) {
-      if (user.mountains !== undefined && user.mountains !== null) {
-        const completedDates = user.mountains.find(
-          (completedMountain) => completedMountain.mountain.id === mountain.id);
+  const mountainRows = mountainsByElevation.map((mountain, index) => (
+      <MountainRow
+        key={mountain.id}
+        index={index}
+        mountain={mountain}
+        type={type}
+        setEditMountainId={setEditMountainId}
+        userMountains={userMountains}
+      />
+    ),
+  );
 
-        if (completedDates !== undefined) {
-          if (type === PeakListVariants.standard) {
-            const completedDate = getStandardCompletion(completedDates);
-            if (completedDate !== null && completedDate !== undefined) {
-              const formattedDate = formatDate(completedDate);
-              peakCompletedContent = <em>{formattedDate}</em>;
-            }
-          } else if (type === PeakListVariants.winter) {
-            const completedDate = getWinterCompletion(completedDates);
-            if (completedDate !== null && completedDate !== undefined) {
-              const formattedDate = formatDate(completedDate);
-              peakCompletedContent = <em>{formattedDate}</em>;
-            }
-          } else if (type === PeakListVariants.fourSeason) {
-            peakCompletedContent = <>four season</>;
-          } else if (type === PeakListVariants.grid) {
-            peakCompletedContent = <>grid</>;
-          } else {
-            failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
-          }
-        }
-      }
-    }
-    const elevation = mountain.elevation !== null ? formatNumberWithCommas(mountain.elevation) + ' ft' : 'N/A';
-    const prominence = mountain.prominence !== null ? formatNumberWithCommas(mountain.prominence) + ' ft' : 'N/A';
-    const style: React.CSSProperties = (index % 2 === 0) ? {} : { backgroundColor: lightBorderColor };
-    return (
-      <React.Fragment key={mountain.id}>
-        <MountainName style={style}>{mountain.name}</MountainName>
-        <MountainElevation style={style}>{elevation}</MountainElevation>
-        <MountainProminence style={style}>{prominence}</MountainProminence>
-        <MountainButton style={style}>
-          {peakCompletedContent}
-        </MountainButton>
-      </React.Fragment>
+  let titleColumns: React.ReactElement<any> | null;
+  if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+    titleColumns = (
+      <>
+        <TitleCell style={{gridColumn: elevationColumn}}>Elevation</TitleCell>
+        <TitleCell style={{gridColumn: prominenceColumn}}>Prominence</TitleCell>
+        <MountainColumnTitleButton>Completed</MountainColumnTitleButton>
+      </>
     );
-  });
+  } else if (type === PeakListVariants.fourSeason) {
+    titleColumns = (
+      <>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.summer]}}>Summer</TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.fall]}}>Fall</TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.winter]}}>Winter</TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.spring]}}>Spring</TitleCell>
+      </>
+    );
+  } else if (type === PeakListVariants.grid) {
+    titleColumns = (
+      <>
+        <TitleCell style={{gridColumn: monthColumns[Months.january]}}>Jan</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.february]}}>Feb</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.march]}}>Mar</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.april]}}>Apr</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.may]}}>May</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.june]}}>Jun</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.july]}}>Jul</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.august]}}>Aug</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.september]}}>Sep</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.october]}}>Oct</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.november]}}>Nov</TitleCell>
+        <TitleCell style={{gridColumn: monthColumns[Months.december]}}>Dec</TitleCell>
+      </>
+    );
+  } else {
+    failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
+    titleColumns = null;
+  }
 
   return (
     <Root>
       <MountainColumnTitleName>Mountain</MountainColumnTitleName>
-      <MountainColumnTitleElevation>Elevation</MountainColumnTitleElevation>
-      <MountainColumnTitleProminence>Prominence</MountainColumnTitleProminence>
-      <MountainColumnTitleButton>Completed</MountainColumnTitleButton>
+      {titleColumns}
       {mountainRows}
       {editMountainModal}
     </Root>
