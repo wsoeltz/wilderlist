@@ -51,34 +51,13 @@ const ADD_MOUNTAIN_COMPLETION = gql`
     }
   }
 `;
-// const REMOVE_MOUNTAIN_COMPLETION = gql`
-//   mutation removeMountainCompletion(
-//     $userId: ID!,
-//     $mountainId: ID!,
-//     $date: String!
-//     ) {
-//     removeMountainCompletion(
-//       userId: $userId,
-//       mountainId: $mountainId,
-//       date: $date
-//     ) {
-//       id
-//       mountains {
-//         mountain {
-//           id
-//         }
-//         dates
-//       }
-//     }
-//   }
-// `;
 
-interface MountainCompletionSuccessResponse {
+export interface MountainCompletionSuccessResponse {
   id: User['id'];
   mountains: User['mountains'];
 }
 
-interface MountainCompletionVariables {
+export interface MountainCompletionVariables {
   userId: string;
   mountainId: string;
   date: string;
@@ -95,18 +74,16 @@ const MountainCompletionModal = (props: Props) => {
 
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
-  // const [removeMountainCompletion] =
-  // useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [completionDay, setCompletionDay] = useState<string>('');
   const [completionMonth, setCompletionMonth] = useState<string>('');
   const [completionYear, setCompletionYear] = useState<string>('');
 
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
-    const year = convertFieldsToDate(completionDay, completionMonth, completionYear);
-    if (year.error !== undefined) {
-      console.error(year.error);
+    const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
+    if (completedDate.error !== undefined) {
+      console.error(completedDate.error);
     } else {
-      addMountainCompletion({ variables: {userId, mountainId, date: year.date}});
+      addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
       closeEditMountainModalModal();
     }
   };

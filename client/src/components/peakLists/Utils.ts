@@ -2,7 +2,7 @@ import { sortBy } from 'lodash';
 import { CompletedMountain } from '../../types/graphQLTypes';
 import { getSeason, Months, Seasons } from '../../Utils';
 
-interface DateObject {
+export interface DateObject {
   dateAsNumber: number;
   year: number;
   month: number;
@@ -11,7 +11,7 @@ interface DateObject {
   minute: number;
 }
 
-const getDates = (dates: CompletedMountain['dates']) => {
+export const getDates = (dates: CompletedMountain['dates']) => {
     const parsedDates: DateObject[] = dates.map(date => {
     const dateParts = date.split('-');
     return {
@@ -47,7 +47,14 @@ export const getStandardCompletion = ({dates}: CompletedMountain) => {
   if (dates.length === 0) {
     return null;
   }
-  return getDates(dates)[0];
+  // first check for earliest date that is !NaN
+  // if doesn't exist, return first date
+  const sortedDates = getDates(dates);
+  const firstNaNDate = sortedDates.find(({day, month, year}) => !isNaN(day) && !isNaN(month) && !isNaN(year));
+  if (firstNaNDate) {
+    return firstNaNDate;
+  }
+  return sortedDates[0];
 };
 
 export const getWinterCompletion = ({dates}: CompletedMountain) => {
@@ -100,15 +107,22 @@ export const getGridCompletion = ({dates}: CompletedMountain) => {
 
 export const formatDate = (date: DateObject) => {
   const { day, month, year } = date;
-  let formattedDate = '';
-  if (!isNaN(month)) {
-    formattedDate = formattedDate + month + '/';
+  // if year isn't known
+    // return 'unknown date'
+  // else if just year (or year and day, but no month) is known
+    // return just year '2018'
+  // else if year && month is known
+    // return month and year '3/2018'
+  // else if everything is known
+    // return full date 3/16/2018
+  if (isNaN(year)) {
+    return 'unknown date';
   }
-  if (!isNaN(day)) {
-    formattedDate = formattedDate + day + '/';
+  if (isNaN(month)) {
+    return year.toString();
   }
-  if (!isNaN(year)) {
-    formattedDate = formattedDate + year;
+  if (isNaN(day)) {
+    return month + '/' + year;
   }
-  return formattedDate;
+  return month + '/' + day + '/' + year;
 };

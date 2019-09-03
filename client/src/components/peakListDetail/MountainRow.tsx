@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { mountainDetailLink } from '../../routing/Utils';
 import {
   ButtonSecondary,
   lightBaseColor,
@@ -21,7 +23,6 @@ import {
 } from '../peakLists/Utils';
 import {
   MountainDatum,
-  // UserDatum,
 } from './index';
 
 export const nameColumn = 1;
@@ -59,7 +60,7 @@ const TableCellBase = styled.div`
   align-items: center;
 `;
 
-const MountainName = styled(TableCellBase)`
+const NameCell = styled(TableCellBase)`
   grid-column: ${nameColumn};
   font-size: 1.2rem;
 `;
@@ -68,6 +69,10 @@ const TableCell = styled(TableCellBase)`
   grid-column: ${elevationColumn};
   justify-content: center;
   color: ${lightBaseColor};
+`;
+
+const MountainName = styled(Link)`
+  font-weight: ${semiBoldFontBoldWeight};
 `;
 
 const MountainButton = styled(TableCellBase)`
@@ -314,7 +319,11 @@ const MountainRow = (props: Props) => {
 
   return (
     <>
-      <MountainName style={{backgroundColor}}>{mountain.name}</MountainName>
+      <NameCell style={{backgroundColor}}>
+        <MountainName to={mountainDetailLink(mountain.id)}>
+          {mountain.name}
+        </MountainName>
+      </NameCell>
       {columnDetailContent}
     </>
   );

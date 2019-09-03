@@ -3,6 +3,7 @@ export enum Routes {
   Dashboard = '/',
   Lists = '/lists',
   ListDetail = '/list/:id',
+  MountainDetail = '/mountain/:id',
   Friends = '/friends',
   Admin = '/admin',
   AdminRegions = '/admin/regions',
