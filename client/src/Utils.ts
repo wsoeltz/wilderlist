@@ -50,6 +50,21 @@ const getYear = (year: string) => {
   return null;
 };
 
+const isLeapYear = (year: number) => {
+  // is leapyear, return true
+  if (year % 4 === 0) {
+    if (year % 100 === 0) {
+      if (year % 400 === 0) {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+  // is not leapyear return false
+  return false;
+};
+
 const monthsWith30Days = [9, 4, 6, 11];
 
 const getDay = (day: string, month: number, year: number) => {
@@ -65,16 +80,12 @@ const getDay = (day: string, month: number, year: number) => {
       return numberAs2DigitString(dayInt);
     }
   } else if (month === 2) {
-    if (year % 4 === 0) {
-      if (year % 100) {
-        if (year % 400) {
-          return numberAs2DigitString(dayInt);
-        } else {
-          return null;
-        }
-      } else {
+    if (isLeapYear(year)) {
+      if (dayInt > 0 && dayInt < 30) {
         return numberAs2DigitString(dayInt);
       }
+    } else if (dayInt > 0 && dayInt < 29) {
+      return numberAs2DigitString(dayInt);
     }
   } else {
     if (dayInt > 0 && dayInt < 32) {
