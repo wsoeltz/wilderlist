@@ -89,6 +89,9 @@ export const ContentHeader = styled.div`
   padding: 0 ${standardContainerPadding};
   position: relative;
 `;
+export const SearchContainer = styled(ContentHeader)`
+  padding: ${standardContainerPadding};
+`;
 export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};
   position: relative;
@@ -104,6 +107,16 @@ export const ContentLeftLarge = styled(BaseContentElement)`
 export const ContentRightSmall = styled(BaseContentElement)`
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
   grid-column: ${gridLines.column7} / ${gridLines.pageRight};
+`;
+
+export const ContentLeftSmall = styled(BaseContentElement)`
+  grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
+  grid-column: ${gridLines.pageLeft} / ${gridLines.column5};
+`;
+
+export const ContentRightLarge = styled(BaseContentElement)`
+  grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
+  grid-column: ${gridLines.column5} / ${gridLines.pageRight};
 `;
 
 export const Root = styled(Grid)`

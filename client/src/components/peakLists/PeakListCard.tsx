@@ -134,7 +134,7 @@ interface Props {
   beginList: (peakListId: string) => void;
 }
 
-const ListPeakLists = (props: Props) => {
+const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, shortName, parent, type}, peakList, active, beginList,
   } = props;
@@ -186,4 +186,4 @@ const ListPeakLists = (props: Props) => {
   );
 };
 
-export default ListPeakLists;
+export default PeakListCard;

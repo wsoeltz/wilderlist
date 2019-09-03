@@ -4,11 +4,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   ContentBody,
-  ContentHeader,
   ContentLeftLarge,
   ContentRightSmall,
+  SearchContainer,
 } from '../../styling/Grid';
-import { standardContainerPadding } from '../../styling/styleUtils';
 import {
   ButtonSecondary,
 } from '../../styling/styleUtils';
@@ -16,10 +15,6 @@ import { PeakList, User } from '../../types/graphQLTypes';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import ListPeakLists from './ListPeakLists';
 import { PeakListDatum } from './ListPeakLists';
-
-const SearchContainer = styled(ContentHeader)`
-  padding: ${standardContainerPadding};
-`;
 
 const Next = styled(ButtonSecondary)`
 `;

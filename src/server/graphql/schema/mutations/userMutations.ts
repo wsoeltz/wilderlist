@@ -147,6 +147,14 @@ const userMutations: any = {
       return await User.findOne({_id: userId});
     },
   },
+  // sendFriendRequest
+  //   create new 'friend' document in both users with respective ids
+  //   assign status of 'sent' and 'recieved' to respective users
+  // acceptFriendRequest
+  //   change status on both users 'friend' document to 'friends'
+  // removeFriend
+  //   remove 'friend' document from both users
+  //   will also be used for declining a friend request
 };
 
 export default userMutations;

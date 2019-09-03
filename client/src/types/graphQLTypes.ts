@@ -51,6 +51,17 @@ export interface CompletedMountain {
   dates: string[];
 }
 
+export enum FriendStatus {
+  friends = 'friends',
+  sent = 'sent',
+  recieved = 'recieved',
+}
+
+export interface Friend {
+  user: User;
+  status: FriendStatus;
+}
+
 export interface User {
   _id: string;
   id: string;

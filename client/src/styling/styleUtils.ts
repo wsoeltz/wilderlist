@@ -104,7 +104,7 @@ export const LinkButton = styled.button`
 `;
 
 export const Card = styled.div`
-  padding: 1rem;
+  padding: 0.7rem;
   border: solid 1px ${lightBorderColor};
   box-shadow: 0px 0px 3px -1px #b5b5b5;
   margin-bottom: 2rem;
