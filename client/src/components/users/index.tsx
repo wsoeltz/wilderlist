@@ -14,7 +14,7 @@ import {
 } from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
 import StandardSearch from '../sharedComponents/StandardSearch';
-import { UserDatum } from './ListUsers';
+import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
 
 const Next = styled(ButtonSecondary)`
@@ -40,6 +40,12 @@ const SEARCH_USERS = gql`
     }
     me: user(id: $id) {
       id
+      friends {
+        user {
+          id
+        }
+        status
+      }
     }
   }
 `;
@@ -48,6 +54,7 @@ interface QuerySuccessResponse {
   users: UserDatum[];
   me: {
     id: User['id'];
+    friends: FriendDatum[];
   };
 }
 
@@ -86,7 +93,7 @@ const UserList = (props: Props) => {
     console.error(error);
     list = null;
   } else if (data !== undefined) {
-    const { users } = data;
+    const { users, me: {friends} } = data;
     const nextBtn = users.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
         Next {'>'}
@@ -101,6 +108,7 @@ const UserList = (props: Props) => {
           userData={users}
           showCurrentUser={false}
           currentUserId={userId}
+          friendsList={friends}
         />
         {prevBtn}
         {nextBtn}

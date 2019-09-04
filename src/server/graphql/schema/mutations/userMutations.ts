@@ -6,7 +6,6 @@ import {
 } from 'graphql';
 import { FriendStatus } from '../../graphQLTypes';
 import { PeakList } from '../queryTypes/peakListType';
-// import { removeConnections } from '../../Utils';
 import UserType, { User } from '../queryTypes/userType';
 
 interface CompletedMountainMutationArgs {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { User } from '../../types/graphQLTypes';
+import { FriendStatus, User } from '../../types/graphQLTypes';
 import UserCard from './UserCard';
 
 export interface UserDatum {
@@ -8,25 +8,46 @@ export interface UserDatum {
   profilePictureUrl: User['profilePictureUrl'];
 }
 
+export interface FriendDatum {
+  user: {
+    id: User['id'],
+  };
+  status: FriendStatus;
+}
+
 interface Props {
   userData: UserDatum[];
   currentUserId: string;
+  friendsList: FriendDatum[];
   showCurrentUser: boolean;
 }
 
-const ListPeakLists = (props: Props) => {
-  const { userData, currentUserId, showCurrentUser } = props;
+const ListUsers = (props: Props) => {
+  const { userData, currentUserId, showCurrentUser, friendsList } = props;
 
   if (userData.length === 0) {
     return <>No users found</>;
   }
-  const peakLists = userData.map(user => {
+  const users = userData.map(user => {
     if (showCurrentUser === false && currentUserId === user.id) {
       return null;
     } else {
+      let friendStatus: FriendStatus | null;
+      if (friendsList !== null && friendsList.length !== 0) {
+        const friendData = friendsList.find(
+          (friend) => friend.user.id === user.id);
+        if (friendData !== undefined) {
+          friendStatus = friendData.status;
+        } else {
+          friendStatus = null;
+        }
+      } else {
+        friendStatus = null;
+      }
       return (
         <UserCard
           user={user}
+          friendStatus={friendStatus}
           key={user.id}
         />
       );
@@ -34,9 +55,9 @@ const ListPeakLists = (props: Props) => {
   });
   return (
     <>
-      {peakLists}
+      {users}
     </>
   );
 };
 
-export default ListPeakLists;
+export default ListUsers;

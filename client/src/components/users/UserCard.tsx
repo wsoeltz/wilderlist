@@ -2,8 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
+  ButtonPrimary,
+  ButtonSecondary,
   Card,
 } from '../../styling/styleUtils';
+import { FriendStatus } from '../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../Utils';
 import { UserDatum } from './ListUsers';
 
 const LinkWrapper = styled(Link)`
@@ -40,10 +44,57 @@ const ProfilePicture = styled.img`
 
 interface Props {
   user: UserDatum;
+  friendStatus: FriendStatus | null;
 }
 
 const UserCard = (props: Props) => {
-  const { user } = props;
+  const { user, friendStatus } = props;
+  let actionButtons: React.ReactElement<any> | null;
+
+  const preventNavigation = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+  };
+
+  if (friendStatus === null) {
+    const onClick = (e: React.SyntheticEvent) => {
+      preventNavigation(e);
+    };
+    actionButtons = (
+      <ButtonPrimary onClick={onClick}>Add Friend</ButtonPrimary>
+    );
+  } else if (friendStatus === FriendStatus.friends) {
+    const onClick = (e: React.SyntheticEvent) => {
+      preventNavigation(e);
+    };
+    actionButtons = (
+      <ButtonSecondary onClick={onClick}>Remove Friend</ButtonSecondary>
+    );
+  } else if (friendStatus === FriendStatus.sent) {
+    const onClick = (e: React.SyntheticEvent) => {
+      preventNavigation(e);
+    };
+    actionButtons = (
+      <p>
+        Pending friend request
+        <ButtonSecondary onClick={onClick}>Cancel Request</ButtonSecondary>
+      </p>
+    );
+  } else if (friendStatus === FriendStatus.recieved) {
+    const onClick = (e: React.SyntheticEvent) => {
+      preventNavigation(e);
+    };
+    actionButtons = (
+      <p>
+        <ButtonSecondary onClick={onClick}>Decline Friend Request</ButtonSecondary>
+        <ButtonPrimary onClick={onClick}>Accept Friend Request</ButtonPrimary>
+      </p>
+    );
+  } else {
+    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
+    actionButtons = null;
+  }
   return (
     <LinkWrapper to={'/'}>
       <Root>
@@ -52,6 +103,7 @@ const UserCard = (props: Props) => {
           <Title>
             {user.name}
           </Title>
+          {actionButtons}
         </TextContainer>
       </Root>
     </LinkWrapper>
