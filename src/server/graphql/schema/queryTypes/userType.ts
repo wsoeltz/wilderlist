@@ -19,8 +19,11 @@ const UserSchema = new Schema({
   profilePictureUrl: { type: String },
   permissions: { type: String },
   friends: [{
-    type: Schema.Types.ObjectId,
-    ref: 'user',
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    status: { type: String },
   }],
   peakLists: [{
     type: Schema.Types.ObjectId,
@@ -39,15 +42,6 @@ export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
 
 export const User: UserModelType = mongoose.model<UserModelType, any>('user', UserSchema);
 
-// const DayMonthYearType = new GraphQLObjectType({
-//   name: 'DayMonthYearType',
-//   fields: () => ({
-//     day: { type: GraphQLInt},
-//     month: { type: GraphQLInt},
-//     year: { type: GraphQLInt},
-//   }),
-// });
-
 const CompletedMountainsType = new GraphQLObjectType({
   name: 'CompletedMountainsType',
   fields: () => ({
@@ -63,6 +57,21 @@ const CompletedMountainsType = new GraphQLObjectType({
   }),
 });
 
+const FriendsType = new GraphQLObjectType({
+  name: 'FriendsType',
+  fields: () => ({
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        return await userLoader.load(parentValue.user);
+      },
+    },
+    status: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
   fields: () => ({
@@ -72,12 +81,7 @@ const UserType: any = new GraphQLObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     profilePictureUrl: { type: GraphQLString },
-    friends: {
-      type: new GraphQLList(UserType),
-      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
-        return await userLoader.loadMany(parentValue.friends);
-      },
-    },
+    friends: { type: new GraphQLList(FriendsType) },
     peakLists: {
       type: new GraphQLList(PeakListType),
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {

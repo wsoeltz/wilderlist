@@ -4,6 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { FriendStatus } from '../../graphQLTypes';
 import { PeakList } from '../queryTypes/peakListType';
 // import { removeConnections } from '../../Utils';
 import UserType, { User } from '../queryTypes/userType';
@@ -147,14 +148,101 @@ const userMutations: any = {
       return await User.findOne({_id: userId});
     },
   },
-  // sendFriendRequest
+  sendFriendRequest: {
   //   create new 'friend' document in both users with respective ids
   //   assign status of 'sent' and 'recieved' to respective users
-  // acceptFriendRequest
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      friendId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string} ) {
+      try {
+        const user = await User.findById(userId);
+        const friend = await User.findById(friendId);
+        if (user !== null && friend !== null) {
+          await User.findOneAndUpdate({
+            '_id': userId,
+            'friends.user': { $ne: friendId },
+          }, {
+            $addToSet: { friends: {
+              user: friendId,
+              status: FriendStatus.sent,
+            } },
+          });
+          await User.findOneAndUpdate({
+            '_id': friendId,
+            'friends.user': { $ne: userId },
+          }, {
+            $addToSet: { friends: {
+              user: userId,
+              status: FriendStatus.recieved,
+            } },
+          });
+          return User.findById(userId);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  acceptFriendRequest: {
   //   change status on both users 'friend' document to 'friends'
-  // removeFriend
-  //   remove 'friend' document from both users
-  //   will also be used for declining a friend request
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      friendId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string} ) {
+      try {
+        const user = await User.findById(userId);
+        const friend = await User.findById(friendId);
+        if (user !== null && friend !== null) {
+          await User.findOneAndUpdate({
+            '_id': userId,
+            'friends.user': friendId,
+          },
+           {
+            $set: { 'friends.$.status': FriendStatus.friends },
+          });
+          await User.findOneAndUpdate({
+            '_id': friendId,
+            'friends.user': userId,
+          }, {
+            $set: { 'friends.$.status': FriendStatus.friends },
+          });
+          return User.findById(userId);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeFriend: {
+    //   remove 'friend' document from both users
+    //   will also be used for declining a friend request
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      friendId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string}) {
+      await User.findOneAndUpdate({
+        '_id': userId,
+        'friends.user': friendId,
+      }, {
+        $pull: { friends: { user: friendId } },
+      });
+      await User.findOneAndUpdate({
+        '_id': friendId,
+        'friends.user': userId,
+      }, {
+        $pull: { friends: { user: userId } },
+      });
+      return await User.findOne({_id: userId});
+    },
+
+  },
 };
 
 export default userMutations;
