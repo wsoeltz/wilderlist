@@ -1,23 +1,23 @@
 import { useMutation } from '@apollo/react-hooks';
 import React from 'react';
 import styled from 'styled-components';
+import { preventNavigation } from '../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
   ButtonSecondary,
   Label,
 } from '../../styling/styleUtils';
-import { UserDatum } from './index';
 import { FriendStatus } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import {
-  SEND_FRIEND_REQUEST,
   ACCEPT_FRIEND_REQUEST,
-  REMOVE_FRIEND,
-  FriendRequestVariables,
   FriendRequestSuccessResponse,
+  FriendRequestVariables,
+  REMOVE_FRIEND,
+  SEND_FRIEND_REQUEST,
 } from '../users/UserCard';
-import { preventNavigation } from '../../routing/Utils';
+import { UserDatum } from './index';
 
 const Root = styled.div`
   display: grid;
@@ -139,7 +139,7 @@ const Header = (props: Props) => {
       </ProfilePictureContainer>
       <BeginRemoveListButtonContainer>
         {actionButtons}
-        <ButtonPrimary>Compare All Summits</ButtonPrimary>
+        <ButtonPrimary>Compare All Ascents</ButtonPrimary>
       </BeginRemoveListButtonContainer>
     </Root>
   );

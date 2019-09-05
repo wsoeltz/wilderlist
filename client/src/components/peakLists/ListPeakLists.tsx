@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mountain, PeakList, Region, State } from '../../types/graphQLTypes';
+import { CompletedMountain, Mountain, PeakList, Region, State } from '../../types/graphQLTypes';
 import PeakListCard from './PeakListCard';
 
 interface MountainDatum {
@@ -32,12 +32,16 @@ export interface PeakListDatum {
 interface Props {
   peakListData: PeakListDatum[];
   userListData: Array<PeakList['id']>;
-  beginList: (peakListId: string) => void;
+  listAction: (peakListId: string) => void;
+  actionText: string;
+  completedAscents: CompletedMountain[];
+  isCurrentUser: boolean;
 }
 
 const ListPeakLists = (props: Props) => {
   const {
-    peakListData, userListData, beginList,
+    peakListData, userListData, listAction, actionText,
+    completedAscents, isCurrentUser,
   } = props;
 
   if (peakListData.length === 0) {
@@ -49,7 +53,10 @@ const ListPeakLists = (props: Props) => {
       <PeakListCard
         peakList={peakList}
         active={active}
-        beginList={beginList}
+        listAction={listAction}
+        actionText={actionText}
+        completedAscents={completedAscents}
+        isCurrentUser={isCurrentUser}
         key={peakList.id}
       />
     );

@@ -154,6 +154,7 @@ const PeakListDetailPage = (props: Props) => {
     } else {
       mountains = [];
     }
+    const completedAscents = user.mountains !== null ? user.mountains : [];
     return (
       <>
         <ContentLeftLarge>
@@ -162,6 +163,7 @@ const PeakListDetailPage = (props: Props) => {
               user={user}
               mountains={mountains}
               peakList={peakList}
+              completedAscents={completedAscents}
             />
             <MountainTable
               user={user}

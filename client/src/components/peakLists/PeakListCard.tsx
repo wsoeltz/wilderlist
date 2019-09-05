@@ -7,9 +7,17 @@ import {
   ButtonPrimary,
   Card,
 } from '../../styling/styleUtils';
-import { Mountain, Region, State } from '../../types/graphQLTypes';
+import {
+  CompletedMountain,
+  Mountain,
+  PeakListVariants,
+  Region,
+  State,
+} from '../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import MountainLogo from './mountainLogo';
+import { completedPeaks } from './Utils';
 
 const LinkWrapper = styled(Link)`
   display: block;
@@ -34,7 +42,7 @@ const Title = styled.h1`
   grid-row: 1;
 `;
 
-const BeginListButtonContainer = styled.div`
+const ActionButtonContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
   text-align: right;
@@ -131,12 +139,17 @@ export const getStatesOrRegion = (mountains: MountainList[]) => {
 interface Props {
   peakList: PeakListDatum;
   active: boolean;
-  beginList: (peakListId: string) => void;
+  listAction: (peakListId: string) => void;
+  actionText: string;
+  completedAscents: CompletedMountain[];
+  isCurrentUser: boolean;
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, parent, type}, peakList, active, beginList,
+    peakList: {id, name, shortName, parent, type}, peakList,
+    active, listAction, actionText, completedAscents,
+    isCurrentUser,
   } = props;
   let mountains: MountainList[];
   if (parent !== null && parent.mountains !== null) {
@@ -146,16 +159,32 @@ const PeakListCard = (props: Props) => {
   } else {
     mountains = [];
   }
-  const beginButtonOnClick = (e: React.SyntheticEvent) => {
+  const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
-    beginList(id);
+    listAction(id);
   };
-  const beginButton = active === false ? (
-    <BeginListButtonContainer>
-      <ButtonPrimary onClick={beginButtonOnClick}>
-        Begin List
+  const actionButton = active === false || isCurrentUser === false ? (
+    <ActionButtonContainer>
+      <ButtonPrimary onClick={actionButtonOnClick}>
+        {actionText}
       </ButtonPrimary>
-    </BeginListButtonContainer> ) : null;
+    </ActionButtonContainer> ) : null;
+
+  const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
+  let totalRequiredAscents: number;
+  if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+    totalRequiredAscents = mountains.length;
+  } else if (type === PeakListVariants.fourSeason) {
+    totalRequiredAscents = mountains.length * 4;
+  } else if (type === PeakListVariants.grid) {
+    totalRequiredAscents = mountains.length * 12;
+  } else {
+    failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+    totalRequiredAscents = 0;
+  }
+  const peakCount = active === false
+    ? `${totalRequiredAscents} Total Ascents`
+    : `${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`;
   return (
     <LinkWrapper to={listDetailLink(id)}>
       <Root>
@@ -164,7 +193,7 @@ const PeakListCard = (props: Props) => {
         </Title>
         <ListInfo>
           <span>
-            {mountains.length} Peaks
+            {peakCount}
           </span>
           <span>
             {getStatesOrRegion(mountains)}
@@ -178,7 +207,7 @@ const PeakListCard = (props: Props) => {
             variant={type}
           />
         </LogoContainer>
-        {beginButton}
+        {actionButton}
       </Root>
     </LinkWrapper>
   );

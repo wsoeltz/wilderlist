@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { userProfileLink, preventNavigation } from '../../routing/Utils';
+import { preventNavigation, userProfileLink } from '../../routing/Utils';
 import {
   ButtonPrimary,
   ButtonSecondary,

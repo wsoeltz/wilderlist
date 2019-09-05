@@ -6,6 +6,8 @@ import {
   ButtonPrimary,
   ButtonSecondary,
 } from '../../styling/styleUtils';
+import { CompletedMountain, PeakListVariants } from '../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive} from '../../Utils';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
@@ -13,6 +15,7 @@ import {
 } from '../peakLists';
 import MountainLogo from '../peakLists/mountainLogo';
 import { getStatesOrRegion } from '../peakLists/PeakListCard';
+import { completedPeaks } from '../peakLists/Utils';
 import {
   MountainDatum,
   PeakListDatum,
@@ -69,11 +72,13 @@ interface Props {
   mountains: MountainDatum[];
   peakList: PeakListDatum;
   user: UserDatum;
+  completedAscents: CompletedMountain[];
 }
 
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type }, peakList,
+    completedAscents,
   } = props;
 
   const [addPeakListToUser] =
@@ -91,7 +96,24 @@ const Header = (props: Props) => {
     <ButtonSecondary onClick={() => removePeakListFromUser({variables: {userId: user.id,  peakListId: id}})}>
       Remove List
     </ButtonSecondary>
- ) ;
+   ) ;
+
+  const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
+  let totalRequiredAscents: number;
+  if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+    totalRequiredAscents = mountains.length;
+  } else if (type === PeakListVariants.fourSeason) {
+    totalRequiredAscents = mountains.length * 4;
+  } else if (type === PeakListVariants.grid) {
+    totalRequiredAscents = mountains.length * 12;
+  } else {
+    failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+    totalRequiredAscents = 0;
+  }
+
+  const peakCount = active === false
+  ? `${totalRequiredAscents} Total Ascents`
+  : `${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`;
 
   return (
     <Root>
@@ -101,7 +123,7 @@ const Header = (props: Props) => {
           {getStatesOrRegion(mountains)}
         </ListInfo>
         <ListInfo>
-          {mountains.length} Total Summits
+          {peakCount}
         </ListInfo>
       </TitleContent>
       <LogoContainer>

@@ -1,6 +1,8 @@
 import { sortBy } from 'lodash';
-import { CompletedMountain } from '../../types/graphQLTypes';
+import { CompletedMountain, PeakListVariants} from '../../types/graphQLTypes';
 import { getSeason, Months, Seasons } from '../../Utils';
+import { failIfValidOrNonExhaustive } from '../../Utils';
+import { MountainList } from './PeakListCard';
 
 export interface DateObject {
   dateAsNumber: number;
@@ -125,4 +127,113 @@ export const formatDate = (date: DateObject) => {
     return month + '/' + year;
   }
   return month + '/' + day + '/' + year;
+};
+
+export const completedPeaks = (
+  mountains: MountainList[],
+  completedAscents: CompletedMountain[],
+  variant: PeakListVariants,
+) => {
+  if (variant === PeakListVariants.standard) {
+    const ascents = mountains.filter(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getStandardCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          return true;
+        }
+      }
+      return false;
+    });
+    return ascents.length;
+  } else if (variant === PeakListVariants.winter) {
+    const ascents = mountains.filter(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getWinterCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          return true;
+        }
+      }
+      return false;
+    });
+    return ascents.length;
+  } else if (variant === PeakListVariants.fourSeason) {
+    let numAscents: number = 0;
+    mountains.forEach(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getFourSeasonCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          if (dateCompleted[Seasons.fall] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Seasons.summer] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Seasons.spring] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Seasons.winter] !== undefined) {
+            numAscents += 1;
+          }
+        }
+      }
+    });
+    return numAscents;
+  } else if (variant === PeakListVariants.grid) {
+
+    let numAscents: number = 0;
+    mountains.forEach(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getGridCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          if (dateCompleted[Months.january] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.february] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.march] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.april] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.may] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.june] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.july] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.august] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.september] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.october] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.november] !== undefined) {
+            numAscents += 1;
+          }
+          if (dateCompleted[Months.december] !== undefined) {
+            numAscents += 1;
+          }
+        }
+      }
+    });
+    return numAscents;
+  } else {
+    failIfValidOrNonExhaustive(variant, 'Invalid list type ' + variant);
+  }
 };

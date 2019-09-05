@@ -1,12 +1,14 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import noop from 'lodash/noop';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
   ContentLeftLarge,
 } from '../../styling/Grid';
-import { User, FriendStatus } from '../../types/graphQLTypes';
+import { FriendStatus, User } from '../../types/graphQLTypes';
+import ListPeakLists, { PeakListDatum } from '../peakLists/ListPeakLists';
 import Header from './Header';
 
 const GET_USER = gql`
@@ -22,6 +24,45 @@ const GET_USER = gql`
         }
         dates
       }
+
+      peakLists {
+        id
+        name
+        shortName
+        type
+        mountains {
+          id
+          state {
+            id
+            name
+            regions {
+              id
+              name
+              states {
+                id
+              }
+            }
+          }
+        }
+        parent {
+          id
+          mountains {
+            id
+            state {
+              id
+              name
+              regions {
+                id
+                name
+                states {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+
     }
     me: user(id: $userId) {
       id
@@ -41,18 +82,19 @@ export interface UserDatum {
   email: User['email'];
   profilePictureUrl: User['profilePictureUrl'];
   mountains: User['mountains'];
+  peakLists: PeakListDatum[];
 }
 
 interface QuerySuccessResponse {
   user: UserDatum;
   me: {
-    friends: {
+    friends: Array<{
       user: {
         id: User['id'];
       }
       status: FriendStatus;
-    }[]
-  }
+    }>,
+  };
 }
 
 interface QueryVariables {
@@ -68,6 +110,8 @@ const UserProfile = (props: Props) => {
   const { match, userId } = props;
   const { id }: any = match.params;
 
+  const isCurrentUser = userId === id;
+
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
     variables: { profileId: id, userId },
   });
@@ -78,7 +122,14 @@ const UserProfile = (props: Props) => {
     console.error(error);
     return null;
   } else if (data !== undefined) {
-    const { user, me } = data;
+    const {
+      user: { peakLists },
+      user,
+      me,
+    } = data;
+
+    const userListData = peakLists.map(peak => peak.id);
+    const completedAscents = user.mountains !== null ? user.mountains : [];
     const friendsList = me.friends;
     let friendStatus: FriendStatus | null;
     if (friendsList !== null && friendsList.length !== 0) {
@@ -100,6 +151,14 @@ const UserProfile = (props: Props) => {
               user={user}
               currentUserId={userId}
               friendStatus={friendStatus}
+            />
+            <ListPeakLists
+              peakListData={peakLists}
+              userListData={userListData}
+              listAction={noop}
+              actionText={'Compare Ascents'}
+              completedAscents={completedAscents}
+              isCurrentUser={isCurrentUser}
             />
           </ContentBody>
         </ContentLeftLarge>

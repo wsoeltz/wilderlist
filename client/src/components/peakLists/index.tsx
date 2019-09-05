@@ -13,8 +13,7 @@ import {
 } from '../../styling/styleUtils';
 import { PeakList, User } from '../../types/graphQLTypes';
 import StandardSearch from '../sharedComponents/StandardSearch';
-import ListPeakLists from './ListPeakLists';
-import { PeakListDatum } from './ListPeakLists';
+import ListPeakLists, { PeakListDatum } from './ListPeakLists';
 
 const Next = styled(ButtonSecondary)`
 `;
@@ -74,6 +73,12 @@ const SEARCH_PEAK_LISTS = gql`
       peakLists {
         id
       }
+      mountains {
+        mountain {
+          id
+        }
+        dates
+      }
     }
   }
 `;
@@ -85,6 +90,7 @@ interface SuccessResponse {
     peakLists: Array<{
       id: PeakList['id'];
     }>
+    mountains: User['mountains'];
   };
 }
 
@@ -151,6 +157,7 @@ const PeakListPage = ({userId}: Props) => {
   } else if (data !== undefined) {
     const { peakLists, user } = data;
     const usersLists = user.peakLists.map(({id}) => id);
+    const completedAscents = user.mountains !== null ? user.mountains : [];
     const nextBtn = peakLists.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
         Next {'>'}
@@ -164,7 +171,10 @@ const PeakListPage = ({userId}: Props) => {
         <ListPeakLists
           peakListData={peakLists}
           userListData={usersLists}
-          beginList={beginList}
+          listAction={beginList}
+          actionText={'Begin List'}
+          completedAscents={completedAscents}
+          isCurrentUser={true}
         />
         {prevBtn}
         {nextBtn}
