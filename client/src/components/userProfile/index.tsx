@@ -6,12 +6,12 @@ import {
   ContentBody,
   ContentLeftLarge,
 } from '../../styling/Grid';
-import { User } from '../../types/graphQLTypes';
+import { User, FriendStatus } from '../../types/graphQLTypes';
 import Header from './Header';
 
 const GET_USER = gql`
-  query getUser($userId: ID!) {
-    user(id: $userId) {
+  query getUser($userId: ID!, $profileId: ID!) {
+    user(id: $profileId) {
       id
       name
       email
@@ -21,6 +21,15 @@ const GET_USER = gql`
           id
         }
         dates
+      }
+    }
+    me: user(id: $userId) {
+      id
+      friends {
+        user {
+          id
+        }
+        status
       }
     }
   }
@@ -36,10 +45,19 @@ export interface UserDatum {
 
 interface QuerySuccessResponse {
   user: UserDatum;
+  me: {
+    friends: {
+      user: {
+        id: User['id'];
+      }
+      status: FriendStatus;
+    }[]
+  }
 }
 
 interface QueryVariables {
   userId: string;
+  profileId: string;
 }
 
 interface Props extends RouteComponentProps {
@@ -47,11 +65,11 @@ interface Props extends RouteComponentProps {
 }
 
 const UserProfile = (props: Props) => {
-  const { match } = props;
+  const { match, userId } = props;
   const { id }: any = match.params;
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
-    variables: { userId: id },
+    variables: { profileId: id, userId },
   });
 
   if (loading === true) {
@@ -60,13 +78,28 @@ const UserProfile = (props: Props) => {
     console.error(error);
     return null;
   } else if (data !== undefined) {
-    const { user } = data;
+    const { user, me } = data;
+    const friendsList = me.friends;
+    let friendStatus: FriendStatus | null;
+    if (friendsList !== null && friendsList.length !== 0) {
+      const friendData = friendsList.find(
+        (friend) => friend.user.id === user.id);
+      if (friendData !== undefined) {
+        friendStatus = friendData.status;
+      } else {
+        friendStatus = null;
+      }
+    } else {
+      friendStatus = null;
+    }
     return (
       <>
         <ContentLeftLarge>
           <ContentBody>
             <Header
               user={user}
+              currentUserId={userId}
+              friendStatus={friendStatus}
             />
           </ContentBody>
         </ContentLeftLarge>

@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { userProfileLink } from '../../routing/Utils';
+import { userProfileLink, preventNavigation } from '../../routing/Utils';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -13,7 +13,7 @@ import { FriendStatus, User } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import { UserDatum } from './ListUsers';
 
-const SEND_FRIEND_REQUEST = gql`
+export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
   sendFriendRequest(userId: $userId, friendId: $friendId) {
     id
@@ -33,7 +33,7 @@ const SEND_FRIEND_REQUEST = gql`
 }
 `;
 
-const ACCEPT_FRIEND_REQUEST = gql`
+export const ACCEPT_FRIEND_REQUEST = gql`
   mutation acceptFriendRequest($userId: ID!, $friendId: ID!) {
   acceptFriendRequest(userId: $userId, friendId: $friendId) {
     id
@@ -53,7 +53,7 @@ const ACCEPT_FRIEND_REQUEST = gql`
 }
 `;
 
-const REMOVE_FRIEND = gql`
+export const REMOVE_FRIEND = gql`
   mutation removeFriend($userId: ID!, $friendId: ID!) {
   removeFriend(userId: $userId, friendId: $friendId) {
     id
@@ -73,12 +73,12 @@ const REMOVE_FRIEND = gql`
 }
 `;
 
-interface FriendRequestVariables {
+export interface FriendRequestVariables {
   userId: string;
   friendId: string;
 }
 
-interface FriendRequestSuccessResponse {
+export interface FriendRequestSuccessResponse {
   id: User['id'];
   friends: Array<{
     user: {
@@ -135,12 +135,6 @@ interface Props {
 const UserCard = (props: Props) => {
   const { user, friendStatus, currentUserId } = props;
   let actionButtons: React.ReactElement<any> | null;
-
-  const preventNavigation = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-  };
 
   const [sendFriendRequestMutation] =
     useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);

@@ -2,7 +2,7 @@ import { sortBy } from 'lodash';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { listDetailLink } from '../../routing/Utils';
+import { listDetailLink, preventNavigation } from '../../routing/Utils';
 import {
   ButtonPrimary,
   Card,
@@ -147,9 +147,7 @@ const PeakListCard = (props: Props) => {
     mountains = [];
   }
   const beginButtonOnClick = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
+    preventNavigation(e);
     beginList(id);
   };
   const beginButton = active === false ? (
