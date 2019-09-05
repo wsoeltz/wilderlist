@@ -155,3 +155,10 @@ export const InputBase = styled.input`
     color: ${placeholderColor};
   }
 `;
+
+export const Label = styled.span`
+  text-transform: uppercase;
+  color: ${lightBaseColor};
+  font-size: 1rem;
+  letter-spacing: 0.01rem;
+`;

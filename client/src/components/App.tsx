@@ -23,6 +23,7 @@ import MountainDetailPage from './mountainDetail';
 import PeakListDetailPage from './peakListDetail';
 import PeakListPage from './peakLists';
 import Header from './sharedComponents/Header';
+import UserProfile from './userProfile';
 import ListUsersPage from './users';
 
 const client = new ApolloClient();
@@ -56,6 +57,9 @@ const App: React.FC = () => {
       />
       <Route exact path={Routes.Friends}
         render={(props) => <ListUsersPage {...props} userId={user._id} />}
+      />
+      <Route exact path={Routes.UserProfile}
+        render={(props) => <UserProfile {...props} userId={user._id} />}
       />
     </>
   ) : null;

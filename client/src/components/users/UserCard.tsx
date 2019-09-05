@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { userProfileLink } from '../../routing/Utils';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -82,7 +83,14 @@ interface FriendRequestSuccessResponse {
   friends: Array<{
     user: {
       id: User['id'];
+      friends: Array<{
+        user: {
+          id: User['id'];
+        }
+        status: FriendStatus;
+      }>;
     },
+    status: FriendStatus;
   }>;
 }
 
@@ -143,7 +151,8 @@ const UserCard = (props: Props) => {
 
   const sendFriendRequest = (e: React.SyntheticEvent) => {
     preventNavigation(e);
-    sendFriendRequestMutation({variables: {userId: currentUserId, friendId: user.id}});
+    sendFriendRequestMutation({
+      variables: {userId: currentUserId, friendId: user.id}});
   };
   const acceptFriendRequest = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -181,7 +190,7 @@ const UserCard = (props: Props) => {
     actionButtons = null;
   }
   return (
-    <LinkWrapper to={'/'}>
+    <LinkWrapper to={userProfileLink(user.id)}>
       <Root>
         <ProfilePicture src={user.profilePictureUrl} />
         <TextContainer>
