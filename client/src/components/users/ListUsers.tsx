@@ -48,6 +48,7 @@ const ListUsers = (props: Props) => {
         <UserCard
           user={user}
           friendStatus={friendStatus}
+          currentUserId={currentUserId}
           key={user.id}
         />
       );

@@ -1,3 +1,5 @@
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,9 +8,83 @@ import {
   ButtonSecondary,
   Card,
 } from '../../styling/styleUtils';
-import { FriendStatus } from '../../types/graphQLTypes';
+import { FriendStatus, User } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import { UserDatum } from './ListUsers';
+
+const SEND_FRIEND_REQUEST = gql`
+  mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
+  sendFriendRequest(userId: $userId, friendId: $friendId) {
+    id
+    friends {
+      status
+      user {
+        id
+        friends {
+          user {
+            id
+          }
+          status
+        }
+      }
+    }
+  }
+}
+`;
+
+const ACCEPT_FRIEND_REQUEST = gql`
+  mutation acceptFriendRequest($userId: ID!, $friendId: ID!) {
+  acceptFriendRequest(userId: $userId, friendId: $friendId) {
+    id
+    friends {
+      status
+      user {
+        id
+        friends {
+          user {
+            id
+          }
+          status
+        }
+      }
+    }
+  }
+}
+`;
+
+const REMOVE_FRIEND = gql`
+  mutation removeFriend($userId: ID!, $friendId: ID!) {
+  removeFriend(userId: $userId, friendId: $friendId) {
+    id
+    friends {
+      status
+      user {
+        id
+        friends {
+          user {
+            id
+          }
+          status
+        }
+      }
+    }
+  }
+}
+`;
+
+interface FriendRequestVariables {
+  userId: string;
+  friendId: string;
+}
+
+interface FriendRequestSuccessResponse {
+  id: User['id'];
+  friends: Array<{
+    user: {
+      id: User['id'];
+    },
+  }>;
+}
 
 const LinkWrapper = styled(Link)`
   display: block;
@@ -45,10 +121,11 @@ const ProfilePicture = styled.img`
 interface Props {
   user: UserDatum;
   friendStatus: FriendStatus | null;
+  currentUserId: string;
 }
 
 const UserCard = (props: Props) => {
-  const { user, friendStatus } = props;
+  const { user, friendStatus, currentUserId } = props;
   let actionButtons: React.ReactElement<any> | null;
 
   const preventNavigation = (e: React.SyntheticEvent) => {
@@ -57,38 +134,46 @@ const UserCard = (props: Props) => {
     e.nativeEvent.stopImmediatePropagation();
   };
 
+  const [sendFriendRequestMutation] =
+    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
+  const [acceptFriendRequestMutation] =
+    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(ACCEPT_FRIEND_REQUEST);
+  const [removeFriendMutation] =
+    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
+
+  const sendFriendRequest = (e: React.SyntheticEvent) => {
+    preventNavigation(e);
+    sendFriendRequestMutation({variables: {userId: currentUserId, friendId: user.id}});
+  };
+  const acceptFriendRequest = (e: React.SyntheticEvent) => {
+    preventNavigation(e);
+    acceptFriendRequestMutation({variables: {userId: currentUserId, friendId: user.id}});
+  };
+  const removeFriend = (e: React.SyntheticEvent) => {
+    preventNavigation(e);
+    removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
+  };
+
   if (friendStatus === null) {
-    const onClick = (e: React.SyntheticEvent) => {
-      preventNavigation(e);
-    };
     actionButtons = (
-      <ButtonPrimary onClick={onClick}>Add Friend</ButtonPrimary>
+      <ButtonPrimary onClick={sendFriendRequest}>Add Friend</ButtonPrimary>
     );
   } else if (friendStatus === FriendStatus.friends) {
-    const onClick = (e: React.SyntheticEvent) => {
-      preventNavigation(e);
-    };
     actionButtons = (
-      <ButtonSecondary onClick={onClick}>Remove Friend</ButtonSecondary>
+      <ButtonSecondary onClick={removeFriend}>Remove Friend</ButtonSecondary>
     );
   } else if (friendStatus === FriendStatus.sent) {
-    const onClick = (e: React.SyntheticEvent) => {
-      preventNavigation(e);
-    };
     actionButtons = (
       <p>
         Pending friend request
-        <ButtonSecondary onClick={onClick}>Cancel Request</ButtonSecondary>
+        <ButtonSecondary onClick={removeFriend}>Cancel Request</ButtonSecondary>
       </p>
     );
   } else if (friendStatus === FriendStatus.recieved) {
-    const onClick = (e: React.SyntheticEvent) => {
-      preventNavigation(e);
-    };
     actionButtons = (
       <p>
-        <ButtonSecondary onClick={onClick}>Decline Friend Request</ButtonSecondary>
-        <ButtonPrimary onClick={onClick}>Accept Friend Request</ButtonPrimary>
+        <ButtonSecondary onClick={removeFriend}>Decline Friend Request</ButtonSecondary>
+        <ButtonPrimary onClick={acceptFriendRequest}>Accept Friend Request</ButtonPrimary>
       </p>
     );
   } else {
