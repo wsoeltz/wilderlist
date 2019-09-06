@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import noop from 'lodash/noop';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { comparePeakListLink } from '../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -107,7 +107,7 @@ interface Props extends RouteComponentProps {
 }
 
 const UserProfile = (props: Props) => {
-  const { match, userId } = props;
+  const { match, history, userId } = props;
   const { id }: any = match.params;
 
   const isCurrentUser = userId === id;
@@ -143,6 +143,11 @@ const UserProfile = (props: Props) => {
     } else {
       friendStatus = null;
     }
+
+    const compareAscents = (peakListId: string) => {
+      history.push(comparePeakListLink(user.id, peakListId));
+    };
+
     return (
       <>
         <ContentLeftLarge>
@@ -155,7 +160,7 @@ const UserProfile = (props: Props) => {
             <ListPeakLists
               peakListData={peakLists}
               userListData={userListData}
-              listAction={noop}
+              listAction={compareAscents}
               actionText={'Compare Ascents'}
               completedAscents={completedAscents}
               isCurrentUser={isCurrentUser}

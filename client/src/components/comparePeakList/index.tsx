@@ -7,12 +7,16 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../styling/Grid';
-import { Mountain, PeakList, Region, State, User } from '../../types/graphQLTypes';
-import Header from './Header';
-import MountainTable from './MountainTable';
+import {
+  MountainDatum,
+  PeakListDatum,
+  UserDatum,
+} from '../peakListDetail';
+import Header from '../peakListDetail/Header';
+import ComparisonTable from './ComparisonTable';
 
 const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID!) {
+  query getPeakList($id: ID!, $userId: ID!, $friendId: ID!) {
     peakList(id: $id) {
       id
       name
@@ -60,7 +64,20 @@ const GET_PEAK_LIST = gql`
         }
       }
     }
-    user(id: $userId) {
+    user(id: $friendId) {
+      id
+      name
+      peakLists {
+        id
+      }
+      mountains {
+        mountain {
+          id
+        }
+        dates
+      }
+    }
+    me: user(id: $userId) {
       id
       name
       peakLists {
@@ -76,55 +93,16 @@ const GET_PEAK_LIST = gql`
   }
 `;
 
-export interface MountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-  latitude: Mountain['latitude'];
-  longitude: Mountain['longitude'];
-  elevation: Mountain['elevation'];
-  prominence: Mountain['prominence'];
-  state: {
-    id: State['id'];
-    name: State['name'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-      states: Array<{
-        id: State['id'],
-      }>
-    }>
-  };
-}
-
-export interface PeakListDatum {
-  id: PeakList['id'];
-  name: PeakList['name'];
-  shortName: PeakList['shortName'];
-  type: PeakList['type'];
-  mountains: MountainDatum[] | null;
-  parent: {
-    id: PeakList['id'];
-    mountains: MountainDatum[] | null;
-  } | null;
-}
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  peakLists: Array<{
-    id: PeakList['id'];
-  }>;
-  mountains: User['mountains'];
-}
-
 interface SuccessResponse {
   peakList: PeakListDatum;
   user: UserDatum;
+  me: UserDatum;
 }
 
 interface Variables {
   id: string;
   userId: string;
+  friendId: string;
 }
 
 interface Props extends RouteComponentProps {
@@ -133,10 +111,10 @@ interface Props extends RouteComponentProps {
 
 const PeakListDetailPage = (props: Props) => {
   const { userId, match } = props;
-  const { id }: any = match.params;
+  const { friendId, peakListId }: any = match.params;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
-    variables: { id, userId },
+    variables: { id: peakListId, userId, friendId },
   });
   if (loading === true) {
     return null;
@@ -146,7 +124,7 @@ const PeakListDetailPage = (props: Props) => {
   } else if (data !== undefined) {
     const {
       peakList: {parent, type},
-      peakList, user,
+      peakList, user, me,
     } = data;
     let mountains: MountainDatum[];
     if (parent !== null && parent.mountains !== null) {
@@ -156,19 +134,23 @@ const PeakListDetailPage = (props: Props) => {
     } else {
       mountains = [];
     }
-    const completedAscents = user.mountains !== null ? user.mountains : [];
+    const userCompletedAscents = user.mountains !== null ? user.mountains : [];
+    const myCompletedAscents = me.mountains !== null ? me.mountains : [];
     return (
       <>
         <ContentLeftLarge>
           <ContentBody>
             <Header
-              user={user}
+              user={me}
               mountains={mountains}
               peakList={peakList}
-              completedAscents={completedAscents}
+              completedAscents={myCompletedAscents}
+              comparisonUser={user}
+              comparisonAscents={userCompletedAscents}
             />
-            <MountainTable
+            <ComparisonTable
               user={user}
+              me={me}
               mountains={mountains}
               type={type}
             />

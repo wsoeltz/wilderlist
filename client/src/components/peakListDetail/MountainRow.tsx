@@ -53,14 +53,14 @@ export const monthColumns = {
   [Months.december]: 13,
 };
 
-const TableCellBase = styled.div`
+export const TableCellBase = styled.div`
   font-weight: ${semiBoldFontBoldWeight};
   padding: 0.8rem ${horizontalPadding}rem;
   display: flex;
   align-items: center;
 `;
 
-const NameCell = styled(TableCellBase)`
+export const NameCell = styled(TableCellBase)`
   grid-column: ${nameColumn};
   font-size: 1.2rem;
 `;
@@ -71,7 +71,7 @@ const TableCell = styled(TableCellBase)`
   color: ${lightBaseColor};
 `;
 
-const MountainName = styled(Link)`
+export const MountainName = styled(Link)`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 

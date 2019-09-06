@@ -73,6 +73,8 @@ interface Props {
   peakList: PeakListDatum;
   user: UserDatum;
   completedAscents: CompletedMountain[];
+  comparisonUser?: UserDatum;
+  comparisonAscents?: CompletedMountain[];
 }
 
 const Header = (props: Props) => {
@@ -110,10 +112,20 @@ const Header = (props: Props) => {
     failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
     totalRequiredAscents = 0;
   }
-
-  const peakCount = active === false
-  ? `${totalRequiredAscents} Total Ascents`
-  : `${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`;
+  let peakCount: React.ReactElement<any>;
+  if (props.comparisonAscents === undefined || props.comparisonUser === undefined) {
+    peakCount = active === false
+    ? <>{`${totalRequiredAscents} Total Ascents`}</>
+    : <>{`${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`}</>;
+  } else {
+    const numComparisonAscents = completedPeaks(mountains, props.comparisonAscents, type);
+    peakCount = (
+      <>
+        <div>{`${user.name}: ${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`}</div>
+        <div>{`${props.comparisonUser.name}: ${numComparisonAscents}/${totalRequiredAscents} Completed Ascents`}</div>
+      </>
+    );
+  }
 
   return (
     <Root>

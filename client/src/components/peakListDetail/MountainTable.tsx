@@ -24,7 +24,7 @@ import {
   seasonColumns,
 } from './MountainRow';
 
-const Root = styled.div`
+export const Root = styled.div`
   display: grid;
 `;
 
@@ -37,12 +37,12 @@ const TitleBase = styled.div`
   border-bottom: solid 2px ${lightBorderColor};
 `;
 
-const MountainColumnTitleName = styled(TitleBase)`
+export const MountainColumnTitleName = styled(TitleBase)`
   grid-column: ${nameColumn};
   font-size: 1.3rem;
 `;
 
-const TitleCell = styled(TitleBase)`
+export const TitleCell = styled(TitleBase)`
   justify-content: center;
 `;
 

@@ -19,6 +19,7 @@ import AdminPeakLists from './adminPanel/AdminPeakLists';
 import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
+import ComparePeakListPage from './comparePeakList';
 import MountainDetailPage from './mountainDetail';
 import PeakListDetailPage from './peakListDetail';
 import PeakListPage from './peakLists';
@@ -60,6 +61,9 @@ const App: React.FC = () => {
       />
       <Route exact path={Routes.UserProfile}
         render={(props) => <UserProfile {...props} userId={user._id} />}
+      />
+      <Route exact path={Routes.ComparePeakList}
+        render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
       />
     </>
   ) : null;

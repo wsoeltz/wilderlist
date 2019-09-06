@@ -6,6 +6,7 @@ export enum Routes {
   MountainDetail = '/mountain/:id',
   Friends = '/users',
   UserProfile = '/user/:id',
+  ComparePeakList = '/user/:friendId/list/:peakListId',
   Admin = '/admin',
   AdminRegions = '/admin/regions',
   AdminStates = '/admin/states',
