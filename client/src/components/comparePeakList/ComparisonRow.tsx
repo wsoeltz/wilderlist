@@ -6,10 +6,7 @@ import {
   lightBorderColor,
   successColor,
 } from '../../styling/styleUtils';
-import { PeakListVariants } from '../../types/graphQLTypes';
-import {
-  MountainDatum,
-} from '../peakListDetail';
+import { Mountain } from '../../types/graphQLTypes';
 import {
   MountainName,
   NameCell,
@@ -20,6 +17,11 @@ import {
   getGoalText,
 } from './Utils';
 
+export interface MountainDatumLite {
+  id: Mountain['id'];
+  name: Mountain['name'];
+}
+
 const TableCell = styled(TableCellBase)`
   justify-content: center;
 `;
@@ -27,8 +29,7 @@ const TableCell = styled(TableCellBase)`
 interface Props {
   userMountains: AscentGoals[];
   myMountains: AscentGoals[];
-  mountain: MountainDatum;
-  type: PeakListVariants;
+  mountain: MountainDatumLite;
   index: number;
 }
 

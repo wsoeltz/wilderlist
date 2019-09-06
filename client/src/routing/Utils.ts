@@ -6,6 +6,7 @@ export const userProfileLink = ((id: string) => Routes.UserProfile.replace(':id'
 export const comparePeakListLink = ((friendId: string, peakListId: string) => {
   return Routes.ComparePeakList.replace(':friendId', friendId).replace(':peakListId', peakListId);
 });
+export const compareAllPeaksListLink = ((id: string) => Routes.CompareAllPeaks.replace(':id', id));
 
 export const preventNavigation = (e: React.SyntheticEvent) => {
   e.preventDefault();

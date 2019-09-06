@@ -7,6 +7,7 @@ export enum Routes {
   Friends = '/users',
   UserProfile = '/user/:id',
   ComparePeakList = '/user/:friendId/list/:peakListId',
+  CompareAllPeaks = '/user/:id/compare-all-peaks',
   Admin = '/admin',
   AdminRegions = '/admin/regions',
   AdminStates = '/admin/states',

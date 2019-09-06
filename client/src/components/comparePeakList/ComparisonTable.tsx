@@ -1,14 +1,10 @@
 import React from 'react';
-import { PeakListVariants } from '../../types/graphQLTypes';
-import {
-  MountainDatum,
-} from '../peakListDetail';
 import {
   MountainColumnTitleName,
   Root,
   TitleCell,
 } from '../peakListDetail/MountainTable';
-import ComparisonRow from './ComparisonRow';
+import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
 import { UserDatum } from './index';
 import { getAscentGoals } from './Utils';
 
@@ -20,12 +16,11 @@ const gridColumns = {
 interface Props {
   user: UserDatum;
   me: UserDatum;
-  mountains: MountainDatum[];
-  type: PeakListVariants;
+  mountains: MountainDatumLite[];
 }
 
 const ComparisonTable = (props: Props) => {
-  const { user, me, mountains, type } = props;
+  const { user, me, mountains } = props;
 
   const userMountains = user.mountains !== null ? user.mountains : [];
   const myMountains = me.mountains !== null ? me.mountains : [];
@@ -39,7 +34,6 @@ const ComparisonTable = (props: Props) => {
       userMountains={userAscentGoals}
       myMountains={myAscentGoals}
       mountain={mountain}
-      type={type}
       index={index}
     />
   ));

@@ -1,10 +1,11 @@
 import { useMutation } from '@apollo/react-hooks';
 import React from 'react';
 import styled from 'styled-components';
-import { preventNavigation } from '../../routing/Utils';
+import { compareAllPeaksListLink, preventNavigation } from '../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
+  ButtonPrimaryLink,
   ButtonSecondary,
   Label,
 } from '../../styling/styleUtils';
@@ -139,7 +140,7 @@ const Header = (props: Props) => {
       </ProfilePictureContainer>
       <BeginRemoveListButtonContainer>
         {actionButtons}
-        <ButtonPrimary>Compare All Ascents</ButtonPrimary>
+        <ButtonPrimaryLink to={compareAllPeaksListLink(user.id)}>Compare All Ascents</ButtonPrimaryLink>
       </BeginRemoveListButtonContainer>
     </Root>
   );

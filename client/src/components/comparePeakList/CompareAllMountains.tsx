@@ -8,61 +8,11 @@ import {
   ContentRightSmall,
 } from '../../styling/Grid';
 import { Mountain, PeakList, User } from '../../types/graphQLTypes';
-import {
-  MountainDatum,
-  PeakListDatum,
-} from '../peakListDetail';
-import Header from '../peakListDetail/Header';
+import { MountainDatumLite } from './ComparisonRow';
 import ComparisonTable from './ComparisonTable';
 
 const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID!, $friendId: ID!) {
-    peakList(id: $id) {
-      id
-      name
-      shortName
-      mountains {
-        id
-        name
-        latitude
-        longitude
-        elevation
-        prominence
-        state {
-          id
-          name
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
-      }
-      parent {
-        id
-        mountains {
-          id
-          name
-          latitude
-          longitude
-          elevation
-          prominence
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
-        }
-      }
-    }
+  query getUserAndMe($userId: ID!, $friendId: ID!) {
     user(id: $friendId) {
       id
       name
@@ -71,17 +21,20 @@ const GET_PEAK_LIST = gql`
         type
         mountains {
           id
+          name
         }
         parent {
           id
           mountains {
             id
+            name
           }
         }
       }
       mountains {
         mountain {
           id
+          name
         }
         dates
       }
@@ -94,17 +47,20 @@ const GET_PEAK_LIST = gql`
         type
         mountains {
           id
+          name
         }
         parent {
           id
           mountains {
             id
+            name
           }
         }
       }
       mountains {
         mountain {
           id
+          name
         }
         dates
       }
@@ -120,11 +76,13 @@ export interface UserDatum {
     type: PeakList['type'];
     mountains: Array<{
       id: Mountain['id'];
+      name: Mountain['name'];
     }>;
     parent: {
       id: PeakList['id'];
       mountains: Array<{
         id: Mountain['id'];
+        name: Mountain['name'];
       }>;
     }
   }>;
@@ -132,13 +90,11 @@ export interface UserDatum {
 }
 
 interface SuccessResponse {
-  peakList: PeakListDatum;
   user: UserDatum;
   me: UserDatum;
 }
 
 interface Variables {
-  id: string;
   userId: string;
   friendId: string;
 }
@@ -147,12 +103,12 @@ interface Props extends RouteComponentProps {
   userId: string;
 }
 
-const ComparePeakListPage = (props: Props) => {
+const CompareAllMountains = (props: Props) => {
   const { userId, match } = props;
-  const { friendId, peakListId }: any = match.params;
+  const { id }: any = match.params;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
-    variables: { id: peakListId, userId, friendId },
+    variables: { userId, friendId: id },
   });
   if (loading === true) {
     return null;
@@ -161,35 +117,50 @@ const ComparePeakListPage = (props: Props) => {
     return null;
   } else if (data !== undefined) {
     const {
-      peakList: {parent},
-      peakList, user, me,
+      user, me,
     } = data;
-    let mountains: MountainDatum[];
-    if (parent !== null && parent.mountains !== null) {
-      mountains = parent.mountains;
-    } else if (peakList.mountains !== null) {
-      mountains = peakList.mountains;
-    } else {
-      mountains = [];
-    }
-    const userCompletedAscents = user.mountains !== null ? user.mountains : [];
-    const myCompletedAscents = me.mountains !== null ? me.mountains : [];
+    const allMountains: MountainDatumLite[] = [];
+    me.peakLists.forEach(peakList => {
+      let mountains: MountainDatumLite[];
+      const { parent } = peakList;
+      if (parent !== null && parent.mountains !== null) {
+        mountains = parent.mountains;
+      } else if (peakList.mountains !== null) {
+        mountains = peakList.mountains;
+      } else {
+        mountains = [];
+      }
+      mountains.forEach(mountain => {
+        if (allMountains.findIndex(({id: currentId}) => mountain.id === currentId) === -1) {
+          allMountains.push(mountain);
+        }
+      });
+    });
+    user.peakLists.forEach(peakList => {
+      let mountains: MountainDatumLite[];
+      const { parent } = peakList;
+      if (parent !== null && parent.mountains !== null) {
+        mountains = parent.mountains;
+      } else if (peakList.mountains !== null) {
+        mountains = peakList.mountains;
+      } else {
+        mountains = [];
+      }
+      mountains.forEach(mountain => {
+        if (allMountains.findIndex(({id: currentId}) => mountain.id === currentId) === -1) {
+          allMountains.push(mountain);
+        }
+      });
+    });
     return (
       <>
         <ContentLeftLarge>
           <ContentBody>
-            <Header
-              user={me}
-              mountains={mountains}
-              peakList={peakList}
-              completedAscents={myCompletedAscents}
-              comparisonUser={user}
-              comparisonAscents={userCompletedAscents}
-            />
+            <h1>Compare all ascents</h1>
             <ComparisonTable
               user={user}
               me={me}
-              mountains={mountains}
+              mountains={allMountains}
             />
           </ContentBody>
         </ContentLeftLarge>
@@ -205,4 +176,4 @@ const ComparePeakListPage = (props: Props) => {
   }
 };
 
-export default withRouter(ComparePeakListPage);
+export default withRouter(CompareAllMountains);

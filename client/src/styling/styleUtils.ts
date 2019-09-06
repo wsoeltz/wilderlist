@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
@@ -142,6 +143,21 @@ export const ButtonSecondary = styled(ButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
+  }
+`;
+
+export const ButtonPrimaryLink = styled(Link)`
+  padding: 0.6rem;
+  text-transform: uppercase;
+  color: #fff;
+  text-align: center;
+  border-radius: ${borderRadius}px;
+  font-weight: ${semiBoldFontBoldWeight};
+  font-size: 0.95rem;
+  background-color: ${primaryColor};
+
+  &:hover {
+    background-color: ${primaryHoverColor};
   }
 `;
 
