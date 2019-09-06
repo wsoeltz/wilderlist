@@ -7,13 +7,13 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../styling/Grid';
+import { Mountain, PeakList, User } from '../../types/graphQLTypes';
 import {
   MountainDatum,
   PeakListDatum,
 } from '../peakListDetail';
 import Header from '../peakListDetail/Header';
 import ComparisonTable from './ComparisonTable';
-import { User, PeakList, Mountain } from '../../types/graphQLTypes';
 
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID!, $friendId: ID!) {
@@ -119,14 +119,14 @@ export interface UserDatum {
   peakLists: Array<{
     id: PeakList['id'];
     type: PeakList['type'];
-    mountains: {
+    mountains: Array<{
       id: Mountain['id'];
-    }[];
+    }>;
     parent: {
       id: PeakList['id'];
-      mountains: {
+      mountains: Array<{
         id: Mountain['id'];
-      }[];
+      }>;
     }
   }>;
   mountains: User['mountains'];

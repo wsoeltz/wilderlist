@@ -1,78 +1,86 @@
 import React from 'react';
+import styled from 'styled-components';
 import { mountainDetailLink } from '../../routing/Utils';
 import {
+  baseColor,
   lightBorderColor,
+  successColor,
 } from '../../styling/styleUtils';
-import { CompletedMountain, PeakListVariants } from '../../types/graphQLTypes';
+import { PeakListVariants } from '../../types/graphQLTypes';
 import {
   MountainDatum,
 } from '../peakListDetail';
 import {
-  // TableCellBase,
   MountainName,
   NameCell,
+  TableCellBase,
 } from '../peakListDetail/MountainRow';
+import {
+  AscentGoals,
+  getGoalText,
+} from './Utils';
 
-// interface AllPeakGoals {
-//   mountainId: string;
-//   type: PeakListVariants
-// }
+const TableCell = styled(TableCellBase)`
+  justify-content: center;
+`;
 
 interface Props {
-  userMountains: CompletedMountain[];
-  myMountains: CompletedMountain[];
+  userMountains: AscentGoals[];
+  myMountains: AscentGoals[];
   mountain: MountainDatum;
   type: PeakListVariants;
   index: number;
-  // allMyPeakGoals: AllPeakGoals
-  // allUserPeakGoals: AllPeakGoals
 }
 
 const ComparisonTable = (props: Props) => {
-  const { mountain, index } = props;
+  const { mountain, index, myMountains, userMountains } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
 
-  // let rowContent
+  const userCompletedDates = userMountains.find(({mountainId}) => mountainId === mountain.id);
+  const myCompletedDates = myMountains.find(({mountainId}) => mountainId === mountain.id);
 
-  // check is each user is doing this list
-  // if one of the users is not
-    // return 'Not working on list' for all columns
-    // return completion status for other user, no comparison necessarry
-
-  // get all ascents by each user
-  // const usersAscents = userMountains.map()
-  // const mysAscents = myMountains.map()
-
-  // if neither have any ascents
-    // rowContent = <TableCellFullWidth>Open</TableCellFullWidth>
-  // else
-    // get completion dates for type
-    // const user[Variant]Ascent = get[Variant]Completion
-    // const my[Variant]Ascent = get[Variant]Completion
-    // if neither have any ascents that match the variant
-       // rowContent = Open
-    // if standard or winter
-      // if one or both users have completed the hike for specified variant
-      // mark completion dates for each user or list open if no completion
-    // if 4-season
-      // check if each user has each season
-      // if both have all seasons
-        // rowContent = <TableCellFullWidth>Completed all seasons</TabelCellFullWidth>
-      // else
-        // State which ones are open for both parties
-    // if grid
-      // check if each user has each month
-      // if both have all months
-        // rowContent = completed all months
-      // else
-        // state which ones are open for both parties
+  let userStyles: React.CSSProperties;
+  let myStyles: React.CSSProperties;
+  let userText: string;
+  let myText: string;
+  if (myCompletedDates !== undefined && userCompletedDates !== undefined) {
+    const userGoalText = getGoalText(userCompletedDates);
+    const myGoalText = getGoalText(myCompletedDates);
+    userText = userGoalText.text;
+    myText = myGoalText.text;
+    userStyles = {
+      opacity: userGoalText.open === false ? 0.7 : 1,
+      color: userGoalText.open === false ? successColor : baseColor,
+    };
+    myStyles = {
+      opacity: myGoalText.open === false ? 0.7 : 1,
+      color: myGoalText.open === false ? successColor : baseColor,
+    };
+  } else {
+    userText = 'Open';
+    myText = 'Open';
+    userStyles = {};
+    myStyles = {};
+  }
 
   return (
-    <NameCell style={{backgroundColor}}>
-      <MountainName to={mountainDetailLink(mountain.id)}>
-        {mountain.name}
-      </MountainName>
-    </NameCell>
+    <>
+      <NameCell style={{backgroundColor}}>
+        <MountainName to={mountainDetailLink(mountain.id)}>
+          {mountain.name}
+        </MountainName>
+      </NameCell>
+      <TableCell style={{ gridColumn: 2, backgroundColor}}>
+        <span style={userStyles}>
+          {userText}
+        </span>
+      </TableCell>
+      <TableCell style={{ gridColumn: 3, backgroundColor}}>
+        <span style={myStyles}>
+          {myText}
+        </span>
+      </TableCell>
+    </>
   );
 
 };
