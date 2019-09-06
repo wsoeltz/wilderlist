@@ -10,10 +10,10 @@ import {
 import {
   MountainDatum,
   PeakListDatum,
-  UserDatum,
 } from '../peakListDetail';
 import Header from '../peakListDetail/Header';
 import ComparisonTable from './ComparisonTable';
+import { User, PeakList, Mountain } from '../../types/graphQLTypes';
 
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID!, $friendId: ID!) {
@@ -69,6 +69,16 @@ const GET_PEAK_LIST = gql`
       name
       peakLists {
         id
+        type
+        mountains {
+          id
+        }
+        parent {
+          id
+          mountains {
+            id
+          }
+        }
       }
       mountains {
         mountain {
@@ -82,6 +92,16 @@ const GET_PEAK_LIST = gql`
       name
       peakLists {
         id
+        type
+        mountains {
+          id
+        }
+        parent {
+          id
+          mountains {
+            id
+          }
+        }
       }
       mountains {
         mountain {
@@ -92,6 +112,25 @@ const GET_PEAK_LIST = gql`
     }
   }
 `;
+
+export interface UserDatum {
+  id: User['id'];
+  name: User['name'];
+  peakLists: Array<{
+    id: PeakList['id'];
+    type: PeakList['type'];
+    mountains: {
+      id: Mountain['id'];
+    }[];
+    parent: {
+      id: PeakList['id'];
+      mountains: {
+        id: Mountain['id'];
+      }[];
+    }
+  }>;
+  mountains: User['mountains'];
+}
 
 interface SuccessResponse {
   peakList: PeakListDatum;
