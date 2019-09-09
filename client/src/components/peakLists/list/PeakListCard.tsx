@@ -16,7 +16,7 @@ import {
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import MountainLogo from '../mountainLogo';
-import { completedPeaks } from '../Utils';
+import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
@@ -36,6 +36,7 @@ const Root = styled(Card)`
   display: grid;
   grid-template-columns: 190px 1fr 150px;
   grid-template-rows: auto auto 50px;
+  grid-column-gap: 1rem;
 `;
 
 const Title = styled.h1`
@@ -65,6 +66,13 @@ const LogoContainer = styled.div`
 const ProgressBarContainer = styled.div`
   grid-column: 2 / span 2;
   grid-row: 3;
+`;
+
+const BigText = styled.span`
+  font-size: 1.5rem;
+  transform: translateY(0.1rem);
+  display: inline-block;
+  margin-right: 0.6rem;
 `;
 
 interface RegionDatum {
@@ -188,9 +196,35 @@ const PeakListCard = (props: Props) => {
     failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
     totalRequiredAscents = 0;
   }
-  const peakCount = active === false
-    ? `${totalRequiredAscents} Total Ascents`
-    : `${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`;
+
+  let listInfoContent: React.ReactElement<any>;
+  if (active === true) {
+    const latestDate = getLatestAscent(mountains, completedAscents, type);
+
+    let latestDateText: string;
+    if (latestDate !== undefined) {
+      const latestAscentText = numCompletedAscents === totalRequiredAscents ? 'Completed'
+        : 'Latest ascent';
+      const preposition = isNaN(latestDate.day) || isNaN(latestDate.month) ? 'in' : 'on';
+      latestDateText = `${latestAscentText} ${preposition} ${formatDate(latestDate)}`;
+    } else {
+      latestDateText = 'No completed ascents yet';
+    }
+    listInfoContent = (
+      <>
+        <span><BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText> Completed Ascents</span>
+        <span>{latestDateText}</span>
+      </>
+    );
+
+  } else {
+    listInfoContent = (
+      <>
+        <span><BigText>{totalRequiredAscents}</BigText> Total Ascents</span>
+        <span>{getStatesOrRegion(mountains)}</span>
+      </>
+    );
+  }
   return (
     <LinkWrapper to={listDetailLink(id)}>
       <Root>
@@ -198,12 +232,7 @@ const PeakListCard = (props: Props) => {
           {name}
         </Title>
         <ListInfo>
-          <span>
-            {peakCount}
-          </span>
-          <span>
-            {getStatesOrRegion(mountains)}
-          </span>
+          {listInfoContent}
         </ListInfo>
         <LogoContainer>
           <MountainLogo

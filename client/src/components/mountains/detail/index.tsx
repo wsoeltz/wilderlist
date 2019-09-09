@@ -127,7 +127,7 @@ const MountainDetailPage = (props: Props) => {
     const completedDates = userMountains.find(
       (completedMountain) => completedMountain.mountain.id === id);
     let completionContent: React.ReactElement<any> | null;
-    if (completedDates) {
+    if (completedDates && completedDates.dates.length) {
       const dates = getDates(completedDates.dates);
       const completionListItems = dates.map(date => (
         <li key={date.dateAsNumber}>

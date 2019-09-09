@@ -238,3 +238,104 @@ export const completedPeaks = (
     return 0;
   }
 };
+
+export const getLatestAscent =  (
+  mountains: MountainList[],
+  completedAscents: CompletedMountain[],
+  variant: PeakListVariants,
+) => {
+  const ascents: DateObject[] = [];
+  if (variant === PeakListVariants.standard) {
+      mountains.forEach(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getStandardCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          ascents.push(dateCompleted);
+        }
+      }
+    });
+  } else if (variant === PeakListVariants.winter) {
+      mountains.forEach(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getWinterCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          ascents.push(dateCompleted);
+        }
+      }
+    });
+  } else if (variant === PeakListVariants.fourSeason) {
+    mountains.forEach(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getFourSeasonCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          if (dateCompleted.fall !== undefined) {
+            ascents.push(dateCompleted.fall);
+          }
+          if (dateCompleted.summer !== undefined) {
+            ascents.push(dateCompleted.summer);
+          }
+          if (dateCompleted.spring !== undefined) {
+            ascents.push(dateCompleted.spring);
+          }
+          if (dateCompleted.winter !== undefined) {
+            ascents.push(dateCompleted.winter);
+          }
+        }
+      }
+    });
+  } else if (variant === PeakListVariants.grid) {
+    mountains.forEach(mountain => {
+      const dates = completedAscents.find(
+        (completedMountain) => completedMountain.mountain.id === mountain.id);
+      if (dates !== undefined) {
+        const dateCompleted = getGridCompletion(dates);
+        if (dateCompleted !== null && dateCompleted !== undefined) {
+          if (dateCompleted.january !== undefined) {
+            ascents.push(dateCompleted.january);
+          }
+          if (dateCompleted.february !== undefined) {
+            ascents.push(dateCompleted.february);
+          }
+          if (dateCompleted.march !== undefined) {
+            ascents.push(dateCompleted.march);
+          }
+          if (dateCompleted.april !== undefined) {
+            ascents.push(dateCompleted.april);
+          }
+          if (dateCompleted.may !== undefined) {
+            ascents.push(dateCompleted.may);
+          }
+          if (dateCompleted.june !== undefined) {
+            ascents.push(dateCompleted.june);
+          }
+          if (dateCompleted.july !== undefined) {
+            ascents.push(dateCompleted.july);
+          }
+          if (dateCompleted.august !== undefined) {
+            ascents.push(dateCompleted.august);
+          }
+          if (dateCompleted.september !== undefined) {
+            ascents.push(dateCompleted.september);
+          }
+          if (dateCompleted.october !== undefined) {
+            ascents.push(dateCompleted.october);
+          }
+          if (dateCompleted.november !== undefined) {
+            ascents.push(dateCompleted.november);
+          }
+          if (dateCompleted.december !== undefined) {
+            ascents.push(dateCompleted.december);
+          }
+        }
+      }
+    });
+  }
+  const sortedAscents = sortBy(ascents, ['year', 'month', 'day']);
+  return sortedAscents[sortedAscents.length - 1];
+};
