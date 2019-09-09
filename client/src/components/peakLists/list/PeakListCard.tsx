@@ -18,6 +18,7 @@ import { failIfValidOrNonExhaustive } from '../../../Utils';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
+import PeakProgressBar from './PeakProgressBar';
 
 const LinkWrapper = styled(Link)`
   display: block;
@@ -59,6 +60,11 @@ const ListInfo = styled.h3`
 const LogoContainer = styled.div`
   grid-row: 1 / span 3;
   grid-column: 1;
+`;
+
+const ProgressBarContainer = styled.div`
+  grid-column: 2 / span 2;
+  grid-row: 3;
 `;
 
 interface RegionDatum {
@@ -205,9 +211,18 @@ const PeakListCard = (props: Props) => {
             title={name}
             shortName={shortName}
             variant={type}
+            active={active}
           />
         </LogoContainer>
         {actionButton}
+        <ProgressBarContainer>
+          <PeakProgressBar
+            variant={active === true ? type : null}
+            completed={active === true ? numCompletedAscents : 0}
+            total={totalRequiredAscents}
+            id={id}
+          />
+        </ProgressBarContainer>
       </Root>
     </LinkWrapper>
   );

@@ -2,10 +2,12 @@
 import React from 'react';
 import { classNames } from './index';
 
+const clipPathId = 'mountain-logo-circle-clip-path-';
+
 const DefaultClipPath = ({id}: {id: string}) => {
   return (
     <defs>
-      <clipPath id={`clip-path-${id}`}>
+      <clipPath id={`${clipPathId}${id}`}>
         <circle cx='410.16' cy='410.17' r='284.17'/>
       </clipPath>
     </defs>
@@ -19,7 +21,7 @@ const Badge = ({id}: {id: string}) => {
     return(
       <>
         <DefaultClipPath id={id} />
-        <g clipPath={`url(#clip-path-${id})`}>
+        <g clipPath={`url(#${clipPathId}${id})`}>
           <polygon className={classNames.sky} points='223.15 360.63 297.61 431.27 432.6 226.66 575.68 487.29 682.04 387.43 708.56 435.24 708.56 105 105 105 105 538.63 124.27 538.63 223.15 360.63'/>
           <path className={classNames.mountainInterior} d='M336.35,416.65h34.19l15.2,60.9,63.82-67,49.38,49.93s-15.19-90.12-20.51-108.39-31.15,1.22-41.78-17.05-4-70.64-4-70.64Z'/>
           <path className={classNames.mountainInterior} d='M295.33,481.2l-73.7-70.63-40.27,68.2,24.32,4.87s-5.32,87.69,25.07,112S297.6,581.07,312,562.8s40.27-9.74,40.27-9.74L315.08,460.5Z'/>
@@ -42,7 +44,7 @@ const Badge = ({id}: {id: string}) => {
     return(
       <>
         <DefaultClipPath id={id} />
-        <g clipPath={`url(#clip-path-${id})`}>
+        <g clipPath={`url(#${clipPathId}${id})`}>
           <path className={classNames.sky} d='M184.91,609.63A305,305,0,0,1,104,402.33C104,233.26,241.1,96.21,410.16,96.21S716.29,233.26,716.29,402.33a305,305,0,0,1-76,201.88'/>
           <polygon className={classNames.mountainInterior} points='235.52 446.17 200.34 537.38 137.39 579.07 257.74 559.85 307.68 438.55 281.81 404.48 235.52 446.17'/>
           <polygon className={classNames.mountainInterior} points='324.4 448.77 248.48 636.4 433.64 579.07 459.56 517.82 391.06 515.52 466.97 417.5 466.97 279.39 431.79 357.57 324.4 448.77'/>
@@ -57,7 +59,7 @@ const Badge = ({id}: {id: string}) => {
     return(
       <>
         <DefaultClipPath id={id} />
-        <g clipPath={`url(#clip-path-${id})`}>
+        <g clipPath={`url(#${clipPathId}${id})`}>
           <path className={classNames.sky} d='M143.9,464.49c36.4-49.77,68.62-93.74,73.37-99.94,11.6-15.16,20.3-32.33,34.08-18.19s74,69.72,74,69.72,97.17-111.15,107.33-123.27,23.92-27.28,40.6-11.12,65.27,59.62,65.27,59.62S558.1,326.15,569,318.07s25.38-17.18,41.34,9.09c6.38,10.52,36.46,56.95,70.24,108.88q1.23-12.84,1.27-25.87a286.73,286.73,0,0,0-3-41,282.72,282.72,0,0,0-10-42.17,243.91,243.91,0,0,0-15.31-37.68,284.29,284.29,0,0,0-21.63-36.17c-4.39-6.24-7.07-9.74-11.59-15.2s-9.11-10.61-14-15.65a271.55,271.55,0,0,0-142.45-78.49c-54.37-11.09-114.75-4.5-165.07,18.4a283.73,283.73,0,0,0-37,20.32A244.57,244.57,0,0,0,230,206.82a285.73,285.73,0,0,0-29.15,30.1,265.41,265.41,0,0,0-23.22,32.73,261.84,261.84,0,0,0-31.44,76.14,269.45,269.45,0,0,0-6.85,86.09A246.73,246.73,0,0,0,143.9,464.49Z'/>
         </g>
         <path className={classNames.mountainInterior} d='M442.8,594.92s31.91-34.35,41.33-53.55c10.16,30.31,0,67.7,0,67.7S453.67,617.15,442.8,594.92Z'/>

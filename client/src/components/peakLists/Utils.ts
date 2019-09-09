@@ -235,5 +235,6 @@ export const completedPeaks = (
     return numAscents;
   } else {
     failIfValidOrNonExhaustive(variant, 'Invalid list type ' + variant);
+    return 0;
   }
 };

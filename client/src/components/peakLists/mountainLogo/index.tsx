@@ -1,7 +1,7 @@
 /* tslint:disable:max-line-length */
 import React from 'react';
 import styled from 'styled-components';
-import { ColorSet, getColorSetFromVariant } from '../../../styling/styleUtils';
+import { ColorSet, colorSetGray, getColorSetFromVariant } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import Badge from './Badge';
 
@@ -31,6 +31,7 @@ const SVG = styled.svg<StyleProps>`
   width: 100%;
 
   .${classNames.mountainLogoTitleText} {
+    transition: all 0.2s ease-in-out;
     font-family: DeliciousWeb;
     font-size: 73px;
     text-align: center;
@@ -38,18 +39,21 @@ const SVG = styled.svg<StyleProps>`
   }
 
   .${classNames.mountainExterior} {
+    transition: all 0.2s ease-in-out;
     fill: ${({colorSet}) => colorSet.primary};
     stroke: ${({colorSet}) => colorSet.primary};
     stroke-width: 4px;
   }
 
   .${classNames.mountainInterior} {
+    transition: all 0.2s ease-in-out;
     fill: ${({colorSet}) => colorSet.secondary};
     stroke: ${({colorSet}) => colorSet.secondary};
     stroke-width: 4px;
   }
 
   .${classNames.sky} {
+    transition: all 0.2s ease-in-out;
     fill: ${({colorSet}) => colorSet.tertiary};
     stroke: ${({colorSet}) => colorSet.tertiary};
     stroke-width: 4px;
@@ -64,6 +68,7 @@ const ShortName = styled.svg<ShortNameProps>`
   bottom: 15%;
 
   text {
+    transition: all 0.2s ease-in-out;
     font-family: DeliciousWeb;
     font-size: ${({shortNameSize}) => shortNameSize};
     fill: #fff;
@@ -79,6 +84,7 @@ const VariantName = styled.svg<StyleProps>`
   bottom: 0;
 
   text {
+    transition: all 0.2s ease-in-out;
     font-size: 0.45rem;
     font-family: DeliciousWeb;
     text-transform: uppercase;
@@ -101,12 +107,13 @@ interface Props {
   title: string;
   shortName: string;
   variant: PeakListVariants;
+  active: boolean;
 }
 
 const MountainLogo = (props: Props) => {
-  const { id, title, shortName, variant } = props;
+  const { id, title, shortName, variant, active } = props;
   const titleId = 'mountainLogoTitle-' + id;
-  const colorSet = getColorSetFromVariant(variant);
+  const colorSet = active === true ? getColorSetFromVariant(variant) : colorSetGray;
   const shortNameSize = shortName.length > 7 ? '0.7rem' : '1rem';
   const shortNameStroke = shortName.length > 7 ? '0.5' : '0.7';
   const variantName = variant === PeakListVariants.standard ? null : (

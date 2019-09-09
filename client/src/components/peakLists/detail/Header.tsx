@@ -144,6 +144,7 @@ const Header = (props: Props) => {
           title={name}
           shortName={shortName}
           variant={type}
+          active={active}
         />
       </LogoContainer>
       <BeginRemoveListButtonContainer>
