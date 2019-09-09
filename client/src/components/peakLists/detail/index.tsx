@@ -6,8 +6,8 @@ import {
   ContentBody,
   ContentLeftLarge,
   ContentRightSmall,
-} from '../../styling/Grid';
-import { Mountain, PeakList, Region, State, User } from '../../types/graphQLTypes';
+} from '../../../styling/Grid';
+import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import Header from './Header';
 import MountainTable from './MountainTable';
 

@@ -2,13 +2,13 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { comparePeakListLink } from '../../routing/Utils';
+import { comparePeakListLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,
-} from '../../styling/Grid';
-import { FriendStatus, User } from '../../types/graphQLTypes';
-import ListPeakLists, { PeakListDatum } from '../peakLists/ListPeakLists';
+} from '../../../styling/Grid';
+import { FriendStatus, User } from '../../../types/graphQLTypes';
+import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
 import Header from './Header';
 
 const GET_USER = gql`

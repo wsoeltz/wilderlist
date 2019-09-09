@@ -7,12 +7,12 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
   SearchContainer,
-} from '../../styling/Grid';
+} from '../../../styling/Grid';
 import {
   ButtonSecondary,
-} from '../../styling/styleUtils';
-import { PeakList, User } from '../../types/graphQLTypes';
-import StandardSearch from '../sharedComponents/StandardSearch';
+} from '../../../styling/styleUtils';
+import { PeakList, User } from '../../../types/graphQLTypes';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
 
 const Next = styled(ButtonSecondary)`

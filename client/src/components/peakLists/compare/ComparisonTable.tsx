@@ -3,7 +3,7 @@ import {
   MountainColumnTitleName,
   Root,
   TitleCell,
-} from '../peakListDetail/MountainTable';
+} from '../detail/MountainTable';
 import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
 import { UserDatum } from './index';
 import { getAscentGoals } from './Utils';

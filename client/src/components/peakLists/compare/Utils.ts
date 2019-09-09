@@ -1,11 +1,11 @@
-import { CompletedMountain, PeakListVariants } from '../../types/graphQLTypes';
+import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   formatDate,
   getFourSeasonCompletion,
   getGridCompletion,
   getStandardCompletion,
   getWinterCompletion,
-} from '../peakLists/Utils';
+} from '../Utils';
 import { UserDatum } from './index';
 
 type BasicAscentGoal = {
@@ -365,67 +365,69 @@ const getGridGoals = (grid: GridAscentGoal) => {
   return {monthsNeeded, monthsCompleted};
 };
 
-export const getGoalText = (ascentGoals: AscentGoals) => {
-  if (ascentGoals.grid.goal === true) {
-    const {monthsNeeded, monthsCompleted} = getGridGoals(ascentGoals.grid);
-    if (monthsNeeded.length === 12) {
-      return {text: 'Open', open: true};
-    } else if (monthsNeeded.length === 0) {
-      return {text: 'Completed in every month', open: false};
-    } else if (monthsNeeded.length === 1) {
-      return {text: 'Open for ' + monthsNeeded[0], open: false};
-    } else if (monthsCompleted.length < monthsNeeded.length) {
-      const monthList = monthsCompleted.reduce((text, month, index) => {
-        const divider = index === monthsCompleted.length - 1 ? ' and ' : ', ';
-        return text = text + divider + month;
-      });
-      return {text: 'Open for every month except ' + monthList, open: true};
-    } else {
-      const monthList = monthsNeeded.reduce((text, month, index) => {
-        const divider = index === monthsNeeded.length - 1 ? ' and ' : ', ';
-        return text = text + divider + month;
-      });
-      return {text: 'Open for ' + monthList, open: true};
-    }
-  } else if (ascentGoals.fourSeason.goal === true) {
-    const {seasonsNeeded} = getFourSeasonGoals(ascentGoals.fourSeason);
-    if (seasonsNeeded.length === 4) {
-      return {text: 'Open', open: true};
-    } else if (seasonsNeeded.length === 0) {
-      return {text: 'Completed in every season', open: false};
-    } else if (seasonsNeeded.length === 0) {
-      return {text: 'Open for ' + seasonsNeeded[0], open: false};
-    } else {
-      const seasonList = seasonsNeeded.reduce((text, season, index) => {
-        const divider = index === seasonsNeeded.length - 1 ? ' and ' : ', ';
-        return text = text + divider + season;
-      });
-      return {text: 'Open for ' + seasonList, open: true};
-    }
-  } else if (ascentGoals.winter.goal === true) {
-    const winterGoal = getBasicGoal(ascentGoals.winter);
-    if (winterGoal !== null) {
-      if (winterGoal === 'open') {
-        if (ascentGoals.standard.goal === true) {
-          const standardGoal = getBasicGoal(ascentGoals.standard);
-          if (standardGoal === 'open') {
-            return {text: 'Open', open: true};
-          }
-        }
-        return {text: 'Open for winter', open: true};
-      } else {
-        return {text: 'Completed on ' + winterGoal, open: false};
-      }
-    }
-  } else if (ascentGoals.standard.goal === true) {
-    const standardGoal = getBasicGoal(ascentGoals.standard);
-    if (standardGoal !== null) {
-      if (standardGoal === 'open') {
+export const getGoalText = (ascentGoals: AscentGoals | undefined) => {
+  if (ascentGoals !== undefined) {
+    if (ascentGoals.grid.goal === true) {
+      const {monthsNeeded, monthsCompleted} = getGridGoals(ascentGoals.grid);
+      if (monthsNeeded.length === 12) {
         return {text: 'Open', open: true};
+      } else if (monthsNeeded.length === 0) {
+        return {text: 'Completed in every month', open: false};
+      } else if (monthsNeeded.length === 1) {
+        return {text: 'Open for ' + monthsNeeded[0], open: false};
+      } else if (monthsCompleted.length < monthsNeeded.length) {
+        const monthList = monthsCompleted.reduce((text, month, index) => {
+          const divider = index === monthsCompleted.length - 1 ? ' and ' : ', ';
+          return text = text + divider + month;
+        });
+        return {text: 'Open for every month except ' + monthList, open: true};
       } else {
-        return {text: 'Completed on ' + standardGoal, open: false};
+        const monthList = monthsNeeded.reduce((text, month, index) => {
+          const divider = index === monthsNeeded.length - 1 ? ' and ' : ', ';
+          return text = text + divider + month;
+        });
+        return {text: 'Open for ' + monthList, open: true};
+      }
+    } else if (ascentGoals.fourSeason.goal === true) {
+      const {seasonsNeeded} = getFourSeasonGoals(ascentGoals.fourSeason);
+      if (seasonsNeeded.length === 4) {
+        return {text: 'Open', open: true};
+      } else if (seasonsNeeded.length === 0) {
+        return {text: 'Completed in every season', open: false};
+      } else if (seasonsNeeded.length === 0) {
+        return {text: 'Open for ' + seasonsNeeded[0], open: false};
+      } else {
+        const seasonList = seasonsNeeded.reduce((text, season, index) => {
+          const divider = index === seasonsNeeded.length - 1 ? ' and ' : ', ';
+          return text = text + divider + season;
+        });
+        return {text: 'Open for ' + seasonList, open: true};
+      }
+    } else if (ascentGoals.winter.goal === true) {
+      const winterGoal = getBasicGoal(ascentGoals.winter);
+      if (winterGoal !== null) {
+        if (winterGoal === 'open') {
+          if (ascentGoals.standard.goal === true) {
+            const standardGoal = getBasicGoal(ascentGoals.standard);
+            if (standardGoal === 'open') {
+              return {text: 'Open', open: true};
+            }
+          }
+          return {text: 'Open for winter', open: true};
+        } else {
+          return {text: 'Completed on ' + winterGoal, open: false};
+        }
+      }
+    } else if (ascentGoals.standard.goal === true) {
+      const standardGoal = getBasicGoal(ascentGoals.standard);
+      if (standardGoal !== null) {
+        if (standardGoal === 'open') {
+          return {text: 'Open', open: true};
+        } else {
+          return {text: 'Completed on ' + standardGoal, open: false};
+        }
       }
     }
   }
-  return {text: 'This mountain is not being pursued', open: false};
+  return {text: 'This mountain is not being pursued', open: null};
 };

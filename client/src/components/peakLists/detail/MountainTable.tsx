@@ -4,10 +4,13 @@ import styled from 'styled-components';
 import {
   lightBorderColor,
   semiBoldFontBoldWeight,
-} from '../../styling/styleUtils';
-import { Mountain, PeakListVariants } from '../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../Utils';
-import { Months, Seasons } from '../../Utils';
+} from '../../../styling/styleUtils';
+import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  failIfValidOrNonExhaustive,
+  Months,
+  Seasons,
+} from '../../../Utils';
 import {
   MountainDatum,
   UserDatum,

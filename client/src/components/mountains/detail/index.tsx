@@ -5,22 +5,22 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
   ContentLeftLarge,
-} from '../../styling/Grid';
+} from '../../../styling/Grid';
 import {
   ButtonPrimary,
   ButtonSecondary,
-} from '../../styling/styleUtils';
-import { Mountain, User } from '../../types/graphQLTypes';
-import { convertFieldsToDate } from '../../Utils';
+} from '../../../styling/styleUtils';
+import { Mountain, User } from '../../../types/graphQLTypes';
+import { convertFieldsToDate } from '../../../Utils';
 import MountainCompletionModal, {
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../peakListDetail/MountainCompletionModal';
+} from '../../peakLists/detail/MountainCompletionModal';
 import {
   DateObject,
   formatDate,
   getDates,
-} from '../peakLists/Utils';
+} from '../../peakLists/Utils';
 
 const GET_MOUNTAIN_LIST = gql`
   query getMountain($id: ID!, $userId: ID!) {

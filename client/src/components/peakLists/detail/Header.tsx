@@ -5,17 +5,17 @@ import styled from 'styled-components';
 import {
   ButtonPrimary,
   ButtonSecondary,
-} from '../../styling/styleUtils';
-import { CompletedMountain, PeakListVariants } from '../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive} from '../../Utils';
+} from '../../../styling/styleUtils';
+import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive} from '../../../Utils';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
   AddRemovePeakListVariables,
-} from '../peakLists';
-import MountainLogo from '../peakLists/mountainLogo';
-import { getStatesOrRegion } from '../peakLists/PeakListCard';
-import { completedPeaks } from '../peakLists/Utils';
+} from '../list';
+import { getStatesOrRegion } from '../list/PeakListCard';
+import MountainLogo from '../mountainLogo';
+import { completedPeaks } from '../Utils';
 import {
   MountainDatum,
   PeakListDatum,

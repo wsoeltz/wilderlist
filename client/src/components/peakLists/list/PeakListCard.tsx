@@ -2,22 +2,22 @@ import { sortBy } from 'lodash';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { listDetailLink, preventNavigation } from '../../routing/Utils';
+import { listDetailLink, preventNavigation } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   Card,
-} from '../../styling/styleUtils';
+} from '../../../styling/styleUtils';
 import {
   CompletedMountain,
   Mountain,
   PeakListVariants,
   Region,
   State,
-} from '../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../Utils';
+} from '../../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
+import MountainLogo from '../mountainLogo';
+import { completedPeaks } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
-import MountainLogo from './mountainLogo';
-import { completedPeaks } from './Utils';
 
 const LinkWrapper = styled(Link)`
   display: block;

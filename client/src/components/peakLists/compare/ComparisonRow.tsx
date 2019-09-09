@@ -1,17 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
-import { mountainDetailLink } from '../../routing/Utils';
+import { mountainDetailLink } from '../../../routing/Utils';
 import {
   baseColor,
   lightBorderColor,
   successColor,
-} from '../../styling/styleUtils';
-import { Mountain } from '../../types/graphQLTypes';
+} from '../../../styling/styleUtils';
+import { Mountain } from '../../../types/graphQLTypes';
 import {
   MountainName,
   NameCell,
   TableCellBase,
-} from '../peakListDetail/MountainRow';
+} from '../detail/MountainRow';
 import {
   AscentGoals,
   getGoalText,
@@ -40,27 +40,47 @@ const ComparisonTable = (props: Props) => {
   const userCompletedDates = userMountains.find(({mountainId}) => mountainId === mountain.id);
   const myCompletedDates = myMountains.find(({mountainId}) => mountainId === mountain.id);
 
+  const userGoalText = getGoalText(userCompletedDates);
+  const myGoalText = getGoalText(myCompletedDates);
+  const userText = userGoalText.text;
+  const myText = myGoalText.text;
+
   let userStyles: React.CSSProperties;
   let myStyles: React.CSSProperties;
-  let userText: string;
-  let myText: string;
-  if (myCompletedDates !== undefined && userCompletedDates !== undefined) {
-    const userGoalText = getGoalText(userCompletedDates);
-    const myGoalText = getGoalText(myCompletedDates);
-    userText = userGoalText.text;
-    myText = myGoalText.text;
+  if (userGoalText.open === false) {
     userStyles = {
-      opacity: userGoalText.open === false ? 0.7 : 1,
-      color: userGoalText.open === false ? successColor : baseColor,
+      opacity: 0.7,
+      color: successColor,
     };
-    myStyles = {
-      opacity: myGoalText.open === false ? 0.7 : 1,
-      color: myGoalText.open === false ? successColor : baseColor,
+  } else if (userGoalText.open === true) {
+    userStyles = {
+      opacity: 1,
+      color: baseColor,
+    };
+  } else if (userGoalText.open === null) {
+    userStyles = {
+      opacity: 0.7,
+      color: baseColor,
     };
   } else {
-    userText = 'Open';
-    myText = 'Open';
     userStyles = {};
+  }
+  if (myGoalText.open === false) {
+    myStyles = {
+      opacity: 0.7,
+      color: successColor,
+    };
+  } else if (myGoalText.open === true) {
+    myStyles = {
+      opacity: 1,
+      color: baseColor,
+    };
+  } else if (myGoalText.open === null) {
+    myStyles = {
+      opacity: 0.5,
+      color: baseColor,
+    };
+  } else {
     myStyles = {};
   }
 

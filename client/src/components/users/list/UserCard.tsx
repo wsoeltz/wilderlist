@@ -3,14 +3,14 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { preventNavigation, userProfileLink } from '../../routing/Utils';
+import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   ButtonSecondary,
   Card,
-} from '../../styling/styleUtils';
-import { FriendStatus, User } from '../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../Utils';
+} from '../../../styling/styleUtils';
+import { FriendStatus, User } from '../../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { UserDatum } from './ListUsers';
 
 export const SEND_FRIEND_REQUEST = gql`

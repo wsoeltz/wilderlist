@@ -2,7 +2,7 @@ import { sortBy } from 'lodash';
 import { CompletedMountain, PeakListVariants} from '../../types/graphQLTypes';
 import { getSeason, Months, Seasons } from '../../Utils';
 import { failIfValidOrNonExhaustive } from '../../Utils';
-import { MountainList } from './PeakListCard';
+import { MountainList } from './list/PeakListCard';
 
 export interface DateObject {
   dateAsNumber: number;

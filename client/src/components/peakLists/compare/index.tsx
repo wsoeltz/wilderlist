@@ -6,13 +6,13 @@ import {
   ContentBody,
   ContentLeftLarge,
   ContentRightSmall,
-} from '../../styling/Grid';
-import { Mountain, PeakList, User } from '../../types/graphQLTypes';
+} from '../../../styling/Grid';
+import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import {
   MountainDatum,
   PeakListDatum,
-} from '../peakListDetail';
-import Header from '../peakListDetail/Header';
+} from '../detail';
+import Header from '../detail/Header';
 import ComparisonTable from './ComparisonTable';
 
 const GET_PEAK_LIST = gql`
@@ -21,6 +21,7 @@ const GET_PEAK_LIST = gql`
       id
       name
       shortName
+      type
       mountains {
         id
         name

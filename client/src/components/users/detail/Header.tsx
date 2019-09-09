@@ -1,23 +1,23 @@
 import { useMutation } from '@apollo/react-hooks';
 import React from 'react';
 import styled from 'styled-components';
-import { compareAllPeaksListLink, preventNavigation } from '../../routing/Utils';
+import { compareAllPeaksListLink, preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
   ButtonPrimaryLink,
   ButtonSecondary,
   Label,
-} from '../../styling/styleUtils';
-import { FriendStatus } from '../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../Utils';
+} from '../../../styling/styleUtils';
+import { FriendStatus } from '../../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
   ACCEPT_FRIEND_REQUEST,
   FriendRequestSuccessResponse,
   FriendRequestVariables,
   REMOVE_FRIEND,
   SEND_FRIEND_REQUEST,
-} from '../users/UserCard';
+} from '../list/UserCard';
 import { UserDatum } from './index';
 
 const Root = styled.div`

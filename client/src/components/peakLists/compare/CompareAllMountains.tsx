@@ -6,8 +6,8 @@ import {
   ContentBody,
   ContentLeftLarge,
   ContentRightSmall,
-} from '../../styling/Grid';
-import { Mountain, PeakList, User } from '../../types/graphQLTypes';
+} from '../../../styling/Grid';
+import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import { MountainDatumLite } from './ComparisonRow';
 import ComparisonTable from './ComparisonTable';
 

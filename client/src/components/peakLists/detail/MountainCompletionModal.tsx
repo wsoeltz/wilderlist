@@ -6,10 +6,10 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   InputBase,
-} from '../../styling/styleUtils';
-import { Mountain, User } from '../../types/graphQLTypes';
-import { convertFieldsToDate } from '../../Utils';
-import Modal from '../sharedComponents/Modal';
+} from '../../../styling/styleUtils';
+import { Mountain, User } from '../../../types/graphQLTypes';
+import { convertFieldsToDate } from '../../../Utils';
+import Modal from '../../sharedComponents/Modal';
 
 const DateInputContainer = styled.div`
   display: grid;

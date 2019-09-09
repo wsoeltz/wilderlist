@@ -8,12 +8,12 @@ import {
   ContentLeftSmall,
   ContentRightLarge,
   SearchContainer,
-} from '../../styling/Grid';
+} from '../../../styling/Grid';
 import {
   ButtonSecondary,
-} from '../../styling/styleUtils';
-import { User } from '../../types/graphQLTypes';
-import StandardSearch from '../sharedComponents/StandardSearch';
+} from '../../../styling/styleUtils';
+import { User } from '../../../types/graphQLTypes';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
 

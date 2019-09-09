@@ -1,5 +1,5 @@
 import React from 'react';
-import { FriendStatus, User } from '../../types/graphQLTypes';
+import { FriendStatus, User } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
 
 export interface UserDatum {

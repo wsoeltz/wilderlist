@@ -1,5 +1,5 @@
 import React from 'react';
-import { CompletedMountain, Mountain, PeakList, Region, State } from '../../types/graphQLTypes';
+import { CompletedMountain, Mountain, PeakList, Region, State } from '../../../types/graphQLTypes';
 import PeakListCard from './PeakListCard';
 
 interface MountainDatum {
