@@ -145,6 +145,7 @@ const Header = (props: Props) => {
           shortName={shortName}
           variant={type}
           active={active}
+          completed={numCompletedAscents === totalRequiredAscents}
         />
       </LogoContainer>
       <BeginRemoveListButtonContainer>

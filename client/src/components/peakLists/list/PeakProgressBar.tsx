@@ -21,7 +21,7 @@ const SvgBase = styled.svg`
   }
 
   .${clipPathId}background {
-    opacity: 0.4;
+    opacity: 0.3;
     transition: all 0.2s ease-in-out;
   }
   .${clipPathId}foreground {

@@ -35,7 +35,7 @@ const LinkWrapper = styled(Link)`
 const Root = styled(Card)`
   display: grid;
   grid-template-columns: 190px 1fr 150px;
-  grid-template-rows: 75px auto 75px;
+  grid-template-rows: auto auto 50px;
 `;
 
 const Title = styled.h1`
@@ -212,6 +212,7 @@ const PeakListCard = (props: Props) => {
             shortName={shortName}
             variant={type}
             active={active}
+            completed={numCompletedAscents === totalRequiredAscents}
           />
         </LogoContainer>
         {actionButton}

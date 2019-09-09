@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ColorSet, colorSetGray, getColorSetFromVariant } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import Badge from './Badge';
+import Ribbon from './Ribbon';
 
 interface StyleProps {
   colorSet: ColorSet;
@@ -24,7 +25,28 @@ export const classNames = {
 };
 
 const Root = styled.div`
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+
+`;
+
+const BadgeGridContainer = styled.div`
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const RibbonGridContainer = styled.div`
+  grid-row: 1;
+  grid-column: 1;
+`;
+
+const BadgeSVGContainer = styled.div`
   position: relative;
+  transition: all 0.2s ease-in-out;
 `;
 
 const SVG = styled.svg<StyleProps>`
@@ -108,10 +130,11 @@ interface Props {
   shortName: string;
   variant: PeakListVariants;
   active: boolean;
+  completed: boolean;
 }
 
 const MountainLogo = (props: Props) => {
-  const { id, title, shortName, variant, active } = props;
+  const { id, title, shortName, variant, active, completed } = props;
   const titleId = 'mountainLogoTitle-' + id;
   const colorSet = active === true ? getColorSetFromVariant(variant) : colorSetGray;
   const shortNameSize = shortName.length > 7 ? '0.7rem' : '1rem';
@@ -127,43 +150,56 @@ const MountainLogo = (props: Props) => {
       </text>
     </VariantName>
   );
+  const badgeCompletionStyles: React.CSSProperties = (completed === false || active === false) ? {} : {
+    width: '60%',
+  };
+  const ribbon = (completed === false || active === false) ? null : (
+    <RibbonGridContainer>
+      <Ribbon fill={colorSet.primary} />
+    </RibbonGridContainer>
+  );
   return (
     <Root>
-      <SVG
-        colorSet={colorSet}
-        xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 820.33 820.33'
-      >
-        <defs>
-          <path id={titleId} fill='none' d='M184.91,609.63A305,305,0,0,1,104,402.33C104,233.26,241.1,96.21,410.16,96.21S716.29,233.26,716.29,402.33a305,305,0,0,1-76,201.88'
-          x='0' y='0'/>
-        </defs>
-
-        <Badge id={id} />
-
-        <text>
-          <textPath
-            href={`#${titleId}`}
-            className={classNames.mountainLogoTitleText}
-            startOffset='50%'
-            textAnchor='middle'
+      <BadgeGridContainer>
+        <BadgeSVGContainer style={badgeCompletionStyles}>
+          <SVG
+            colorSet={colorSet}
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 820.33 820.33'
           >
-            {title}
-          </textPath>
-        </text>
-      </SVG>
-      <ShortName
-        colorSet={colorSet}
-        viewBox='0 0 56 18'
-        textAnchor='middle'
-        shortNameSize={shortNameSize}
-        shortNameStroke={shortNameStroke}
-      >
-        <text x='50%' y='70%'>
-          {shortName}
-        </text>
-      </ShortName>
-      {variantName}
+            <defs>
+              <path id={titleId} fill='none' d='M184.91,609.63A305,305,0,0,1,104,402.33C104,233.26,241.1,96.21,410.16,96.21S716.29,233.26,716.29,402.33a305,305,0,0,1-76,201.88'
+              x='0' y='0'/>
+            </defs>
+
+            <Badge id={id} />
+
+            <text>
+              <textPath
+                href={`#${titleId}`}
+                className={classNames.mountainLogoTitleText}
+                startOffset='50%'
+                textAnchor='middle'
+              >
+                {title}
+              </textPath>
+            </text>
+          </SVG>
+          <ShortName
+            colorSet={colorSet}
+            viewBox='0 0 56 18'
+            textAnchor='middle'
+            shortNameSize={shortNameSize}
+            shortNameStroke={shortNameStroke}
+          >
+            <text x='50%' y='70%'>
+              {shortName}
+            </text>
+          </ShortName>
+          {variantName}
+        </BadgeSVGContainer>
+      </BadgeGridContainer>
+      {ribbon}
     </Root>
   );
 };
