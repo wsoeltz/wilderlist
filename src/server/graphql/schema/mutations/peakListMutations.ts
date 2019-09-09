@@ -62,8 +62,12 @@ const peakListMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await removeConnections(PeakList, id, 'mountains', Mountain);
-      return PeakList.findByIdAndDelete(id);
+      try {
+        await removeConnections(PeakList, id, 'mountains', Mountain);
+        return PeakList.findByIdAndDelete(id);
+      } catch (err) {
+        return err;
+      }
     },
   },
   addItemToPeakList: {
@@ -153,13 +157,17 @@ const peakListMutations: any = {
     async resolve(_unused: any,
                   { id, newName }: { id: string , newName: string},
                   {dataloaders}: {dataloaders: any}) {
-      const peakList = await PeakList.findOneAndUpdate({
-        _id: id,
-      },
-      { name: newName },
-      {new: true});
-      dataloaders.peakListLoader.clear(id).prime(id, peakList);
-      return peakList;
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { name: newName },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
     },
   },
   changePeakListShortName: {
@@ -171,13 +179,17 @@ const peakListMutations: any = {
     async resolve(_unused: any,
                   { id, newShortName }: { id: string , newShortName: string},
                   {dataloaders}: {dataloaders: any}) {
-      const peakList = await PeakList.findOneAndUpdate({
-        _id: id,
-      },
-      { shortName: newShortName },
-      {new: true});
-      dataloaders.peakListLoader.clear(id).prime(id, peakList);
-      return peakList;
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { shortName: newShortName },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
     },
   },
   adjustPeakListVariant: {
@@ -189,13 +201,17 @@ const peakListMutations: any = {
     async resolve(_unused: any,
                   { id, type }: { id: string , type: IPeakList['type'] },
                   {dataloaders}: {dataloaders: any}) {
-      const peakList = await PeakList.findOneAndUpdate({
-        _id: id,
-      },
-      { type },
-      {new: true});
-      dataloaders.peakListLoader.clear(id).prime(id, peakList);
-      return peakList;
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { type },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
     },
   },
   changePeakListParent: {
@@ -207,13 +223,17 @@ const peakListMutations: any = {
     async resolve(_unused: any,
                   { id, parent }: { id: string , parent: string | null },
                   {dataloaders}: {dataloaders: any}) {
-      const peakList = await PeakList.findOneAndUpdate({
-        _id: id,
-      },
-      { parent },
-      {new: true});
-      dataloaders.peakListLoader.clear(id).prime(id, peakList);
-      return peakList;
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { parent },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
     },
   },
 };

@@ -48,7 +48,11 @@ const CompletedMountainsType = new GraphQLObjectType({
     mountain: {
       type: MountainType,
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
-        return await mountainLoader.load(parentValue.mountain);
+        try {
+          return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
       },
     },
     dates: {
@@ -63,7 +67,11 @@ const FriendsType = new GraphQLObjectType({
     user: {
       type: UserType,
       async resolve(parentValue, args, {dataloaders: {userLoader}}) {
-        return await userLoader.load(parentValue.user);
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
       },
     },
     status: {
@@ -85,7 +93,11 @@ const UserType: any = new GraphQLObjectType({
     peakLists: {
       type: new GraphQLList(PeakListType),
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
-        return await peakListLoader.loadMany(parentValue.peakLists);
+        try {
+          return await peakListLoader.loadMany(parentValue.peakLists);
+        } catch (err) {
+          return err;
+        }
       },
     },
     mountains: { type: new GraphQLList(CompletedMountainsType) },

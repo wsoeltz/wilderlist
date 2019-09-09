@@ -30,7 +30,11 @@ const RegionType = new GraphQLObjectType({
     states:  {
       type: new GraphQLList(StateType),
       async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
-        return await stateLoader.loadMany(parentValue.states);
+        try {
+          return await stateLoader.loadMany(parentValue.states);
+        } catch (err) {
+          return err;
+        }
       },
     },
   }),

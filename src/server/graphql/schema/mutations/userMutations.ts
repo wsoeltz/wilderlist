@@ -108,19 +108,23 @@ const userMutations: any = {
     },
     async resolve(_unused: any, args: CompletedMountainMutationArgs) {
       const { userId, mountainId, date } = args;
-      await User.findOneAndUpdate({
-        '_id': userId,
-        'mountains.mountain': { $ne: mountainId },
-      }, {
-        $addToSet: { mountains: {mountain: mountainId} },
-      });
-      await User.findOneAndUpdate({
-        '_id': userId,
-        'mountains.mountain': mountainId,
-      }, {
-        $addToSet: { 'mountains.$.dates': date },
-      });
-      return await User.findOne({_id: userId});
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountains.mountain': { $ne: mountainId },
+        }, {
+          $addToSet: { mountains: {mountain: mountainId} },
+        });
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountains.mountain': mountainId,
+        }, {
+          $addToSet: { 'mountains.$.dates': date },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
     },
   },
   removeMountainCompletion: {
@@ -132,19 +136,23 @@ const userMutations: any = {
     },
     async resolve(_unused: any, args: CompletedMountainMutationArgs) {
       const { userId, mountainId, date } = args;
-      await User.findOneAndUpdate({
-        '_id': userId,
-        'mountains.mountain': { $ne: mountainId },
-      }, {
-        $addToSet: { mountains: {mountain: mountainId} },
-      });
-      await User.findOneAndUpdate({
-        '_id': userId,
-        'mountains.mountain': mountainId,
-      }, {
-        $pull: { 'mountains.$.dates': date },
-      });
-      return await User.findOne({_id: userId});
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountains.mountain': { $ne: mountainId },
+        }, {
+          $addToSet: { mountains: {mountain: mountainId} },
+        });
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountains.mountain': mountainId,
+        }, {
+          $pull: { 'mountains.$.dates': date },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
     },
   },
   sendFriendRequest: {
@@ -226,19 +234,23 @@ const userMutations: any = {
       friendId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string}) {
-      await User.findOneAndUpdate({
-        '_id': userId,
-        'friends.user': friendId,
-      }, {
-        $pull: { friends: { user: friendId } },
-      });
-      await User.findOneAndUpdate({
-        '_id': friendId,
-        'friends.user': userId,
-      }, {
-        $pull: { friends: { user: userId } },
-      });
-      return await User.findOne({_id: userId});
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'friends.user': friendId,
+        }, {
+          $pull: { friends: { user: friendId } },
+        });
+        await User.findOneAndUpdate({
+          '_id': friendId,
+          'friends.user': userId,
+        }, {
+          $pull: { friends: { user: userId } },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
     },
 
   },

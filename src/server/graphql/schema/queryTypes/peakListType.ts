@@ -61,13 +61,21 @@ const PeakListType: any = new GraphQLObjectType({
     mountains:  {
       type: new GraphQLList(MountainType),
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
-        return await mountainLoader.loadMany(parentValue.mountains);
+        try {
+          return await mountainLoader.loadMany(parentValue.mountains);
+        } catch (err) {
+          return err;
+        }
       },
     },
     users:  {
       type: new GraphQLList(UserType),
       async resolve(parentValue, args, {dataloaders: {userLoader}}) {
-        return await userLoader.loadMany(parentValue.users);
+        try {
+          return await userLoader.loadMany(parentValue.users);
+        } catch (err) {
+          return err;
+        }
       },
     },
     numUsers: { type: GraphQLInt },
@@ -75,7 +83,11 @@ const PeakListType: any = new GraphQLObjectType({
       type: PeakListType,
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         if (parentValue.parent) {
-          return await peakListLoader.load(parentValue.parent);
+          try {
+            return await peakListLoader.load(parentValue.parent);
+          } catch (err) {
+            return err;
+          }
         } else {
           return null;
         }

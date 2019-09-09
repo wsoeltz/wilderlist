@@ -36,13 +36,21 @@ const StateType: any = new GraphQLObjectType({
     regions: {
       type: new GraphQLList(RegionType),
       async resolve(parentValue, args, {dataloaders: {regionLoader}}) {
-        return await regionLoader.loadMany(parentValue.regions);
+        try {
+          return await regionLoader.loadMany(parentValue.regions);
+        } catch (err) {
+          return err;
+        }
       },
     },
     mountains: {
       type: new GraphQLList(MountainType),
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
-        return await mountainLoader.loadMany(parentValue.mountains);
+        try {
+          return await mountainLoader.loadMany(parentValue.mountains);
+        } catch (err) {
+          return err;
+        }
       },
     },
   }),

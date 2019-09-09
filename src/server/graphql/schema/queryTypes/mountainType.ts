@@ -53,17 +53,25 @@ const MountainType: any = new GraphQLObjectType({
     state: {
       type: StateType,
       async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
-        const res = await stateLoader.load(parentValue.state);
-        if (res._id.toString() !== parentValue.state.toString()) {
-          throw new Error('IDs do not match' + res);
+        try {
+          const res = await stateLoader.load(parentValue.state);
+          if (res._id.toString() !== parentValue.state.toString()) {
+            throw new Error('IDs do not match' + res);
+          }
+          return res;
+        } catch (err) {
+          return err;
         }
-        return res;
       },
     },
     lists:  {
       type: new GraphQLList(PeakListType),
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
-        return await peakListLoader.loadMany(parentValue.lists);
+        try {
+          return await peakListLoader.loadMany(parentValue.lists);
+        } catch (err) {
+          return err;
+        }
       },
     },
   }),

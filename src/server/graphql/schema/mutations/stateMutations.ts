@@ -42,11 +42,15 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await Mountain.findOneAndUpdate({ state: { $eq: id } },
-        { state: null }, function(error, model) {
-          if (error) { console.error(error); } } );
-      await removeConnections(State, id, 'regions', Region);
-      return State.findByIdAndDelete(id);
+      try {
+        await Mountain.findOneAndUpdate({ state: { $eq: id } },
+          { state: null }, function(error, model) {
+            if (error) { console.error(error); } } );
+        await removeConnections(State, id, 'regions', Region);
+        return State.findByIdAndDelete(id);
+      } catch (err) {
+        return err;
+      }
     },
   },
   changeStateName: {
@@ -58,13 +62,17 @@ const stateMutations: any = {
     async resolve(_unused: any,
                   { id, newName }: { id: string , newName: string},
                   {dataloaders}: {dataloaders: any}) {
-      const state = await State.findOneAndUpdate({
-        _id: id,
-      },
-      { name: newName },
-      {new: true});
-      dataloaders.stateLoader.clear(id).prime(id, state);
-      return state;
+      try {
+        const state = await State.findOneAndUpdate({
+          _id: id,
+        },
+        { name: newName },
+        {new: true});
+        dataloaders.stateLoader.clear(id).prime(id, state);
+        return state;
+      } catch (err) {
+        return err;
+      }
     },
   },
   changeStateAbbreviation: {
@@ -76,13 +84,17 @@ const stateMutations: any = {
     async resolve(_unused: any,
                   { id, newAbbreviation }: { id: string , newAbbreviation: string},
                   {dataloaders}: {dataloaders: any}) {
-      const state = await State.findOneAndUpdate({
-        _id: id,
-      },
-      { abbreviation: newAbbreviation },
-      {new: true});
-      dataloaders.stateLoader.clear(id).prime(id, state);
-      return state;
+      try {
+        const state = await State.findOneAndUpdate({
+          _id: id,
+        },
+        { abbreviation: newAbbreviation },
+        {new: true});
+        dataloaders.stateLoader.clear(id).prime(id, state);
+        return state;
+      } catch (err) {
+        return err;
+      }
     },
   },
   addRegionToState: {

@@ -40,8 +40,12 @@ const regionMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await removeConnections(Region, id, 'states', State);
-      return Region.findByIdAndDelete(id);
+      try {
+        await removeConnections(Region, id, 'states', State);
+        return Region.findByIdAndDelete(id);
+      } catch (err) {
+        return err;
+      }
     },
   },
   addStateToRegion: {
@@ -131,13 +135,17 @@ const regionMutations: any = {
     async resolve(_unused: any,
                   { id, newName }: { id: string , newName: string},
                   {dataloaders}: {dataloaders: any}) {
-      const region = await Region.findOneAndUpdate({
-        _id: id,
-      },
-      { name: newName },
-      {new: true});
-      dataloaders.regionLoader.clear(id).prime(id, region);
-      return region;
+      try {
+        const region = await Region.findOneAndUpdate({
+          _id: id,
+        },
+        { name: newName },
+        {new: true});
+        dataloaders.regionLoader.clear(id).prime(id, region);
+        return region;
+      } catch (err) {
+        return err;
+      }
     },
   },
 };

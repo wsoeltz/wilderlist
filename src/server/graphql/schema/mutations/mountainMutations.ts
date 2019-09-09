@@ -29,24 +29,28 @@ const mountainMutations: any = {
     async resolve(_unused: any, input: IMountain) {
       const { name, state, lists, latitude, longitude, elevation, prominence } = input;
       const newMountain = new Mountain({ name, state, lists, latitude, longitude, elevation, prominence });
-      if ( name !== '') {
-        if (lists !== undefined) {
-          lists.forEach(async (id) => {
-            await PeakList.findOneAndUpdate(
-              { _id: id, mountains: { $ne: newMountain.id} },
-              { $push: {mountains: newMountain.id} },
-              function(err: any, model: any) {
-                if (err) {
-                  console.error(err);
-                }
-              },
-            );
-          });
+      try {
+        if ( name !== '') {
+          if (lists !== undefined) {
+            lists.forEach(async (id) => {
+              await PeakList.findOneAndUpdate(
+                { _id: id, mountains: { $ne: newMountain.id} },
+                { $push: {mountains: newMountain.id} },
+                function(err: any, model: any) {
+                  if (err) {
+                    console.error(err);
+                  }
+                },
+              );
+            });
+          }
+          await State.findByIdAndUpdate(state,
+            { $push: {mountains: newMountain.id} });
         }
-        await State.findByIdAndUpdate(state,
-          { $push: {mountains: newMountain.id} });
+        return newMountain.save();
+      } catch (err) {
+        return err;
       }
-      return newMountain.save();
     },
   },
   deleteMountain: {
@@ -55,11 +59,15 @@ const mountainMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      await State.findOneAndUpdate({ mountains: { $eq: id } },
-        { $pull: {mountains: id} }, function(err: any, model: any) {
-          if (err) { console.error(err); } } );
-      await removeConnections(Mountain, id, 'lists', PeakList);
-      return Mountain.findByIdAndDelete(id);
+      try {
+        await State.findOneAndUpdate({ mountains: { $eq: id } },
+          { $pull: {mountains: id} }, function(err: any, model: any) {
+            if (err) { console.error(err); } } );
+        await removeConnections(Mountain, id, 'lists', PeakList);
+        return Mountain.findByIdAndDelete(id);
+      } catch (err) {
+        return err;
+      }
     },
   },
   addMountainToState: {
@@ -124,48 +132,51 @@ const mountainMutations: any = {
     },
     async resolve(_unused: any, input: IMountain) {
       const { id, name, state: stateId, latitude, longitude, elevation, prominence } = input;
-
-      const mountain = await Mountain.findById(id);
-      const state = await State.findById(stateId);
-      if (mountain !== null && state !== null) {
-        await State.findOneAndUpdate({
-            mountains: { $eq: id },
-          },
-          { $pull: {mountains: id} },
-          function(err: any, model: any) {
-            if (err) {
-              console.error(err);
-            }
-          },
-        );
-        await State.findOneAndUpdate({
-            _id: stateId,
-            mountains: { $ne: id },
-          },
-          { $push: {mountains: id} },
-          function(err: any, model: any) {
-            if (err) {
-              console.error(err);
-            }
-          },
-        );
-        const fields = (prominence) ? { name, state: stateId, latitude, longitude, elevation, prominence }
-          : { name, state: stateId, latitude, longitude, elevation };
-        const newMountain = await Mountain.findOneAndUpdate({
-            _id: id,
-          },
-          { ...fields },
-          {new: true});
-        return newMountain;
-      } else if (mountain !== null) {
-        const fields = (prominence) ? { name, latitude, longitude, elevation, prominence }
-          : { name, latitude, longitude, elevation };
-        const newMountain = await Mountain.findOneAndUpdate({
-            _id: id,
-          },
-          { ...fields },
-          {new: true});
-        return newMountain;
+      try {
+        const mountain = await Mountain.findById(id);
+        const state = await State.findById(stateId);
+        if (mountain !== null && state !== null) {
+          await State.findOneAndUpdate({
+              mountains: { $eq: id },
+            },
+            { $pull: {mountains: id} },
+            function(err: any, model: any) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await State.findOneAndUpdate({
+              _id: stateId,
+              mountains: { $ne: id },
+            },
+            { $push: {mountains: id} },
+            function(err: any, model: any) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          const fields = (prominence) ? { name, state: stateId, latitude, longitude, elevation, prominence }
+            : { name, state: stateId, latitude, longitude, elevation };
+          const newMountain = await Mountain.findOneAndUpdate({
+              _id: id,
+            },
+            { ...fields },
+            {new: true});
+          return newMountain;
+        } else if (mountain !== null) {
+          const fields = (prominence) ? { name, latitude, longitude, elevation, prominence }
+            : { name, latitude, longitude, elevation };
+          const newMountain = await Mountain.findOneAndUpdate({
+              _id: id,
+            },
+            { ...fields },
+            {new: true});
+          return newMountain;
+        }
+      } catch (err) {
+        return err;
       }
     },
   },
