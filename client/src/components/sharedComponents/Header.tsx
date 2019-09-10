@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Logo from '../../assets/logo/Logo';
 import { Routes } from '../../routing/routes';
-import { HeaderContainer as HeaderContainerBase } from '../../styling/Grid';
+import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
   lightFontWeight,
@@ -27,12 +27,24 @@ const LogoContainer = styled(Link)`
   font-size: 0;
   color: rgba(0, 0, 0, 0);
   margin-right: auto;
-  padding: 0.6rem;
 
   svg {
     display: block;
     width: 100%;
-    height: 100%;
+    padding: 0.6rem;
+
+    @media(max-width: ${smallHeaderBreakpoint}px) {
+      transform: scale(0.6);
+      transform-origin: top left;
+      width: 200%;
+    }
+
+    @media(max-width: 600px) {
+      transform: scale(0.55);
+    }
+    @media(max-width: 450px) {
+      transform: scale(0.5);
+    }
   }
 `;
 
@@ -49,6 +61,10 @@ const NavLink = styled(Link)`
   text-transform: uppercase;
   min-width: 90px;
   padding: 0 1rem;
+
+  @media(max-width: ${smallHeaderBreakpoint}px) {
+    min-width: 20px;
+  }
 `;
 
 const InactiveNavLink = styled(NavLink)`

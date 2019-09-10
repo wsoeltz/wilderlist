@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Routes } from '../../routing/routes';
+import { smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
   lightBorderColor,
@@ -28,6 +29,10 @@ const UserMenu = styled.div`
     width: 1px;
     background-color: ${lightBorderColor};
   }
+
+  @media(max-width: ${smallHeaderBreakpoint}px) {
+    min-width: 50px;
+  }
 `;
 
 const UserButton = styled.button`
@@ -44,6 +49,12 @@ const UserButton = styled.button`
   }
 `;
 
+const UserName = styled.span`
+  @media(max-width: ${smallHeaderBreakpoint}px) {
+    display: none;
+  }
+`;
+
 const UserMenuListContainer = styled.div`
   position: absolute;
   z-index: 500;
@@ -54,6 +65,7 @@ const UserMenuListContainer = styled.div`
   width: 100%;
   padding: 0 1.5rem;
   box-sizing: border-box;
+  min-width: 200px;
 `;
 
 const userMenuLinkStyles = `
@@ -88,6 +100,10 @@ const UserImage = styled.img`
   margin-right: 1rem;
   border-radius: 1000px;
   max-width: 30px;
+
+  @media(max-width: ${smallHeaderBreakpoint}px) {
+    margin-right: 0;
+  }
 `;
 
 const Caret = styled(FontAwesomeIcon)`
@@ -159,7 +175,9 @@ const UserMenuComponent = (props: UserMenuComponentProps) => {
         onClick={() => setUserMenuOpen(!userMenuOpen)}
       >
         <UserImage src={user.profilePictureUrl} />
-        {user.name}
+        <UserName>
+          {user.name}
+        </UserName>
         <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
       </UserButton>
       {userMenuList}

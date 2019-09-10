@@ -31,14 +31,17 @@ const gridLines = {
   pageRight: 'wilderListGlobalGridPageRight',
 };
 
-const headerHeight = 80; // in px
+const headerHeight = 5; // in rem
+const smallHeaderHeight = 3; // in rem
+
+export const smallHeaderBreakpoint = 800;
 
 const Grid = styled.div`
   height: 100vh;
   display: grid;
   grid-template-rows:
     [${gridLines.pageTop} ${gridLines.bannerTop}] auto
-    [${gridLines.bannerBottom} ${gridLines.headerTop}] ${headerHeight}px
+    [${gridLines.bannerBottom} ${gridLines.headerTop}] ${headerHeight}rem
     [${gridLines.headerBottom} ${gridLines.contentHeaderTop}] auto
     [${gridLines.contentHeaderBottom} ${gridLines.contentTop}] 1fr
     [${gridLines.contentBottom} ${gridLines.footerTop}] auto
@@ -55,6 +58,16 @@ const Grid = styled.div`
     [${gridLines.column9}] 1fr
     [${gridLines.column10}] 1fr
     [${gridLines.pageRight}];
+
+    @media(max-width: ${smallHeaderBreakpoint}px) {
+      grid-template-rows:
+        [${gridLines.pageTop} ${gridLines.bannerTop}] auto
+        [${gridLines.bannerBottom} ${gridLines.headerTop}] ${smallHeaderHeight}rem
+        [${gridLines.headerBottom} ${gridLines.contentHeaderTop}] auto
+        [${gridLines.contentHeaderBottom} ${gridLines.contentTop}] 1fr
+        [${gridLines.contentBottom} ${gridLines.footerTop}] auto
+        [${gridLines.footerbottom} ${gridLines.pageBottom}];
+    }
 `;
 
 export const HeaderContainer = styled.div`
