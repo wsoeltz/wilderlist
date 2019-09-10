@@ -15,11 +15,36 @@ import {
 import { PeakList, User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
+import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
 
+const PaginationContainer = styled.div`
+  display: flex;
+`;
+
 const Next = styled(ButtonSecondary)`
+  margin-left: auto;
+
+  &:after {
+    content: '›';
+    font-size: 1.5rem;
+    position: relative;
+    line-height: 0;
+    top: 0.01rem;
+    margin-left: 0.4rem;
+  }
 `;
 const Prev = styled(ButtonSecondary)`
+  margin-right: auto;
+
+  &:before {
+    content: '‹';
+    font-size: 1.5rem;
+    position: relative;
+    line-height: 0;
+    top: 0.01rem;
+    margin-right: 0.4rem;
+  }
 `;
 
 const SEARCH_PEAK_LISTS = gql`
@@ -155,7 +180,11 @@ const PeakListPage = (props: Props) => {
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
-    list = <>Loading</>;
+    const loadingCards: Array<React.ReactElement<any>> = [];
+    for (let i = 0; i < nPerPage; i++) {
+      loadingCards.push(<GhostPeakListCard key={i} />);
+    }
+    list = <>{loadingCards}</>;
   } else if (error !== undefined) {
     console.error(error);
     list = (<p>There was an error</p>);
@@ -165,11 +194,11 @@ const PeakListPage = (props: Props) => {
     const completedAscents = user.mountains !== null ? user.mountains : [];
     const nextBtn = peakLists.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
-        Next {'>'}
+        Next
       </Next> ) : null;
     const prevBtn = pageNumber > 1 ? (
       <Prev onClick={decrementPageNumber}>
-        {'<'} Previous
+        Previous
       </Prev> ) : null;
     list = (
       <>
@@ -181,8 +210,10 @@ const PeakListPage = (props: Props) => {
           completedAscents={completedAscents}
           isCurrentUser={true}
         />
-        {prevBtn}
-        {nextBtn}
+        <PaginationContainer>
+          {prevBtn}
+          {nextBtn}
+        </PaginationContainer>
       </>
     );
   } else {

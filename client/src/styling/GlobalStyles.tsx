@@ -12,6 +12,18 @@ import {
 library.add(faCaretDown, faCaretUp, faSearch);
 
 const GlobalStyles = createGlobalStyle`
+
+  @media(max-width: 600px) {
+    html {
+      font-size: 14px;
+    }
+  }
+  @media(max-width: 450px) {
+    html {
+      font-size: 12px;
+    }
+  }
+
   body {
     font-family: RobotoWeb;
     color: ${baseColor};

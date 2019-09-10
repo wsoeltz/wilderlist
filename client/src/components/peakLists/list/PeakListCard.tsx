@@ -32,15 +32,30 @@ const LinkWrapper = styled(DynamicLink)`
   }
 `;
 
-const Root = styled(Card)`
+const smallCardBreakpoint = 400; // in px
+
+export const Root = styled(Card)`
   display: grid;
-  grid-template-columns: 190px 1fr 150px;
+  grid-template-columns: 11.875rem 1fr auto;
   grid-template-rows: auto auto 50px;
   grid-column-gap: 1rem;
+
+  @media(max-width: 600px) {
+    grid-template-columns: 8rem 1fr auto;
+  }
+
+  @media(max-width: ${smallCardBreakpoint}px) {
+
+  }
 `;
 
-const Title = styled.h1`
+const TitleBase = styled.h1`
   grid-column: 2;
+  grid-row: 1;
+`;
+
+export const TitleFull = styled.h1`
+  grid-column: 2 / span 2;
   grid-row: 1;
 `;
 
@@ -50,29 +65,44 @@ const ActionButtonContainer = styled.div`
   text-align: right;
 `;
 
-const ListInfo = styled.h3`
+export const ListInfo = styled.h3`
   grid-column: 2 / span 2;
   grid-row: 2;
   display: flex;
   justify-content: space-between;
   margin: 0;
+
+  @media(max-width: ${smallCardBreakpoint}px) {
+    flex-direction: column-reverse;
+  }
 `;
 
-const LogoContainer = styled.div`
+export const LogoContainer = styled.div`
   grid-row: 1 / span 3;
   grid-column: 1;
 `;
 
-const ProgressBarContainer = styled.div`
+export const ProgressBarContainer = styled.div`
   grid-column: 2 / span 2;
   grid-row: 3;
+`;
+
+export const TextRight = styled.div`
+  text-align: right;
+  margin-left: 1rem;
+
+  @media(max-width: ${smallCardBreakpoint}px) {
+    margin-left: 0;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
 `;
 
 const BigText = styled.span`
   font-size: 1.5rem;
   transform: translateY(0.1rem);
   display: inline-block;
-  margin-right: 0.6rem;
+  margin-right: 0.3rem;
 `;
 
 interface RegionDatum {
@@ -184,6 +214,9 @@ const PeakListCard = (props: Props) => {
       </ButtonPrimary>
     </ActionButtonContainer> ) : null;
 
+  const Title = active === false || isCurrentUser === false
+    ? TitleBase : TitleFull;
+
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
   let totalRequiredAscents: number;
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
@@ -201,19 +234,23 @@ const PeakListCard = (props: Props) => {
   if (active === true) {
     const latestDate = getLatestAscent(mountains, completedAscents, type);
 
-    let latestDateText: string;
+    let latestDateText: React.ReactElement<any>;
     if (latestDate !== undefined) {
       const latestAscentText = numCompletedAscents === totalRequiredAscents ? 'Completed'
         : 'Latest ascent';
       const preposition = isNaN(latestDate.day) || isNaN(latestDate.month) ? 'in' : 'on';
-      latestDateText = `${latestAscentText} ${preposition} ${formatDate(latestDate)}`;
+      latestDateText = (
+        <>
+          {latestAscentText} {preposition} <BigText>{formatDate(latestDate)}</BigText>
+        </>
+      );
     } else {
-      latestDateText = 'No completed ascents yet';
+      latestDateText = <>No completed ascents yet</>;
     }
     listInfoContent = (
       <>
         <span><BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText> Completed Ascents</span>
-        <span>{latestDateText}</span>
+        <TextRight>{latestDateText}</TextRight>
       </>
     );
 
@@ -221,7 +258,7 @@ const PeakListCard = (props: Props) => {
     listInfoContent = (
       <>
         <span><BigText>{totalRequiredAscents}</BigText> Total Ascents</span>
-        <span>{getStatesOrRegion(mountains)}</span>
+        <TextRight>{getStatesOrRegion(mountains)}</TextRight>
       </>
     );
   }
@@ -249,7 +286,7 @@ const PeakListCard = (props: Props) => {
         <ProgressBarContainer>
           <PeakProgressBar
             variant={active === true ? type : null}
-            completed={active === true ? numCompletedAscents : 0}
+            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
             total={totalRequiredAscents}
             id={id}
           />
