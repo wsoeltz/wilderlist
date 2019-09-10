@@ -66,9 +66,6 @@ const App: React.FC = () => {
 
   const userRoutes = (user) ? (
     <>
-      <Route exact path={Routes.Lists}
-        render={(props) => <PeakListPage {...props} userId={user._id} />}
-      />
       <Route exact path={Routes.ListsWithDetail}
         render={(props) => <PeakListPage {...props} userId={user._id} />}
       />
@@ -80,9 +77,6 @@ const App: React.FC = () => {
       />
       <Route exact path={Routes.MountainDetail}
         render={(props) => <MountainDetailPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.Friends}
-        render={(props) => <ListUsersPage {...props} userId={user._id} />}
       />
       <Route exact path={Routes.FriendsWithProfile}
         render={(props) => <ListUsersPage {...props} userId={user._id} />}

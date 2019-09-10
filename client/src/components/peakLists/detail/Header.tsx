@@ -96,10 +96,15 @@ const Header = (props: Props) => {
     setIsRemoveListModalOpen(false);
   };
 
+  const confirmRemove = () => {
+    removePeakListFromUser({variables: {userId: user.id,  peakListId: id}})
+    closeAreYouSureModal();
+  }
+
 
   const areYouSureModal = isRemoveListModalOpen === false ? null : (
     <AreYouSureModal
-      onConfirm={() => removePeakListFromUser({variables: {userId: user.id,  peakListId: id}})}
+      onConfirm={confirmRemove}
       onCancel={closeAreYouSureModal}
       title={'Are you sure'}
       text={`Remove ${peakList.name} from your active lists?`}

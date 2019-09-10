@@ -96,11 +96,11 @@ const Header = (props: RouteComponentProps) => {
     let normalizedPathname: string;
     if (pathname.includes(Routes.UserProfile.split(':id')[0])
       || pathname.includes(Routes.FriendsWithProfile.split(':id')[0])) {
-      normalizedPathname = Routes.Friends;
+      normalizedPathname = Routes.FriendsWithProfile;
     } else if (pathname.includes(Routes.ListDetail.split(':id')[0])
       || pathname.includes(Routes.MountainDetail.split(':id')[0])
       || pathname.includes(Routes.ListsWithDetail.split(':id')[0])) {
-      normalizedPathname = Routes.Lists;
+      normalizedPathname = Routes.ListsWithDetail;
     } else {
       normalizedPathname = pathname;
     }
@@ -116,8 +116,8 @@ const Header = (props: RouteComponentProps) => {
         <>
           <MainNav>
             {createLink(Routes.Dashboard, 'Dashboard')}
-            {createLink(Routes.Lists, 'Lists')}
-            {createLink(Routes.Friends, 'Friends')}
+            {createLink(Routes.ListsWithDetail, 'Lists')}
+            {createLink(Routes.FriendsWithProfile, 'Friends')}
           </MainNav>
           <UserMenu
             userMenuOpen={userMenuOpen}

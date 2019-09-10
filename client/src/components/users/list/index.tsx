@@ -17,6 +17,7 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import UserProfile from '../detail/UserProfile';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
+import { Types } from 'mongoose';
 
 const Next = styled(ButtonSecondary)`
 `;
@@ -119,7 +120,7 @@ const UserList = (props: Props) => {
   } else {
     list = null;
   }
-  const userProfile = id === undefined
+  const userProfile = !Types.ObjectId.isValid(id)
   ? (
     <h2>Select a user to see more details</h2>
     )

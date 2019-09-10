@@ -1,12 +1,10 @@
 export enum Routes {
   Login = '/',
   Dashboard = '/',
-  Lists = '/lists',
   ListsWithDetail = '/lists/:id',
   ListDetail = '/list/:id',
   ListDetailWithMountainDetail = '/list/:id/mountain/:mountainId',
   MountainDetail = '/mountain/:id',
-  Friends = '/users',
   FriendsWithProfile = '/users/:id',
   UserProfile = '/user/:id',
   ComparePeakList = '/user/:id/list/:peakListId',

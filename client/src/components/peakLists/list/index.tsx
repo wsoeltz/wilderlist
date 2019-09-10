@@ -19,6 +19,7 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
+import { Types } from 'mongoose';
 
 
 const SEARCH_PEAK_LISTS = gql`
@@ -194,7 +195,7 @@ const PeakListPage = (props: Props) => {
     list = null;
   }
 
-  const listDetail = id === undefined
+  const listDetail = !Types.ObjectId.isValid(id)
     ? (
         <PlaceholderText>Select a list on the left to see more details</PlaceholderText>
       )
