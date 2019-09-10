@@ -3,10 +3,13 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import {
   ButtonPrimary,
-  ButtonSecondary,
+  GhostButton,
+  lightBaseColor,
+  lightBorderColor,
+  semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
-import { Mountain, User } from '../../../types/graphQLTypes';
-import { convertFieldsToDate } from '../../../Utils';
+import { Mountain, User, State, Region, PeakList } from '../../../types/graphQLTypes';
+import { convertFieldsToDate, convertDMS } from '../../../Utils';
 import MountainCompletionModal, {
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
@@ -16,12 +19,74 @@ import {
   formatDate,
   getDates,
 } from '../../peakLists/Utils';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import styled from 'styled-components';
+
+const titleWidth = 150; // in px
+
+const ItemTitle = styled.div`
+  text-transform: uppercase;
+  color: ${lightBaseColor};
+  font-weight: ${semiBoldFontBoldWeight};
+`;
+
+const ItemTitleShort = styled(ItemTitle)`
+  width: ${titleWidth}px;
+`;
+
+const ContentItem = styled.div`
+  border-bottom: solid 1px ${lightBorderColor};
+  padding: 0.5rem 0;
+`;
+
+const HorizontalContentItem = styled(ContentItem)`
+  display: flex;
+`;
+
+const VerticalContentItem = styled(ContentItem)`
+  margin-bottom: 0.5rem;
+`;
+
+const BasicListItem = styled.div`
+  font-size: 0.9rem;
+`;
+
+const AscentListItem = styled(BasicListItem)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-basis: 1;
+
+  &:hover {
+    background-color: ${lightBorderColor};
+  }
+`;
+
+const AddAscentButton = styled(ButtonPrimary)`
+  margin-top: 1rem;
+`;
 
 const GET_MOUNTAIN_LIST = gql`
   query getMountain($id: ID!, $userId: ID!) {
     mountain(id: $id) {
       id
       name
+      elevation
+      prominence
+      latitude
+      longitude
+      state {
+        id
+        name
+        regions {
+          id
+          name
+        }
+      }
+      lists {
+        id
+        name
+      }
     }
     user(id: $userId) {
       id
@@ -39,6 +104,22 @@ interface QuerySuccessResponse {
   mountain: {
     id: Mountain['name'];
     name: Mountain['name'];
+    elevation: Mountain['elevation'];
+    prominence: Mountain['prominence'];
+    latitude: Mountain['latitude'];
+    longitude: Mountain['longitude'];
+    state: {
+      id: State['id'];
+      name: State['name'];
+      regions: {
+        id: Region['id'];
+        name: Region['name'];
+      }[];
+    };
+    lists: {
+      id: PeakList['id'];
+      name: PeakList['name'];
+    }[];
   };
   user: {
     id: User['name'];
@@ -111,57 +192,130 @@ const MountainDetail = (props: Props) => {
     />
   );
 
+  const [dateToRemove, setDateToRemove] = useState<DateObject | null>(null);
+
+  const closeAreYouSureModal = () => {
+    setDateToRemove(null);
+  };
+
+  const confirmRemove = () => {
+    if (dateToRemove !== null) {
+      removeMountainCompletion({ variables: { userId, mountainId: id, date: getDateAsString(dateToRemove)}});
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureModal = dateToRemove === null ? null : (
+    <AreYouSureModal
+      onConfirm={confirmRemove}
+      onCancel={closeAreYouSureModal}
+      title={'Are you sure'}
+      text={`Remove ${formatDate(dateToRemove)} from your ascents?`}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
+
   if (loading === true) {
     return null;
   } else if (error !== undefined) {
     console.error(error);
     return null;
   } else if (data !== undefined) {
-    const { mountain: { name }, user } = data;
+    const { mountain: { name, elevation, prominence, state, lists, latitude, longitude }, user } = data;
     const userMountains = (user && user.mountains) ? user.mountains : [];
     const completedDates = userMountains.find(
       (completedMountain) => completedMountain.mountain.id === id);
     let completionContent: React.ReactElement<any> | null;
     if (completedDates && completedDates.dates.length) {
       const dates = getDates(completedDates.dates);
-      const completionListItems = dates.map(date => (
-        <li key={date.dateAsNumber}>
-          {formatDate(date)}
-          <ButtonSecondary
+      const completionListItems = dates.map((date, index) => (
+        <AscentListItem key={date.dateAsNumber + index.toString()}>
+          <strong>{formatDate(date)}</strong>
+          <GhostButton
             onClick={
-              () => removeMountainCompletion({ variables: { userId, mountainId: id, date: getDateAsString(date)}})
+              () => setDateToRemove(date)
             }
           >
             Remove Ascent
-          </ButtonSecondary>
-        </li>
+          </GhostButton>
+        </AscentListItem>
       ));
       completionContent = (
         <>
-          <h2>Ascent dates</h2>
-          <ul>
-            {completionListItems}
-          </ul>
-          <ButtonPrimary onClick={() => setEditMountainId(id)}>
+          {completionListItems}
+          <AddAscentButton onClick={() => setEditMountainId(id)}>
             Add another ascent
-          </ButtonPrimary>
+          </AddAscentButton>
+          {areYouSureModal}
         </>
       );
     } else {
       completionContent = (
         <>
-          <h2>Completed dates</h2>
-          <p>You have not yet hiked {name}.</p>
-          <ButtonPrimary onClick={() => setEditMountainId(id)}>
+          <BasicListItem>You have not yet hiked {name}.</BasicListItem>
+          <AddAscentButton onClick={() => setEditMountainId(id)}>
             Add Ascent Date
-          </ButtonPrimary>
+          </AddAscentButton>
         </>
       );
     }
+
+    const regions = state.regions.map((region, index) => {
+      if (index === state.regions.length - 1 ) {
+        return `${region.name}`;
+      } else {
+        return `${region.name}, `;
+      }
+    });
+
+    const regionsContent = regions.length < 1 ? null : (
+        <HorizontalContentItem>
+          <ItemTitleShort>Regions:</ItemTitleShort>
+          <strong>{regions}</strong>
+        </HorizontalContentItem>
+      );
+
+    const listsText = lists.map((list, index) => {
+      if (index === lists.length - 1 ) {
+        return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
+      } else {
+        return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
+      }
+    });
+
+    const listsContent = listsText.length < 1 ? null : (
+        <VerticalContentItem>
+          <ItemTitle>Lists {name} appears on:</ItemTitle>
+          {listsText}
+        </VerticalContentItem>
+      );
+    const {lat, long} = convertDMS(latitude, longitude);
     return (
       <>
         <h1>{name}</h1>
-        {completionContent}
+        <HorizontalContentItem>
+          <ItemTitleShort>Elevation:</ItemTitleShort>
+          <strong>{elevation}ft</strong>
+        </HorizontalContentItem>
+        <HorizontalContentItem>
+          <ItemTitleShort>Prominence:</ItemTitleShort>
+          <strong>{prominence}ft</strong>
+        </HorizontalContentItem>
+        <HorizontalContentItem>
+          <ItemTitleShort>Location:</ItemTitleShort>
+          <strong>{lat}, {long}</strong>
+        </HorizontalContentItem>
+        <HorizontalContentItem>
+          <ItemTitleShort>State:</ItemTitleShort>
+          <strong>{state.name}</strong>
+        </HorizontalContentItem>
+        {regionsContent}
+        {listsContent}
+        <VerticalContentItem>
+          <ItemTitle>Ascent dates:</ItemTitle>
+          {completionContent}
+        </VerticalContentItem>
         {editMountainModal}
       </>
     );

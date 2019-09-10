@@ -30,6 +30,16 @@ const YearInput = styled(InputBase)`
   text-align: center;
 `;
 
+const ButtonWrapper = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const CancelButton = styled(ButtonSecondary)`
+  margin-right: 1rem;
+`;
+
 const ADD_MOUNTAIN_COMPLETION = gql`
   mutation addMountainCompletion(
     $userId: ID!,
@@ -67,10 +77,11 @@ interface Props {
   editMountainId: string;
   closeEditMountainModalModal: () => void;
   userId: string;
+  textNote?: React.ReactElement<any> | null;
 }
 
 const MountainCompletionModal = (props: Props) => {
-  const { editMountainId, closeEditMountainModalModal, userId } = props;
+  const { editMountainId, closeEditMountainModalModal, userId, textNote } = props;
 
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
@@ -91,8 +102,8 @@ const MountainCompletionModal = (props: Props) => {
   return (
     <Modal
       onClose={closeEditMountainModalModal}
-      width={'300px'}
-      height={'300px'}
+      width={'240px'}
+      height={'auto'}
     >
       <DateInputContainer>
         <MonthInput
@@ -114,12 +125,15 @@ const MountainCompletionModal = (props: Props) => {
           type='number'
         />
       </DateInputContainer>
-      <ButtonSecondary onClick={closeEditMountainModalModal}>
-        Cancel
-      </ButtonSecondary>
-      <ButtonPrimary onClick={() => validateAndAddMountainCompletion(editMountainId)}>
-        Mark Complete
-      </ButtonPrimary>
+      {textNote}
+      <ButtonWrapper>
+        <CancelButton onClick={closeEditMountainModalModal}>
+          Cancel
+        </CancelButton>
+        <ButtonPrimary onClick={() => validateAndAddMountainCompletion(editMountainId)}>
+          Mark Complete
+        </ButtonPrimary>
+      </ButtonWrapper>
     </Modal>
   );
 };

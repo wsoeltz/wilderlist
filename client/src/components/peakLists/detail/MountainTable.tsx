@@ -86,7 +86,7 @@ const MountainColumnTitleButton = styled(TitleBase)`
   }
 `;
 
-const GridNote = styled.div`
+const Note = styled.div`
   color: ${placeholderColor};
   font-size: 0.8rem;
   padding-left: 0.8rem;
@@ -116,11 +116,45 @@ const MountainTable = (props: Props) => {
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
   };
+  let textNote: React.ReactElement<any> | null;
+  if (type === PeakListVariants.standard) {
+    textNote = (
+        <Note>
+          Entering a date is optional for <strong>Standard</strong> lists.
+          However an unspecific date may not count towards other lists that contain this peak.
+        </Note>
+    );
+  } else if (type === PeakListVariants.winter) {
+    textNote = (
+        <Note>
+          <strong>Winter</strong> lists require the date to be in between the <strong>winter solstice</strong> and the <strong>vernal equinox</strong> for a given year.
+          You may still enter other dates here, and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
+        </Note>
+    );
+  } else if (type === PeakListVariants.fourSeason) {
+    textNote = (
+        <Note>
+          <strong>4-Season</strong> lists require dates to be in between the official solstice and equinox for a given season and year.
+          You may still enter other dates here, and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
+        </Note>
+    );
+  } else if (type === PeakListVariants.grid) {
+    textNote = (
+        <Note>
+          <strong>Grid</strong> lists require dates to be a day within the specified month.
+          You may still enter other dates here, and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
+        </Note>
+    );
+  } else {
+    failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
+    textNote = null;
+  }
   const editMountainModal = editMountainId === null ? null : (
     <MountainCompletionModal
       editMountainId={editMountainId}
       closeEditMountainModalModal={closeEditMountainModalModal}
       userId={user.id}
+      textNote={textNote}
     />
   );
 
@@ -180,10 +214,10 @@ const MountainTable = (props: Props) => {
   }
 
   const gridNote = type === PeakListVariants.grid
-    ? (<GridNote>
+    ? (<Note>
         <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
         <div>For example, <em>March 3, 2014</em> would show as <em>3, '14</em>.</div>
-      </GridNote>)
+      </Note>)
     : null;
 
   return (

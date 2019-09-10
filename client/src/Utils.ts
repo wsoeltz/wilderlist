@@ -98,12 +98,15 @@ const getDay = (day: string, month: number, year: number) => {
 };
 
 export const convertFieldsToDate = (day: string, month: string, year: string) => {
-  // Check if valid month
-  const validMonth = getMonth(month);
   // Check if valid year
   const validYear = getYear(year);
-  if (validMonth === null || validYear === null) {
-    return {error: 'Invalid month or year', date: undefined};
+  if (validYear === null) {
+    return {error: 'Invalid year', date: undefined};
+  }
+  // Check if valid month
+  const validMonth = getMonth(month);
+  if (validMonth === null) {
+    return {error: 'Invalid month', date: undefined};
   }
   // Check if valid day for the month and year
   const validDay = getDay(day, parseInt(validMonth, 10), parseInt(validYear, 10));
@@ -163,3 +166,17 @@ export const getSeason = (year: number, month: number, day: number): Seasons | u
 export const getSolsticeAndEquinox = (year: number) => {
   return getSolsticeAndEquinoxUtility(year);
 };
+
+export const convertDMS = ( lat: number, lng: number ) => {
+    const convertLat = Math.abs(lat);
+    const LatDeg = Math.floor(convertLat);
+    const LatMin = (Math.floor((convertLat - LatDeg) * 60));
+    const LatCardinal = ((lat > 0) ? "n" : "s");
+
+    const convertLng = Math.abs(lng);
+    const LngDeg = Math.floor(convertLng);
+    const LngMin = (Math.floor((convertLng - LngDeg) * 60));
+    const LngCardinal = ((lng > 0) ? "e" : "w");
+
+    return { lat: LatDeg + LatCardinal + LatMin, long: + LngDeg + LngCardinal + LngMin};
+}
