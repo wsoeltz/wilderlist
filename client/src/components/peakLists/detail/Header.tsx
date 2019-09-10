@@ -8,25 +8,29 @@ import {
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
   AddRemovePeakListVariables,
 } from '../list';
-import { getStatesOrRegion } from '../list/PeakListCard';
+import {
+  BigText,
+  getStatesOrRegion,
+  TextRight,
+} from '../list/PeakListCard';
 import MountainLogo from '../mountainLogo';
-import { completedPeaks } from '../Utils';
+import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
 import {
   MountainDatum,
   PeakListDatum,
   UserDatum,
 } from './PeakListDetail';
-import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 
 const Root = styled.div`
   display: grid;
   grid-template-columns: 12.5rem 1fr auto;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: auto auto auto auto;
   grid-column-gap: 1rem;
 `;
 
@@ -59,6 +63,13 @@ const LogoContainer = styled.div`
   grid-column: 1;
 `;
 
+const ActiveListContentContainer = styled(ListInfo)`
+  display: flex;
+  justify-content: space-between;
+  grid-column: 1 / 4;
+  grid-row: 4;
+`;
+
 const REMOVE_PEAK_LIST_FROM_USER = gql`
   mutation removePeakListFromUser($userId: ID!, $peakListId: ID!) {
     removePeakListFromUser(userId: $userId, peakListId: $peakListId) {
@@ -81,7 +92,7 @@ interface Props {
 
 const Header = (props: Props) => {
   const {
-    mountains, user, peakList: { name, id, shortName, type }, peakList,
+    mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
     completedAscents,
   } = props;
 
@@ -97,10 +108,9 @@ const Header = (props: Props) => {
   };
 
   const confirmRemove = () => {
-    removePeakListFromUser({variables: {userId: user.id,  peakListId: id}})
+    removePeakListFromUser({variables: {userId: user.id,  peakListId: id}});
     closeAreYouSureModal();
-  }
-
+  };
 
   const areYouSureModal = isRemoveListModalOpen === false ? null : (
     <AreYouSureModal
@@ -137,21 +147,36 @@ const Header = (props: Props) => {
     failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
     totalRequiredAscents = 0;
   }
-  let peakCount: React.ReactElement<any>;
-  if (props.comparisonAscents === undefined || props.comparisonUser === undefined) {
-    peakCount = active === false
-    ? <>{`${totalRequiredAscents} Total Ascents`}</>
-    : <>{`${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`}</>;
-  } else {
-    const numComparisonAscents = completedPeaks(mountains, props.comparisonAscents, type);
-    peakCount = (
-      <>
-        <div>{`${user.name}: ${numCompletedAscents}/${totalRequiredAscents} Completed Ascents`}</div>
-        <div>{`${props.comparisonUser.name}: ${numComparisonAscents}/${totalRequiredAscents} Completed Ascents`}</div>
-      </>
+
+  let listInfoContent: React.ReactElement<any> | null;
+  if (active === true) {
+    const latestDate = getLatestAscent(mountains, completedAscents, type);
+
+    let latestDateText: React.ReactElement<any>;
+    if (latestDate !== undefined) {
+      const latestAscentText = numCompletedAscents === totalRequiredAscents ? 'Completed'
+        : 'Latest ascent';
+      const preposition = isNaN(latestDate.day) || isNaN(latestDate.month) ? 'in' : 'on';
+      latestDateText = (
+        <>
+          {latestAscentText} {preposition} <BigText>{formatDate(latestDate)}</BigText>
+        </>
+      );
+    } else {
+      latestDateText = <>No completed ascents yet</>;
+    }
+    listInfoContent = (
+      <ActiveListContentContainer>
+        <div><BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText> Completed Ascents</div>
+        <TextRight>{latestDateText}</TextRight>
+      </ActiveListContentContainer>
     );
+
+  } else {
+    listInfoContent = null;
   }
 
+  const mountainLogoId = parent === null ? id : parent.id;
   return (
     <Root>
       <TitleContent>
@@ -160,12 +185,12 @@ const Header = (props: Props) => {
           {getStatesOrRegion(mountains)}
         </ListInfo>
         <ListInfo>
-          {peakCount}
+          {totalRequiredAscents} Total Ascents
         </ListInfo>
       </TitleContent>
       <LogoContainer>
         <MountainLogo
-          id={id}
+          id={mountainLogoId}
           title={name}
           shortName={shortName}
           variant={type}
@@ -176,6 +201,7 @@ const Header = (props: Props) => {
       <BeginRemoveListButtonContainer>
         {beginRemoveButton}
       </BeginRemoveListButtonContainer>
+      {listInfoContent}
       {areYouSureModal}
     </Root>
   );

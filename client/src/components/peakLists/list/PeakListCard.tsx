@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { listDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
 import {
+  boldFontWeight,
   ButtonPrimary,
   Card,
 } from '../../../styling/styleUtils';
@@ -98,11 +99,12 @@ export const TextRight = styled.div`
   }
 `;
 
-const BigText = styled.span`
-  font-size: 1.5rem;
-  transform: translateY(0.1rem);
+export const BigText = styled.span`
+  font-size: 1.3rem;
+  transform: translateY(0.04rem);
   display: inline-block;
-  margin-right: 0.3rem;
+  margin-right: 0.1rem;
+  font-weight: ${boldFontWeight};
 `;
 
 interface RegionDatum {
@@ -262,6 +264,7 @@ const PeakListCard = (props: Props) => {
       </>
     );
   }
+  const mountainLogoId = parent === null ? id : parent.id;
   const desktopURL = isCurrentUser === true ? searchListDetailLink(id) : listDetailLink(id);
   return (
     <LinkWrapper mobileURL={listDetailLink(id)} desktopURL={desktopURL}>
@@ -274,7 +277,7 @@ const PeakListCard = (props: Props) => {
         </ListInfo>
         <LogoContainer>
           <MountainLogo
-            id={id}
+            id={mountainLogoId}
             title={name}
             shortName={shortName}
             variant={type}

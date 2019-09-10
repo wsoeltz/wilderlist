@@ -5,6 +5,9 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../../styling/Grid';
+import {
+  PlaceholderText,
+} from '../../../styling/styleUtils';
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import PeakListDetail from './PeakListDetail';
 
@@ -18,7 +21,7 @@ const PeakListDetailPage = (props: Props) => {
 
   const mountainDetail = mountainId === undefined
     ? (
-        <h2>Select a mountain to see more details</h2>
+        <PlaceholderText>Select a mountain to see its details and your ascents</PlaceholderText>
       )
     : (
         <MountainDetail userId={userId} id={mountainId} />

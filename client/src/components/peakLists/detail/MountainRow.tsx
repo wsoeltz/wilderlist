@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
 import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
@@ -6,16 +7,19 @@ import {
   lightBaseColor,
   lightBorderColor,
   semiBoldFontBoldWeight,
+  successColor,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   failIfValidOrNonExhaustive,
   formatNumberWithCommas,
+  mobileSize,
 } from '../../../Utils';
 import { Months, Seasons } from '../../../Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import {
   formatDate,
+  formatGridDate,
   getFourSeasonCompletion,
   getGridCompletion,
   getStandardCompletion,
@@ -30,6 +34,8 @@ export const elevationColumn = 2;
 export const prominenceColumn = 3;
 export const buttonColumn = 4;
 export const horizontalPadding = 0.6; // in rem
+export const smallPadding = 0.5; // in rem
+export const extraSmallPadding = 0.3; // in rem
 
 export const seasonColumns = {
   [Seasons.summer]: 2,
@@ -52,17 +58,31 @@ export const monthColumns = {
   [Months.november]: 12,
   [Months.december]: 13,
 };
+const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
 export const TableCellBase = styled.div`
   font-weight: ${semiBoldFontBoldWeight};
   padding: 0.8rem ${horizontalPadding}rem;
   display: flex;
   align-items: center;
+
+  @media ${smallColumnMediaQuery} {
+    font-size: 0.9rem;
+    padding: 0.6rem ${smallPadding}rem;
+  }
+
+  @media (max-width: 360px) {
+    padding: 0.5rem ${extraSmallPadding}rem;
+  }
 `;
 
 export const NameCell = styled(TableCellBase)`
   grid-column: ${nameColumn};
-  font-size: 1.2rem;
+  line-height: 1.4;
+
+  @media ${smallColumnMediaQuery} {
+    font-size: 1rem;
+  }
 `;
 
 const TableCell = styled(TableCellBase)`
@@ -71,14 +91,65 @@ const TableCell = styled(TableCellBase)`
   color: ${lightBaseColor};
 `;
 
+const GridNameCell = styled(NameCell)`
+  font-size: 1rem;
+
+  @media ${smallColumnMediaQuery} {
+    font-size: 0.8rem;
+    padding: 0.5rem ${extraSmallPadding}rem;
+  }
+`;
+
+const GridCell = styled(TableCellBase)`
+  font-size: 0.9rem;
+  padding: 0.5rem 0.1rem;
+  justify-content: center;
+  border-left: solid 1px ${lightBorderColor};
+
+  @media ${smallColumnMediaQuery} {
+    padding: 0.5rem 0.1rem;
+  }
+`;
+
 export const MountainName = styled(DynamicLink)`
   font-weight: ${semiBoldFontBoldWeight};
+`;
+
+const CalendarButton = styled(FontAwesomeIcon)`
+  color: #fff;
+`;
+
+const CheckMark = styled(FontAwesomeIcon)`
+  font-size: 1.1rem;
+  margin-right: 0.3rem;
+`;
+
+const CompletedDateText = styled.div`
+  color: ${successColor};
+  font-size: 0.9rem;
+  text-align: center;
 `;
 
 const MountainButton = styled(TableCellBase)`
   grid-column: ${buttonColumn};
   justify-content: flex-end;
 `;
+
+const MarkDoneButton = styled(ButtonSecondary)`
+  @media ${smallColumnMediaQuery} {
+    font-size: 0.7rem;
+    padding: 0.3rem;
+  }
+`;
+
+const CompletedDate = ({date}: {date: string}) => {
+  return (
+    <CompletedDateText>
+      <CheckMark icon='check' />
+      {date}
+    </CompletedDateText>
+  );
+};
 
 interface Props {
   index: number;
@@ -92,10 +163,12 @@ interface Props {
 const MountainRow = (props: Props) => {
   const { index, mountain, type, setEditMountainId, userMountains, peakListId } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
+  const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
+  const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
   const completeButton: React.ReactElement = (
-    <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
-      Mark done
-    </ButtonSecondary>
+    <MarkDoneButton onClick={() => setEditMountainId(mountain.id)}>
+      <CalendarButton icon='calendar-alt' /> {completeButtonText}
+    </MarkDoneButton>
   );
 
   let peakCompletedContent: React.ReactElement<any> | null = completeButton;
@@ -106,22 +179,30 @@ const MountainRow = (props: Props) => {
       const completedDate = getStandardCompletion(completedDates);
       if (completedDate !== null && completedDate !== undefined) {
         const formattedDate = formatDate(completedDate);
-        peakCompletedContent = <em>{formattedDate}</em>;
+        peakCompletedContent = <CompletedDate date={formattedDate} />;
       }
     } else if (type === PeakListVariants.winter) {
       const completedDate = getWinterCompletion(completedDates);
       if (completedDate !== null && completedDate !== undefined) {
         const formattedDate = formatDate(completedDate);
-        peakCompletedContent = <em>{formattedDate}</em>;
+        peakCompletedContent = <CompletedDate date={formattedDate} />;
       }
     } else if (type === PeakListVariants.fourSeason) {
       const completedDate = getFourSeasonCompletion(completedDates);
       if (completedDate !== null) {
         const {summer, fall, spring, winter} = completedDate;
-        const summerDate = summer !== undefined ? formatDate(summer) : completeButton;
-        const fallDate = fall !== undefined ? formatDate(fall) : completeButton;
-        const springDate = spring !== undefined ? formatDate(spring) : completeButton;
-        const winterDate = winter !== undefined ? formatDate(winter) : completeButton;
+        const summerDate = summer !== undefined
+          ? <CompletedDate date={formatDate(summer)} />
+          : completeButton;
+        const fallDate = fall !== undefined
+          ? <CompletedDate date={formatDate(fall)} />
+          : completeButton;
+        const springDate = spring !== undefined
+          ? <CompletedDate date={formatDate(spring)} />
+          : completeButton;
+        const winterDate = winter !== undefined
+          ? <CompletedDate date={formatDate(winter)} />
+          : completeButton;
         peakCompletedContent = (
           <>
             <TableCell
@@ -151,66 +232,126 @@ const MountainRow = (props: Props) => {
           may, june, july, august, september,
           october, november, december,
         } = completedDate;
-        const januaryDate = january !== undefined ? formatDate(january) : completeButton;
-        const februaryDate = february !== undefined ? formatDate(february) : completeButton;
-        const marchDate = march !== undefined ? formatDate(march) : completeButton;
-        const aprilDate = april !== undefined ? formatDate(april) : completeButton;
-        const mayDate = may !== undefined ? formatDate(may) : completeButton;
-        const juneDate = june !== undefined ? formatDate(june) : completeButton;
-        const julyDate = july !== undefined ? formatDate(july) : completeButton;
-        const augustDate = august !== undefined ? formatDate(august) : completeButton;
-        const septemberDate = september !== undefined ? formatDate(september) : completeButton;
-        const octoberDate = october !== undefined ? formatDate(october) : completeButton;
-        const novemberDate = november !== undefined ? formatDate(november) : completeButton;
-        const decemberDate = december !== undefined ? formatDate(december) : completeButton;
+        const januaryDate = january !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(january)}</>} />
+          : completeButton;
+        const februaryDate = february !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(february)}</>} />
+          : completeButton;
+        const marchDate = march !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(march)}</>} />
+          : completeButton;
+        const aprilDate = april !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(april)}</>} />
+          : completeButton;
+        const mayDate = may !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(may)}</>} />
+          : completeButton;
+        const juneDate = june !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(june)}</>} />
+          : completeButton;
+        const julyDate = july !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(july)}</>} />
+          : completeButton;
+        const augustDate = august !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(august)}</>} />
+          : completeButton;
+        const septemberDate = september !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(september)}</>} />
+          : completeButton;
+        const octoberDate = october !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(october)}</>} />
+          : completeButton;
+        const novemberDate = november !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(november)}</>} />
+          : completeButton;
+        const decemberDate = december !== undefined
+          ? <CompletedDateText children={<>{formatGridDate(december)}</>} />
+          : completeButton;
         peakCompletedContent = (
           <>
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.january]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.january],
+                borderColor,
+              }}
               children={januaryDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.february]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.february],
+                borderColor,
+              }}
               children={februaryDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.march]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.march],
+                borderColor,
+              }}
               children={marchDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.april]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.april],
+                borderColor,
+              }}
               children={aprilDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.may]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.may],
+                borderColor,
+              }}
               children={mayDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.june]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.june],
+                borderColor,
+              }}
               children={juneDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.july]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.july],
+                borderColor,
+              }}
               children={julyDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.august]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.august],
+                borderColor,
+              }}
               children={augustDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.september]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.september],
+                borderColor,
+              }}
               children={septemberDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.october]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.october],
+                borderColor,
+              }}
               children={octoberDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.november]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.november],
+                borderColor,
+              }}
               children={novemberDate}
             />
-            <TableCell
-              style={{backgroundColor, gridColumn: monthColumns[Months.december]}}
+            <GridCell
+              style={{
+                backgroundColor, gridColumn: monthColumns[Months.december],
+                borderColor,
+              }}
               children={decemberDate}
             />
           </>
@@ -244,52 +385,88 @@ const MountainRow = (props: Props) => {
     } else if (type === PeakListVariants.grid) {
       peakCompletedContent = (
         <>
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.january]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.january],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.february]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.february],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.march]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.march],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.april]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.april],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.may]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.may],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.june]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.june],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.july]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.july],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.august]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.august],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.september]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.september],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.october]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.october],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.november]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.november],
+              borderColor,
+            }}
             children={completeButton}
           />
-          <TableCell
-            style={{backgroundColor, gridColumn: monthColumns[Months.december]}}
+          <GridCell
+            style={{
+              backgroundColor, gridColumn: monthColumns[Months.december],
+              borderColor,
+            }}
             children={completeButton}
           />
         </>
@@ -318,16 +495,19 @@ const MountainRow = (props: Props) => {
     columnDetailContent = null;
   }
 
+  const NameContainer = type === PeakListVariants.grid || type === PeakListVariants.fourSeason
+    ? GridNameCell : NameCell;
+
   return (
     <>
-      <NameCell style={{backgroundColor}}>
+      <NameContainer style={{backgroundColor}}>
         <MountainName
           mobileURL={mountainDetailLink(mountain.id)}
           desktopURL={listDetailWithMountainDetailLink(peakListId, mountain.id)}
         >
           {mountain.name}
         </MountainName>
-      </NameCell>
+      </NameContainer>
       {columnDetailContent}
     </>
   );

@@ -170,7 +170,6 @@ export const ButtonPrimaryLink = styled(DynamicLink)`
   }
 `;
 
-
 export const GhostButton = styled(ButtonBase)`
   color: ${secondaryColor};
   background-color: transparent;
@@ -199,7 +198,6 @@ export const Label = styled.span`
   font-size: 1rem;
   letter-spacing: 0.01rem;
 `;
-
 
 export const PaginationContainer = styled.div`
   display: flex;

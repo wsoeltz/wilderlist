@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { Types } from 'mongoose';
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
@@ -9,18 +10,16 @@ import {
   SearchContainer,
 } from '../../../styling/Grid';
 import {
-  PaginationContainer,
   Next,
-  Prev,
+  PaginationContainer,
   PlaceholderText,
+  Prev,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
-import { Types } from 'mongoose';
-
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(

@@ -1,10 +1,10 @@
 import React from 'react';
+import styled from 'styled-components';
 import {
-  ButtonWarning,
   ButtonSecondary,
+  ButtonWarning,
 } from '../../styling/styleUtils';
 import Modal from './Modal';
-import styled from 'styled-components';
 
 const ButtonWrapper = styled.div`
   display: flex;

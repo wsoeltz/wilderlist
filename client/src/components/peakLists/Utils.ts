@@ -75,7 +75,12 @@ export const getWinterCompletion = ({dates}: CompletedMountain) => {
 
 export const getFourSeasonCompletion = ({dates}: CompletedMountain) => {
   if (dates.length === 0) {
-    return null;
+    return {
+      [Seasons.winter]: undefined,
+      [Seasons.summer]: undefined,
+      [Seasons.fall]: undefined,
+      [Seasons.spring]: undefined,
+    };
   }
   const sortedDates = getDates(dates);
   return {
@@ -87,11 +92,24 @@ export const getFourSeasonCompletion = ({dates}: CompletedMountain) => {
 };
 
 export const getGridCompletion = ({dates}: CompletedMountain) => {
-    if (dates.length === 0) {
-    return null;
-  }
-    const sortedDates = getDates(dates);
+  if (dates.length === 0) {
     return {
+      [Months.january]: undefined,
+      [Months.february]: undefined,
+      [Months.march]: undefined,
+      [Months.april]: undefined,
+      [Months.may]: undefined,
+      [Months.june]: undefined,
+      [Months.july]: undefined,
+      [Months.august]: undefined,
+      [Months.september]: undefined,
+      [Months.october]: undefined,
+      [Months.november]: undefined,
+      [Months.december]: undefined,
+    };
+  }
+  const sortedDates = getDates(dates);
+  return {
     [Months.january]: sortedDates.find(({day, month, year}) => isDateInMonth(day, month, year, 1)),
     [Months.february]: sortedDates.find(({day, month, year}) => isDateInMonth(day, month, year, 2)),
     [Months.march]: sortedDates.find(({day, month, year}) => isDateInMonth(day, month, year, 3)),
@@ -127,6 +145,22 @@ export const formatDate = (date: DateObject) => {
     return month + '/' + year;
   }
   return month + '/' + day + '/' + year;
+};
+
+export const formatGridDate = (date: DateObject) => {
+    const { day, month, year } = date;
+  // if year isn't known
+    // return 'unknown date'
+  // else if just year (or year and day, but no month) is known
+    // return just year '2018'
+  // else if year && month is known
+    // return month and year '3/2018'
+  // else if everything is known
+    // return full date 3/16/2018
+    if (isNaN(year) && isNaN(month) && isNaN(day)) {
+    return 'unknown date';
+  }
+    return day + `, '` + year.toString().slice(-2);
 };
 
 export const completedPeaks = (

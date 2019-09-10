@@ -3,11 +3,13 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
   lightBorderColor,
+  placeholderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   failIfValidOrNonExhaustive,
+  mobileSize,
   Months,
   Seasons,
 } from '../../../Utils';
@@ -16,16 +18,20 @@ import MountainRow from './MountainRow';
 import {
   buttonColumn,
   elevationColumn,
+  extraSmallPadding,
   horizontalPadding,
   monthColumns,
   nameColumn,
   prominenceColumn,
   seasonColumns,
+  smallPadding,
 } from './MountainRow';
 import {
   MountainDatum,
   UserDatum,
 } from './PeakListDetail';
+
+const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
 export const Root = styled.div`
   display: grid;
@@ -38,21 +44,61 @@ const TitleBase = styled.div`
   align-items: flex-end;
   padding: ${horizontalPadding}rem;
   border-bottom: solid 2px ${lightBorderColor};
+
+  @media ${smallColumnMediaQuery} {
+    font-size: 0.8rem;
+    padding: ${smallPadding}rem;
+  }
+
+  @media (max-width: 360px) {
+    padding: ${extraSmallPadding}rem;
+  }
 `;
 
 export const MountainColumnTitleName = styled(TitleBase)`
   grid-column: ${nameColumn};
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+
+  @media ${smallColumnMediaQuery} {
+    font-size: 0.95rem;
+  }
 `;
 
 export const TitleCell = styled(TitleBase)`
   justify-content: center;
 `;
 
+const GridTitle = styled(TitleCell)`
+  padding: 0.5rem 0.1rem;
+
+  @media ${smallColumnMediaQuery} {
+    padding: 0.5rem 0.1rem;
+  }
+`;
+
 const MountainColumnTitleButton = styled(TitleBase)`
   grid-column: ${buttonColumn};
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   justify-content: flex-end;
+
+  @media ${smallColumnMediaQuery} {
+    font-size: 0.95rem;
+  }
+`;
+
+const GridNote = styled.div`
+  color: ${placeholderColor};
+  font-size: 0.8rem;
+  padding-left: 0.8rem;
+  position: relative;
+  margin: 1rem 0;
+
+  &:before {
+    content: '*';
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 `;
 
 interface Props {
@@ -99,7 +145,7 @@ const MountainTable = (props: Props) => {
       <>
         <TitleCell style={{gridColumn: elevationColumn}}>Elevation</TitleCell>
         <TitleCell style={{gridColumn: prominenceColumn}}>Prominence</TitleCell>
-        <MountainColumnTitleButton>Completed</MountainColumnTitleButton>
+        <MountainColumnTitleButton>Done</MountainColumnTitleButton>
       </>
     );
   } else if (type === PeakListVariants.fourSeason) {
@@ -114,18 +160,18 @@ const MountainTable = (props: Props) => {
   } else if (type === PeakListVariants.grid) {
     titleColumns = (
       <>
-        <TitleCell style={{gridColumn: monthColumns[Months.january]}}>Jan</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.february]}}>Feb</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.march]}}>Mar</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.april]}}>Apr</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.may]}}>May</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.june]}}>Jun</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.july]}}>Jul</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.august]}}>Aug</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.september]}}>Sep</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.october]}}>Oct</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.november]}}>Nov</TitleCell>
-        <TitleCell style={{gridColumn: monthColumns[Months.december]}}>Dec</TitleCell>
+        <GridTitle style={{gridColumn: monthColumns[Months.january]}}>Jan</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.february]}}>Feb</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.march]}}>Mar</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.april]}}>Apr</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.may]}}>May</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.june]}}>Jun</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.july]}}>Jul</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.august]}}>Aug</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.september]}}>Sep</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.october]}}>Oct</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.november]}}>Nov</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.december]}}>Dec</GridTitle>
       </>
     );
   } else {
@@ -133,13 +179,23 @@ const MountainTable = (props: Props) => {
     titleColumns = null;
   }
 
+  const gridNote = type === PeakListVariants.grid
+    ? (<GridNote>
+        <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
+        <div>For example, <em>March 3, 2014</em> would show as <em>3, '14</em>.</div>
+      </GridNote>)
+    : null;
+
   return (
-    <Root>
-      <MountainColumnTitleName>Mountain</MountainColumnTitleName>
-      {titleColumns}
-      {mountainRows}
-      {editMountainModal}
-    </Root>
+    <>
+      {gridNote}
+      <Root>
+        <MountainColumnTitleName>Mountain</MountainColumnTitleName>
+        {titleColumns}
+        {mountainRows}
+        {editMountainModal}
+      </Root>
+    </>
   );
 
 };

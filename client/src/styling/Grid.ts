@@ -113,9 +113,15 @@ export const ContentBody = styled.div`
   overflow: auto;
 `;
 
+const mediumColumnBreakpoint = 1400;
+
 export const ContentLeftLarge = styled(BaseContentElement)`
   grid-column: ${gridLines.pageLeft} / ${gridLines.pageRight};
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
+
+  @media(min-width: ${mediumColumnBreakpoint}px) {
+    grid-column: ${gridLines.pageLeft} / ${gridLines.column6};
+  }
 
   @media(min-width: ${mobileSize}px) {
     grid-column: ${gridLines.pageLeft} / ${gridLines.column7};
@@ -126,6 +132,10 @@ export const ContentRightSmall = styled(BaseContentElement)`
   height: 0;
   width: 0;
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
+
+  @media(min-width: ${mediumColumnBreakpoint}px) {
+    grid-column: ${gridLines.column6} / ${gridLines.pageRight};
+  }
 
   @media(min-width: ${mobileSize}px) {
     height: auto;

@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { Types } from 'mongoose';
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
@@ -17,7 +18,6 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import UserProfile from '../detail/UserProfile';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
-import { Types } from 'mongoose';
 
 const Next = styled(ButtonSecondary)`
 `;

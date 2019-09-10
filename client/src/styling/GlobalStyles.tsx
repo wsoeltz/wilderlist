@@ -1,5 +1,5 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCaretDown, faCaretUp, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faCaretDown, faCaretUp, faCheck, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components';
 import {
   baseColor,
@@ -9,7 +9,7 @@ import {
 } from './styleUtils';
 
 // Add all font awesome icons here
-library.add(faCaretDown, faCaretUp, faSearch);
+library.add(faCaretDown, faCaretUp, faSearch, faCalendarAlt, faCheck);
 
 const GlobalStyles = createGlobalStyle`
 
