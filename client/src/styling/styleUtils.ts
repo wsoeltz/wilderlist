@@ -18,6 +18,7 @@ export const tertiaryColor = '#f3f3f3'; // really light gray color for use as a 
 export const linkColor = '#2b5b37'; // greenish blue color for use with links
 export const linkHoverColor = '#3dad15'; // hover color for links, light green
 export const warningColor = '#b9161a'; // bright red for warning buttons
+export const warningHoverColor = '#db363a'; // bright red for warning buttons
 
 export const successColor = '#658238';
 
@@ -121,13 +122,13 @@ export const Card = styled.div`
 export const borderRadius = 6; // in px
 
 const ButtonBase = styled.button`
-  padding: 0.6rem;
+  padding: 0.4rem;
   text-transform: uppercase;
   color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
   font-weight: ${semiBoldFontBoldWeight};
-  font-size: 0.95rem;
+  font-size: 0.8rem;
 `;
 
 export const ButtonPrimary = styled(ButtonBase)`
@@ -146,6 +147,14 @@ export const ButtonSecondary = styled(ButtonBase)`
   }
 `;
 
+export const ButtonWarning = styled(ButtonBase)`
+  background-color: ${warningColor};
+
+  &:hover {
+    background-color: ${warningHoverColor};
+  }
+`;
+
 export const ButtonPrimaryLink = styled(DynamicLink)`
   padding: 0.6rem;
   text-transform: uppercase;
@@ -158,6 +167,16 @@ export const ButtonPrimaryLink = styled(DynamicLink)`
 
   &:hover {
     background-color: ${primaryHoverColor};
+  }
+`;
+
+
+export const GhostButton = styled(ButtonBase)`
+  color: ${secondaryColor};
+  background-color: transparent;
+
+  &:hover {
+    color: ${secondaryHoverColor};
   }
 `;
 
@@ -179,4 +198,45 @@ export const Label = styled.span`
   color: ${lightBaseColor};
   font-size: 1rem;
   letter-spacing: 0.01rem;
+`;
+
+
+export const PaginationContainer = styled.div`
+  display: flex;
+`;
+
+export const Next = styled(ButtonSecondary)`
+  margin-left: auto;
+
+  &:after {
+    content: '›';
+    font-size: 1.5rem;
+    position: relative;
+    line-height: 0;
+    top: 0.01rem;
+    margin-left: 0.4rem;
+  }
+`;
+export const Prev = styled(ButtonSecondary)`
+  margin-right: auto;
+
+  &:before {
+    content: '‹';
+    font-size: 1.5rem;
+    position: relative;
+    line-height: 0;
+    top: 0.01rem;
+    margin-right: 0.4rem;
+  }
+`;
+
+export const PlaceholderText = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-style: italic;
+  color: ${placeholderColor};
+  background-color: rgba(0, 0, 0, 0.025);
 `;

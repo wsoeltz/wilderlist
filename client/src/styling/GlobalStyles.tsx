@@ -44,6 +44,10 @@ const GlobalStyles = createGlobalStyle`
     color: ${lightBaseColor};
   }
 
+  p {
+    line-height: 1.4;
+  }
+
   button {
     cursor: pointer;
     border: none;

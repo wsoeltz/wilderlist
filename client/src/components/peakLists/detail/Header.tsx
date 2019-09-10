@@ -1,10 +1,10 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
   ButtonPrimary,
-  ButtonSecondary,
+  GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
@@ -21,15 +21,17 @@ import {
   PeakListDatum,
   UserDatum,
 } from './PeakListDetail';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 
 const Root = styled.div`
   display: grid;
-  grid-template-columns: 200px 1fr 150px;
+  grid-template-columns: 12.5rem 1fr auto;
   grid-template-rows: auto auto auto;
+  grid-column-gap: 1rem;
 `;
 
 const TitleContent = styled.div`
-  grid-column: 2;
+  grid-column: 2 / 4;
   grid-row: 2;
   display: flex;
   flex-direction: column;
@@ -88,6 +90,24 @@ const Header = (props: Props) => {
   const [removePeakListFromUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
 
+  const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
+
+  const closeAreYouSureModal = () => {
+    setIsRemoveListModalOpen(false);
+  };
+
+
+  const areYouSureModal = isRemoveListModalOpen === false ? null : (
+    <AreYouSureModal
+      onConfirm={() => removePeakListFromUser({variables: {userId: user.id,  peakListId: id}})}
+      onCancel={closeAreYouSureModal}
+      title={'Are you sure'}
+      text={`Remove ${peakList.name} from your active lists?`}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
+
   const usersLists = user.peakLists.map((list) => list.id);
   const active = usersLists.includes(peakList.id);
   const beginRemoveButton = active === false ? (
@@ -95,9 +115,9 @@ const Header = (props: Props) => {
       Begin List
     </ButtonPrimary>
    ) : (
-    <ButtonSecondary onClick={() => removePeakListFromUser({variables: {userId: user.id,  peakListId: id}})}>
+    <GhostButton onClick={() => setIsRemoveListModalOpen(true)}>
       Remove List
-    </ButtonSecondary>
+    </GhostButton>
    ) ;
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
@@ -151,6 +171,7 @@ const Header = (props: Props) => {
       <BeginRemoveListButtonContainer>
         {beginRemoveButton}
       </BeginRemoveListButtonContainer>
+      {areYouSureModal}
     </Root>
   );
 };

@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -10,7 +9,10 @@ import {
   SearchContainer,
 } from '../../../styling/Grid';
 import {
-  ButtonSecondary,
+  PaginationContainer,
+  Next,
+  Prev,
+  PlaceholderText,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
@@ -18,34 +20,6 @@ import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
 
-const PaginationContainer = styled.div`
-  display: flex;
-`;
-
-const Next = styled(ButtonSecondary)`
-  margin-left: auto;
-
-  &:after {
-    content: '›';
-    font-size: 1.5rem;
-    position: relative;
-    line-height: 0;
-    top: 0.01rem;
-    margin-left: 0.4rem;
-  }
-`;
-const Prev = styled(ButtonSecondary)`
-  margin-right: auto;
-
-  &:before {
-    content: '‹';
-    font-size: 1.5rem;
-    position: relative;
-    line-height: 0;
-    top: 0.01rem;
-    margin-right: 0.4rem;
-  }
-`;
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
@@ -222,7 +196,7 @@ const PeakListPage = (props: Props) => {
 
   const listDetail = id === undefined
     ? (
-        <h2>Click on a list to see more</h2>
+        <PlaceholderText>Select a list on the left to see more details</PlaceholderText>
       )
     : ( <PeakListDetail userId={userId} id={id} />);
 
