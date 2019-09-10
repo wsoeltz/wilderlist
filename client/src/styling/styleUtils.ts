@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
 
@@ -146,7 +146,7 @@ export const ButtonSecondary = styled(ButtonBase)`
   }
 `;
 
-export const ButtonPrimaryLink = styled(Link)`
+export const ButtonPrimaryLink = styled(DynamicLink)`
   padding: 0.6rem;
   text-transform: uppercase;
   color: #fff;

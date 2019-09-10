@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks';
 import React from 'react';
 import styled from 'styled-components';
-import { compareAllPeaksListLink, preventNavigation } from '../../../routing/Utils';
+import { comparePeakListIsolatedLink, comparePeakListLink, preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
@@ -18,7 +18,7 @@ import {
   REMOVE_FRIEND,
   SEND_FRIEND_REQUEST,
 } from '../list/UserCard';
-import { UserDatum } from './index';
+import { UserDatum } from './UserProfile';
 
 const Root = styled.div`
   display: grid;
@@ -140,7 +140,12 @@ const Header = (props: Props) => {
       </ProfilePictureContainer>
       <BeginRemoveListButtonContainer>
         {actionButtons}
-        <ButtonPrimaryLink to={compareAllPeaksListLink(user.id)}>Compare All Ascents</ButtonPrimaryLink>
+        <ButtonPrimaryLink
+          desktopURL={comparePeakListLink(user.id, 'all')}
+          mobileURL={comparePeakListIsolatedLink(user.id, 'all')}
+        >
+          Compare All Ascents
+        </ButtonPrimaryLink>
       </BeginRemoveListButtonContainer>
     </Root>
   );

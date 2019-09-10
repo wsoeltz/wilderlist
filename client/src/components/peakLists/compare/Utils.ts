@@ -6,7 +6,7 @@ import {
   getStandardCompletion,
   getWinterCompletion,
 } from '../Utils';
-import { UserDatum } from './index';
+import { UserDatum } from './PeakListComparison';
 
 type BasicAscentGoal = {
   goal: false;

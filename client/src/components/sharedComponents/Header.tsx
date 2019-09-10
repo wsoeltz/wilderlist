@@ -78,10 +78,12 @@ const Header = (props: RouteComponentProps) => {
 
   const createLink = (route: Routes, label: string) => {
     let normalizedPathname: string;
-    if (pathname.includes(Routes.UserProfile.split(':id')[0])) {
+    if (pathname.includes(Routes.UserProfile.split(':id')[0])
+      || pathname.includes(Routes.FriendsWithProfile.split(':id')[0])) {
       normalizedPathname = Routes.Friends;
     } else if (pathname.includes(Routes.ListDetail.split(':id')[0])
-      || pathname.includes(Routes.MountainDetail.split(':id')[0])) {
+      || pathname.includes(Routes.MountainDetail.split(':id')[0])
+      || pathname.includes(Routes.ListsWithDetail.split(':id')[0])) {
       normalizedPathname = Routes.Lists;
     } else {
       normalizedPathname = pathname;

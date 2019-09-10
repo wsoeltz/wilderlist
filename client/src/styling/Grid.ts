@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { mobileSize } from '../Utils';
 import { standardContainerPadding } from './styleUtils';
 
 const gridLines = {
@@ -100,23 +101,45 @@ export const ContentBody = styled.div`
 `;
 
 export const ContentLeftLarge = styled(BaseContentElement)`
+  grid-column: ${gridLines.pageLeft} / ${gridLines.pageRight};
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
-  grid-column: ${gridLines.pageLeft} / ${gridLines.column7};
+
+  @media(min-width: ${mobileSize}px) {
+    grid-column: ${gridLines.pageLeft} / ${gridLines.column7};
+  }
 `;
 
 export const ContentRightSmall = styled(BaseContentElement)`
+  height: 0;
+  width: 0;
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
-  grid-column: ${gridLines.column7} / ${gridLines.pageRight};
+
+  @media(min-width: ${mobileSize}px) {
+    height: auto;
+    width: auto;
+    grid-column: ${gridLines.column7} / ${gridLines.pageRight};
+  }
 `;
 
 export const ContentLeftSmall = styled(BaseContentElement)`
+  grid-column: ${gridLines.pageLeft} / ${gridLines.pageRight};
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
-  grid-column: ${gridLines.pageLeft} / ${gridLines.column5};
+
+  @media(min-width: ${mobileSize}px) {
+    grid-column: ${gridLines.pageLeft} / ${gridLines.column5};
+  }
 `;
 
 export const ContentRightLarge = styled(BaseContentElement)`
+  height: 0;
+  width: 0;
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
-  grid-column: ${gridLines.column5} / ${gridLines.pageRight};
+
+  @media(min-width: ${mobileSize}px) {
+    height: auto;
+    width: auto;
+    grid-column: ${gridLines.column5} / ${gridLines.pageRight};
+  }
 `;
 
 export const Root = styled(Grid)`

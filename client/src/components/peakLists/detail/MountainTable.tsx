@@ -11,10 +11,6 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
-import {
-  MountainDatum,
-  UserDatum,
-} from './index';
 import MountainCompletionModal from './MountainCompletionModal';
 import MountainRow from './MountainRow';
 import {
@@ -26,6 +22,10 @@ import {
   prominenceColumn,
   seasonColumns,
 } from './MountainRow';
+import {
+  MountainDatum,
+  UserDatum,
+} from './PeakListDetail';
 
 export const Root = styled.div`
   display: grid;
@@ -59,10 +59,11 @@ interface Props {
   mountains: MountainDatum[];
   user: UserDatum;
   type: PeakListVariants;
+  peakListId: string;
 }
 
 const MountainTable = (props: Props) => {
-  const { mountains, user, type } = props;
+  const { mountains, user, type, peakListId } = props;
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
 
@@ -87,6 +88,7 @@ const MountainTable = (props: Props) => {
         type={type}
         setEditMountainId={setEditMountainId}
         userMountains={userMountains}
+        peakListId={peakListId}
       />
     ),
   );

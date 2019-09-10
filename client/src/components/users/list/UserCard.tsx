@@ -1,9 +1,8 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { preventNavigation, userProfileLink } from '../../../routing/Utils';
+import { friendsWithUserProfileLink, preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -11,6 +10,7 @@ import {
 } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
 
 export const SEND_FRIEND_REQUEST = gql`
@@ -94,7 +94,7 @@ export interface FriendRequestSuccessResponse {
   }>;
 }
 
-const LinkWrapper = styled(Link)`
+const LinkWrapper = styled(DynamicLink)`
   display: block;
   color: inherit;
   text-decoration: inherit;
@@ -184,7 +184,10 @@ const UserCard = (props: Props) => {
     actionButtons = null;
   }
   return (
-    <LinkWrapper to={userProfileLink(user.id)}>
+    <LinkWrapper
+      mobileURL={userProfileLink(user.id)}
+      desktopURL={friendsWithUserProfileLink(user.id)}
+    >
       <Root>
         <ProfilePicture src={user.profilePictureUrl} />
         <TextContainer>

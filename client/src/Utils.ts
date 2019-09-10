@@ -9,6 +9,8 @@ export function failIfValidOrNonExhaustive(_variable: never, message: string): n
   throw new Error(message);
 }
 
+export const mobileSize = 950; // in px
+
 export const overlayPortalContainerId = 'overlayPortalContainerId';
 
 const numberAs2DigitString = (num: number) => {

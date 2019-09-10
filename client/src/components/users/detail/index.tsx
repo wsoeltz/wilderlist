@@ -1,177 +1,57 @@
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { comparePeakListLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,
+  ContentRightSmall,
 } from '../../../styling/Grid';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
-import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
-import Header from './Header';
-
-const GET_USER = gql`
-  query getUser($userId: ID!, $profileId: ID!) {
-    user(id: $profileId) {
-      id
-      name
-      email
-      profilePictureUrl
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-
-      peakLists {
-        id
-        name
-        shortName
-        type
-        mountains {
-          id
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
-        }
-        parent {
-          id
-          mountains {
-            id
-            state {
-              id
-              name
-              regions {
-                id
-                name
-                states {
-                  id
-                }
-              }
-            }
-          }
-        }
-      }
-
-    }
-    me: user(id: $userId) {
-      id
-      friends {
-        user {
-          id
-        }
-        status
-      }
-    }
-  }
-`;
-
-export interface UserDatum {
-  id: User['name'];
-  name: User['name'];
-  email: User['email'];
-  profilePictureUrl: User['profilePictureUrl'];
-  mountains: User['mountains'];
-  peakLists: PeakListDatum[];
-}
-
-interface QuerySuccessResponse {
-  user: UserDatum;
-  me: {
-    friends: Array<{
-      user: {
-        id: User['id'];
-      }
-      status: FriendStatus;
-    }>,
-  };
-}
-
-interface QueryVariables {
-  userId: string;
-  profileId: string;
-}
+import CompareAllMountains from '../../peakLists/compare/CompareAllMountains';
+import PeakListComparison from '../../peakLists/compare/PeakListComparison';
+import UserProfile from './UserProfile';
 
 interface Props extends RouteComponentProps {
   userId: string;
 }
 
-const UserProfile = (props: Props) => {
+const UserProfilePage = (props: Props) => {
   const { match, history, userId } = props;
-  const { id }: any = match.params;
+  const { id, friendId, peakListId }: any = match.params;
 
-  const isCurrentUser = userId === id;
+  const profileId = id === undefined ? friendId : id;
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
-    variables: { profileId: id, userId },
-  });
-
-  if (loading === true) {
-    return null;
-  } else if (error !== undefined) {
-    console.error(error);
-    return null;
-  } else if (data !== undefined) {
-    const {
-      user: { peakLists },
-      user,
-      me,
-    } = data;
-
-    const userListData = peakLists.map(peak => peak.id);
-    const completedAscents = user.mountains !== null ? user.mountains : [];
-    const friendsList = me.friends;
-    let friendStatus: FriendStatus | null;
-    if (friendsList !== null && friendsList.length !== 0) {
-      const friendData = friendsList.find(
-        (friend) => friend.user.id === user.id);
-      if (friendData !== undefined) {
-        friendStatus = friendData.status;
-      } else {
-        friendStatus = null;
-      }
-    } else {
-      friendStatus = null;
-    }
-
-    const compareAscents = (peakListId: string) => {
-      history.push(comparePeakListLink(user.id, peakListId));
-    };
-
-    return (
-      <>
-        <ContentLeftLarge>
-          <ContentBody>
-            <Header
-              user={user}
-              currentUserId={userId}
-              friendStatus={friendStatus}
-            />
-            <ListPeakLists
-              peakListData={peakLists}
-              userListData={userListData}
-              listAction={compareAscents}
-              actionText={'Compare Ascents'}
-              completedAscents={completedAscents}
-              isCurrentUser={isCurrentUser}
-            />
-          </ContentBody>
-        </ContentLeftLarge>
-      </>
-    );
+  let comparison: React.ReactElement<any> | null;
+  if (peakListId === undefined) {
+    comparison = null;
+  } else if (peakListId === 'all') {
+    comparison = <CompareAllMountains userId={userId} id={profileId} />;
   } else {
-    return null;
+    comparison = (
+      <PeakListComparison
+        userId={userId}
+        friendId={profileId}
+        peakListId={peakListId}
+      />
+    );
   }
+
+  return (
+    <>
+      <ContentLeftLarge>
+        <ContentBody>
+          <UserProfile
+            userId={userId}
+            id={profileId}
+            history={history}
+          />
+        </ContentBody>
+      </ContentLeftLarge>
+      <ContentRightSmall>
+        <ContentBody>
+          {comparison}
+        </ContentBody>
+      </ContentRightSmall>
+    </>
+  );
 };
 
-export default withRouter(UserProfile);
+export default withRouter(UserProfilePage);

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
 import {
   ContentBody,
@@ -13,6 +14,7 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
+import PeakListDetail from '../detail/PeakListDetail';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
 
 const Next = styled(ButtonSecondary)`
@@ -124,11 +126,14 @@ export interface AddRemovePeakListVariables {
   peakListId: string;
 }
 
-interface Props {
+interface Props extends RouteComponentProps {
   userId: string;
 }
 
-const PeakListPage = ({userId}: Props) => {
+const PeakListPage = (props: Props) => {
+  const { userId, match } = props;
+  const { id }: any = match.params;
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const incrementPageNumber = () => setPageNumber(pageNumber + 1);
@@ -156,7 +161,7 @@ const PeakListPage = ({userId}: Props) => {
     list = (<p>There was an error</p>);
   } else if (data !== undefined) {
     const { peakLists, user } = data;
-    const usersLists = user.peakLists.map(({id}) => id);
+    const usersLists = user.peakLists.map(peakList => peakList.id);
     const completedAscents = user.mountains !== null ? user.mountains : [];
     const nextBtn = peakLists.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
@@ -184,6 +189,12 @@ const PeakListPage = ({userId}: Props) => {
     list = null;
   }
 
+  const listDetail = id === undefined
+    ? (
+        <h2>Click on a list to see more</h2>
+      )
+    : ( <PeakListDetail userId={userId} id={id} />);
+
   return (
     <>
       <ContentLeftLarge>
@@ -199,11 +210,11 @@ const PeakListPage = ({userId}: Props) => {
       </ContentLeftLarge>
       <ContentRightSmall>
         <ContentBody>
-          selected peak list content
+          {listDetail}
         </ContentBody>
       </ContentRightSmall>
     </>
   );
 };
 
-export default PeakListPage;
+export default withRouter(PeakListPage);

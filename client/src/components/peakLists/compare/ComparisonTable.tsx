@@ -5,7 +5,7 @@ import {
   TitleCell,
 } from '../detail/MountainTable';
 import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
-import { UserDatum } from './index';
+import { UserDatum } from './PeakListComparison';
 import { getAscentGoals } from './Utils';
 
 const gridColumns = {

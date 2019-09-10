@@ -14,6 +14,7 @@ import {
 } from '../../../styling/styleUtils';
 import { User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
+import UserProfile from '../detail/UserProfile';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
 
@@ -70,7 +71,8 @@ interface Props extends RouteComponentProps {
 }
 
 const UserList = (props: Props) => {
-  const { userId } = props;
+  const { userId, match, history } = props;
+  const { id }: any = match.params;
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const incrementPageNumber = () => setPageNumber(pageNumber + 1);
@@ -117,6 +119,13 @@ const UserList = (props: Props) => {
   } else {
     list = null;
   }
+  const userProfile = id === undefined
+  ? (
+    <h2>Select a user to see more details</h2>
+    )
+  : (
+    <UserProfile userId={userId} id={id} history={history} />
+    );
   return (
     <>
       <ContentLeftSmall>
@@ -132,7 +141,7 @@ const UserList = (props: Props) => {
       </ContentLeftSmall>
       <ContentRightLarge>
         <ContentBody>
-          <p>selected user profile goes here</p>
+          {userProfile}
         </ContentBody>
       </ContentRightLarge>
     </>

@@ -1,12 +1,6 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  ContentBody,
-  ContentLeftLarge,
-  ContentRightSmall,
-} from '../../../styling/Grid';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import { MountainDatumLite } from './ComparisonRow';
 import ComparisonTable from './ComparisonTable';
@@ -99,13 +93,13 @@ interface Variables {
   friendId: string;
 }
 
-interface Props extends RouteComponentProps {
+interface Props {
   userId: string;
+  id: string;
 }
 
 const CompareAllMountains = (props: Props) => {
-  const { userId, match } = props;
-  const { id }: any = match.params;
+  const { userId, id } = props;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { userId, friendId: id },
@@ -154,21 +148,12 @@ const CompareAllMountains = (props: Props) => {
     });
     return (
       <>
-        <ContentLeftLarge>
-          <ContentBody>
-            <h1>Compare all ascents</h1>
-            <ComparisonTable
-              user={user}
-              me={me}
-              mountains={allMountains}
-            />
-          </ContentBody>
-        </ContentLeftLarge>
-        <ContentRightSmall>
-          <ContentBody>
-            selected mountain content
-          </ContentBody>
-        </ContentRightSmall>
+        <h1>Compare all ascents</h1>
+        <ComparisonTable
+          user={user}
+          me={me}
+          mountains={allMountains}
+        />
       </>
     );
   } else {
@@ -176,4 +161,4 @@ const CompareAllMountains = (props: Props) => {
   }
 };
 
-export default withRouter(CompareAllMountains);
+export default CompareAllMountains;

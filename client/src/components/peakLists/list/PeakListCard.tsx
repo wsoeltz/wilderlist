@@ -1,8 +1,7 @@
 import { sortBy } from 'lodash';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { listDetailLink, preventNavigation } from '../../../routing/Utils';
+import { listDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   Card,
@@ -15,12 +14,13 @@ import {
   State,
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
-const LinkWrapper = styled(Link)`
+const LinkWrapper = styled(DynamicLink)`
   display: block;
   color: inherit;
   text-decoration: inherit;
@@ -226,7 +226,7 @@ const PeakListCard = (props: Props) => {
     );
   }
   return (
-    <LinkWrapper to={listDetailLink(id)}>
+    <LinkWrapper mobileURL={listDetailLink(id)} desktopURL={searchListDetailLink(id)}>
       <Root>
         <Title>
           {name}

@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { mountainDetailLink } from '../../../routing/Utils';
+import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
   lightBaseColor,
@@ -14,6 +13,7 @@ import {
   formatNumberWithCommas,
 } from '../../../Utils';
 import { Months, Seasons } from '../../../Utils';
+import DynamicLink from '../../sharedComponents/DynamicLink';
 import {
   formatDate,
   getFourSeasonCompletion,
@@ -23,7 +23,7 @@ import {
 } from '../Utils';
 import {
   MountainDatum,
-} from './index';
+} from './PeakListDetail';
 
 export const nameColumn = 1;
 export const elevationColumn = 2;
@@ -71,7 +71,7 @@ const TableCell = styled(TableCellBase)`
   color: ${lightBaseColor};
 `;
 
-export const MountainName = styled(Link)`
+export const MountainName = styled(DynamicLink)`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
@@ -86,10 +86,11 @@ interface Props {
   type: PeakListVariants;
   setEditMountainId: (id: string) => void;
   userMountains: CompletedMountain[];
+  peakListId: string;
 }
 
 const MountainRow = (props: Props) => {
-  const { index, mountain, type, setEditMountainId, userMountains } = props;
+  const { index, mountain, type, setEditMountainId, userMountains, peakListId } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const completeButton: React.ReactElement = (
     <ButtonSecondary onClick={() => setEditMountainId(mountain.id)}>
@@ -320,7 +321,10 @@ const MountainRow = (props: Props) => {
   return (
     <>
       <NameCell style={{backgroundColor}}>
-        <MountainName to={mountainDetailLink(mountain.id)}>
+        <MountainName
+          mobileURL={mountainDetailLink(mountain.id)}
+          desktopURL={listDetailWithMountainDetailLink(peakListId, mountain.id)}
+        >
           {mountain.name}
         </MountainName>
       </NameCell>

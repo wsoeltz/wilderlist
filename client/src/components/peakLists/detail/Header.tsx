@@ -20,7 +20,7 @@ import {
   MountainDatum,
   PeakListDatum,
   UserDatum,
-} from './index';
+} from './PeakListDetail';
 
 const Root = styled.div`
   display: grid;
