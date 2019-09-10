@@ -225,8 +225,9 @@ const PeakListCard = (props: Props) => {
       </>
     );
   }
+  const desktopURL = isCurrentUser === true ? searchListDetailLink(id) : listDetailLink(id);
   return (
-    <LinkWrapper mobileURL={listDetailLink(id)} desktopURL={searchListDetailLink(id)}>
+    <LinkWrapper mobileURL={listDetailLink(id)} desktopURL={desktopURL}>
       <Root>
         <Title>
           {name}

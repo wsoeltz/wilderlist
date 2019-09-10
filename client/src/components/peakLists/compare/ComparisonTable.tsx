@@ -17,10 +17,11 @@ interface Props {
   user: UserDatum;
   me: UserDatum;
   mountains: MountainDatumLite[];
+  peakListId: string;
 }
 
 const ComparisonTable = (props: Props) => {
-  const { user, me, mountains } = props;
+  const { user, me, mountains, peakListId } = props;
 
   const userMountains = user.mountains !== null ? user.mountains : [];
   const myMountains = me.mountains !== null ? me.mountains : [];
@@ -35,6 +36,8 @@ const ComparisonTable = (props: Props) => {
       myMountains={myAscentGoals}
       mountain={mountain}
       index={index}
+      profileId={user.id}
+      peakListId={peakListId}
     />
   ));
 

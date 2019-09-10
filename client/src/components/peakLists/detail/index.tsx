@@ -18,10 +18,10 @@ const PeakListDetailPage = (props: Props) => {
 
   const mountainDetail = mountainId === undefined
     ? (
-      <h2>Select a mountain to see more details</h2>
+        <h2>Select a mountain to see more details</h2>
       )
     : (
-      <MountainDetail userId={userId} id={mountainId} />
+        <MountainDetail userId={userId} id={mountainId} />
       );
 
   return (

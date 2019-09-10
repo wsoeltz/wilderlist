@@ -15,9 +15,7 @@ interface Props extends RouteComponentProps {
 
 const UserProfilePage = (props: Props) => {
   const { match, history, userId } = props;
-  const { id, friendId, peakListId }: any = match.params;
-
-  const profileId = id === undefined ? friendId : id;
+  const { id: profileId, peakListId }: any = match.params;
 
   let comparison: React.ReactElement<any> | null;
   if (peakListId === undefined) {

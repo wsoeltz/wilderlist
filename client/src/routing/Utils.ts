@@ -11,10 +11,15 @@ export const comparePeakListLink = ((friendId: string, peakListId: string) => {
 export const comparePeakListIsolatedLink = ((friendId: string, peakListId: string) => {
   return Routes.ComparePeakListIsolated.replace(':id', friendId).replace(':peakListId', peakListId);
 });
+export const comparePeakListWithMountainDetailLink = ((friendId: string, peakListId: string, mountainId: string) => {
+  return Routes.ComparePeakListWithMountainDetail
+    .replace(':id', friendId)
+    .replace(':peakListId', peakListId)
+    .replace(':mountainId', mountainId);
+});
 export const listDetailWithMountainDetailLink = ((peakListId: string, mountainId: string) => {
   return Routes.ListDetailWithMountainDetail.replace(':id', peakListId).replace(':mountainId', mountainId);
 });
-export const compareAllPeaksListLink = ((id: string) => Routes.CompareAllPeaks.replace(':id', id));
 
 export const preventNavigation = (e: React.SyntheticEvent) => {
   e.preventDefault();

@@ -5,6 +5,7 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../../styling/Grid';
+import MountainDetail from '../../mountains/detail/MountainDetail';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
 
@@ -14,9 +15,7 @@ interface Props extends RouteComponentProps {
 
 const ComparePeakListPage = (props: Props) => {
   const { userId, match } = props;
-  const { id, friendId, peakListId }: any = match.params;
-
-  const profileId = id === undefined ? friendId : id;
+  const { id: profileId, peakListId, mountainId }: any = match.params;
 
   let comparison: React.ReactElement<any> | null;
   if (peakListId === undefined) {
@@ -33,6 +32,14 @@ const ComparePeakListPage = (props: Props) => {
     );
   }
 
+  const mountainDetail = mountainId === undefined
+    ? (
+        <h2>Select a mountain to see more details</h2>
+      )
+    : (
+        <MountainDetail userId={userId} id={mountainId} />
+      );
+
   return (
     <>
       <ContentLeftLarge>
@@ -42,7 +49,7 @@ const ComparePeakListPage = (props: Props) => {
       </ContentLeftLarge>
       <ContentRightSmall>
         <ContentBody>
-          selected mountain content
+          {mountainDetail}
         </ContentBody>
       </ContentRightSmall>
     </>

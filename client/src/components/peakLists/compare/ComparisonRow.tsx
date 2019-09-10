@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { mountainDetailLink } from '../../../routing/Utils';
+import { comparePeakListWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   baseColor,
   lightBorderColor,
@@ -31,10 +31,12 @@ interface Props {
   myMountains: AscentGoals[];
   mountain: MountainDatumLite;
   index: number;
+  profileId: string;
+  peakListId: string;
 }
 
 const ComparisonTable = (props: Props) => {
-  const { mountain, index, myMountains, userMountains } = props;
+  const { mountain, index, myMountains, userMountains, profileId, peakListId } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
 
   const userCompletedDates = userMountains.find(({mountainId}) => mountainId === mountain.id);
@@ -87,7 +89,10 @@ const ComparisonTable = (props: Props) => {
   return (
     <>
       <NameCell style={{backgroundColor}}>
-        <MountainName to={mountainDetailLink(mountain.id)}>
+        <MountainName
+          mobileURL={mountainDetailLink(mountain.id)}
+          desktopURL={comparePeakListWithMountainDetailLink(profileId, peakListId, mountain.id)}
+         >
           {mountain.name}
         </MountainName>
       </NameCell>

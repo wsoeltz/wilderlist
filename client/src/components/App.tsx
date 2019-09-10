@@ -96,7 +96,7 @@ const App: React.FC = () => {
       <Route exact path={Routes.ComparePeakListIsolated}
         render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
       />
-      <Route exact path={Routes.CompareAllPeaks}
+      <Route exact path={Routes.ComparePeakListWithMountainDetail}
         render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
       />
     </>

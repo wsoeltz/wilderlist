@@ -153,6 +153,7 @@ const CompareAllMountains = (props: Props) => {
           user={user}
           me={me}
           mountains={allMountains}
+          peakListId={'all'}
         />
       </>
     );
