@@ -27,6 +27,10 @@ import PeakListPage from './peakLists/list';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
+import {
+  appLocalizationAndBundle as fluentValue,
+  AppLocalizationAndBundleContext as FluentText,
+} from '../contextProviders/getFluentLocalizationContext';
 
 export interface IAppContext {
   windowWidth: number;
@@ -111,15 +115,17 @@ const App: React.FC = () => {
     <UserContext.Provider value={user}>
       <AppContext.Provider value={appContext}>
         <ApolloProvider client={client}>
-          <GlobalStyles />
-          <Router>
-            <Root>
-              <Header />
-              {adminRoutes}
-              {userRoutes}
-              <div id={overlayPortalContainerId} />
-            </Root>
-          </Router>
+          <FluentText.Provider value={fluentValue}>
+            <GlobalStyles />
+            <Router>
+              <Root>
+                <Header />
+                {adminRoutes}
+                {userRoutes}
+                <div id={overlayPortalContainerId} />
+              </Root>
+            </Router>
+          </FluentText.Provider>
         </ApolloProvider>
       </AppContext.Provider>
     </UserContext.Provider>

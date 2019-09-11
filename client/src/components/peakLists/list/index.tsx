@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
@@ -20,6 +20,10 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
@@ -144,6 +148,9 @@ const PeakListPage = (props: Props) => {
     setPageNumber(1);
   };
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS, {
     variables: { searchQuery, pageNumber, nPerPage, userId },
   });
@@ -168,7 +175,7 @@ const PeakListPage = (props: Props) => {
     const completedAscents = user.mountains !== null ? user.mountains : [];
     const nextBtn = peakLists.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
-        Next
+        {getFluentString('global-text-value-navigation-next')}
       </Next> ) : null;
     const prevBtn = pageNumber > 1 ? (
       <Prev onClick={decrementPageNumber}>

@@ -211,7 +211,7 @@ export const Next = styled(ButtonSecondary)`
     font-size: 1.5rem;
     position: relative;
     line-height: 0;
-    top: 0.01rem;
+    top: 0.1rem;
     margin-left: 0.4rem;
   }
 `;
@@ -223,7 +223,7 @@ export const Prev = styled(ButtonSecondary)`
     font-size: 1.5rem;
     position: relative;
     line-height: 0;
-    top: 0.01rem;
+    top: 0.1rem;
     margin-right: 0.4rem;
   }
 `;
@@ -236,5 +236,5 @@ export const PlaceholderText = styled.div`
   align-items: center;
   font-style: italic;
   color: ${placeholderColor};
-  background-color: rgba(0, 0, 0, 0.025);
+  background-color: rgba(0, 0, 0, 0.04);
 `;
