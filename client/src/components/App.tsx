@@ -1,3 +1,4 @@
+import 'cross-fetch/polyfill';
 import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
 import axios from 'axios';
