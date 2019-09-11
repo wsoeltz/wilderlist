@@ -179,7 +179,7 @@ const PeakListPage = (props: Props) => {
       </Next> ) : null;
     const prevBtn = pageNumber > 1 ? (
       <Prev onClick={decrementPageNumber}>
-        Previous
+        {getFluentString('global-text-value-navigation-prev')}
       </Prev> ) : null;
     list = (
       <>
@@ -203,7 +203,7 @@ const PeakListPage = (props: Props) => {
 
   const listDetail = !Types.ObjectId.isValid(id)
     ? (
-        <PlaceholderText>Select a list on the left to see more details</PlaceholderText>
+        <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>
       )
     : ( <PeakListDetail userId={userId} id={id} />);
 
