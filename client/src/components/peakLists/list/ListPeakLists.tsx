@@ -1,14 +1,8 @@
 import React from 'react';
 import { CompletedMountain, Mountain, PeakList, Region, State } from '../../../types/graphQLTypes';
 import PeakListCard from './PeakListCard';
-import styled from 'styled-components';
-import { placeholderColor } from '../../../styling/styleUtils';
+import { NoResults } from '../../../styling/styleUtils';
 
-const NoResults = styled.div`
-  font-style: italic;
-  color: ${placeholderColor};
-  text-align: center;
-`;
 
 interface MountainDatum {
   id: Mountain['id'];

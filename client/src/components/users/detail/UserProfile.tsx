@@ -1,13 +1,17 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { History } from 'history';
-import React from 'react';
+import React, {useContext} from 'react';
 import { comparePeakListIsolatedLink, comparePeakListLink } from '../../../routing/Utils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
 import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
 import Header from './Header';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const GET_USER = gql`
   query getUser($userId: ID!, $profileId: ID!) {
@@ -109,6 +113,9 @@ interface Props {
 const UserProfile = (props: Props) => {
   const { id, history, userId } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const isCurrentUser = userId === id;
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
@@ -150,6 +157,10 @@ const UserProfile = (props: Props) => {
         history.push(url);
       };
 
+      const noResultsText = getFluentString('user-profile-no-lists', {
+        'user-name': user.name
+      })
+
       return (
         <>
           <Header
@@ -161,10 +172,10 @@ const UserProfile = (props: Props) => {
             peakListData={peakLists}
             userListData={userListData}
             listAction={compareAscents}
-            actionText={'Compare Ascents'}
+            actionText={getFluentString('user-profile-compare-ascents')}
             completedAscents={completedAscents}
             isCurrentUser={isCurrentUser}
-            noResultsText={user.name + ' has not started any lists.'}
+            noResultsText={noResultsText}
           />
         </>
       );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
+import { NoResults } from '../../../styling/styleUtils';
 
 export interface UserDatum {
   id: User['id'];
@@ -20,13 +21,14 @@ interface Props {
   currentUserId: string;
   friendsList: FriendDatum[];
   showCurrentUser: boolean;
+  noResultsText: string;
 }
 
 const ListUsers = (props: Props) => {
-  const { userData, currentUserId, showCurrentUser, friendsList } = props;
+  const { userData, currentUserId, showCurrentUser, friendsList, noResultsText } = props;
 
   if (userData.length === 0) {
-    return <>No users found</>;
+    return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
   const users = userData.map(user => {
     if (showCurrentUser === false && currentUserId === user.id) {

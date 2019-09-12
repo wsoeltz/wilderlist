@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useContext} from 'react';
 import styled from 'styled-components';
 import { friendsWithUserProfileLink, preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
@@ -12,6 +12,10 @@ import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
@@ -136,6 +140,9 @@ const UserCard = (props: Props) => {
   const { user, friendStatus, currentUserId } = props;
   let actionButtons: React.ReactElement<any> | null;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const [sendFriendRequestMutation] =
     useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
   const [acceptFriendRequestMutation] =
@@ -159,24 +166,34 @@ const UserCard = (props: Props) => {
 
   if (friendStatus === null) {
     actionButtons = (
-      <ButtonPrimary onClick={sendFriendRequest}>Add Friend</ButtonPrimary>
+      <ButtonPrimary onClick={sendFriendRequest}>
+        {getFluentString('user-profile-requests-add-friend')}
+      </ButtonPrimary>
     );
   } else if (friendStatus === FriendStatus.friends) {
     actionButtons = (
-      <ButtonSecondary onClick={removeFriend}>Remove Friend</ButtonSecondary>
+      <ButtonSecondary onClick={removeFriend}>
+        {getFluentString('user-profile-requests-remove-friend')}
+      </ButtonSecondary>
     );
   } else if (friendStatus === FriendStatus.sent) {
     actionButtons = (
       <p>
-        Pending friend request
-        <ButtonSecondary onClick={removeFriend}>Cancel Request</ButtonSecondary>
+        {getFluentString('user-profile-requests-pending-request')}
+        <ButtonSecondary onClick={removeFriend}>
+          {getFluentString('user-profile-requests-cancel-request')}
+        </ButtonSecondary>
       </p>
     );
   } else if (friendStatus === FriendStatus.recieved) {
     actionButtons = (
       <p>
-        <ButtonSecondary onClick={removeFriend}>Decline Friend Request</ButtonSecondary>
-        <ButtonPrimary onClick={acceptFriendRequest}>Accept Friend Request</ButtonPrimary>
+        <ButtonSecondary onClick={removeFriend}>
+          {getFluentString('user-profile-requests-decline-request')}
+        </ButtonSecondary>
+        <ButtonPrimary onClick={acceptFriendRequest}>
+          {getFluentString('user-profile-requests-accept-request')}
+        </ButtonPrimary>
       </p>
     );
   } else {

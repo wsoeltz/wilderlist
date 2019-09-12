@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import styled from 'styled-components';
 import { comparePeakListWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
@@ -16,6 +16,10 @@ import {
   AscentGoals,
   getGoalText,
 } from './Utils';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 export interface MountainDatumLite {
   id: Mountain['id'];
@@ -37,13 +41,17 @@ interface Props {
 
 const ComparisonTable = (props: Props) => {
   const { mountain, index, myMountains, userMountains, profileId, peakListId } = props;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
 
   const userCompletedDates = userMountains.find(({mountainId}) => mountainId === mountain.id);
   const myCompletedDates = myMountains.find(({mountainId}) => mountainId === mountain.id);
 
-  const userGoalText = getGoalText(userCompletedDates);
-  const myGoalText = getGoalText(myCompletedDates);
+  const userGoalText = getGoalText(userCompletedDates, getFluentString);
+  const myGoalText = getGoalText(myCompletedDates, getFluentString);
   const userText = userGoalText.text;
   const myText = myGoalText.text;
 

@@ -238,3 +238,10 @@ export const PlaceholderText = styled.div`
   color: ${placeholderColor};
   background-color: rgba(0, 0, 0, 0.04);
 `;
+
+
+export const NoResults = styled.div`
+  font-style: italic;
+  color: ${placeholderColor};
+  text-align: center;
+`;

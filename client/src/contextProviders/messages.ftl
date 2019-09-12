@@ -3,15 +3,22 @@ global-text-value-wilderlist-name = Wilderlist
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous
 
-global-text-value-no-results-found-for-term = No results found for&nbsp;<strong>{ $term }</strong>
+global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
+global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
 global-text-value-modal-confirm = Confirm
 global-text-value-modal-cancel = Cancel
 global-text-value-modal-mark-complete = Mark Complete
 
+global-text-value-modal-email = Email
+
 global-text-value-mountain = Mountain
+global-text-value-regions = Regions
+global-text-value-state = State
 global-text-value-elevation = Elevation
 global-text-value-prominence = Prominence
+global-text-value-location = Location
+global-text-value-ascent-dates = Ascent Dates
 global-text-value-done = Done
 global-text-value-summer = Summer
 global-text-value-fall = Fall
@@ -30,6 +37,15 @@ global-text-value-month-short-oct = Oct
 global-text-value-month-short-nov = Nov
 global-text-value-month-short-dec = Dec
 
+global-text-value-open = Open
+global-text-value-open-for-winter = Open for Winter
+global-text-value-open-for = Open for
+global-text-value-open-for-every-month-except = Open for every month except
+global-text-value-open-for-every-season-except = Open for every season except
+global-text-value-completed-on = Completed on
+global-text-value-completed-in-every-month = Completed in every month
+global-text-value-completed-in-every-season = Completed in every season
+global-text-value-mountain-not-being-pursued = This mountain is not being pursued
 
 header-text-login-with-google = Login With Google
 header-text-menu-item-dashboard = Dashboard
@@ -39,6 +55,7 @@ header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
 
 list-search-list-detail-placeholder = Select a list on the left to see more details
+list-detail-mountain-detail-placeholder = Select a mountain to see more details
 
 peak-list-text-latest-ascent = {
   $completed ->
@@ -54,7 +71,7 @@ peak-list-text-completed-ascent = Completed Ascents
 peak-list-text-total-ascents = Total Ascents
 peak-list-text-across-the-us = Across the US
 
-peak-list-detail-text-modal-remove-confirm = Remove&nbsp;<strong>{ $peak-list-name }</strong>&nbsp;from your active lists?
+peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-name }</strong>&#32;from your active lists?
 peak-list-detail-text-begin-list = Begin List
 peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
@@ -72,3 +89,21 @@ mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em>.</div>
 
+mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
+mountain-detail-add-another-ascent = Add another ascent
+mountain-detail-add-ascent-date = Add Ascent Date
+mountain-detail-remove-ascent = Remove Ascent
+mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
+mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
+
+user-list-no-user-selected-text = Select a user on the left to see more details
+user-profile-requests-add-friend = Add Friend
+user-profile-requests-remove-friend = Remove Friend
+user-profile-requests-pending-request = Pending Friend Request
+user-profile-requests-cancel-request = Cancel Request
+user-profile-requests-decline-request = Decline
+user-profile-requests-accept-request = Accept Friend Request
+
+user-profile-compare-all-ascents = Compare All Ascents
+user-profile-compare-ascents = Compare Ascents
+user-profile-no-lists = { $user-name } has not started any lists.
