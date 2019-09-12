@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
-import { friendsWithUserProfileLink, preventNavigation, userProfileLink } from '../../../routing/Utils';
+import { friendsWithUserProfileLink, preventNavigation, comparePeakListLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -202,7 +202,7 @@ const UserCard = (props: Props) => {
   }
   return (
     <LinkWrapper
-      mobileURL={userProfileLink(user.id)}
+      mobileURL={comparePeakListLink(user.id, 'none')}
       desktopURL={friendsWithUserProfileLink(user.id)}
     >
       <Root>

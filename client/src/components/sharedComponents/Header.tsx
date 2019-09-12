@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Logo from '../../assets/logo/Logo';
 import { Routes } from '../../routing/routes';
+import { searchListDetailLink, friendsWithUserProfileLink } from '../../routing/Utils';
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -99,7 +100,7 @@ const Header = (props: RouteComponentProps) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const createLink = (route: Routes, label: string) => {
+  const createLink = (route: string, label: string) => {
     let normalizedPathname: string;
     if (pathname.includes(Routes.UserProfile.split(':id')[0])
       || pathname.includes(Routes.FriendsWithProfile.split(':id')[0])) {
@@ -123,8 +124,8 @@ const Header = (props: RouteComponentProps) => {
         <>
           <MainNav>
             {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
-            {createLink(Routes.ListsWithDetail, getFluentString('header-text-menu-item-lists'))}
-            {createLink(Routes.FriendsWithProfile, getFluentString('header-text-menu-item-friends'))}
+            {createLink(searchListDetailLink('search'), getFluentString('header-text-menu-item-lists'))}
+            {createLink(friendsWithUserProfileLink('search'), getFluentString('header-text-menu-item-friends'))}
           </MainNav>
           <UserMenu
             userMenuOpen={userMenuOpen}

@@ -8,6 +8,7 @@ import {
 import CompareAllMountains from '../../peakLists/compare/CompareAllMountains';
 import PeakListComparison from '../../peakLists/compare/PeakListComparison';
 import UserProfile from './UserProfile';
+import { Types } from 'mongoose';
 
 interface Props extends RouteComponentProps {
   userId: string;
@@ -18,10 +19,10 @@ const UserProfilePage = (props: Props) => {
   const { id: profileId, peakListId }: any = match.params;
 
   let comparison: React.ReactElement<any> | null;
-  if (peakListId === undefined) {
-    comparison = null;
-  } else if (peakListId === 'all') {
+  if (peakListId === 'all') {
     comparison = <CompareAllMountains userId={userId} id={profileId} />;
+  } else if (!Types.ObjectId.isValid(peakListId)) {
+    comparison = null;
   } else {
     comparison = (
       <PeakListComparison

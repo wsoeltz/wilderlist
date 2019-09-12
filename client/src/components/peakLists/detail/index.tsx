@@ -14,6 +14,7 @@ import { GetString } from 'fluent-react';
 import {
   AppLocalizationAndBundleContext
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { Types } from 'mongoose';
 
 interface Props extends RouteComponentProps {
   userId: string;
@@ -26,7 +27,7 @@ const PeakListDetailPage = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const mountainDetail = mountainId === undefined
+  const mountainDetail = !Types.ObjectId.isValid(mountainId)
     ? (
         <PlaceholderText>
           {getFluentString('peak-list-detail-select-mountain')}

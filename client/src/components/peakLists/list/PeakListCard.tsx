@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
-import { listDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
+import { listDetailWithMountainDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
@@ -279,9 +279,9 @@ const PeakListCard = (props: Props) => {
     );
   }
   const mountainLogoId = parent === null ? id : parent.id;
-  const desktopURL = isCurrentUser === true ? searchListDetailLink(id) : listDetailLink(id);
+  const desktopURL = isCurrentUser === true ? searchListDetailLink(id) : listDetailWithMountainDetailLink(id, 'none');
   return (
-    <LinkWrapper mobileURL={listDetailLink(id)} desktopURL={desktopURL}>
+    <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
       <Root>
         <Title>
           {name}
