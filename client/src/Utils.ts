@@ -167,34 +167,42 @@ export const getSolsticeAndEquinox = (year: number) => {
   return getSolsticeAndEquinoxUtility(year);
 };
 
-export const convertDMS = ( lat: number, lng: number ) => {
-    const convertLat = Math.abs(lat);
-    const LatDeg = Math.floor(convertLat);
-    const LatMin = (Math.floor((convertLat - LatDeg) * 60));
-    const LatCardinal = ((lat > 0) ? "n" : "s");
+function toDegreesMinutesAndSeconds(coordinate: number) {
+    const absolute = Math.abs(coordinate);
+    const degrees = Math.floor(absolute);
+    const minutesNotTruncated = (absolute - degrees) * 60;
+    const minutes = Math.floor(minutesNotTruncated);
+    const seconds = Math.floor((minutesNotTruncated - minutes) * 60);
 
-    const convertLng = Math.abs(lng);
-    const LngDeg = Math.floor(convertLng);
-    const LngMin = (Math.floor((convertLng - LngDeg) * 60));
-    const LngCardinal = ((lng > 0) ? "e" : "w");
+    return `${degrees}° ${minutes}' ${seconds}"`;
+}
 
-    return { lat: LatDeg + LatCardinal + LatMin, long: + LngDeg + LngCardinal + LngMin};
+export const convertDMS= (lat: number, lng: number) => {
+    const latitude = toDegreesMinutesAndSeconds(lat);
+    const latitudeCardinal = lat >= 0 ? 'N' : 'S';
+
+    const longitude = toDegreesMinutesAndSeconds(lng);
+    const longitudeCardinal = lng >= 0 ? 'E' : 'W';
+
+    return { lat: `${latitude} ${latitudeCardinal}`, long: `${longitude} ${longitudeCardinal}`};
 }
 
 export const getBrowser = () => {
-    const ua = navigator.userAgent
+  const { userAgent } = navigator;
   let tem;
-  let M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  let M = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
   if ( /trident/i.test(M[1]) ) {
-    tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
-    return 'IE '+(tem[1] || '');
+    tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
+    return { browser: 'IE', version: parseFloat(`${(tem[1] || '')}`) };
   }
   if ( M[1] === 'Chrome' ) {
-      tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
-      if (tem !== null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+      tem= userAgent.match(/\b(OPR|Edge)\/(\d+)/);
+      if (tem !== null) {
+        return { browser: tem[1], version: parseFloat(tem[2]) };
+      }
   }
 
   M = M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-  if ((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+  if ((tem= userAgent.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
   return { browser: M[0], version: parseFloat(M[1]) };
 };
