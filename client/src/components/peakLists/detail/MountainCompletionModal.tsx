@@ -6,6 +6,7 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   InputBase,
+  warningColor,
 } from '../../../styling/styleUtils';
 import { Mountain, User } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
@@ -42,6 +43,11 @@ const ButtonWrapper = styled.div`
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+`;
+
+const Error = styled.p`
+  color: ${warningColor};
+  text-align: center;
 `;
 
 const ADD_MOUNTAIN_COMPLETION = gql`
@@ -92,6 +98,7 @@ const MountainCompletionModal = (props: Props) => {
   const [completionDay, setCompletionDay] = useState<string>('');
   const [completionMonth, setCompletionMonth] = useState<string>('');
   const [completionYear, setCompletionYear] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -99,12 +106,15 @@ const MountainCompletionModal = (props: Props) => {
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     if (completedDate.error !== undefined) {
-      console.error(completedDate.error);
+      setErrorMessage(completedDate.error);
     } else {
+      setErrorMessage(undefined);
       addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
       closeEditMountainModalModal();
     }
   };
+
+  const error = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
 
   return (
     <Modal
@@ -132,6 +142,7 @@ const MountainCompletionModal = (props: Props) => {
           type='number'
         />
       </DateInputContainer>
+      {error}
       {textNote}
       <ButtonWrapper>
         <CancelButton onClick={closeEditMountainModalModal}>

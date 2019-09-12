@@ -71,47 +71,53 @@ const monthsWith30Days = [9, 4, 6, 11];
 
 const getDay = (day: string, month: number, year: number) => {
   if (day === '') {
-    return 'XX';
+    return {error: undefined, day: 'XX'};
   }
+  let error: string;
   const dayInt = parseInt(day, 10);
   if (isNaN(dayInt)) {
-    return null;
+    return {error: 'Day must be a number', day: undefined};
   }
   if (monthsWith30Days.includes(month)) {
     if (dayInt > 0 && dayInt < 31) {
-      return numberAs2DigitString(dayInt);
+      return {error: undefined, day: numberAs2DigitString(dayInt)};
     }
+    error = 'Day must be a number between 1 and 30';
   } else if (month === 2) {
     if (isLeapYear(year)) {
       if (dayInt > 0 && dayInt < 30) {
-        return numberAs2DigitString(dayInt);
+        return {error: undefined, day: numberAs2DigitString(dayInt)};
       }
+      error = 'Day must be a number between 1 and 29';
     } else if (dayInt > 0 && dayInt < 29) {
-      return numberAs2DigitString(dayInt);
+      return {error: undefined, day: numberAs2DigitString(dayInt)};
+    } else {
+      error = 'Day must be a number between 1 and 28';
     }
   } else {
     if (dayInt > 0 && dayInt < 32) {
-      return numberAs2DigitString(dayInt);
+      return {error: undefined, day: numberAs2DigitString(dayInt)};
     }
+    error = 'Day must be a number between 1 and 31';
   }
-  return null;
+  return {error: error, day: undefined};
 };
 
 export const convertFieldsToDate = (day: string, month: string, year: string) => {
   // Check if valid year
   const validYear = getYear(year);
   if (validYear === null) {
-    return {error: 'Invalid year', date: undefined};
+    return {error: 'Please enter a valid year', date: undefined};
   }
   // Check if valid month
   const validMonth = getMonth(month);
   if (validMonth === null) {
-    return {error: 'Invalid month', date: undefined};
+    return {error: 'Please enter a valid month', date: undefined};
   }
   // Check if valid day for the month and year
-  const validDay = getDay(day, parseInt(validMonth, 10), parseInt(validYear, 10));
-  if (validDay === null) {
-    return {error: 'Invalid day', date: undefined};
+  const {error, day: validDay} = getDay(day, parseInt(validMonth, 10), parseInt(validYear, 10));
+  if (error !== undefined) {
+    return {error, date: undefined};
   }
   // Ignore time for now, keeping it in in case of need for it later
   // If all valid, return YYYY-MM-DD-HH-MM string. Use X for any part of the date that is empty
