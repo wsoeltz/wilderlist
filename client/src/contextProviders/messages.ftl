@@ -102,8 +102,10 @@ user-profile-requests-remove-friend = Remove Friend
 user-profile-requests-pending-request = Pending Friend Request
 user-profile-requests-cancel-request = Cancel Request
 user-profile-requests-decline-request = Decline
-user-profile-requests-accept-request = Accept Friend Request
+user-profile-requests-accept-request = Accept Request
 
 user-profile-compare-all-ascents = Compare All Ascents
 user-profile-compare-ascents = Compare Ascents
 user-profile-no-lists = { $user-name } has not started any lists.
+user-profile-no-recent-ascents = No recent ascents
+user-profile-latest-ascents = Hiked { $mountain-name } on { $date }

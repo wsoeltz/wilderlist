@@ -373,3 +373,23 @@ export const getLatestAscent =  (
   const sortedAscents = sortBy(ascents, ['year', 'month', 'day']);
   return sortedAscents[sortedAscents.length - 1];
 };
+
+export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
+  if (mountains.length === 0) {
+    return null;
+  }
+  const sortedMountains = sortBy(mountains, mountain => {
+    const dates = getDates(mountain.dates);
+    const sortedDates = sortBy(dates, ['year', 'month', 'day']);
+    if (sortedDates && sortedDates.length) {
+      return sortedDates[sortedDates.length - 1].dateAsNumber;
+    } else {
+      return -1000;
+    }
+  });
+  const latestAscent = sortBy(sortedMountains[sortedMountains.length - 1].dates, ['year', 'month', 'day']);
+  return {
+    name: sortedMountains[sortedMountains.length - 1].mountain.name,
+    date: getDates(latestAscent)[0]
+  };
+}

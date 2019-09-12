@@ -1,12 +1,27 @@
 import React from 'react';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
+import { FriendStatus, User, PeakList, Mountain } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
 import { NoResults } from '../../../styling/styleUtils';
+
+interface BasicMountainDatum {
+  id: Mountain['id'];
+  name: Mountain['name'];
+}
 
 export interface UserDatum {
   id: User['id'];
   name: User['name'];
   profilePictureUrl: User['profilePictureUrl'];
+  peakLists: {
+    id: PeakList['id'];
+    name: PeakList['name'];
+    mountains: BasicMountainDatum[];
+    parent: {
+      id: PeakList['id'];
+      mountains: BasicMountainDatum[];
+    } | null;
+  }[];
+  mountains: User['mountains'];
 }
 
 export interface FriendDatum {
