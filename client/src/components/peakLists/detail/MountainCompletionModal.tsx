@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import {
   ButtonPrimary,
@@ -10,6 +10,10 @@ import {
 import { Mountain, User } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const DateInputContainer = styled.div`
   display: grid;
@@ -89,6 +93,9 @@ const MountainCompletionModal = (props: Props) => {
   const [completionMonth, setCompletionMonth] = useState<string>('');
   const [completionYear, setCompletionYear] = useState<string>('');
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     if (completedDate.error !== undefined) {
@@ -128,10 +135,10 @@ const MountainCompletionModal = (props: Props) => {
       {textNote}
       <ButtonWrapper>
         <CancelButton onClick={closeEditMountainModalModal}>
-          Cancel
+          {getFluentString('global-text-value-modal-cancel')}
         </CancelButton>
         <ButtonPrimary onClick={() => validateAndAddMountainCompletion(editMountainId)}>
-          Mark Complete
+          {getFluentString('global-text-value-modal-mark-complete')}
         </ButtonPrimary>
       </ButtonWrapper>
     </Modal>

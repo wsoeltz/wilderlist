@@ -164,6 +164,7 @@ const UserProfile = (props: Props) => {
             actionText={'Compare Ascents'}
             completedAscents={completedAscents}
             isCurrentUser={isCurrentUser}
+            noResultsText={user.name + ' has not started any lists.'}
           />
         </>
       );

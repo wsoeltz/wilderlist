@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import styled from 'styled-components';
 import {
   ButtonPrimary,
@@ -26,6 +26,10 @@ import {
   PeakListDatum,
   UserDatum,
 } from './PeakListDetail';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const Root = styled.div`
   display: grid;
@@ -96,6 +100,9 @@ const Header = (props: Props) => {
     completedAscents,
   } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
   const [removePeakListFromUser] =
@@ -116,10 +123,12 @@ const Header = (props: Props) => {
     <AreYouSureModal
       onConfirm={confirmRemove}
       onCancel={closeAreYouSureModal}
-      title={'Are you sure'}
-      text={`Remove ${peakList.name} from your active lists?`}
-      confirmText={'Confirm'}
-      cancelText={'Cancel'}
+      title={getFluentString('global-text-value-are-you-sure-modal')}
+      text={getFluentString('peak-list-detail-text-modal-remove-confirm', {
+        'peak-list-name': peakList.name
+      })}
+      confirmText={getFluentString('global-text-value-modal-confirm')}
+      cancelText={getFluentString('global-text-value-modal-cancel')}
     />
   );
 
@@ -127,11 +136,11 @@ const Header = (props: Props) => {
   const active = usersLists.includes(peakList.id);
   const beginRemoveButton = active === false ? (
     <ButtonPrimary onClick={() => addPeakListToUser({variables: {userId: user.id,  peakListId: id}})}>
-      Begin List
+      {getFluentString('peak-list-detail-text-begin-list')}
     </ButtonPrimary>
    ) : (
     <GhostButton onClick={() => setIsRemoveListModalOpen(true)}>
-      Remove List
+      {getFluentString('peak-list-detail-text-remove-list')}
     </GhostButton>
    ) ;
 
@@ -154,20 +163,24 @@ const Header = (props: Props) => {
 
     let latestDateText: React.ReactElement<any>;
     if (latestDate !== undefined) {
-      const latestAscentText = numCompletedAscents === totalRequiredAscents ? 'Completed'
-        : 'Latest ascent';
-      const preposition = isNaN(latestDate.day) || isNaN(latestDate.month) ? 'in' : 'on';
+      const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
+        'completed': (numCompletedAscents === totalRequiredAscents).toString(),
+        'has-full-date': !(isNaN(latestDate.day) || isNaN(latestDate.month)).toString(),
+      })
       latestDateText = (
         <>
-          {latestAscentText} {preposition} <BigText>{formatDate(latestDate)}</BigText>
+          {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>
         </>
       );
     } else {
-      latestDateText = <>No completed ascents yet</>;
+      latestDateText = <>{getFluentString('peak-list-text-no-completed-ascent')}</>;
     }
     listInfoContent = (
       <ActiveListContentContainer>
-        <div><BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText> Completed Ascents</div>
+        <div>
+          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+          {getFluentString('peak-list-text-total-ascents')}
+        </div>
         <TextRight>{latestDateText}</TextRight>
       </ActiveListContentContainer>
     );
@@ -182,10 +195,10 @@ const Header = (props: Props) => {
       <TitleContent>
         <Title>{name}</Title>
         <ListInfo>
-          {getStatesOrRegion(mountains)}
+          {getStatesOrRegion(mountains, getFluentString)}
         </ListInfo>
         <ListInfo>
-          {totalRequiredAscents} Total Ascents
+          {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
         </ListInfo>
       </TitleContent>
       <LogoContainer>

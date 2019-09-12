@@ -181,6 +181,9 @@ const PeakListPage = (props: Props) => {
       <Prev onClick={decrementPageNumber}>
         {getFluentString('global-text-value-navigation-prev')}
       </Prev> ) : null;
+    const noResultsText = getFluentString('global-text-value-no-results-found-for-term', {
+      'term': searchQuery,
+    });
     list = (
       <>
         <ListPeakLists
@@ -190,6 +193,7 @@ const PeakListPage = (props: Props) => {
           actionText={'Begin List'}
           completedAscents={completedAscents}
           isCurrentUser={true}
+          noResultsText={noResultsText}
         />
         <PaginationContainer>
           {prevBtn}

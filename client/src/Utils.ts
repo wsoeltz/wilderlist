@@ -9,7 +9,7 @@ export function failIfValidOrNonExhaustive(_variable: never, message: string): n
   throw new Error(message);
 }
 
-export const mobileSize = 990; // in px
+export const mobileSize = 1150; // in px
 
 export const overlayPortalContainerId = 'overlayPortalContainerId';
 

@@ -34,7 +34,7 @@ const AreYouSureModal = (props: Props) => {
       height={'auto'}
     >
       <h3>{title}</h3>
-      <p>{text}</p>
+      <p dangerouslySetInnerHTML={{__html: text}} />
       <ButtonWrapper>
         <CancelButton onClick={onCancel}>
           {cancelText}

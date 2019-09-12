@@ -107,7 +107,7 @@ export const BigText = styled.span`
   font-size: 1.3rem;
   transform: translateY(0.04rem);
   display: inline-block;
-  margin-right: 0.1rem;
+  margin-right: 0.25rem;
   font-weight: ${boldFontWeight};
 `;
 
@@ -130,7 +130,7 @@ export interface MountainList {
   state: StateDatum;
 }
 
-export const getStatesOrRegion = (mountains: MountainList[]) => {
+export const getStatesOrRegion = (mountains: MountainList[], getFluentString: GetString) => {
   // If there are 3 or less states, just show the states
   const statesArray: StateDatum[] = [];
   mountains.forEach(({state}) => {
@@ -177,7 +177,7 @@ export const getStatesOrRegion = (mountains: MountainList[]) => {
           return regionsArray[0].name + ', ' + regionsArray[1].name + ' & ' + regionsArray[2].name;
         } else {
           // otherwise just say Across the US
-          return 'Across the US';
+          return getFluentString('peak-list-text-across-the-us');
         }
       }
     }
@@ -267,7 +267,6 @@ const PeakListCard = (props: Props) => {
         <TextRight>{latestDateText}</TextRight>
       </>
     );
-
   } else {
     listInfoContent = (
       <>
@@ -275,7 +274,7 @@ const PeakListCard = (props: Props) => {
           <BigText>{totalRequiredAscents}</BigText>
           {getFluentString('peak-list-text-total-ascents')}
         </span>
-        <TextRight>{getStatesOrRegion(mountains)}</TextRight>
+        <TextRight>{getStatesOrRegion(mountains, getFluentString)}</TextRight>
       </>
     );
   }

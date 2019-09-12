@@ -1,6 +1,14 @@
 import React from 'react';
 import { CompletedMountain, Mountain, PeakList, Region, State } from '../../../types/graphQLTypes';
 import PeakListCard from './PeakListCard';
+import styled from 'styled-components';
+import { placeholderColor } from '../../../styling/styleUtils';
+
+const NoResults = styled.div`
+  font-style: italic;
+  color: ${placeholderColor};
+  text-align: center;
+`;
 
 interface MountainDatum {
   id: Mountain['id'];
@@ -36,16 +44,17 @@ interface Props {
   actionText: string;
   completedAscents: CompletedMountain[];
   isCurrentUser: boolean;
+  noResultsText: string;
 }
 
 const ListPeakLists = (props: Props) => {
   const {
     peakListData, userListData, listAction, actionText,
-    completedAscents, isCurrentUser,
+    completedAscents, isCurrentUser, noResultsText,
   } = props;
 
   if (peakListData.length === 0) {
-    return <>No results found</>;
+    return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
   const peakLists = peakListData.map(peakList => {
     const active = userListData.includes(peakList.id);
