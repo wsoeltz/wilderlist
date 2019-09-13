@@ -7,6 +7,9 @@ import {
   getWinterCompletion,
 } from '../Utils';
 import { UserDatum } from './PeakListComparison';
+import { GetString } from 'fluent-react';
+import startCase from 'lodash/startCase';
+// import toLower from 'lodash/toLower';
 
 type BasicAscentGoal = {
   goal: false;
@@ -365,43 +368,70 @@ const getGridGoals = (grid: GridAscentGoal) => {
   return {monthsNeeded, monthsCompleted};
 };
 
-export const getGoalText = (ascentGoals: AscentGoals | undefined) => {
+export const getGoalText = (
+  ascentGoals: AscentGoals | undefined, getFluentString: GetString) => {
   if (ascentGoals !== undefined) {
     if (ascentGoals.grid.goal === true) {
       const {monthsNeeded, monthsCompleted} = getGridGoals(ascentGoals.grid);
       if (monthsNeeded.length === 12) {
-        return {text: 'Open', open: true};
+        return {text: getFluentString('global-text-value-open'), open: true};
       } else if (monthsNeeded.length === 0) {
-        return {text: 'Completed in every month', open: false};
+        return {text: getFluentString('global-text-value-completed-in-every-month'), open: false};
       } else if (monthsNeeded.length === 1) {
-        return {text: 'Open for ' + monthsNeeded[0], open: false};
+        return {
+          text: getFluentString('global-text-value-open-for') + ' ' + startCase(monthsNeeded[0]),
+          open: false
+        };
       } else if (monthsCompleted.length < monthsNeeded.length) {
         const monthList = monthsCompleted.reduce((text, month, index) => {
-          const divider = index === monthsCompleted.length - 1 ? ' and ' : ', ';
-          return text = text + divider + month;
-        });
-        return {text: 'Open for every month except ' + monthList, open: true};
+          if (index === 0) {
+            return text = startCase(month);
+          }
+          const divider = index === monthsCompleted.length - 1 ? ' & ' : ', ';
+          return text = text + divider + startCase(month);
+        }, '');
+        return {
+          text: getFluentString('global-text-value-open-for-every-month-except')
+                +' ' + monthList,
+          open: true
+        };
       } else {
         const monthList = monthsNeeded.reduce((text, month, index) => {
-          const divider = index === monthsNeeded.length - 1 ? ' and ' : ', ';
-          return text = text + divider + month;
-        });
-        return {text: 'Open for ' + monthList, open: true};
+          if (index === 0) {
+            return text = startCase(month);
+          }
+          const divider = index === monthsNeeded.length - 1 ? ' & ' : ', ';
+          return text = text + divider + startCase(month);
+        }, '');
+        return {
+          text: getFluentString('global-text-value-open-for')
+                +' ' + monthList,
+          open: true
+        };
       }
     } else if (ascentGoals.fourSeason.goal === true) {
       const {seasonsNeeded} = getFourSeasonGoals(ascentGoals.fourSeason);
       if (seasonsNeeded.length === 4) {
-        return {text: 'Open', open: true};
+        return {text: getFluentString('global-text-value-open'), open: true};
       } else if (seasonsNeeded.length === 0) {
-        return {text: 'Completed in every season', open: false};
-      } else if (seasonsNeeded.length === 0) {
-        return {text: 'Open for ' + seasonsNeeded[0], open: false};
+        return {text: getFluentString('global-text-value-completed-in-every-season'), open: false};
+      } else if (seasonsNeeded.length === 1) {
+        return {
+          text: getFluentString('global-text-value-open-for') + ' ' + startCase(seasonsNeeded[0]),
+          open: false
+        };
       } else {
         const seasonList = seasonsNeeded.reduce((text, season, index) => {
-          const divider = index === seasonsNeeded.length - 1 ? ' and ' : ', ';
-          return text = text + divider + season;
-        });
-        return {text: 'Open for ' + seasonList, open: true};
+          if (index === 0) {
+            return text = startCase(season);
+          }
+          const divider = index === seasonsNeeded.length - 1 ? ' & ' : ', ';
+          return text = text + divider + startCase(season);
+        }, '');
+        return {
+          text: getFluentString('global-text-value-open-for') + ' ' + seasonList,
+          open: true
+        };
       }
     } else if (ascentGoals.winter.goal === true) {
       const winterGoal = getBasicGoal(ascentGoals.winter);
@@ -410,24 +440,24 @@ export const getGoalText = (ascentGoals: AscentGoals | undefined) => {
           if (ascentGoals.standard.goal === true) {
             const standardGoal = getBasicGoal(ascentGoals.standard);
             if (standardGoal === 'open') {
-              return {text: 'Open', open: true};
+              return {text: getFluentString('global-text-value-open'), open: true};
             }
           }
-          return {text: 'Open for winter', open: true};
+          return {text: getFluentString('global-text-value-open-for-winter'), open: true};
         } else {
-          return {text: 'Completed on ' + winterGoal, open: false};
+          return {text: getFluentString('global-text-value-completed-on') + ' ' + winterGoal, open: false};
         }
       }
     } else if (ascentGoals.standard.goal === true) {
       const standardGoal = getBasicGoal(ascentGoals.standard);
       if (standardGoal !== null) {
         if (standardGoal === 'open') {
-          return {text: 'Open', open: true};
+          return {text: getFluentString('global-text-value-open'), open: true};
         } else {
-          return {text: 'Completed on ' + standardGoal, open: false};
+          return {text: getFluentString('global-text-value-completed-on') + ' ' + standardGoal, open: false};
         }
       }
     }
   }
-  return {text: 'This mountain is not being pursued', open: null};
+  return {text: getFluentString('global-text-value-mountain-not-being-pursued'), open: null};
 };

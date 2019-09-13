@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
@@ -10,6 +10,11 @@ import {
 } from '../../../styling/styleUtils';
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import PeakListDetail from './PeakListDetail';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { Types } from 'mongoose';
 
 interface Props extends RouteComponentProps {
   userId: string;
@@ -19,9 +24,14 @@ const PeakListDetailPage = (props: Props) => {
   const { userId, match } = props;
   const { id, mountainId }: any = match.params;
 
-  const mountainDetail = mountainId === undefined
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const mountainDetail = !Types.ObjectId.isValid(mountainId)
     ? (
-        <PlaceholderText>Select a mountain to see its details and your ascents</PlaceholderText>
+        <PlaceholderText>
+          {getFluentString('peak-list-detail-select-mountain')}
+        </PlaceholderText>
       )
     : (
         <MountainDetail userId={userId} id={mountainId} />

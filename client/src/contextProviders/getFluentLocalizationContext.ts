@@ -10,7 +10,6 @@ import {
 import raw from 'raw.macro';
 
 const getLocalizationInfo = (messages: string) => {
-  console.log(messages);
   const bundle = new FluentBundle(['en-US']);
   bundle.addMessages(messages);
   function* generateBundles(_locales: string[]) {

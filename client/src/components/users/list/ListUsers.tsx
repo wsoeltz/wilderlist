@@ -1,11 +1,27 @@
 import React from 'react';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
+import { FriendStatus, User, PeakList, Mountain } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
+import { NoResults } from '../../../styling/styleUtils';
+
+interface BasicMountainDatum {
+  id: Mountain['id'];
+  name: Mountain['name'];
+}
 
 export interface UserDatum {
   id: User['id'];
   name: User['name'];
   profilePictureUrl: User['profilePictureUrl'];
+  peakLists: {
+    id: PeakList['id'];
+    name: PeakList['name'];
+    mountains: BasicMountainDatum[];
+    parent: {
+      id: PeakList['id'];
+      mountains: BasicMountainDatum[];
+    } | null;
+  }[];
+  mountains: User['mountains'];
 }
 
 export interface FriendDatum {
@@ -20,13 +36,14 @@ interface Props {
   currentUserId: string;
   friendsList: FriendDatum[];
   showCurrentUser: boolean;
+  noResultsText: string;
 }
 
 const ListUsers = (props: Props) => {
-  const { userData, currentUserId, showCurrentUser, friendsList } = props;
+  const { userData, currentUserId, showCurrentUser, friendsList, noResultsText } = props;
 
   if (userData.length === 0) {
-    return <>No users found</>;
+    return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
   const users = userData.map(user => {
     if (showCurrentUser === false && currentUserId === user.id) {

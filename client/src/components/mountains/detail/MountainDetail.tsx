@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   ButtonPrimary,
   GhostButton,
@@ -21,6 +21,10 @@ import {
 } from '../../peakLists/Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import styled from 'styled-components';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const titleWidth = 150; // in px
 
@@ -173,6 +177,9 @@ const getDateAsString = (date: DateObject) => {
 const MountainDetail = (props: Props) => {
   const { userId, id } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_LIST, {
     variables: { id, userId },
   });
@@ -209,10 +216,12 @@ const MountainDetail = (props: Props) => {
     <AreYouSureModal
       onConfirm={confirmRemove}
       onCancel={closeAreYouSureModal}
-      title={'Are you sure'}
-      text={`Remove ${formatDate(dateToRemove)} from your ascents?`}
-      confirmText={'Confirm'}
-      cancelText={'Cancel'}
+      title={getFluentString('global-text-value-are-you-sure-modal')}
+      text={getFluentString('mountain-detail-remove-ascent-modal-text', {
+        'date': formatDate(dateToRemove)
+      })}
+      confirmText={getFluentString('global-text-value-modal-confirm')}
+      cancelText={getFluentString('global-text-value-modal-cancel')}
     />
   );
 
@@ -237,7 +246,7 @@ const MountainDetail = (props: Props) => {
               () => setDateToRemove(date)
             }
           >
-            Remove Ascent
+            {getFluentString('mountain-detail-remove-ascent')}
           </GhostButton>
         </AscentListItem>
       ));
@@ -245,7 +254,7 @@ const MountainDetail = (props: Props) => {
         <>
           {completionListItems}
           <AddAscentButton onClick={() => setEditMountainId(id)}>
-            Add another ascent
+            {getFluentString('mountain-detail-add-another-ascent')}
           </AddAscentButton>
           {areYouSureModal}
         </>
@@ -253,9 +262,11 @@ const MountainDetail = (props: Props) => {
     } else {
       completionContent = (
         <>
-          <BasicListItem>You have not yet hiked {name}.</BasicListItem>
+          <BasicListItem>{getFluentString('mountain-detail-no-ascents-text', {
+            'mountain-name': name,
+          })}</BasicListItem>
           <AddAscentButton onClick={() => setEditMountainId(id)}>
-            Add Ascent Date
+            {getFluentString('mountain-detail-add-ascent-date')}
           </AddAscentButton>
         </>
       );
@@ -271,7 +282,7 @@ const MountainDetail = (props: Props) => {
 
     const regionsContent = regions.length < 1 ? null : (
         <HorizontalContentItem>
-          <ItemTitleShort>Regions:</ItemTitleShort>
+          <ItemTitleShort>{getFluentString('global-text-value-regions')}:</ItemTitleShort>
           <strong>{regions}</strong>
         </HorizontalContentItem>
       );
@@ -286,7 +297,9 @@ const MountainDetail = (props: Props) => {
 
     const listsContent = listsText.length < 1 ? null : (
         <VerticalContentItem>
-          <ItemTitle>Lists {name} appears on:</ItemTitle>
+          <ItemTitle>{getFluentString('mountain-detail-lists-mountain-appears-on', {
+            'mountain-name': name,
+          })}</ItemTitle>
           {listsText}
         </VerticalContentItem>
       );
@@ -295,25 +308,25 @@ const MountainDetail = (props: Props) => {
       <>
         <h1>{name}</h1>
         <HorizontalContentItem>
-          <ItemTitleShort>Elevation:</ItemTitleShort>
+          <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
           <strong>{elevation}ft</strong>
         </HorizontalContentItem>
         <HorizontalContentItem>
-          <ItemTitleShort>Prominence:</ItemTitleShort>
+          <ItemTitleShort>{getFluentString('global-text-value-prominence')}:</ItemTitleShort>
           <strong>{prominence}ft</strong>
         </HorizontalContentItem>
         <HorizontalContentItem>
-          <ItemTitleShort>Location:</ItemTitleShort>
+          <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
           <strong>{lat}, {long}</strong>
         </HorizontalContentItem>
         <HorizontalContentItem>
-          <ItemTitleShort>State:</ItemTitleShort>
+          <ItemTitleShort>{getFluentString('global-text-value-state')}:</ItemTitleShort>
           <strong>{state.name}</strong>
         </HorizontalContentItem>
         {regionsContent}
         {listsContent}
         <VerticalContentItem>
-          <ItemTitle>Ascent dates:</ItemTitle>
+          <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
           {completionContent}
         </VerticalContentItem>
         {editMountainModal}

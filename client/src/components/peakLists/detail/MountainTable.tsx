@@ -1,5 +1,5 @@
 import { sortBy } from 'lodash';
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import styled from 'styled-components';
 import {
   lightBorderColor,
@@ -30,6 +30,10 @@ import {
   MountainDatum,
   UserDatum,
 } from './PeakListDetail';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
@@ -111,6 +115,9 @@ interface Props {
 const MountainTable = (props: Props) => {
   const { mountains, user, type, peakListId } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
 
   const closeEditMountainModalModal = () => {
@@ -118,33 +125,21 @@ const MountainTable = (props: Props) => {
   };
   let textNote: React.ReactElement<any> | null;
   if (type === PeakListVariants.standard) {
-    textNote = (
-        <Note>
-          Entering a date is optional for <strong>Standard</strong> lists.
-          However an unspecific date may not count towards other lists that contain this peak.
-        </Note>
-    );
+    textNote = <Note dangerouslySetInnerHTML={{
+      __html: getFluentString('mountain-completion-modal-text-note-standard')
+    }} />;
   } else if (type === PeakListVariants.winter) {
-    textNote = (
-        <Note>
-          <strong>Winter</strong> lists require the date to be in between the <strong>winter solstice</strong> and the <strong>vernal equinox</strong> for a given year.
-          You may still enter other dates here, and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
-        </Note>
-    );
+    textNote = <Note dangerouslySetInnerHTML={{
+      __html: getFluentString('mountain-completion-modal-text-note-winter')
+    }} />;
   } else if (type === PeakListVariants.fourSeason) {
-    textNote = (
-        <Note>
-          <strong>4-Season</strong> lists require dates to be in between the official solstice and equinox for a given season and year.
-          You may still enter other dates here, and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
-        </Note>
-    );
+    textNote = <Note dangerouslySetInnerHTML={{
+      __html: getFluentString('mountain-completion-modal-text-note-four-season')
+    }} />;
   } else if (type === PeakListVariants.grid) {
-    textNote = (
-        <Note>
-          <strong>Grid</strong> lists require dates to be a day within the specified month.
-          You may still enter other dates here, and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
-        </Note>
-    );
+    textNote = <Note dangerouslySetInnerHTML={{
+      __html: getFluentString('mountain-completion-modal-text-note-grid')
+    }} />;
   } else {
     failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
     textNote = null;
@@ -177,35 +172,73 @@ const MountainTable = (props: Props) => {
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     titleColumns = (
       <>
-        <TitleCell style={{gridColumn: elevationColumn}}>Elevation</TitleCell>
-        <TitleCell style={{gridColumn: prominenceColumn}}>Prominence</TitleCell>
-        <MountainColumnTitleButton>Done</MountainColumnTitleButton>
+        <TitleCell style={{gridColumn: elevationColumn}}>
+          {getFluentString('global-text-value-elevation')}
+        </TitleCell>
+        <TitleCell style={{gridColumn: prominenceColumn}}>
+          {getFluentString('global-text-value-prominence')}
+        </TitleCell>
+        <MountainColumnTitleButton>
+          {getFluentString('global-text-value-done')}
+        </MountainColumnTitleButton>
       </>
     );
   } else if (type === PeakListVariants.fourSeason) {
     titleColumns = (
       <>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.summer]}}>Summer</TitleCell>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.fall]}}>Fall</TitleCell>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.winter]}}>Winter</TitleCell>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.spring]}}>Spring</TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.summer]}}>
+          {getFluentString('global-text-value-summer')}
+        </TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.fall]}}>
+          {getFluentString('global-text-value-fall')}
+        </TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.winter]}}>
+          {getFluentString('global-text-value-winter')}
+        </TitleCell>
+        <TitleCell style={{gridColumn: seasonColumns[Seasons.spring]}}>
+          {getFluentString('global-text-value-spring')}
+        </TitleCell>
       </>
     );
   } else if (type === PeakListVariants.grid) {
     titleColumns = (
       <>
-        <GridTitle style={{gridColumn: monthColumns[Months.january]}}>Jan</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.february]}}>Feb</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.march]}}>Mar</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.april]}}>Apr</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.may]}}>May</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.june]}}>Jun</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.july]}}>Jul</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.august]}}>Aug</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.september]}}>Sep</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.october]}}>Oct</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.november]}}>Nov</GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.december]}}>Dec</GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.january]}}>
+          {getFluentString('global-text-value-month-short-jan')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.february]}}>
+          {getFluentString('global-text-value-month-short-feb')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.march]}}>
+          {getFluentString('global-text-value-month-short-mar')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.april]}}>
+          {getFluentString('global-text-value-month-short-apr')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.may]}}>
+          {getFluentString('global-text-value-month-short-may')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.june]}}>
+          {getFluentString('global-text-value-month-short-jun')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.july]}}>
+          {getFluentString('global-text-value-month-short-jul')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.august]}}>
+          {getFluentString('global-text-value-month-short-aug')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.september]}}>
+          {getFluentString('global-text-value-month-short-sep')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.october]}}>
+          {getFluentString('global-text-value-month-short-oct')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.november]}}>
+          {getFluentString('global-text-value-month-short-nov')}
+        </GridTitle>
+        <GridTitle style={{gridColumn: monthColumns[Months.december]}}>
+          {getFluentString('global-text-value-month-short-dec')}
+        </GridTitle>
       </>
     );
   } else {
@@ -214,17 +247,18 @@ const MountainTable = (props: Props) => {
   }
 
   const gridNote = type === PeakListVariants.grid
-    ? (<Note>
-        <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
-        <div>For example, <em>March 3, 2014</em> would show as <em>3, '14</em>.</div>
-      </Note>)
+    ? (<Note dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-table-grid-date-note-text')
+        }} />)
     : null;
 
   return (
     <>
       {gridNote}
       <Root>
-        <MountainColumnTitleName>Mountain</MountainColumnTitleName>
+        <MountainColumnTitleName>
+          {getFluentString('global-text-value-mountain')}
+        </MountainColumnTitleName>
         {titleColumns}
         {mountainRows}
         {editMountainModal}

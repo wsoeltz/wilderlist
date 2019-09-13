@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
@@ -8,6 +8,10 @@ import {
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 interface Props extends RouteComponentProps {
   userId: string;
@@ -16,6 +20,9 @@ interface Props extends RouteComponentProps {
 const ComparePeakListPage = (props: Props) => {
   const { userId, match } = props;
   const { id: profileId, peakListId, mountainId }: any = match.params;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   let comparison: React.ReactElement<any> | null;
   if (peakListId === undefined) {
@@ -34,7 +41,9 @@ const ComparePeakListPage = (props: Props) => {
 
   const mountainDetail = mountainId === undefined
     ? (
-        <h2>Select a mountain to see more details</h2>
+        <h2>
+          {getFluentString('list-detail-mountain-detail-placeholder')}
+        </h2>
       )
     : (
         <MountainDetail userId={userId} id={mountainId} />

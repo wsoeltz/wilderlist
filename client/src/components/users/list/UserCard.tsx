@@ -1,17 +1,23 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useContext} from 'react';
 import styled from 'styled-components';
-import { friendsWithUserProfileLink, preventNavigation, userProfileLink } from '../../../routing/Utils';
+import { friendsWithUserProfileLink, preventNavigation, comparePeakListLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  ButtonSecondary,
+  GhostButton,
   Card,
+  lightBaseColor,
 } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { getLatestOverallAscent, formatDate } from '../../peakLists/Utils';
 
 export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
@@ -108,22 +114,44 @@ const LinkWrapper = styled(DynamicLink)`
 
 const Root = styled(Card)`
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 6rem 1fr;
+  grid-template-rows: 1fr auto;
+  grid-column-gap: 1.1rem;
 `;
 
 const Title = styled.h1`
   font-size: 1.3rem;
   margin-top: 0;
+  margin-bottom: 0.4rem;
 `;
 const TextContainer = styled.div`
+  grid-row: 1;
   grid-column: 2;
 `;
 
 const ProfilePicture = styled.img`
+  grid-row: 1 / span 2;
   grid-column: 1;
-  max-width: 64px;
+  max-width: 100%;
   margin-right: 1.5rem;
   border-radius: 4000px;
+`;
+
+const Subtitle = styled.p`
+  color: ${lightBaseColor};
+  margin: 0.4rem 0;
+`;
+
+const ButtonContainer = styled.div`
+  grid-column: 2
+  grid-row: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+`;
+
+const DeclineButton = styled(GhostButton)`
+  margin-right: 0.6rem;
 `;
 
 interface Props {
@@ -134,7 +162,9 @@ interface Props {
 
 const UserCard = (props: Props) => {
   const { user, friendStatus, currentUserId } = props;
-  let actionButtons: React.ReactElement<any> | null;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [sendFriendRequestMutation] =
     useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
@@ -157,45 +187,104 @@ const UserCard = (props: Props) => {
     removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
   };
 
+  let cardContent: React.ReactElement<any> | null;
   if (friendStatus === null) {
-    actionButtons = (
-      <ButtonPrimary onClick={sendFriendRequest}>Add Friend</ButtonPrimary>
-    );
-  } else if (friendStatus === FriendStatus.friends) {
-    actionButtons = (
-      <ButtonSecondary onClick={removeFriend}>Remove Friend</ButtonSecondary>
-    );
-  } else if (friendStatus === FriendStatus.sent) {
-    actionButtons = (
-      <p>
-        Pending friend request
-        <ButtonSecondary onClick={removeFriend}>Cancel Request</ButtonSecondary>
-      </p>
-    );
-  } else if (friendStatus === FriendStatus.recieved) {
-    actionButtons = (
-      <p>
-        <ButtonSecondary onClick={removeFriend}>Decline Friend Request</ButtonSecondary>
-        <ButtonPrimary onClick={acceptFriendRequest}>Accept Friend Request</ButtonPrimary>
-      </p>
-    );
-  } else {
-    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
-    actionButtons = null;
-  }
-  return (
-    <LinkWrapper
-      mobileURL={userProfileLink(user.id)}
-      desktopURL={friendsWithUserProfileLink(user.id)}
-    >
-      <Root>
-        <ProfilePicture src={user.profilePictureUrl} />
+    cardContent = (
+      <>
         <TextContainer>
           <Title>
             {user.name}
           </Title>
-          {actionButtons}
         </TextContainer>
+        <ButtonContainer>
+          <ButtonPrimary onClick={sendFriendRequest}>
+            {getFluentString('user-profile-requests-add-friend')}
+          </ButtonPrimary>
+        </ButtonContainer>
+      </>
+    );
+  } else if (friendStatus === FriendStatus.friends) {
+    const { mountains } = user;
+    let ascentText: string;
+    if (mountains !== null) {
+      const latestAscent = getLatestOverallAscent(mountains);
+      if (latestAscent !== null) {
+        ascentText = getFluentString('user-profile-latest-ascents', {
+          'mountain-name': latestAscent.name,
+          'date': formatDate(latestAscent.date),
+        })
+      } else {
+        ascentText = getFluentString('user-profile-no-recent-ascents');
+      }
+    } else {
+      ascentText = getFluentString('user-profile-no-recent-ascents');
+    }
+    cardContent = (
+      <>
+        <TextContainer>
+          <Title>
+            {user.name}
+          </Title>
+          <Subtitle>
+            {ascentText}
+          </Subtitle>
+        </TextContainer>
+      </>
+    );
+  } else if (friendStatus === FriendStatus.sent) {
+    cardContent = (
+      <>
+        <TextContainer>
+          <Title>
+            {user.name}
+          </Title>
+          <Subtitle>
+            {getFluentString('user-profile-requests-pending-request')}
+          </Subtitle>
+        </TextContainer>
+        <ButtonContainer>
+          <GhostButton onClick={removeFriend}>
+            {getFluentString('user-profile-requests-cancel-request')}
+          </GhostButton>
+        </ButtonContainer>
+      </>
+    );
+  } else if (friendStatus === FriendStatus.recieved) {
+    cardContent = (
+      <>
+        <TextContainer>
+          <Title>
+            {user.name}
+          </Title>
+        </TextContainer>
+        <ButtonContainer>
+          <DeclineButton onClick={removeFriend}>
+            {getFluentString('user-profile-requests-decline-request')}
+          </DeclineButton>
+          <ButtonPrimary onClick={acceptFriendRequest}>
+            {getFluentString('user-profile-requests-accept-request')}
+          </ButtonPrimary>
+        </ButtonContainer>
+      </>
+    );
+  } else {
+    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
+    cardContent = null;
+  }
+
+  const opacity = friendStatus === FriendStatus.friends ? 1 : 0.2;
+
+  return (
+    <LinkWrapper
+      mobileURL={comparePeakListLink(user.id, 'none')}
+      desktopURL={friendsWithUserProfileLink(user.id)}
+    >
+      <Root>
+        <ProfilePicture
+          src={user.profilePictureUrl}
+          style={{opacity}}
+        />
+        {cardContent}
       </Root>
     </LinkWrapper>
   );

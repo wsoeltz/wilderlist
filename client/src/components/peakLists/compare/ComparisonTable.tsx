@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   MountainColumnTitleName,
   Root,
@@ -7,6 +7,10 @@ import {
 import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
 import { UserDatum } from './PeakListComparison';
 import { getAscentGoals } from './Utils';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const gridColumns = {
   friendColumn: 2,
@@ -22,6 +26,9 @@ interface Props {
 
 const ComparisonTable = (props: Props) => {
   const { user, me, mountains, peakListId } = props;
+  
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const userMountains = user.mountains !== null ? user.mountains : [];
   const myMountains = me.mountains !== null ? me.mountains : [];
@@ -43,7 +50,9 @@ const ComparisonTable = (props: Props) => {
 
   return (
     <Root>
-      <MountainColumnTitleName>Mountain</MountainColumnTitleName>
+      <MountainColumnTitleName>
+        {getFluentString('global-text-value-mountain')}
+      </MountainColumnTitleName>
       <TitleCell style={{gridColumn: gridColumns.friendColumn}}>{user.name}</TitleCell>
       <TitleCell style={{gridColumn: gridColumns.meColumn}}>{me.name}</TitleCell>
       {comparisonRows}

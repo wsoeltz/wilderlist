@@ -1,15 +1,20 @@
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import {
   ButtonPrimary,
   ButtonSecondary,
   InputBase,
+  warningColor,
 } from '../../../styling/styleUtils';
 import { Mountain, User } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const DateInputContainer = styled.div`
   display: grid;
@@ -38,6 +43,11 @@ const ButtonWrapper = styled.div`
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+`;
+
+const Error = styled.p`
+  color: ${warningColor};
+  text-align: center;
 `;
 
 const ADD_MOUNTAIN_COMPLETION = gql`
@@ -88,16 +98,23 @@ const MountainCompletionModal = (props: Props) => {
   const [completionDay, setCompletionDay] = useState<string>('');
   const [completionMonth, setCompletionMonth] = useState<string>('');
   const [completionYear, setCompletionYear] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     if (completedDate.error !== undefined) {
-      console.error(completedDate.error);
+      setErrorMessage(completedDate.error);
     } else {
+      setErrorMessage(undefined);
       addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
       closeEditMountainModalModal();
     }
   };
+
+  const error = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
 
   return (
     <Modal
@@ -125,13 +142,14 @@ const MountainCompletionModal = (props: Props) => {
           type='number'
         />
       </DateInputContainer>
+      {error}
       {textNote}
       <ButtonWrapper>
         <CancelButton onClick={closeEditMountainModalModal}>
-          Cancel
+          {getFluentString('global-text-value-modal-cancel')}
         </CancelButton>
         <ButtonPrimary onClick={() => validateAndAddMountainCompletion(editMountainId)}>
-          Mark Complete
+          {getFluentString('global-text-value-modal-mark-complete')}
         </ButtonPrimary>
       </ButtonWrapper>
     </Modal>

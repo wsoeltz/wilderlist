@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
 import {
@@ -18,6 +18,13 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import UserProfile from '../detail/UserProfile';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
+import {
+  PlaceholderText,
+} from '../../../styling/styleUtils';
 
 const Next = styled(ButtonSecondary)`
 `;
@@ -39,6 +46,26 @@ const SEARCH_USERS = gql`
       id
       name
       profilePictureUrl
+      peakLists {
+        id
+        name
+        mountains {
+          id
+        }
+        parent {
+          id
+          mountains {
+            id
+          }
+        }
+      }
+      mountains {
+        mountain {
+          id
+          name
+        }
+        dates
+      }
     }
     me: user(id: $id) {
       id
@@ -74,6 +101,10 @@ interface Props extends RouteComponentProps {
 const UserList = (props: Props) => {
   const { userId, match, history } = props;
   const { id }: any = match.params;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const incrementPageNumber = () => setPageNumber(pageNumber + 1);
@@ -99,12 +130,15 @@ const UserList = (props: Props) => {
     const { users, me: {friends} } = data;
     const nextBtn = users.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
-        Next {'>'}
+        {getFluentString('global-text-value-navigation-next')}
       </Next> ) : null;
     const prevBtn = pageNumber > 1 ? (
       <Prev onClick={decrementPageNumber}>
-        {'<'} Previous
+        {getFluentString('global-text-value-navigation-prev')}
       </Prev> ) : null;
+    const noResultsText = getFluentString('global-text-value-no-users-found-for-term', {
+      'term': searchQuery,
+    });
     list = (
       <>
         <ListUsers
@@ -112,6 +146,7 @@ const UserList = (props: Props) => {
           showCurrentUser={false}
           currentUserId={userId}
           friendsList={friends}
+          noResultsText={noResultsText}
         />
         {prevBtn}
         {nextBtn}
@@ -122,7 +157,9 @@ const UserList = (props: Props) => {
   }
   const userProfile = !Types.ObjectId.isValid(id)
   ? (
-    <h2>Select a user to see more details</h2>
+      <PlaceholderText>
+        {getFluentString('user-list-no-user-selected-text')}
+      </PlaceholderText>
     )
   : (
     <UserProfile userId={userId} id={id} history={history} />
