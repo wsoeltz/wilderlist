@@ -1,5 +1,10 @@
+import { GetString } from 'fluent-react';
+import { Types } from 'mongoose';
 import React, { useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -10,11 +15,6 @@ import {
 } from '../../../styling/styleUtils';
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import PeakListDetail from './PeakListDetail';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { Types } from 'mongoose';
 
 interface Props extends RouteComponentProps {
   userId: string;

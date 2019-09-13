@@ -1,17 +1,17 @@
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { History } from 'history';
 import React, {useContext} from 'react';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import { comparePeakListIsolatedLink, comparePeakListLink } from '../../../routing/Utils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
 import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
 import Header from './Header';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const GET_USER = gql`
   query getUser($userId: ID!, $profileId: ID!) {
@@ -158,8 +158,8 @@ const UserProfile = (props: Props) => {
       };
 
       const noResultsText = getFluentString('user-profile-no-lists', {
-        'user-name': user.name
-      })
+        'user-name': user.name,
+      });
 
       return (
         <>

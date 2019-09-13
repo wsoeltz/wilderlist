@@ -274,7 +274,7 @@ export const completedPeaks = (
 };
 
 export const getLatestAscent =  (
-  mountains: {id: string}[],
+  mountains: Array<{id: string}>,
   completedAscents: CompletedMountain[],
   variant: PeakListVariants,
 ) => {
@@ -374,17 +374,17 @@ export const getLatestAscent =  (
   const ascentsNotNaN = ascents.filter(
     ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
   if (ascentsNotNaN.length) {
-    const sortedAscents = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
-    if (sortedAscents.length) {
-      return sortedAscents[sortedAscents.length - 1];
+    const sortedAscentsNotNaN = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
+    if (sortedAscentsNotNaN.length) {
+      return sortedAscentsNotNaN[sortedAscentsNotNaN.length - 1];
     }
   }
   const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
-  const sortedAscents = ascentsYearOnly.length
+  const sortedAscentsYearOnly = ascentsYearOnly.length
     ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
     : sortBy(ascents, ['year', 'month', 'day']);
 
-  return sortedAscents[sortedAscents.length - 1];
+  return sortedAscentsYearOnly[sortedAscentsYearOnly.length - 1];
 };
 
 type DateWithName = DateObject & { name: string };
@@ -393,7 +393,7 @@ export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
   if (mountains.length === 0) {
     return null;
   }
-  const mountainList = mountains.map(({mountain: { id }}) => { return {id} });
+  const mountainList = mountains.map(({mountain: { id }}) => ({id}));
   const ascents: DateWithName[] = [];
   mountainList.forEach(({id}) => {
     const dates = mountains.find(
@@ -409,20 +409,20 @@ export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
   const ascentsNotNaN = ascents.filter(
     ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
   if (ascentsNotNaN.length) {
-    const sortedAscents = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
-    if (sortedAscents.length) {
-      const {name, ...date} = sortedAscents[sortedAscents.length - 1];
+    const sortedAscentsNotNaN = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
+    if (sortedAscentsNotNaN.length) {
+      const {name, ...date} = sortedAscentsNotNaN[sortedAscentsNotNaN.length - 1];
       return {name, date };
     }
   }
   const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
-  const sortedAscents = ascentsYearOnly.length
+  const sortedAscentsYearOnly = ascentsYearOnly.length
     ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
     : sortBy(ascents, ['year', 'month', 'day']);
 
-  if (sortedAscents.length) {
-    const {name, ...date} = sortedAscents[sortedAscents.length - 1];
+  if (sortedAscentsYearOnly.length) {
+    const {name, ...date} = sortedAscentsYearOnly[sortedAscentsYearOnly.length - 1];
     return {name, date };
   }
   return null;
-}
+};

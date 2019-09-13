@@ -1,7 +1,7 @@
 import React from 'react';
-import { FriendStatus, User, PeakList, Mountain } from '../../../types/graphQLTypes';
-import UserCard from './UserCard';
 import { NoResults } from '../../../styling/styleUtils';
+import { FriendStatus, Mountain, PeakList, User } from '../../../types/graphQLTypes';
+import UserCard from './UserCard';
 
 interface BasicMountainDatum {
   id: Mountain['id'];
@@ -12,7 +12,7 @@ export interface UserDatum {
   id: User['id'];
   name: User['name'];
   profilePictureUrl: User['profilePictureUrl'];
-  peakLists: {
+  peakLists: Array<{
     id: PeakList['id'];
     name: PeakList['name'];
     mountains: BasicMountainDatum[];
@@ -20,7 +20,7 @@ export interface UserDatum {
       id: PeakList['id'];
       mountains: BasicMountainDatum[];
     } | null;
-  }[];
+  }>;
   mountains: User['mountains'];
 }
 

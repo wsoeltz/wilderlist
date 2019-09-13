@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
@@ -8,7 +9,6 @@ import {
 import CompareAllMountains from '../../peakLists/compare/CompareAllMountains';
 import PeakListComparison from '../../peakLists/compare/PeakListComparison';
 import UserProfile from './UserProfile';
-import { Types } from 'mongoose';
 
 interface Props extends RouteComponentProps {
   userId: string;

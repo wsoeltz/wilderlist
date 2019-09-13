@@ -1,5 +1,9 @@
+import { GetString } from 'fluent-react';
 import React, { useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -8,10 +12,6 @@ import {
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 interface Props extends RouteComponentProps {
   userId: string;

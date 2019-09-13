@@ -4,10 +4,10 @@ import {
 import {
   ReactLocalization,
 } from 'fluent-react';
+import raw from 'raw.macro';
 import {
   createContext,
 } from 'react';
-import raw from 'raw.macro';
 
 const getLocalizationInfo = (messages: string) => {
   const bundle = new FluentBundle(['en-US']);

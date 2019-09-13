@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { GetString } from 'fluent-react';
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,7 +12,6 @@ import {
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
-import { GetString } from 'fluent-react';
 
 const UserMenu = styled.div`
   min-width: 200px;

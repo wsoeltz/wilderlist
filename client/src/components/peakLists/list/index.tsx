@@ -1,8 +1,12 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -20,10 +24,6 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from './ListPeakLists';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
@@ -182,7 +182,7 @@ const PeakListPage = (props: Props) => {
         {getFluentString('global-text-value-navigation-prev')}
       </Prev> ) : null;
     const noResultsText = getFluentString('global-text-value-no-results-found-for-term', {
-      'term': searchQuery,
+      term: searchQuery,
     });
     list = (
       <>

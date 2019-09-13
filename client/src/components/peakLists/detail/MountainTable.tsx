@@ -1,6 +1,10 @@
+import { GetString } from 'fluent-react';
 import { sortBy } from 'lodash';
-import React, {useState, useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   lightBorderColor,
   placeholderColor,
@@ -30,10 +34,6 @@ import {
   MountainDatum,
   UserDatum,
 } from './PeakListDetail';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
@@ -126,19 +126,19 @@ const MountainTable = (props: Props) => {
   let textNote: React.ReactElement<any> | null;
   if (type === PeakListVariants.standard) {
     textNote = <Note dangerouslySetInnerHTML={{
-      __html: getFluentString('mountain-completion-modal-text-note-standard')
+      __html: getFluentString('mountain-completion-modal-text-note-standard'),
     }} />;
   } else if (type === PeakListVariants.winter) {
     textNote = <Note dangerouslySetInnerHTML={{
-      __html: getFluentString('mountain-completion-modal-text-note-winter')
+      __html: getFluentString('mountain-completion-modal-text-note-winter'),
     }} />;
   } else if (type === PeakListVariants.fourSeason) {
     textNote = <Note dangerouslySetInnerHTML={{
-      __html: getFluentString('mountain-completion-modal-text-note-four-season')
+      __html: getFluentString('mountain-completion-modal-text-note-four-season'),
     }} />;
   } else if (type === PeakListVariants.grid) {
     textNote = <Note dangerouslySetInnerHTML={{
-      __html: getFluentString('mountain-completion-modal-text-note-grid')
+      __html: getFluentString('mountain-completion-modal-text-note-grid'),
     }} />;
   } else {
     failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
@@ -248,7 +248,7 @@ const MountainTable = (props: Props) => {
 
   const gridNote = type === PeakListVariants.grid
     ? (<Note dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-table-grid-date-note-text')
+          __html: getFluentString('mountain-table-grid-date-note-text'),
         }} />)
     : null;
 

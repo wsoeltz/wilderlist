@@ -28,7 +28,7 @@ const NoApp = ({browser, version}: {browser: string, version: number}) => {
   let output: React.ReactElement<any> | null;
   if (browser === 'IE') {
     output = (
-      <Text><strong>Wilderlist</strong> does not support <strong>Internet Explorer</strong>. Please use a different browser, such as <a href="microsoft-edge:http://wilderlist-dev.herokuapp.com">Edge</a>, <a href="https://www.google.com/chrome/">Chrome</a>, or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>.</Text>
+      <Text><strong>Wilderlist</strong> does not support <strong>Internet Explorer</strong>. Please use a different browser, such as <a href='microsoft-edge:http://wilderlist-dev.herokuapp.com'>Edge</a>, <a href='https://www.google.com/chrome/'>Chrome</a>, or <a href='https://www.mozilla.org/en-US/firefox/new/'>Firefox</a>.</Text>
     );
   } else if (browser === 'Chrome') {
     output = (<Text><strong>Wilderlist</strong> does not support <strong>Chrome</strong> version <strong>{version}</strong>. Please upgrade your browser. You can read how to do so <a href={'https://support.google.com/chrome/answer/95414?co=GENIE.Platform%3DDesktop&hl=en'}>here</a></Text>
@@ -46,7 +46,7 @@ const NoApp = ({browser, version}: {browser: string, version: number}) => {
     output = (<Text><strong>Wilderlist</strong> does not support <strong>Opera</strong> version <strong>{version}</strong>. Please upgrade your browser. You can read how to do so <a href={'https://help.opera.com/en/opera-tutorials/how-do-i-update-my-opera-browser/'}>here</a></Text>
     );
   } else {
-    output = (<Text><strong>Wilderlist</strong> does not support <strong>{browser}</strong>. Please use a different browser, such as <a href="https://www.google.com/chrome/">Chrome</a> or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>.</Text>
+    output = (<Text><strong>Wilderlist</strong> does not support <strong>{browser}</strong>. Please use a different browser, such as <a href='https://www.google.com/chrome/'>Chrome</a> or <a href='https://www.mozilla.org/en-US/firefox/new/'>Firefox</a>.</Text>
     );
   }
   return (
@@ -62,6 +62,6 @@ const NoApp = ({browser, version}: {browser: string, version: number}) => {
       </Root>
     </>
   );
-}
+};
 
 export default NoApp;

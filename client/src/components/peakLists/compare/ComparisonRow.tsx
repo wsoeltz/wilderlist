@@ -1,5 +1,9 @@
+import { GetString } from 'fluent-react';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import { comparePeakListWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   baseColor,
@@ -16,10 +20,6 @@ import {
   AscentGoals,
   getGoalText,
 } from './Utils';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 export interface MountainDatumLite {
   id: Mountain['id'];

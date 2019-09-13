@@ -1,23 +1,23 @@
 import { useMutation } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
-import { friendsWithUserProfileLink, preventNavigation, comparePeakListLink } from '../../../routing/Utils';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { comparePeakListLink, friendsWithUserProfileLink, preventNavigation } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  GhostButton,
   Card,
+  GhostButton,
   lightBaseColor,
 } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import { formatDate, getLatestOverallAscent } from '../../peakLists/Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { getLatestOverallAscent, formatDate } from '../../peakLists/Utils';
 
 export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
@@ -212,7 +212,7 @@ const UserCard = (props: Props) => {
         ascentText = getFluentString('user-profile-latest-ascents', {
           'mountain-name': latestAscent.name,
           'date': formatDate(latestAscent.date),
-        })
+        });
       } else {
         ascentText = getFluentString('user-profile-no-recent-ascents');
       }

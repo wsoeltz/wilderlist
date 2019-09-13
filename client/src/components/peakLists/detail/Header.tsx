@@ -1,7 +1,11 @@
 import { useMutation } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useState, useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   GhostButton,
@@ -26,10 +30,6 @@ import {
   PeakListDatum,
   UserDatum,
 } from './PeakListDetail';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const Root = styled.div`
   display: grid;
@@ -125,7 +125,7 @@ const Header = (props: Props) => {
       onCancel={closeAreYouSureModal}
       title={getFluentString('global-text-value-are-you-sure-modal')}
       text={getFluentString('peak-list-detail-text-modal-remove-confirm', {
-        'peak-list-name': peakList.name
+        'peak-list-name': peakList.name,
       })}
       confirmText={getFluentString('global-text-value-modal-confirm')}
       cancelText={getFluentString('global-text-value-modal-cancel')}
@@ -166,7 +166,7 @@ const Header = (props: Props) => {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
         'has-full-date': !(isNaN(latestDate.day) || isNaN(latestDate.month)).toString(),
-      })
+      });
       latestDateText = (
         <>
           {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>

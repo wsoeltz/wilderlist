@@ -1,7 +1,7 @@
-import 'cross-fetch/polyfill';
 import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
 import axios from 'axios';
+import 'cross-fetch/polyfill';
 import debounce from 'lodash/debounce';
 import 'normalize.css';
 import React, { useEffect, useState } from 'react';
@@ -9,6 +9,10 @@ import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
+import {
+  appLocalizationAndBundle as fluentValue,
+  AppLocalizationAndBundleContext as FluentText,
+} from '../contextProviders/getFluentLocalizationContext';
 import { Routes } from '../routing/routes';
 import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
@@ -28,10 +32,6 @@ import PeakListPage from './peakLists/list';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
-import {
-  appLocalizationAndBundle as fluentValue,
-  AppLocalizationAndBundleContext as FluentText,
-} from '../contextProviders/getFluentLocalizationContext';
 
 export interface IAppContext {
   windowWidth: number;

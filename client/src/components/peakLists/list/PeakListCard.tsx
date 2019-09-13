@@ -1,6 +1,10 @@
+import { GetString } from 'fluent-react';
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailWithMountainDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
 import {
   boldFontWeight,
@@ -20,10 +24,6 @@ import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -249,7 +249,7 @@ const PeakListCard = (props: Props) => {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
         'has-full-date': !(isNaN(latestDate.day) || isNaN(latestDate.month)).toString(),
-      })
+      });
       latestDateText = (
         <>
           {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>

@@ -1,4 +1,8 @@
+import { GetString } from 'fluent-react';
 import React, {useContext} from 'react';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   MountainColumnTitleName,
   Root,
@@ -7,10 +11,6 @@ import {
 import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
 import { UserDatum } from './PeakListComparison';
 import { getAscentGoals } from './Utils';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const gridColumns = {
   friendColumn: 2,
@@ -26,7 +26,7 @@ interface Props {
 
 const ComparisonTable = (props: Props) => {
   const { user, me, mountains, peakListId } = props;
-  
+
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 

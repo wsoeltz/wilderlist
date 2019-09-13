@@ -1,10 +1,10 @@
-import "core-js/stable";
-import "regenerator-runtime/runtime";
-import { getBrowser } from './Utils';
+import 'core-js/stable';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'regenerator-runtime/runtime';
 import App from './components/App';
 import NoApp from './components/NoApp';
+import { getBrowser } from './Utils';
 
 const {browser, version} = getBrowser();
 
@@ -18,4 +18,3 @@ if ( browser === 'IE'                       ||
 } else {
   ReactDOM.render(<App />, document.getElementById('root'));
 }
-

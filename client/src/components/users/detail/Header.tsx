@@ -1,6 +1,10 @@
 import { useMutation } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import { comparePeakListIsolatedLink, comparePeakListLink, preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
@@ -19,10 +23,6 @@ import {
   SEND_FRIEND_REQUEST,
 } from '../list/UserCard';
 import { UserDatum } from './UserProfile';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const Root = styled.div`
   display: grid;

@@ -239,7 +239,6 @@ export const PlaceholderText = styled.div`
   background-color: rgba(0, 0, 0, 0.04);
 `;
 
-
 export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};

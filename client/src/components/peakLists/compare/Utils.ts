@@ -1,3 +1,5 @@
+import { GetString } from 'fluent-react';
+import startCase from 'lodash/startCase';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   formatDate,
@@ -7,8 +9,6 @@ import {
   getWinterCompletion,
 } from '../Utils';
 import { UserDatum } from './PeakListComparison';
-import { GetString } from 'fluent-react';
-import startCase from 'lodash/startCase';
 // import toLower from 'lodash/toLower';
 
 type BasicAscentGoal = {
@@ -380,7 +380,7 @@ export const getGoalText = (
       } else if (monthsNeeded.length === 1) {
         return {
           text: getFluentString('global-text-value-open-for') + ' ' + startCase(monthsNeeded[0]),
-          open: false
+          open: false,
         };
       } else if (monthsCompleted.length < monthsNeeded.length) {
         const monthList = monthsCompleted.reduce((text, month, index) => {
@@ -392,8 +392,8 @@ export const getGoalText = (
         }, '');
         return {
           text: getFluentString('global-text-value-open-for-every-month-except')
-                +' ' + monthList,
-          open: true
+                + ' ' + monthList,
+          open: true,
         };
       } else {
         const monthList = monthsNeeded.reduce((text, month, index) => {
@@ -405,8 +405,8 @@ export const getGoalText = (
         }, '');
         return {
           text: getFluentString('global-text-value-open-for')
-                +' ' + monthList,
-          open: true
+                + ' ' + monthList,
+          open: true,
         };
       }
     } else if (ascentGoals.fourSeason.goal === true) {
@@ -418,7 +418,7 @@ export const getGoalText = (
       } else if (seasonsNeeded.length === 1) {
         return {
           text: getFluentString('global-text-value-open-for') + ' ' + startCase(seasonsNeeded[0]),
-          open: false
+          open: false,
         };
       } else {
         const seasonList = seasonsNeeded.reduce((text, season, index) => {
@@ -430,7 +430,7 @@ export const getGoalText = (
         }, '');
         return {
           text: getFluentString('global-text-value-open-for') + ' ' + seasonList,
-          open: true
+          open: true,
         };
       }
     } else if (ascentGoals.winter.goal === true) {

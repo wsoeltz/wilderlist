@@ -1,8 +1,7 @@
 import React from 'react';
+import { NoResults } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakList, Region, State } from '../../../types/graphQLTypes';
 import PeakListCard from './PeakListCard';
-import { NoResults } from '../../../styling/styleUtils';
-
 
 interface MountainDatum {
   id: Mountain['id'];

@@ -1,10 +1,14 @@
-import React, { useState, useContext } from 'react';
+import { GetString } from 'fluent-react';
+import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Logo from '../../assets/logo/Logo';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../contextProviders/getFluentLocalizationContext';
 import { Routes } from '../../routing/routes';
-import { searchListDetailLink, friendsWithUserProfileLink } from '../../routing/Utils';
+import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -15,10 +19,6 @@ import {
 import { User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
 import UserMenu from './UserMenu';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../contextProviders/getFluentLocalizationContext';
 
 const HeaderContainer = styled(HeaderContainerBase)`
   box-shadow: 0 1px 3px 1px #d1d1d1;

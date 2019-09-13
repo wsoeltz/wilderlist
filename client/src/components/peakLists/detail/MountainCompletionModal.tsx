@@ -1,7 +1,11 @@
 import { useMutation } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -11,10 +15,6 @@ import {
 import { Mountain, User } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const DateInputContainer = styled.div`
   display: grid;

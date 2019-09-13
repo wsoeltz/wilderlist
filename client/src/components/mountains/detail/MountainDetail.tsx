@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   GhostButton,
@@ -8,8 +13,8 @@ import {
   lightBorderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
-import { Mountain, User, State, Region, PeakList } from '../../../types/graphQLTypes';
-import { convertFieldsToDate, convertDMS } from '../../../Utils';
+import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import { convertDMS, convertFieldsToDate } from '../../../Utils';
 import MountainCompletionModal, {
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
@@ -20,11 +25,6 @@ import {
   getDates,
 } from '../../peakLists/Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
-import styled from 'styled-components';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const titleWidth = 150; // in px
 
@@ -115,15 +115,15 @@ interface QuerySuccessResponse {
     state: {
       id: State['id'];
       name: State['name'];
-      regions: {
+      regions: Array<{
         id: Region['id'];
         name: Region['name'];
-      }[];
+      }>;
     };
-    lists: {
+    lists: Array<{
       id: PeakList['id'];
       name: PeakList['name'];
-    }[];
+    }>;
   };
   user: {
     id: User['name'];
@@ -218,7 +218,7 @@ const MountainDetail = (props: Props) => {
       onCancel={closeAreYouSureModal}
       title={getFluentString('global-text-value-are-you-sure-modal')}
       text={getFluentString('mountain-detail-remove-ascent-modal-text', {
-        'date': formatDate(dateToRemove)
+        date: formatDate(dateToRemove),
       })}
       confirmText={getFluentString('global-text-value-modal-confirm')}
       cancelText={getFluentString('global-text-value-modal-cancel')}
