@@ -2,7 +2,6 @@ import { sortBy } from 'lodash';
 import { CompletedMountain, PeakListVariants} from '../../types/graphQLTypes';
 import { getSeason, Months, Seasons } from '../../Utils';
 import { failIfValidOrNonExhaustive } from '../../Utils';
-import { MountainList } from './list/PeakListCard';
 
 export interface DateObject {
   dateAsNumber: number;
@@ -164,7 +163,7 @@ export const formatGridDate = (date: DateObject) => {
 };
 
 export const completedPeaks = (
-  mountains: MountainList[],
+  mountains: Array<{id: string}>,
   completedAscents: CompletedMountain[],
   variant: PeakListVariants,
 ) => {

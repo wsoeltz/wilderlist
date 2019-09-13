@@ -14,7 +14,8 @@ export interface UserDatum {
   profilePictureUrl: User['profilePictureUrl'];
   peakLists: Array<{
     id: PeakList['id'];
-    name: PeakList['name'];
+    shortName: PeakList['shortName'];
+    type: PeakList['type'];
     mountains: BasicMountainDatum[];
     parent: {
       id: PeakList['id'];

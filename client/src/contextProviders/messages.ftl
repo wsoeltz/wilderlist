@@ -9,6 +9,7 @@ global-text-value-are-you-sure-modal = Please Confirm
 global-text-value-modal-confirm = Confirm
 global-text-value-modal-cancel = Cancel
 global-text-value-modal-mark-complete = Mark Complete
+global-text-value-more = more
 
 global-text-value-modal-email = Email
 
@@ -63,8 +64,8 @@ peak-list-text-latest-ascent = {
     *[false] Latest ascent
 } {
   $has-full-date ->
-    *[false] on
-    [true] in
+    *[false] in
+    [true] on
 }
 peak-list-text-no-completed-ascent = No completed ascents yet
 peak-list-text-completed-ascent = Completed Ascents
@@ -109,3 +110,9 @@ user-profile-compare-ascents = Compare Ascents
 user-profile-no-lists = { $user-name } has not started any lists.
 user-profile-no-recent-ascents = No recent ascents
 user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
+
+user-card-completed = Completed
+user-card-working-on = Working On
+user-card-not-currently-working-on = Not currently working on any lists
+
+

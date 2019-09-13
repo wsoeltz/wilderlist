@@ -48,7 +48,8 @@ const SEARCH_USERS = gql`
       profilePictureUrl
       peakLists {
         id
-        name
+        shortName
+        type
         mountains {
           id
         }

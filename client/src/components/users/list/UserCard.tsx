@@ -13,9 +13,17 @@ import {
   GhostButton,
   lightBaseColor,
 } from '../../../styling/styleUtils';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
+import {
+  FriendStatus,
+  PeakListVariants,
+  User,
+} from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
-import { formatDate, getLatestOverallAscent } from '../../peakLists/Utils';
+import {
+  completedPeaks,
+  formatDate,
+  getLatestOverallAscent,
+} from '../../peakLists/Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
 
@@ -142,6 +150,15 @@ const Subtitle = styled.p`
   margin: 0.4rem 0;
 `;
 
+const SubtitleSmall = styled(Subtitle)`
+  font-size: 0.9rem;
+`;
+
+const TextTitle = styled.strong`
+  font-size: 0.75rem;
+  text-transform: uppercase;
+`;
+
 const ButtonContainer = styled.div`
   grid-column: 2
   grid-row: 2;
@@ -153,6 +170,44 @@ const ButtonContainer = styled.div`
 const DeclineButton = styled(GhostButton)`
   margin-right: 0.6rem;
 `;
+
+const getListsInProgress =
+  (peakLists: UserDatum['peakLists'], completedAscents: UserDatum['mountains']) => {
+    if (completedAscents === null) {
+      return { completedLists: [], listsInProgress: peakLists };
+    }
+    const completedLists: string[] = [];
+    const listsInProgress: string[] = [];
+    peakLists.forEach(list => {
+      const { type, parent } = list;
+      let mountains: Array<{id: string}>;
+      if (parent !== null && parent.mountains !== null) {
+        mountains = parent.mountains;
+      } else if (list.mountains !== null) {
+        mountains = list.mountains;
+      } else {
+        mountains = [];
+      }
+      const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
+      let totalRequiredAscents: number;
+      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+        totalRequiredAscents = mountains.length;
+      } else if (type === PeakListVariants.fourSeason) {
+        totalRequiredAscents = mountains.length * 4;
+      } else if (type === PeakListVariants.grid) {
+        totalRequiredAscents = mountains.length * 12;
+      } else {
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+        totalRequiredAscents = 0;
+      }
+      if (numCompletedAscents === totalRequiredAscents) {// list complete
+        completedLists.push(list.shortName);
+      } else { // list is incomplete
+        listsInProgress.push(list.shortName);
+      }
+    });
+    return { completedLists, listsInProgress };
+};
 
 interface Props {
   user: UserDatum;
@@ -187,6 +242,77 @@ const UserCard = (props: Props) => {
     removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
   };
 
+  const { completedLists, listsInProgress } = getListsInProgress(user.peakLists, user.mountains);
+  const numListsToShow = 3;
+  let completedListsElement: React.ReactElement<any> | null;
+  if (completedLists.length === 0) {
+    completedListsElement = null;
+  } else {
+    let listShortNames: string = '';
+    for (let i = 0; i < numListsToShow; i++) {
+      if (completedLists.length - 1 === i) { // last elemnt in array
+        listShortNames = listShortNames + completedLists[i];
+        break;
+      } else if (i > 0) { //not last element or first element
+        listShortNames = listShortNames + ', ' + completedLists[i];
+      } else {
+        listShortNames = listShortNames + completedLists[i];
+        if (completedLists.length === 2) {
+          listShortNames = listShortNames + ' & ';
+        }
+      }
+      if (i === numListsToShow - 1 && completedLists.length > numListsToShow) {
+        listShortNames =
+          listShortNames + ' & ' +
+          (completedLists.length - numListsToShow) + ' ' +
+          getFluentString('global-text-value-more');
+      }
+    }
+    completedListsElement = (
+      <SubtitleSmall>
+        <TextTitle>
+          {getFluentString('user-card-completed')}: </TextTitle>
+        {listShortNames}
+      </SubtitleSmall>
+    );
+  }
+  let listsInProgressElement: React.ReactElement<any> | null;
+  if (listsInProgress.length === 0) {
+    listsInProgressElement = (
+      <SubtitleSmall>
+        <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
+        {getFluentString('user-card-not-currently-working-on')}
+      </SubtitleSmall>
+    );
+  } else {
+    let listShortNames: string = '';
+    for (let i = 0; i < numListsToShow; i++) {
+      if (listsInProgress.length - 1 === i) { // last elemnt in array
+        listShortNames = listShortNames + listsInProgress[i];
+        break;
+      } else if (i > 0) { //not last element or first element
+        listShortNames = listShortNames + ', ' + listsInProgress[i];
+      } else {
+        listShortNames = listShortNames + listsInProgress[i];
+        if (listsInProgress.length === 2) {
+          listShortNames = listShortNames + ' & ';
+        }
+      }
+      if (i === numListsToShow - 1 && listsInProgress.length > numListsToShow) {
+        listShortNames =
+          listShortNames + ' & ' +
+          (listsInProgress.length - numListsToShow) + ' ' +
+          getFluentString('global-text-value-more');
+      }
+    }
+    listsInProgressElement = (
+      <SubtitleSmall>
+        <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
+        {listShortNames}
+      </SubtitleSmall>
+    );
+  }
+
   let cardContent: React.ReactElement<any> | null;
   if (friendStatus === null) {
     cardContent = (
@@ -195,6 +321,8 @@ const UserCard = (props: Props) => {
           <Title>
             {user.name}
           </Title>
+          {completedListsElement}
+          {listsInProgressElement}
         </TextContainer>
         <ButtonContainer>
           <ButtonPrimary onClick={sendFriendRequest}>
@@ -228,6 +356,8 @@ const UserCard = (props: Props) => {
           <Subtitle>
             {ascentText}
           </Subtitle>
+          {completedListsElement}
+          {listsInProgressElement}
         </TextContainer>
       </>
     );
@@ -241,6 +371,8 @@ const UserCard = (props: Props) => {
           <Subtitle>
             {getFluentString('user-profile-requests-pending-request')}
           </Subtitle>
+          {completedListsElement}
+          {listsInProgressElement}
         </TextContainer>
         <ButtonContainer>
           <GhostButton onClick={removeFriend}>
@@ -256,6 +388,8 @@ const UserCard = (props: Props) => {
           <Title>
             {user.name}
           </Title>
+          {completedListsElement}
+          {listsInProgressElement}
         </TextContainer>
         <ButtonContainer>
           <DeclineButton onClick={removeFriend}>
