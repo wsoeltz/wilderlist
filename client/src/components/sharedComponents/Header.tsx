@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,6 +14,10 @@ import {
 import { User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
 import UserMenu from './UserMenu';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../contextProviders/getFluentLocalizationContext';
 
 const HeaderContainer = styled(HeaderContainerBase)`
   box-shadow: 0 1px 3px 1px #d1d1d1;
@@ -92,6 +96,9 @@ const Header = (props: RouteComponentProps) => {
 
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const createLink = (route: Routes, label: string) => {
     let normalizedPathname: string;
     if (pathname.includes(Routes.UserProfile.split(':id')[0])
@@ -115,21 +122,22 @@ const Header = (props: RouteComponentProps) => {
       return (
         <>
           <MainNav>
-            {createLink(Routes.Dashboard, 'Dashboard')}
-            {createLink(Routes.ListsWithDetail, 'Lists')}
-            {createLink(Routes.FriendsWithProfile, 'Friends')}
+            {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
+            {createLink(Routes.ListsWithDetail, getFluentString('header-text-menu-item-lists'))}
+            {createLink(Routes.FriendsWithProfile, getFluentString('header-text-menu-item-friends'))}
           </MainNav>
           <UserMenu
             userMenuOpen={userMenuOpen}
             setUserMenuOpen={setUserMenuOpen}
             user={user}
+            getFluentString={getFluentString}
           />
         </>
       );
     } else {
       return (
         <>
-          <a href='/auth/google'>Login With Google</a>
+          <a href='/auth/google'>{getFluentString('header-text-login-with-google')}</a>
         </>
       );
     }
@@ -137,7 +145,7 @@ const Header = (props: RouteComponentProps) => {
   return (
     <HeaderContainer>
       <LogoContainer to={Routes.Dashboard}>
-        Wilderlist
+        {getFluentString('global-text-value-wilderlist-name')}
         <Logo />
       </LogoContainer>
       <UserContext.Consumer

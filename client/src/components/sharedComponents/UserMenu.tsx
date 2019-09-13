@@ -11,6 +11,7 @@ import {
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
+import { GetString } from 'fluent-react';
 
 const UserMenu = styled.div`
   min-width: 200px;
@@ -113,9 +114,10 @@ const Caret = styled(FontAwesomeIcon)`
 interface UserMenuListProps {
   adminPanel: React.ReactElement<any> | null;
   closeUserMenu: () => void;
+  getFluentString: GetString;
 }
 
-const UserMenuList = ({adminPanel, closeUserMenu}: UserMenuListProps) => {
+const UserMenuList = ({adminPanel, closeUserMenu, getFluentString}: UserMenuListProps) => {
   const node = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -134,7 +136,7 @@ const UserMenuList = ({adminPanel, closeUserMenu}: UserMenuListProps) => {
   return (
     <UserMenuListContainer ref={node} onClick={closeUserMenu}>
       {adminPanel}
-      <UserMenuAnchor href='/api/logout'>Logout</UserMenuAnchor>
+      <UserMenuAnchor href='/api/logout'>{getFluentString('header-text-menu-item-logout')}</UserMenuAnchor>
     </UserMenuListContainer>
   );
 };
@@ -143,17 +145,29 @@ interface UserMenuComponentProps {
   userMenuOpen: boolean;
   setUserMenuOpen: (value: boolean) => void;
   user: User;
+  getFluentString: GetString;
 }
 
 const UserMenuComponent = (props: UserMenuComponentProps) => {
   const {
-    userMenuOpen, setUserMenuOpen, user,
+    userMenuOpen, setUserMenuOpen, user, getFluentString,
   } = props;
 
   const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
-    ? <UserMenuLink to={Routes.Admin}>Admin Panel</UserMenuLink> : null;
+    ? (
+        <UserMenuLink to={Routes.Admin}>
+          {getFluentString('header-text-menu-item-admin-panel')}
+        </UserMenuLink>
+      )
+    : null;
   const userMenuList = userMenuOpen === true
-    ? <UserMenuList adminPanel={adminPanel} closeUserMenu={() => setUserMenuOpen(false)} /> : null;
+    ? (
+        <UserMenuList
+          adminPanel={adminPanel}
+          closeUserMenu={() => setUserMenuOpen(false)}
+          getFluentString={getFluentString} />
+        )
+    : null;
 
   const userMenuButtonEl = useRef<HTMLButtonElement | null>(null);
 

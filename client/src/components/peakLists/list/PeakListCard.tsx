@@ -1,5 +1,5 @@
 import { sortBy } from 'lodash';
-import React from 'react';
+import React, {useContext} from 'react';
 import styled from 'styled-components';
 import { listDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
 import {
@@ -20,6 +20,10 @@ import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext
+} from '../../../contextProviders/getFluentLocalizationContext';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -197,6 +201,10 @@ const PeakListCard = (props: Props) => {
     active, listAction, actionText, completedAscents,
     isCurrentUser,
   } = props;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   let mountains: MountainList[];
   if (parent !== null && parent.mountains !== null) {
     mountains = parent.mountains;
@@ -238,20 +246,24 @@ const PeakListCard = (props: Props) => {
 
     let latestDateText: React.ReactElement<any>;
     if (latestDate !== undefined) {
-      const latestAscentText = numCompletedAscents === totalRequiredAscents ? 'Completed'
-        : 'Latest ascent';
-      const preposition = isNaN(latestDate.day) || isNaN(latestDate.month) ? 'in' : 'on';
+      const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
+        'completed': (numCompletedAscents === totalRequiredAscents).toString(),
+        'has-full-date': !(isNaN(latestDate.day) || isNaN(latestDate.month)).toString(),
+      })
       latestDateText = (
         <>
-          {latestAscentText} {preposition} <BigText>{formatDate(latestDate)}</BigText>
+          {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>
         </>
       );
     } else {
-      latestDateText = <>No completed ascents yet</>;
+      latestDateText = <>{getFluentString('peak-list-text-no-completed-ascent')}</>;
     }
     listInfoContent = (
       <>
-        <span><BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText> Completed Ascents</span>
+        <span>
+          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+          {getFluentString('peak-list-text-completed-ascent')}
+        </span>
         <TextRight>{latestDateText}</TextRight>
       </>
     );
@@ -259,7 +271,10 @@ const PeakListCard = (props: Props) => {
   } else {
     listInfoContent = (
       <>
-        <span><BigText>{totalRequiredAscents}</BigText> Total Ascents</span>
+        <span>
+          <BigText>{totalRequiredAscents}</BigText>
+          {getFluentString('peak-list-text-total-ascents')}
+        </span>
         <TextRight>{getStatesOrRegion(mountains)}</TextRight>
       </>
     );
