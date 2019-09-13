@@ -52,9 +52,9 @@ export const getStandardCompletion = ({dates}: CompletedMountain) => {
   // first check for earliest date that is !NaN
   // if doesn't exist, return first date
   const sortedDates = getDates(dates);
-  const firstNaNDate = sortedDates.find(({day, month, year}) => !isNaN(day) && !isNaN(month) && !isNaN(year));
-  if (firstNaNDate) {
-    return firstNaNDate;
+  const firstNotNaNDate = sortedDates.find(({day, month, year}) => !isNaN(day) && !isNaN(month) && !isNaN(year));
+  if (firstNotNaNDate) {
+    return firstNotNaNDate;
   }
   return sortedDates[0];
 };
@@ -274,7 +274,7 @@ export const completedPeaks = (
 };
 
 export const getLatestAscent =  (
-  mountains: MountainList[],
+  mountains: {id: string}[],
   completedAscents: CompletedMountain[],
   variant: PeakListVariants,
 ) => {
@@ -370,26 +370,59 @@ export const getLatestAscent =  (
       }
     });
   }
-  const sortedAscents = sortBy(ascents, ['year', 'month', 'day']);
+
+  const ascentsNotNaN = ascents.filter(
+    ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
+  if (ascentsNotNaN.length) {
+    const sortedAscents = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
+    if (sortedAscents.length) {
+      return sortedAscents[sortedAscents.length - 1];
+    }
+  }
+  const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
+  const sortedAscents = ascentsYearOnly.length
+    ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
+    : sortBy(ascents, ['year', 'month', 'day']);
+
   return sortedAscents[sortedAscents.length - 1];
 };
+
+type DateWithName = DateObject & { name: string };
 
 export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
   if (mountains.length === 0) {
     return null;
   }
-  const sortedMountains = sortBy(mountains, mountain => {
-    const dates = getDates(mountain.dates);
-    const sortedDates = sortBy(dates, ['year', 'month', 'day']);
-    if (sortedDates && sortedDates.length) {
-      return sortedDates[sortedDates.length - 1].dateAsNumber;
-    } else {
-      return -1000;
+  const mountainList = mountains.map(({mountain: { id }}) => { return {id} });
+  const ascents: DateWithName[] = [];
+  mountainList.forEach(({id}) => {
+    const dates = mountains.find(
+      ({mountain}) => mountain.id === id);
+    if (dates !== undefined) {
+      const datesCompleted = getDates(dates.dates);
+      const dateCompleted = datesCompleted[datesCompleted.length - 1];
+      if (dateCompleted !== null && dateCompleted !== undefined) {
+        ascents.push({name: dates.mountain.name, ...dateCompleted});
+      }
     }
   });
-  const latestAscent = sortBy(sortedMountains[sortedMountains.length - 1].dates, ['year', 'month', 'day']);
-  return {
-    name: sortedMountains[sortedMountains.length - 1].mountain.name,
-    date: getDates(latestAscent)[0]
-  };
+  const ascentsNotNaN = ascents.filter(
+    ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
+  if (ascentsNotNaN.length) {
+    const sortedAscents = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
+    if (sortedAscents.length) {
+      const {name, ...date} = sortedAscents[sortedAscents.length - 1];
+      return {name, date };
+    }
+  }
+  const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
+  const sortedAscents = ascentsYearOnly.length
+    ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
+    : sortBy(ascents, ['year', 'month', 'day']);
+
+  if (sortedAscents.length) {
+    const {name, ...date} = sortedAscents[sortedAscents.length - 1];
+    return {name, date };
+  }
+  return null;
 }
