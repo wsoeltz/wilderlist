@@ -120,19 +120,19 @@ const LinkWrapper = styled(DynamicLink)`
   }
 `;
 
-const Root = styled(Card)`
+export const Root = styled(Card)`
   display: grid;
   grid-template-columns: 6rem 1fr;
   grid-template-rows: 1fr auto;
   grid-column-gap: 1.1rem;
 `;
 
-const Title = styled.h1`
+export const Title = styled.h1`
   font-size: 1.3rem;
   margin-top: 0;
   margin-bottom: 0.4rem;
 `;
-const TextContainer = styled.div`
+export const TextContainer = styled.div`
   grid-row: 1;
   grid-column: 2;
 `;

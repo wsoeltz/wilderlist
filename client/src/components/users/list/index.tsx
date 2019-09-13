@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import { Types } from 'mongoose';
 import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -15,21 +14,17 @@ import {
   SearchContainer,
 } from '../../../styling/Grid';
 import {
-  ButtonSecondary,
-} from '../../../styling/styleUtils';
-import {
+  Next,
+  PaginationContainer,
   PlaceholderText,
+  Prev,
 } from '../../../styling/styleUtils';
 import { User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import UserProfile from '../detail/UserProfile';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
-
-const Next = styled(ButtonSecondary)`
-`;
-const Prev = styled(ButtonSecondary)`
-`;
+import GhostUserCard from './GhostUserCard';
 
 const SEARCH_USERS = gql`
   query searchUsers(
@@ -123,7 +118,11 @@ const UserList = (props: Props) => {
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
-    list = null;
+    const loadingCards: Array<React.ReactElement<any>> = [];
+    for (let i = 0; i < nPerPage; i++) {
+      loadingCards.push(<GhostUserCard key={i} />);
+    }
+    list = <>{loadingCards}</>;
   } else if (error !== undefined) {
     console.error(error);
     list = null;
@@ -149,8 +148,10 @@ const UserList = (props: Props) => {
           friendsList={friends}
           noResultsText={noResultsText}
         />
-        {prevBtn}
-        {nextBtn}
+        <PaginationContainer>
+          {prevBtn}
+          {nextBtn}
+        </PaginationContainer>
       </>
     );
   } else {
