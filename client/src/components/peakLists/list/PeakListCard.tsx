@@ -248,7 +248,7 @@ const PeakListCard = (props: Props) => {
     if (latestDate !== undefined) {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': !(isNaN(latestDate.day) || isNaN(latestDate.month)).toString(),
+        'has-full-date': (!(isNaN(latestDate.day) || isNaN(latestDate.month))).toString(),
       });
       latestDateText = (
         <>
