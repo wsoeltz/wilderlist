@@ -12,6 +12,19 @@ import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
 import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
 import Header from './Header';
+import styled from 'styled-components';
+import { lightBaseColor } from '../../../styling/styleUtils';
+
+const ListContainer = styled.div`
+  margin-top: 3rem;
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  color: ${lightBaseColor};
+  margin-bottom: 1.2rem;
+`;
 
 const GET_USER = gql`
   query getUser($userId: ID!, $profileId: ID!) {
@@ -168,15 +181,20 @@ const UserProfile = (props: Props) => {
             currentUserId={userId}
             friendStatus={friendStatus}
           />
-          <ListPeakLists
-            peakListData={peakLists}
-            userListData={userListData}
-            listAction={compareAscents}
-            actionText={getFluentString('user-profile-compare-ascents')}
-            completedAscents={completedAscents}
-            isCurrentUser={isCurrentUser}
-            noResultsText={noResultsText}
-          />
+          <ListContainer>
+            <SectionTitle>
+              {getFluentString('user-profile-lists-in-progress')}
+            </SectionTitle>
+            <ListPeakLists
+              peakListData={peakLists}
+              userListData={userListData}
+              listAction={compareAscents}
+              actionText={getFluentString('user-profile-compare-ascents')}
+              completedAscents={completedAscents}
+              isCurrentUser={isCurrentUser}
+              noResultsText={noResultsText}
+            />
+          </ListContainer>
         </>
       );
     } else {

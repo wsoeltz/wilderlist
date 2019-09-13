@@ -162,10 +162,13 @@ export const ButtonPrimaryLink = styled(DynamicLink)`
   text-align: center;
   border-radius: ${borderRadius}px;
   font-weight: ${semiBoldFontBoldWeight};
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   background-color: ${primaryColor};
+  display: inline-block;
+  text-decoration: none;
 
   &:hover {
+    color: #fff;
     background-color: ${primaryHoverColor};
   }
 `;

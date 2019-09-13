@@ -110,9 +110,13 @@ user-profile-compare-ascents = Compare Ascents
 user-profile-no-lists = { $user-name } has not started any lists.
 user-profile-no-recent-ascents = No recent ascents
 user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
+user-profile-sent-you-a-friend-request = { $name } sent you a friend request.
+
+user-profile-lists-in-progress = Lists in progress
+
+user-profile-remove-friend-modal = Remove&#32;<strong>{ $name }</strong>&#32;from your friends?
 
 user-card-completed = Completed
 user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
-
 

@@ -28,6 +28,7 @@ export interface MountainDatumLite {
 
 const TableCell = styled(TableCellBase)`
   justify-content: center;
+  text-align: center;
 `;
 
 interface Props {
