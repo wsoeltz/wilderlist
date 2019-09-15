@@ -86,7 +86,7 @@ mountain-completion-modal-text-note-four-season =
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 
-mountain-table-grid-date-note-text = 
+mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em>.</div>
 
@@ -113,6 +113,7 @@ user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
 user-profile-sent-you-a-friend-request = { $name } sent you a friend request.
 
 user-profile-lists-in-progress = Lists in progress
+user-profile-lists-completed = Completed Lists
 
 user-profile-remove-friend-modal = Remove&#32;<strong>{ $name }</strong>&#32;from your friends?
 

@@ -3,6 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { History } from 'history';
 import React, {useContext} from 'react';
+import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -12,18 +13,9 @@ import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
 import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
 import Header from './Header';
-import styled from 'styled-components';
-import { lightBaseColor } from '../../../styling/styleUtils';
 
 const ListContainer = styled.div`
   margin-top: 3rem;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 1.2rem;
-  text-transform: uppercase;
-  color: ${lightBaseColor};
-  margin-bottom: 1.2rem;
 `;
 
 const GET_USER = gql`
@@ -182,9 +174,6 @@ const UserProfile = (props: Props) => {
             friendStatus={friendStatus}
           />
           <ListContainer>
-            <SectionTitle>
-              {getFluentString('user-profile-lists-in-progress')}
-            </SectionTitle>
             <ListPeakLists
               peakListData={peakLists}
               userListData={userListData}
@@ -193,6 +182,7 @@ const UserProfile = (props: Props) => {
               completedAscents={completedAscents}
               isCurrentUser={isCurrentUser}
               noResultsText={noResultsText}
+              showTrophies={true}
             />
           </ListContainer>
         </>

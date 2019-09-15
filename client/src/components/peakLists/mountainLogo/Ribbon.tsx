@@ -6,6 +6,9 @@ const Svg = styled.svg`
   width: 100%;
   height: 100%;
   min-height: 170px;
+  @media(max-width: 500px) {
+    min-height: 0;
+  }
 `;
 
 const Ribbon = ({fill}: {fill: string}) => {

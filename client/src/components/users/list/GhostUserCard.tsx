@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { lightBorderColor } from '../../../styling/styleUtils';
 import {
   Root,
-  Title,
   TextContainer,
+  Title,
 } from './UserCard';
 
 const PlaceholderRoot = styled(Root)`
@@ -32,7 +32,6 @@ const ProfilePicture = styled(PlaceholderBase)`
   width: 100%;
   border-radius: 4000px;
 `;
-
 
 const GhostPeakListCard = () => {
   return (

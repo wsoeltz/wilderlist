@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/react-hooks';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
-import React, {useState, useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
@@ -16,6 +17,7 @@ import {
 } from '../../../styling/styleUtils';
 import { FriendStatus } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import {
   ACCEPT_FRIEND_REQUEST,
   FriendRequestSuccessResponse,
@@ -24,8 +26,6 @@ import {
   SEND_FRIEND_REQUEST,
 } from '../list/UserCard';
 import { UserDatum } from './UserProfile';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 
 const contactLinkMobileSize = 780;
 
@@ -65,7 +65,7 @@ const Title = styled.h1`
 
 const ListInfo = styled.h3`
   margin-bottom: 0.5rem;
-  margin-top: 0; 
+  margin-top: 0;
 `;
 
 const ProfilePictureContainer = styled.div`
@@ -129,7 +129,6 @@ const SmallGhostButton = styled(GhostButton)`
 const DeclineButton = styled(GhostButton)`
   margin-right: 0.4rem;
 `;
-
 
 interface Props {
   user: UserDatum;
@@ -229,7 +228,7 @@ const Header = (props: Props) => {
       <>
         <SmallText>
           {getFluentString('user-profile-sent-you-a-friend-request', {
-            'name': user.name,
+            name: user.name,
           })}
         </SmallText>
         <DeclineButton onClick={cancelOrDeclineRequest}>

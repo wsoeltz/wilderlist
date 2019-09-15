@@ -22,9 +22,9 @@ import {
 import { User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import UserProfile from '../detail/UserProfile';
+import GhostUserCard from './GhostUserCard';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
-import GhostUserCard from './GhostUserCard';
 
 const SEARCH_USERS = gql`
   query searchUsers(

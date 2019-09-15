@@ -390,7 +390,7 @@ const UserCard = (props: Props) => {
           </Title>
           <Subtitle>
             {getFluentString('user-profile-sent-you-a-friend-request', {
-              'name': user.name,
+              name: user.name,
             })}
           </Subtitle>
           {completedListsElement}

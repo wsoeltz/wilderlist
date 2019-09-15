@@ -4,8 +4,8 @@ import {
   faCaretDown,
   faCaretUp,
   faCheck,
-  faSearch,
   faEnvelope,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components';
 import {

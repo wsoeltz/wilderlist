@@ -194,6 +194,7 @@ const PeakListPage = (props: Props) => {
           completedAscents={completedAscents}
           isCurrentUser={true}
           noResultsText={noResultsText}
+          showTrophies={false}
         />
         <PaginationContainer>
           {prevBtn}

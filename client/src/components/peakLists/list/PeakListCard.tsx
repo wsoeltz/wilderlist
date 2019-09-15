@@ -14,14 +14,12 @@ import {
 import {
   CompletedMountain,
   Mountain,
-  PeakListVariants,
   Region,
   State,
 } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
+import { formatDate, getLatestAscent } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
@@ -29,8 +27,6 @@ const LinkWrapper = styled(DynamicLink)`
   display: block;
   color: inherit;
   text-decoration: inherit;
-  grid-row: span 3;
-  grid-column: span 2;
 
   &:hover {
     color: inherit;
@@ -47,10 +43,6 @@ export const Root = styled(Card)`
 
   @media(max-width: 600px) {
     grid-template-columns: 8rem 1fr auto;
-  }
-
-  @media(max-width: ${smallCardBreakpoint}px) {
-
   }
 `;
 
@@ -193,26 +185,22 @@ interface Props {
   actionText: string;
   completedAscents: CompletedMountain[];
   isCurrentUser: boolean;
+  mountains: MountainList[];
+  numCompletedAscents: number;
+  totalRequiredAscents: number;
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, parent, type}, peakList,
+    peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
-    isCurrentUser,
+    isCurrentUser, mountains, numCompletedAscents,
+    totalRequiredAscents,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  let mountains: MountainList[];
-  if (parent !== null && parent.mountains !== null) {
-    mountains = parent.mountains;
-  } else if (peakList.mountains !== null) {
-    mountains = peakList.mountains;
-  } else {
-    mountains = [];
-  }
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
     listAction(id);
@@ -226,19 +214,6 @@ const PeakListCard = (props: Props) => {
 
   const Title = active === false || isCurrentUser === false
     ? TitleBase : TitleFull;
-
-  const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
-  let totalRequiredAscents: number;
-  if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-    totalRequiredAscents = mountains.length;
-  } else if (type === PeakListVariants.fourSeason) {
-    totalRequiredAscents = mountains.length * 4;
-  } else if (type === PeakListVariants.grid) {
-    totalRequiredAscents = mountains.length * 12;
-  } else {
-    failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
-    totalRequiredAscents = 0;
-  }
 
   let listInfoContent: React.ReactElement<any>;
   if (active === true) {
