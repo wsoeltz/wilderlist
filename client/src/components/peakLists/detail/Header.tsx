@@ -97,7 +97,7 @@ interface Props {
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents,
+    completedAscents, comparisonUser, comparisonAscents,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -158,7 +158,27 @@ const Header = (props: Props) => {
   }
 
   let listInfoContent: React.ReactElement<any> | null;
-  if (active === true) {
+  if (comparisonUser !== undefined && comparisonAscents !== undefined) {
+
+    const numFriendsCompletedAscents = completedPeaks(mountains, comparisonAscents, type);
+
+    listInfoContent = (
+      <ActiveListContentContainer>
+        <div>
+          <BigText>{numFriendsCompletedAscents}/{totalRequiredAscents}</BigText>
+          {getFluentString('user-profile-compare-completed-by', {
+            'user-name': comparisonUser.name,
+          })}
+        </div>
+        <TextRight>
+          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+          {getFluentString('user-profile-compare-completed-by', {
+            'user-name': user.name,
+          })}
+        </TextRight>
+      </ActiveListContentContainer>
+    );
+  } else if (active === true) {
     const latestDate = getLatestAscent(mountains, completedAscents, type);
 
     let latestDateText: React.ReactElement<any>;

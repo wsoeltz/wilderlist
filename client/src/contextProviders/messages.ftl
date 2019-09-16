@@ -107,6 +107,7 @@ user-profile-requests-accept-request = Accept Request
 
 user-profile-compare-all-ascents = Compare All Ascents
 user-profile-compare-ascents = Compare Ascents
+user-profile-compare-completed-by = completed by { $user-name }
 user-profile-no-lists = { $user-name } has not started any lists.
 user-profile-no-recent-ascents = No recent ascents
 user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
