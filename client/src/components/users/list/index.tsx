@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -105,6 +105,7 @@ const UserList = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -122,6 +123,7 @@ const UserList = (props: Props) => {
 
   useEffect(() => {
     if (typeof query === 'string') {
+      setInitialSearchQuery(query);
       setSearchQuery(query);
     }
     if (typeof page === 'string') {
@@ -142,6 +144,15 @@ const UserList = (props: Props) => {
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(SEARCH_USERS, {
     variables: { id: userId, searchQuery, pageNumber, nPerPage },
   });
+
+  const userListContainerElm = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = userListContainerElm.current;
+    if (node) {
+      node.scrollTop = 0;
+    }
+  }, [userListContainerElm, data]);
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
@@ -200,9 +211,11 @@ const UserList = (props: Props) => {
           <StandardSearch
             placeholder='Search users'
             setSearchQuery={searchUsers}
+            focusOnMount={true}
+            initialQuery={initialSearchQuery}
           />
         </SearchContainer>
-        <ContentBody>
+        <ContentBody ref={userListContainerElm}>
           {list}
         </ContentBody>
       </ContentLeftSmall>

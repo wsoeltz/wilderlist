@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { debounce } from 'lodash';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   lightBorderColor,
@@ -42,10 +42,12 @@ const SearchBar = styled.input`
 interface Props {
   placeholder: string;
   setSearchQuery: (value: string) => void;
+  initialQuery: string;
+  focusOnMount: boolean;
 }
 
-const PeakListSearch = (props: Props) => {
-  const { placeholder, setSearchQuery } = props;
+const StandardSearch = (props: Props) => {
+  const { placeholder, setSearchQuery, initialQuery, focusOnMount } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
 
@@ -54,6 +56,16 @@ const PeakListSearch = (props: Props) => {
       setSearchQuery(searchEl.current.value);
     }
   }, 400);
+
+  useEffect(() => {
+    const node = searchEl.current;
+    if (node) {
+      if (focusOnMount === true) {
+        node.focus();
+      }
+      node.value = initialQuery;
+    }
+  }, [searchEl, focusOnMount, initialQuery]);
 
   return (
     <SearchContainer>
@@ -68,4 +80,4 @@ const PeakListSearch = (props: Props) => {
   );
 };
 
-export default PeakListSearch;
+export default StandardSearch;

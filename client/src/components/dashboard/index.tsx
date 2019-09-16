@@ -223,6 +223,8 @@ const Dashboard = (props: Props) => {
           <StandardSearch
             placeholder='Search lists'
             setSearchQuery={searchPeakLists}
+            focusOnMount={false}
+            initialQuery={''}
           />
         </SearchContainer>
         <ContentBody>
@@ -234,6 +236,8 @@ const Dashboard = (props: Props) => {
           <StandardSearch
             placeholder='Search users'
             setSearchQuery={searchFriends}
+            focusOnMount={false}
+            initialQuery={''}
           />
         </SearchContainer>
         <ContentBody>

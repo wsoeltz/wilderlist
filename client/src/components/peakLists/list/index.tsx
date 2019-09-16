@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -141,6 +141,7 @@ const PeakListPage = (props: Props) => {
   const { query, page } = queryString.parse(location.search);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -158,6 +159,7 @@ const PeakListPage = (props: Props) => {
 
   useEffect(() => {
     if (typeof query === 'string') {
+      setInitialSearchQuery(query);
       setSearchQuery(query);
     }
     if (typeof page === 'string') {
@@ -181,6 +183,15 @@ const PeakListPage = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS, {
     variables: { searchQuery, pageNumber, nPerPage, userId },
   });
+
+  const listContainerElm = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = listContainerElm.current;
+    if (node) {
+      node.scrollTop = 0;
+    }
+  }, [listContainerElm, data]);
 
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
@@ -246,9 +257,11 @@ const PeakListPage = (props: Props) => {
           <StandardSearch
             placeholder='Search lists'
             setSearchQuery={searchPeakLists}
+            focusOnMount={true}
+            initialQuery={initialSearchQuery}
           />
         </SearchContainer>
-        <ContentBody>
+        <ContentBody ref={listContainerElm}>
           {list}
         </ContentBody>
       </ContentLeftLarge>
