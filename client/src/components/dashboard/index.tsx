@@ -4,10 +4,10 @@ import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
-import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
+import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,

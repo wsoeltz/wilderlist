@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   Route,
+  Switch,
 } from 'react-router-dom';
 import {
   appLocalizationAndBundle as fluentValue,
@@ -71,7 +72,7 @@ const App: React.FC = () => {
   }, []);
 
   const userRoutes = (user) ? (
-    <>
+    <Switch>
       <Route exact path={Routes.Dashboard}
         render={(props) => <Dashboard {...props} userId={user._id} />}
       />
@@ -102,7 +103,10 @@ const App: React.FC = () => {
       <Route exact path={Routes.ComparePeakListWithMountainDetail}
         render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
       />
-    </>
+      <Route
+        render={(props) => <Dashboard {...props} userId={user._id} />}
+      />
+    </Switch>
   ) : null;
 
   const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (

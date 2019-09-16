@@ -8,6 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { comparePeakListIsolatedLink, comparePeakListLink } from '../../../routing/Utils';
+import { PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
@@ -129,64 +130,76 @@ const UserProfile = (props: Props) => {
       return null;
     } else if (error !== undefined) {
       console.error(error);
-      return null;
+      return (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
     } else if (data !== undefined) {
-      const {
-        user: { peakLists },
-        user,
-        me,
-      } = data;
-
-      const userListData = peakLists.map(peak => peak.id);
-      const completedAscents = user.mountains !== null ? user.mountains : [];
-      const friendsList = me.friends;
-      let friendStatus: FriendStatus | null;
-      if (friendsList !== null && friendsList.length !== 0) {
-        const friendData = friendsList.find(
-          (friend) => friend.user.id === user.id);
-        if (friendData !== undefined) {
-          friendStatus = friendData.status;
+      const {user, me} = data;
+      if (!me || !user) {
+        return (
+          <PlaceholderText>
+            {getFluentString('global-error-retrieving-data')}
+          </PlaceholderText>
+        );
+      } else {
+        const { peakLists } = user;
+        const userListData = peakLists.map(peak => peak.id);
+        const completedAscents = user.mountains !== null ? user.mountains : [];
+        const friendsList = me.friends;
+        let friendStatus: FriendStatus | null;
+        if (friendsList !== null && friendsList.length !== 0) {
+          const friendData = friendsList.find(
+            (friend) => friend.user.id === user.id);
+          if (friendData !== undefined) {
+            friendStatus = friendData.status;
+          } else {
+            friendStatus = null;
+          }
         } else {
           friendStatus = null;
         }
-      } else {
-        friendStatus = null;
-      }
 
-      const compareAscents = (peakListId: string) => {
-        const url = windowWidth >= mobileSize
-          ? comparePeakListLink(user.id, peakListId)
-          : comparePeakListIsolatedLink(user.id, peakListId);
-        history.push(url);
-      };
+        const compareAscents = (peakListId: string) => {
+          const url = windowWidth >= mobileSize
+            ? comparePeakListLink(user.id, peakListId)
+            : comparePeakListIsolatedLink(user.id, peakListId);
+          history.push(url);
+        };
 
-      const noResultsText = getFluentString('user-profile-no-lists', {
-        'user-name': user.name,
-      });
+        const noResultsText = getFluentString('user-profile-no-lists', {
+          'user-name': user.name,
+        });
 
-      return (
-        <>
-          <Header
-            user={user}
-            currentUserId={userId}
-            friendStatus={friendStatus}
-          />
-          <ListContainer>
-            <ListPeakLists
-              peakListData={peakLists}
-              userListData={userListData}
-              listAction={compareAscents}
-              actionText={getFluentString('user-profile-compare-ascents')}
-              completedAscents={completedAscents}
-              profileView={true}
-              noResultsText={noResultsText}
-              showTrophies={true}
+        return (
+          <>
+            <Header
+              user={user}
+              currentUserId={userId}
+              friendStatus={friendStatus}
             />
-          </ListContainer>
-        </>
-      );
+            <ListContainer>
+              <ListPeakLists
+                peakListData={peakLists}
+                userListData={userListData}
+                listAction={compareAscents}
+                actionText={getFluentString('user-profile-compare-ascents')}
+                completedAscents={completedAscents}
+                profileView={true}
+                noResultsText={noResultsText}
+                showTrophies={true}
+              />
+            </ListContainer>
+          </>
+        );
+      }
     } else {
-      return null;
+      return (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
     }
   };
   return (

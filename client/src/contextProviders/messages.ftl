@@ -11,6 +11,8 @@ global-text-value-modal-cancel = Cancel
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
 
+global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact the administrator.
+
 global-text-value-modal-email = Email
 
 global-text-value-mountain = Mountain

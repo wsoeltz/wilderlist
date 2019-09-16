@@ -1,6 +1,11 @@
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useContext} from 'react';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import Header from '../detail/Header';
 import {
@@ -147,6 +152,9 @@ interface Props {
 const ComparePeakListPage = (props: Props) => {
   const { userId, friendId, peakListId } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id: peakListId, userId, friendId },
   });
@@ -154,42 +162,56 @@ const ComparePeakListPage = (props: Props) => {
     return null;
   } else if (error !== undefined) {
     console.error(error);
-    return null;
-  } else if (data !== undefined) {
-    const {
-      peakList: {parent},
-      peakList, user, me,
-    } = data;
-    let mountains: MountainDatum[];
-    if (parent !== null && parent.mountains !== null) {
-      mountains = parent.mountains;
-    } else if (peakList.mountains !== null) {
-      mountains = peakList.mountains;
-    } else {
-      mountains = [];
-    }
-    const userCompletedAscents = user.mountains !== null ? user.mountains : [];
-    const myCompletedAscents = me.mountains !== null ? me.mountains : [];
     return (
-      <>
-        <Header
-          user={me}
-          mountains={mountains}
-          peakList={peakList}
-          completedAscents={myCompletedAscents}
-          comparisonUser={user}
-          comparisonAscents={userCompletedAscents}
-        />
-        <ComparisonTable
-          user={user}
-          me={me}
-          mountains={mountains}
-          peakListId={peakList.id}
-        />
-      </>
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
     );
+  } else if (data !== undefined) {
+    const { peakList, user, me } = data;
+    if (!peakList || !user || !me) {
+      return (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
+    } else {
+      const {parent} = peakList;
+      let mountains: MountainDatum[];
+      if (parent !== null && parent.mountains !== null) {
+        mountains = parent.mountains;
+      } else if (peakList.mountains !== null) {
+        mountains = peakList.mountains;
+      } else {
+        mountains = [];
+      }
+      const userCompletedAscents = user.mountains !== null ? user.mountains : [];
+      const myCompletedAscents = me.mountains !== null ? me.mountains : [];
+      return (
+        <>
+          <Header
+            user={me}
+            mountains={mountains}
+            peakList={peakList}
+            completedAscents={myCompletedAscents}
+            comparisonUser={user}
+            comparisonAscents={userCompletedAscents}
+          />
+          <ComparisonTable
+            user={user}
+            me={me}
+            mountains={mountains}
+            peakListId={peakList.id}
+          />
+        </>
+      );
+    }
   } else {
-    return null;
+    return (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   }
 };
 

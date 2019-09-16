@@ -206,42 +206,58 @@ const PeakListPage = (props: Props) => {
     list = <>{loadingCards}</>;
   } else if (error !== undefined) {
     console.error(error);
-    list = (<p>There was an error</p>);
+    list =  (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   } else if (data !== undefined) {
     const { peakLists, user } = data;
-    const usersLists = user.peakLists.map(peakList => peakList.id);
-    const completedAscents = user.mountains !== null ? user.mountains : [];
-    const nextBtn = peakLists.length === nPerPage ? (
-      <Next onClick={incrementPageNumber}>
-        {getFluentString('global-text-value-navigation-next')}
-      </Next> ) : null;
-    const prevBtn = pageNumber > 1 ? (
-      <Prev onClick={decrementPageNumber}>
-        {getFluentString('global-text-value-navigation-prev')}
-      </Prev> ) : null;
-    const noResultsText = getFluentString('global-text-value-no-results-found-for-term', {
-      term: searchQuery,
-    });
-    list = (
-      <>
-        <ListPeakLists
-          peakListData={peakLists}
-          userListData={usersLists}
-          listAction={beginList}
-          actionText={'Begin List'}
-          completedAscents={completedAscents}
-          profileView={false}
-          noResultsText={noResultsText}
-          showTrophies={false}
-        />
-        <PaginationContainer>
-          {prevBtn}
-          {nextBtn}
-        </PaginationContainer>
-      </>
-    );
+    if (!peakLists || !user) {
+      list = (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
+    } else {
+      const usersLists = user.peakLists.map(peakList => peakList.id);
+      const completedAscents = user.mountains !== null ? user.mountains : [];
+      const nextBtn = peakLists.length === nPerPage ? (
+        <Next onClick={incrementPageNumber}>
+          {getFluentString('global-text-value-navigation-next')}
+        </Next> ) : null;
+      const prevBtn = pageNumber > 1 ? (
+        <Prev onClick={decrementPageNumber}>
+          {getFluentString('global-text-value-navigation-prev')}
+        </Prev> ) : null;
+      const noResultsText = getFluentString('global-text-value-no-results-found-for-term', {
+        term: searchQuery,
+      });
+      list = (
+        <>
+          <ListPeakLists
+            peakListData={peakLists}
+            userListData={usersLists}
+            listAction={beginList}
+            actionText={'Begin List'}
+            completedAscents={completedAscents}
+            profileView={false}
+            noResultsText={noResultsText}
+            showTrophies={false}
+          />
+          <PaginationContainer>
+            {prevBtn}
+            {nextBtn}
+          </PaginationContainer>
+        </>
+      );
+    }
   } else {
-    list = null;
+    list =  (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   }
 
   const listDetail = !Types.ObjectId.isValid(id)

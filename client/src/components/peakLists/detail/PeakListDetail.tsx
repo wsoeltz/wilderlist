@@ -1,6 +1,11 @@
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useContext} from 'react';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import Header from './Header';
 import MountainTable from './MountainTable';
@@ -129,6 +134,9 @@ interface Props {
 const PeakListDetail = (props: Props) => {
   const { userId, id } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
   });
@@ -136,39 +144,53 @@ const PeakListDetail = (props: Props) => {
     return null;
   } else if (error !== undefined) {
     console.error(error);
-    return null;
-  } else if (data !== undefined) {
-    const {
-      peakList: {parent, type},
-      peakList, user,
-    } = data;
-    let mountains: MountainDatum[];
-    if (parent !== null && parent.mountains !== null) {
-      mountains = parent.mountains;
-    } else if (peakList.mountains !== null) {
-      mountains = peakList.mountains;
-    } else {
-      mountains = [];
-    }
-    const completedAscents = user.mountains !== null ? user.mountains : [];
-    return (
-      <>
-        <Header
-          user={user}
-          mountains={mountains}
-          peakList={peakList}
-          completedAscents={completedAscents}
-        />
-        <MountainTable
-          user={user}
-          mountains={mountains}
-          type={type}
-          peakListId={peakList.id}
-        />
-      </>
+    return  (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
     );
+  } else if (data !== undefined) {
+    const { peakList, user } = data;
+    if (!peakList || !user) {
+      return (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
+    } else {
+      const {parent, type} = peakList;
+      let mountains: MountainDatum[];
+      if (parent !== null && parent.mountains !== null) {
+        mountains = parent.mountains;
+      } else if (peakList.mountains !== null) {
+        mountains = peakList.mountains;
+      } else {
+        mountains = [];
+      }
+      const completedAscents = user.mountains !== null ? user.mountains : [];
+      return (
+        <>
+          <Header
+            user={user}
+            mountains={mountains}
+            peakList={peakList}
+            completedAscents={completedAscents}
+          />
+          <MountainTable
+            user={user}
+            mountains={mountains}
+            type={type}
+            peakListId={peakList.id}
+          />
+        </>
+      );
+    }
   } else {
-    return null;
+    return (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   }
 };
 

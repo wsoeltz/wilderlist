@@ -13,6 +13,7 @@ import {
   lightBorderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
+import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import { convertDMS, convertFieldsToDate } from '../../../Utils';
 import MountainCompletionModal, {
@@ -229,109 +230,122 @@ const MountainDetail = (props: Props) => {
     return null;
   } else if (error !== undefined) {
     console.error(error);
-    return null;
+    return (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   } else if (data !== undefined) {
-    const { mountain: { name, elevation, prominence, state, lists, latitude, longitude }, user } = data;
-    const userMountains = (user && user.mountains) ? user.mountains : [];
-    const completedDates = userMountains.find(
-      (completedMountain) => completedMountain.mountain.id === id);
-    let completionContent: React.ReactElement<any> | null;
-    if (completedDates && completedDates.dates.length) {
-      const dates = getDates(completedDates.dates);
-      const completionListItems = dates.map((date, index) => (
-        <AscentListItem key={date.dateAsNumber + index.toString()}>
-          <strong>{formatDate(date)}</strong>
-          <GhostButton
-            onClick={
-              () => setDateToRemove(date)
-            }
-          >
-            {getFluentString('mountain-detail-remove-ascent')}
-          </GhostButton>
-        </AscentListItem>
-      ));
-      completionContent = (
-        <>
-          {completionListItems}
-          <AddAscentButton onClick={() => setEditMountainId(id)}>
-            {getFluentString('mountain-detail-add-another-ascent')}
-          </AddAscentButton>
-          {areYouSureModal}
-        </>
+    const { mountain, user } = data;
+    if (!mountain || !user) {
+      return (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
       );
     } else {
-      completionContent = (
+      const { name, elevation, prominence, state, lists, latitude, longitude } = mountain;
+      const userMountains = (user && user.mountains) ? user.mountains : [];
+      const completedDates = userMountains.find(
+        (completedMountain) => completedMountain.mountain.id === id);
+      let completionContent: React.ReactElement<any> | null;
+      if (completedDates && completedDates.dates.length) {
+        const dates = getDates(completedDates.dates);
+        const completionListItems = dates.map((date, index) => (
+          <AscentListItem key={date.dateAsNumber + index.toString()}>
+            <strong>{formatDate(date)}</strong>
+            <GhostButton
+              onClick={
+                () => setDateToRemove(date)
+              }
+            >
+              {getFluentString('mountain-detail-remove-ascent')}
+            </GhostButton>
+          </AscentListItem>
+        ));
+        completionContent = (
+          <>
+            {completionListItems}
+            <AddAscentButton onClick={() => setEditMountainId(id)}>
+              {getFluentString('mountain-detail-add-another-ascent')}
+            </AddAscentButton>
+            {areYouSureModal}
+          </>
+        );
+      } else {
+        completionContent = (
+          <>
+            <BasicListItem>{getFluentString('mountain-detail-no-ascents-text', {
+              'mountain-name': name,
+            })}</BasicListItem>
+            <AddAscentButton onClick={() => setEditMountainId(id)}>
+              {getFluentString('mountain-detail-add-ascent-date')}
+            </AddAscentButton>
+          </>
+        );
+      }
+
+      const regions = state.regions.map((region, index) => {
+        if (index === state.regions.length - 1 ) {
+          return `${region.name}`;
+        } else {
+          return `${region.name}, `;
+        }
+      });
+
+      const regionsContent = regions.length < 1 ? null : (
+          <HorizontalContentItem>
+            <ItemTitleShort>{getFluentString('global-text-value-regions')}:</ItemTitleShort>
+            <strong>{regions}</strong>
+          </HorizontalContentItem>
+        );
+
+      const listsText = lists.map((list, index) => {
+        if (index === lists.length - 1 ) {
+          return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
+        } else {
+          return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
+        }
+      });
+
+      const listsContent = listsText.length < 1 ? null : (
+          <VerticalContentItem>
+            <ItemTitle>{getFluentString('mountain-detail-lists-mountain-appears-on', {
+              'mountain-name': name,
+            })}</ItemTitle>
+            {listsText}
+          </VerticalContentItem>
+        );
+      const {lat, long} = convertDMS(latitude, longitude);
+      return (
         <>
-          <BasicListItem>{getFluentString('mountain-detail-no-ascents-text', {
-            'mountain-name': name,
-          })}</BasicListItem>
-          <AddAscentButton onClick={() => setEditMountainId(id)}>
-            {getFluentString('mountain-detail-add-ascent-date')}
-          </AddAscentButton>
+          <h1>{name}</h1>
+          <HorizontalContentItem>
+            <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
+            <strong>{elevation}ft</strong>
+          </HorizontalContentItem>
+          <HorizontalContentItem>
+            <ItemTitleShort>{getFluentString('global-text-value-prominence')}:</ItemTitleShort>
+            <strong>{prominence}ft</strong>
+          </HorizontalContentItem>
+          <HorizontalContentItem>
+            <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
+            <strong>{lat}, {long}</strong>
+          </HorizontalContentItem>
+          <HorizontalContentItem>
+            <ItemTitleShort>{getFluentString('global-text-value-state')}:</ItemTitleShort>
+            <strong>{state.name}</strong>
+          </HorizontalContentItem>
+          {regionsContent}
+          {listsContent}
+          <VerticalContentItem>
+            <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
+            {completionContent}
+          </VerticalContentItem>
+          {editMountainModal}
         </>
       );
     }
-
-    const regions = state.regions.map((region, index) => {
-      if (index === state.regions.length - 1 ) {
-        return `${region.name}`;
-      } else {
-        return `${region.name}, `;
-      }
-    });
-
-    const regionsContent = regions.length < 1 ? null : (
-        <HorizontalContentItem>
-          <ItemTitleShort>{getFluentString('global-text-value-regions')}:</ItemTitleShort>
-          <strong>{regions}</strong>
-        </HorizontalContentItem>
-      );
-
-    const listsText = lists.map((list, index) => {
-      if (index === lists.length - 1 ) {
-        return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
-      } else {
-        return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
-      }
-    });
-
-    const listsContent = listsText.length < 1 ? null : (
-        <VerticalContentItem>
-          <ItemTitle>{getFluentString('mountain-detail-lists-mountain-appears-on', {
-            'mountain-name': name,
-          })}</ItemTitle>
-          {listsText}
-        </VerticalContentItem>
-      );
-    const {lat, long} = convertDMS(latitude, longitude);
-    return (
-      <>
-        <h1>{name}</h1>
-        <HorizontalContentItem>
-          <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
-          <strong>{elevation}ft</strong>
-        </HorizontalContentItem>
-        <HorizontalContentItem>
-          <ItemTitleShort>{getFluentString('global-text-value-prominence')}:</ItemTitleShort>
-          <strong>{prominence}ft</strong>
-        </HorizontalContentItem>
-        <HorizontalContentItem>
-          <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
-          <strong>{lat}, {long}</strong>
-        </HorizontalContentItem>
-        <HorizontalContentItem>
-          <ItemTitleShort>{getFluentString('global-text-value-state')}:</ItemTitleShort>
-          <strong>{state.name}</strong>
-        </HorizontalContentItem>
-        {regionsContent}
-        {listsContent}
-        <VerticalContentItem>
-          <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
-          {completionContent}
-        </VerticalContentItem>
-        {editMountainModal}
-      </>
-    );
   } else {
     return null;
   }
