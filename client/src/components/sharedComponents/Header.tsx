@@ -100,15 +100,15 @@ const Header = (props: RouteComponentProps) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const peakListsPath = searchListDetailLink('search');
+  const usersPath = friendsWithUserProfileLink('search');
+
   const createLink = (route: string, label: string) => {
     let normalizedPathname: string;
-    if (pathname.includes(Routes.UserProfile.split(':id')[0])
-      || pathname.includes(Routes.FriendsWithProfile.split(':id')[0])) {
-      normalizedPathname = Routes.FriendsWithProfile;
-    } else if (pathname.includes(Routes.ListDetail.split(':id')[0])
-      || pathname.includes(Routes.MountainDetail.split(':id')[0])
-      || pathname.includes(Routes.ListsWithDetail.split(':id')[0])) {
-      normalizedPathname = Routes.ListsWithDetail;
+    if (pathname.includes('user')) {
+      normalizedPathname = usersPath;
+    } else if (pathname.includes('list')) {
+      normalizedPathname = peakListsPath;
     } else {
       normalizedPathname = pathname;
     }
@@ -124,8 +124,8 @@ const Header = (props: RouteComponentProps) => {
         <>
           <MainNav>
             {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
-            {createLink(searchListDetailLink('search'), getFluentString('header-text-menu-item-lists'))}
-            {createLink(friendsWithUserProfileLink('search'), getFluentString('header-text-menu-item-friends'))}
+            {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+            {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
           </MainNav>
           <UserMenu
             userMenuOpen={userMenuOpen}

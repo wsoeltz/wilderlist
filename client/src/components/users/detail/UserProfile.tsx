@@ -121,8 +121,6 @@ const UserProfile = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const isCurrentUser = userId === id;
-
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
     variables: { profileId: id, userId },
   });
@@ -180,7 +178,7 @@ const UserProfile = (props: Props) => {
               listAction={compareAscents}
               actionText={getFluentString('user-profile-compare-ascents')}
               completedAscents={completedAscents}
-              isCurrentUser={isCurrentUser}
+              profileView={true}
               noResultsText={noResultsText}
               showTrophies={true}
             />

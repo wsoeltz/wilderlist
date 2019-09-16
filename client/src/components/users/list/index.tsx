@@ -2,11 +2,13 @@ import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
-import React, { useContext, useState } from 'react';
+import queryString from 'query-string';
+import React, { useContext, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { friendsWithUserProfileLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftSmall,
@@ -95,21 +97,46 @@ interface Props extends RouteComponentProps {
 }
 
 const UserList = (props: Props) => {
-  const { userId, match, history } = props;
+  const { userId, match, history, location } = props;
   const { id }: any = match.params;
+  const { query, page } = queryString.parse(location.search);
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const incrementPageNumber = () => setPageNumber(pageNumber + 1);
-  const decrementPageNumber = () => setPageNumber(pageNumber - 1);
+  const incrementPageNumber = () => {
+    const newPageNumber = pageNumber + 1;
+    setPageNumber(newPageNumber);
+    const url = friendsWithUserProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    history.push(url);
+  };
+  const decrementPageNumber = () => {
+    const newPageNumber = pageNumber - 1;
+    setPageNumber(newPageNumber);
+    const url = friendsWithUserProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    history.push(url);
+  };
   const nPerPage = 15;
+
+  useEffect(() => {
+    if (typeof query === 'string') {
+      setSearchQuery(query);
+    }
+    if (typeof page === 'string') {
+      const pageAsNumber = parseInt(page, 10);
+      if (!isNaN(pageAsNumber)) {
+        setPageNumber(pageAsNumber);
+      }
+    }
+  }, [query, page]);
 
   const searchUsers = (value: string) => {
     setSearchQuery(value);
     setPageNumber(1);
+    const url = friendsWithUserProfileLink(id) + '?query=' + value + '&page=' + 1;
+    history.push(url);
   };
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(SEARCH_USERS, {

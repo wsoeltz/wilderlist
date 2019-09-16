@@ -181,10 +181,10 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
 interface Props {
   peakList: PeakListDatum;
   active: boolean;
-  listAction: (peakListId: string) => void;
+  listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
-  isCurrentUser: boolean;
+  profileView: boolean;
   mountains: MountainList[];
   numCompletedAscents: number;
   totalRequiredAscents: number;
@@ -194,7 +194,7 @@ const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
-    isCurrentUser, mountains, numCompletedAscents,
+    profileView, mountains, numCompletedAscents,
     totalRequiredAscents,
   } = props;
 
@@ -203,16 +203,19 @@ const PeakListCard = (props: Props) => {
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
-    listAction(id);
+    if (listAction !== null) {
+      listAction(id);
+    }
   };
-  const actionButton = active === false || isCurrentUser === false ? (
-    <ActionButtonContainer>
-      <ButtonPrimary onClick={actionButtonOnClick}>
-        {actionText}
-      </ButtonPrimary>
-    </ActionButtonContainer> ) : null;
+  const actionButton = (active === false || profileView === true) && listAction !== null
+    ? (
+      <ActionButtonContainer>
+        <ButtonPrimary onClick={actionButtonOnClick}>
+          {actionText}
+        </ButtonPrimary>
+      </ActionButtonContainer> ) : null;
 
-  const Title = active === false || isCurrentUser === false
+  const Title = (active === false || profileView === true) && listAction !== null
     ? TitleBase : TitleFull;
 
   let listInfoContent: React.ReactElement<any>;
@@ -254,7 +257,7 @@ const PeakListCard = (props: Props) => {
     );
   }
   const mountainLogoId = parent === null ? id : parent.id;
-  const desktopURL = isCurrentUser === true ? searchListDetailLink(id) : listDetailWithMountainDetailLink(id, 'none');
+  const desktopURL = profileView === false ? searchListDetailLink(id) : listDetailWithMountainDetailLink(id, 'none');
   return (
     <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
       <Root>

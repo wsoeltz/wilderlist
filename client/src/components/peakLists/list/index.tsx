@@ -2,11 +2,13 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
-import React, { useContext, useState } from 'react';
+import queryString from 'query-string';
+import React, { useContext, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -134,18 +136,43 @@ interface Props extends RouteComponentProps {
 }
 
 const PeakListPage = (props: Props) => {
-  const { userId, match } = props;
+  const { userId, match, location, history } = props;
   const { id }: any = match.params;
+  const { query, page } = queryString.parse(location.search);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const incrementPageNumber = () => setPageNumber(pageNumber + 1);
-  const decrementPageNumber = () => setPageNumber(pageNumber - 1);
+  const incrementPageNumber = () => {
+    const newPageNumber = pageNumber + 1;
+    setPageNumber(newPageNumber);
+    const url = searchListDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    history.push(url);
+  };
+  const decrementPageNumber = () => {
+    const newPageNumber = pageNumber - 1;
+    setPageNumber(newPageNumber);
+    const url = searchListDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    history.push(url);
+  };
   const nPerPage = 5;
+
+  useEffect(() => {
+    if (typeof query === 'string') {
+      setSearchQuery(query);
+    }
+    if (typeof page === 'string') {
+      const pageAsNumber = parseInt(page, 10);
+      if (!isNaN(pageAsNumber)) {
+        setPageNumber(pageAsNumber);
+      }
+    }
+  }, [query, page]);
 
   const searchPeakLists = (value: string) => {
     setSearchQuery(value);
     setPageNumber(1);
+    const url = searchListDetailLink(id) + '?query=' + value + '&page=' + 1;
+    history.push(url);
   };
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -192,7 +219,7 @@ const PeakListPage = (props: Props) => {
           listAction={beginList}
           actionText={'Begin List'}
           completedAscents={completedAscents}
-          isCurrentUser={true}
+          profileView={false}
           noResultsText={noResultsText}
           showTrophies={false}
         />

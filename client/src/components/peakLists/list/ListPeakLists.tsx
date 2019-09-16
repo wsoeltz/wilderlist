@@ -63,10 +63,10 @@ export interface PeakListDatum {
 interface Props {
   peakListData: PeakListDatum[];
   userListData: Array<PeakList['id']>;
-  listAction: (peakListId: string) => void;
+  listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
-  isCurrentUser: boolean;
+  profileView: boolean;
   noResultsText: string;
   showTrophies: boolean;
 }
@@ -74,7 +74,7 @@ interface Props {
 const ListPeakLists = (props: Props) => {
   const {
     peakListData, userListData, listAction, actionText,
-    completedAscents, isCurrentUser, noResultsText,
+    completedAscents, profileView, noResultsText,
     showTrophies,
   } = props;
 
@@ -127,7 +127,7 @@ const ListPeakLists = (props: Props) => {
         listAction={listAction}
         actionText={actionText}
         completedAscents={completedAscents}
-        isCurrentUser={isCurrentUser}
+        profileView={profileView}
         key={peakList.id}
         mountains={mountains}
         numCompletedAscents={numCompletedAscents}
