@@ -213,10 +213,11 @@ interface Props {
   user: UserDatum;
   friendStatus: FriendStatus | null;
   currentUserId: string;
+  openInSidebar: boolean;
 }
 
 const UserCard = (props: Props) => {
-  const { user, friendStatus, currentUserId } = props;
+  const { user, friendStatus, currentUserId, openInSidebar} = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -413,10 +414,14 @@ const UserCard = (props: Props) => {
 
   const opacity = friendStatus === FriendStatus.friends ? 1 : 0.2;
 
+  const desktopURL = openInSidebar === true
+    ? friendsWithUserProfileLink(user.id)
+    : comparePeakListLink(user.id, 'none');
+
   return (
     <LinkWrapper
       mobileURL={comparePeakListLink(user.id, 'none')}
-      desktopURL={friendsWithUserProfileLink(user.id)}
+      desktopURL={desktopURL}
     >
       <Root>
         <ProfilePicture

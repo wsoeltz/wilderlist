@@ -185,6 +185,8 @@ const UserList = (props: Props) => {
           currentUserId={userId}
           friendsList={friends}
           noResultsText={noResultsText}
+          openInSidebar={true}
+          sortByStatus={false}
         />
         <PaginationContainer>
           {prevBtn}

@@ -1,24 +1,30 @@
 import { useQuery } from '@apollo/react-hooks';
-// import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useContext} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import styled from 'styled-components';
 import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
-// import {
-//   AppLocalizationAndBundleContext,
-// } from '../../contextProviders/getFluentLocalizationContext';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
   ContentLeftLarge,
   ContentRightSmall,
   SearchContainer,
 } from '../../styling/Grid';
+import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
 import { FriendStatus, PeakList, User } from '../../types/graphQLTypes';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
 import ListPeakLists, { PeakListDatum } from '../peakLists/list/ListPeakLists';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import GhostUserCard from '../users/list/GhostUserCard';
 import ListUsers, { UserDatum } from '../users/list/ListUsers';
+
+const PlaceholderButton = styled(ButtonPrimaryLink)`
+  font-style: normal;
+`;
 
 const GET_USERS_PEAK_LISTS = gql`
   query SearchPeakLists($userId: ID!) {
@@ -155,8 +161,8 @@ const Dashboard = (props: Props) => {
     history.push(url);
   };
 
-  // const {localization} = useContext(AppLocalizationAndBundleContext);
-  // const getFluentString: GetString = (...args) => localization.getString(...args);
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_USERS_PEAK_LISTS, {
     variables: { userId },
@@ -182,12 +188,28 @@ const Dashboard = (props: Props) => {
     friendsList = (<p>There was an error</p>);
   } else if (data !== undefined) {
     const { user } = data;
-    const { peakLists, friends } = user;
-    const usersLists = user.peakLists.map(peakList => peakList.id);
-    const completedAscents = user.mountains !== null ? user.mountains : [];
-    const friendsAsUsersArray = friends.map(friend => friend.user);
-    peakListsList = (
-      <>
+    const { peakLists, friends, mountains } = user;
+    if (peakLists.length === 0) {
+      peakListsList = (
+        <PlaceholderText>
+          <div>
+            <p>
+              {getFluentString('dashboard-empty-state-no-active-lists-text')}
+            </p>
+            <p>
+              <PlaceholderButton
+                to={searchListDetailLink('search')}
+              >
+                {getFluentString('dashboard-empty-state-no-active-lists-button')}
+              </PlaceholderButton>
+            </p>
+          </div>
+        </PlaceholderText>
+      );
+    } else {
+      const usersLists = peakLists.map(peakList => peakList.id);
+      const completedAscents = mountains !== null ? mountains : [];
+      peakListsList = (
         <ListPeakLists
           peakListData={peakLists}
           userListData={usersLists}
@@ -198,19 +220,39 @@ const Dashboard = (props: Props) => {
           noResultsText={''}
           showTrophies={true}
         />
-      </>
-    );
-    friendsList = (
-      <>
+      );
+    }
+    if (friends.length === 0) {
+      friendsList = (
+        <PlaceholderText>
+          <div>
+            <p>
+              {getFluentString('dashboard-empty-state-no-friends-text')}
+            </p>
+            <p>
+              <PlaceholderButton
+                to={friendsWithUserProfileLink('search')}
+              >
+                {getFluentString('dashboard-empty-state-no-friends-button')}
+              </PlaceholderButton>
+            </p>
+          </div>
+        </PlaceholderText>
+      );
+    } else {
+      const friendsAsUsersArray = friends.map(friend => friend.user);
+      friendsList = (
         <ListUsers
           userData={friendsAsUsersArray}
           showCurrentUser={false}
           currentUserId={userId}
           friendsList={friends}
           noResultsText={''}
+          openInSidebar={false}
+          sortByStatus={true}
         />
-      </>
-    );
+      );
+    }
   } else {
     peakListsList = null;
     friendsList = null;

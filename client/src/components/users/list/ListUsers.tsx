@@ -38,14 +38,21 @@ interface Props {
   friendsList: FriendDatum[];
   showCurrentUser: boolean;
   noResultsText: string;
+  openInSidebar: boolean;
+  sortByStatus: boolean;
 }
 
 const ListUsers = (props: Props) => {
-  const { userData, currentUserId, showCurrentUser, friendsList, noResultsText } = props;
+  const {
+    userData, currentUserId, showCurrentUser, friendsList, noResultsText,
+    openInSidebar, sortByStatus,
+  } = props;
 
   if (userData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
+  const usersAwaitingYourResponse: Array<React.ReactElement<any>> = [];
+  const usersAwaitingTheirRespone: Array<React.ReactElement<any>> = [];
   const users = userData.map(user => {
     if (showCurrentUser === false && currentUserId === user.id) {
       return null;
@@ -62,19 +69,30 @@ const ListUsers = (props: Props) => {
       } else {
         friendStatus = null;
       }
-      return (
+      const userCard = (
         <UserCard
           user={user}
           friendStatus={friendStatus}
           currentUserId={currentUserId}
+          openInSidebar={openInSidebar}
           key={user.id}
         />
       );
+      if (friendStatus === FriendStatus.recieved && sortByStatus === true) {
+        usersAwaitingYourResponse.push(userCard);
+      } else if (friendStatus === FriendStatus.sent && sortByStatus === true) {
+        usersAwaitingTheirRespone.push(userCard);
+      } else {
+        return userCard;
+      }
+      return null;
     }
   });
   return (
     <>
+      {usersAwaitingYourResponse}
       {users}
+      {usersAwaitingTheirRespone}
     </>
   );
 };

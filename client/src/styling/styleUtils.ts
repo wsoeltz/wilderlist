@@ -237,6 +237,7 @@ export const PlaceholderText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   font-style: italic;
   color: ${placeholderColor};
   background-color: rgba(0, 0, 0, 0.04);
