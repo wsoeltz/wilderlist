@@ -1,32 +1,21 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  ButtonPrimary,
-  GhostButton,
   lightBaseColor,
   lightBorderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
-import { convertDMS, convertFieldsToDate } from '../../../Utils';
-import MountainCompletionModal, {
-  MountainCompletionSuccessResponse,
-  MountainCompletionVariables,
-} from '../../peakLists/detail/MountainCompletionModal';
-import {
-  DateObject,
-  formatDate,
-  getDates,
-} from '../../peakLists/Utils';
-import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import { convertDMS } from '../../../Utils';
 import Map from '../../sharedComponents/map';
+import AscentsList from './AscentsList';
 
 const titleWidth = 150; // in px
 
@@ -53,11 +42,11 @@ const VerticalContentItem = styled(ContentItem)`
   margin-bottom: 0.5rem;
 `;
 
-const BasicListItem = styled.div`
+export const BasicListItem = styled.div`
   font-size: 0.9rem;
 `;
 
-const AscentListItem = styled(BasicListItem)`
+export const AscentListItem = styled(BasicListItem)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -66,10 +55,6 @@ const AscentListItem = styled(BasicListItem)`
   &:hover {
     background-color: ${lightBorderColor};
   }
-`;
-
-const AddAscentButton = styled(ButtonPrimary)`
-  margin-top: 1rem;
 `;
 
 const GET_MOUNTAIN_LIST = gql`
@@ -138,43 +123,10 @@ interface QueryVariables {
   userId: string;
 }
 
-const REMOVE_MOUNTAIN_COMPLETION = gql`
-  mutation removeMountainCompletion(
-    $userId: ID!,
-    $mountainId: ID!,
-    $date: String!
-    ) {
-    removeMountainCompletion(
-      userId: $userId,
-      mountainId: $mountainId,
-      date: $date
-    ) {
-      id
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-  }
-`;
-
 interface Props {
   userId: string;
   id: string;
 }
-
-const getDateAsString = (date: DateObject) => {
-  const day = isNaN(date.day) ? '' : date.day;
-  const month = isNaN(date.month) ? '' : date.month;
-  const year = isNaN(date.year) ? '' : date.year;
-  const result = convertFieldsToDate(day.toString(), month.toString(), year.toString());
-  if (result.error || result.date === undefined) {
-    return '';
-  }
-  return result.date;
-};
 
 const MountainDetail = (props: Props) => {
   const { userId, id } = props;
@@ -185,47 +137,6 @@ const MountainDetail = (props: Props) => {
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_LIST, {
     variables: { id, userId },
   });
-
-  const [removeMountainCompletion] =
-  useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
-
-  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
-  const closeEditMountainModalModal = () => {
-    setEditMountainId(null);
-  };
-  const editMountainModal = editMountainId === null ? null : (
-    <MountainCompletionModal
-      editMountainId={editMountainId}
-      closeEditMountainModalModal={closeEditMountainModalModal}
-      userId={userId}
-    />
-  );
-
-  const [dateToRemove, setDateToRemove] = useState<DateObject | null>(null);
-
-  const closeAreYouSureModal = () => {
-    setDateToRemove(null);
-  };
-
-  const confirmRemove = () => {
-    if (dateToRemove !== null) {
-      removeMountainCompletion({ variables: { userId, mountainId: id, date: getDateAsString(dateToRemove)}});
-    }
-    closeAreYouSureModal();
-  };
-
-  const areYouSureModal = dateToRemove === null ? null : (
-    <AreYouSureModal
-      onConfirm={confirmRemove}
-      onCancel={closeAreYouSureModal}
-      title={getFluentString('global-text-value-are-you-sure-modal')}
-      text={getFluentString('mountain-detail-remove-ascent-modal-text', {
-        date: formatDate(dateToRemove),
-      })}
-      confirmText={getFluentString('global-text-value-modal-confirm')}
-      cancelText={getFluentString('global-text-value-modal-cancel')}
-    />
-  );
 
   if (loading === true) {
     return null;
@@ -249,42 +160,6 @@ const MountainDetail = (props: Props) => {
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
         (completedMountain) => completedMountain.mountain.id === id);
-      let completionContent: React.ReactElement<any> | null;
-      if (completedDates && completedDates.dates.length) {
-        const dates = getDates(completedDates.dates);
-        const completionListItems = dates.map((date, index) => (
-          <AscentListItem key={date.dateAsNumber + index.toString()}>
-            <strong>{formatDate(date)}</strong>
-            <GhostButton
-              onClick={
-                () => setDateToRemove(date)
-              }
-            >
-              {getFluentString('mountain-detail-remove-ascent')}
-            </GhostButton>
-          </AscentListItem>
-        ));
-        completionContent = (
-          <>
-            {completionListItems}
-            <AddAscentButton onClick={() => setEditMountainId(id)}>
-              {getFluentString('mountain-detail-add-another-ascent')}
-            </AddAscentButton>
-            {areYouSureModal}
-          </>
-        );
-      } else {
-        completionContent = (
-          <>
-            <BasicListItem>{getFluentString('mountain-detail-no-ascents-text', {
-              'mountain-name': name,
-            })}</BasicListItem>
-            <AddAscentButton onClick={() => setEditMountainId(id)}>
-              {getFluentString('mountain-detail-add-ascent-date')}
-            </AddAscentButton>
-          </>
-        );
-      }
 
       const regions = state.regions.map((region, index) => {
         if (index === state.regions.length - 1 ) {
@@ -345,9 +220,13 @@ const MountainDetail = (props: Props) => {
           {listsContent}
           <VerticalContentItem>
             <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
-            {completionContent}
+            <AscentsList
+              completedDates={completedDates}
+              userId={userId}
+              mountainId={id}
+              mountainName={name}
+            />
           </VerticalContentItem>
-          {editMountainModal}
         </>
       );
     }
