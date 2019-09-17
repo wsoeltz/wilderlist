@@ -26,6 +26,7 @@ import {
   getDates,
 } from '../../peakLists/Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import Map from '../../sharedComponents/map';
 
 const titleWidth = 150; // in px
 
@@ -320,6 +321,10 @@ const MountainDetail = (props: Props) => {
       return (
         <>
           <h1>{name}</h1>
+          <Map
+            id={id}
+            coordinates={[mountain]}
+          />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
             <strong>{elevation}ft</strong>

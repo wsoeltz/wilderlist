@@ -10,6 +10,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
+import styled from 'styled-components';
 import {
   appLocalizationAndBundle as fluentValue,
   AppLocalizationAndBundleContext as FluentText,
@@ -34,6 +35,13 @@ import PeakListPage from './peakLists/list';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
+
+const overlayPortalZIndex = 3000;
+
+const OverlayPortal = styled.div`
+  position: relative;
+  z-index: ${overlayPortalZIndex};
+`;
 
 export interface IAppContext {
   windowWidth: number;
@@ -71,6 +79,17 @@ const App: React.FC = () => {
     };
   }, []);
 
+  const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (
+      <>
+        <Route path={Routes.Admin} component={AdminPanel} />
+        <Route exact path={Routes.AdminStates} component={AdminStates} />
+        <Route exact path={Routes.AdminPeakLists} component={AdminPeakLists} />
+        <Route exact path={Routes.AdminMountains} component={AdminMountains} />
+        <Route exact path={Routes.AdminRegions} component={AdminRegions} />
+        <Route exact path={Routes.AdminUsers} component={AdminUsers} />
+      </>
+    ) : null;
+
   const userRoutes = (user) ? (
     <Switch>
       <Route exact path={Routes.Dashboard}
@@ -103,22 +122,13 @@ const App: React.FC = () => {
       <Route exact path={Routes.ComparePeakListWithMountainDetail}
         render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
       />
+      {adminRoutes}
+      {/* 404 Route -> */}
       <Route
         render={(props) => <Dashboard {...props} userId={user._id} />}
       />
     </Switch>
   ) : null;
-
-  const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (
-      <>
-        <Route path={Routes.Admin} component={AdminPanel} />
-        <Route exact path={Routes.AdminStates} component={AdminStates} />
-        <Route exact path={Routes.AdminPeakLists} component={AdminPeakLists} />
-        <Route exact path={Routes.AdminMountains} component={AdminMountains} />
-        <Route exact path={Routes.AdminRegions} component={AdminRegions} />
-        <Route exact path={Routes.AdminUsers} component={AdminUsers} />
-      </>
-    ) : null;
 
   return (
     <UserContext.Provider value={user}>
@@ -129,9 +139,8 @@ const App: React.FC = () => {
             <Router>
               <Root>
                 <Header />
-                {adminRoutes}
                 {userRoutes}
-                <div id={overlayPortalContainerId} />
+                <OverlayPortal id={overlayPortalContainerId} />
               </Root>
             </Router>
           </FluentText.Provider>

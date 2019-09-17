@@ -7,6 +7,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import Map from '../../sharedComponents/map';
 import Header from './Header';
 import MountainTable from './MountainTable';
 
@@ -175,6 +176,10 @@ const PeakListDetail = (props: Props) => {
             mountains={mountains}
             peakList={peakList}
             completedAscents={completedAscents}
+          />
+          <Map
+            id={peakList.id}
+            coordinates={mountains}
           />
           <MountainTable
             user={user}
