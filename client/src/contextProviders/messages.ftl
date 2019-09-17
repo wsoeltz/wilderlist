@@ -84,6 +84,28 @@ peak-list-detail-text-begin-list = Begin List
 peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
 
+peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located {
+  $state-or-region ->
+    [state] within
+    *[region] throughout
+} { $state-region-name }. Sitting at { $highest-mountain-elevation }ft {
+  $highest-also-most-prominent ->
+    [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is 
+    *[false] , { $highest-mountain-name } is 
+} {
+  $highest-also-most-prominent ->
+    [true] both the
+    *[false] the
+} highest point {
+  $highest-also-most-prominent ->
+    [true] and the most prominent peak on { $list-name }.
+    *[false] on { $list-name }.
+} {
+  $highest-also-most-prominent ->
+    [true] The smallest mountain is 
+    *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence. The smallest mountain is 
+} { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+
 mountain-completion-modal-text-note-standard =
   Entering a date is optional for <strong>Standard</strong> lists. However an unspecific date may not count towards other lists that contain this peak.
 mountain-completion-modal-text-note-winter =

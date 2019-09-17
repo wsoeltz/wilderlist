@@ -10,6 +10,9 @@ import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLT
 import Map from '../../sharedComponents/map';
 import Header from './Header';
 import MountainTable from './MountainTable';
+import { getStatesOrRegion } from '../list/PeakListCard';
+import { isState } from '../Utils';
+import sortBy from 'lodash/sortBy';
 
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID!) {
@@ -169,6 +172,27 @@ const PeakListDetail = (props: Props) => {
         mountains = [];
       }
       const completedAscents = user.mountains !== null ? user.mountains : [];
+      const statesOrRegions = getStatesOrRegion(mountains, getFluentString);
+      const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+      const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+      const mountainsSortedByProminence = sortBy(mountains, ['prominence']).reverse();
+      const highestAlsoMostProminent = mountainsSortedByElevation[0].id === mountainsSortedByProminence[0].id;
+      const paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
+        'list-name': peakList.name,
+        'number-of-peaks': mountains.length,
+        'state-or-region': isStateOrRegion.toString(),
+        'state-region-name': statesOrRegions,
+        'highest-mountain-name': mountainsSortedByElevation[0].name,
+        'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+        'highest-also-most-prominent': highestAlsoMostProminent.toString(),
+        'most-prominent-peak-name': mountainsSortedByProminence[0].name,
+        'most-prominent-value': mountainsSortedByProminence[0].prominence,
+        'most-prominent-elevation': mountainsSortedByProminence[0].elevation,
+        'smallest-mountain-name': 
+          mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
+        'smallest-mountain-elevation': 
+          mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+      });
       return (
         <>
           <Header
@@ -181,6 +205,9 @@ const PeakListDetail = (props: Props) => {
             id={peakList.id}
             coordinates={mountains}
           />
+          <p>
+            {paragraphText}
+          </p>
           <MountainTable
             user={user}
             mountains={mountains}
