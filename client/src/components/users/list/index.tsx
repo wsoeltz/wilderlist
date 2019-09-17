@@ -152,7 +152,7 @@ const UserList = (props: Props) => {
     if (node) {
       node.scrollTop = 0;
     }
-  }, [userListContainerElm, data]);
+  }, [userListContainerElm, pageNumber]);
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {

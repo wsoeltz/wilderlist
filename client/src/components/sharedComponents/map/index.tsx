@@ -14,11 +14,6 @@ const Root = styled.div`
   margin: 2rem 0;
 `;
 
-const ScrollAssistance = styled.div`
-  font-size: 0.8rem;
-  text-align: center;
-  margin: 0.9rem 0;
-`;
 
 const MapDiv = styled.div`
   height: 500px;
@@ -61,8 +56,10 @@ const Map = (props: Props) => {
     const startLatitude = defaultCoordinates.latitude;
     const startLongitude = defaultCoordinates.longitude;
 
-    const map = L.map(mapid).setView([startLatitude, startLongitude], 7);
-    map.scrollWheelZoom.disable();
+    const map = L.map(mapid, {
+      dragging: !L.Browser.mobile,
+      tap: !L.Browser.mobile,
+    }).setView([startLatitude, startLongitude], 7);
 
     const enableScroll = (e: KeyboardEvent) => {
       if (e.shiftKey) {
@@ -115,9 +112,6 @@ const Map = (props: Props) => {
   return (
     <Root>
       <MapDiv id={mapid} />
-      <ScrollAssistance
-        dangerouslySetInnerHTML={{__html: getFluentString('map-text-scroll-with-shift-help')}}
-      />
     </Root>
   );
 };

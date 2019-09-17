@@ -191,7 +191,7 @@ const PeakListPage = (props: Props) => {
     if (node) {
       node.scrollTop = 0;
     }
-  }, [listContainerElm, data]);
+  }, [listContainerElm, pageNumber]);
 
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
