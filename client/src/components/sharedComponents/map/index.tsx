@@ -14,7 +14,6 @@ const Root = styled.div`
   margin: 2rem 0;
 `;
 
-
 const MapDiv = styled.div`
   height: 500px;
   width: 100%;

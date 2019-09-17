@@ -1,14 +1,14 @@
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
-import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
-import { MountainDatumLite } from './ComparisonRow';
-import ComparisonTable from './ComparisonTable';
-import { GetString } from 'fluent-react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { PlaceholderText } from '../../../styling/styleUtils';
+import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
+import { MountainDatumLite } from './ComparisonRow';
+import ComparisonTable from './ComparisonTable';
 
 const GET_PEAK_LIST = gql`
   query getUserAndMe($userId: ID!, $friendId: ID!) {

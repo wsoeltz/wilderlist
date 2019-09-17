@@ -6,58 +6,71 @@ import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import {
-  lightBaseColor,
-  lightBorderColor,
-  semiBoldFontBoldWeight,
-} from '../../../styling/styleUtils';
-import { PlaceholderText } from '../../../styling/styleUtils';
+import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
+import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import { convertDMS } from '../../../Utils';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
+import IncludedLists from './IncludedLists';
+import {
+  ContentItem,
+  ItemTitle,
+} from './sharedStyling';
 
 const titleWidth = 150; // in px
-
-const ItemTitle = styled.div`
-  text-transform: uppercase;
-  color: ${lightBaseColor};
-  font-weight: ${semiBoldFontBoldWeight};
-`;
+const smallScreenSize = 560; // in px
 
 const ItemTitleShort = styled(ItemTitle)`
   width: ${titleWidth}px;
-`;
 
-const ContentItem = styled.div`
-  border-bottom: solid 1px ${lightBorderColor};
-  padding: 0.5rem 0;
+  @media(max-width: ${smallScreenSize}px) {
+    width: auto;
+    margin-right: 0.7rem;
+  }
 `;
 
 const HorizontalContentItem = styled(ContentItem)`
   display: flex;
+  align-items: center;
 `;
 
-const VerticalContentItem = styled(ContentItem)`
-  margin-bottom: 0.5rem;
-`;
-
-export const BasicListItem = styled.div`
-  font-size: 0.9rem;
-`;
-
-export const AscentListItem = styled(BasicListItem)`
+const LocationLinksContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-basis: 1;
+  flex-grow: 1;
+`;
 
-  &:hover {
-    background-color: ${lightBorderColor};
+const ExternalMapsButtons = styled.div`
+  margin-left: 1rem;
+
+  @media(max-width: ${smallScreenSize}px) {
+    display: flex;
+    flex-direction: column;
   }
 `;
 
-const GET_MOUNTAIN_LIST = gql`
+const LatLongContainer = styled.div`
+  @media(max-width: ${smallScreenSize}px) {
+    display: flex;
+    flex-direction: column;
+  }
+`;
+
+const Divider = styled.div`
+  display: inline-block;
+  height: 1rem;
+  width: 1px;
+  background-color: ${lightBorderColor};
+  margin: 0 0.4rem;
+
+  @media(max-width: ${smallScreenSize}px) {
+    display: none;
+  }
+`;
+
+const GET_MOUNTAIN_DETAIL = gql`
   query getMountain($id: ID!, $userId: ID!) {
     mountain(id: $id) {
       id
@@ -76,7 +89,6 @@ const GET_MOUNTAIN_LIST = gql`
       }
       lists {
         id
-        name
       }
     }
     user(id: $userId) {
@@ -109,7 +121,6 @@ interface QuerySuccessResponse {
     };
     lists: Array<{
       id: PeakList['id'];
-      name: PeakList['name'];
     }>;
   };
   user: {
@@ -134,7 +145,7 @@ const MountainDetail = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_LIST, {
+  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
   });
 
@@ -176,22 +187,6 @@ const MountainDetail = (props: Props) => {
           </HorizontalContentItem>
         );
 
-      const listsText = lists.map((list, index) => {
-        if (index === lists.length - 1 ) {
-          return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
-        } else {
-          return <BasicListItem key={list.id}>{list.name}</BasicListItem>;
-        }
-      });
-
-      const listsContent = listsText.length < 1 ? null : (
-          <VerticalContentItem>
-            <ItemTitle>{getFluentString('mountain-detail-lists-mountain-appears-on', {
-              'mountain-name': name,
-            })}</ItemTitle>
-            {listsText}
-          </VerticalContentItem>
-        );
       const {lat, long} = convertDMS(latitude, longitude);
       return (
         <>
@@ -199,6 +194,7 @@ const MountainDetail = (props: Props) => {
           <Map
             id={id}
             coordinates={[mountain]}
+            key={`map-id-${id}`}
           />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
@@ -210,23 +206,35 @@ const MountainDetail = (props: Props) => {
           </HorizontalContentItem>
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
-            <strong>{lat}, {long}</strong>
+            <LocationLinksContainer>
+              <LatLongContainer>
+                <strong>{lat},</strong> <strong>{long}</strong>
+              </LatLongContainer>
+              <ExternalMapsButtons>
+                <GoogleMapsLink lat={latitude} long={longitude} />
+                <Divider />
+                <CaltopoLink lat={latitude} long={longitude} />
+              </ExternalMapsButtons>
+            </LocationLinksContainer>
           </HorizontalContentItem>
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-state')}:</ItemTitleShort>
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
-          {listsContent}
-          <VerticalContentItem>
-            <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
-            <AscentsList
-              completedDates={completedDates}
-              userId={userId}
-              mountainId={id}
-              mountainName={name}
-            />
-          </VerticalContentItem>
+          <IncludedLists
+            getFluentString={getFluentString}
+            mountainId={id}
+            mountainName={name}
+            numLists={lists.length}
+          />
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
+          />
         </>
       );
     }

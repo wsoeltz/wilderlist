@@ -1,11 +1,8 @@
 import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   GhostButton,
@@ -22,7 +19,12 @@ import {
   getDates,
 } from '../../peakLists/Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
-import { AscentListItem, BasicListItem } from './MountainDetail';
+import {
+  AscentListItem,
+  BasicListItem,
+  ItemTitle,
+  VerticalContentItem,
+} from './sharedStyling';
 
 const AddAscentButton = styled(ButtonPrimary)`
   margin-top: 1rem;
@@ -66,13 +68,11 @@ interface Props {
   userId: string;
   mountainId: string;
   mountainName: string;
+  getFluentString: GetString;
 }
 
 const AscentsList = (props: Props) => {
-  const { completedDates, userId, mountainId, mountainName } = props;
-
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const { completedDates, userId, mountainId, mountainName, getFluentString } = props;
 
   const [removeMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
@@ -152,10 +152,11 @@ const AscentsList = (props: Props) => {
     );
   }
   return (
-    <>
+    <VerticalContentItem>
+      <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
       {output}
       {editMountainModal}
-    </>
+    </VerticalContentItem>
   );
 };
 
