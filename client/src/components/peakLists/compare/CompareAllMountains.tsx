@@ -1,9 +1,14 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, {useContext} from 'react';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import { MountainDatumLite } from './ComparisonRow';
 import ComparisonTable from './ComparisonTable';
+import { GetString } from 'fluent-react';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { PlaceholderText } from '../../../styling/styleUtils';
 
 const GET_PEAK_LIST = gql`
   query getUserAndMe($userId: ID!, $friendId: ID!) {
@@ -101,6 +106,9 @@ interface Props {
 const CompareAllMountains = (props: Props) => {
   const { userId, id } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { userId, friendId: id },
   });
@@ -108,7 +116,11 @@ const CompareAllMountains = (props: Props) => {
     return null;
   } else if (error !== undefined) {
     console.error(error);
-    return null;
+    return (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   } else if (data !== undefined) {
     const {
       user, me,

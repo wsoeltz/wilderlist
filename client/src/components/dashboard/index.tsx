@@ -184,8 +184,14 @@ const Dashboard = (props: Props) => {
     friendsList = <>{loadingUserCards}</>;
   } else if (error !== undefined) {
     console.error(error);
-    peakListsList = (<p>There was an error</p>);
-    friendsList = (<p>There was an error</p>);
+    peakListsList = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>);
+    friendsList = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>);
   } else if (data !== undefined) {
     const { user } = data;
     const { peakLists, friends, mountains } = user;
@@ -254,8 +260,14 @@ const Dashboard = (props: Props) => {
       );
     }
   } else {
-    peakListsList = null;
-    friendsList = null;
+    peakListsList = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>);
+    friendsList = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>);
   }
 
   return (

@@ -163,7 +163,11 @@ const UserList = (props: Props) => {
     list = <>{loadingCards}</>;
   } else if (error !== undefined) {
     console.error(error);
-    list = null;
+    list = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
   } else if (data !== undefined) {
     const { users, me: {friends} } = data;
     const nextBtn = users.length === nPerPage ? (
