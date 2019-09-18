@@ -8,6 +8,22 @@ import raw from 'raw.macro';
 import {
   createContext,
 } from 'react';
+import { states } from '../Utils';
+
+const regionsThatDontStartWithThe = [
+  'new england',
+];
+
+const FORMAT_STATE_REGION_FOR_TEXT = ([name]: [string]): string => {
+  const nameAsLowerCase = name.toLowerCase();
+  if (states.includes(nameAsLowerCase) || regionsThatDontStartWithThe.includes(nameAsLowerCase)) {
+    return name;
+  } else if (nameAsLowerCase === 'across the us') {
+    return 'the US';
+  } else {
+    return 'the ' + name;
+  }
+}
 
 const POSSESSIVE = ([word]: [string]): string => {
   const lastCharacter = word[word.length - 1];
@@ -44,6 +60,7 @@ const getLocalizationInfo = (messages: string) => {
   const bundle = new FluentBundle(['en-US'], {
     functions: {
       POSSESSIVE, SENTENCE_CASE, ORDINAL_SUFFIX, ORDINAL_NUMBER,
+      FORMAT_STATE_REGION_FOR_TEXT,
     },
   });
   bundle.addMessages(messages);

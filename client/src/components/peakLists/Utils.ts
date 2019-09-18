@@ -1,7 +1,12 @@
 import { sortBy } from 'lodash';
 import { CompletedMountain, PeakListVariants} from '../../types/graphQLTypes';
-import { getSeason, Months, Seasons } from '../../Utils';
-import { failIfValidOrNonExhaustive } from '../../Utils';
+import {
+  getSeason,
+  Months,
+  Seasons,
+  states,
+  failIfValidOrNonExhaustive,
+} from '../../Utils';
 
 export interface DateObject {
   dateAsNumber: number;
@@ -425,59 +430,6 @@ export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
   }
   return null;
 };
-
-const states = [
-  'alabama',
-  'alaska',
-  'arizona',
-  'arkansas',
-  'california',
-  'colorado',
-  'connecticut',
-  'delaware',
-  'florida',
-  'georgia',
-  'hawaii',
-  'idaho',
-  'illinois',
-  'indiana',
-  'iowa',
-  'kansas',
-  'kentucky',
-  'louisiana',
-  'maine',
-  'maryland',
-  'massachusetts',
-  'michigan',
-  'minnesota',
-  'mississippi',
-  'missouri',
-  'montana',
-  'nebraska',
-  'nevada',
-  'new hampshire',
-  'new jersey',
-  'new mexico',
-  'new york',
-  'north carolina',
-  'north dakota',
-  'ohio',
-  'oklahoma',
-  'oregon',
-  'pennsylvania',
-  'rhode island',
-  'south carolina',
-  'south dakota',
-  'tennessee',
-  'texas',
-  'utah',
-  'vermont',
-  'virginia',
-  'washington',
-  'west virginia',
-  'wisconsin',
-  'wyoming',
-];
 
 export const isState = (value: any) => {
   if (typeof value !== 'string') {

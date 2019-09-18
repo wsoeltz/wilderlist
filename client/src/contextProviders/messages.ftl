@@ -88,10 +88,10 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
   $state-or-region ->
     [state] within
     *[region] throughout
-} { $state-region-name }. Sitting at { $highest-mountain-elevation }ft {
+} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft {
   $highest-also-most-prominent ->
-    [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is 
-    *[false] , { $highest-mountain-name } is 
+    [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is
+    *[false] , { $highest-mountain-name } is
 } {
   $highest-also-most-prominent ->
     [true] both the
@@ -102,8 +102,8 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
     *[false] on { $list-name }.
 } {
   $highest-also-most-prominent ->
-    [true] The smallest mountain is 
-    *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence. The smallest mountain is 
+    [true] The smallest mountain is
+    *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence. The smallest mountain is
 } { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
 mountain-completion-modal-text-note-standard =
