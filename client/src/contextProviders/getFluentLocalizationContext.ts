@@ -16,7 +16,9 @@ const regionsThatDontStartWithThe = [
 
 const FORMAT_STATE_REGION_FOR_TEXT = ([name]: [string]): string => {
   const nameAsLowerCase = name.toLowerCase();
-  if (states.includes(nameAsLowerCase) || regionsThatDontStartWithThe.includes(nameAsLowerCase)) {
+  if (states.includes(nameAsLowerCase) ||
+    regionsThatDontStartWithThe.includes(nameAsLowerCase) ||
+    nameAsLowerCase.includes(',') || nameAsLowerCase.includes('&')) {
     return name;
   } else if (nameAsLowerCase === 'across the us') {
     return 'the US';

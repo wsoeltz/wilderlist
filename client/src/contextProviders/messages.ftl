@@ -125,7 +125,7 @@ mountain-detail-add-ascent-date = Add Ascent Date
 mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
-mountain-detail-lists-mountain-appears-on-ranks =  — {$elevation-rank}{ ORDINAL_SUFFIX($elevation-rank) } largest peak, {$prominence-rank}{ ORDINAL_SUFFIX($prominence-rank) } most prominent
+mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak, { ORDINAL_NUMBER($prominence-rank) } most prominent
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
