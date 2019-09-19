@@ -30,6 +30,8 @@ import {
   PeakListDatum,
   UserDatum,
 } from './PeakListDetail';
+import ImportAscentsModal from '../import';
+import noop from 'lodash/noop';
 
 const Root = styled.div`
   display: grid;
@@ -236,6 +238,11 @@ const Header = (props: Props) => {
       </BeginRemoveListButtonContainer>
       {listInfoContent}
       {areYouSureModal}
+      <ImportAscentsModal
+        mountains={mountains}
+        onConfirm={noop}
+        onCancel={noop}
+      />
     </Root>
   );
 };

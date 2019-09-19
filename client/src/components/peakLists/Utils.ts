@@ -129,8 +129,7 @@ export const getGridCompletion = ({dates}: CompletedMountain) => {
   };
 };
 
-export const formatDate = (date: DateObject) => {
-  const { day, month, year } = date;
+export const formatDate = ({ day, month, year }: { day: number, month: number, year: number }) => {
   // if year isn't known
     // return 'unknown date'
   // else if just year (or year and day, but no month) is known

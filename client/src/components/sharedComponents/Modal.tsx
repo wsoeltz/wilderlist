@@ -33,6 +33,8 @@ const Container = styled.div`
   position: relative;
   padding: 1rem;
   border-radius: ${borderRadius}px;
+  max-height: 90%;
+  overflow: auto;
 `;
 
 interface Props {
