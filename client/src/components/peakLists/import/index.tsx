@@ -18,6 +18,13 @@ import {
 import {
   horizontalPadding,
 } from '../detail/MountainRow';
+import { useMutation } from '@apollo/react-hooks';
+import {
+  ADD_MOUNTAIN_COMPLETION,
+  MountainCompletionSuccessResponse,
+  MountainCompletionVariables,
+} from '../detail/MountainCompletionModal';
+import { convertFieldsToDate } from '../../../Utils';
 
 const TitleBase = styled.div`
   text-transform: uppercase;
@@ -79,109 +86,109 @@ const WarningBox = styled.div`
   border-radius: 4px;
 `;
 
-const mountainTestArr = [
-  {id: "Mount Washington", name: "Mount Washington",},
-  {id: "Mount Adams", name: "Mount Adams",},
-  {id: "Mount Jefferson", name: "Mount Jefferson",},
-  {id: "Mount Monroe", name: "Mount Monroe",},
-  {id: "Mount Madison", name: "Mount Madison",},
-  {id: "Mount Lafayette", name: "Mount Lafayette",},
-  {id: "Mount Lincoln", name: "Mount Lincoln",},
-  {id: "South Twin", name: "South Twin",},
-  {id: "Carter Dome", name: "Carter Dome",},
-  {id: "Mount Moosilauke", name: "Mount Moosilauke",},
-  {id: "Mount Eisenhower", name: "Mount Eisenhower",},
-  {id: "North Twin Mountain", name: "North Twin Mountain",},
-  {id: "Mount Carrigain", name: "Mount Carrigain",},
-  {id: "Mount Bond", name: "Mount Bond",},
-  {id: "Middle Carter Mountain", name: "Middle Carter Mountain",},
-  {id: "West Bond", name: "West Bond",},
-  {id: "Mount Garfield", name: "Mount Garfield",},
-  {id: "Mount Liberty", name: "Mount Liberty",},
-  {id: "South Carter Mountain", name: "South Carter Mountain",},
-  {id: "Wildcat, A peak", name: "Wildcat, A peak",},
-  {id: "Hancock Mountain", name: "Hancock Mountain",},
-  {id: "South Kinsman", name: "South Kinsman",},
-  {id: "Mount Field", name: "Mount Field",},
-  {id: "Mount Osceola", name: "Mount Osceola",},
-  {id: "Mount Flume", name: "Mount Flume",},
-  {id: "South Hancock Mountain", name: "South Hancock Mountain",},
-  {id: "Mount Pierce", name: "Mount Pierce",},
-  {id: "North Kinsman", name: "North Kinsman",},
-  {id: "Willey", name: "Willey",},
-  {id: "Bondcliff", name: "Bondcliff",},
-  {id: "Zealand", name: "Zealand",},
-  {id: "North Tripyramid", name: "North Tripyramid",},
-  {id: "Cabot", name: "Cabot",},
-  {id: "East Osceola", name: "East Osceola",},
-  {id: "Middle Tripyramid", name: "Middle Tripyramid",},
-  {id: "Cannon Mountain", name: "Cannon Mountain",},
-  {id: "Mount Hale", name: "Mount Hale",},
-  {id: "Mount Jackson", name: "Mount Jackson",},
-  {id: "Mount Tom", name: "Mount Tom",},
-  {id: "Wildcat, D Peak", name: "Wildcat, D Peak",},
-  {id: "Mount Moriah", name: "Mount Moriah",},
-  {id: "Mount Passaconaway", name: "Mount Passaconaway",},
-  {id: "Owl's Head Mountain", name: "Owl's Head Mountain",},
-  {id: "Galehead Mountain", name: "Galehead Mountain",},
-  {id: "Mount Whiteface", name: "Mount Whiteface",},
-  {id: "Mount Waumbek", name: "Mount Waumbek",},
-  {id: "Mount Isolation", name: "Mount Isolation",},
-  {id: "Mount Tecumseh", name: "Mount Tecumseh",},
-  {id: "Mount Anderson", name: "Mount Anderson",},
-  {id: "North Baldface", name: "North Baldface",},
-  {id: "South Baldface", name: "South Baldface",},
-  {id: "Bemis", name: "Bemis",},
-  {id: "Blue", name: "Blue",},
-  {id: "Bulge", name: "Bulge",},
-  {id: "Cannonball", name: "Cannonball",},
-  {id: "Captin", name: "Captin",},
-  {id: "Castle West Peak", name: "Castle West Peak",},
-  {id: "Cherry", name: "Cherry",},
-  {id: "Clough", name: "Clough",},
-  {id: "Dartmouth", name: "Dartmouth",},
-  {id: "Deception, East", name: "Deception, East",},
-  {id: "Field, West", name: "Field, West",},
-  {id: "Fool Killer", name: "Fool Killer",},
-  {id: "Garfield Ridge, East", name: "Garfield Ridge, East",},
-  {id: "Garfield Ridge, West", name: "Garfield Ridge, West",},
-  {id: "Gore", name: "Gore",},
-  {id: "Hale, South", name: "Hale, South",},
-  {id: "Hitchcock, Middle", name: "Hitchcock, Middle",},
-  {id: "Horn", name: "Horn",},
-  {id: "Huntington", name: "Huntington",},
-  {id: "Huntington South", name: "Huntington South",},
-  {id: "Mount Hutchins", name: "Mount Hutchins",},
-  {id: "Mount Kancamagus", name: "Mount Kancamagus",},
-  {id: "Middle Long Mountain", name: "Middle Long Mountain",},
-  {id: "West Long Mountain", name: "West Long Mountain",},
-  {id: "Lowell", name: "Lowell",},
-  {id: "Mary", name: "Mary",},
-  {id: "Muise", name: "Muise",},
-  {id: "Nancy", name: "Nancy",},
-  {id: "Peak Above the Nubble", name: "Peak Above the Nubble",},
-  {id: "Pilot Ridge Middle", name: "Pilot Ridge Middle",},
-  {id: "Pliny", name: "Pliny",},
-  {id: "Sable", name: "Sable",},
-  {id: "Sandwich Dome", name: "Sandwich Dome",},
-  {id: "Savage", name: "Savage",},
-  {id: "Scar Ridge, East", name: "Scar Ridge, East",},
-  {id: "Scar Ridge, West", name: "Scar Ridge, West",},
-  {id: "Scaur", name: "Scaur",},
-  {id: "Shelburne Moriah", name: "Shelburne Moriah",},
-  {id: "East Sleeper", name: "East Sleeper",},
-  {id: "West Sleeper", name: "West Sleeper",},
-  {id: "Stub Hill", name: "Stub Hill",},
-  {id: "Success", name: "Success",},
-  {id: "Sugarloaf", name: "Sugarloaf",},
-  {id: "Terrace, East", name: "Terrace, East",},
-  {id: "Unknown Pond", name: "Unknown Pond",},
-  {id: "Vose Spur", name: "Vose Spur",},
-  {id: "Weeks, Middle", name: "Weeks, Middle",},
-  {id: "Weeks, North", name: "Weeks, North",},
-  {id: "Weeks, South", name: "Weeks, South",},
-  {id: "Wolf", name: "Wolf",},
-]
+// const mountainTestArr = [
+//   {id: "Mount Washington", name: "Mount Washington",},
+//   {id: "Mount Adams", name: "Mount Adams",},
+//   {id: "Mount Jefferson", name: "Mount Jefferson",},
+//   {id: "Mount Monroe", name: "Mount Monroe",},
+//   {id: "Mount Madison", name: "Mount Madison",},
+//   {id: "Mount Lafayette", name: "Mount Lafayette",},
+//   {id: "Mount Lincoln", name: "Mount Lincoln",},
+//   {id: "South Twin", name: "South Twin",},
+//   {id: "Carter Dome", name: "Carter Dome",},
+//   {id: "Mount Moosilauke", name: "Mount Moosilauke",},
+//   {id: "Mount Eisenhower", name: "Mount Eisenhower",},
+//   {id: "North Twin Mountain", name: "North Twin Mountain",},
+//   {id: "Mount Carrigain", name: "Mount Carrigain",},
+//   {id: "Mount Bond", name: "Mount Bond",},
+//   {id: "Middle Carter Mountain", name: "Middle Carter Mountain",},
+//   {id: "West Bond", name: "West Bond",},
+//   {id: "Mount Garfield", name: "Mount Garfield",},
+//   {id: "Mount Liberty", name: "Mount Liberty",},
+//   {id: "South Carter Mountain", name: "South Carter Mountain",},
+//   {id: "Wildcat, A peak", name: "Wildcat, A peak",},
+//   {id: "Hancock Mountain", name: "Hancock Mountain",},
+//   {id: "South Kinsman", name: "South Kinsman",},
+//   {id: "Mount Field", name: "Mount Field",},
+//   {id: "Mount Osceola", name: "Mount Osceola",},
+//   {id: "Mount Flume", name: "Mount Flume",},
+//   {id: "South Hancock Mountain", name: "South Hancock Mountain",},
+//   {id: "Mount Pierce", name: "Mount Pierce",},
+//   {id: "North Kinsman", name: "North Kinsman",},
+//   {id: "Willey", name: "Willey",},
+//   {id: "Bondcliff", name: "Bondcliff",},
+//   {id: "Zealand", name: "Zealand",},
+//   {id: "North Tripyramid", name: "North Tripyramid",},
+//   {id: "Cabot", name: "Cabot",},
+//   {id: "East Osceola", name: "East Osceola",},
+//   {id: "Middle Tripyramid", name: "Middle Tripyramid",},
+//   {id: "Cannon Mountain", name: "Cannon Mountain",},
+//   {id: "Mount Hale", name: "Mount Hale",},
+//   {id: "Mount Jackson", name: "Mount Jackson",},
+//   {id: "Mount Tom", name: "Mount Tom",},
+//   {id: "Wildcat, D Peak", name: "Wildcat, D Peak",},
+//   {id: "Mount Moriah", name: "Mount Moriah",},
+//   {id: "Mount Passaconaway", name: "Mount Passaconaway",},
+//   {id: "Owl's Head Mountain", name: "Owl's Head Mountain",},
+//   {id: "Galehead Mountain", name: "Galehead Mountain",},
+//   {id: "Mount Whiteface", name: "Mount Whiteface",},
+//   {id: "Mount Waumbek", name: "Mount Waumbek",},
+//   {id: "Mount Isolation", name: "Mount Isolation",},
+//   {id: "Mount Tecumseh", name: "Mount Tecumseh",},
+//   {id: "Mount Anderson", name: "Mount Anderson",},
+//   {id: "North Baldface", name: "North Baldface",},
+//   {id: "South Baldface", name: "South Baldface",},
+//   {id: "Bemis", name: "Bemis",},
+//   {id: "Blue", name: "Blue",},
+//   {id: "Bulge", name: "Bulge",},
+//   {id: "Cannonball", name: "Cannonball",},
+//   {id: "Captin", name: "Captin",},
+//   {id: "Castle West Peak", name: "Castle West Peak",},
+//   {id: "Cherry", name: "Cherry",},
+//   {id: "Clough", name: "Clough",},
+//   {id: "Dartmouth", name: "Dartmouth",},
+//   {id: "Deception, East", name: "Deception, East",},
+//   {id: "Field, West", name: "Field, West",},
+//   {id: "Fool Killer", name: "Fool Killer",},
+//   {id: "Garfield Ridge, East", name: "Garfield Ridge, East",},
+//   {id: "Garfield Ridge, West", name: "Garfield Ridge, West",},
+//   {id: "Gore", name: "Gore",},
+//   {id: "Hale, South", name: "Hale, South",},
+//   {id: "Hitchcock, Middle", name: "Hitchcock, Middle",},
+//   {id: "Horn", name: "Horn",},
+//   {id: "Huntington", name: "Huntington",},
+//   {id: "Huntington South", name: "Huntington South",},
+//   {id: "Mount Hutchins", name: "Mount Hutchins",},
+//   {id: "Mount Kancamagus", name: "Mount Kancamagus",},
+//   {id: "Middle Long Mountain", name: "Middle Long Mountain",},
+//   {id: "West Long Mountain", name: "West Long Mountain",},
+//   {id: "Lowell", name: "Lowell",},
+//   {id: "Mary", name: "Mary",},
+//   {id: "Muise", name: "Muise",},
+//   {id: "Nancy", name: "Nancy",},
+//   {id: "Peak Above the Nubble", name: "Peak Above the Nubble",},
+//   {id: "Pilot Ridge Middle", name: "Pilot Ridge Middle",},
+//   {id: "Pliny", name: "Pliny",},
+//   {id: "Sable", name: "Sable",},
+//   {id: "Sandwich Dome", name: "Sandwich Dome",},
+//   {id: "Savage", name: "Savage",},
+//   {id: "Scar Ridge, East", name: "Scar Ridge, East",},
+//   {id: "Scar Ridge, West", name: "Scar Ridge, West",},
+//   {id: "Scaur", name: "Scaur",},
+//   {id: "Shelburne Moriah", name: "Shelburne Moriah",},
+//   {id: "East Sleeper", name: "East Sleeper",},
+//   {id: "West Sleeper", name: "West Sleeper",},
+//   {id: "Stub Hill", name: "Stub Hill",},
+//   {id: "Success", name: "Success",},
+//   {id: "Sugarloaf", name: "Sugarloaf",},
+//   {id: "Terrace, East", name: "Terrace, East",},
+//   {id: "Unknown Pond", name: "Unknown Pond",},
+//   {id: "Vose Spur", name: "Vose Spur",},
+//   {id: "Weeks, Middle", name: "Weeks, Middle",},
+//   {id: "Weeks, North", name: "Weeks, North",},
+//   {id: "Weeks, South", name: "Weeks, South",},
+//   {id: "Wolf", name: "Wolf",},
+// ]
 
 const genericWords = [
   'mount',
@@ -204,6 +211,7 @@ interface Props {
   mountains: MountainDatum[];
   onConfirm: () => void;
   onCancel: () => void;
+  userId: string;
 }
 
 const maxValIndicies = (array: number[]) => {
@@ -224,8 +232,8 @@ const maxValIndicies = (array: number[]) => {
 }
 
 const ImportAscentsModal = (props: Props) => {
-  const { onConfirm, onCancel } = props;
-  const mountains = mountainTestArr;
+  const { onCancel, mountains, userId } = props;
+  // const mountains = mountainTestArr;
 
   const [pastedMountains, setPastedMountains] = useState<string[]>([]);
   const [cleanedMountains, setCleanedMountains] = useState<MountainDatum[] | null>([]);
@@ -234,6 +242,39 @@ const ImportAscentsModal = (props: Props) => {
   const [cleanedDates, setCleanedDates] = useState<DateArray | null>([]);
 
   console.log({cleanedDates, cleanedMountains})
+
+  const [addMountainCompletion] =
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+
+  const validateAndAddMountainCompletion = (mountainId: Mountain['id'], day: string, month: string, year: string) => {
+    const completedDate = convertFieldsToDate(day, month, year);
+    if (completedDate.error !== undefined) {
+      console.error(completedDate.error);
+    } else {
+      addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
+      console.log('success');
+    }
+  };
+
+  const onConfirm = () => {
+    console.log('onConfirm');
+    if (
+      cleanedMountains !== null && cleanedDates !== null
+      && cleanedMountains.length > 0 && cleanedDates.length > 0
+      && cleanedMountains.length === cleanedDates.length) {
+      cleanedMountains.forEach((mtn, i) => {
+        const dates = cleanedDates[i];
+        const mountainId = mtn.id;
+        if (dates !== null && dates !== undefined && mountainId) {
+          const {day, month, year} = dates;
+          validateAndAddMountainCompletion(mountainId, day.toString(), month.toString(), year.toString());
+        }
+        console.warn('dates are undefined, skipping');
+      });
+    } else {
+      console.error('Data doesnt exist or is the wrong length');
+    }
+  }
 
   const onMountainNamesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
@@ -399,6 +440,8 @@ const ImportAscentsModal = (props: Props) => {
         const numberValue = parseInt(value, 10);
         if (!isNaN(numberValue)) {
           newDates[i] = {...originalDates, [dayMonthYear]: numberValue}
+        } else {
+          newDates[i] = {...originalDates, [dayMonthYear]: -1}
         }
       }
       setCleanedDates([...newDates]);

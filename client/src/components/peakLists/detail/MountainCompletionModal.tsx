@@ -50,7 +50,7 @@ const Error = styled.p`
   text-align: center;
 `;
 
-const ADD_MOUNTAIN_COMPLETION = gql`
+export const ADD_MOUNTAIN_COMPLETION = gql`
   mutation addMountainCompletion(
     $userId: ID!,
     $mountainId: ID!,

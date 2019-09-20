@@ -239,6 +239,7 @@ const Header = (props: Props) => {
       {listInfoContent}
       {areYouSureModal}
       <ImportAscentsModal
+        userId={user.id}
         mountains={mountains}
         onConfirm={noop}
         onCancel={noop}
