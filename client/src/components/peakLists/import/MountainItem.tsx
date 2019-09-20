@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { MountainDatum, DateDatum } from './index';
 import styled from 'styled-components';
 import { TableCellBase } from '../detail/MountainRow';
@@ -87,6 +87,7 @@ interface Props {
   userInput: string;
   mountains: MountainDatum[],
   fixMountain: (newMountain: MountainDatum) => void;
+  fixDate: (date: DateDatum | null | undefined) => void;
   duplicate: boolean;
   date: DateDatum | null | undefined;
   dateInput: string;
@@ -96,12 +97,12 @@ interface Props {
 const MountainItem = (props: Props) => {
   const {
     officialMountain, userInput, mountains, fixMountain,
-    duplicate, date, dateInput, index,
+    duplicate, date, dateInput, index, fixDate,
   } = props;
   const options = mountains.map(mtn => {
     return <option value={mtn.id} key={mtn.id}>{mtn.name}</option>
   });
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onMountainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target) {
       const newMountain = mountains.find(({id}) => id === e.target.value);
       if (newMountain) {
@@ -110,20 +111,46 @@ const MountainItem = (props: Props) => {
     }
   }
 
-  let dateValue: React.ReactElement<any> | null;
+  const initialDay = date ? date.day.toString() : undefined;
+  const initialMonth = date ? date.month.toString() : undefined;
+  const initialYear = date ? date.year.toString() : undefined;
+  const [day, setDay] = useState<string | undefined>(initialDay)
+  const [month, setMonth] = useState<string | undefined>(initialMonth)
+  const [year, setYear] = useState<string | undefined>(initialYear)
+
+  useEffect(() => {
+    console.log(month, day, year)
+    if (day && month && year) {
+      const dayAsInt = parseInt(day, 10);
+      const monthAsInt = parseInt(month, 10);
+      const yearAsInt = parseInt(year, 10);
+      if (isNaN(dayAsInt) && isNaN(monthAsInt) && isNaN(yearAsInt)) {
+        fixDate({
+          day: dayAsInt,
+          month: monthAsInt,
+          year: yearAsInt,
+        });
+      } else {
+        fixDate(undefined);
+      }
+    } else {
+      fixDate(undefined);
+    }
+  }, [day, month, year]);
+
+  const dateValue: React.ReactElement<any> = (
+    <DateInputContainer>
+      <DayLabel>Day</DayLabel>
+      <MonthLabel>Month</MonthLabel>
+      <YearLabel>Year</YearLabel>
+      <MonthInput placeholder='M' value={month} onChange={e => setMonth(e.target.value)}/>
+      <DayInput placeholder='D' value={day} onChange={e => setDay(e.target.value)}/>
+      <YearInput placeholder='YYYY' value={year} onChange={e => setYear(e.target.value)}/>
+    </DateInputContainer>
+  );
   let dateInputText: React.ReactElement<any> | null;
   if (date === undefined) {
     dateInputText = <LightText>No date specified</LightText>;
-    dateValue = (
-      <DateInputContainer>
-        <DayLabel>Day</DayLabel>
-        <MonthLabel>Month</MonthLabel>
-        <YearLabel>Year</YearLabel>
-        <MonthInput placeholder='M'/>
-        <DayInput placeholder='D'/>
-        <YearInput placeholder='YYYY'/>
-      </DateInputContainer>
-    );
   } else if (date === null) {
     dateInputText = (
       <WarningText>
@@ -131,31 +158,9 @@ const MountainItem = (props: Props) => {
         <br />
         <strong>{dateInput}</strong>
       </WarningText>);
-    dateValue = (
-      <DateInputContainer>
-        <DayLabel>Day</DayLabel>
-        <MonthLabel>Month</MonthLabel>
-        <YearLabel>Year</YearLabel>
-        <MonthInput placeholder='M'/>
-        <DayInput placeholder='D'/>
-        <YearInput placeholder='YYYY'/>
-      </DateInputContainer>
-    );
   } else {
     dateInputText = <>{dateInput}</>;
-    dateValue = (
-      <DateInputContainer>
-        <DayLabel>Day</DayLabel>
-        <MonthLabel>Month</MonthLabel>
-        <YearLabel>Year</YearLabel>
-        <MonthInput placeholder='M' defaultValue={date.month.toString()}/>
-        <DayInput placeholder='D' defaultValue={date.day.toString()}/>
-        <YearInput placeholder='YYYY' defaultValue={date.year.toString()}/>
-      </DateInputContainer>
-    );
   }
-
-
 
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const color = duplicate === true ? warningColor : baseColor;
@@ -166,7 +171,7 @@ const MountainItem = (props: Props) => {
     <>
       <UserInput style={{backgroundColor}}>{userInput}</UserInput>
       <ExpectedName style={{backgroundColor}}>
-        <MountainSelect value={officialMountain.id} onChange={onChange} style={{color}}>
+        <MountainSelect value={officialMountain.id} onChange={onMountainChange} style={{color}}>
           {options}
         </MountainSelect>
         {duplicateWarning}

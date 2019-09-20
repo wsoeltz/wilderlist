@@ -233,6 +233,8 @@ const ImportAscentsModal = (props: Props) => {
   const [pastedDates, setPastedDates] = useState<string[]>([]);
   const [cleanedDates, setCleanedDates] = useState<DateArray | null>([]);
 
+  console.log({cleanedDates, cleanedMountains})
+
   const onMountainNamesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
     const valueArray = pastedValue.split(/\r?\n/);
@@ -308,9 +310,9 @@ const ImportAscentsModal = (props: Props) => {
           return firstChoice;
         }
       })
-      setCleanedMountains(cleanPeaknames);
+      setCleanedMountains([...cleanPeaknames]);
     }
-    setPastedMountains(valueArray);
+    setPastedMountains([...valueArray]);
   }
 
   const onMountainDatesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -375,9 +377,9 @@ const ImportAscentsModal = (props: Props) => {
           cleanedDates.push(null);
         }
       });
-      setCleanedDates(cleanedDates);
+      setCleanedDates([...cleanedDates]);
     }
-    setPastedDates(valueArray);
+    setPastedDates([...valueArray]);
   }
 
   const mountainList =
@@ -390,6 +392,11 @@ const ImportAscentsModal = (props: Props) => {
       newPeaks[i] = { id: newMountain.id, name: newMountain.name };
       setCleanedMountains([...newPeaks]);
     }
+    const fixDate = (date: DateDatum | null | undefined) => {
+      const newDates = cleanedDates;
+      newDates[i] = date;
+      setCleanedDates([...newDates]);
+    }
     const duplicate = (cleanedMountains.filter(({id}) => id === mtn.id).length > 1);
     return (
       <MountainItem
@@ -397,6 +404,7 @@ const ImportAscentsModal = (props: Props) => {
         officialMountain={mtn}
         mountains={mountains}
         fixMountain={fixMountain}
+        fixDate={fixDate}
         duplicate={duplicate}
         date={cleanedDates[i]}
         dateInput={pastedDates[i]}
