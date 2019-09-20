@@ -41,7 +41,7 @@ export const Root = styled.div`
   display: grid;
 `;
 
-const TitleBase = styled.div`
+export const TitleBase = styled.div`
   text-transform: uppercase;
   font-weight: ${semiBoldFontBoldWeight};
   display: flex;

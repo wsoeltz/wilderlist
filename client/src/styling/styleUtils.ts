@@ -19,6 +19,8 @@ export const linkColor = '#2b5b37'; // greenish blue color for use with links
 export const linkHoverColor = '#3dad15'; // hover color for links, light green
 export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
+export const lowWarningColorLight = '#f2e4b3';
+export const lowWarningColor = '#d6aa0a';
 
 export const successColor = '#658238';
 

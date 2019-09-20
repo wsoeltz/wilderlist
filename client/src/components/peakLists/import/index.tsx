@@ -3,11 +3,52 @@ import styled from 'styled-components';
 import {
   ButtonSecondary,
   ButtonPrimary,
+  semiBoldFontBoldWeight,
+  lightBorderColor,
+  lowWarningColor,
+  lowWarningColorLight,
 } from '../../../styling/styleUtils';
 import Modal from '../../sharedComponents/Modal';
 import { Mountain } from '../../../types/graphQLTypes';
 import {intersection, sortBy} from 'lodash';
-import MountainItem from './MountainItem';
+import MountainItem, { gridCols } from './MountainItem';
+import {
+  Root as Table,
+} from '../detail/MountainTable';
+import {
+  horizontalPadding,
+} from '../detail/MountainRow';
+
+const TitleBase = styled.div`
+  text-transform: uppercase;
+  padding: ${horizontalPadding}rem;
+  border-bottom: solid 2px ${lightBorderColor};
+  font-weight: ${semiBoldFontBoldWeight};
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+`;
+
+const InputTitle = styled(TitleBase)`
+  opacity: 0.7;
+  font-size: 0.8rem;
+`;
+const OutputTitle = styled(TitleBase)`
+  font-size: 1rem;
+`;
+
+const UserInput = styled(InputTitle)`
+  grid-column: ${gridCols.userInput};
+`;
+const ExpectedName = styled(OutputTitle)`
+  grid-column: ${gridCols.expectedName};
+`;
+const UserDate = styled(InputTitle)`
+  grid-column: ${gridCols.userDate};
+`;
+const ExpectedDate = styled(OutputTitle)`
+  grid-column: ${gridCols.expectedDate};
+`;
 
 const ButtonWrapper = styled.div`
   display: flex;
@@ -16,6 +57,26 @@ const ButtonWrapper = styled.div`
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+`;
+
+const PasteContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 2rem;
+`;
+
+const PasteArea = styled.textarea`
+  width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+`;
+
+const WarningBox = styled.div`
+  padding: 2rem;
+  margin: 2rem 0;
+  background-color: ${lowWarningColorLight};
+  border: 1px solid ${lowWarningColor};
+  border-radius: 4px;
 `;
 
 const mountainTestArr = [
@@ -266,7 +327,14 @@ const ImportAscentsModal = (props: Props) => {
         } else if (dateParts.length === 3) {
           const month = parseInt(dateParts[0], 10);
           const day = parseInt(dateParts[1], 10);
-          const year = parseInt(dateParts[2], 10);
+          let year = parseInt(dateParts[2], 10);
+          if (year < 1000) {
+            if (year < new Date().getFullYear() - 2000) {
+              year = year + 2000;
+            } else {
+              year = year + 1900;
+            }
+          }
           if (isNaN(month) || isNaN(day) || isNaN(year)) {
             cleanedDates.push(null);
           } else {
@@ -278,7 +346,14 @@ const ImportAscentsModal = (props: Props) => {
           if (dateParts[1].length === 4) {
             const month = parseInt(dateParts[0], 10);
             const day = month;
-            const year = parseInt(dateParts[1], 10);
+            let year = parseInt(dateParts[1], 10);
+            if (year < 1000) {
+              if (year < new Date().getFullYear() - 2000) {
+                year = year + 2000;
+              } else {
+                year = year + 1900;
+              }
+            }
             if (isNaN(day) || isNaN(month) || isNaN(year)) {
               cleanedDates.push(null);
             } else {
@@ -325,26 +400,27 @@ const ImportAscentsModal = (props: Props) => {
         duplicate={duplicate}
         date={cleanedDates[i]}
         dateInput={pastedDates[i]}
+        index={i}
         key={mtn.id + i}
       />
     );
   });
   let errorMessage: React.ReactElement<any> | null = null;
   if (cleanedDates === null && cleanedMountains !== null) {
-    errorMessage = <p>Please paste your list of dates</p>;
+    errorMessage = <WarningBox>Please paste your list of dates</WarningBox>;
   } else if (cleanedMountains === null) {
     if (cleanedDates === null) {
-      errorMessage = <p>Please paste your list of mountains</p>;
+      errorMessage = <WarningBox>Please paste your list of mountains</WarningBox>;
     }
     if (pastedMountains.length > mountains.length) {
       const pastedOut = pastedMountains.map((mtn, i) => <li key={mtn + i}>{mtn}</li>);
       errorMessage = (
-        <>
+        <WarningBox>
           <p>The list of mountains you pasted was longer than the amount of mountains on this list. Please review the output of what we recieved below, make changes, and try pasting again</p>
           <ol>
             {pastedOut}
           </ol>
-        </>
+        </WarningBox>
       );
     }
   } else if (cleanedDates !== null && cleanedMountains.length !== cleanedDates.length) {
@@ -353,7 +429,7 @@ const ImportAscentsModal = (props: Props) => {
     const pastedOutMountains = pastedMountains.map((mtn, i) => <li key={mtn + i}>{mtn}</li>);
     const pastedOutDates = pastedDates.map((date, i) => <li key={date + i}>{date}</li>);
     errorMessage = (
-      <>
+      <WarningBox>
         <p>Your list of {biggerList} is largers than your {smallerList}. Please adjust them so they are both the same size. Please review the output of what we recieved below.</p>
         <h4>Mountains</h4>
         <ol>
@@ -363,9 +439,19 @@ const ImportAscentsModal = (props: Props) => {
         <ol>
           {pastedOutDates}
         </ol>
-      </>
+      </WarningBox>
     );
   }
+
+  const table = errorMessage === null ? (
+      <Table>
+        <UserInput>Your Name Input</UserInput>
+        <ExpectedName>Name Output</ExpectedName>
+        <UserDate>Your Date Input</UserDate>
+        <ExpectedDate>Date Output</ExpectedDate>
+        {mountainList}
+      </Table>
+    ) : null;
 
   return (
     <Modal
@@ -374,12 +460,12 @@ const ImportAscentsModal = (props: Props) => {
       height={'auto'}
     >
       <h3>Import peaks</h3>
-      <textarea onChange={onMountainNamesPaste} />
-      <textarea onChange={onMountainDatesPaste} />
+      <PasteContainer>
+        <PasteArea placeholder='Paste Mountain Names Here' onChange={onMountainNamesPaste} />
+        <PasteArea placeholder='Paste Dates Here' onChange={onMountainDatesPaste} />
+      </PasteContainer>
       {errorMessage}
-      <ul>
-        {mountainList}
-      </ul>
+      {table}
       <ButtonWrapper>
         <CancelButton onClick={onCancel}>
           Close
