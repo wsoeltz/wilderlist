@@ -23,6 +23,7 @@ export const lowWarningColorLight = '#f2e4b3';
 export const lowWarningColor = '#d6aa0a';
 
 export const successColor = '#658238';
+export const successColorLight = '#d0e3b1';
 
 export interface ColorSet {
   primary: string;

@@ -7,6 +7,10 @@ import {
   lightBorderColor,
   lowWarningColor,
   lowWarningColorLight,
+  primaryColor,
+  primaryHoverColor,
+  successColor,
+  successColorLight,
 } from '../../../styling/styleUtils';
 import Modal from '../../sharedComponents/Modal';
 import { Mountain } from '../../../types/graphQLTypes';
@@ -25,6 +29,10 @@ import {
   MountainCompletionVariables,
 } from '../detail/MountainCompletionModal';
 import { convertFieldsToDate } from '../../../Utils';
+import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';
+import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
+import SelectMountainsStaticUrl from '../../../assets/images/import-gifs/select-mountains.png';
+import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-dates.png';
 
 const TitleBase = styled.div`
   text-transform: uppercase;
@@ -58,137 +66,96 @@ const ExpectedDate = styled(OutputTitle)`
 `;
 
 const ButtonWrapper = styled.div`
+  margin-top: 2rem;
   display: flex;
-  justify-content: flex-end;
 `;
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
 `;
 
+const SubmitButton = styled(ButtonPrimary)`
+  margin-left: auto;
+`;
+
 const PasteContainer = styled.div`
   display: grid;
+  grid-template-rows: auto auto auto;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 2rem;
+  margin-bottom: 2rem;
 `;
 
 const PasteArea = styled.textarea`
   width: 100%;
-  padding: 2rem;
+  padding: 1rem;
   box-sizing: border-box;
+  grid-row: 2;
+  height: 3.5rem;
+
+  &::placeholder {
+    text-align: center;
+  }
 `;
 
-const WarningBox = styled.div`
+const TextHelp = styled.div`
+  grid-row: 1;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+`;
+
+const BigNumber = styled.div`
+  grid-column: 1;
+  font-size: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 200px;
+  color: white;
+  background-color: ${primaryHoverColor};
+  border: solid 4px ${primaryColor};
+`;
+
+const HelpText = styled.div`
+  padding: 0 0.7rem;
+  line-height: 1.4;
+`;
+
+const HelpGifContainer = styled.div`
+  grid-row: 3;
+  grid-column: 1 / 3;
+
+  img {
+    max-width: 100%;
+    max-height: 180px;
+    cursor: pointer;
+  }
+`;
+
+const SignalBox = styled.div`
   padding: 2rem;
   margin: 2rem 0;
-  background-color: ${lowWarningColorLight};
-  border: 1px solid ${lowWarningColor};
   border-radius: 4px;
+  line-height: 1.4;
 `;
 
-// const mountainTestArr = [
-//   {id: "Mount Washington", name: "Mount Washington",},
-//   {id: "Mount Adams", name: "Mount Adams",},
-//   {id: "Mount Jefferson", name: "Mount Jefferson",},
-//   {id: "Mount Monroe", name: "Mount Monroe",},
-//   {id: "Mount Madison", name: "Mount Madison",},
-//   {id: "Mount Lafayette", name: "Mount Lafayette",},
-//   {id: "Mount Lincoln", name: "Mount Lincoln",},
-//   {id: "South Twin", name: "South Twin",},
-//   {id: "Carter Dome", name: "Carter Dome",},
-//   {id: "Mount Moosilauke", name: "Mount Moosilauke",},
-//   {id: "Mount Eisenhower", name: "Mount Eisenhower",},
-//   {id: "North Twin Mountain", name: "North Twin Mountain",},
-//   {id: "Mount Carrigain", name: "Mount Carrigain",},
-//   {id: "Mount Bond", name: "Mount Bond",},
-//   {id: "Middle Carter Mountain", name: "Middle Carter Mountain",},
-//   {id: "West Bond", name: "West Bond",},
-//   {id: "Mount Garfield", name: "Mount Garfield",},
-//   {id: "Mount Liberty", name: "Mount Liberty",},
-//   {id: "South Carter Mountain", name: "South Carter Mountain",},
-//   {id: "Wildcat, A peak", name: "Wildcat, A peak",},
-//   {id: "Hancock Mountain", name: "Hancock Mountain",},
-//   {id: "South Kinsman", name: "South Kinsman",},
-//   {id: "Mount Field", name: "Mount Field",},
-//   {id: "Mount Osceola", name: "Mount Osceola",},
-//   {id: "Mount Flume", name: "Mount Flume",},
-//   {id: "South Hancock Mountain", name: "South Hancock Mountain",},
-//   {id: "Mount Pierce", name: "Mount Pierce",},
-//   {id: "North Kinsman", name: "North Kinsman",},
-//   {id: "Willey", name: "Willey",},
-//   {id: "Bondcliff", name: "Bondcliff",},
-//   {id: "Zealand", name: "Zealand",},
-//   {id: "North Tripyramid", name: "North Tripyramid",},
-//   {id: "Cabot", name: "Cabot",},
-//   {id: "East Osceola", name: "East Osceola",},
-//   {id: "Middle Tripyramid", name: "Middle Tripyramid",},
-//   {id: "Cannon Mountain", name: "Cannon Mountain",},
-//   {id: "Mount Hale", name: "Mount Hale",},
-//   {id: "Mount Jackson", name: "Mount Jackson",},
-//   {id: "Mount Tom", name: "Mount Tom",},
-//   {id: "Wildcat, D Peak", name: "Wildcat, D Peak",},
-//   {id: "Mount Moriah", name: "Mount Moriah",},
-//   {id: "Mount Passaconaway", name: "Mount Passaconaway",},
-//   {id: "Owl's Head Mountain", name: "Owl's Head Mountain",},
-//   {id: "Galehead Mountain", name: "Galehead Mountain",},
-//   {id: "Mount Whiteface", name: "Mount Whiteface",},
-//   {id: "Mount Waumbek", name: "Mount Waumbek",},
-//   {id: "Mount Isolation", name: "Mount Isolation",},
-//   {id: "Mount Tecumseh", name: "Mount Tecumseh",},
-//   {id: "Mount Anderson", name: "Mount Anderson",},
-//   {id: "North Baldface", name: "North Baldface",},
-//   {id: "South Baldface", name: "South Baldface",},
-//   {id: "Bemis", name: "Bemis",},
-//   {id: "Blue", name: "Blue",},
-//   {id: "Bulge", name: "Bulge",},
-//   {id: "Cannonball", name: "Cannonball",},
-//   {id: "Captin", name: "Captin",},
-//   {id: "Castle West Peak", name: "Castle West Peak",},
-//   {id: "Cherry", name: "Cherry",},
-//   {id: "Clough", name: "Clough",},
-//   {id: "Dartmouth", name: "Dartmouth",},
-//   {id: "Deception, East", name: "Deception, East",},
-//   {id: "Field, West", name: "Field, West",},
-//   {id: "Fool Killer", name: "Fool Killer",},
-//   {id: "Garfield Ridge, East", name: "Garfield Ridge, East",},
-//   {id: "Garfield Ridge, West", name: "Garfield Ridge, West",},
-//   {id: "Gore", name: "Gore",},
-//   {id: "Hale, South", name: "Hale, South",},
-//   {id: "Hitchcock, Middle", name: "Hitchcock, Middle",},
-//   {id: "Horn", name: "Horn",},
-//   {id: "Huntington", name: "Huntington",},
-//   {id: "Huntington South", name: "Huntington South",},
-//   {id: "Mount Hutchins", name: "Mount Hutchins",},
-//   {id: "Mount Kancamagus", name: "Mount Kancamagus",},
-//   {id: "Middle Long Mountain", name: "Middle Long Mountain",},
-//   {id: "West Long Mountain", name: "West Long Mountain",},
-//   {id: "Lowell", name: "Lowell",},
-//   {id: "Mary", name: "Mary",},
-//   {id: "Muise", name: "Muise",},
-//   {id: "Nancy", name: "Nancy",},
-//   {id: "Peak Above the Nubble", name: "Peak Above the Nubble",},
-//   {id: "Pilot Ridge Middle", name: "Pilot Ridge Middle",},
-//   {id: "Pliny", name: "Pliny",},
-//   {id: "Sable", name: "Sable",},
-//   {id: "Sandwich Dome", name: "Sandwich Dome",},
-//   {id: "Savage", name: "Savage",},
-//   {id: "Scar Ridge, East", name: "Scar Ridge, East",},
-//   {id: "Scar Ridge, West", name: "Scar Ridge, West",},
-//   {id: "Scaur", name: "Scaur",},
-//   {id: "Shelburne Moriah", name: "Shelburne Moriah",},
-//   {id: "East Sleeper", name: "East Sleeper",},
-//   {id: "West Sleeper", name: "West Sleeper",},
-//   {id: "Stub Hill", name: "Stub Hill",},
-//   {id: "Success", name: "Success",},
-//   {id: "Sugarloaf", name: "Sugarloaf",},
-//   {id: "Terrace, East", name: "Terrace, East",},
-//   {id: "Unknown Pond", name: "Unknown Pond",},
-//   {id: "Vose Spur", name: "Vose Spur",},
-//   {id: "Weeks, Middle", name: "Weeks, Middle",},
-//   {id: "Weeks, North", name: "Weeks, North",},
-//   {id: "Weeks, South", name: "Weeks, South",},
-//   {id: "Wolf", name: "Wolf",},
-// ]
+const WarningBox = styled(SignalBox)`
+  background-color: ${lowWarningColorLight};
+  border: 1px solid ${lowWarningColor};
+`;
+
+const SuccessBox = styled(SignalBox)`
+  background-color: ${successColorLight};
+  border: 1px solid ${successColor};
+`;
+
+const OutputContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+`;
 
 const genericWords = [
   'mount',
@@ -241,7 +208,19 @@ const ImportAscentsModal = (props: Props) => {
   const [pastedDates, setPastedDates] = useState<string[]>([]);
   const [cleanedDates, setCleanedDates] = useState<DateArray | null>([]);
 
-  console.log({cleanedDates, cleanedMountains})
+  const [selectMountainsGif, setSelectMountainsGif] = useState<string>(SelectMountainsStaticUrl);
+  const [selectDatesGif, setSelectDatesGif] = useState<string>(SelectDatesStaticUrl);
+
+  const toggleMountainGif = () => {
+    const src = selectMountainsGif === SelectMountainsGifUrl
+      ? SelectMountainsStaticUrl : SelectMountainsGifUrl;
+    setSelectMountainsGif(src);
+  }
+  const toggleDatesGif = () => {
+    const src = selectDatesGif === SelectDatesGifUrl
+      ? SelectDatesStaticUrl : SelectDatesGifUrl;
+    setSelectDatesGif(src);
+  }
 
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
@@ -257,7 +236,6 @@ const ImportAscentsModal = (props: Props) => {
   };
 
   const onConfirm = () => {
-    console.log('onConfirm');
     if (
       cleanedMountains !== null && cleanedDates !== null
       && cleanedMountains.length > 0 && cleanedDates.length > 0
@@ -274,6 +252,7 @@ const ImportAscentsModal = (props: Props) => {
     } else {
       console.error('Data doesnt exist or is the wrong length');
     }
+    onCancel();
   }
 
   const onMountainNamesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -462,45 +441,81 @@ const ImportAscentsModal = (props: Props) => {
       />
     );
   });
-  let errorMessage: React.ReactElement<any> | null = null;
-  if (cleanedDates === null && cleanedMountains !== null) {
-    errorMessage = <WarningBox>Please paste your list of dates</WarningBox>;
-  } else if (cleanedMountains === null) {
-    if (cleanedDates === null) {
-      errorMessage = <WarningBox>Please paste your list of mountains</WarningBox>;
-    }
-    if (pastedMountains.length > mountains.length) {
-      const pastedOut = pastedMountains.map((mtn, i) => <li key={mtn + i}>{mtn}</li>);
+  let errorMessage: React.ReactElement<any> | null;
+  if (pastedMountains.length > mountains.length) {
+      // mountains is longer than total mountains
+      const pastedOutMountains = pastedMountains.map((mtn, i) => <li key={mtn + i}>{mtn}</li>);
+      const mountainNames = mountains.map((mtn, i) => <li key={mtn.id + i}>{mtn.name}</li>);
       errorMessage = (
         <WarningBox>
-          <p>The list of mountains you pasted was longer than the amount of mountains on this list. Please review the output of what we recieved below, make changes, and try pasting again</p>
-          <ol>
-            {pastedOut}
-          </ol>
+          <p>The list of mountains you pasted was <strong>longer than the amount of mountains on this list</strong>. Please review the output of what we recieved below, make changes, and try pasting again</p>
+          <OutputContainer>
+            <div>
+              <h4>Your Input</h4>
+              <ol>
+                {pastedOutMountains}
+              </ol>
+            </div>
+            <div>
+              <h4>Mountains On This List</h4>
+              <ol>
+                {mountainNames}
+              </ol>
+            </div>
+          </OutputContainer>
         </WarningBox>
       );
-    }
-  } else if (cleanedDates !== null && cleanedMountains.length !== cleanedDates.length) {
+  } else if (cleanedDates === null && cleanedMountains === null) {
+    // neither list has received any input, no error
+    errorMessage = null;
+  } else if ((cleanedDates === null || cleanedDates.length === 0)  && 
+    (cleanedMountains !== null && cleanedMountains.length !== 0)) {
+    // mountains has input but dates does not
+    // ask to paste in the dates
+    errorMessage = <WarningBox>Please paste your list of <strong>dates</strong></WarningBox>;
+  } else if ((cleanedMountains === null || cleanedMountains.length === 0)  && 
+    (cleanedDates !== null && cleanedDates.length !== 0)) {
+    // date has input but mountains does not
+    // ask to paste in the dates
+    errorMessage = <WarningBox>Please paste your list of <strong>mountains</strong></WarningBox>;
+  } else if (cleanedDates !== null && cleanedMountains !== null
+    && cleanedMountains.length !== 0 && cleanedDates.length !== 0
+    && cleanedMountains.length !== cleanedDates.length) {
+    // length of both lists does not match
     const biggerList = cleanedMountains.length > cleanedDates.length ? 'mountains' : 'dates';
     const smallerList = cleanedMountains.length > cleanedDates.length ? 'dates' : 'mountains';
     const pastedOutMountains = pastedMountains.map((mtn, i) => <li key={mtn + i}>{mtn}</li>);
     const pastedOutDates = pastedDates.map((date, i) => <li key={date + i}>{date}</li>);
     errorMessage = (
       <WarningBox>
-        <p>Your list of {biggerList} is largers than your {smallerList}. Please adjust them so they are both the same size. Please review the output of what we recieved below.</p>
-        <h4>Mountains</h4>
-        <ol>
-          {pastedOutMountains}
-        </ol>
-        <h4>Dates</h4>
-        <ol>
-          {pastedOutDates}
-        </ol>
+        <p>Your list of {biggerList} is larger than your {smallerList}. Please adjust them so they are both the same size. Please review the output of what we recieved below.</p>
+        <OutputContainer>
+          <div>
+            <h4>Mountains</h4>
+            <ol>
+              {pastedOutMountains}
+            </ol>
+          </div>
+          <div>
+            <h4>Dates</h4>
+            <ol>
+              {pastedOutDates}
+            </ol>
+          </div>
+        </OutputContainer>
       </WarningBox>
     );
+  } else {
+    errorMessage = null;
   }
 
-  const table = errorMessage === null ? (
+  const allDataAvailable = !(cleanedDates === null || cleanedMountains === null
+      || cleanedMountains.length === 0
+      || cleanedDates.length === 0
+      || cleanedMountains.length !== cleanedDates.length);
+
+  const table = allDataAvailable
+    ? (
       <Table>
         <UserInput>Your Name Input</UserInput>
         <ExpectedName>Name Output</ExpectedName>
@@ -510,26 +525,71 @@ const ImportAscentsModal = (props: Props) => {
       </Table>
     ) : null;
 
+    const successMessage = allDataAvailable
+      ? (
+        <SuccessBox>
+          Your data has been succesfully read. Please review it for accuracy and make any necessary changes. Then hit the green <strong>Submit</strong> button at the end of page.
+        </SuccessBox>
+      ) : null;
+
+    const submitBtn = allDataAvailable
+      ? (
+        <SubmitButton onClick={onConfirm}>
+          Submit
+        </SubmitButton>
+      ) : null;
+
   return (
     <Modal
       onClose={onCancel}
       width={'80%'}
       height={'auto'}
     >
-      <h3>Import peaks</h3>
+      <h2>Import Ascents</h2>
+      <p>This tool will import your existing ascent data from a spreadsheet and into Wilderlist</p>
+      <p>
+        <em><strong>Note:</strong> Dates must be in <strong>Month/Day/Year</strong> format in order to be properly read.</em>
+      </p>
       <PasteContainer>
-        <PasteArea placeholder='Paste Mountain Names Here' onChange={onMountainNamesPaste} />
-        <PasteArea placeholder='Paste Dates Here' onChange={onMountainDatesPaste} />
+        <TextHelp>
+          <BigNumber>1</BigNumber>
+          <HelpText>First, select all of the cells with the <strong>mountain names</strong> and paste them into the box on the <strong>left</strong>.</HelpText>
+          <HelpGifContainer>
+            <img
+              src={selectMountainsGif}
+              onClick={toggleMountainGif}
+              alt={'Click and drag to select multiple cells in a spreadsheet'}
+            />
+          </HelpGifContainer>
+        </TextHelp>
+        <TextHelp>
+          <BigNumber>2</BigNumber>
+          <HelpText>Then, select all of the cells with the <strong>dates (including the ones that are blank)</strong> and paste them into the box on the <strong>right</strong>.</HelpText>
+          <HelpGifContainer>
+            <img
+              src={selectDatesGif}
+              onClick={toggleDatesGif}
+              alt={'Click and drag to select multiple cells in a spreadsheet'}
+            />
+          </HelpGifContainer>
+        </TextHelp>
+        <PasteArea
+          placeholder='Paste Mountain Names Here'
+          onChange={onMountainNamesPaste}
+        />
+        <PasteArea
+          placeholder='Paste Dates Here'
+          onChange={onMountainDatesPaste}
+        />
       </PasteContainer>
+      {successMessage}
       {errorMessage}
       {table}
       <ButtonWrapper>
         <CancelButton onClick={onCancel}>
-          Close
+          Cancel
         </CancelButton>
-        <ButtonPrimary onClick={onConfirm}>
-          Submit
-        </ButtonPrimary>
+        {submitBtn}
       </ButtonWrapper>
     </Modal>
   );
