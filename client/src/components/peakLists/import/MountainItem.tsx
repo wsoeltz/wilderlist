@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { MountainDatum, DateDatum } from './index';
 import styled from 'styled-components';
 import { TableCellBase } from '../detail/MountainRow';
@@ -87,7 +87,7 @@ interface Props {
   userInput: string;
   mountains: MountainDatum[],
   fixMountain: (newMountain: MountainDatum) => void;
-  fixDate: (date: DateDatum | null | undefined) => void;
+  fixDate: (value: string | undefined, dayMonthYear: keyof DateDatum) => void;
   duplicate: boolean;
   date: DateDatum | null | undefined;
   dateInput: string;
@@ -118,34 +118,30 @@ const MountainItem = (props: Props) => {
   const [month, setMonth] = useState<string | undefined>(initialMonth)
   const [year, setYear] = useState<string | undefined>(initialYear)
 
-  useEffect(() => {
-    console.log(month, day, year)
-    if (day && month && year) {
-      const dayAsInt = parseInt(day, 10);
-      const monthAsInt = parseInt(month, 10);
-      const yearAsInt = parseInt(year, 10);
-      if (isNaN(dayAsInt) && isNaN(monthAsInt) && isNaN(yearAsInt)) {
-        fixDate({
-          day: dayAsInt,
-          month: monthAsInt,
-          year: yearAsInt,
-        });
-      } else {
-        fixDate(undefined);
-      }
-    } else {
-      fixDate(undefined);
-    }
-  }, [day, month, year]);
+  const onMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newMonth = e.target.value;
+    setMonth(newMonth);
+    fixDate(newMonth, 'month');
+  }
+  const onDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDay = e.target.value;
+    setDay(newDay);
+    fixDate(newDay, 'day');
+  }
+  const onYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newYear = e.target.value;
+    setYear(newYear);
+    fixDate(newYear, 'year');
+  }
 
   const dateValue: React.ReactElement<any> = (
     <DateInputContainer>
       <DayLabel>Day</DayLabel>
       <MonthLabel>Month</MonthLabel>
       <YearLabel>Year</YearLabel>
-      <MonthInput placeholder='M' value={month} onChange={e => setMonth(e.target.value)}/>
-      <DayInput placeholder='D' value={day} onChange={e => setDay(e.target.value)}/>
-      <YearInput placeholder='YYYY' value={year} onChange={e => setYear(e.target.value)}/>
+      <MonthInput type='number' placeholder='M' value={month} onChange={onMonthChange}/>
+      <DayInput type='number' placeholder='D' value={day} onChange={onDayChange}/>
+      <YearInput type='number' placeholder='YYYY' value={year} onChange={onYearChange}/>
     </DateInputContainer>
   );
   let dateInputText: React.ReactElement<any> | null;

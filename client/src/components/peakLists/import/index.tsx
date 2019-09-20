@@ -392,9 +392,15 @@ const ImportAscentsModal = (props: Props) => {
       newPeaks[i] = { id: newMountain.id, name: newMountain.name };
       setCleanedMountains([...newPeaks]);
     }
-    const fixDate = (date: DateDatum | null | undefined) => {
+    const fixDate = (value: string | undefined, dayMonthYear: keyof DateDatum) => {
       const newDates = cleanedDates;
-      newDates[i] = date;
+      const originalDates = newDates[i];
+      if (originalDates !== null && originalDates !== undefined && value !== undefined) {
+        const numberValue = parseInt(value, 10);
+        if (!isNaN(numberValue)) {
+          newDates[i] = {...originalDates, [dayMonthYear]: numberValue}
+        }
+      }
       setCleanedDates([...newDates]);
     }
     const duplicate = (cleanedMountains.filter(({id}) => id === mtn.id).length > 1);
