@@ -19,6 +19,7 @@ import {
   Seasons,
 } from '../../../Utils';
 import ImportAscentsModal from '../import';
+import ImportGridModal from '../import/ImportGrid';
 import MountainCompletionModal from './MountainCompletionModal';
 import MountainRow from './MountainRow';
 import {
@@ -127,7 +128,7 @@ const MountainTable = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
-  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(true);
 
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
@@ -162,13 +163,29 @@ const MountainTable = (props: Props) => {
     />
   );
 
-  const importAscentsModal = isImportModalOpen === false ? null : (
-    <ImportAscentsModal
-      userId={user.id}
-      mountains={mountains}
-      onCancel={() => setIsImportModalOpen(false)}
-    />
- ) ;
+  let importAscentsModal: React.ReactElement<any> | null;
+  if (isImportModalOpen === true) {
+    if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+      importAscentsModal = (
+        <ImportAscentsModal
+          userId={user.id}
+          mountains={mountains}
+          onCancel={() => setIsImportModalOpen(false)}
+        />
+     ) ;
+    } else if (type === PeakListVariants.grid) {
+      importAscentsModal = (
+          <ImportGridModal
+            userId={user.id}
+            onCancel={() => setIsImportModalOpen(false)}
+          />
+      );
+    } else {
+      importAscentsModal = null;
+    }
+  } else {
+    importAscentsModal = null;
+  }
 
   const userMountains = (user && user.mountains) ? user.mountains : [];
   const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
@@ -269,7 +286,8 @@ const MountainTable = (props: Props) => {
         }} />)
     : null;
 
-  const importButton = type === PeakListVariants.standard || type === PeakListVariants.winter
+  const importButton =
+    (type === PeakListVariants.standard || type === PeakListVariants.winter || type === PeakListVariants.grid)
     ? (
       <ImportAscentsButtonContainer>
         <ButtonPrimary

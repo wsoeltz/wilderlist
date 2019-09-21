@@ -121,7 +121,7 @@ mountain-completion-modal-text-note-grid =
 
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
-  <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em>.</div>
+  <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
 mountain-table-import-button = Import Ascents from Spreadsheet
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
