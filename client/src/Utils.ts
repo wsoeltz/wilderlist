@@ -214,7 +214,6 @@ export const getBrowser = () => {
   return { browser: M[0], version: parseFloat(M[1]) };
 };
 
-
 export const states = [
   'alabama',
   'alaska',

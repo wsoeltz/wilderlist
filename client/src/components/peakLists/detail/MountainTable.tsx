@@ -6,6 +6,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  ButtonPrimary,
   lightBorderColor,
   placeholderColor,
   semiBoldFontBoldWeight,
@@ -17,6 +18,7 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
+import ImportAscentsModal from '../import';
 import MountainCompletionModal from './MountainCompletionModal';
 import MountainRow from './MountainRow';
 import {
@@ -105,6 +107,12 @@ const Note = styled.div`
   }
 `;
 
+const ImportAscentsButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0;
+`;
+
 interface Props {
   mountains: MountainDatum[];
   user: UserDatum;
@@ -119,6 +127,7 @@ const MountainTable = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
 
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
@@ -152,6 +161,14 @@ const MountainTable = (props: Props) => {
       textNote={textNote}
     />
   );
+
+  const importAscentsModal = isImportModalOpen === false ? null : (
+    <ImportAscentsModal
+      userId={user.id}
+      mountains={mountains}
+      onCancel={() => setIsImportModalOpen(false)}
+    />
+ ) ;
 
   const userMountains = (user && user.mountains) ? user.mountains : [];
   const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
@@ -252,9 +269,21 @@ const MountainTable = (props: Props) => {
         }} />)
     : null;
 
+  const importButton = type === PeakListVariants.standard || type === PeakListVariants.winter
+    ? (
+      <ImportAscentsButtonContainer>
+        <ButtonPrimary
+          onClick={() => setIsImportModalOpen(true)}
+        >
+          {getFluentString('mountain-table-import-button')}
+        </ButtonPrimary>
+      </ImportAscentsButtonContainer>
+    ) : null;
+
   return (
     <>
       {gridNote}
+      {importButton}
       <Root>
         <MountainColumnTitleName>
           {getFluentString('global-text-value-mountain')}
@@ -262,6 +291,7 @@ const MountainTable = (props: Props) => {
         {titleColumns}
         {mountainRows}
         {editMountainModal}
+        {importAscentsModal}
       </Root>
     </>
   );

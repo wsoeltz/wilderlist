@@ -1,11 +1,11 @@
 import { sortBy } from 'lodash';
 import { CompletedMountain, PeakListVariants} from '../../types/graphQLTypes';
 import {
+  failIfValidOrNonExhaustive,
   getSeason,
   Months,
   Seasons,
   states,
-  failIfValidOrNonExhaustive,
 } from '../../Utils';
 
 export interface DateObject {
@@ -436,4 +436,4 @@ export const isState = (value: any) => {
   } else {
     return states.includes(value.toLowerCase());
   }
-}
+};

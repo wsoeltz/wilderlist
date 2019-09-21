@@ -25,7 +25,7 @@ const FORMAT_STATE_REGION_FOR_TEXT = ([name]: [string]): string => {
   } else {
     return 'the ' + name;
   }
-}
+};
 
 const POSSESSIVE = ([word]: [string]): string => {
   const lastCharacter = word[word.length - 1];

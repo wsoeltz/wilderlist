@@ -16,6 +16,8 @@ global-error-retrieving-data = There was an error retrieving the data. Please tr
 global-text-value-modal-email = Email
 
 global-text-value-mountain = Mountain
+global-text-value-mountains = Mountains
+global-text-value-dates = Dates
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
@@ -49,6 +51,8 @@ global-text-value-completed-on = Completed on
 global-text-value-completed-in-every-month = Completed in every month
 global-text-value-completed-in-every-season = Completed in every season
 global-text-value-mountain-not-being-pursued = This mountain is not being pursued
+
+global-text-value-submit = Submit
 
 header-text-login-with-google = Login With Google
 header-text-menu-item-dashboard = Dashboard
@@ -118,6 +122,7 @@ mountain-completion-modal-text-note-grid =
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em>.</div>
+mountain-table-import-button = Import Ascents from Spreadsheet
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent
@@ -153,3 +158,31 @@ user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
 map-text-attribution = Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)
+
+import-ascents-title = Import Ascents
+import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.
+import-ascents-date-note = <strong>Note:</strong>&#32;Dates must be in&#32;<strong>Month/Day/Year</strong>&#32;format in order to be properly read.
+import-ascents-step-1 = First, select all of the cells with the&#32;<strong>mountain names</strong>&#32;and paste them into the box on the&#32;<strong>left</strong>.
+import-ascents-step-2 = Then, select all of the cells with the&#32;<strong>dates (including the ones that are blank)</strong>&#32;and paste them into the box on the&#32;<strong>right</strong>.
+import-ascents-gif-help-alt-text = Click and drag to select multiple cells in a spreadsheet
+import-ascents-paste-mountains-here = Paste Mountain Names Here
+import-ascents-paste-dates-here = Paste Dates Here
+
+import-ascents-your-input = Your Input
+import-ascents-your-name-input = Your Name Input
+import-ascents-name-output = Name Output
+import-ascents-your-date-input = Your Date Input
+import-ascents-date-output = Date Output
+import-ascents-mountains-on-list = Mountains On This List
+
+import-ascents-error-message-your-list-too-long = The list of mountains you pasted was&#32;<strong>longer than the amount of mountains on this list</strong>.&#32;Please review the output of what we received below, make changes, and try pasting again.
+import-ascents-error-message-please-paste-dates = Please paste your list of&#32;<strong>dates</strong>.
+import-ascents-error-message-please-paste-mountains = Please paste your list of&#32;<strong>mountains</strong>.
+import-ascents-error-message-list-is-bigger-than-other = Your list of { $bigger-list } is larger than your { $smaller-list }. Please adjust them so they are both the same size. Please review the output of what we received below.
+
+import-ascents-success-message = Your data has been successfully read. Please review it for accuracy and make any necessary changes. Then hit the green <strong>Submit</strong> button at the end of page.
+
+import-ascents-no-date-specified = No date specified
+import-ascents-date-specified-but-could-not-get = Date specified but could not be determined:
+import-ascents-duplicate-text-warning = <strong>Duplicate:</strong> There is more than one selection with this name
+

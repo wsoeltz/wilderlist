@@ -1,38 +1,42 @@
-import React, {useState} from 'react';
+import { useMutation } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
+import {intersection, sortBy} from 'lodash';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
+import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
+import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-dates.png';
+import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';
+import SelectMountainsStaticUrl from '../../../assets/images/import-gifs/select-mountains.png';
 import {
-  ButtonSecondary,
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import {
   ButtonPrimary,
-  semiBoldFontBoldWeight,
+  ButtonSecondary,
   lightBorderColor,
   lowWarningColor,
   lowWarningColorLight,
   primaryColor,
   primaryHoverColor,
+  semiBoldFontBoldWeight,
   successColor,
   successColorLight,
 } from '../../../styling/styleUtils';
-import Modal from '../../sharedComponents/Modal';
 import { Mountain } from '../../../types/graphQLTypes';
-import {intersection, sortBy} from 'lodash';
-import MountainItem, { gridCols } from './MountainItem';
-import {
-  Root as Table,
-} from '../detail/MountainTable';
-import {
-  horizontalPadding,
-} from '../detail/MountainRow';
-import { useMutation } from '@apollo/react-hooks';
+import { convertFieldsToDate } from '../../../Utils';
+import Modal from '../../sharedComponents/Modal';
 import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
 } from '../detail/MountainCompletionModal';
-import { convertFieldsToDate } from '../../../Utils';
-import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';
-import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
-import SelectMountainsStaticUrl from '../../../assets/images/import-gifs/select-mountains.png';
-import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-dates.png';
+import {
+  horizontalPadding,
+} from '../detail/MountainRow';
+import {
+  Root as Table,
+} from '../detail/MountainTable';
+import MountainItem, { gridCols } from './MountainItem';
 
 const TitleBase = styled.div`
   text-transform: uppercase;
@@ -176,14 +180,13 @@ type DateArray = Array<DateDatum | undefined | null>;
 
 interface Props {
   mountains: MountainDatum[];
-  onConfirm: () => void;
   onCancel: () => void;
   userId: string;
 }
 
 const maxValIndicies = (array: number[]) => {
   const sortedArray = sortBy(array).reverse();
-  let indexOfValuesInOrder: number[] = [];
+  const indexOfValuesInOrder: number[] = [];
   for (let i = 0; i < 3; i++) {
     const val = sortedArray[i];
     const index = array.indexOf(val);
@@ -196,11 +199,13 @@ const maxValIndicies = (array: number[]) => {
     }
   }
   return indexOfValuesInOrder;
-}
+};
 
 const ImportAscentsModal = (props: Props) => {
   const { onCancel, mountains, userId } = props;
-  // const mountains = mountainTestArr;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [pastedMountains, setPastedMountains] = useState<string[]>([]);
   const [cleanedMountains, setCleanedMountains] = useState<MountainDatum[] | null>([]);
@@ -215,12 +220,12 @@ const ImportAscentsModal = (props: Props) => {
     const src = selectMountainsGif === SelectMountainsGifUrl
       ? SelectMountainsStaticUrl : SelectMountainsGifUrl;
     setSelectMountainsGif(src);
-  }
+  };
   const toggleDatesGif = () => {
     const src = selectDatesGif === SelectDatesGifUrl
       ? SelectDatesStaticUrl : SelectDatesGifUrl;
     setSelectDatesGif(src);
-  }
+  };
 
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
@@ -231,7 +236,6 @@ const ImportAscentsModal = (props: Props) => {
       console.error(completedDate.error);
     } else {
       addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
-      console.log('success');
     }
   };
 
@@ -246,14 +250,17 @@ const ImportAscentsModal = (props: Props) => {
         if (dates !== null && dates !== undefined && mountainId) {
           const {day, month, year} = dates;
           validateAndAddMountainCompletion(mountainId, day.toString(), month.toString(), year.toString());
+        } else {
+          console.warn('dates are undefined, skipping');
         }
-        console.warn('dates are undefined, skipping');
       });
     } else {
+      // The following should not run
+      // button should not exist if data is incorrect
       console.error('Data doesnt exist or is the wrong length');
     }
     onCancel();
-  }
+  };
 
   const onMountainNamesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
@@ -290,8 +297,8 @@ const ImportAscentsModal = (props: Props) => {
             }
           });
           const letterMatch = intersection(lowerCaseName.split(''), letters).length;
-          const percentMatchOriginal = letterMatch/mtn.length;
-          const percentMatchTarget = letterMatch/name.length;
+          const percentMatchOriginal = letterMatch / mtn.length;
+          const percentMatchTarget = letterMatch / name.length;
           const totalMatch = exactMatch + nameMatch + pastedMatch + percentMatchOriginal + percentMatchTarget;
           return totalMatch;
         });
@@ -300,7 +307,7 @@ const ImportAscentsModal = (props: Props) => {
       const topChoices = matchPercentages.map((matches) => {
         return maxValIndicies(matches);
       });
-      let usedPeak: string[] = [];
+      const usedPeak: string[] = [];
       const cleanPeaknames = topChoices.map(([a1, b1], i) => {
         const firstChoice = mountains[a1];
         const secondChoice = mountains[b1];
@@ -329,11 +336,11 @@ const ImportAscentsModal = (props: Props) => {
           usedPeak.push(firstChoice.name);
           return firstChoice;
         }
-      })
+      });
       setCleanedMountains([...cleanPeaknames]);
     }
     setPastedMountains([...valueArray]);
-  }
+  };
 
   const onMountainDatesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
@@ -341,11 +348,11 @@ const ImportAscentsModal = (props: Props) => {
     if (valueArray.length > mountains.length || !pastedValue) {
       setCleanedDates(null);
     } else {
-      const cleanedDates: DateArray = [];
+      const cleanedDatesArray: DateArray = [];
       valueArray.forEach(dateAsString => {
         const dateParts = dateAsString.split('/');
         if (dateAsString === '' || dateParts.length === 0) {
-          cleanedDates.push(undefined);
+          cleanedDatesArray.push(undefined);
         } else if (dateParts.length === 3) {
           const month = parseInt(dateParts[0], 10);
           const day = parseInt(dateParts[1], 10);
@@ -358,9 +365,9 @@ const ImportAscentsModal = (props: Props) => {
             }
           }
           if (isNaN(month) || isNaN(day) || isNaN(year)) {
-            cleanedDates.push(null);
+            cleanedDatesArray.push(null);
           } else {
-            cleanedDates.push({day, month, year});
+            cleanedDatesArray.push({day, month, year});
           }
         } else if (dateParts.length === 2) {
           // is it DD/(DD)/YYYY
@@ -377,30 +384,30 @@ const ImportAscentsModal = (props: Props) => {
               }
             }
             if (isNaN(day) || isNaN(month) || isNaN(year)) {
-              cleanedDates.push(null);
+              cleanedDatesArray.push(null);
             } else {
-              cleanedDates.push({day, month, year});
+              cleanedDatesArray.push({day, month, year});
             }
           } else if (dateParts[1].length === 2) {
             const month = parseInt(dateParts[0], 10);
             const day = parseInt(dateParts[1], 10);
             const year = day + 2000;
             if (isNaN(day) || isNaN(month) || isNaN(year)) {
-              cleanedDates.push(null);
+              cleanedDatesArray.push(null);
             } else {
-              cleanedDates.push({day, month, year});
+              cleanedDatesArray.push({day, month, year});
             }
           } else {
-            cleanedDates.push(null);
+            cleanedDatesArray.push(null);
           }
         } else {
-          cleanedDates.push(null);
+          cleanedDatesArray.push(null);
         }
       });
-      setCleanedDates([...cleanedDates]);
+      setCleanedDates([...cleanedDatesArray]);
     }
     setPastedDates([...valueArray]);
-  }
+  };
 
   const mountainList =
     (cleanedMountains === null || cleanedDates === null ||
@@ -411,20 +418,20 @@ const ImportAscentsModal = (props: Props) => {
       const newPeaks = cleanedMountains;
       newPeaks[i] = { id: newMountain.id, name: newMountain.name };
       setCleanedMountains([...newPeaks]);
-    }
+    };
     const fixDate = (value: string | undefined, dayMonthYear: keyof DateDatum) => {
       const newDates = cleanedDates;
       const originalDates = newDates[i];
       if (originalDates !== null && originalDates !== undefined && value !== undefined) {
         const numberValue = parseInt(value, 10);
         if (!isNaN(numberValue)) {
-          newDates[i] = {...originalDates, [dayMonthYear]: numberValue}
+          newDates[i] = {...originalDates, [dayMonthYear]: numberValue};
         } else {
-          newDates[i] = {...originalDates, [dayMonthYear]: -1}
+          newDates[i] = {...originalDates, [dayMonthYear]: -1};
         }
       }
       setCleanedDates([...newDates]);
-    }
+    };
     const duplicate = (cleanedMountains.filter(({id}) => id === mtn.id).length > 1);
     return (
       <MountainItem
@@ -437,6 +444,7 @@ const ImportAscentsModal = (props: Props) => {
         date={cleanedDates[i]}
         dateInput={pastedDates[i]}
         index={i}
+        getFluentString={getFluentString}
         key={mtn.id + i}
       />
     );
@@ -448,16 +456,16 @@ const ImportAscentsModal = (props: Props) => {
       const mountainNames = mountains.map((mtn, i) => <li key={mtn.id + i}>{mtn.name}</li>);
       errorMessage = (
         <WarningBox>
-          <p>The list of mountains you pasted was <strong>longer than the amount of mountains on this list</strong>. Please review the output of what we recieved below, make changes, and try pasting again</p>
+          <p dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-error-message-your-list-too-long')}}/>
           <OutputContainer>
             <div>
-              <h4>Your Input</h4>
+              <h4>{getFluentString('import-ascents-your-input')}</h4>
               <ol>
                 {pastedOutMountains}
               </ol>
             </div>
             <div>
-              <h4>Mountains On This List</h4>
+              <h4>{getFluentString('import-ascents-mountains-on-list')}</h4>
               <ol>
                 {mountainNames}
               </ol>
@@ -468,16 +476,24 @@ const ImportAscentsModal = (props: Props) => {
   } else if (cleanedDates === null && cleanedMountains === null) {
     // neither list has received any input, no error
     errorMessage = null;
-  } else if ((cleanedDates === null || cleanedDates.length === 0)  && 
+  } else if ((cleanedDates === null || cleanedDates.length === 0)  &&
     (cleanedMountains !== null && cleanedMountains.length !== 0)) {
     // mountains has input but dates does not
     // ask to paste in the dates
-    errorMessage = <WarningBox>Please paste your list of <strong>dates</strong></WarningBox>;
-  } else if ((cleanedMountains === null || cleanedMountains.length === 0)  && 
+    errorMessage = (
+      <WarningBox
+        dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-error-message-please-paste-dates')}}
+      />
+    );
+  } else if ((cleanedMountains === null || cleanedMountains.length === 0)  &&
     (cleanedDates !== null && cleanedDates.length !== 0)) {
     // date has input but mountains does not
     // ask to paste in the dates
-    errorMessage = <WarningBox>Please paste your list of <strong>mountains</strong></WarningBox>;
+    errorMessage = (
+      <WarningBox
+        dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-error-message-please-paste-mountains')}}
+      />
+    );
   } else if (cleanedDates !== null && cleanedMountains !== null
     && cleanedMountains.length !== 0 && cleanedDates.length !== 0
     && cleanedMountains.length !== cleanedDates.length) {
@@ -488,16 +504,19 @@ const ImportAscentsModal = (props: Props) => {
     const pastedOutDates = pastedDates.map((date, i) => <li key={date + i}>{date}</li>);
     errorMessage = (
       <WarningBox>
-        <p>Your list of {biggerList} is larger than your {smallerList}. Please adjust them so they are both the same size. Please review the output of what we recieved below.</p>
+        <p>{getFluentString('import-ascents-error-message-list-is-bigger-than-other', {
+          'bigger-list': biggerList,
+          'smaller-list': smallerList,
+        })}</p>
         <OutputContainer>
           <div>
-            <h4>Mountains</h4>
+            <h4>{getFluentString('global-text-value-mountains')}</h4>
             <ol>
               {pastedOutMountains}
             </ol>
           </div>
           <div>
-            <h4>Dates</h4>
+            <h4>{getFluentString('global-text-value-dates')}</h4>
             <ol>
               {pastedOutDates}
             </ol>
@@ -517,27 +536,21 @@ const ImportAscentsModal = (props: Props) => {
   const table = allDataAvailable
     ? (
       <Table>
-        <UserInput>Your Name Input</UserInput>
-        <ExpectedName>Name Output</ExpectedName>
-        <UserDate>Your Date Input</UserDate>
-        <ExpectedDate>Date Output</ExpectedDate>
+        <UserInput>{getFluentString('import-ascents-your-name-input')}</UserInput>
+        <ExpectedName>{getFluentString('import-ascents-name-output')}</ExpectedName>
+        <UserDate>{getFluentString('import-ascents-your-date-input')}</UserDate>
+        <ExpectedDate>{getFluentString('import-ascents-date-output')}</ExpectedDate>
         {mountainList}
       </Table>
     ) : null;
 
-    const successMessage = allDataAvailable
-      ? (
-        <SuccessBox>
-          Your data has been succesfully read. Please review it for accuracy and make any necessary changes. Then hit the green <strong>Submit</strong> button at the end of page.
-        </SuccessBox>
-      ) : null;
+  const successMessage = allDataAvailable
+      ? <SuccessBox dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-success-message')}} />
+      : null;
 
-    const submitBtn = allDataAvailable
-      ? (
-        <SubmitButton onClick={onConfirm}>
-          Submit
-        </SubmitButton>
-      ) : null;
+  const submitBtn = allDataAvailable
+      ? <SubmitButton onClick={onConfirm}>{getFluentString('global-text-value-submit')}</SubmitButton>
+      : null;
 
   return (
     <Modal
@@ -545,40 +558,46 @@ const ImportAscentsModal = (props: Props) => {
       width={'80%'}
       height={'auto'}
     >
-      <h2>Import Ascents</h2>
-      <p>This tool will import your existing ascent data from a spreadsheet and into Wilderlist</p>
+      <h2>{getFluentString('import-ascents-title')}</h2>
+      <p>{getFluentString('import-ascents-para-1')}</p>
       <p>
-        <em><strong>Note:</strong> Dates must be in <strong>Month/Day/Year</strong> format in order to be properly read.</em>
+        <em
+          dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-date-note')}}
+        />
       </p>
       <PasteContainer>
         <TextHelp>
           <BigNumber>1</BigNumber>
-          <HelpText>First, select all of the cells with the <strong>mountain names</strong> and paste them into the box on the <strong>left</strong>.</HelpText>
+          <HelpText
+            dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-step-1')}}
+          />
           <HelpGifContainer>
             <img
               src={selectMountainsGif}
               onClick={toggleMountainGif}
-              alt={'Click and drag to select multiple cells in a spreadsheet'}
+              alt={getFluentString('import-ascents-gif-help-alt-text')}
             />
           </HelpGifContainer>
         </TextHelp>
         <TextHelp>
           <BigNumber>2</BigNumber>
-          <HelpText>Then, select all of the cells with the <strong>dates (including the ones that are blank)</strong> and paste them into the box on the <strong>right</strong>.</HelpText>
+          <HelpText
+            dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-step-2')}}
+          />
           <HelpGifContainer>
             <img
               src={selectDatesGif}
               onClick={toggleDatesGif}
-              alt={'Click and drag to select multiple cells in a spreadsheet'}
+              alt={getFluentString('import-ascents-gif-help-alt-text')}
             />
           </HelpGifContainer>
         </TextHelp>
         <PasteArea
-          placeholder='Paste Mountain Names Here'
+          placeholder={getFluentString('import-ascents-paste-mountains-here')}
           onChange={onMountainNamesPaste}
         />
         <PasteArea
-          placeholder='Paste Dates Here'
+          placeholder={getFluentString('import-ascents-paste-dates-here')}
           onChange={onMountainDatesPaste}
         />
       </PasteContainer>
@@ -587,7 +606,7 @@ const ImportAscentsModal = (props: Props) => {
       {table}
       <ButtonWrapper>
         <CancelButton onClick={onCancel}>
-          Cancel
+          {getFluentString('global-text-value-modal-cancel')}
         </CancelButton>
         {submitBtn}
       </ButtonWrapper>

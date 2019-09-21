@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import {
   AppLocalizationAndBundleContext,
@@ -8,11 +9,10 @@ import {
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import Map from '../../sharedComponents/map';
-import Header from './Header';
-import MountainTable from './MountainTable';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
-import sortBy from 'lodash/sortBy';
+import Header from './Header';
+import MountainTable from './MountainTable';
 
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID!) {
@@ -188,9 +188,9 @@ const PeakListDetail = (props: Props) => {
         'most-prominent-peak-name': mountainsSortedByProminence[0].name,
         'most-prominent-value': mountainsSortedByProminence[0].prominence,
         'most-prominent-elevation': mountainsSortedByProminence[0].elevation,
-        'smallest-mountain-name': 
+        'smallest-mountain-name':
           mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-        'smallest-mountain-elevation': 
+        'smallest-mountain-elevation':
           mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
       });
       return (

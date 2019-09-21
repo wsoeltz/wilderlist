@@ -30,8 +30,6 @@ import {
   PeakListDatum,
   UserDatum,
 } from './PeakListDetail';
-import ImportAscentsModal from '../import';
-import noop from 'lodash/noop';
 
 const Root = styled.div`
   display: grid;
@@ -111,7 +109,6 @@ const Header = (props: Props) => {
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
 
   const closeAreYouSureModal = () => {
     setIsRemoveListModalOpen(false);
@@ -145,14 +142,6 @@ const Header = (props: Props) => {
     <GhostButton onClick={() => setIsRemoveListModalOpen(true)}>
       {getFluentString('peak-list-detail-text-remove-list')}
     </GhostButton>
-   ) ;
-  const importAscentsModel = isImportModalOpen === false ? null : (
-      <ImportAscentsModal
-        userId={user.id}
-        mountains={mountains}
-        onConfirm={noop}
-        onCancel={() => setIsImportModalOpen(false)}
-      />
    ) ;
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
@@ -247,12 +236,6 @@ const Header = (props: Props) => {
       </BeginRemoveListButtonContainer>
       {listInfoContent}
       {areYouSureModal}
-      {importAscentsModel}
-      <ButtonPrimary
-        onClick={() => setIsImportModalOpen(true)}
-      >
-        Import Ascents from Spreadsheet
-      </ButtonPrimary>
     </Root>
   );
 };

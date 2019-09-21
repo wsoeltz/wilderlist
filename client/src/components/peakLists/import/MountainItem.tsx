@@ -1,15 +1,16 @@
+import { GetString } from 'fluent-react';
 import React, {useState} from 'react';
-import { MountainDatum, DateDatum } from './index';
 import styled from 'styled-components';
+import { baseColor, InputBase, lightBorderColor, warningColor } from '../../../styling/styleUtils';
 import { TableCellBase } from '../detail/MountainRow';
-import { lightBorderColor, InputBase, warningColor, baseColor } from '../../../styling/styleUtils';
+import { DateDatum, MountainDatum } from './index';
 
 export const gridCols = {
   userInput: 1,
   expectedName: 2,
   userDate: 3,
   expectedDate: 4,
-}
+};
 
 const TableCell = styled(TableCellBase)`
   justify-content: center;
@@ -83,24 +84,25 @@ const WarningText = styled.span`
 `;
 
 interface Props {
-  officialMountain: MountainDatum,
+  officialMountain: MountainDatum;
   userInput: string;
-  mountains: MountainDatum[],
+  mountains: MountainDatum[];
   fixMountain: (newMountain: MountainDatum) => void;
   fixDate: (value: string | undefined, dayMonthYear: keyof DateDatum) => void;
   duplicate: boolean;
   date: DateDatum | null | undefined;
   dateInput: string;
   index: number;
+  getFluentString: GetString;
 }
 
 const MountainItem = (props: Props) => {
   const {
     officialMountain, userInput, mountains, fixMountain,
-    duplicate, date, dateInput, index, fixDate,
+    duplicate, date, dateInput, index, fixDate, getFluentString,
   } = props;
   const options = mountains.map(mtn => {
-    return <option value={mtn.id} key={mtn.id}>{mtn.name}</option>
+    return <option value={mtn.id} key={mtn.id}>{mtn.name}</option>;
   });
   const onMountainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target) {
@@ -109,30 +111,30 @@ const MountainItem = (props: Props) => {
         fixMountain(newMountain);
       }
     }
-  }
+  };
 
   const initialDay = date ? date.day.toString() : undefined;
   const initialMonth = date ? date.month.toString() : undefined;
   const initialYear = date ? date.year.toString() : undefined;
-  const [day, setDay] = useState<string | undefined>(initialDay)
-  const [month, setMonth] = useState<string | undefined>(initialMonth)
-  const [year, setYear] = useState<string | undefined>(initialYear)
+  const [day, setDay] = useState<string | undefined>(initialDay);
+  const [month, setMonth] = useState<string | undefined>(initialMonth);
+  const [year, setYear] = useState<string | undefined>(initialYear);
 
   const onMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newMonth = e.target.value;
     setMonth(newMonth);
     fixDate(newMonth, 'month');
-  }
+  };
   const onDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDay = e.target.value;
     setDay(newDay);
     fixDate(newDay, 'day');
-  }
+  };
   const onYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newYear = e.target.value;
     setYear(newYear);
     fixDate(newYear, 'year');
-  }
+  };
 
   const dateValue: React.ReactElement<any> = (
     <DateInputContainer>
@@ -146,11 +148,11 @@ const MountainItem = (props: Props) => {
   );
   let dateInputText: React.ReactElement<any> | null;
   if (date === undefined) {
-    dateInputText = <LightText>No date specified</LightText>;
+    dateInputText = <LightText>{getFluentString('import-ascents-no-date-specified')}</LightText>;
   } else if (date === null) {
     dateInputText = (
       <WarningText>
-        Date specified but could not be determined:
+        {getFluentString('import-ascents-date-specified-but-could-not-get')}
         <br />
         <strong>{dateInput}</strong>
       </WarningText>);
@@ -161,7 +163,9 @@ const MountainItem = (props: Props) => {
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const color = duplicate === true ? warningColor : baseColor;
   const duplicateWarning = duplicate === true ? (
-    <WarningText><strong>Duplicate:</strong> There is more than one selection with this name</WarningText>
+    <WarningText
+      dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-duplicate-text-warning')}}
+    />
     ) : null;
   return (
     <>
