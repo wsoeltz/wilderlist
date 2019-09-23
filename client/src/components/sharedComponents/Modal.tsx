@@ -63,7 +63,7 @@ const Modal = (props: Props) => {
     modal = createPortal((
       <Root>
         <Overlay onClick={onClose} />
-        <Container style={{ width, height }}>
+        <Container style={{ maxWidth: width, height }}>
           {children}
         </Container>
       </Root>

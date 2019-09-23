@@ -186,3 +186,17 @@ import-ascents-no-date-specified = No date specified
 import-ascents-date-specified-but-could-not-get = Date specified but could not be determined:
 import-ascents-duplicate-text-warning = <strong>Duplicate:</strong> There is more than one selection with this name
 
+import-grid-introduction = If you have been tracking your <strong>New Hampshire 48 4000-footers Grid</strong> via the official Grid spreadsheet, <a href="http://www.48x12.com/application.shtml" target="_blank">found here</a>, you may import that data directly into Wilderlist with following steps.
+
+import-grid-steps-1 = <strong>Upload your spreadsheet to Google Drive</strong> - If you are already using your spreadsheet via Google Drive (as opposed to Microsoft Excel) than you can skip to step 2. Otherwise navigate to <a href="https://drive.google.com/" target="_blank">Google Drive</a> and then click the <strong>"New"</strong> button in the top left corner. From there select <strong>File upload</strong> and select your grid file.
+import-grid-steps-2-a = <strong>Publish your spreadsheet</strong> - Open your Grid spreadsheet in Google Docs. Then click <strong>File > Publish to the web</strong>.
+import-grid-steps-2-b = A window with two dropdown boxes will appear. Select the one that says <strong>"Entire Document"</strong> and click on the grid that you want import (i.e. <em>Grid 1</em>). Then select the other box that says <strong>"Web Page"</strong> and click the option that says <strong>Comma-separated values (.csv)</strong>. Your settings should look like the diagram below -
+import-grid-steps-3 = <strong>Copy the link to Wilderlist</strong> - Once your settings look good, press the <strong>Publish</strong> button. The window will then update with a link. Copy it and paste it into the box on this page.
+
+import-grid-error-entire-file = It appears as though you published the entire Grid file instead of a single page. Please review the steps to import and try again.
+import-grid-error-not-csv = The Google Sheets file you pasted does not appear to be in CSV format. Please review the steps to import and try again.
+import-grid-error-not-google-url = The url you pasted does not appear to be a valid Google Spreadsheets url. Please review the steps to import and try again.
+import-grid-error-network-error = Unable to access your Google Sheets file. Please review the steps to import and try again.
+import-grid-error-incorrect-format = The spreadsheet you are trying to import does not appear to have the same formatting as the <a href="http://www.48x12.com/application.shtml" target="_blank">official Grid spreadsheet</a>. Please review the steps to import and try again.
+
+import-grid-success = Your Grid ascents have been successfully retrieved. Please <strong>review</strong> them below for accuracy and then press the green <strong>Confirm</strong> button to import them into Wilderlist.

@@ -102,14 +102,14 @@ const PasteArea = styled.textarea`
   }
 `;
 
-const TextHelp = styled.div`
+const HelpTextContainer = styled.div`
   grid-row: 1;
   margin-bottom: 1rem;
   display: grid;
   grid-template-columns: auto 1fr;
 `;
 
-const BigNumber = styled.div`
+export const BigNumber = styled.div`
   grid-column: 1;
   font-size: 1.5rem;
   width: 2rem;
@@ -123,7 +123,7 @@ const BigNumber = styled.div`
   border: solid 4px ${primaryColor};
 `;
 
-const HelpText = styled.div`
+export const HelpText = styled.div`
   padding: 0 0.7rem;
   line-height: 1.4;
 `;
@@ -146,12 +146,12 @@ const SignalBox = styled.div`
   line-height: 1.4;
 `;
 
-const WarningBox = styled(SignalBox)`
+export const WarningBox = styled(SignalBox)`
   background-color: ${lowWarningColorLight};
   border: 1px solid ${lowWarningColor};
 `;
 
-const SuccessBox = styled(SignalBox)`
+export const SuccessBox = styled(SignalBox)`
   background-color: ${successColorLight};
   border: 1px solid ${successColor};
 `;
@@ -566,7 +566,7 @@ const ImportAscentsModal = (props: Props) => {
         />
       </p>
       <PasteContainer>
-        <TextHelp>
+        <HelpTextContainer>
           <BigNumber>1</BigNumber>
           <HelpText
             dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-step-1')}}
@@ -578,8 +578,8 @@ const ImportAscentsModal = (props: Props) => {
               alt={getFluentString('import-ascents-gif-help-alt-text')}
             />
           </HelpGifContainer>
-        </TextHelp>
-        <TextHelp>
+        </HelpTextContainer>
+        <HelpTextContainer>
           <BigNumber>2</BigNumber>
           <HelpText
             dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-step-2')}}
@@ -591,7 +591,7 @@ const ImportAscentsModal = (props: Props) => {
               alt={getFluentString('import-ascents-gif-help-alt-text')}
             />
           </HelpGifContainer>
-        </TextHelp>
+        </HelpTextContainer>
         <PasteArea
           placeholder={getFluentString('import-ascents-paste-mountains-here')}
           onChange={onMountainNamesPaste}
