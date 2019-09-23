@@ -66,12 +66,13 @@ const AddPeakList = (props: Props) => {
   const [name, setName] = useState<string>('');
   const [shortName, setShortName] = useState<string>('');
   const [selectedMountains, setSelectedMountains] = useState<Array<Region['id']>>([]);
-  const [type, setType] = useState<PeakListVariants | null>(null);
+  const [type, setType] = useState<PeakListVariants>(PeakListVariants.standard);
   const [parent, setParent] = useState<string | null>(null);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (type !== null) {
+      console.log('addPeakList not null')
       addPeakList({
         name, shortName, mountains: selectedMountains,
         type, parent,
