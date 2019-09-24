@@ -35,6 +35,7 @@ import PeakListPage from './peakLists/list';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
+import LoginPage from './login';
 
 const overlayPortalZIndex = 3000;
 
@@ -128,7 +129,7 @@ const App: React.FC = () => {
         render={(props) => <Dashboard {...props} userId={user._id} />}
       />
     </Switch>
-  ) : null;
+  ) : <LoginPage />;
 
   return (
     <UserContext.Provider value={user}>
