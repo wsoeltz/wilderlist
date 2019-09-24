@@ -358,7 +358,7 @@ const ImportAscentsModal = (props: Props) => {
           const day = parseInt(dateParts[1], 10);
           let year = parseInt(dateParts[2], 10);
           if (year < 1000) {
-            if (year < new Date().getFullYear() - 2000) {
+            if (year <= new Date().getFullYear() - 2000) {
               year = year + 2000;
             } else {
               year = year + 1900;

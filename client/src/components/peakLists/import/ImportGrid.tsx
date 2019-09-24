@@ -1,7 +1,15 @@
-// import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
+import axios from 'axios';
+import csv from 'csvtojson';
 import { GetString } from 'fluent-react';
+import raw from 'raw.macro';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
+import FileUploadImgUrl from '../../../assets/images/import-gifs/import-grid/file-upload.png';
+import NewButtonImgUrl from '../../../assets/images/import-gifs/import-grid/new-button.png';
+import PublishToWebLinkImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web-link.png';
+import PublishToWebModalImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web-modal.png';
+import PublishToWebImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web.png';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -13,20 +21,19 @@ import {
 } from '../../../styling/styleUtils';
 import { convertFieldsToDate } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
-// import {
-//   ADD_MOUNTAIN_COMPLETION,
-//   MountainCompletionSuccessResponse,
-//   MountainCompletionVariables,
-// } from '../detail/MountainCompletionModal';
-import axios from 'axios';
-import csv from 'csvtojson';
 import {
-  WarningBox,
-  SuccessBox,
+  ADD_MOUNTAIN_COMPLETION,
+  MountainCompletionSuccessResponse,
+  MountainCompletionVariables,
+} from '../detail/MountainCompletionModal';
+import {
   BigNumber,
   HelpText as HelpTextBase,
+  SuccessBox,
+  WarningBox,
 } from './index';
-import raw from 'raw.macro';
+
+export const NH48_GRID_OBJECT_ID = '5d8952e6d9d8254dd40b7627';
 
 interface Mountain {
   name: string;
@@ -59,7 +66,7 @@ const SubmitButton = styled(ButtonPrimary)`
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-column: auto repeat(12, 1fr); 
+  grid-template-column: auto repeat(12, 1fr);
 `;
 
 const GridCell = styled.div`
@@ -75,26 +82,58 @@ const GridTitle = styled(GridCell)`
   border-bottom: 1px solid ${lightBorderColor};
 `;
 
+const PasteBox = styled.input`
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 4px;
+  box-sizing: border-box;
+  border: 1px solid ${lightBorderColor};
+  margin-left: 1rem;
+  grid-row: 1;
+  grid-column: 2;
+`;
+
+const FileUploadImageContainer = styled.div`
+  grid-row: 2;
+  grid-column: 1 / 3;
+  display: grid;
+  padding-top: 2rem;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 1rem;
+`;
+
+const PublishHelpContainer = styled.div`
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+`;
+
+const Image = styled.img`
+  margin: 1.5rem auto;
+  width: 100%;
+`;
+
 interface DateToImport {
   id: string;
   date: string;
 }
 
 interface GridData {
-  name: string,
-  jan: string,
-  feb: string,
-  mar: string,
-  apr: string,
-  may: string,
-  jun: string,
-  jul: string,
-  aug: string,
-  sep: string,
-  oct: string,
-  nov: string,
-  dec: string,
-  total: string,
+  name: string;
+  jan: string;
+  feb: string;
+  mar: string;
+  apr: string;
+  may: string;
+  jun: string;
+  jul: string;
+  aug: string;
+  sep: string;
+  oct: string;
+  nov: string;
+  dec: string;
+  total: string;
 }
 
 interface Props {
@@ -112,8 +151,8 @@ const ImportAscentsModal = (props: Props) => {
   const [gridData, setGridData] = useState<GridData[]>([]);
   const [importError, setImportError] = useState<string | null>(null);
 
-  // const [addMountainCompletion] =
-  //   useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+  const [addMountainCompletion] =
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
 
   const onGridCsvPaste = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fetchGridData = async () => {
@@ -126,7 +165,7 @@ const ImportAscentsModal = (props: Props) => {
               if (url.includes('single=true')) {
                 const res = await axios.get(url);
                 const newGridData: GridData[] = [];
-                await csv({
+                csv({
                     noheader: false,
                     headers: [
                       'name',
@@ -146,7 +185,7 @@ const ImportAscentsModal = (props: Props) => {
                     ],
                   })
                   .fromString(res.data)
-                  .subscribe((jsonObj)=>{
+                  .subscribe((jsonObj) => {
                     newGridData.push(jsonObj);
                   });
                 const objShouldBeWashington = newGridData[0];
@@ -174,7 +213,7 @@ const ImportAscentsModal = (props: Props) => {
       }
     };
     await fetchGridData();
-  }
+  };
 
   const errorMessage = (importError !== null && urlInput !== '') ? (
       <WarningBox
@@ -182,26 +221,24 @@ const ImportAscentsModal = (props: Props) => {
       />
     ) : null;
 
-
   const datesToImport: DateToImport[] = [];
 
   const onConfirm = () => {
     datesToImport.forEach(({id, date}) => {
-      console.log({userId, mountainId: id, date})
-      // addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
-    })
-    // onCancel();
+      addMountainCompletion({ variables: {userId, mountainId: id, date}});
+    });
+    onCancel();
   };
 
   const valideDate = (month: number, date: string, id: string) => {
-    const dateArray = date.replace(/[.,/#!$%^&*;:{}=\-_`~()'"]/g,' ').split(' ');
+    const dateArray = date.replace(/[.,/#!$%^&*;:{}=\-_`~()'"]/g, ' ').split(' ');
     const parsedArray = dateArray.map(val => parseInt(val, 10));
     const numbersOnly = parsedArray.filter(val => !isNaN(val));
     if (numbersOnly.length === 2) {
       const [day, year] = numbersOnly;
       let validYear: number;
       if (year < 1000) {
-        if (year < new Date().getFullYear() - 2000) {
+        if (year <= new Date().getFullYear() - 2000) {
           validYear = year + 2000;
         } else {
           validYear = year + 1900;
@@ -220,7 +257,7 @@ const ImportAscentsModal = (props: Props) => {
     } else {
       return null;
     }
-  }
+  };
 
   let successOutput: React.ReactElement<any> | null;
   let confirmButton: React.ReactElement<any> | null;
@@ -320,25 +357,61 @@ const ImportAscentsModal = (props: Props) => {
         <HelpText
           dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-1')}}
         />
+        <FileUploadImageContainer>
+          <Image
+            src={NewButtonImgUrl}
+            alt={getFluentString('import-grid-img-alt-new-button')}
+            style={{maxWidth: 260}}
+          />
+          <Image
+            src={FileUploadImgUrl}
+            alt={getFluentString('import-grid-img-alt-file-upload')}
+            style={{maxWidth: 260}}
+          />
+        </FileUploadImageContainer>
       </HelpTextContainer>
       <HelpTextContainer>
         <BigNumber>2</BigNumber>
-        <HelpText
-          dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-2-a')}}
-        />
-        <HelpText
-          dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-2-b')}}
-        />
+        <PublishHelpContainer>
+          <HelpTextBase
+            dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-2-a')}}
+          />
+          <Image
+            src={PublishToWebImgUrl}
+            alt={getFluentString('import-grid-img-alt-file-publish')}
+            style={{maxWidth: 250}}
+          />
+          <HelpTextBase
+            dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-2-b')}}
+          />
+          <Image
+            src={PublishToWebModalImgUrl}
+            alt={getFluentString('import-grid-img-alt-publish-setting')}
+            style={{maxWidth: 460}}
+          />
+        </PublishHelpContainer>
       </HelpTextContainer>
       <HelpTextContainer>
           <BigNumber>3</BigNumber>
-        <HelpText
-          dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-3')}}
-        />
+        <PublishHelpContainer>
+          <HelpTextBase
+            dangerouslySetInnerHTML={{__html: getFluentString('import-grid-steps-3')}}
+          />
+          <Image
+            src={PublishToWebLinkImgUrl}
+            alt={getFluentString('import-grid-img-alt-publish-link')}
+              style={{maxWidth: 460}}
+          />
+        </PublishHelpContainer>
       </HelpTextContainer>
-      <input
-        onChange={onGridCsvPaste}
-      />
+
+      <HelpTextContainer>
+          <BigNumber>4</BigNumber>
+          <PasteBox
+            onChange={onGridCsvPaste}
+            placeholder={getFluentString('import-grid-paste-url')}
+          />
+      </HelpTextContainer>
       {errorMessage}
       {successOutput}
       <ButtonWrapper>

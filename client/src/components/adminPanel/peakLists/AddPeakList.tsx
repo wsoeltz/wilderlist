@@ -72,7 +72,6 @@ const AddPeakList = (props: Props) => {
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (type !== null) {
-      console.log('addPeakList not null')
       addPeakList({
         name, shortName, mountains: selectedMountains,
         type, parent,

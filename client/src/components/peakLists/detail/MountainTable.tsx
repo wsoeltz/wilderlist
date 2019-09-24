@@ -19,7 +19,7 @@ import {
   Seasons,
 } from '../../../Utils';
 import ImportAscentsModal from '../import';
-import ImportGridModal from '../import/ImportGrid';
+import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import MountainCompletionModal from './MountainCompletionModal';
 import MountainRow from './MountainRow';
 import {
@@ -128,7 +128,7 @@ const MountainTable = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
-  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(true);
+  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
 
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
@@ -287,7 +287,7 @@ const MountainTable = (props: Props) => {
     : null;
 
   const importButton =
-    (type === PeakListVariants.standard || type === PeakListVariants.winter || type === PeakListVariants.grid)
+    (type === PeakListVariants.standard || type === PeakListVariants.winter || peakListId === NH48_GRID_OBJECT_ID)
     ? (
       <ImportAscentsButtonContainer>
         <ButtonPrimary
