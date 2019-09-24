@@ -1,11 +1,13 @@
 import {
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
 } from 'graphql';
-import ListType, { List } from './queryTypes/listType';
 import MountainType, { Mountain } from './queryTypes/mountainType';
+import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
 import UserType, { User } from './queryTypes/userType';
@@ -31,16 +33,46 @@ const RootQuery = new GraphQLObjectType({
         return Region.find({});
       },
     },
-    lists: {
-      type: new GraphQLList(ListType),
+    peakLists: {
+      type: new GraphQLList(PeakListType),
       resolve() {
-        return List.find({});
+        return PeakList.find({});
+      },
+    },
+    peakListsSearch: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        searchQuery: { type: new GraphQLNonNull(GraphQLString) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+        pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+        return PeakList
+          .find({ name: { $regex: searchQuery, $options: 'i' } })
+          .limit(nPerPage)
+          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+          .sort({ numUsers: -1, name: 1 });
       },
     },
     users: {
       type: new GraphQLList(UserType),
       resolve() {
         return User.find({});
+      },
+    },
+    usersSearch: {
+      type: new GraphQLList(UserType),
+      args: {
+        searchQuery: { type: new GraphQLNonNull(GraphQLString) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+        pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+        return User
+          .find({ name: { $regex: searchQuery, $options: 'i' } })
+          .limit(nPerPage)
+          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+          .sort({ name: 1 });
       },
     },
     mountain: {
@@ -64,11 +96,11 @@ const RootQuery = new GraphQLObjectType({
         return Region.findById(id);
       },
     },
-    list: {
-      type: ListType,
+    peakList: {
+      type: PeakListType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parnetValue, { id }) {
-        return List.findById(id);
+        return PeakList.findById(id);
       },
     },
     user: {

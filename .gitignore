@@ -7,3 +7,5 @@ client/.env.development
 client/.env.production
 
 client-secret.json
+
+client/src/components/users/user-accounts.md

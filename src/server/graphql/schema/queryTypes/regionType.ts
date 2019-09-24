@@ -8,9 +8,8 @@ import mongoose, { Schema } from 'mongoose';
 import { Region as IRegion } from '../../graphQLTypes';
 import StateType from './stateType';
 
-type RegionSchemaType = mongoose.Document & IRegion & {
-  findStates: (id: string) => any;
-};
+type RegionSchemaType = mongoose.Document & IRegion;
+
 export type RegionModelType = mongoose.Model<RegionSchemaType> & RegionSchemaType;
 
 const RegionSchema: Schema = new Schema({
@@ -21,12 +20,6 @@ const RegionSchema: Schema = new Schema({
   }],
 });
 
-RegionSchema.statics.findStates = function(id: string) {
-  return this.findById(id)
-    .populate('states')
-    .then((region: IRegion) => region.states);
-};
-
 export const Region: RegionModelType = mongoose.model<RegionModelType, any>('region', RegionSchema);
 
 const RegionType = new GraphQLObjectType({
@@ -36,8 +29,12 @@ const RegionType = new GraphQLObjectType({
     name: { type: GraphQLString },
     states:  {
       type: new GraphQLList(StateType),
-      resolve(parentValue) {
-        return Region.findStates(parentValue.id);
+      async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
+        try {
+          return await stateLoader.loadMany(parentValue.states);
+        } catch (err) {
+          return err;
+        }
       },
     },
   }),

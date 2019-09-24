@@ -8,6 +8,7 @@ import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import googleAuth from './auth/google';
+import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
 import requireLogin from './middleware/requireLogin';
 
@@ -60,6 +61,9 @@ app.use(bodyParser.json());
 app.use('/graphql', requireLogin, expressGraphQL({
   schema,
   graphiql: true,
+  context: {
+    dataloaders: buildDataloaders(),
+  },
 }));
 ///// End MongoDb Connection Setup
 

@@ -3,62 +3,104 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  // GraphQLInt,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { User as IUser } from '../../graphQLTypes';
-import ListType from './listType';
+import MountainType from './mountainType';
+import PeakListType from './peakListType';
 
-type UserSchemaType = mongoose.Document & IUser & {
-  findFriends: (id: string) => any;
-  findLists: (id: string) => any;
-};
+type UserSchemaType = mongoose.Document & IUser;
 
 const UserSchema = new Schema({
   googleId: { type: String},
   name: { type: String },
+  email: { type: String },
+  profilePictureUrl: { type: String },
+  permissions: { type: String },
   friends: [{
-    type: Schema.Types.ObjectId,
-    ref: 'user',
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    status: { type: String },
   }],
-  lists: [{
+  peakLists: [{
     type: Schema.Types.ObjectId,
     ref: 'list',
   }],
+  mountains: [{
+    mountain: {
+      type: Schema.Types.ObjectId,
+      ref: 'mountain',
+    },
+    dates: [{ type: String }],
+  }],
 });
-
-UserSchema.statics.findFriends = function(id: string) {
-  return this.findById(id)
-    .populate('friends')
-    .then((user: IUser) => user.friends);
-};
-
-UserSchema.statics.findLists = function(id: string) {
-  return this.findById(id)
-    .populate('lists')
-    .then((user: IUser) => user.lists);
-};
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
 
 export const User: UserModelType = mongoose.model<UserModelType, any>('user', UserSchema);
 
+const CompletedMountainsType = new GraphQLObjectType({
+  name: 'CompletedMountainsType',
+  fields: () => ({
+    mountain: {
+      type: MountainType,
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        try {
+          return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    dates: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+});
+
+const FriendsType = new GraphQLObjectType({
+  name: 'FriendsType',
+  fields: () => ({
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    status: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
   fields: () => ({
     id: { type: GraphQLID },
+    permissions: { type: GraphQLString },
+    googleId: { type: GraphQLString},
     name: { type: GraphQLString },
-    friends: {
-      type: new GraphQLList(UserType),
-      resolve(parentValue) {
-        return User.findFriends(parentValue.id);
+    email: { type: GraphQLString },
+    profilePictureUrl: { type: GraphQLString },
+    friends: { type: new GraphQLList(FriendsType) },
+    peakLists: {
+      type: new GraphQLList(PeakListType),
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          return await peakListLoader.loadMany(parentValue.peakLists);
+        } catch (err) {
+          return err;
+        }
       },
     },
-    lists: {
-      type: new GraphQLList(ListType),
-      resolve(parentValue) {
-        return User.findLists(parentValue.id);
-      },
-    },
+    mountains: { type: new GraphQLList(CompletedMountainsType) },
   }),
 });
 

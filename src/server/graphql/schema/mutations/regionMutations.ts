@@ -6,6 +6,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { State as IState } from '../../graphQLTypes';
+import { removeConnections } from '../../Utils';
 import RegionType, { Region } from '../queryTypes/regionType';
 import { State } from '../queryTypes/stateType';
 
@@ -18,11 +19,11 @@ const regionMutations: any = {
     },
     resolve(_unused: any, { name, states }: {name: string, states: IState[]}) {
       const newRegion = new Region({ name, states });
-      if (states !== undefined) {
+      if (states !== undefined && name !== '') {
         states.forEach((id) => {
           State.findByIdAndUpdate(id,
             { $push: {regions: newRegion.id} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -39,20 +40,12 @@ const regionMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string }) {
-      const region = await Region.findByIdAndDelete(id)
-        .select({states: true})
-        .exec(function(err: any, doc: any) {
-          if (err) {
-            console.error(err);
-          } else if (doc) {
-            doc.states.forEach(async (stateId: string) => {
-              await State.findByIdAndUpdate(stateId, {
-                $pull: { regions: id},
-              });
-            });
-          }
-      });
-      return region;
+      try {
+        await removeConnections(Region, id, 'states', State);
+        return Region.findByIdAndDelete(id);
+      } catch (err) {
+        return err;
+      }
     },
   },
   addStateToRegion: {
@@ -71,7 +64,7 @@ const regionMutations: any = {
               regions: { $ne: regionId },
             },
             { $push: {regions: regionId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -82,7 +75,7 @@ const regionMutations: any = {
               states: { $ne: stateId },
             },
             { $push: {states: stateId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -110,7 +103,7 @@ const regionMutations: any = {
               _id: stateId,
             },
             { $pull: {regions: regionId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -120,7 +113,7 @@ const regionMutations: any = {
               _id: regionId,
             },
             { $pull: {states: stateId} },
-            function(err, model) {
+            function(err: any, model: any) {
               if (err) {
                 console.error(err);
               }
@@ -128,6 +121,28 @@ const regionMutations: any = {
           );
           return region;
         }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  changeRegionName: {
+    type: RegionType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newName: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any,
+                  { id, newName }: { id: string , newName: string},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const region = await Region.findOneAndUpdate({
+          _id: id,
+        },
+        { name: newName },
+        {new: true});
+        dataloaders.regionLoader.clear(id).prime(id, region);
+        return region;
       } catch (err) {
         return err;
       }
