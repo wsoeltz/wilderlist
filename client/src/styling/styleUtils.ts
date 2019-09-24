@@ -87,11 +87,6 @@ export const boldFontWeight = 700;
 
 export const standardContainerPadding = '1rem';
 
-export const svgTitleFont = `
-  font-family: 'DelicousWeb';
-  font-weight: 700;
-`;
-
 export const linkStyles = `
   color: ${linkColor};
   font-weight: initial;

@@ -61,6 +61,8 @@ header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
 
+login-page-tagline-text = Track, plan, and share progress towards your hiking goals
+
 dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet.
 dashboard-empty-state-no-active-lists-button = Find Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.

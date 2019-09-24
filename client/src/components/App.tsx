@@ -28,6 +28,7 @@ import AdminRegions from './adminPanel/AdminRegions';
 import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
 import Dashboard from './dashboard';
+import LoginPage from './login';
 import MountainDetailPage from './mountains/detail';
 import ComparePeakListPage from './peakLists/compare';
 import PeakListDetailPage from './peakLists/detail';
@@ -35,7 +36,6 @@ import PeakListPage from './peakLists/list';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
-import LoginPage from './login';
 
 const overlayPortalZIndex = 3000;
 
