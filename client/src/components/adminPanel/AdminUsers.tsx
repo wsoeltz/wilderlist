@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React from 'react';
 import {
@@ -20,6 +20,14 @@ export const GET_USERS = gql`
   }
 `;
 
+const DELETE_USER = gql`
+  mutation($id: ID!) {
+    deleteUser(id: $id) {
+      id
+    }
+  }
+`;
+
 export interface SuccessResponse {
   users: Array<{
     id: User['id'];
@@ -31,6 +39,22 @@ export interface SuccessResponse {
 
 const AdminPanel = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_USERS);
+
+  const [deleteUserMutation] = useMutation(DELETE_USER, {
+    update: (cache, { data: successData }) => {
+      const response: SuccessResponse | null = cache.readQuery({ query: GET_USERS });
+      if (response !== null && response.users !== null) {
+        cache.writeQuery({
+          query: GET_USERS,
+          data: { users: response.users.filter(({id}) => id !== successData.deleteUser.id) },
+        });
+      }
+    },
+  });
+
+  const deleteUser = async (id: string) => {
+    deleteUserMutation({variables: {id}});
+  }
   return (
     <>
       <UserListColumn>
@@ -42,6 +66,7 @@ const AdminPanel = () => {
             loading={loading}
             error={error}
             data={data}
+            deleteUser={deleteUser}
           />
         </ContentBody>
       </UserListColumn>

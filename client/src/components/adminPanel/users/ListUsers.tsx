@@ -26,10 +26,11 @@ interface Props {
   loading: boolean;
   error: ApolloError | undefined;
   data: SuccessResponse | undefined;
+  deleteUser: (id: string) => void;
 }
 
 const ListUsers = (props: Props) => {
-  const {loading, error, data } = props;
+  const {loading, error, data, deleteUser } = props;
 
   if (loading === true) {
     return (<p>Loading</p>);
@@ -43,6 +44,11 @@ const ListUsers = (props: Props) => {
         <UserListItem key={user.id}>
           <UserInfo>
             <strong><LinkButton>{user.name}</LinkButton></strong>
+            <button
+              onClick={() => deleteUser(user.id)}
+            >
+              Delete
+            </button>
             <div><small>{user.email}</small></div>
           </UserInfo>
           <UserImage src={user.profilePictureUrl} />
