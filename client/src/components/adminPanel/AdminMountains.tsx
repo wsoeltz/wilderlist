@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+import { withRouter } from 'react-router';
 import {
   ContentBody,
   ContentHeader,
@@ -125,7 +126,7 @@ enum EditMountainPanelEnum {
   Update,
 }
 
-const AdminPanel = () => {
+const AdminMountains = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS);
   const [editMountainPanel, setEditMountainPanel] = useState<EditMountainPanelEnum>(EditMountainPanelEnum.Empty);
   const [mountainToEdit, setMountainToEdit] = useState<string | null>(null);
@@ -237,4 +238,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default withRouter(AdminMountains);

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+import { withRouter } from 'react-router';
 import {
   ContentBody,
   ContentHeader,
@@ -104,7 +105,7 @@ enum EditPeakListPanelEnum {
   Update,
 }
 
-const AdminPanel = () => {
+const AdminPeakLists = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_PEAK_LISTS);
   const [editPeakListPanel, setEditPeakListPanel] = useState<EditPeakListPanelEnum>(EditPeakListPanelEnum.Empty);
   const [peakListToEdit, setPeakListToEdit] = useState<string | null>(null);
@@ -216,4 +217,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default withRouter(AdminPeakLists);

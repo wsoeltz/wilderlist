@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Routes } from '../../routing/routes';
@@ -32,4 +33,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default withRouter(AdminPanel);

@@ -264,16 +264,16 @@ const userMutations: any = {
       try {
         const user = await User.findById(id);
         if (user !== null) {
-          if (  (user.peakLists !== null && user.peakLists.length > 0)
-             || (user.friends !== null && user.friends.length > 0) ) {
-            console.log({lists: user.peakLists, friends: user.friends});
-            console.log('You must remove all peakLists and friends from a users account before deleting');
-            return {
-              error: 'You must remove all peakLists and friends from a users account before deleting'
-            };
-          } else {
-            console.log('User will be deleted');
-            // return User.findByIdAndDelete(id);
+          try {
+            if (user.peakLists !== null && user.peakLists.length > 0) {
+              throw new Error('You must remove all peakLists');
+            }
+            if (user.friends !== null && user.friends.length > 0) {
+              throw new Error('You must remove all friends');
+            }
+            return User.findByIdAndDelete(id);
+          } catch (err) {
+            return err;
           }
         }
       } catch (err) {

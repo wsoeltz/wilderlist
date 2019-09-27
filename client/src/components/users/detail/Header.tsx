@@ -170,7 +170,6 @@ const Header = (props: Props) => {
   };
   const removeFriend = (e: React.SyntheticEvent) => {
     preventNavigation(e);
-    // removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
     setRemoveFriendModalOpen(true);
   };
 

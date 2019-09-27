@@ -82,54 +82,77 @@ const App: React.FC = () => {
 
   const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (
       <>
-        <Route path={Routes.Admin} component={AdminPanel} />
-        <Route exact path={Routes.AdminStates} component={AdminStates} />
-        <Route exact path={Routes.AdminPeakLists} component={AdminPeakLists} />
-        <Route exact path={Routes.AdminMountains} component={AdminMountains} />
-        <Route exact path={Routes.AdminRegions} component={AdminRegions} />
-        <Route exact path={Routes.AdminUsers} component={AdminUsers} />
+        <Route path={Routes.Admin}
+          render={props => <AdminPanel {...props} />}
+        />
+        <Route exact path={Routes.AdminStates}
+          render={props => <AdminStates {...props} />}
+        />
+        <Route exact path={Routes.AdminPeakLists}
+          render={props => <AdminPeakLists {...props} />}
+        />
+        <Route exact path={Routes.AdminMountains}
+          render={props => <AdminMountains {...props} />}
+        />
+        <Route exact path={Routes.AdminRegions}
+          render={props => <AdminRegions {...props} />}
+        />
+        <Route exact path={Routes.AdminUsers}
+          render={props => <AdminUsers {...props} />}
+        />
       </>
     ) : null;
 
-  const userRoutes = (user) ? (
-    <Switch>
-      <Route exact path={Routes.Dashboard}
-        render={(props) => <Dashboard {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.ListsWithDetail}
-        render={(props) => <PeakListPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.ListDetail}
-        render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.ListDetailWithMountainDetail}
-        render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.MountainDetail}
-        render={(props) => <MountainDetailPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.FriendsWithProfile}
-        render={(props) => <ListUsersPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.UserProfile}
-        render={(props) => <UserProfile {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.ComparePeakList}
-        render={(props) => <UserProfile {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.ComparePeakListIsolated}
-        render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
-      />
-      <Route exact path={Routes.ComparePeakListWithMountainDetail}
-        render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
-      />
-      {adminRoutes}
-      {/* 404 Route -> */}
-      <Route
-        render={(props) => <Dashboard {...props} userId={user._id} />}
-      />
-    </Switch>
-  ) : <LoginPage />;
+  let userRoutes: React.ReactElement<any> | null;
+  if (user === null) {
+    userRoutes = null;
+  } else if (user) {
+    userRoutes = (
+      <Switch>
+        <Route exact path={Routes.Dashboard}
+          render={(props) => <Dashboard {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.ListsWithDetail}
+          render={(props) => <PeakListPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.ListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.ListDetailWithMountainDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.MountainDetail}
+          render={(props) => <MountainDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.FriendsWithProfile}
+          render={(props) => <ListUsersPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.UserProfile}
+          render={(props) => <UserProfile {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.ComparePeakList}
+          render={(props) => <UserProfile {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.ComparePeakListIsolated}
+          render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.ComparePeakListWithMountainDetail}
+          render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
+        />
+        {adminRoutes}
+        {/* 404 Route -> */}
+        <Route
+          render={(props) => <Dashboard {...props} userId={user._id} />}
+        />
+      </Switch>
+    );
+  } else {
+    userRoutes = (
+      <Switch>
+        <Route path={Routes.Login} component={LoginPage} />
+      </Switch>
+    );
+  }
 
   return (
     <UserContext.Provider value={user}>

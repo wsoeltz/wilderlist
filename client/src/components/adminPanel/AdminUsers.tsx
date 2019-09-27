@@ -1,12 +1,24 @@
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React from 'react';
+import { withRouter } from 'react-router';
 import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge as UserListColumn,
 } from '../../styling/Grid';
-import { User } from '../../types/graphQLTypes';
+import { Friend, User } from '../../types/graphQLTypes';
+import { asyncForEach } from '../../Utils';
+import { REMOVE_PEAK_LIST_FROM_USER } from '../peakLists/detail/Header';
+import {
+  AddRemovePeakListSuccessResponse,
+  AddRemovePeakListVariables,
+} from '../peakLists/list';
+import {
+  FriendRequestSuccessResponse,
+  FriendRequestVariables,
+  REMOVE_FRIEND,
+} from '../users/list/UserCard';
 import ListUsers from './users/ListUsers';
 
 export const GET_USERS = gql`
@@ -16,6 +28,14 @@ export const GET_USERS = gql`
       name
       email
       profilePictureUrl
+      peakLists {
+        id
+      }
+      friends {
+        user {
+          id
+        }
+      }
     }
   }
 `;
@@ -28,18 +48,26 @@ const DELETE_USER = gql`
   }
 `;
 
-export interface SuccessResponse {
-  users: Array<{
-    id: User['id'];
-    name: User['name'];
-    email: User['email'];
-    profilePictureUrl: User['profilePictureUrl'];
-  }>;
+export interface UserDatum {
+  id: User['id'];
+  name: User['name'];
+  email: User['email'];
+  profilePictureUrl: User['profilePictureUrl'];
+  friends: User['friends'];
+  peakLists: User['peakLists'];
 }
 
-const AdminPanel = () => {
+export interface SuccessResponse {
+  users: UserDatum[];
+}
+
+const AdminUsers = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_USERS);
 
+  const [removePeakListFromUser] =
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
+  const [removeFriendMutation] =
+    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
   const [deleteUserMutation] = useMutation(DELETE_USER, {
     update: (cache, { data: successData }) => {
       const response: SuccessResponse | null = cache.readQuery({ query: GET_USERS });
@@ -52,9 +80,23 @@ const AdminPanel = () => {
     },
   });
 
-  const deleteUser = async (id: string) => {
-    deleteUserMutation({variables: {id}});
-  }
+  const deleteUser = async ({id: userId, friends, peakLists}: UserDatum) => {
+    try {
+      if (peakLists) {
+        await asyncForEach(peakLists, ({id: peakListId}: {id: string}) =>
+          removePeakListFromUser({variables: {peakListId, userId}}),
+        );
+      }
+      if (friends) {
+        await asyncForEach(friends, ({user: {id: friendId}}: Friend) =>
+          removeFriendMutation({variables: {friendId, userId}}),
+        );
+      }
+      deleteUserMutation({variables: {id: userId}});
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <>
       <UserListColumn>
@@ -74,4 +116,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default withRouter(AdminUsers);
