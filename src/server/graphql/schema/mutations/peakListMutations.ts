@@ -9,6 +9,7 @@ import { Mountain as IMountain } from '../../graphQLTypes';
 import { PeakList as IPeakList } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
+import { User } from '../queryTypes/userType';
 import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
 
 interface AddPeakListVariables {
@@ -63,7 +64,8 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any, { id }: { id: string }) {
       try {
-        await removeConnections(PeakList, id, 'mountains', Mountain);
+        await removeConnections(PeakList, id, 'mountains', Mountain, 'lists');
+        await removeConnections(PeakList, id, 'users', User, 'peakLists');
         return PeakList.findByIdAndDelete(id);
       } catch (err) {
         return err;

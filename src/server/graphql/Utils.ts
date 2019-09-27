@@ -13,7 +13,9 @@ export async function asyncForEach(array: any[], callback: any) {
 
 type Models = typeof mongoose.Model;
 
-export const removeConnections = (PrimaryModel: Models, id: string, connectedField: string, SecondaryModel: Models) => {
+export const removeConnections = (
+  PrimaryModel: Models, id: string, connectedField: string, SecondaryModel: Models, othersConnectField: string,
+  ) => {
   return new Promise((resolve, reject) => {
     PrimaryModel.findById(id)
       .select({[connectedField]: true})
@@ -24,7 +26,7 @@ export const removeConnections = (PrimaryModel: Models, id: string, connectedFie
           try {
             await asyncForEach(doc[connectedField], async (itemId: string) => {
               await SecondaryModel.findByIdAndUpdate(itemId, {
-                $pull: { lists: id},
+                $pull: { [othersConnectField]: id},
               });
             });
             resolve(true);

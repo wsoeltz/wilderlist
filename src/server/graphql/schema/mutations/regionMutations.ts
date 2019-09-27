@@ -41,7 +41,7 @@ const regionMutations: any = {
     },
     async resolve(_unused: any, { id }: { id: string }) {
       try {
-        await removeConnections(Region, id, 'states', State);
+        await removeConnections(Region, id, 'states', State, 'regions');
         return Region.findByIdAndDelete(id);
       } catch (err) {
         return err;
