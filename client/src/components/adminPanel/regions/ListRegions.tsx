@@ -1,7 +1,8 @@
 import { ApolloError } from 'apollo-boost';
-import React from 'react';
+import React, {useState} from 'react';
 import { LinkButton } from '../../../styling/styleUtils';
-import { SuccessResponse } from '../AdminRegions';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import { RegionDatum, SuccessResponse } from '../AdminRegions';
 
 interface Props {
   loading: boolean;
@@ -13,6 +14,29 @@ interface Props {
 
 const ListRegions = (props: Props) => {
   const {loading, error, data, deleteRegion, editRegion} = props;
+
+  const [regionToDelete, setRegionToDelete] = useState<RegionDatum | null>(null);
+
+  const closeAreYouSureModal = () => {
+    setRegionToDelete(null);
+  };
+  const confirmRemove = () => {
+    if (regionToDelete !== null) {
+      deleteRegion(regionToDelete.id);
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureModal = regionToDelete === null ? null : (
+    <AreYouSureModal
+      onConfirm={confirmRemove}
+      onCancel={closeAreYouSureModal}
+      title={'Confirm delete'}
+      text={'Are your sure you want to delete region ' + regionToDelete.name + '? This cannot be undone.'}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
 
   if (loading === true) {
     return (<p>Loading</p>);
@@ -29,7 +53,7 @@ const ListRegions = (props: Props) => {
             onClick={() => editRegion(region.id)}
           >{region.name}</LinkButton></strong>
           <button
-            onClick={() => deleteRegion(region.id)}
+            onClick={() => setRegionToDelete(region)}
           >
             Delete
           </button>
@@ -42,6 +66,7 @@ const ListRegions = (props: Props) => {
     return(
       <>
         {regionElms}
+        {areYouSureModal}
       </>
     );
   } else {

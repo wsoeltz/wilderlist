@@ -77,7 +77,7 @@ const DELETE_PEAK_LIST = gql`
   }
 `;
 
-interface PeakListDatum {
+export interface PeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
   shortName: PeakList['shortName'];

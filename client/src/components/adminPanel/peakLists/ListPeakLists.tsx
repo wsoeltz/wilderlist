@@ -1,7 +1,8 @@
 import { ApolloError } from 'apollo-boost';
-import React from 'react';
+import React, {useState} from 'react';
 import { LinkButton } from '../../../styling/styleUtils';
-import { SuccessResponse } from '../AdminPeakLists';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import { PeakListDatum, SuccessResponse } from '../AdminPeakLists';
 
 interface Props {
   loading: boolean;
@@ -13,6 +14,29 @@ interface Props {
 
 const ListStates = (props: Props) => {
   const {loading, error, data, deletePeakList, editPeakList} = props;
+
+  const [peakListToDelete, setPeakListToDelete] = useState<PeakListDatum | null>(null);
+
+  const closeAreYouSureModal = () => {
+    setPeakListToDelete(null);
+  };
+  const confirmRemove = () => {
+    if (peakListToDelete !== null) {
+      deletePeakList(peakListToDelete.id);
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureModal = peakListToDelete === null ? null : (
+    <AreYouSureModal
+      onConfirm={confirmRemove}
+      onCancel={closeAreYouSureModal}
+      title={'Confirm delete'}
+      text={'Are your sure you want to delete peakList ' + peakListToDelete.name + '? This cannot be undone.'}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
 
   if (loading === true) {
     return (<p>Loading</p>);
@@ -41,7 +65,7 @@ const ListStates = (props: Props) => {
             onClick={() => editPeakList(peakList.id)}
           >{peakList.name} ({peakList.shortName})</LinkButton></strong>
           <button
-            onClick={() => deletePeakList(peakList.id)}
+            onClick={() => setPeakListToDelete(peakList)}
           >
             Delete
           </button>
@@ -57,6 +81,7 @@ const ListStates = (props: Props) => {
     return(
       <>
         {peakListElms}
+        {areYouSureModal}
       </>
     );
   } else {
