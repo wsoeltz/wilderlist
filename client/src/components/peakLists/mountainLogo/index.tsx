@@ -28,8 +28,8 @@ const Root = styled.div`
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr;
-  height: 100%;
 
+  justify-content: center;
 `;
 
 const BadgeGridContainer = styled.div`
@@ -43,6 +43,8 @@ const BadgeGridContainer = styled.div`
 const RibbonGridContainer = styled.div`
   grid-row: 1;
   grid-column: 1;
+  height: 100%;
+  justify-content: center;
 `;
 
 const BadgeSVGContainer = styled.div`

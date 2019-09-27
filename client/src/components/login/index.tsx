@@ -28,6 +28,7 @@ const ContentRoot = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
+  height: 100%;
   z-index: 100;
   display: grid;
   padding: 2rem;
@@ -68,6 +69,7 @@ const LoginWithGoogleButton = styled.a`
   margin: auto;
   max-height: 50px;
   max-width: 220px;
+  text-decoration: none;
 
 
   &:hover {

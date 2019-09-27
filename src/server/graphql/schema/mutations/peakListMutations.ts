@@ -9,8 +9,8 @@ import { Mountain as IMountain } from '../../graphQLTypes';
 import { PeakList as IPeakList } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
-import { User } from '../queryTypes/userType';
 import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
+import { User } from '../queryTypes/userType';
 
 interface AddPeakListVariables {
   name: string;
