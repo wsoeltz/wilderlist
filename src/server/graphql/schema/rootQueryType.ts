@@ -35,7 +35,7 @@ const RootQuery = new GraphQLObjectType({
     },
     peakLists: {
       type: new GraphQLList(PeakListType),
-      resolve() {
+      async resolve() {
         return PeakList.find({});
       },
     },
@@ -48,7 +48,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
         return PeakList
-          .find({ name: { $regex: searchQuery, $options: 'i' } })
+          .find({ searchString: { $regex: searchQuery, $options: 'i' } })
           .limit(nPerPage)
           .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
           .sort({ numUsers: -1, name: 1 });

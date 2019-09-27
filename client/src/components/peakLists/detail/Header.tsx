@@ -24,7 +24,7 @@ import {
   TextRight,
 } from '../list/PeakListCard';
 import MountainLogo from '../mountainLogo';
-import { completedPeaks, formatDate, getLatestAscent } from '../Utils';
+import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import {
   MountainDatum,
   PeakListDatum,
@@ -125,7 +125,7 @@ const Header = (props: Props) => {
       onCancel={closeAreYouSureModal}
       title={getFluentString('global-text-value-are-you-sure-modal')}
       text={getFluentString('peak-list-detail-text-modal-remove-confirm', {
-        'peak-list-name': peakList.name,
+        'peak-list-name': name + getType(type),
       })}
       confirmText={getFluentString('global-text-value-modal-confirm')}
       cancelText={getFluentString('global-text-value-modal-cancel')}
@@ -213,7 +213,7 @@ const Header = (props: Props) => {
   return (
     <Root>
       <TitleContent>
-        <Title>{name}</Title>
+        <Title>{name}{getType(type)}</Title>
         <ListInfo>
           {getStatesOrRegion(mountains, getFluentString)}
         </ListInfo>

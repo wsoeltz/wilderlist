@@ -437,3 +437,18 @@ export const isState = (value: any) => {
     return states.includes(value.toLowerCase());
   }
 };
+
+export const getType = (type: PeakListVariants) => {
+  if (type === PeakListVariants.standard) {
+    return '';
+  } else if (type === PeakListVariants.winter) {
+    return ' - Winter';
+  } else if (type === PeakListVariants.fourSeason) {
+    return ' - 4-Season';
+  } else if (type === PeakListVariants.grid) {
+    return ' - Grid';
+  } else {
+    failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
+    return '';
+  }
+};

@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { Mountain as IMountain } from '../../graphQLTypes';
 import { PeakList as IPeakList } from '../../graphQLTypes';
-import { removeConnections } from '../../Utils';
+import { getType, removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
 import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
 import { User } from '../queryTypes/userType';
@@ -36,9 +36,11 @@ const peakListMutations: any = {
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
+        const searchString = name + getType(type) + ' ' + shortName + ' ' + type;
         const newPeakList = new PeakList({
           name, shortName, mountains,
           type, parent, numUsers: 0,
+          searchString,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -165,6 +167,15 @@ const peakListMutations: any = {
         },
         { name: newName },
         {new: true});
+        if (peakList) {
+          const {shortName, type} = peakList;
+          const newSearchString = newName + getType(type) + ' ' + shortName + ' ' + type;
+          await PeakList.findOneAndUpdate({
+            _id: id,
+          },
+          {searchString: newSearchString },
+          {new: true});
+        }
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;
       } catch (err) {
@@ -187,6 +198,15 @@ const peakListMutations: any = {
         },
         { shortName: newShortName },
         {new: true});
+        if (peakList) {
+          const {name, type} = peakList;
+          const newSearchString = name + getType(type) + ' ' + newShortName + ' ' + type;
+          await PeakList.findOneAndUpdate({
+            _id: id,
+          },
+          {searchString: newSearchString },
+          {new: true});
+        }
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;
       } catch (err) {
@@ -209,6 +229,15 @@ const peakListMutations: any = {
         },
         { type },
         {new: true});
+        if (peakList) {
+          const {name, shortName} = peakList;
+          const newSearchString = name + getType(type) + ' ' + shortName + ' ' + type;
+          await PeakList.findOneAndUpdate({
+            _id: id,
+          },
+          {searchString: newSearchString },
+          {new: true});
+        }
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;
       } catch (err) {

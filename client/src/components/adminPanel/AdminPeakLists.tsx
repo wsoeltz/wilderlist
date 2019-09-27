@@ -8,7 +8,7 @@ import {
   ContentLeftLarge as PeakListListColumn,
   ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
-import { Mountain, PeakList, PeakListVariants } from '../../types/graphQLTypes';
+import { PeakList, PeakListVariants } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import AddPeakList from './peakLists/AddPeakList';
 import EditPeakList from './peakLists/EditPeakList';
@@ -21,13 +21,10 @@ export const GET_PEAK_LISTS = gql`
       name
       shortName
       type
-      mountains {
-        id
-        name
-      }
       parent {
         id
         name
+        type
       }
     }
   }
@@ -85,13 +82,10 @@ interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
-  mountains: Array<{
-    id: Mountain['id'];
-    name: Mountain['name'];
-  }>;
   parent: {
     id: PeakList['id'];
     name: PeakList['name'];
+    type: PeakList['type'];
   };
 }
 

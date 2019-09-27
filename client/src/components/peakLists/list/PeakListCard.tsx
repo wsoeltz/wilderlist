@@ -19,7 +19,7 @@ import {
 } from '../../../types/graphQLTypes';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { formatDate, getLatestAscent } from '../Utils';
+import { formatDate, getLatestAscent, getType } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
@@ -262,7 +262,7 @@ const PeakListCard = (props: Props) => {
     <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
       <Root>
         <Title>
-          {name}
+          {name}{getType(type)}
         </Title>
         <ListInfo>
           {listInfoContent}

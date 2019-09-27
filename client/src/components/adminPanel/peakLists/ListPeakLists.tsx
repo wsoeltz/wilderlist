@@ -23,11 +23,17 @@ const ListStates = (props: Props) => {
     const { peakLists } = data;
     const peakListElms = peakLists.map(peakList => {
       const { type, parent } = peakList;
-      let mountainElms;
+      let parentCopy: React.ReactElement<any> | null;
       if (parent !== null) {
-        mountainElms = `Parent list: ${parent.name}`;
+        parentCopy = (
+          <div>
+            <small>
+              Parent list: {parent.name} ({parent.type})
+            </small>
+          </div>
+        );
       } else {
-        mountainElms = peakList.mountains.map(({name}) => name + ', ');
+        parentCopy = null;
       }
       return (
         <li key={peakList.id}>
@@ -39,12 +45,10 @@ const ListStates = (props: Props) => {
           >
             Delete
           </button>
-          <div>
-            <small>{mountainElms}</small>
-          </div>
+          {parentCopy}
           <div>
             <small>
-              {type},
+              {type}
             </small>
           </div>
         </li>
