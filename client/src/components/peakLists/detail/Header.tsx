@@ -74,7 +74,7 @@ const ActiveListContentContainer = styled(ListInfo)`
   grid-row: 4;
 `;
 
-const REMOVE_PEAK_LIST_FROM_USER = gql`
+export const REMOVE_PEAK_LIST_FROM_USER = gql`
   mutation removePeakListFromUser($userId: ID!, $peakListId: ID!) {
     removePeakListFromUser(userId: $userId, peakListId: $peakListId) {
       id

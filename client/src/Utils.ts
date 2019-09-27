@@ -9,6 +9,16 @@ export function failIfValidOrNonExhaustive(_variable: never, message: string): n
   throw new Error(message);
 }
 
+export async function asyncForEach(array: any[], callback: any) {
+  for (let index = 0; index < array.length; index++) {
+    try {
+      await callback(array[index], index, array);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 export const mobileSize = 1150; // in px
 
 export const overlayPortalContainerId = 'overlayPortalContainerId';

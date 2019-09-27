@@ -254,6 +254,33 @@ const userMutations: any = {
     },
 
   },
+
+  deleteUser: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, { id }: { id: string }) {
+      try {
+        const user = await User.findById(id);
+        if (user !== null) {
+          try {
+            if (user.peakLists !== null && user.peakLists.length > 0) {
+              throw new Error('You must remove all peakLists');
+            }
+            if (user.friends !== null && user.friends.length > 0) {
+              throw new Error('You must remove all friends');
+            }
+            return User.findByIdAndDelete(id);
+          } catch (err) {
+            return err;
+          }
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
 };
 
 export default userMutations;

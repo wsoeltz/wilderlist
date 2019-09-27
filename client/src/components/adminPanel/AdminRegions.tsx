@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+import { withRouter } from 'react-router';
 import {
   ContentBody,
   ContentHeader,
@@ -65,7 +66,7 @@ enum EditRegionPanelEnum {
   Update,
 }
 
-const AdminPanel = () => {
+const AdminRegions = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_REGIONS);
   const [editRegionPanel, setEditRegionPanel] = useState<EditRegionPanelEnum>(EditRegionPanelEnum.Empty);
   const [regionToEdit, setRegionToEdit] = useState<string | null>(null);
@@ -174,4 +175,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default withRouter(AdminRegions);

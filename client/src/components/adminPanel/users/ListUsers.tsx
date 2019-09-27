@@ -1,8 +1,9 @@
 import { ApolloError } from 'apollo-boost';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import { LinkButton } from '../../../styling/styleUtils';
-import { SuccessResponse } from '../AdminUsers';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import { SuccessResponse, UserDatum } from '../AdminUsers';
 
 const UserListItem = styled.div`
   display: grid;
@@ -26,10 +27,34 @@ interface Props {
   loading: boolean;
   error: ApolloError | undefined;
   data: SuccessResponse | undefined;
+  deleteUser: (user: UserDatum) => void;
 }
 
 const ListUsers = (props: Props) => {
-  const {loading, error, data } = props;
+  const {loading, error, data, deleteUser } = props;
+
+  const [userToDelete, setUserToDelete] = useState<UserDatum | null>(null);
+
+  const closeAreYouSureModal = () => {
+    setUserToDelete(null);
+  };
+  const confirmRemove = () => {
+    if (userToDelete !== null) {
+      deleteUser(userToDelete);
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureModal = userToDelete === null ? null : (
+    <AreYouSureModal
+      onConfirm={confirmRemove}
+      onCancel={closeAreYouSureModal}
+      title={'Confirm delete'}
+      text={'Are your sure you want to delete user ' + userToDelete.name + '? This cannot be undone.'}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
 
   if (loading === true) {
     return (<p>Loading</p>);
@@ -39,10 +64,16 @@ const ListUsers = (props: Props) => {
   } else if (data !== undefined) {
     const { users } = data;
     const usersElms = users.map(user => {
+
       return (
         <UserListItem key={user.id}>
           <UserInfo>
             <strong><LinkButton>{user.name}</LinkButton></strong>
+            <button
+              onClick={() => setUserToDelete(user)}
+            >
+              Delete
+            </button>
             <div><small>{user.email}</small></div>
           </UserInfo>
           <UserImage src={user.profilePictureUrl} />
@@ -52,6 +83,7 @@ const ListUsers = (props: Props) => {
     return(
       <>
         {usersElms}
+        {areYouSureModal}
       </>
     );
   } else {

@@ -26,7 +26,7 @@ export const GoogleMapsLink = ({lat, long}: {lat: number, long: number}) => {
 };
 
 export const CaltopoLink = ({lat, long}: {lat: number, long: number}) => {
-  const caltopoUrl = `https://caltopo.com/map.html#ll=${lat},${long}`;
+  const caltopoUrl = `https://caltopo.com/map.html#ll=${lat},${long}&z=15`;
   return (
     <ExternalLink href={caltopoUrl} target='_blank'>
       <CaltopoLogo src={CaltopoLogoImageUrl} />

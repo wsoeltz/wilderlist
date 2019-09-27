@@ -63,7 +63,7 @@ const mountainMutations: any = {
         await State.findOneAndUpdate({ mountains: { $eq: id } },
           { $pull: {mountains: id} }, function(err: any, model: any) {
             if (err) { console.error(err); } } );
-        await removeConnections(Mountain, id, 'lists', PeakList);
+        await removeConnections(Mountain, id, 'lists', PeakList, 'mountains');
         return Mountain.findByIdAndDelete(id);
       } catch (err) {
         return err;

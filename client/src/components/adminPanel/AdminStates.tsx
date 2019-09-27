@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+import { withRouter } from 'react-router';
 import {
   ContentBody,
   ContentHeader,
@@ -75,7 +76,7 @@ enum EditStatePanelEnum {
   Update,
 }
 
-const AdminPanel = () => {
+const AdminStates = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES);
   const [editStatePanel, setEditStatePanel] = useState<EditStatePanelEnum>(EditStatePanelEnum.Empty);
   const [stateToEdit, setStateToEdit] = useState<string | null>(null);
@@ -187,4 +188,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default withRouter(AdminStates);
