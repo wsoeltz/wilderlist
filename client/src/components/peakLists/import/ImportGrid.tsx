@@ -165,7 +165,8 @@ const ImportAscentsModal = (props: Props) => {
               if (url.includes('single=true')) {
                 const res = await axios.get(url);
                 const newGridData: GridData[] = [];
-                csv({
+                /* tslint:disable:await-promise */
+                await csv({
                     noheader: false,
                     headers: [
                       'name',
