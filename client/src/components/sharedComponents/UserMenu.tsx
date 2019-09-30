@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Routes } from '../../routing/routes';
+import { myProfileLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -135,6 +136,7 @@ const UserMenuList = ({adminPanel, closeUserMenu, getFluentString}: UserMenuList
 
   return (
     <UserMenuListContainer ref={node} onClick={closeUserMenu}>
+      <UserMenuLink to={myProfileLink('none')}>{getFluentString('header-text-menu-my-profile')}</UserMenuLink>
       {adminPanel}
       <UserMenuAnchor href='/api/logout'>{getFluentString('header-text-menu-item-logout')}</UserMenuAnchor>
     </UserMenuListContainer>

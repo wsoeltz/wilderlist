@@ -60,22 +60,25 @@ export interface PeakListDatum {
   } | null;
 }
 
-interface Props {
+interface BaseProps {
   peakListData: PeakListDatum[];
   userListData: Array<PeakList['id']>;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
-  profileView: boolean;
   noResultsText: string;
   showTrophies: boolean;
 }
 
+type Props = BaseProps & ({ profileView: false } | {
+  profileView: true;
+  isMe: boolean;
+});
+
 const ListPeakLists = (props: Props) => {
   const {
     peakListData, userListData, listAction, actionText,
-    completedAscents, profileView, noResultsText,
-    showTrophies,
+    completedAscents, noResultsText, showTrophies,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -118,7 +121,7 @@ const ListPeakLists = (props: Props) => {
       );
       return null;
     }
-
+    const isMe = props.profileView === true ? props.isMe : false;
     const active = userListData.includes(peakList.id);
     return (
       <PeakListCard
@@ -127,11 +130,12 @@ const ListPeakLists = (props: Props) => {
         listAction={listAction}
         actionText={actionText}
         completedAscents={completedAscents}
-        profileView={profileView}
+        profileView={props.profileView}
         key={peakList.id}
         mountains={mountains}
         numCompletedAscents={numCompletedAscents}
         totalRequiredAscents={totalRequiredAscents}
+        isMe={isMe}
       />
     );
   });

@@ -7,6 +7,7 @@ export enum Routes {
   MountainDetail = '/mountain/:id',
   FriendsWithProfile = '/users/:id',
   UserProfile = '/user/:id',
+  MyProfile = '/user/me/list/:peakListId',
   ComparePeakList = '/user/:id/list/:peakListId',
   ComparePeakListWithMountainDetail = '/user/:id/list/:peakListId/mountain/:mountainId',
   ComparePeakListIsolated = '/compare/user/:id/list/:peakListId',

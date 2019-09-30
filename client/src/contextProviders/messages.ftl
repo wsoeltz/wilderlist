@@ -60,6 +60,8 @@ header-text-menu-item-lists = Lists
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
+header-text-menu-my-profile = My Profile
+header-text-menu-settings = Settings
 
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
@@ -149,6 +151,7 @@ user-profile-no-lists = { $user-name } has not started any lists.
 user-profile-no-recent-ascents = No recent ascents
 user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
 user-profile-sent-you-a-friend-request = { $name } sent you a friend request.
+user-profile-compare-ascents-placeholder = Click "Compare Ascents" on a list on the left to compare your progress
 
 user-profile-lists-in-progress = Lists in progress
 user-profile-lists-completed = Completed Lists

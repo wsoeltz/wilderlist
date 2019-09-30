@@ -130,6 +130,9 @@ const App: React.FC = () => {
         <Route exact path={Routes.UserProfile}
           render={(props) => <UserProfile {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.MyProfile}
+          render={(props) => <UserProfile {...props} userId={user._id} />}
+        />
         <Route exact path={Routes.ComparePeakList}
           render={(props) => <UserProfile {...props} userId={user._id} />}
         />

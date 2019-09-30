@@ -243,6 +243,17 @@ const Header = (props: Props) => {
     actionButtons = null;
   }
 
+  const compareAllAscentsBtn = user.id === currentUserId ? null : (
+    <div>
+      <ButtonPrimaryLink
+        desktopURL={comparePeakListLink(user.id, 'all')}
+        mobileURL={comparePeakListIsolatedLink(user.id, 'all')}
+      >
+        {getFluentString('user-profile-compare-all-ascents')}
+      </ButtonPrimaryLink>
+    </div>
+  );
+
   return (
     <Root>
       <TitleContent>
@@ -264,14 +275,7 @@ const Header = (props: Props) => {
         <ActionButtonContainer>
           {actionButtons}
         </ActionButtonContainer>
-        <div>
-          <ButtonPrimaryLink
-            desktopURL={comparePeakListLink(user.id, 'all')}
-            mobileURL={comparePeakListIsolatedLink(user.id, 'all')}
-          >
-            {getFluentString('user-profile-compare-all-ascents')}
-          </ButtonPrimaryLink>
-        </div>
+        {compareAllAscentsBtn}
       </ButtonContainer>
       {areYouSureModal}
     </Root>

@@ -5,7 +5,12 @@ import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { listDetailWithMountainDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
+import {
+  listDetailWithMountainDetailLink,
+  myProfileLink,
+  preventNavigation,
+  searchListDetailLink,
+} from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
@@ -188,6 +193,7 @@ interface Props {
   mountains: MountainList[];
   numCompletedAscents: number;
   totalRequiredAscents: number;
+  isMe: boolean;
 }
 
 const PeakListCard = (props: Props) => {
@@ -195,7 +201,7 @@ const PeakListCard = (props: Props) => {
     peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
     profileView, mountains, numCompletedAscents,
-    totalRequiredAscents,
+    totalRequiredAscents, isMe,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -257,7 +263,17 @@ const PeakListCard = (props: Props) => {
     );
   }
   const mountainLogoId = parent === null ? id : parent.id;
-  const desktopURL = profileView === false ? searchListDetailLink(id) : listDetailWithMountainDetailLink(id, 'none');
+  let desktopURL: string;
+  if (profileView === true) {
+    if (isMe === true) {
+      desktopURL = myProfileLink(id);
+    } else {
+      desktopURL = listDetailWithMountainDetailLink(id, 'none');
+    }
+  } else {
+    desktopURL = searchListDetailLink(id);
+  }
+
   return (
     <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
       <Root>

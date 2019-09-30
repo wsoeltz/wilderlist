@@ -161,7 +161,7 @@ const UserProfile = (props: Props) => {
           friendStatus = null;
         }
 
-        const compareAscents = (peakListId: string) => {
+        const compareAscents = user.id === userId ? null : (peakListId: string) => {
           const url = windowWidth >= mobileSize
             ? comparePeakListLink(user.id, peakListId)
             : comparePeakListIsolatedLink(user.id, peakListId);
@@ -171,6 +171,8 @@ const UserProfile = (props: Props) => {
         const noResultsText = getFluentString('user-profile-no-lists', {
           'user-name': user.name,
         });
+
+        const isMe = user.id === userId;
 
         return (
           <>
@@ -189,6 +191,7 @@ const UserProfile = (props: Props) => {
                 profileView={true}
                 noResultsText={noResultsText}
                 showTrophies={true}
+                isMe={isMe}
               />
             </ListContainer>
           </>
