@@ -7,7 +7,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   listDetailWithMountainDetailLink,
-  myProfileLink,
+  comparePeakListLink,
   preventNavigation,
   searchListDetailLink,
 } from '../../../routing/Utils';
@@ -21,12 +21,14 @@ import {
   Mountain,
   Region,
   State,
+  User,
 } from '../../../types/graphQLTypes';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { formatDate, getLatestAscent, getType } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
+import { UserContext } from '../../App';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -263,47 +265,55 @@ const PeakListCard = (props: Props) => {
     );
   }
   const mountainLogoId = parent === null ? id : parent.id;
-  let desktopURL: string;
-  if (profileView === true) {
-    if (isMe === true) {
-      desktopURL = myProfileLink(id);
-    } else {
-      desktopURL = listDetailWithMountainDetailLink(id, 'none');
-    }
-  } else {
-    desktopURL = searchListDetailLink(id);
-  }
 
+  const renderProp = (user: User | null) => {
+    let desktopURL: string;
+    if (profileView === true) {
+      if (isMe === true) {
+        const userId = user !== null ? user._id : 'none';
+        desktopURL = comparePeakListLink(userId, id);
+      } else {
+        desktopURL = listDetailWithMountainDetailLink(id, 'none');
+      }
+    } else {
+      desktopURL = searchListDetailLink(id);
+    }
+    return (
+      <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
+        <Root>
+          <Title>
+            {name}{getType(type)}
+          </Title>
+          <ListInfo>
+            {listInfoContent}
+          </ListInfo>
+          <LogoContainer>
+            <MountainLogo
+              id={mountainLogoId}
+              title={name}
+              shortName={shortName}
+              variant={type}
+              active={active}
+              completed={numCompletedAscents === totalRequiredAscents}
+            />
+          </LogoContainer>
+          {actionButton}
+          <ProgressBarContainer>
+            <PeakProgressBar
+              variant={active === true ? type : null}
+              completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+              total={totalRequiredAscents}
+              id={id}
+            />
+          </ProgressBarContainer>
+        </Root>
+      </LinkWrapper>
+    );
+  }
   return (
-    <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
-      <Root>
-        <Title>
-          {name}{getType(type)}
-        </Title>
-        <ListInfo>
-          {listInfoContent}
-        </ListInfo>
-        <LogoContainer>
-          <MountainLogo
-            id={mountainLogoId}
-            title={name}
-            shortName={shortName}
-            variant={type}
-            active={active}
-            completed={numCompletedAscents === totalRequiredAscents}
-          />
-        </LogoContainer>
-        {actionButton}
-        <ProgressBarContainer>
-          <PeakProgressBar
-            variant={active === true ? type : null}
-            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
-            total={totalRequiredAscents}
-            id={id}
-          />
-        </ProgressBarContainer>
-      </Root>
-    </LinkWrapper>
+    <UserContext.Consumer
+      children={renderProp}
+    />
   );
 };
 

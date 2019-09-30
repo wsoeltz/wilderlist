@@ -5,7 +5,6 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { Routes } from '../../../routing/routes';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -25,13 +24,13 @@ const UserProfilePage = (props: Props) => {
   const { match, history, userId } = props;
   const { id, peakListId }: any = match.params;
 
-  const profileId = match.path === Routes.MyProfile ? userId : id;
+  const profileId = id === userId ? userId : id;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   let comparison: React.ReactElement<any> | null;
-  if (match.path === Routes.MyProfile) {
+  if (id === userId) {
     if (!Types.ObjectId.isValid(peakListId)) {
       comparison = <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>;
     } else {
