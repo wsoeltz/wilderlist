@@ -14,6 +14,8 @@ global-text-value-more = more
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact the administrator.
 
 global-text-value-modal-email = Email
+global-text-value-name = Name
+global-text-value-profile-picture = Profile Picture
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
@@ -62,9 +64,43 @@ header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
 header-text-menu-my-profile = My Profile
 header-text-menu-settings = Settings
-header-text-menu-privacy-policy = Privacy Policy
+header-text-menu-privacy-policy = Privacy & Usage Policy
 
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
+
+settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, then you can click the button below to sync your account.
+settings-page-sync-with-google-button = Sync your Account with Google
+
+settings-page-privacy-settings = Privacy Settings
+settings-page-display-email = Display your email address on your profile
+settings-page-display-profile-picture = Display your Profile Picture on your profile
+settings-page-display-profile-in-search = Have your account appear in search results
+
+settings-page-delete-account = Delete your Account
+settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>wilderlistapp@gmail.com</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
+
+privacy-and-usage-policy-content =
+  <h4>
+    <strong>Disclaimer</strong>
+  </h4>
+  <p>
+    The content of this site is provided for general educational and informational purposes only. All forms of outdoor recreation have a high risk and can be potentially dangerous and/or hazardous. It is the responsibility of the users of this website to learn the necessary skills, have the proper physical conditioning, and carry the correct gear, when embarking on any outdoor activity. The information on this site is not to be considered a guide and the users of this site must assume full responsibility for their actions and personal safety.
+  </p>
+  <h4>
+    <strong>Indemnification</strong>
+  </h4>
+  <p>
+    The authors of this site provide no warranties, either express or implied, that the information provided on this site is accurate or reliable. By using Wilderlist you agree to indemnify and hold harmless Wilderlist (its owners) and its affiliates with respect to any claims, damages, losses, liabilities, and all costs and expenses of defense, including but not limited to attorneys’ fees, resulting directly or indirectly from a claim by a third party that arises in connection with your use of this website.
+  </P>
+  <h4>
+    <strong>Personal Information</strong>
+  </h4>
+  <p>When you sign up for or use Wilderlist, you give us certain information voluntarily. This includes your name, email address, profile photo, and any other information you give us. Wilderlist uses authorization through Google, and we receive your account information through Google, based on the privacy settings you have with Google. Wilderlist are is not affiliated with Google, so please refer to Google's privacy policies and settings for any information that is shared or used through them.
+  </p>
+  <p>We do not share personal information with third-parties. We do store information we collect about your visit to this site through the use of cookies, which you can turn off at anytime by modifying your Internet browser’s settings. You may at any time contact us to receive all of the data that Wilderlist has stored on you. You may also contact us to have all of the data that we have on you wiped out any time.
+  </p>
+  <p>We are not responsible for the republishing of the content found on this site on other Web sites or media without our permission.</p>
+  <p>This privacy and usage policy is subject to change without notice.</p>
 
 dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet.
 dashboard-empty-state-no-active-lists-button = Find Lists

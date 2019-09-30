@@ -33,11 +33,11 @@ import MountainDetailPage from './mountains/detail';
 import ComparePeakListPage from './peakLists/compare';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
+import PrivacyPolicy from './privacyPolicy';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserSettings from './users/settings';
-import PrivacyPolicy from './privacyPolicy';
 
 const overlayPortalZIndex = 3000;
 
