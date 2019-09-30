@@ -26,6 +26,8 @@ const GET_USER = gql`
       name
       email
       profilePictureUrl
+      hideEmail
+      hideProfilePicture
       mountains {
         mountain {
           id
@@ -88,6 +90,8 @@ export interface UserDatum {
   id: User['name'];
   name: User['name'];
   email: User['email'];
+  hideEmail: User['hideEmail'];
+  hideProfilePicture: User['hideProfilePicture'];
   profilePictureUrl: User['profilePictureUrl'];
   mountains: User['mountains'];
   peakLists: PeakListDatum[];

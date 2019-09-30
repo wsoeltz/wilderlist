@@ -68,8 +68,7 @@ header-text-menu-privacy-policy = Privacy & Usage Policy
 
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
-settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, then you can click the button below to sync your account.
-settings-page-sync-with-google-button = Sync your Account with Google
+settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
 
 settings-page-privacy-settings = Privacy Settings
 settings-page-display-email = Display your email address on your profile

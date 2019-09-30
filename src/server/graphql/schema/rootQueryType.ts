@@ -69,7 +69,10 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
         return User
-          .find({ name: { $regex: searchQuery, $options: 'i' } })
+          .find({
+            hideProfileInSearch: { $ne: true },
+            name: { $regex: searchQuery, $options: 'i' },
+          })
           .limit(nPerPage)
           .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
           .sort({ name: 1 });

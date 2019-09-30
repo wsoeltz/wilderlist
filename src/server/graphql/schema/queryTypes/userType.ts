@@ -1,9 +1,9 @@
 import {
+  GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
-  // GraphQLInt,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { User as IUser } from '../../graphQLTypes';
@@ -18,6 +18,9 @@ const UserSchema = new Schema({
   email: { type: String },
   profilePictureUrl: { type: String },
   permissions: { type: String },
+  hideEmail: { type: Boolean },
+  hideProfilePicture: { type: Boolean },
+  hideProfileInSearch: { type: Boolean },
   friends: [{
     user: {
       type: Schema.Types.ObjectId,
@@ -89,6 +92,9 @@ const UserType: any = new GraphQLObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     profilePictureUrl: { type: GraphQLString },
+    hideEmail: { type: GraphQLBoolean },
+    hideProfilePicture: { type: GraphQLBoolean },
+    hideProfileInSearch: { type: GraphQLBoolean },
     friends: { type: new GraphQLList(FriendsType) },
     peakLists: {
       type: new GraphQLList(PeakListType),

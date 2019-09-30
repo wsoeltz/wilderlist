@@ -70,8 +70,11 @@ export interface User {
   name: string;
   email: string;
   profilePictureUrl: string;
-  friends: User[] | null;
+  friends: Friend[] | null;
   peakLists: PeakList[] | null;
   mountains: CompletedMountain[] | null;
   permissions: PermissionTypes;
+  hideEmail: boolean | null;
+  hideProfilePicture: boolean | null;
+  hideProfileInSearch: boolean | null;
 }

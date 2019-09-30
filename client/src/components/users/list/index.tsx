@@ -43,6 +43,7 @@ const SEARCH_USERS = gql`
       id
       name
       profilePictureUrl
+      hideProfilePicture
       peakLists {
         id
         shortName

@@ -145,6 +145,17 @@ const ProfilePicture = styled.img`
   border-radius: 4000px;
 `;
 
+const ProfilePictureEmpty = styled.div`
+  grid-row: 1 / span 2;
+  grid-column: 1;
+  max-width: 100%;
+  width: 96px;
+  padding-bottom: 100%;
+  margin-right: 1.5rem;
+  border-radius: 4000px;
+  background-color: gray;
+`;
+
 const Subtitle = styled.p`
   color: ${lightBaseColor};
   margin: 0.4rem 0;
@@ -414,6 +425,19 @@ const UserCard = (props: Props) => {
 
   const opacity = friendStatus === FriendStatus.friends ? 1 : 0.2;
 
+  const profilePicture = user.hideProfilePicture === true
+    ? (
+      <>
+        <ProfilePictureEmpty style={{opacity}} />
+      </>
+      )
+    : (
+        <ProfilePicture
+          src={user.profilePictureUrl}
+          style={{opacity}}
+        />
+      );
+
   const desktopURL = openInSidebar === true
     ? friendsWithUserProfileLink(user.id)
     : comparePeakListLink(user.id, 'none');
@@ -424,10 +448,7 @@ const UserCard = (props: Props) => {
       desktopURL={desktopURL}
     >
       <Root>
-        <ProfilePicture
-          src={user.profilePictureUrl}
-          style={{opacity}}
-        />
+        {profilePicture}
         {cardContent}
       </Root>
     </LinkWrapper>

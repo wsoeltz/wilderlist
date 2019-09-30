@@ -12,6 +12,7 @@ export interface UserDatum {
   id: User['id'];
   name: User['name'];
   profilePictureUrl: User['profilePictureUrl'];
+  hideProfilePicture: User['hideProfilePicture'];
   peakLists: Array<{
     id: PeakList['id'];
     shortName: PeakList['shortName'];
@@ -88,6 +89,9 @@ const ListUsers = (props: Props) => {
       return null;
     }
   });
+  if (userData.length === 1 && showCurrentUser === false && userData[0].id === currentUserId) {
+    return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
+  }
   return (
     <>
       {usersAwaitingYourResponse}

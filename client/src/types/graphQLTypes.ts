@@ -74,4 +74,7 @@ export interface User {
   peakLists: PeakList[] | null;
   mountains: CompletedMountain[] | null;
   permissions: PermissionTypes;
+  hideEmail: boolean | null;
+  hideProfilePicture: boolean | null;
+  hideProfileInSearch: boolean | null;
 }
