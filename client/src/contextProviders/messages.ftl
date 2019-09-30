@@ -62,6 +62,7 @@ header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
 header-text-menu-my-profile = My Profile
 header-text-menu-settings = Settings
+header-text-menu-privacy-policy = Privacy Policy
 
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 

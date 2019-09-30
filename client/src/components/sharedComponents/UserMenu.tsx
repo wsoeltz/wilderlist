@@ -136,9 +136,19 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
   });
   return (
     <UserMenuListContainer ref={node} onClick={closeUserMenu}>
-      <UserMenuLink to={comparePeakListLink(userId, 'none')}>{getFluentString('header-text-menu-my-profile')}</UserMenuLink>
+      <UserMenuLink to={comparePeakListLink(userId, 'none')}>
+        {getFluentString('header-text-menu-my-profile')}
+      </UserMenuLink>
+      <UserMenuLink to={Routes.UserSettings}>
+        {getFluentString('header-text-menu-settings')}
+      </UserMenuLink>
+      <UserMenuLink to={Routes.PrivacyPolicy}>
+        {getFluentString('header-text-menu-privacy-policy')}
+      </UserMenuLink>
       {adminPanel}
-      <UserMenuAnchor href='/api/logout'>{getFluentString('header-text-menu-item-logout')}</UserMenuAnchor>
+      <UserMenuAnchor href='/api/logout'>
+        {getFluentString('header-text-menu-item-logout')}
+      </UserMenuAnchor>
     </UserMenuListContainer>
   );
 };

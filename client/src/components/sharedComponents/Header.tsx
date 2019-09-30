@@ -121,11 +121,7 @@ const Header = (props: RouteComponentProps) => {
       return null;
     } else if (user) {
       return (
-        <HeaderContainer>
-          <LogoContainer to={Routes.Dashboard}>
-            {getFluentString('global-text-value-wilderlist-name')}
-            <Logo />
-          </LogoContainer>
+        <>
           <MainNav>
             {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
             {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
@@ -137,16 +133,22 @@ const Header = (props: RouteComponentProps) => {
             user={user}
             getFluentString={getFluentString}
           />
-        </HeaderContainer>
+        </>
       );
     } else {
       return null;
     }
   };
   return (
+    <HeaderContainer>
+      <LogoContainer to={Routes.Dashboard}>
+        {getFluentString('global-text-value-wilderlist-name')}
+        <Logo />
+      </LogoContainer>
       <UserContext.Consumer
         children={renderProp}
       />
+    </HeaderContainer>
   );
 };
 

@@ -7,7 +7,7 @@ export enum Routes {
   MountainDetail = '/mountain/:id',
   FriendsWithProfile = '/users/:id',
   UserProfile = '/user/:id',
-  MyProfile = '/user/me/list/:peakListId',
+  UserSettings = '/user-settings',
   ComparePeakList = '/user/:id/list/:peakListId',
   ComparePeakListWithMountainDetail = '/user/:id/list/:peakListId/mountain/:mountainId',
   ComparePeakListIsolated = '/compare/user/:id/list/:peakListId',
@@ -17,4 +17,5 @@ export enum Routes {
   AdminMountains = '/admin/mountains',
   AdminPeakLists = '/admin/lists',
   AdminUsers = '/admin/users',
+  PrivacyPolicy = '/privacy-policy',
 }

@@ -6,8 +6,8 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  listDetailWithMountainDetailLink,
   comparePeakListLink,
+  listDetailWithMountainDetailLink,
   preventNavigation,
   searchListDetailLink,
 } from '../../../routing/Utils';
@@ -23,12 +23,12 @@ import {
   State,
   User,
 } from '../../../types/graphQLTypes';
+import { UserContext } from '../../App';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { formatDate, getLatestAscent, getType } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
-import { UserContext } from '../../App';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -309,7 +309,7 @@ const PeakListCard = (props: Props) => {
         </Root>
       </LinkWrapper>
     );
-  }
+  };
   return (
     <UserContext.Consumer
       children={renderProp}
