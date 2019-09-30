@@ -49,15 +49,17 @@ const DELETE_REGION = gql`
   }
 `;
 
-export interface SuccessResponse {
-  regions: Array<{
-    id: Region['id'];
-    name: Region['name'];
-    states: Array<{
-      id: State['id'];
-      name: State['name'];
-    }>
+export interface RegionDatum {
+  id: Region['id'];
+  name: Region['name'];
+  states: Array<{
+    id: State['id'];
+    name: State['name'];
   }>;
+}
+
+export interface SuccessResponse {
+  regions: RegionDatum[];
 }
 
 enum EditRegionPanelEnum {

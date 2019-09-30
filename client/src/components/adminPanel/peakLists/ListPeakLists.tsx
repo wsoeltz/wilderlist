@@ -1,7 +1,8 @@
 import { ApolloError } from 'apollo-boost';
-import React from 'react';
+import React, {useState} from 'react';
 import { LinkButton } from '../../../styling/styleUtils';
-import { SuccessResponse } from '../AdminPeakLists';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import { PeakListDatum, SuccessResponse } from '../AdminPeakLists';
 
 interface Props {
   loading: boolean;
@@ -14,6 +15,29 @@ interface Props {
 const ListStates = (props: Props) => {
   const {loading, error, data, deletePeakList, editPeakList} = props;
 
+  const [peakListToDelete, setPeakListToDelete] = useState<PeakListDatum | null>(null);
+
+  const closeAreYouSureModal = () => {
+    setPeakListToDelete(null);
+  };
+  const confirmRemove = () => {
+    if (peakListToDelete !== null) {
+      deletePeakList(peakListToDelete.id);
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureModal = peakListToDelete === null ? null : (
+    <AreYouSureModal
+      onConfirm={confirmRemove}
+      onCancel={closeAreYouSureModal}
+      title={'Confirm delete'}
+      text={'Are your sure you want to delete peakList ' + peakListToDelete.name + '? This cannot be undone.'}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
+
   if (loading === true) {
     return (<p>Loading</p>);
   } else if (error !== undefined) {
@@ -23,11 +47,17 @@ const ListStates = (props: Props) => {
     const { peakLists } = data;
     const peakListElms = peakLists.map(peakList => {
       const { type, parent } = peakList;
-      let mountainElms;
+      let parentCopy: React.ReactElement<any> | null;
       if (parent !== null) {
-        mountainElms = `Parent list: ${parent.name}`;
+        parentCopy = (
+          <div>
+            <small>
+              Parent list: {parent.name} ({parent.type})
+            </small>
+          </div>
+        );
       } else {
-        mountainElms = peakList.mountains.map(({name}) => name + ', ');
+        parentCopy = null;
       }
       return (
         <li key={peakList.id}>
@@ -35,16 +65,14 @@ const ListStates = (props: Props) => {
             onClick={() => editPeakList(peakList.id)}
           >{peakList.name} ({peakList.shortName})</LinkButton></strong>
           <button
-            onClick={() => deletePeakList(peakList.id)}
+            onClick={() => setPeakListToDelete(peakList)}
           >
             Delete
           </button>
-          <div>
-            <small>{mountainElms}</small>
-          </div>
+          {parentCopy}
           <div>
             <small>
-              {type},
+              {type}
             </small>
           </div>
         </li>
@@ -53,6 +81,7 @@ const ListStates = (props: Props) => {
     return(
       <>
         {peakListElms}
+        {areYouSureModal}
       </>
     );
   } else {

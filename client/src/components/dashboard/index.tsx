@@ -225,6 +225,7 @@ const Dashboard = (props: Props) => {
           profileView={true}
           noResultsText={''}
           showTrophies={true}
+          isMe={false}
         />
       );
     }

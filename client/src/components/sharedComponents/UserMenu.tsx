@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Routes } from '../../routing/routes';
+import { comparePeakListLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -112,14 +113,15 @@ const Caret = styled(FontAwesomeIcon)`
 `;
 
 interface UserMenuListProps {
+  user: User;
   adminPanel: React.ReactElement<any> | null;
   closeUserMenu: () => void;
   getFluentString: GetString;
 }
 
-const UserMenuList = ({adminPanel, closeUserMenu, getFluentString}: UserMenuListProps) => {
+const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMenuListProps) => {
   const node = useRef<HTMLDivElement | null>(null);
-
+  const userId = user !== null ? user._id : 'none';
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const element = e.target as HTMLElement;
@@ -132,11 +134,21 @@ const UserMenuList = ({adminPanel, closeUserMenu, getFluentString}: UserMenuList
       document.removeEventListener('mousedown', handleClick);
     };
   });
-
   return (
     <UserMenuListContainer ref={node} onClick={closeUserMenu}>
+      <UserMenuLink to={comparePeakListLink(userId, 'none')}>
+        {getFluentString('header-text-menu-my-profile')}
+      </UserMenuLink>
+      <UserMenuLink to={Routes.UserSettings}>
+        {getFluentString('header-text-menu-settings')}
+      </UserMenuLink>
+      <UserMenuLink to={Routes.PrivacyPolicy}>
+        {getFluentString('header-text-menu-privacy-policy')}
+      </UserMenuLink>
       {adminPanel}
-      <UserMenuAnchor href='/api/logout'>{getFluentString('header-text-menu-item-logout')}</UserMenuAnchor>
+      <UserMenuAnchor href='/api/logout'>
+        {getFluentString('header-text-menu-item-logout')}
+      </UserMenuAnchor>
     </UserMenuListContainer>
   );
 };
@@ -163,6 +175,7 @@ const UserMenuComponent = (props: UserMenuComponentProps) => {
   const userMenuList = userMenuOpen === true
     ? (
         <UserMenuList
+          user={user}
           adminPanel={adminPanel}
           closeUserMenu={() => setUserMenuOpen(false)}
           getFluentString={getFluentString} />

@@ -6,8 +6,13 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import {lightBaseColor, semiBoldFontBoldWeight} from '../../styling/styleUtils';
+import { getBrowser } from '../../Utils';
 
+const {browser} = getBrowser();
 const mobileWidth = 890;
+const videoStyles = browser === 'Edge'
+  ? 'min-width: 100%; min-height: 100%;'
+  : 'width: 100%; height: 100%;';
 
 const Root = styled.div`
   position: relative;
@@ -17,8 +22,7 @@ const Root = styled.div`
 
 const VideoBackground = styled.video`
   object-fit: cover;
-  width: 100%;
-  height: 100%;
+  ${videoStyles}
   position: relative;
 `;
 

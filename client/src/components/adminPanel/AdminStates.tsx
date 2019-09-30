@@ -58,16 +58,18 @@ const DELETE_STATE = gql`
   }
 `;
 
-export interface SuccessResponse {
-  states: Array<{
-    id: State['id'];
-    name: State['name'];
-    abbreviation: State['abbreviation'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-    }>
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  abbreviation: State['abbreviation'];
+  regions: Array<{
+    id: Region['id'];
+    name: Region['name'];
   }>;
+}
+
+export interface SuccessResponse {
+  states: StateDatum[];
 }
 
 enum EditStatePanelEnum {

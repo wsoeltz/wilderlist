@@ -29,6 +29,7 @@ const PeakListSchema = new Schema({
   }],
   numUsers: { type: Number, required: true },
   parent: { type: Schema.Types.ObjectId },
+  searchString: { type: String, required: true },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -93,6 +94,7 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    searchString: { type: GraphQLString },
   }),
 });
 

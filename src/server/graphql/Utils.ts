@@ -1,5 +1,6 @@
 /* tslint:disable:await-promise */
 import mongoose from 'mongoose';
+import { PeakListVariants } from './graphQLTypes';
 
 export async function asyncForEach(array: any[], callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -36,4 +37,26 @@ export const removeConnections = (
         }
     });
   });
+};
+
+// Errors out at compile time if a discriminating `switch` doesn't catch all cases
+// of an enum and at run time if for some reason an invalid enum value is passed.
+// See https://basarat.gitbooks.io/typescript/content/docs/types/discriminated-unions.html
+export function failIfValidOrNonExhaustive(_variable: never, message: string): never {
+  throw new Error(message);
+}
+
+export const getType = (type: PeakListVariants) => {
+  if (type === PeakListVariants.standard) {
+    return '';
+  } else if (type === PeakListVariants.winter) {
+    return ' - Winter';
+  } else if (type === PeakListVariants.fourSeason) {
+    return ' - 4-Season';
+  } else if (type === PeakListVariants.grid) {
+    return ' - Grid';
+  } else {
+    failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
+    return '';
+  }
 };

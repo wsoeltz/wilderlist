@@ -1,7 +1,8 @@
 import { ApolloError } from 'apollo-boost';
-import React from 'react';
+import React, {useState} from 'react';
 import { LinkButton } from '../../../styling/styleUtils';
-import { SuccessResponse } from '../AdminStates';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import { StateDatum, SuccessResponse } from '../AdminStates';
 
 interface Props {
   loading: boolean;
@@ -13,6 +14,29 @@ interface Props {
 
 const ListStates = (props: Props) => {
   const {loading, error, data, deleteState, editState} = props;
+
+  const [stateToDelete, setStateToDelete] = useState<StateDatum | null>(null);
+
+  const closeAreYouSureModal = () => {
+    setStateToDelete(null);
+  };
+  const confirmRemove = () => {
+    if (stateToDelete !== null) {
+      deleteState(stateToDelete.id);
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureModal = stateToDelete === null ? null : (
+    <AreYouSureModal
+      onConfirm={confirmRemove}
+      onCancel={closeAreYouSureModal}
+      title={'Confirm delete'}
+      text={'Are your sure you want to delete state ' + stateToDelete.name + '? This cannot be undone.'}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
 
   if (loading === true) {
     return (<p>Loading</p>);
@@ -29,7 +53,7 @@ const ListStates = (props: Props) => {
             onClick={() => editState(state.id)}
           >{state.name} ({state.abbreviation})</LinkButton></strong>
           <button
-            onClick={() => deleteState(state.id)}
+            onClick={() => setStateToDelete(state)}
           >
             Delete
           </button>
@@ -42,6 +66,7 @@ const ListStates = (props: Props) => {
     return(
       <>
         {stateElms}
+        {areYouSureModal}
       </>
     );
   } else {

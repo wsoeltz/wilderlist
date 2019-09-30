@@ -87,6 +87,18 @@ const ProfilePicture = styled.img`
   }
 `;
 
+const ProfilePictureEmpty = styled.div`
+  max-width: 100%;
+  width: 10rem;
+  padding-top: 100%;
+  border-radius: 4000px;
+  background-color: gray;
+
+  @media(max-width: 550px) {
+    max-width: 6rem;
+  }
+`;
+
 const BoldLink = styled.a`
   font-weight: ${boldFontWeight};
   white-space: nowrap;
@@ -243,35 +255,51 @@ const Header = (props: Props) => {
     actionButtons = null;
   }
 
+  const compareAllAscentsBtn = user.id === currentUserId ? null : (
+    <div>
+      <ButtonPrimaryLink
+        desktopURL={comparePeakListLink(user.id, 'all')}
+        mobileURL={comparePeakListIsolatedLink(user.id, 'all')}
+      >
+        {getFluentString('user-profile-compare-all-ascents')}
+      </ButtonPrimaryLink>
+    </div>
+  );
+
+  const emailOutput = user.hideEmail === true ? null : (
+      <ListInfo>
+        <ContactLabel>
+          {getFluentString('global-text-value-modal-email')}:
+        </ContactLabel>
+        <BoldLink href={`mailto:${email}`}>
+          <EmailIcon icon='envelope' />
+          {email}
+        </BoldLink>
+      </ListInfo>
+    );
+
+  const profilePicture = user.hideProfilePicture === true ? (
+      <ProfilePictureContainer>
+        <ProfilePictureEmpty />
+      </ProfilePictureContainer>
+    ) : (
+      <ProfilePictureContainer>
+        <ProfilePicture alt={name} title={name} src={profilePictureUrl}/>
+      </ProfilePictureContainer>
+    );
+
   return (
     <Root>
       <TitleContent>
         <Title>{name}</Title>
-        <ListInfo>
-          <ContactLabel>
-            {getFluentString('global-text-value-modal-email')}:
-          </ContactLabel>
-          <BoldLink href={`mailto:${email}`}>
-            <EmailIcon icon='envelope' />
-            {email}
-          </BoldLink>
-        </ListInfo>
+        {emailOutput}
       </TitleContent>
-      <ProfilePictureContainer>
-        <ProfilePicture alt={name} title={name} src={profilePictureUrl}/>
-      </ProfilePictureContainer>
+      {profilePicture}
       <ButtonContainer>
         <ActionButtonContainer>
           {actionButtons}
         </ActionButtonContainer>
-        <div>
-          <ButtonPrimaryLink
-            desktopURL={comparePeakListLink(user.id, 'all')}
-            mobileURL={comparePeakListIsolatedLink(user.id, 'all')}
-          >
-            {getFluentString('user-profile-compare-all-ascents')}
-          </ButtonPrimaryLink>
-        </div>
+        {compareAllAscentsBtn}
       </ButtonContainer>
       {areYouSureModal}
     </Root>

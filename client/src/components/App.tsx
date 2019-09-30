@@ -33,9 +33,11 @@ import MountainDetailPage from './mountains/detail';
 import ComparePeakListPage from './peakLists/compare';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
+import PrivacyPolicy from './privacyPolicy';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
+import UserSettings from './users/settings';
 
 const overlayPortalZIndex = 3000;
 
@@ -130,6 +132,9 @@ const App: React.FC = () => {
         <Route exact path={Routes.UserProfile}
           render={(props) => <UserProfile {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.UserSettings}
+          render={(props) => <UserSettings {...props} userId={user._id} />}
+        />
         <Route exact path={Routes.ComparePeakList}
           render={(props) => <UserProfile {...props} userId={user._id} />}
         />
@@ -139,6 +144,7 @@ const App: React.FC = () => {
         <Route exact path={Routes.ComparePeakListWithMountainDetail}
           render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}
         <Route
@@ -149,6 +155,7 @@ const App: React.FC = () => {
   } else {
     userRoutes = (
       <Switch>
+        <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         <Route path={Routes.Login} component={LoginPage} />
       </Switch>
     );

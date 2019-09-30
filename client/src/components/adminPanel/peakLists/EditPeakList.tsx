@@ -20,6 +20,7 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       parent {
         id
         name
+        type
       }
     }
     mountains {
@@ -366,7 +367,7 @@ const EditRegion = (props: Props) => {
       }
     };
     const parentOptions = listDatum !== undefined ? listDatum.peakLists.map(list => (
-        <option value={list.id} key={list.id}>{list.name}</option>
+        <option value={list.id} key={list.id}>{list.name} - {list.type}</option>
       ),
     ) : null;
     parent = (

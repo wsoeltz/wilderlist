@@ -5,7 +5,12 @@ import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { listDetailWithMountainDetailLink, preventNavigation, searchListDetailLink } from '../../../routing/Utils';
+import {
+  comparePeakListLink,
+  listDetailWithMountainDetailLink,
+  preventNavigation,
+  searchListDetailLink,
+} from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
@@ -16,10 +21,12 @@ import {
   Mountain,
   Region,
   State,
+  User,
 } from '../../../types/graphQLTypes';
+import { UserContext } from '../../App';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { formatDate, getLatestAscent } from '../Utils';
+import { formatDate, getLatestAscent, getType } from '../Utils';
 import { PeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
@@ -188,6 +195,7 @@ interface Props {
   mountains: MountainList[];
   numCompletedAscents: number;
   totalRequiredAscents: number;
+  isMe: boolean;
 }
 
 const PeakListCard = (props: Props) => {
@@ -195,7 +203,7 @@ const PeakListCard = (props: Props) => {
     peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
     profileView, mountains, numCompletedAscents,
-    totalRequiredAscents,
+    totalRequiredAscents, isMe,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -257,37 +265,55 @@ const PeakListCard = (props: Props) => {
     );
   }
   const mountainLogoId = parent === null ? id : parent.id;
-  const desktopURL = profileView === false ? searchListDetailLink(id) : listDetailWithMountainDetailLink(id, 'none');
+
+  const renderProp = (user: User | null) => {
+    let desktopURL: string;
+    if (profileView === true) {
+      if (isMe === true) {
+        const userId = user !== null ? user._id : 'none';
+        desktopURL = comparePeakListLink(userId, id);
+      } else {
+        desktopURL = listDetailWithMountainDetailLink(id, 'none');
+      }
+    } else {
+      desktopURL = searchListDetailLink(id);
+    }
+    return (
+      <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
+        <Root>
+          <Title>
+            {name}{getType(type)}
+          </Title>
+          <ListInfo>
+            {listInfoContent}
+          </ListInfo>
+          <LogoContainer>
+            <MountainLogo
+              id={mountainLogoId}
+              title={name}
+              shortName={shortName}
+              variant={type}
+              active={active}
+              completed={numCompletedAscents === totalRequiredAscents}
+            />
+          </LogoContainer>
+          {actionButton}
+          <ProgressBarContainer>
+            <PeakProgressBar
+              variant={active === true ? type : null}
+              completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+              total={totalRequiredAscents}
+              id={id}
+            />
+          </ProgressBarContainer>
+        </Root>
+      </LinkWrapper>
+    );
+  };
   return (
-    <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
-      <Root>
-        <Title>
-          {name}
-        </Title>
-        <ListInfo>
-          {listInfoContent}
-        </ListInfo>
-        <LogoContainer>
-          <MountainLogo
-            id={mountainLogoId}
-            title={name}
-            shortName={shortName}
-            variant={type}
-            active={active}
-            completed={numCompletedAscents === totalRequiredAscents}
-          />
-        </LogoContainer>
-        {actionButton}
-        <ProgressBarContainer>
-          <PeakProgressBar
-            variant={active === true ? type : null}
-            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
-            total={totalRequiredAscents}
-            id={id}
-          />
-        </ProgressBarContainer>
-      </Root>
-    </LinkWrapper>
+    <UserContext.Consumer
+      children={renderProp}
+    />
   );
 };
 
