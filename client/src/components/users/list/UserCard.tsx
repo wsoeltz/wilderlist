@@ -23,6 +23,7 @@ import {
   completedPeaks,
   formatDate,
   getLatestOverallAscent,
+  getType,
 } from '../../peakLists/Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
@@ -212,9 +213,9 @@ const getListsInProgress =
         totalRequiredAscents = 0;
       }
       if (numCompletedAscents === totalRequiredAscents) {// list complete
-        completedLists.push(list.shortName);
+        completedLists.push(list.shortName + getType(list.type));
       } else { // list is incomplete
-        listsInProgress.push(list.shortName);
+        listsInProgress.push(list.shortName + getType(list.type));
       }
     });
     return { completedLists, listsInProgress };
@@ -262,7 +263,10 @@ const UserCard = (props: Props) => {
   } else {
     let listShortNames: string = '';
     for (let i = 0; i < numListsToShow; i++) {
-      if (completedLists.length - 1 === i) { // last elemnt in array
+      if (completedLists.length - 1 === i) { // last element in array
+        if (listsInProgress.length === numListsToShow) {
+          listShortNames = listShortNames + ' & ';
+        }
         listShortNames = listShortNames + completedLists[i];
         break;
       } else if (i > 0) { //not last element or first element
@@ -299,7 +303,10 @@ const UserCard = (props: Props) => {
   } else {
     let listShortNames: string = '';
     for (let i = 0; i < numListsToShow; i++) {
-      if (listsInProgress.length - 1 === i) { // last elemnt in array
+      if (listsInProgress.length - 1 === i) { // last element in array
+        if (listsInProgress.length === numListsToShow) {
+          listShortNames = listShortNames + ' & ';
+        }
         listShortNames = listShortNames + listsInProgress[i];
         break;
       } else if (i > 0) { //not last element or first element
