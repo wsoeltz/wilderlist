@@ -10,6 +10,7 @@ import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import { convertDMS } from '../../../Utils';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
@@ -150,7 +151,7 @@ const MountainDetail = (props: Props) => {
   });
 
   if (loading === true) {
-    return null;
+    return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return (

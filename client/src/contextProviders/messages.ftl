@@ -11,6 +11,10 @@ global-text-value-modal-cancel = Cancel
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
 global-text-value-back = Back
+global-text-value-loading = Loading
+global-text-value-loading-medium =  This is taking awhile, please don't get lost
+global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
+global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact the administrator.
 

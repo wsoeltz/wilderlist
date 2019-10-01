@@ -1,4 +1,5 @@
 import { GetString } from 'fluent-react';
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
 import {
@@ -18,7 +19,6 @@ import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { completedPeaks } from '../Utils';
 import PeakListCard, {MountainList} from './PeakListCard';
 import PeakListTrophy from './PeakListTrophy';
-import sortBy from 'lodash/sortBy';
 
 const SectionTitle = styled.h3`
   font-size: 1.2rem;

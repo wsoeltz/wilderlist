@@ -8,6 +8,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
@@ -145,7 +146,7 @@ const PeakListDetail = (props: Props) => {
     variables: { id, userId },
   });
   if (loading === true) {
-    return null;
+    return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return  (

@@ -7,6 +7,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Header from '../detail/Header';
 import {
   MountainDatum,
@@ -159,7 +160,7 @@ const ComparePeakListPage = (props: Props) => {
     variables: { id: peakListId, userId, friendId },
   });
   if (loading === true) {
-    return null;
+    return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return (
