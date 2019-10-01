@@ -320,7 +320,7 @@ const MountainTable = (props: Props) => {
       {importButton}
       <FilterBar>
         <StandardSearch
-          placeholder='Filter mountains'
+          placeholder={getFluentString('peak-list-detail-filter-mountains')}
           setSearchQuery={filterMountains}
           focusOnMount={false}
           initialQuery={searchQuery}

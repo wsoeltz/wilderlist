@@ -7,6 +7,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
+  ContentHeader,
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../../styling/Grid';
@@ -14,6 +15,7 @@ import { PlaceholderText } from '../../../styling/styleUtils';
 import CompareAllMountains from '../../peakLists/compare/CompareAllMountains';
 import PeakListComparison from '../../peakLists/compare/PeakListComparison';
 import PeakListDetail from '../../peakLists/detail/PeakListDetail';
+import BackButton from '../../sharedComponents/BackButton';
 import UserProfile from './UserProfile';
 
 interface Props extends RouteComponentProps {
@@ -55,6 +57,9 @@ const UserProfilePage = (props: Props) => {
   return (
     <>
       <ContentLeftLarge>
+        <ContentHeader>
+          <BackButton />
+        </ContentHeader>
         <ContentBody>
           <UserProfile
             userId={userId}

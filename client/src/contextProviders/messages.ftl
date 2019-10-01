@@ -10,6 +10,7 @@ global-text-value-modal-confirm = Confirm
 global-text-value-modal-cancel = Cancel
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
+global-text-value-back = Back
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact the administrator.
 
@@ -127,6 +128,7 @@ peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-nam
 peak-list-detail-text-begin-list = Begin List
 peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
+peak-list-detail-filter-mountains = Filter mountains
 
 peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located {
   $state-or-region ->
