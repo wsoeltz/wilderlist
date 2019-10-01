@@ -200,7 +200,7 @@ const PeakListPage = (props: Props) => {
   let list: React.ReactElement<any> | null;
   if (loading === true) {
     const loadingCards: Array<React.ReactElement<any>> = [];
-    for (let i = 0; i < nPerPage; i++) {
+    for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostPeakListCard key={i} />);
     }
     list = <>{loadingCards}</>;

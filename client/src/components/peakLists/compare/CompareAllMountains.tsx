@@ -7,6 +7,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import { MountainDatumLite } from './ComparisonRow';
 import ComparisonTable from './ComparisonTable';
 
@@ -113,7 +114,7 @@ const CompareAllMountains = (props: Props) => {
     variables: { userId, friendId: id },
   });
   if (loading === true) {
-    return null;
+    return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return (

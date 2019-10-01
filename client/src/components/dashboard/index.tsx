@@ -172,13 +172,13 @@ const Dashboard = (props: Props) => {
   let friendsList: React.ReactElement<any> | null;
   if (loading === true) {
     const loadingListCards: Array<React.ReactElement<any>> = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       loadingListCards.push(<GhostPeakListCard key={i} />);
     }
     peakListsList = <>{loadingListCards}</>;
 
     const loadingUserCards: Array<React.ReactElement<any>> = [];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 5; i++) {
       loadingUserCards.push(<GhostUserCard key={i} />);
     }
     friendsList = <>{loadingUserCards}</>;

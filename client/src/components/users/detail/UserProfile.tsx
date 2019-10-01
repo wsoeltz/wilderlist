@@ -13,6 +13,7 @@ import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
 import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Header from './Header';
 
 const ListContainer = styled.div`
@@ -131,7 +132,7 @@ const UserProfile = (props: Props) => {
   });
   const renderProp = ({windowWidth}: IAppContext) => {
     if (loading === true) {
-      return null;
+      return <LoadingSpinner />;
     } else if (error !== undefined) {
       console.error(error);
       return (

@@ -18,6 +18,7 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import MountainCompletionModal from './MountainCompletionModal';
@@ -51,6 +52,9 @@ export const TitleBase = styled.div`
   align-items: flex-end;
   padding: ${horizontalPadding}rem;
   border-bottom: solid 2px ${lightBorderColor};
+  position: sticky;
+  top: -1rem;
+  background-color: #fff;
 
   @media ${smallColumnMediaQuery} {
     font-size: 0.8rem;
@@ -114,6 +118,11 @@ const ImportAscentsButtonContainer = styled.div`
   margin: 1rem 0;
 `;
 
+export const FilterBar = styled.div`
+  margin-bottom: 1rem;
+  font-size: 75%;
+`;
+
 interface Props {
   mountains: MountainDatum[];
   user: UserDatum;
@@ -129,6 +138,7 @@ const MountainTable = (props: Props) => {
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
@@ -189,7 +199,9 @@ const MountainTable = (props: Props) => {
 
   const userMountains = (user && user.mountains) ? user.mountains : [];
   const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
-  const mountainRows = mountainsByElevation.map((mountain, index) => (
+  const filteredMountains = mountainsByElevation.filter(
+    ({name}) => name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const mountainRows = filteredMountains.map((mountain, index) => (
       <MountainRow
         key={mountain.id}
         index={index}
@@ -298,19 +310,33 @@ const MountainTable = (props: Props) => {
       </ImportAscentsButtonContainer>
     ) : null;
 
+  const filterMountains = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       {gridNote}
       {importButton}
-      <Root>
-        <MountainColumnTitleName>
-          {getFluentString('global-text-value-mountain')}
-        </MountainColumnTitleName>
-        {titleColumns}
-        {mountainRows}
-        {editMountainModal}
-        {importAscentsModal}
-      </Root>
+      <FilterBar>
+        <StandardSearch
+          placeholder={getFluentString('peak-list-detail-filter-mountains')}
+          setSearchQuery={filterMountains}
+          focusOnMount={false}
+          initialQuery={searchQuery}
+        />
+      </FilterBar>
+      <div style={{minHeight: mountains.length * 32}}>
+        <Root>
+          <MountainColumnTitleName>
+            {getFluentString('global-text-value-mountain')}
+          </MountainColumnTitleName>
+          {titleColumns}
+          {mountainRows}
+          {editMountainModal}
+          {importAscentsModal}
+        </Root>
+      </div>
     </>
   );
 
