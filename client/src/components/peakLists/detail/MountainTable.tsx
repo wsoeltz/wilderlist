@@ -51,6 +51,9 @@ export const TitleBase = styled.div`
   align-items: flex-end;
   padding: ${horizontalPadding}rem;
   border-bottom: solid 2px ${lightBorderColor};
+  position: sticky;
+  top: -1rem;
+  background-color: #fff;
 
   @media ${smallColumnMediaQuery} {
     font-size: 0.8rem;
