@@ -1,8 +1,8 @@
 import { ApolloError } from 'apollo-boost';
 import React, {useState} from 'react';
-import { LinkButton } from '../../../styling/styleUtils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { RegionDatum, SuccessResponse } from '../AdminRegions';
+import { ListItem } from '../sharedStyles';
 
 interface Props {
   loading: boolean;
@@ -46,21 +46,15 @@ const ListRegions = (props: Props) => {
   } else if (data !== undefined) {
     const { regions } = data;
     const regionElms = regions.map(region => {
-      const stateElms = region.states.map(({name}) => name + ', ');
+      const stateElms = region.states.map(({name, id}) => <small key={id}>{name + ', '}</small>);
       return (
-        <li key={region.id}>
-          <strong><LinkButton
-            onClick={() => editRegion(region.id)}
-          >{region.name}</LinkButton></strong>
-          <button
-            onClick={() => setRegionToDelete(region)}
-          >
-            Delete
-          </button>
-          <div>
-            <small>{stateElms}</small>
-          </div>
-        </li>
+        <ListItem
+          key={region.id}
+          title={region.name}
+          content={stateElms}
+          onEdit={() => editRegion(region.id)}
+          onDelete={() => setRegionToDelete(region)}
+        />
       );
     });
     return(

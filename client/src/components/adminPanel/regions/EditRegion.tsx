@@ -4,6 +4,73 @@ import React, { useState } from 'react';
 import { Region, State } from '../../../types/graphQLTypes';
 import { GET_REGIONS } from '../AdminRegions';
 import { GET_STATES } from '../AdminStates';
+import { EditPanel } from '../sharedStyles';
+import {
+  InputBase,
+  ButtonPrimary,
+  ButtonSecondary,
+} from '../../../styling/styleUtils';
+import styled from 'styled-components';
+
+const NameInactive = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: 1rem 0;
+`;
+
+const NameActive = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: 1rem 0;
+`;
+
+const EditNameForm = styled.form`
+  display: contents;
+`;
+
+const NameText = styled(InputBase)`
+  border: 1px solid transparent;
+  outline: none;
+  background-color: #eee;
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+const NameInput = styled(InputBase)`
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+
+const CheckboxContainer = styled.fieldset`
+  overflow: auto;
+  max-height: 300px;
+  padding: 0;
+`;
+
+const CheckboxRoot = styled.div`
+  display: block;
+  position: relative;
+`;
+
+const CheckboxInput = styled.input`
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+`;
+
+const CheckboxLabel = styled.label`
+  padding: 8px 8px 8px 30px;
+  display: block;
+  border-bottom: 1px solid #ddd;
+
+  &:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
+`;
 
 const GET_REGION_AND_ALL_STATES = gql`
   query GetRegionAndAllStates($id: ID!) {
@@ -99,16 +166,16 @@ const Checkbox = (props: CheckboxProps) => {
   };
 
   return (
-    <>
-      <input
+    <CheckboxRoot>
+      <CheckboxInput
         type='checkbox'
         value={id}
         id={`state-checkbox-${id}`}
         checked={checked}
         onChange={onChange}
       />
-      <label htmlFor={`state-checkbox-${id}`}>{name}</label>
-    </>
+      <CheckboxLabel htmlFor={`state-checkbox-${id}`}>{name}</CheckboxLabel>
+    </CheckboxRoot>
   );
 
 };
@@ -152,10 +219,10 @@ const EditRegion = (props: Props) => {
         setInputNameValue(data.region.name);
       };
       name = (
-        <>
-          <h3>{data.region.name}</h3>
-          <button onClick={setEditToTrue}>Edit Name</button>
-        </>
+        <NameInactive>
+          <NameText value={data.region.name} readOnly={true}/>
+          <ButtonSecondary onClick={setEditToTrue}>Edit Name</ButtonSecondary>
+        </NameInactive>
       );
     } else if (editingName === true) {
       const handleSubmit = (e: React.SyntheticEvent) => {
@@ -164,28 +231,27 @@ const EditRegion = (props: Props) => {
         setEditingName(false);
       };
       name = (
-        <>
-        <form onSubmit={handleSubmit}>
-          <input value={inputNameValue} onChange={(e) => setInputNameValue(e.target.value)} />
-          <button type='submit' disabled={inputNameValue === ''}>Update</button>
-        </form>
-        <button onClick={() => setEditingName(false)}>Cancel</button>
-        </>
+        <NameActive>
+          <EditNameForm onSubmit={handleSubmit}>
+            <NameInput value={inputNameValue} onChange={(e) => setInputNameValue(e.target.value)} />
+            <ButtonPrimary type='submit' disabled={inputNameValue === ''}>Update</ButtonPrimary>
+          </EditNameForm>
+          <ButtonSecondary onClick={() => setEditingName(false)}>Cancel</ButtonSecondary>
+        </NameActive>
       );
     } else {
       name = null;
     }
     const stateList = data.states.map(state => {
       return (
-        <li key={state.id}>
-          <Checkbox
-            id={state.id}
-            name={state.name}
-            defaultChecked={(data.region.states.filter(regionState => regionState.id === state.id).length > 0)}
-            removeStateFromRegion={(stateId) => removeStateFromRegion({ variables: {regionId, stateId}}) }
-            addStateToRegion={(stateId) => addStateToRegion({ variables: {regionId, stateId}}) }
-          />
-        </li>
+        <Checkbox
+          key={state.id}
+          id={state.id}
+          name={state.name}
+          defaultChecked={(data.region.states.filter(regionState => regionState.id === state.id).length > 0)}
+          removeStateFromRegion={(stateId) => removeStateFromRegion({ variables: {regionId, stateId}}) }
+          addStateToRegion={(stateId) => addStateToRegion({ variables: {regionId, stateId}}) }
+        />
       );
     });
     states = <>{stateList}</>;
@@ -195,15 +261,12 @@ const EditRegion = (props: Props) => {
   }
 
   return (
-    <div>
-      <button onClick={cancel}>Close</button>
+    <EditPanel onCancel={cancel}>
         {name}
-        <fieldset>
-          <ul>
-            {states}
-          </ul>
-        </fieldset>
-    </div>
+        <CheckboxContainer>
+          {states}
+        </CheckboxContainer>
+    </EditPanel>
   );
 
 };

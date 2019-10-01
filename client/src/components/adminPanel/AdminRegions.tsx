@@ -14,6 +14,7 @@ import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
 import ListRegions from './regions/ListRegions';
+import { ButtonPrimary } from '../../styling/styleUtils';
 
 export const GET_REGIONS = gql`
   query ListRegions{
@@ -110,9 +111,9 @@ const AdminRegions = () => {
       setEditRegionPanel(EditRegionPanelEnum.New);
     };
     editPanel = (
-      <button onClick={createNewButtonClick}>
+      <ButtonPrimary onClick={createNewButtonClick}>
         Create new region
-      </button>
+      </ButtonPrimary>
     );
   } else if (editRegionPanel === EditRegionPanelEnum.New) {
     editPanel = (
