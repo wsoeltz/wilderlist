@@ -18,6 +18,7 @@ import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { completedPeaks } from '../Utils';
 import PeakListCard, {MountainList} from './PeakListCard';
 import PeakListTrophy from './PeakListTrophy';
+import sortBy from 'lodash/sortBy';
 
 const SectionTitle = styled.h3`
   font-size: 1.2rem;
@@ -140,6 +141,15 @@ const ListPeakLists = (props: Props) => {
     );
   });
 
+  const sortedPeakLists = showTrophies === true
+    ? sortBy(peakLists, (list) => {
+      if (list !== null) {
+        const { numCompletedAscents, totalRequiredAscents } = list.props;
+        return numCompletedAscents / totalRequiredAscents;
+      }
+    }).reverse()
+    : peakLists;
+
   const trophyContent = showTrophies === true && trophies.length > 0 ? (
     <>
       <SectionTitle>
@@ -162,7 +172,7 @@ const ListPeakLists = (props: Props) => {
     <>
       {trophyContent}
       {inProgressTitle}
-      {peakLists}
+      {sortedPeakLists}
     </>
   );
 };
