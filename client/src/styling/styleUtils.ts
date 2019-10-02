@@ -25,6 +25,9 @@ export const lowWarningColor = '#d6aa0a';
 export const successColor = '#658238';
 export const successColorLight = '#d0e3b1';
 
+export const coolBlueColor = '#3a29c3';
+export const warmRedColor = '#d92a21';
+
 export interface ColorSet {
   primary: string;
   secondary: string;
