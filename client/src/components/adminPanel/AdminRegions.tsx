@@ -8,13 +8,13 @@ import {
   ContentLeftLarge as RegionListColumn,
   ContentRightSmall as RegionEditColumn,
 } from '../../styling/Grid';
+import { ButtonPrimary } from '../../styling/styleUtils';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
 import ListRegions from './regions/ListRegions';
-import { ButtonPrimary } from '../../styling/styleUtils';
 
 export const GET_REGIONS = gql`
   query ListRegions{

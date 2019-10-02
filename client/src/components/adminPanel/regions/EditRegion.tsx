@@ -1,16 +1,16 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+import styled from 'styled-components';
+import {
+  ButtonPrimary,
+  ButtonSecondary,
+  InputBase,
+} from '../../../styling/styleUtils';
 import { Region, State } from '../../../types/graphQLTypes';
 import { GET_REGIONS } from '../AdminRegions';
 import { GET_STATES } from '../AdminStates';
 import { EditPanel } from '../sharedStyles';
-import {
-  InputBase,
-  ButtonPrimary,
-  ButtonSecondary,
-} from '../../../styling/styleUtils';
-import styled from 'styled-components';
 
 const NameInactive = styled.div`
   display: flex;

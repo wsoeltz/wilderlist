@@ -1,11 +1,11 @@
 import React from 'react';
-import {
-  lightBorderColor,
-  ButtonSecondary,
-  LinkButton,
-  ButtonPrimary,
-} from '../../styling/styleUtils';
 import styled from 'styled-components';
+import {
+  ButtonPrimary,
+  ButtonSecondary,
+  lightBorderColor,
+  LinkButton,
+} from '../../styling/styleUtils';
 
 const ListItemRoot = styled.div`
   margin: 1rem;
@@ -67,7 +67,7 @@ export const ListItem = (props: ListItemProps) => {
       </ButtonContainer>
     </ListItemRoot>
   );
-}
+};
 
 const EditPanelRoot = styled.div``;
 
@@ -87,4 +87,4 @@ export const EditPanel = (props: EditPanelProps) => {
       {children}
     </EditPanelRoot>
   );
-}
+};
