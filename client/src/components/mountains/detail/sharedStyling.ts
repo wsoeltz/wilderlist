@@ -12,6 +12,13 @@ export const ItemTitle = styled.div`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const ItemFooter = styled.div`
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
+
 export const ContentItem = styled.div`
   border-bottom: solid 1px ${lightBorderColor};
   padding: 0.5rem 0;

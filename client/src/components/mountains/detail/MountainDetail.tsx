@@ -18,6 +18,8 @@ import {
   ContentItem,
   ItemTitle,
 } from './sharedStyling';
+import WeatherReport from './WeatherReport';
+import LocalTrails from './LocalTrails';
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -223,6 +225,15 @@ const MountainDetail = (props: Props) => {
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
+          <WeatherReport
+            latitude={latitude}
+            longitude={longitude}
+          />
+          <LocalTrails
+            mountainName={mountain.name}
+            latitude={latitude}
+            longitude={longitude}
+          />
           <IncludedLists
             getFluentString={getFluentString}
             mountainId={id}
