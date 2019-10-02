@@ -161,7 +161,7 @@ const OutputContainer = styled.div`
   grid-template-columns: 1fr 1fr;
 `;
 
-const genericWords = [
+export const genericWords = [
   'mount',
   'mountain',
 ];

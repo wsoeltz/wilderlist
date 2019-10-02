@@ -19,6 +19,7 @@ import {
   ItemTitle,
 } from './sharedStyling';
 import WeatherReport from './WeatherReport';
+import LocalTrails from './LocalTrails';
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -225,6 +226,11 @@ const MountainDetail = (props: Props) => {
           </HorizontalContentItem>
           {regionsContent}
           <WeatherReport
+            latitude={latitude}
+            longitude={longitude}
+          />
+          <LocalTrails
+            mountainName={mountain.name}
             latitude={latitude}
             longitude={longitude}
           />
