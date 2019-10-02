@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {
   ButtonPrimary,
   ButtonSecondary,
+  InputBase,
   lightBorderColor,
   LinkButton,
 } from '../../styling/styleUtils';
@@ -88,3 +89,83 @@ export const EditPanel = (props: EditPanelProps) => {
     </EditPanelRoot>
   );
 };
+
+export const NameInactive = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: 1rem 0;
+`;
+
+export const NameActive = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: 1rem 0;
+`;
+
+export const EditNameForm = styled.form`
+  display: contents;
+`;
+
+export const NameText = styled(InputBase)`
+  border: 1px solid transparent;
+  outline: none;
+  background-color: #eee;
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+export const NameInput = styled(InputBase)`
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+
+export const UpdateButton = styled(ButtonPrimary)`
+  margin-right: 0.4rem;
+`;
+export const CreateButton = styled(ButtonPrimary)`
+  margin: 0.4rem auto;
+`;
+
+export const SelectionPanel = styled.div`
+  display: grid;
+  grid-template-columns: 4fr 3fr;
+`;
+
+export const CheckboxContainer = styled.fieldset`
+  overflow: auto;
+  max-height: 300px;
+  padding: 0;
+  border: 1px solid #ccc;
+`;
+
+export const CheckboxRoot = styled.div`
+  display: block;
+  position: relative;
+`;
+
+export const CheckboxInput = styled.input`
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+`;
+
+export const CheckboxLabel = styled.label`
+  padding: 8px 8px 8px 30px;
+  display: block;
+  border-bottom: 1px solid #ddd;
+
+  &:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
+`;
+
+export const SelectedItemsContainer = styled.div`
+  max-height: 300px;
+  overflow: auto;
+  padding: 0 0.7rem;
+  border: 1px solid #ccc;
+`;

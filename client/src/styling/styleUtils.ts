@@ -127,6 +127,11 @@ const ButtonBase = styled.button`
   border-radius: ${borderRadius}px;
   font-weight: ${semiBoldFontBoldWeight};
   font-size: 0.8rem;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 `;
 
 export const ButtonPrimary = styled(ButtonBase)`

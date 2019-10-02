@@ -1,76 +1,29 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import {
-  ButtonPrimary,
   ButtonSecondary,
-  InputBase,
 } from '../../../styling/styleUtils';
 import { Region, State } from '../../../types/graphQLTypes';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import { GET_REGIONS } from '../AdminRegions';
 import { GET_STATES } from '../AdminStates';
-import { EditPanel } from '../sharedStyles';
-
-const NameInactive = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  margin: 1rem 0;
-`;
-
-const NameActive = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  margin: 1rem 0;
-`;
-
-const EditNameForm = styled.form`
-  display: contents;
-`;
-
-const NameText = styled(InputBase)`
-  border: 1px solid transparent;
-  outline: none;
-  background-color: #eee;
-  flex-shrink: 0;
-  margin-bottom: 0.4rem;
-`;
-const NameInput = styled(InputBase)`
-  flex-shrink: 0;
-  margin-bottom: 0.4rem;
-`;
-
-const CheckboxContainer = styled.fieldset`
-  overflow: auto;
-  max-height: 300px;
-  padding: 0;
-`;
-
-const CheckboxRoot = styled.div`
-  display: block;
-  position: relative;
-`;
-
-const CheckboxInput = styled.input`
-  position: absolute;
-  left: 4px;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-`;
-
-const CheckboxLabel = styled.label`
-  padding: 8px 8px 8px 30px;
-  display: block;
-  border-bottom: 1px solid #ddd;
-
-  &:hover {
-    background-color: #eee;
-    cursor: pointer;
-  }
-`;
+import {
+  CheckboxContainer,
+  CheckboxInput,
+  CheckboxLabel,
+  CheckboxRoot,
+  EditNameForm,
+  EditPanel,
+  NameActive,
+  NameInactive,
+  NameInput,
+  NameText,
+  SelectedItemsContainer,
+  SelectionPanel,
+  UpdateButton,
+} from '../sharedStyles';
 
 const GET_REGION_AND_ALL_STATES = gql`
   query GetRegionAndAllStates($id: ID!) {
@@ -79,11 +32,13 @@ const GET_REGION_AND_ALL_STATES = gql`
       name
       states {
         id
+        name
       }
     }
     states {
       id
       name
+      abbreviation
     }
   }
 `;
@@ -133,6 +88,7 @@ interface SuccessResponse {
   states: Array<{
     id: State['id'];
     name: State['name'];
+    abbreviation: State['abbreviation'];
   }>;
 }
 
@@ -189,6 +145,7 @@ const EditRegion = (props: Props) => {
   const { regionId, cancel } = props;
   const [editingName, setEditingName] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_REGION_AND_ALL_STATES, {
     variables: { id: regionId },
@@ -205,12 +162,15 @@ const EditRegion = (props: Props) => {
 
   let name: React.ReactElement | null;
   let states: React.ReactElement | null;
+  let selectedStates: React.ReactElement[] | null;
   if (loading === true) {
     name = null;
     states = (<p>Loading</p>);
+    selectedStates = null;
   } else if (error !== undefined) {
     name = null;
     states = null;
+    selectedStates = null;
     console.error(error);
   } else if (data !== undefined) {
     if (editingName === false) {
@@ -234,7 +194,7 @@ const EditRegion = (props: Props) => {
         <NameActive>
           <EditNameForm onSubmit={handleSubmit}>
             <NameInput value={inputNameValue} onChange={(e) => setInputNameValue(e.target.value)} />
-            <ButtonPrimary type='submit' disabled={inputNameValue === ''}>Update</ButtonPrimary>
+            <UpdateButton type='submit' disabled={inputNameValue === ''}>Update</UpdateButton>
           </EditNameForm>
           <ButtonSecondary onClick={() => setEditingName(false)}>Cancel</ButtonSecondary>
         </NameActive>
@@ -242,30 +202,56 @@ const EditRegion = (props: Props) => {
     } else {
       name = null;
     }
-    const stateList = data.states.map(state => {
-      return (
-        <Checkbox
-          key={state.id}
-          id={state.id}
-          name={state.name}
-          defaultChecked={(data.region.states.filter(regionState => regionState.id === state.id).length > 0)}
-          removeStateFromRegion={(stateId) => removeStateFromRegion({ variables: {regionId, stateId}}) }
-          addStateToRegion={(stateId) => addStateToRegion({ variables: {regionId, stateId}}) }
-        />
-      );
+    const sortedStates = sortBy(data.states, ['name']);
+    const stateList = sortedStates.map(state => {
+      if ((state.name.toLowerCase() + state.abbreviation.toLowerCase()).includes(searchQuery.toLowerCase())) {
+        return (
+          <Checkbox
+            key={state.id}
+            id={state.id}
+            name={state.name}
+            defaultChecked={(data.region.states.filter(regionState => regionState.id === state.id).length > 0)}
+            removeStateFromRegion={(stateId) => removeStateFromRegion({ variables: {regionId, stateId}}) }
+            addStateToRegion={(stateId) => addStateToRegion({ variables: {regionId, stateId}}) }
+          />
+        );
+      } else {
+        return null;
+      }
     });
     states = <>{stateList}</>;
+    const sortedSelectedStates = sortBy(data.region.states, ['name']);
+    selectedStates = sortedSelectedStates.map(state => <li key={'selected-' + state.id}>{state.name}</li>);
   } else {
     name = null;
     states = null;
+    selectedStates = null;
   }
+
+  const filterStates = (value: string) => {
+    setSearchQuery(value);
+  };
 
   return (
     <EditPanel onCancel={cancel}>
         {name}
-        <CheckboxContainer>
-          {states}
-        </CheckboxContainer>
+        <SelectionPanel>
+          <CheckboxContainer>
+            <StandardSearch
+              placeholder={'Filter states'}
+              setSearchQuery={filterStates}
+              focusOnMount={false}
+              initialQuery={searchQuery}
+            />
+            {states}
+          </CheckboxContainer>
+          <SelectedItemsContainer>
+            <strong>Selected States</strong>
+            <ol>
+              {selectedStates}
+            </ol>
+          </SelectedItemsContainer>
+        </SelectionPanel>
     </EditPanel>
   );
 
