@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useState} from 'react';
@@ -28,6 +29,11 @@ import {
 
 const AddAscentButton = styled(ButtonPrimary)`
   margin-top: 1rem;
+`;
+
+const CalendarButton = styled(FontAwesomeIcon)`
+  color: #fff;
+  margin-right: 0.5rem;
 `;
 
 const REMOVE_MOUNTAIN_COMPLETION = gql`
@@ -134,6 +140,7 @@ const AscentsList = (props: Props) => {
       <>
         {completionListItems}
         <AddAscentButton onClick={() => setEditMountainId(mountainId)}>
+          <CalendarButton icon='calendar-alt' />
           {getFluentString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
         {areYouSureModal}
@@ -146,6 +153,7 @@ const AscentsList = (props: Props) => {
           'mountain-name': mountainName,
         })}</BasicListItem>
         <AddAscentButton onClick={() => setEditMountainId(mountainId)}>
+          <CalendarButton icon='calendar-alt' />
           {getFluentString('mountain-detail-add-ascent-date')}
         </AddAscentButton>
       </>

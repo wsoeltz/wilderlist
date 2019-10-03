@@ -1,9 +1,9 @@
 import { ApolloError } from 'apollo-boost';
+import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { StateDatum, SuccessResponse } from '../AdminStates';
 import { ListItem } from '../sharedStyles';
-import sortBy from 'lodash/sortBy';
 
 interface Props {
   loading: boolean;

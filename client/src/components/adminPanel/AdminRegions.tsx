@@ -11,11 +11,11 @@ import {
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
 import ListRegions from './regions/ListRegions';
-import StandardSearch from '../sharedComponents/StandardSearch';
 
 export const GET_REGIONS = gql`
   query ListRegions{
@@ -154,7 +154,6 @@ const AdminRegions = () => {
     deleteRegionMutation({ variables: { id } });
     clearEditRegionPanel();
   };
-
 
   const filterRegions = (value: string) => {
     setSearchQuery(value);

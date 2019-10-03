@@ -268,5 +268,5 @@ local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft 
 local-trails-hiking-project-nearby-route = Nearby Routes
 local-trails-hiking-project-beta = Beta
 local-trails-hiking-project-via-the = via the
-local-trails-hiking-project-no-trails = Could not find any trails near { $mountain-name } on the Hiking Project.
+local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
 local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.

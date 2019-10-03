@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
 import { Region } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
@@ -15,7 +16,6 @@ import {
   SelectedItemsContainer,
   SelectionPanel,
 } from '../sharedStyles';
-import sortBy from 'lodash/sortBy';
 
 const GET_REGIONS = gql`
   query ListRegions{
