@@ -1,8 +1,9 @@
 import { ApolloError } from 'apollo-boost';
 import React, {useState} from 'react';
-import { LinkButton } from '../../../styling/styleUtils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { StateDatum, SuccessResponse } from '../AdminStates';
+import { ListItem } from '../sharedStyles';
+import sortBy from 'lodash/sortBy';
 
 interface Props {
   loading: boolean;
@@ -10,10 +11,11 @@ interface Props {
   data: SuccessResponse | undefined;
   deleteState: (id: string) => void;
   editState: (id: string) => void;
+  searchQuery: string;
 }
 
 const ListStates = (props: Props) => {
-  const {loading, error, data, deleteState, editState} = props;
+  const {loading, error, data, deleteState, editState, searchQuery} = props;
 
   const [stateToDelete, setStateToDelete] = useState<StateDatum | null>(null);
 
@@ -45,23 +47,22 @@ const ListStates = (props: Props) => {
     return (<p>There was an error</p>);
   } else if (data !== undefined) {
     const { states } = data;
-    const stateElms = states.map(state => {
-      const regionElms = state.regions.map(({name}) => name + ', ');
-      return (
-        <li key={state.id}>
-          <strong><LinkButton
-            onClick={() => editState(state.id)}
-          >{state.name} ({state.abbreviation})</LinkButton></strong>
-          <button
-            onClick={() => setStateToDelete(state)}
-          >
-            Delete
-          </button>
-          <div>
-            <small>{regionElms}</small>
-          </div>
-        </li>
-      );
+    const sortedStates = sortBy(states, ['name']);
+    const stateElms = sortedStates.map(state => {
+      if ((state.name.toLowerCase() + state.abbreviation.toLowerCase()).includes(searchQuery.toLowerCase())) {
+        const regionElms = state.regions.map(({name}) => name + ', ');
+        return (
+          <ListItem
+            key={state.id}
+            title={`${state.name} (${state.abbreviation})`}
+            content={regionElms}
+            onEdit={() => editState(state.id)}
+            onDelete={() => setStateToDelete(state)}
+          />
+        );
+      } else {
+        return null;
+      }
     });
     return(
       <>

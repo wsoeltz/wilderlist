@@ -2,6 +2,20 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Region } from '../../../types/graphQLTypes';
+import StandardSearch from '../../sharedComponents/StandardSearch';
+import {
+  CheckboxContainer,
+  CheckboxInput,
+  CheckboxLabel,
+  CheckboxRoot,
+  CreateButton,
+  EditPanel,
+  NameActive,
+  NameInput,
+  SelectedItemsContainer,
+  SelectionPanel,
+} from '../sharedStyles';
+import sortBy from 'lodash/sortBy';
 
 const GET_REGIONS = gql`
   query ListRegions{
@@ -22,7 +36,7 @@ interface SuccessResponse {
 interface CheckboxProps {
   name: string;
   id: string;
-  toggleItem: (id: string, checked: boolean) => void;
+  toggleItem: (id: string, regionName: string, checked: boolean) => void;
 }
 
 const Checkbox = ({name, id, toggleItem}: CheckboxProps) => {
@@ -31,23 +45,28 @@ const Checkbox = ({name, id, toggleItem}: CheckboxProps) => {
   const onChange = () => {
     const checkedWillBe = !checked;
     setChecked(checkedWillBe);
-    toggleItem(id, checkedWillBe);
+    toggleItem(id, name, checkedWillBe);
   };
 
   return (
-    <>
-      <input
+    <CheckboxRoot>
+      <CheckboxInput
         type='checkbox'
         value={id}
         id={`state-checkbox-${id}`}
         checked={checked}
         onChange={onChange}
       />
-      <label htmlFor={`state-checkbox-${id}`}>{name}</label>
-    </>
+      <CheckboxLabel htmlFor={`state-checkbox-${id}`}>{name}</CheckboxLabel>
+    </CheckboxRoot>
   );
 
 };
+
+interface RegionDatum {
+  name: Region['name'];
+  id: Region['id'];
+}
 
 interface Props {
   addState: (name: string, abbreviation: string, states: Array<Region['id']>) => void;
@@ -59,70 +78,96 @@ const AddState = (props: Props) => {
 
   const [name, setName] = useState<string>('');
   const [abbreviation, setAbbreviation] = useState<string>('');
-  const [selectedStates, setSelectedStates] = useState<Array<Region['id']>>([]);
+  const [selectedRegions, setSelectedRegions] = useState<RegionDatum[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    addState(name, abbreviation, selectedStates);
+    const selectedRegionIds = selectedRegions.map(({id}) => id);
+    addState(name, abbreviation, selectedRegionIds);
     cancel();
   };
 
-  const toggleStateListItem = (id: string, checked: boolean) => {
+  const toggleStateListItem = (id: string, regionName: string, checked: boolean) => {
     if (checked === true) {
-      setSelectedStates([...selectedStates, id]);
+      setSelectedRegions([...selectedRegions, {id, name: regionName}]);
     } else if (checked === false) {
-      setSelectedStates(selectedStates.filter(idInList => idInList !== id));
+      setSelectedRegions(selectedRegions.filter(({id: idInList}) => idInList !== id));
     }
   };
 
+  const sortedSelectedRegions = sortBy(selectedRegions, ['name']);
+  const selectedRegionsLi = sortedSelectedRegions.map(state => <li key={state.id}>{state.name}</li>);
+
   const {loading, error, data} = useQuery<SuccessResponse>(GET_REGIONS);
 
-  let states: React.ReactElement | null;
+  let regions: React.ReactElement | null;
   if (loading === true) {
-    states = (<p>Loading</p>);
+    regions = (<p>Loading</p>);
   } else if (error !== undefined) {
-    states = null;
+    regions = null;
     console.error(error);
   } else if (data !== undefined) {
-    const stateList = data.regions.map(region => {
-      return (
-        <li key={region.id}>
+    const regionList = data.regions.map(region => {
+      if (region.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return (
           <Checkbox
+            key={region.id}
             id={region.id}
             name={region.name}
             toggleItem={toggleStateListItem}
           />
-        </li>
-      );
+        );
+      } else {
+        return null;
+      }
     });
-    states = <>{stateList}</>;
+    regions = <>{regionList}</>;
   } else {
-    states = null;
+    regions = null;
   }
+
+  const filterRegions = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
-    <div>
-      <button onClick={cancel}>Cancel</button>
+    <EditPanel onCancel={cancel}>
       <form
         onSubmit={handleSubmit}
       >
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder='Name'
-        />
-        <input
-          value={abbreviation}
-          onChange={e => setAbbreviation(e.target.value)}
-          placeholder='abbreviation'
-        />
-        <fieldset>
-          <ul>
-            {states}
-          </ul>
-        </fieldset>
-        <button type='submit' disabled={name === '' || abbreviation === ''}>Add State</button>
+        <NameActive>
+          <NameInput
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder='Name'
+          />
+          <NameInput
+            value={abbreviation}
+            onChange={e => setAbbreviation(e.target.value)}
+            placeholder='abbreviation'
+          />
+        </NameActive>
+        <SelectionPanel>
+          <CheckboxContainer>
+            <StandardSearch
+              placeholder={'Filter states'}
+              setSearchQuery={filterRegions}
+              focusOnMount={false}
+              initialQuery={searchQuery}
+            />
+            {regions}
+          </CheckboxContainer>
+          <SelectedItemsContainer>
+            <strong>Selected Regions</strong>
+            <ol>
+              {selectedRegionsLi}
+            </ol>
+          </SelectedItemsContainer>
+        </SelectionPanel>
+        <CreateButton type='submit' disabled={name === '' || abbreviation === ''}>Add State</CreateButton>
       </form>
-    </div>
+    </EditPanel>
   );
 
 };

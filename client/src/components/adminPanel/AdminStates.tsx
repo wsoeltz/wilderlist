@@ -15,6 +15,8 @@ import { GET_REGIONS } from './AdminRegions';
 import AddState from './states/AddState';
 import EditState from './states/EditState';
 import ListStates from './states/ListStates';
+import StandardSearch from '../sharedComponents/StandardSearch';
+import { ButtonPrimary } from '../../styling/styleUtils';
 
 export const GET_STATES = gql`
   query ListStates {
@@ -82,6 +84,7 @@ const AdminStates = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES);
   const [editStatePanel, setEditStatePanel] = useState<EditStatePanelEnum>(EditStatePanelEnum.Empty);
   const [stateToEdit, setStateToEdit] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const clearEditStatePanel = () => {
     setEditStatePanel(EditStatePanelEnum.Empty);
     setStateToEdit(null);
@@ -120,9 +123,9 @@ const AdminStates = () => {
       setEditStatePanel(EditStatePanelEnum.New);
     };
     editPanel = (
-      <button onClick={createNewButtonClick}>
+      <ButtonPrimary onClick={createNewButtonClick}>
         Create new state
-      </button>
+      </ButtonPrimary>
     );
   } else if (editStatePanel === EditStatePanelEnum.New) {
     editPanel = (
@@ -165,11 +168,21 @@ const AdminStates = () => {
     clearEditStatePanel();
   };
 
+  const filterStates = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       <StateListColumn>
         <ContentHeader>
           <h2>States</h2>
+          <StandardSearch
+            placeholder={'Filter states'}
+            setSearchQuery={filterStates}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
         </ContentHeader>
         <ContentBody>
           <ListStates
@@ -178,6 +191,7 @@ const AdminStates = () => {
             data={data}
             deleteState={deleteState}
             editState={editState}
+            searchQuery={searchQuery}
           />
         </ContentBody>
       </StateListColumn>

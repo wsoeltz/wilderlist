@@ -15,6 +15,7 @@ import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
 import ListRegions from './regions/ListRegions';
+import StandardSearch from '../sharedComponents/StandardSearch';
 
 export const GET_REGIONS = gql`
   query ListRegions{
@@ -73,6 +74,7 @@ const AdminRegions = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_REGIONS);
   const [editRegionPanel, setEditRegionPanel] = useState<EditRegionPanelEnum>(EditRegionPanelEnum.Empty);
   const [regionToEdit, setRegionToEdit] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const clearEditRegionPanel = () => {
     setEditRegionPanel(EditRegionPanelEnum.Empty);
     setRegionToEdit(null);
@@ -153,11 +155,22 @@ const AdminRegions = () => {
     clearEditRegionPanel();
   };
 
+
+  const filterRegions = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       <RegionListColumn>
         <ContentHeader>
           <h2>Regions</h2>
+          <StandardSearch
+            placeholder={'Filter states'}
+            setSearchQuery={filterRegions}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
         </ContentHeader>
         <ContentBody>
           <ListRegions
@@ -166,6 +179,7 @@ const AdminRegions = () => {
             data={data}
             deleteRegion={deleteRegion}
             editRegion={editRegion}
+            searchQuery={searchQuery}
           />
         </ContentBody>
       </RegionListColumn>
