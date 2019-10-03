@@ -14,12 +14,12 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
+import LocalTrails from './LocalTrails';
 import {
   ContentItem,
   ItemTitle,
 } from './sharedStyling';
 import WeatherReport from './WeatherReport';
-import LocalTrails from './LocalTrails';
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px

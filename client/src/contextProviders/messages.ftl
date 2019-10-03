@@ -8,6 +8,7 @@ global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $te
 global-text-value-are-you-sure-modal = Please Confirm
 global-text-value-modal-confirm = Confirm
 global-text-value-modal-cancel = Cancel
+global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
 global-text-value-back = Back
@@ -255,3 +256,17 @@ import-grid-img-alt-file-upload = Then select FILE UPLOAD
 import-grid-img-alt-file-publish = Go to File > Publish to the web
 import-grid-img-alt-publish-setting = Select the Grid you would like to publish and set it to CSV
 import-grid-img-alt-publish-link = Copy the generated link
+
+weather-forecast-weather = Weather
+weather-forecast-high = High
+weather-forecast-low = Low
+weather-forecast-wind = Wind
+weather-forecast-detailed-report = Detailed Report
+weather-forecast-network-error = There was a network error retrieving weather data. Please try again later.
+
+local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
+local-trails-hiking-project-nearby-route = Nearby Routes
+local-trails-hiking-project-beta = Beta
+local-trails-hiking-project-via-the = via the
+local-trails-hiking-project-no-trails = Could not find any trails near { $mountain-name } on the Hiking Project.
+local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.

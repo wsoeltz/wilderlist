@@ -1,5 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import { GetString } from 'fluent-react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   coolBlueColor,
   lightBaseColor,
@@ -113,6 +117,9 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   const [error, setError] = useState<any | null>(null);
   const [weatherDetail, setWeatherDetail] = useState<DetailForecastState | null>(null);
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const closeWeatherDetailModal = () => {
     setWeatherDetail(null);
   };
@@ -142,7 +149,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
 
   let output: React.ReactElement<any> | null;
   if (error !== null) {
-    output = <>There was a network error retrieving weather data. Please try again later.</>;
+    output = <>{getFluentString('weather-forecast-network-error')}</>;
   } else if (forecast === null) {
     output = <LoadingSpinner />;
   } else if (forecast) {
@@ -156,16 +163,18 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
           <ForecastBlock key={tonight.name}>
             <strong>{tonight.name}</strong>
             <Temperatures>
-              <TempHigh>High --°</TempHigh>
+              <TempHigh>{getFluentString('weather-forecast-high')} --°</TempHigh>
               /
-              <TempLow>Low {tonight.temperature}°</TempLow>
+              <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°</TempLow>
             </Temperatures>
-            <WindSpeed>Wind {tonight.windSpeed} {tonight.windDirection}</WindSpeed>
+            <WindSpeed>
+              {getFluentString('weather-forecast-wind')} {tonight.windSpeed} {tonight.windDirection}
+            </WindSpeed>
             <ForecastShort>{tonight.shortForecast}</ForecastShort>
             <DetailModalButton
               onClick={() => setWeatherDetail({today: tonight, tonight})}
             >
-              Detailed report
+              {getFluentString('weather-forecast-detailed-report')}
             </DetailModalButton>
           </ForecastBlock>,
         );
@@ -177,16 +186,16 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
             <ForecastBlock key={today.name}>
               <strong>{today.name}</strong>
               <Temperatures>
-                <TempHigh>High {today.temperature}°</TempHigh>
+                <TempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°</TempHigh>
                 /
-                <TempLow>Low {tonight.temperature}°</TempLow>
+                <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°</TempLow>
               </Temperatures>
-              <WindSpeed>Wind {today.windSpeed} {today.windDirection}</WindSpeed>
+              <WindSpeed>{getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}</WindSpeed>
               <ForecastShort>{today.shortForecast}</ForecastShort>
               <DetailModalButton
                 onClick={() => setWeatherDetail({today, tonight})}
               >
-                Detailed report
+                {getFluentString('weather-forecast-detailed-report')}
               </DetailModalButton>
             </ForecastBlock>,
           );
@@ -195,16 +204,16 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
             <ForecastBlock key={today.name}>
               <strong>{today.name}</strong>
               <Temperatures>
-                <TempHigh>High {today.temperature}°</TempHigh>
+                <TempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°</TempHigh>
                 /
-                <TempLow>Low --°</TempLow>
+                <TempLow>{getFluentString('weather-forecast-low')} --°</TempLow>
               </Temperatures>
-              <WindSpeed>Wind {today.windSpeed} {today.windDirection}</WindSpeed>
+              <WindSpeed>{getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}</WindSpeed>
               <ForecastShort>{today.shortForecast}</ForecastShort>
               <DetailModalButton
                 onClick={() => setWeatherDetail({today, tonight})}
               >
-                Detailed report
+                {getFluentString('weather-forecast-detailed-report')}
               </DetailModalButton>
             </ForecastBlock>,
           );
@@ -232,7 +241,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   return (
     <VerticalContentItem>
       <ItemTitle>
-        Weather
+        {getFluentString('weather-forecast-weather')}
       </ItemTitle>
       <ForecastContainer>
         {output}

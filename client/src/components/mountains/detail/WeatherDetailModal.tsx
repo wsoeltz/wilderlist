@@ -1,5 +1,9 @@
-import React from 'react';
+import { GetString } from 'fluent-react';
+import React, {useContext} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   baseColor,
   ButtonSecondary,
@@ -80,6 +84,9 @@ interface Props {
 const AreYouSureModal = (props: Props) => {
   const { onCancel, today, tonight } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const todayContent = today.name === tonight.name ? null : (
     <ForecastContainer>
       <ForecastTitle>{today.name}</ForecastTitle>
@@ -87,8 +94,8 @@ const AreYouSureModal = (props: Props) => {
         <ForecastImg src={today.icon} />
       </ForecastImgContainer>
       <ForecastContent>
-        <TempHigh>High {today.temperature}°</TempHigh>
-        <WindSpeed>Wind {today.windSpeed} {today.windDirection}</WindSpeed>
+        <TempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°</TempHigh>
+        <WindSpeed>{getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}</WindSpeed>
         <ForecastText>{today.detailedForecast}</ForecastText>
       </ForecastContent>
     </ForecastContainer>
@@ -107,14 +114,14 @@ const AreYouSureModal = (props: Props) => {
           <ForecastImg src={tonight.icon} />
         </ForecastImgContainer>
         <ForecastContent>
-          <TempLow>Low {tonight.temperature}°</TempLow>
-          <WindSpeed>Wind {tonight.windSpeed} {tonight.windDirection}</WindSpeed>
+          <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°</TempLow>
+          <WindSpeed>{getFluentString('weather-forecast-wind')} {tonight.windSpeed} {tonight.windDirection}</WindSpeed>
           <ForecastText>{tonight.detailedForecast}</ForecastText>
         </ForecastContent>
       </ForecastContainer>
       <ButtonWrapper>
         <CancelButton onClick={onCancel}>
-          Close
+          {getFluentString('global-text-value-modal-close')}
         </CancelButton>
       </ButtonWrapper>
     </Modal>
