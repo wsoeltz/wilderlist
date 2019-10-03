@@ -8,7 +8,7 @@ import {
   ButtonPrimary,
   GhostButton,
 } from '../../../styling/styleUtils';
-import { CompletedMountain, Mountain } from '../../../types/graphQLTypes';
+import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
 import MountainCompletionModal, {
   MountainCompletionSuccessResponse,
@@ -92,6 +92,8 @@ const AscentsList = (props: Props) => {
       editMountainId={editMountainId}
       closeEditMountainModalModal={closeEditMountainModalModal}
       userId={userId}
+      mountainName={mountainName}
+      variant={PeakListVariants.standard}
     />
   );
 
