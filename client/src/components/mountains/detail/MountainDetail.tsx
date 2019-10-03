@@ -10,13 +10,16 @@ import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import { convertDMS } from '../../../Utils';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
+import LocalTrails from './LocalTrails';
 import {
   ContentItem,
   ItemTitle,
 } from './sharedStyling';
+import WeatherReport from './WeatherReport';
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -150,7 +153,7 @@ const MountainDetail = (props: Props) => {
   });
 
   if (loading === true) {
-    return null;
+    return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return (
@@ -222,6 +225,15 @@ const MountainDetail = (props: Props) => {
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
+          <WeatherReport
+            latitude={latitude}
+            longitude={longitude}
+          />
+          <LocalTrails
+            mountainName={mountain.name}
+            latitude={latitude}
+            longitude={longitude}
+          />
           <IncludedLists
             getFluentString={getFluentString}
             mountainId={id}

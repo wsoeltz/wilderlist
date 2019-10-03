@@ -1,8 +1,8 @@
 import { ApolloError } from 'apollo-boost';
 import React, {useState} from 'react';
-import { LinkButton } from '../../../styling/styleUtils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { RegionDatum, SuccessResponse } from '../AdminRegions';
+import { ListItem } from '../sharedStyles';
 
 interface Props {
   loading: boolean;
@@ -10,10 +10,11 @@ interface Props {
   data: SuccessResponse | undefined;
   deleteRegion: (id: string) => void;
   editRegion: (id: string) => void;
+  searchQuery: string;
 }
 
 const ListRegions = (props: Props) => {
-  const {loading, error, data, deleteRegion, editRegion} = props;
+  const {loading, error, data, deleteRegion, editRegion, searchQuery} = props;
 
   const [regionToDelete, setRegionToDelete] = useState<RegionDatum | null>(null);
 
@@ -46,22 +47,20 @@ const ListRegions = (props: Props) => {
   } else if (data !== undefined) {
     const { regions } = data;
     const regionElms = regions.map(region => {
-      const stateElms = region.states.map(({name}) => name + ', ');
-      return (
-        <li key={region.id}>
-          <strong><LinkButton
-            onClick={() => editRegion(region.id)}
-          >{region.name}</LinkButton></strong>
-          <button
-            onClick={() => setRegionToDelete(region)}
-          >
-            Delete
-          </button>
-          <div>
-            <small>{stateElms}</small>
-          </div>
-        </li>
-      );
+      if (region.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        const stateElms = region.states.map(({name, id}) => <small key={id}>{name + ', '}</small>);
+        return (
+          <ListItem
+            key={region.id}
+            title={region.name}
+            content={stateElms}
+            onEdit={() => editRegion(region.id)}
+            onDelete={() => setRegionToDelete(region)}
+          />
+        );
+      } else {
+        return null;
+      }
     });
     return(
       <>

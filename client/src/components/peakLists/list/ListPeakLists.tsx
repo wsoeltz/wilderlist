@@ -1,4 +1,5 @@
 import { GetString } from 'fluent-react';
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import styled from 'styled-components';
 import {
@@ -140,6 +141,15 @@ const ListPeakLists = (props: Props) => {
     );
   });
 
+  const sortedPeakLists = showTrophies === true
+    ? sortBy(peakLists, (list) => {
+      if (list !== null) {
+        const { numCompletedAscents, totalRequiredAscents } = list.props;
+        return numCompletedAscents / totalRequiredAscents;
+      }
+    }).reverse()
+    : peakLists;
+
   const trophyContent = showTrophies === true && trophies.length > 0 ? (
     <>
       <SectionTitle>
@@ -162,7 +172,7 @@ const ListPeakLists = (props: Props) => {
     <>
       {trophyContent}
       {inProgressTitle}
-      {peakLists}
+      {sortedPeakLists}
     </>
   );
 };

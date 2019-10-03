@@ -7,6 +7,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
+  ContentHeader,
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../../styling/Grid';
@@ -14,6 +15,7 @@ import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
 import MountainDetail from '../../mountains/detail/MountainDetail';
+import BackButton from '../../sharedComponents/BackButton';
 import PeakListDetail from './PeakListDetail';
 
 interface Props extends RouteComponentProps {
@@ -40,6 +42,9 @@ const PeakListDetailPage = (props: Props) => {
   return (
     <>
       <ContentLeftLarge>
+        <ContentHeader>
+          <BackButton />
+        </ContentHeader>
         <ContentBody>
           <PeakListDetail userId={userId} id={id} />
         </ContentBody>

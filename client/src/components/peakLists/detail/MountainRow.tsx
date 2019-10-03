@@ -25,6 +25,7 @@ import {
   getStandardCompletion,
   getWinterCompletion,
 } from '../Utils';
+import { MountainToEdit } from './MountainTable';
 import {
   MountainDatum,
 } from './PeakListDetail';
@@ -155,7 +156,7 @@ interface Props {
   index: number;
   mountain: MountainDatum;
   type: PeakListVariants;
-  setEditMountainId: (id: string) => void;
+  setEditMountainId: (mountainToEdit: MountainToEdit) => void;
   userMountains: CompletedMountain[];
   peakListId: string;
 }
@@ -165,13 +166,17 @@ const MountainRow = (props: Props) => {
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
   const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
-  const completeButton: React.ReactElement = (
-    <MarkDoneButton onClick={() => setEditMountainId(mountain.id)}>
-      <CalendarButton icon='calendar-alt' /> {completeButtonText}
-    </MarkDoneButton>
-  );
+  const completeButton = (target: Months | Seasons | null) => {
+      return (
+      <MarkDoneButton onClick={() => setEditMountainId({
+        id: mountain.id, name: mountain.name, target,
+      })}>
+        <CalendarButton icon='calendar-alt' /> {completeButtonText}
+      </MarkDoneButton>
+    );
+  };
 
-  let peakCompletedContent: React.ReactElement<any> | null = completeButton;
+  let peakCompletedContent: React.ReactElement<any> | null = completeButton(null);
   const completedDates = userMountains.find(
     (completedMountain) => completedMountain.mountain.id === mountain.id);
   if (completedDates !== undefined) {
@@ -193,16 +198,16 @@ const MountainRow = (props: Props) => {
         const {summer, fall, spring, winter} = completedDate;
         const summerDate = summer !== undefined
           ? <CompletedDate date={formatDate(summer)} />
-          : completeButton;
+          : completeButton(Seasons.summer);
         const fallDate = fall !== undefined
           ? <CompletedDate date={formatDate(fall)} />
-          : completeButton;
+          : completeButton(Seasons.fall);
         const springDate = spring !== undefined
           ? <CompletedDate date={formatDate(spring)} />
-          : completeButton;
+          : completeButton(Seasons.spring);
         const winterDate = winter !== undefined
           ? <CompletedDate date={formatDate(winter)} />
-          : completeButton;
+          : completeButton(Seasons.winter);
         peakCompletedContent = (
           <>
             <TableCell
@@ -234,40 +239,40 @@ const MountainRow = (props: Props) => {
         } = completedDate;
         const januaryDate = january !== undefined
           ? <CompletedDateText children={<>{formatGridDate(january)}</>} />
-          : completeButton;
+          : completeButton(Months.january);
         const februaryDate = february !== undefined
           ? <CompletedDateText children={<>{formatGridDate(february)}</>} />
-          : completeButton;
+          : completeButton(Months.february);
         const marchDate = march !== undefined
           ? <CompletedDateText children={<>{formatGridDate(march)}</>} />
-          : completeButton;
+          : completeButton(Months.march);
         const aprilDate = april !== undefined
           ? <CompletedDateText children={<>{formatGridDate(april)}</>} />
-          : completeButton;
+          : completeButton(Months.april);
         const mayDate = may !== undefined
           ? <CompletedDateText children={<>{formatGridDate(may)}</>} />
-          : completeButton;
+          : completeButton(Months.may);
         const juneDate = june !== undefined
           ? <CompletedDateText children={<>{formatGridDate(june)}</>} />
-          : completeButton;
+          : completeButton(Months.june);
         const julyDate = july !== undefined
           ? <CompletedDateText children={<>{formatGridDate(july)}</>} />
-          : completeButton;
+          : completeButton(Months.july);
         const augustDate = august !== undefined
           ? <CompletedDateText children={<>{formatGridDate(august)}</>} />
-          : completeButton;
+          : completeButton(Months.august);
         const septemberDate = september !== undefined
           ? <CompletedDateText children={<>{formatGridDate(september)}</>} />
-          : completeButton;
+          : completeButton(Months.september);
         const octoberDate = october !== undefined
           ? <CompletedDateText children={<>{formatGridDate(october)}</>} />
-          : completeButton;
+          : completeButton(Months.october);
         const novemberDate = november !== undefined
           ? <CompletedDateText children={<>{formatGridDate(november)}</>} />
-          : completeButton;
+          : completeButton(Months.november);
         const decemberDate = december !== undefined
           ? <CompletedDateText children={<>{formatGridDate(december)}</>} />
-          : completeButton;
+          : completeButton(Months.december);
         peakCompletedContent = (
           <>
             <GridCell
@@ -366,19 +371,19 @@ const MountainRow = (props: Props) => {
         <>
           <TableCell
             style={{backgroundColor, gridColumn: seasonColumns[Seasons.summer]}}
-            children={completeButton}
+            children={completeButton(Seasons.summer)}
           />
           <TableCell
             style={{backgroundColor, gridColumn: seasonColumns[Seasons.fall]}}
-            children={completeButton}
+            children={completeButton(Seasons.fall)}
           />
           <TableCell
             style={{backgroundColor, gridColumn: seasonColumns[Seasons.winter]}}
-            children={completeButton}
+            children={completeButton(Seasons.winter)}
           />
           <TableCell
             style={{backgroundColor, gridColumn: seasonColumns[Seasons.spring]}}
-            children={completeButton}
+            children={completeButton(Seasons.spring)}
           />
         </>
       );
@@ -390,84 +395,84 @@ const MountainRow = (props: Props) => {
               backgroundColor, gridColumn: monthColumns[Months.january],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.january)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.february],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.february)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.march],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.march)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.april],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.april)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.may],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.may)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.june],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.june)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.july],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.july)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.august],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.august)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.september],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.september)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.october],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.october)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.november],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.november)}
           />
           <GridCell
             style={{
               backgroundColor, gridColumn: monthColumns[Months.december],
               borderColor,
             }}
-            children={completeButton}
+            children={completeButton(Months.december)}
           />
         </>
       );

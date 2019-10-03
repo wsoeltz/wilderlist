@@ -24,6 +24,8 @@ const HeaderContainer = styled(HeaderContainerBase)`
   box-shadow: 0 1px 3px 1px #d1d1d1;
   display: flex;
   justify-content: flex-end;
+  position: relative;
+  z-index: 100;
 `;
 
 const LogoContainer = styled(Link)`

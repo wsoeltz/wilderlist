@@ -8,8 +8,10 @@ import {
   ContentLeftLarge as RegionListColumn,
   ContentRightSmall as RegionEditColumn,
 } from '../../styling/Grid';
+import { ButtonPrimary } from '../../styling/styleUtils';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_STATES } from './AdminStates';
 import AddRegion from './regions/AddRegion';
 import EditRegion from './regions/EditRegion';
@@ -72,6 +74,7 @@ const AdminRegions = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_REGIONS);
   const [editRegionPanel, setEditRegionPanel] = useState<EditRegionPanelEnum>(EditRegionPanelEnum.Empty);
   const [regionToEdit, setRegionToEdit] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const clearEditRegionPanel = () => {
     setEditRegionPanel(EditRegionPanelEnum.Empty);
     setRegionToEdit(null);
@@ -110,9 +113,9 @@ const AdminRegions = () => {
       setEditRegionPanel(EditRegionPanelEnum.New);
     };
     editPanel = (
-      <button onClick={createNewButtonClick}>
+      <ButtonPrimary onClick={createNewButtonClick}>
         Create new region
-      </button>
+      </ButtonPrimary>
     );
   } else if (editRegionPanel === EditRegionPanelEnum.New) {
     editPanel = (
@@ -152,11 +155,21 @@ const AdminRegions = () => {
     clearEditRegionPanel();
   };
 
+  const filterRegions = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       <RegionListColumn>
         <ContentHeader>
           <h2>Regions</h2>
+          <StandardSearch
+            placeholder={'Filter states'}
+            setSearchQuery={filterRegions}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
         </ContentHeader>
         <ContentBody>
           <ListRegions
@@ -165,6 +178,7 @@ const AdminRegions = () => {
             data={data}
             deleteRegion={deleteRegion}
             editRegion={editRegion}
+            searchQuery={searchQuery}
           />
         </ContentBody>
       </RegionListColumn>

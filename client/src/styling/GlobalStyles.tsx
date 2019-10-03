@@ -4,6 +4,8 @@ import {
   faCaretDown,
   faCaretUp,
   faCheck,
+  faChevronLeft,
+  faChevronRight,
   faEnvelope,
   faSearch,
 } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +18,10 @@ import {
 } from './styleUtils';
 
 // Add all font awesome icons here
-library.add(faCaretDown, faCaretUp, faSearch, faCalendarAlt, faCheck, faEnvelope);
+library.add(
+  faCaretDown, faCaretUp, faSearch, faCalendarAlt,
+  faCheck, faEnvelope, faChevronLeft, faChevronRight,
+);
 
 const GlobalStyles = createGlobalStyle`
 

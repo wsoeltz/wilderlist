@@ -6,10 +6,12 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
+  ContentHeader,
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../../styling/Grid';
 import MountainDetail from '../../mountains/detail/MountainDetail';
+import BackButton from '../../sharedComponents/BackButton';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
 
@@ -52,6 +54,9 @@ const ComparePeakListPage = (props: Props) => {
   return (
     <>
       <ContentLeftLarge>
+        <ContentHeader>
+          <BackButton />
+        </ContentHeader>
         <ContentBody>
           {comparison}
         </ContentBody>

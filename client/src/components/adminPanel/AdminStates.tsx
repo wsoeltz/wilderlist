@@ -8,8 +8,10 @@ import {
   ContentLeftLarge as StateListColumn,
   ContentRightSmall as StateEditColumn,
 } from '../../styling/Grid';
+import { ButtonPrimary } from '../../styling/styleUtils';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_MOUNTAINS } from './AdminMountains';
 import { GET_REGIONS } from './AdminRegions';
 import AddState from './states/AddState';
@@ -82,6 +84,7 @@ const AdminStates = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES);
   const [editStatePanel, setEditStatePanel] = useState<EditStatePanelEnum>(EditStatePanelEnum.Empty);
   const [stateToEdit, setStateToEdit] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const clearEditStatePanel = () => {
     setEditStatePanel(EditStatePanelEnum.Empty);
     setStateToEdit(null);
@@ -120,9 +123,9 @@ const AdminStates = () => {
       setEditStatePanel(EditStatePanelEnum.New);
     };
     editPanel = (
-      <button onClick={createNewButtonClick}>
+      <ButtonPrimary onClick={createNewButtonClick}>
         Create new state
-      </button>
+      </ButtonPrimary>
     );
   } else if (editStatePanel === EditStatePanelEnum.New) {
     editPanel = (
@@ -165,11 +168,21 @@ const AdminStates = () => {
     clearEditStatePanel();
   };
 
+  const filterStates = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       <StateListColumn>
         <ContentHeader>
           <h2>States</h2>
+          <StandardSearch
+            placeholder={'Filter states'}
+            setSearchQuery={filterStates}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
         </ContentHeader>
         <ContentBody>
           <ListStates
@@ -178,6 +191,7 @@ const AdminStates = () => {
             data={data}
             deleteState={deleteState}
             editState={editState}
+            searchQuery={searchQuery}
           />
         </ContentBody>
       </StateListColumn>

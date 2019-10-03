@@ -1,9 +1,11 @@
 import { GetString } from 'fluent-react';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
+  FilterBar,
   MountainColumnTitleName,
   Root,
   TitleCell,
@@ -30,13 +32,17 @@ const ComparisonTable = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
   const userMountains = user.mountains !== null ? user.mountains : [];
   const myMountains = me.mountains !== null ? me.mountains : [];
 
   const myAscentGoals = getAscentGoals(me.peakLists, myMountains);
   const userAscentGoals = getAscentGoals(user.peakLists, userMountains);
 
-  const comparisonRows = mountains.map((mountain, index) => (
+  const filteredMountains = mountains.filter(
+    ({name}) => name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const comparisonRows = filteredMountains.map((mountain, index) => (
     <ComparisonRow
       key={`comparison-row-${mountain.id}`}
       userMountains={userAscentGoals}
@@ -48,15 +54,31 @@ const ComparisonTable = (props: Props) => {
     />
   ));
 
+  const filterMountains = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
-    <Root>
-      <MountainColumnTitleName>
-        {getFluentString('global-text-value-mountain')}
-      </MountainColumnTitleName>
-      <TitleCell style={{gridColumn: gridColumns.friendColumn}}>{user.name}</TitleCell>
-      <TitleCell style={{gridColumn: gridColumns.meColumn}}>{me.name}</TitleCell>
-      {comparisonRows}
-    </Root>
+    <>
+      <FilterBar>
+        <StandardSearch
+          placeholder='Filter mountains'
+          setSearchQuery={filterMountains}
+          focusOnMount={false}
+          initialQuery={searchQuery}
+        />
+      </FilterBar>
+      <div style={{minHeight: mountains.length * 32}}>
+        <Root>
+          <MountainColumnTitleName>
+            {getFluentString('global-text-value-mountain')}
+          </MountainColumnTitleName>
+          <TitleCell style={{gridColumn: gridColumns.friendColumn}}>{user.name}</TitleCell>
+          <TitleCell style={{gridColumn: gridColumns.meColumn}}>{me.name}</TitleCell>
+          {comparisonRows}
+        </Root>
+      </div>
+    </>
   );
 
 };

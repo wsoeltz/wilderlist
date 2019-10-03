@@ -8,10 +8,16 @@ global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $te
 global-text-value-are-you-sure-modal = Please Confirm
 global-text-value-modal-confirm = Confirm
 global-text-value-modal-cancel = Cancel
+global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
+global-text-value-back = Back
+global-text-value-loading = Loading
+global-text-value-loading-medium =  This is taking awhile, please don't get lost
+global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
+global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
-global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact the administrator.
+global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilerlistapp@gmail.com
 
 global-text-value-modal-email = Email
 global-text-value-name = Name
@@ -127,6 +133,7 @@ peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-nam
 peak-list-detail-text-begin-list = Begin List
 peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
+peak-list-detail-filter-mountains = Filter mountains
 
 peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located {
   $state-or-region ->
@@ -249,3 +256,17 @@ import-grid-img-alt-file-upload = Then select FILE UPLOAD
 import-grid-img-alt-file-publish = Go to File > Publish to the web
 import-grid-img-alt-publish-setting = Select the Grid you would like to publish and set it to CSV
 import-grid-img-alt-publish-link = Copy the generated link
+
+weather-forecast-weather = Weather
+weather-forecast-high = High
+weather-forecast-low = Low
+weather-forecast-wind = Wind
+weather-forecast-detailed-report = Detailed Report
+weather-forecast-network-error = There was a network error retrieving weather data. Please try again later.
+
+local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
+local-trails-hiking-project-nearby-route = Nearby Routes
+local-trails-hiking-project-beta = Beta
+local-trails-hiking-project-via-the = via the
+local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
+local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.
