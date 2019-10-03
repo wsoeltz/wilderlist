@@ -180,19 +180,34 @@ export const getSeason = (year: number, month: number, day: number): Seasons | u
 };
 
 export const getMonthIndex = (month: Months) => {
-  if (month === Months.january) { return 1; }
-  else if (month === Months.february) { return 2; }
-  else if (month === Months.march) { return 3; }
-  else if (month === Months.april) { return 4; }
-  else if (month === Months.may) { return 5; }
-  else if (month === Months.june) { return 6; }
-  else if (month === Months.july) { return 7; }
-  else if (month === Months.august) { return 8; }
-  else if (month === Months.september) { return 9; }
-  else if (month === Months.october) { return 10; }
-  else if (month === Months.november) { return 11; }
-  else if (month === Months.december) { return 12; }
-}
+  if (month === Months.january) {
+    return 1;
+  } else if (month === Months.february) {
+    return 2;
+  } else if (month === Months.march) {
+    return 3;
+  } else if (month === Months.april) {
+    return 4;
+  } else if (month === Months.may) {
+    return 5;
+  } else if (month === Months.june) {
+    return 6;
+  } else if (month === Months.july) {
+    return 7;
+  } else if (month === Months.august) {
+    return 8;
+  } else if (month === Months.september) {
+    return 9;
+  } else if (month === Months.october) {
+    return 10;
+     } else if (month === Months.november) {
+    return 11;
+     } else if (month === Months.december) {
+    return 12;
+     } else {
+    return 0;
+  }
+};
 
 export const getSolsticeAndEquinox = (year: number) => {
   return getSolsticeAndEquinoxUtility(year);

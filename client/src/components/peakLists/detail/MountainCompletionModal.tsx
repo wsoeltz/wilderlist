@@ -14,13 +14,13 @@ import {
   ButtonSecondary,
   warningColor,
 } from '../../../styling/styleUtils';
-import { Mountain, User, PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakListVariants, User } from '../../../types/graphQLTypes';
 import {
   convertFieldsToDate,
-  Seasons,
-  Months,
-  getSeason,
   getMonthIndex,
+  getSeason,
+  Months,
+  Seasons,
 } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
 import './react-datepicker.custom.css';
@@ -95,7 +95,7 @@ const SelectMonth = styled(SelectBoxBase)`
   border-left: none;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  padding-right: 20px;
+  padding-right: 25px;
 `;
 const SelectDateOption = styled.option`
   padding: 4px;
@@ -156,7 +156,7 @@ type Restrictions = {
 } | {
   variant: PeakListVariants.grid;
   month: Months;
-}
+};
 
 type Props = BaseProps & Restrictions;
 
@@ -269,17 +269,20 @@ const MountainCompletionModal = (props: Props) => {
 
   let title: string;
   let filterDate: (date: Date) => boolean;
+  let initialDate: Date;
   if (props.variant === PeakListVariants.standard) {
     title = mountainName;
+    initialDate = today;
     filterDate = (date: Date) => {
       const year = date.getFullYear();
       if (yearOutOfBounds(year)) {
         return false;
       }
       return true;
-    }
+    };
   } else if (props.variant === PeakListVariants.winter) {
     title = mountainName + ' - ' + Seasons.winter;
+    initialDate = new Date(today.getFullYear() - 1, 11);
     filterDate = (date: Date) => {
       const year = date.getFullYear();
       if (yearOutOfBounds(year)) {
@@ -295,6 +298,17 @@ const MountainCompletionModal = (props: Props) => {
     };
   } else if (props.variant === PeakListVariants.fourSeason) {
     title = mountainName + ' - ' + props.season;
+    if (props.season === Seasons.fall) {
+      initialDate = new Date(today.getFullYear(), 8);
+    } else if (props.season === Seasons.winter) {
+      initialDate = new Date(today.getFullYear() - 1, 11);
+    } else if (props.season === Seasons.spring) {
+      initialDate = new Date(today.getFullYear(), 2);
+    } else if (props.season === Seasons.summer) {
+      initialDate = new Date(today.getFullYear(), 5);
+    } else {
+      initialDate = today;
+    }
     filterDate = (date: Date) => {
       const year = date.getFullYear();
       if (yearOutOfBounds(year)) {
@@ -310,13 +324,14 @@ const MountainCompletionModal = (props: Props) => {
     };
   } else if (props.variant === PeakListVariants.grid) {
     title = mountainName + ' - ' + props.month;
+    const monthIndex = getMonthIndex(props.month);
+    initialDate = new Date(today.getFullYear(), monthIndex - 1);
     filterDate = (date: Date) => {
       const year = date.getFullYear();
       if (yearOutOfBounds(year)) {
         return false;
       }
       const month = date.getMonth() + 1;
-      const monthIndex = getMonthIndex(props.month)
       if (month === monthIndex) {
         return true;
       }
@@ -324,9 +339,9 @@ const MountainCompletionModal = (props: Props) => {
     };
   } else {
     title = mountainName;
+    initialDate = today;
     filterDate = () => true;
   }
-
 
   return (
     <Modal
@@ -357,6 +372,7 @@ const MountainCompletionModal = (props: Props) => {
           renderCustomHeader={renderCustomHeader}
           fixedHeight={true}
           calendarClassName={'mountain-completion-modal-datepicker'}
+          openToDate={initialDate}
         />
       </DateInputContainer>
       {error}

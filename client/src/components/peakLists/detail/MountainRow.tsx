@@ -25,10 +25,10 @@ import {
   getStandardCompletion,
   getWinterCompletion,
 } from '../Utils';
+import { MountainToEdit } from './MountainTable';
 import {
   MountainDatum,
 } from './PeakListDetail';
-import { MountainToEdit } from './MountainTable';
 
 export const nameColumn = 1;
 export const elevationColumn = 2;
@@ -174,7 +174,7 @@ const MountainRow = (props: Props) => {
         <CalendarButton icon='calendar-alt' /> {completeButtonText}
       </MarkDoneButton>
     );
-  }
+  };
 
   let peakCompletedContent: React.ReactElement<any> | null = completeButton(null);
   const completedDates = userMountains.find(
