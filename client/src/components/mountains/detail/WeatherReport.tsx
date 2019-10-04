@@ -108,8 +108,8 @@ export interface Forecast {
 }
 
 interface DetailForecastState {
-  today: Forecast;
-  tonight: Forecast;
+  today: Forecast | null;
+  tonight: Forecast | null;
 }
 
 const WeatherReport = ({latitude, longitude}: LatLong) => {
@@ -172,7 +172,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
             </WindSpeed>
             <ForecastShort>{tonight.shortForecast}</ForecastShort>
             <DetailModalButton
-              onClick={() => setWeatherDetail({today: tonight, tonight})}
+              onClick={() => setWeatherDetail({today: null, tonight})}
             >
               {getFluentString('weather-forecast-detailed-report')}
             </DetailModalButton>
@@ -211,7 +211,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
               <WindSpeed>{getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}</WindSpeed>
               <ForecastShort>{today.shortForecast}</ForecastShort>
               <DetailModalButton
-                onClick={() => setWeatherDetail({today, tonight})}
+                onClick={() => setWeatherDetail({today, tonight: null})}
               >
                 {getFluentString('weather-forecast-detailed-report')}
               </DetailModalButton>
