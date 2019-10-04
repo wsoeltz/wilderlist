@@ -157,6 +157,11 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
     *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence. The smallest mountain is
 } { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
+mountain-completion-modal-toggle-btn-full-date = Full Date
+mountain-completion-modal-toggle-btn-month-year = Month / Year
+mountain-completion-modal-toggle-btn-year-only = Year Only
+mountain-completion-modal-toggle-btn-no-date = No Date
+mountain-completion-modal-no-date = Mark complete with no date.
 mountain-completion-modal-text-note-standard =
   Entering a date is optional for <strong>Standard</strong> lists. However an unspecific date may not count towards other lists that contain this peak.
 mountain-completion-modal-text-note-winter =

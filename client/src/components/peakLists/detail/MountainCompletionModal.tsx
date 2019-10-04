@@ -12,6 +12,7 @@ import {
 import {
   ButtonPrimary,
   ButtonSecondary,
+  GhostButton,
   warningColor,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants, User } from '../../../types/graphQLTypes';
@@ -29,6 +30,13 @@ const DateInputContainer = styled.div`
   display: grid;
   grid-template-rows: auto auto;
   grid-row-gap: 1rem;
+  min-height: 385px;
+
+  /* This is necessary as datepicker wraps the datepicker
+     in a blank div with no class name that can't be removed */
+  div:not([class]) {
+    display: flex;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -48,12 +56,6 @@ const Error = styled.p`
 
 const HideCalendar = styled.div`
   display: none;
-
-  /* This is necessary as datepicker wraps the datepicker
-     in a blank div with no class name that can't be removed */
-  + div {
-    display: flex;
-  }
 `;
 
 const CalendarHeaderRoot = styled.div`
@@ -101,8 +103,34 @@ const SelectDateOption = styled.option`
   padding: 4px;
 `;
 
+const SelectYearYearOnly = styled(SelectBoxBase)`
+  border-radius: 4px;
+  max-height: 2.5rem;
+`;
+
+const NoDateText = styled.p`
+  text-align: center;
+  font-style: italic;
+`;
+
 const TitleText = styled.h3`
   text-transform: capitalize;
+`;
+
+const ToggleTypeButtonContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const ToggleTypeButton = styled(GhostButton)`
+  width: 100%;
+
+  &.active,
+  &:hover {
+    background-color: #d1e2e9;
+  }
 `;
 
 export const ADD_MOUNTAIN_COMPLETION = gql`
@@ -136,6 +164,13 @@ export interface MountainCompletionVariables {
   userId: string;
   mountainId: string;
   date: string;
+}
+
+enum DateType {
+  full = 'full',
+  monthYear = 'monthYear',
+  yearOnly = 'yearOnly',
+  none = 'none',
 }
 
 interface BaseProps {
@@ -173,17 +208,38 @@ const MountainCompletionModal = (props: Props) => {
   const [completionYear, setCompletionYear] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(null);
+  const [dateType, setDateType] = useState<DateType>(DateType.full);
 
   const setDates = (date: Date | null) => {
     if (date !== null) {
       const newYear = date.getFullYear();
       const newMonth = date.getMonth() + 1;
       const newDay = date.getDate();
-      setCompletionYear(newYear.toString());
-      setCompletionMonth(newMonth.toString());
-      setCompletionDay(newDay.toString());
+      if (dateType === DateType.full) {
+        setCompletionYear(newYear.toString());
+        setCompletionMonth(newMonth.toString());
+        setCompletionDay(newDay.toString());
+      } else if (dateType === DateType.monthYear) {
+        setCompletionYear(newYear.toString());
+        setCompletionMonth(newMonth.toString());
+        setCompletionDay('');
+      } else {
+        setCompletionYear('');
+        setCompletionMonth('');
+        setCompletionDay('');
+      }
+    } else {
+      setCompletionYear('');
+      setCompletionMonth('');
+      setCompletionDay('');
     }
     setStartDate(date);
+  };
+
+  const setYearOnly = (year: string) => {
+    setCompletionYear(year);
+    setCompletionMonth('');
+    setCompletionDay('');
   };
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -270,6 +326,7 @@ const MountainCompletionModal = (props: Props) => {
   let title: string;
   let filterDate: (date: Date) => boolean;
   let initialDate: Date;
+  let toggleButtons: React.ReactElement<any> | null = null;
   if (props.variant === PeakListVariants.standard) {
     title = mountainName;
     initialDate = today;
@@ -280,6 +337,47 @@ const MountainCompletionModal = (props: Props) => {
       }
       return true;
     };
+    toggleButtons = (
+      <ToggleTypeButtonContainer>
+        <ToggleTypeButton
+          onClick={() => {
+            setDates(null);
+            setDateType(DateType.full);
+          }}
+          className={dateType === DateType.full ? 'active' : ''}
+        >
+          {getFluentString('mountain-completion-modal-toggle-btn-full-date')}
+        </ToggleTypeButton>
+        <ToggleTypeButton
+          onClick={() => {
+            setDates(null);
+            setDateType(DateType.monthYear);
+          }}
+          className={dateType === DateType.monthYear ? 'active' : ''}
+        >
+          {getFluentString('mountain-completion-modal-toggle-btn-month-year')}
+        </ToggleTypeButton>
+        <ToggleTypeButton
+          onClick={() => {
+            setDates(null);
+            setYearOnly('2019');
+            setDateType(DateType.yearOnly);
+          }}
+          className={dateType === DateType.yearOnly ? 'active' : ''}
+        >
+          {getFluentString('mountain-completion-modal-toggle-btn-year-only')}
+        </ToggleTypeButton>
+        <ToggleTypeButton
+          onClick={() => {
+            setDates(null);
+            setDateType(DateType.none);
+          }}
+          className={dateType === DateType.none ? 'active' : ''}
+        >
+          {getFluentString('mountain-completion-modal-toggle-btn-no-date')}
+        </ToggleTypeButton>
+      </ToggleTypeButtonContainer>
+    );
   } else if (props.variant === PeakListVariants.winter) {
     title = mountainName + ' - ' + Seasons.winter;
     initialDate = new Date(today.getFullYear() - 1, 11);
@@ -343,23 +441,22 @@ const MountainCompletionModal = (props: Props) => {
     filterDate = () => true;
   }
 
-  return (
-    <Modal
-      onClose={closeEditMountainModalModal}
-      width={'300px'}
-      height={'auto'}
-    >
-      <TitleText>{title}</TitleText>
-      <DateInputContainer>
-        <DatePicker
-          selected={startDate}
-          onChange={date => setDates(date)}
-          filterDate={filterDate}
-          popperContainer={HideCalendar}
-          disabledKeyboardNavigation={true}
-          isClearable={true}
-          placeholderText={'MM/DD/YYYY'}
-        />
+  let datePickers: React.ReactElement<any> | null;
+  if (dateType === DateType.full || dateType === DateType.monthYear) {
+    const input = dateType === DateType.monthYear ? null : (
+      <DatePicker
+        selected={startDate}
+        onChange={date => setDates(date)}
+        filterDate={filterDate}
+        popperContainer={HideCalendar}
+        disabledKeyboardNavigation={true}
+        isClearable={true}
+        placeholderText={'MM/DD/YYYY'}
+      />
+    );
+    datePickers = (
+      <>
+        {input}
         <DatePicker
           selected={startDate}
           onChange={date => setDates(date)}
@@ -369,11 +466,64 @@ const MountainCompletionModal = (props: Props) => {
           showMonthDropdown={true}
           showYearDropdown={true}
           dropdownMode={'select'}
-          renderCustomHeader={renderCustomHeader}
+          renderCustomHeader={dateType === DateType.monthYear ? undefined : renderCustomHeader}
           fixedHeight={true}
           calendarClassName={'mountain-completion-modal-datepicker'}
           openToDate={initialDate}
+          showMonthYearPicker={dateType === DateType.monthYear}
         />
+      </>
+    );
+  } else if (dateType === DateType.yearOnly) {
+    datePickers = (
+      <SelectYearYearOnly
+        value={completionYear}
+        onChange={e => setYearOnly(e.target.value)}
+      >
+        {years.map(option => (
+          <SelectDateOption key={option} value={option}>
+            {option}
+          </SelectDateOption>
+        ))}
+      </SelectYearYearOnly>
+    );
+  } else if (dateType === DateType.none) {
+    datePickers = (
+      <NoDateText>
+        {getFluentString('mountain-completion-modal-no-date')}
+      </NoDateText>
+    );
+  } else {
+    datePickers = null;
+  }
+
+  const isConfirmDisabled = () => {
+    if (dateType === DateType.full &&
+      (completionDay === '' || completionMonth === '' || completionYear === '')) {
+      return true;
+    } else if (dateType === DateType.monthYear &&
+      (completionDay !== '' || completionMonth === '' || completionYear === '')) {
+      return true;
+    } else if (dateType === DateType.yearOnly &&
+      (completionDay !== '' || completionMonth !== '' || completionYear === '')) {
+      return true;
+    } else if (dateType === DateType.none &&
+      (completionDay !== '' || completionMonth !== '' || completionYear !== '')) {
+      return true;
+    }
+    return false;
+  };
+
+  return (
+    <Modal
+      onClose={closeEditMountainModalModal}
+      width={'400px'}
+      height={'auto'}
+    >
+      <TitleText>{title}</TitleText>
+      {toggleButtons}
+      <DateInputContainer>
+        {datePickers}
       </DateInputContainer>
       {error}
       {textNote}
@@ -381,7 +531,10 @@ const MountainCompletionModal = (props: Props) => {
         <CancelButton onClick={closeEditMountainModalModal}>
           {getFluentString('global-text-value-modal-cancel')}
         </CancelButton>
-        <ButtonPrimary onClick={() => validateAndAddMountainCompletion(editMountainId)}>
+        <ButtonPrimary
+          onClick={() => validateAndAddMountainCompletion(editMountainId)}
+          disabled={isConfirmDisabled()}
+        >
           {getFluentString('global-text-value-modal-mark-complete')}
         </ButtonPrimary>
       </ButtonWrapper>
