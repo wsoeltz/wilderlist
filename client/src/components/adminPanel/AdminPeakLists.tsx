@@ -8,8 +8,10 @@ import {
   ContentLeftLarge as PeakListListColumn,
   ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
+import { ButtonPrimary } from '../../styling/styleUtils';
 import { PeakList, PeakListVariants } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import StandardSearch from '../sharedComponents/StandardSearch';
 import AddPeakList from './peakLists/AddPeakList';
 import EditPeakList from './peakLists/EditPeakList';
 import ListPeakLists from './peakLists/ListPeakLists';
@@ -21,6 +23,7 @@ export const GET_PEAK_LISTS = gql`
       name
       shortName
       type
+      searchString
       parent {
         id
         name
@@ -49,6 +52,7 @@ const ADD_PEAK_LIST = gql`
       name
       shortName
       type
+      searchString
       mountains {
         id
         name
@@ -82,6 +86,7 @@ export interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  searchString: PeakList['searchString'];
   parent: {
     id: PeakList['id'];
     name: PeakList['name'];
@@ -103,6 +108,7 @@ const AdminPeakLists = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_PEAK_LISTS);
   const [editPeakListPanel, setEditPeakListPanel] = useState<EditPeakListPanelEnum>(EditPeakListPanelEnum.Empty);
   const [peakListToEdit, setPeakListToEdit] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const clearEditPeakListPanel = () => {
     setEditPeakListPanel(EditPeakListPanelEnum.Empty);
     setPeakListToEdit(null);
@@ -139,9 +145,9 @@ const AdminPeakLists = () => {
       setEditPeakListPanel(EditPeakListPanelEnum.New);
     };
     editPanel = (
-      <button onClick={createNewButtonClick}>
+      <ButtonPrimary onClick={createNewButtonClick}>
         Create new peak list
-      </button>
+      </ButtonPrimary>
     );
   } else if (editPeakListPanel === EditPeakListPanelEnum.New) {
     editPanel = (
@@ -186,11 +192,21 @@ const AdminPeakLists = () => {
     clearEditPeakListPanel();
   };
 
+  const filterPeakLists = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       <PeakListListColumn>
         <ContentHeader>
           <h2>Peak Lists</h2>
+          <StandardSearch
+            placeholder={'Filter peak lists'}
+            setSearchQuery={filterPeakLists}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
         </ContentHeader>
         <ContentBody>
           <ListPeakLists
@@ -199,6 +215,7 @@ const AdminPeakLists = () => {
             data={data}
             deletePeakList={deletePeakList}
             editPeakList={editPeakList}
+            searchQuery={searchQuery}
           />
         </ContentBody>
       </PeakListListColumn>
