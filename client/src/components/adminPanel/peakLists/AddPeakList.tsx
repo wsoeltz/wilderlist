@@ -1,11 +1,26 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
-import { PeakListVariants, Region } from '../../../types/graphQLTypes';
+import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   AddPeakListVariables,
   SuccessResponse as PeakListDatum,
 } from '../AdminPeakLists';
+import {
+  CheckboxContainer,
+  CheckboxInput,
+  CheckboxLabel,
+  CheckboxRoot,
+  CreateButton,
+  EditPanel,
+  NameActive,
+  NameInput,
+  SelectBox,
+  SelectedItemsContainer,
+  SelectionPanel,
+} from '../sharedStyles';
 
 const GET_MOUNTAINS = gql`
   query ListMountains{
@@ -18,15 +33,15 @@ const GET_MOUNTAINS = gql`
 
 interface SuccessResponse {
   mountains: Array<{
-    id: Region['id'];
-    name: Region['name'];
+    id: Mountain['id'];
+    name: Mountain['name'];
   }>;
 }
 
 interface CheckboxProps {
   name: string;
   id: string;
-  toggleItem: (id: string, checked: boolean) => void;
+  toggleItem: (id: string, name: string, checked: boolean) => void;
   startChecked: boolean;
 }
 
@@ -36,23 +51,28 @@ const Checkbox = ({name, id, toggleItem, startChecked}: CheckboxProps) => {
   const onChange = () => {
     const checkedWillBe = !checked;
     setChecked(checkedWillBe);
-    toggleItem(id, checkedWillBe);
+    toggleItem(id, name, checkedWillBe);
   };
 
   return (
-    <>
-      <input
+    <CheckboxRoot>
+      <CheckboxInput
         type='checkbox'
         value={id}
         id={`state-checkbox-${id}`}
         checked={checked}
         onChange={onChange}
       />
-      <label htmlFor={`state-checkbox-${id}`}>{name}</label>
-    </>
+      <CheckboxLabel htmlFor={`state-checkbox-${id}`}>{name}</CheckboxLabel>
+    </CheckboxRoot>
   );
 
 };
+
+interface MountainDatum {
+  name: Mountain['name'];
+  id: Mountain['id'];
+}
 
 interface Props {
   listDatum: PeakListDatum | undefined;
@@ -65,15 +85,17 @@ const AddPeakList = (props: Props) => {
 
   const [name, setName] = useState<string>('');
   const [shortName, setShortName] = useState<string>('');
-  const [selectedMountains, setSelectedMountains] = useState<Array<Region['id']>>([]);
+  const [selectedMountains, setSelectedMountains] = useState<MountainDatum[]>([]);
   const [type, setType] = useState<PeakListVariants>(PeakListVariants.standard);
   const [parent, setParent] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (type !== null) {
+      const selectedMountainIds = selectedMountains.map(({id}) => id);
       addPeakList({
-        name, shortName, mountains: selectedMountains,
+        name, shortName, mountains: selectedMountainIds,
         type, parent,
       });
     }
@@ -92,13 +114,16 @@ const AddPeakList = (props: Props) => {
     }
   };
 
-  const toggleMountainListItem = (id: string, checked: boolean) => {
+  const toggleMountainListItem = (id: string, mountainName: string, checked: boolean) => {
     if (checked === true) {
-      setSelectedMountains([...selectedMountains, id]);
+      setSelectedMountains([...selectedMountains, {id, name: mountainName}]);
     } else if (checked === false) {
-      setSelectedMountains(selectedMountains.filter(idInList => idInList !== id));
+      setSelectedMountains(selectedMountains.filter(idInList => idInList.id !== id));
     }
   };
+
+  const sortedSelectedMountains = sortBy(selectedMountains, ['name']);
+  const selectedMountainsLi = sortedSelectedMountains.map(mountain => <li key={mountain.id}>{mountain.name}</li>);
 
   const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS);
 
@@ -109,17 +134,21 @@ const AddPeakList = (props: Props) => {
     mountains = null;
     console.error(error);
   } else if (data !== undefined) {
-    const mountainList = data.mountains.map(mountain => {
-      return (
-        <li key={mountain.id}>
+    const sortedMountains = sortBy(data.mountains, ['name']);
+    const mountainList = sortedMountains.map(mountain => {
+      if (mountain.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return (
           <Checkbox
+            key={mountain.id}
             id={mountain.id}
             name={mountain.name}
             toggleItem={toggleMountainListItem}
             startChecked={false}
           />
-        </li>
-      );
+        );
+      } else {
+        return null;
+      }
     });
     mountains = <>{mountainList}</>;
   } else {
@@ -136,24 +165,31 @@ const AddPeakList = (props: Props) => {
       setParent(value);
     }
   };
+
+  const filterMountains = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
-    <div>
-      <button onClick={cancel}>Cancel</button>
+    <EditPanel onCancel={cancel}>
       <form
         onSubmit={handleSubmit}
       >
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder='Name'
-        />
-        <input
-          value={shortName}
-          onChange={e => setShortName(e.target.value)}
-          placeholder='shortName'
-        />
+        <NameActive>
+          <NameInput
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder='Name'
+          />
+          <NameInput
+            value={shortName}
+            onChange={e => setShortName(e.target.value)}
+            placeholder='shortName'
+          />
+        </NameActive>
         <div>
-          <select
+          <label>Set list type</label>
+          <SelectBox
             value={`${type || ''}`}
             onChange={e => setStringToPeakListVariant(e.target.value)}
           >
@@ -161,26 +197,38 @@ const AddPeakList = (props: Props) => {
             <option value={PeakListVariants.winter}>{PeakListVariants.winter}</option>
             <option value={PeakListVariants.fourSeason}>{PeakListVariants.fourSeason}</option>
             <option value={PeakListVariants.grid}>{PeakListVariants.grid}</option>
-          </select>
+          </SelectBox>
         </div>
         <div>
-          <select
+          <label>Set list parent (optional)</label>
+          <SelectBox
             value={`${parent || ''}`}
             onChange={e => setParentFromString(e.target.value)}
           >
             <option value=''>Parent (none)</option>
             {parentOptions}
-          </select>
+          </SelectBox>
         </div>
-        <fieldset>
-          Mountains
-          <ul>
+        <SelectionPanel>
+          <CheckboxContainer>
+            <StandardSearch
+              placeholder={'Filter mountains'}
+              setSearchQuery={filterMountains}
+              focusOnMount={false}
+              initialQuery={searchQuery}
+            />
             {mountains}
-          </ul>
-        </fieldset>
-        <button type='submit' disabled={name === '' || shortName === ''}>Add Peak List</button>
+          </CheckboxContainer>
+          <SelectedItemsContainer>
+            <strong>Selected Mountains</strong>
+            <ol>
+              {selectedMountainsLi}
+            </ol>
+          </SelectedItemsContainer>
+        </SelectionPanel>
+        <CreateButton type='submit' disabled={name === '' || shortName === ''}>Add Peak List</CreateButton>
       </form>
-    </div>
+    </EditPanel>
   );
 
 };

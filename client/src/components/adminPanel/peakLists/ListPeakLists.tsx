@@ -1,8 +1,8 @@
 import { ApolloError } from 'apollo-boost';
 import React, {useState} from 'react';
-import { LinkButton } from '../../../styling/styleUtils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { PeakListDatum, SuccessResponse } from '../AdminPeakLists';
+import { ListItem } from '../sharedStyles';
 
 interface Props {
   loading: boolean;
@@ -10,10 +10,11 @@ interface Props {
   data: SuccessResponse | undefined;
   deletePeakList: (id: string) => void;
   editPeakList: (id: string) => void;
+  searchQuery: string;
 }
 
 const ListStates = (props: Props) => {
-  const {loading, error, data, deletePeakList, editPeakList} = props;
+  const {loading, error, data, deletePeakList, editPeakList, searchQuery} = props;
 
   const [peakListToDelete, setPeakListToDelete] = useState<PeakListDatum | null>(null);
 
@@ -46,37 +47,32 @@ const ListStates = (props: Props) => {
   } else if (data !== undefined) {
     const { peakLists } = data;
     const peakListElms = peakLists.map(peakList => {
-      const { type, parent } = peakList;
-      let parentCopy: React.ReactElement<any> | null;
-      if (parent !== null) {
-        parentCopy = (
-          <div>
-            <small>
-              Parent list: {parent.name} ({parent.type})
-            </small>
-          </div>
+      if (peakList.searchString.toLowerCase().includes(searchQuery.toLowerCase())) {
+        const { type, parent } = peakList;
+        let parentCopy: React.ReactElement<any> | null;
+        if (parent !== null) {
+          parentCopy = (
+            <div>
+              <small>
+                Parent list: {parent.name} ({parent.type})
+              </small>
+            </div>
+          );
+        } else {
+          parentCopy = null;
+        }
+        return (
+          <ListItem
+            key={peakList.id}
+            title={`${peakList.name} (${peakList.shortName}) - ${type}`}
+            content={parentCopy}
+            onEdit={() => editPeakList(peakList.id)}
+            onDelete={() => setPeakListToDelete(peakList)}
+          />
         );
       } else {
-        parentCopy = null;
+        return null;
       }
-      return (
-        <li key={peakList.id}>
-          <strong><LinkButton
-            onClick={() => editPeakList(peakList.id)}
-          >{peakList.name} ({peakList.shortName})</LinkButton></strong>
-          <button
-            onClick={() => setPeakListToDelete(peakList)}
-          >
-            Delete
-          </button>
-          {parentCopy}
-          <div>
-            <small>
-              {type}
-            </small>
-          </div>
-        </li>
-      );
     });
     return(
       <>

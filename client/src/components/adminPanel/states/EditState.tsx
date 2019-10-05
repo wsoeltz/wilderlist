@@ -1,9 +1,29 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
+import {
+  ButtonSecondary,
+} from '../../../styling/styleUtils';
 import { Region, State } from '../../../types/graphQLTypes';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 import { GET_REGIONS } from '../AdminRegions';
 import { GET_STATES } from '../AdminStates';
+import {
+  CheckboxContainer,
+  CheckboxInput,
+  CheckboxLabel,
+  CheckboxRoot,
+  EditNameForm,
+  EditPanel,
+  NameActive,
+  NameInactive,
+  NameInput,
+  NameText,
+  SelectedItemsContainer,
+  SelectionPanel,
+  UpdateButton,
+} from '../sharedStyles';
 
 const GET_STATE_AND_ALL_REGIONS = gql`
   query GetStateAndAllRegions($id: ID!) {
@@ -13,6 +33,7 @@ const GET_STATE_AND_ALL_REGIONS = gql`
       abbreviation
       regions {
         id
+        name
       }
     }
     regions {
@@ -117,16 +138,16 @@ const Checkbox = (props: CheckboxProps) => {
   };
 
   return (
-    <>
-      <input
+    <CheckboxRoot>
+      <CheckboxInput
         type='checkbox'
         value={id}
         id={`state-checkbox-${id}`}
         checked={checked}
         onChange={onChange}
       />
-      <label htmlFor={`state-checkbox-${id}`}>{name}</label>
-    </>
+      <CheckboxLabel htmlFor={`state-checkbox-${id}`}>{name}</CheckboxLabel>
+    </CheckboxRoot>
   );
 
 };
@@ -142,6 +163,7 @@ const EditRegion = (props: Props) => {
   const [editingAbbreviation, setEditingAbbreviation] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
   const [inputAbbreviationValue, setInputAbbreviationValue] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATE_AND_ALL_REGIONS, {
     variables: { id: stateId },
@@ -161,15 +183,18 @@ const EditRegion = (props: Props) => {
 
   let name: React.ReactElement | null;
   let abbreviation: React.ReactElement | null;
-  let states: React.ReactElement | null;
+  let regions: React.ReactElement | null;
+  let selectedRegions: Array<React.ReactElement<any>> | null;
   if (loading === true) {
     name = null;
     abbreviation = null;
-    states = (<p>Loading</p>);
+    selectedRegions = null;
+    regions = (<p>Loading</p>);
   } else if (error !== undefined) {
     name = null;
     abbreviation = null;
-    states = null;
+    regions = null;
+    selectedRegions = null;
     console.error(error);
   } else if (data !== undefined) {
     if (editingName === false) {
@@ -178,10 +203,10 @@ const EditRegion = (props: Props) => {
         setInputNameValue(data.state.name);
       };
       name = (
-        <>
-          <h3>{data.state.name}</h3>
-          <button onClick={setEditNameToTrue}>Edit Name</button>
-        </>
+        <NameInactive>
+          <NameText value={data.state.name} readOnly={true} />
+          <ButtonSecondary onClick={setEditNameToTrue}>Edit Name</ButtonSecondary>
+        </NameInactive>
       );
     } else if (editingName === true) {
       const handleNameSubmit = (e: React.SyntheticEvent) => {
@@ -190,13 +215,13 @@ const EditRegion = (props: Props) => {
         setEditingName(false);
       };
       name = (
-        <>
-        <form onSubmit={handleNameSubmit}>
-          <input value={inputNameValue} onChange={(e) => setInputNameValue(e.target.value)} />
-          <button type='submit' disabled={inputNameValue === ''}>Update</button>
-        </form>
-        <button onClick={() => setEditingName(false)}>Cancel</button>
-        </>
+        <NameActive>
+          <EditNameForm onSubmit={handleNameSubmit}>
+            <NameInput value={inputNameValue} onChange={(e) => setInputNameValue(e.target.value)} />
+            <UpdateButton type='submit' disabled={inputNameValue === ''}>Update</UpdateButton>
+          </EditNameForm>
+          <ButtonSecondary onClick={() => setEditingName(false)}>Cancel</ButtonSecondary>
+        </NameActive>
       );
     } else {
       name = null;
@@ -207,10 +232,10 @@ const EditRegion = (props: Props) => {
         setInputAbbreviationValue(data.state.abbreviation);
       };
       abbreviation = (
-        <>
-          <h4>{data.state.abbreviation}</h4>
-          <button onClick={setEditAbbreviationToTrue}>Edit Abbreviation</button>
-        </>
+        <NameInactive>
+          <NameText value={data.state.abbreviation}  readOnly={true} />
+          <ButtonSecondary onClick={setEditAbbreviationToTrue}>Edit Abbreviation</ButtonSecondary>
+        </NameInactive>
       );
     } else if (editingAbbreviation === true) {
       const handleAbbreviationSubmit = (e: React.SyntheticEvent) => {
@@ -219,48 +244,65 @@ const EditRegion = (props: Props) => {
         setEditingAbbreviation(false);
       };
       abbreviation = (
-        <>
-        <form onSubmit={handleAbbreviationSubmit}>
-          <input value={inputAbbreviationValue} onChange={(e) => setInputAbbreviationValue(e.target.value)} />
-          <button type='submit' disabled={inputAbbreviationValue === ''}>Update</button>
-        </form>
-        <button onClick={() => setEditingAbbreviation(false)}>Cancel</button>
-        </>
+        <NameActive>
+          <EditNameForm onSubmit={handleAbbreviationSubmit}>
+            <NameInput value={inputAbbreviationValue} onChange={(e) => setInputAbbreviationValue(e.target.value)} />
+            <UpdateButton type='submit' disabled={inputAbbreviationValue === ''}>Update</UpdateButton>
+          </EditNameForm>
+          <ButtonSecondary onClick={() => setEditingAbbreviation(false)}>Cancel</ButtonSecondary>
+        </NameActive>
       );
     } else {
       abbreviation = null;
     }
-    const stateList = data.regions.map(region => {
+    const sortedRegions = sortBy(data.regions, ['name']);
+    const regionList = sortedRegions.map(region => {
       return (
-        <li key={region.id}>
-          <Checkbox
-            id={region.id}
-            name={region.name}
-            defaultChecked={(data.state.regions.filter(stateRegion => stateRegion.id === region.id).length > 0)}
-            removeRegionFromState={(regionId) => removeRegionFromState({ variables: {regionId, stateId}}) }
-            addRegionToState={(regionId) => addRegionToState({ variables: {regionId, stateId}}) }
-          />
-        </li>
+        <Checkbox
+          id={region.id}
+          name={region.name}
+          defaultChecked={(data.state.regions.filter(stateRegion => stateRegion.id === region.id).length > 0)}
+          removeRegionFromState={(regionId) => removeRegionFromState({ variables: {regionId, stateId}}) }
+          addRegionToState={(regionId) => addRegionToState({ variables: {regionId, stateId}}) }
+        />
       );
     });
-    states = <>{stateList}</>;
+    regions = <>{regionList}</>;
+    const sortedSelectedRegion = sortBy(data.state.regions, ['name']);
+    selectedRegions = sortedSelectedRegion.map(state => <li key={'selected-' + state.id}>{state.name}</li>);
   } else {
     name = null;
     abbreviation = null;
-    states = null;
+    regions = null;
+    selectedRegions = null;
   }
 
+  const filterRegions = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
-    <div>
-      <button onClick={cancel}>Close</button>
+    <EditPanel onCancel={cancel}>
         {name}
         {abbreviation}
-        <fieldset>
-          <ul>
-            {states}
-          </ul>
-        </fieldset>
-    </div>
+        <SelectionPanel>
+          <CheckboxContainer>
+            <StandardSearch
+              placeholder={'Filter regions'}
+              setSearchQuery={filterRegions}
+              focusOnMount={false}
+              initialQuery={searchQuery}
+            />
+            {regions}
+          </CheckboxContainer>
+          <SelectedItemsContainer>
+            <strong>Selected Regions</strong>
+            <ol>
+              {selectedRegions}
+            </ol>
+          </SelectedItemsContainer>
+        </SelectionPanel>
+    </EditPanel>
   );
 
 };

@@ -3,6 +3,13 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { State } from '../../../types/graphQLTypes';
 import { AddMountainVariables } from '../AdminMountains';
+import {
+  CreateButton,
+  EditPanel,
+  NameActive,
+  NameInput,
+  SelectBox,
+} from '../sharedStyles';
 
 const GET_STATES = gql`
   query ListStates{
@@ -68,69 +75,84 @@ const AddMountain = (props: Props) => {
       );
     });
     states = (
-      <select
-        value={`${selectedState || ''}`}
-        onChange={e => setSelectedState(e.target.value)}
-      >
-        <option value='' key='empty-option-to-select'></option>
-        {stateList}
-      </select>
+      <div>
+        <label>Select State</label>
+        <SelectBox
+          value={`${selectedState || ''}`}
+          onChange={e => setSelectedState(e.target.value)}
+        >
+          <option value='' key='empty-option-to-select'></option>
+          {stateList}
+        </SelectBox>
+      </div>
     );
   } else {
     states = null;
   }
+
+  const prominenceValue = () => {
+    if (prominence) {
+      return `${prominence}`;
+    } else if (prominence === 0) {
+      return '0';
+    } else {
+      return '';
+    }
+  };
+
   return (
-    <div>
-      <button onClick={cancel}>Cancel</button>
+    <EditPanel onCancel={cancel}>
       <form
         onSubmit={handleSubmit}
       >
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder='Name'
-        />
-        <input
-          value={`${longitude || ''}`}
-          onChange={e => setLongitude(parseFloat(e.target.value))}
-          placeholder='longitude'
-          type='number'
-        />
-        <input
-          value={`${latitude || ''}`}
-          onChange={e => setLatitude(parseFloat(e.target.value))}
-          placeholder='latitude'
-          type='number'
-        />
-        <input
-          value={`${elevation || ''}`}
-          onChange={e => setElevation(parseFloat(e.target.value))}
-          placeholder='elevation'
-          type='number'
-        />
-        <input
-          value={`${prominence || ''}`}
-          onChange={e => setProminence(parseFloat(e.target.value))}
-          placeholder='prominence'
-          type='number'
-        />
-        <fieldset>
-          <ul>
-            {states}
-          </ul>
-        </fieldset>
-        <button type='submit' disabled={
+        <NameActive>
+          <label>Name</label>
+          <NameInput
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder='Name'
+          />
+            <label>Latitude</label>
+          <NameInput
+            value={`${latitude || ''}`}
+            onChange={e => setLatitude(parseFloat(e.target.value))}
+            placeholder='latitude'
+            type='number'
+          />
+            <label>Longitude</label>
+          <NameInput
+            value={`${longitude || ''}`}
+            onChange={e => setLongitude(parseFloat(e.target.value))}
+            placeholder='longitude'
+            type='number'
+          />
+            <label>Elevation</label>
+          <NameInput
+            value={`${elevation || ''}`}
+            onChange={e => setElevation(parseFloat(e.target.value))}
+            placeholder='elevation'
+            type='number'
+          />
+            <label>Prominence</label>
+          <NameInput
+            value={prominenceValue()}
+            onChange={e => setProminence(parseFloat(e.target.value))}
+            placeholder='prominence'
+            type='number'
+          />
+        </NameActive>
+        {states}
+        <CreateButton type='submit' disabled={
           name === '' || longitude === null || isNaN(longitude) ||
           latitude === null || isNaN(latitude) || elevation === null ||
           isNaN(elevation) || prominence === null || isNaN(prominence) ||
           selectedState === null || selectedState === ''}
         >
           Add Mountain
-        </button>
+        </CreateButton>
       </form>
-    </div>
+    </EditPanel>
   );
-
 };
 
 export default AddMountain;
