@@ -20,6 +20,7 @@ import {
   getDates,
 } from '../../peakLists/Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   AscentListItem,
   BasicListItem,
@@ -71,7 +72,7 @@ const getDateAsString = (date: DateObject) => {
 
 interface Props {
   completedDates: CompletedMountain | undefined;
-  userId: string;
+  userId: string | null;
   mountainId: string;
   mountainName: string;
   getFluentString: GetString;
@@ -87,15 +88,27 @@ const AscentsList = (props: Props) => {
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
   };
-  const editMountainModal = editMountainId === null ? null : (
-    <MountainCompletionModal
-      editMountainId={editMountainId}
-      closeEditMountainModalModal={closeEditMountainModalModal}
-      userId={userId}
-      mountainName={mountainName}
-      variant={PeakListVariants.standard}
-    />
-  );
+
+  let editMountainModal: React.ReactElement<any> | null;
+  if (editMountainId === null) {
+    editMountainModal = null;
+  } else {
+    if (!userId) {
+      editMountainModal = (
+        <SignUpModal onCancel={closeEditMountainModalModal}/>
+      );
+    } else {
+      editMountainModal = editMountainId === null ? null : (
+        <MountainCompletionModal
+          editMountainId={editMountainId}
+          closeEditMountainModalModal={closeEditMountainModalModal}
+          userId={userId}
+          mountainName={mountainName}
+          variant={PeakListVariants.standard}
+        />
+      );
+    }
+  }
 
   const [dateToRemove, setDateToRemove] = useState<DateObject | null>(null);
 
@@ -104,7 +117,7 @@ const AscentsList = (props: Props) => {
   };
 
   const confirmRemove = () => {
-    if (dateToRemove !== null) {
+    if (userId && dateToRemove !== null) {
       removeMountainCompletion({ variables: { userId, mountainId, date: getDateAsString(dateToRemove)}});
     }
     closeAreYouSureModal();

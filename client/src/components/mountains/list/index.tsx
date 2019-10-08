@@ -59,7 +59,7 @@ interface Variables {
 }
 
 interface Props extends RouteComponentProps {
-  userId: string;
+  userId: string | null;
 }
 
 const MountainSearchPage = (props: Props) => {
@@ -177,7 +177,7 @@ const MountainSearchPage = (props: Props) => {
 
   const mountainDetail = !Types.ObjectId.isValid(id)
     ? (
-        <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>
+        <PlaceholderText>{getFluentString('mountain-search-mountains-detail-placeholder')}</PlaceholderText>
       )
     : ( <MountainDetail userId={userId} id={id} />);
 

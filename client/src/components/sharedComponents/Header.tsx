@@ -133,9 +133,7 @@ const Header = (props: RouteComponentProps) => {
   };
 
   const renderProp = (user: User | null) => {
-    if (user === null) {
-      return null;
-    } else if (user) {
+    if (user) {
       return (
         <>
           <MainNav>
@@ -153,7 +151,18 @@ const Header = (props: RouteComponentProps) => {
         </>
       );
     } else {
-      return null;
+      return (
+        <>
+          <MainNav>
+            {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+            {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
+          </MainNav>
+          <UserMenu
+            user={user}
+            getFluentString={getFluentString}
+          />
+        </>
+      );
     }
   };
   return (

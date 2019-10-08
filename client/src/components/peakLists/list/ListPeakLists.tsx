@@ -63,7 +63,7 @@ export interface PeakListDatum {
 
 interface BaseProps {
   peakListData: PeakListDatum[];
-  userListData: Array<PeakList['id']>;
+  userListData: Array<PeakList['id']> | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
@@ -123,7 +123,7 @@ const ListPeakLists = (props: Props) => {
       return null;
     }
     const isMe = props.profileView === true ? props.isMe : false;
-    const active = userListData.includes(peakList.id);
+    const active = userListData ? userListData.includes(peakList.id) : null;
     return (
       <PeakListCard
         peakList={peakList}

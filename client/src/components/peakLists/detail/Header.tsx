@@ -13,6 +13,7 @@ import {
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
@@ -88,7 +89,7 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
 interface Props {
   mountains: MountainDatum[];
   peakList: PeakListDatum;
-  user: UserDatum;
+  user: UserDatum | null;
   completedAscents: CompletedMountain[];
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
@@ -109,15 +110,28 @@ const Header = (props: Props) => {
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
+  const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
 
+  const openSignUpModal = () => {
+    setIsSignUpModal(true);
+  };
+  const closeSignUpModal = () => {
+    setIsSignUpModal(false);
+  };
   const closeAreYouSureModal = () => {
     setIsRemoveListModalOpen(false);
   };
 
   const confirmRemove = () => {
-    removePeakListFromUser({variables: {userId: user.id,  peakListId: id}});
+    if (user && user.id) {
+      removePeakListFromUser({variables: {userId: user.id,  peakListId: id}});
+    }
     closeAreYouSureModal();
   };
+
+  const signUpModal = isSignUpModal === false ? null : (
+    <SignUpModal onCancel={closeSignUpModal}/>
+  );
 
   const areYouSureModal = isRemoveListModalOpen === false ? null : (
     <AreYouSureModal
@@ -132,10 +146,19 @@ const Header = (props: Props) => {
     />
   );
 
-  const usersLists = user.peakLists.map((list) => list.id);
-  const active = usersLists.includes(peakList.id);
-  const beginRemoveButton = active === false ? (
-    <ButtonPrimary onClick={() => addPeakListToUser({variables: {userId: user.id,  peakListId: id}})}>
+  const usersLists = user ? user.peakLists.map((list) => list.id) : [];
+  const active = user ? usersLists.includes(peakList.id) : null;
+
+  const beginList = () => {
+    if (user) {
+      addPeakListToUser({variables: {userId: user.id,  peakListId: id}});
+    } else {
+      openSignUpModal();
+    }
+  };
+
+  const beginRemoveButton = active === false || !user ? (
+    <ButtonPrimary onClick={beginList}>
       {getFluentString('peak-list-detail-text-begin-list')}
     </ButtonPrimary>
    ) : (
@@ -158,7 +181,7 @@ const Header = (props: Props) => {
   }
 
   let listInfoContent: React.ReactElement<any> | null;
-  if (comparisonUser !== undefined && comparisonAscents !== undefined) {
+  if (user && comparisonUser !== undefined && comparisonAscents !== undefined) {
 
     const numFriendsCompletedAscents = completedPeaks(mountains, comparisonAscents, type);
 
@@ -236,6 +259,7 @@ const Header = (props: Props) => {
       </BeginRemoveListButtonContainer>
       {listInfoContent}
       {areYouSureModal}
+      {signUpModal}
     </Root>
   );
 };
