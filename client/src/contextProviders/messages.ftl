@@ -117,6 +117,7 @@ dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 
 list-search-list-detail-placeholder = Select a list on the left to see more details
+mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details
 list-detail-mountain-detail-placeholder = Select a mountain to see more details
 
 peak-list-text-latest-ascent = {
