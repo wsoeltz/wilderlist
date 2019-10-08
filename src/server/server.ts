@@ -63,10 +63,11 @@ mongoose.connection
   // tslint:disable-next-line
     .on('error', error => console.log('Error connecting to MongoLab:', error));
 
+const graphiql = process.env.NODE_ENV === 'development' ? true : false;
 app.use(bodyParser.json());
 app.use('/graphql', requireLogin, expressGraphQL({
   schema,
-  graphiql: true,
+  graphiql,
   context: {
     dataloaders: buildDataloaders(),
   },

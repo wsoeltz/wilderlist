@@ -18,6 +18,7 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
+import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
@@ -131,7 +132,7 @@ export interface MountainToEdit {
 
 interface Props {
   mountains: MountainDatum[];
-  user: UserDatum;
+  user: UserDatum | null;
   type: PeakListVariants;
   peakListId: string;
 }
@@ -153,74 +154,80 @@ const MountainTable = (props: Props) => {
   if (mountainToEdit === null) {
     editMountainModal = null;
   } else {
-    if (type === PeakListVariants.standard) {
-      const textNote = <Note dangerouslySetInnerHTML={{
-        __html: getFluentString('mountain-completion-modal-text-note-standard'),
-      }} />;
+    if (!user) {
       editMountainModal = (
-        <MountainCompletionModal
-          editMountainId={mountainToEdit.id}
-          closeEditMountainModalModal={closeEditMountainModalModal}
-          userId={user.id}
-          textNote={textNote}
-          mountainName={mountainToEdit.name}
-          variant={type}
-        />
-      );
-    } else if (type === PeakListVariants.winter) {
-      const textNote = <Note dangerouslySetInnerHTML={{
-        __html: getFluentString('mountain-completion-modal-text-note-winter'),
-      }} />;
-      editMountainModal = (
-        <MountainCompletionModal
-          editMountainId={mountainToEdit.id}
-          closeEditMountainModalModal={closeEditMountainModalModal}
-          userId={user.id}
-          textNote={textNote}
-          mountainName={mountainToEdit.name}
-          variant={type}
-        />
-      );
-    } else if (type === PeakListVariants.fourSeason) {
-      const textNote = <Note dangerouslySetInnerHTML={{
-        __html: getFluentString('mountain-completion-modal-text-note-four-season'),
-      }} />;
-      const season = mountainToEdit.target as Seasons;
-      editMountainModal = (
-        <MountainCompletionModal
-          editMountainId={mountainToEdit.id}
-          closeEditMountainModalModal={closeEditMountainModalModal}
-          userId={user.id}
-          textNote={textNote}
-          mountainName={mountainToEdit.name}
-          variant={type}
-          season={season}
-        />
-      );
-    } else if (type === PeakListVariants.grid) {
-      const textNote = <Note dangerouslySetInnerHTML={{
-        __html: getFluentString('mountain-completion-modal-text-note-grid'),
-      }} />;
-      const month = mountainToEdit.target as Months;
-      editMountainModal = (
-        <MountainCompletionModal
-          editMountainId={mountainToEdit.id}
-          closeEditMountainModalModal={closeEditMountainModalModal}
-          userId={user.id}
-          textNote={textNote}
-          mountainName={mountainToEdit.name}
-          variant={type}
-          month={month}
-        />
+        <SignUpModal onCancel={closeEditMountainModalModal}/>
       );
     } else {
-      failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
-      editMountainModal = null;
+      if (type === PeakListVariants.standard) {
+        const textNote = <Note dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-completion-modal-text-note-standard'),
+        }} />;
+        editMountainModal = (
+          <MountainCompletionModal
+            editMountainId={mountainToEdit.id}
+            closeEditMountainModalModal={closeEditMountainModalModal}
+            userId={user.id}
+            textNote={textNote}
+            mountainName={mountainToEdit.name}
+            variant={type}
+          />
+        );
+      } else if (type === PeakListVariants.winter) {
+        const textNote = <Note dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-completion-modal-text-note-winter'),
+        }} />;
+        editMountainModal = (
+          <MountainCompletionModal
+            editMountainId={mountainToEdit.id}
+            closeEditMountainModalModal={closeEditMountainModalModal}
+            userId={user.id}
+            textNote={textNote}
+            mountainName={mountainToEdit.name}
+            variant={type}
+          />
+        );
+      } else if (type === PeakListVariants.fourSeason) {
+        const textNote = <Note dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-completion-modal-text-note-four-season'),
+        }} />;
+        const season = mountainToEdit.target as Seasons;
+        editMountainModal = (
+          <MountainCompletionModal
+            editMountainId={mountainToEdit.id}
+            closeEditMountainModalModal={closeEditMountainModalModal}
+            userId={user.id}
+            textNote={textNote}
+            mountainName={mountainToEdit.name}
+            variant={type}
+            season={season}
+          />
+        );
+      } else if (type === PeakListVariants.grid) {
+        const textNote = <Note dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-completion-modal-text-note-grid'),
+        }} />;
+        const month = mountainToEdit.target as Months;
+        editMountainModal = (
+          <MountainCompletionModal
+            editMountainId={mountainToEdit.id}
+            closeEditMountainModalModal={closeEditMountainModalModal}
+            userId={user.id}
+            textNote={textNote}
+            mountainName={mountainToEdit.name}
+            variant={type}
+            month={month}
+          />
+        );
+      } else {
+        failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
+        editMountainModal = null;
+      }
     }
   }
 
   let importAscentsModal: React.ReactElement<any> | null;
-  if (isImportModalOpen === true) {
+  if (user && isImportModalOpen === true) {
     if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
       importAscentsModal = (
         <ImportAscentsModal

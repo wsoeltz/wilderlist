@@ -16,7 +16,7 @@ import Header from './Header';
 import MountainTable from './MountainTable';
 
 const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID!) {
+  query getPeakList($id: ID!, $userId: ID) {
     peakList(id: $id) {
       id
       name
@@ -123,16 +123,16 @@ export interface UserDatum {
 
 interface SuccessResponse {
   peakList: PeakListDatum;
-  user: UserDatum;
+  user: UserDatum | null;
 }
 
 interface Variables {
   id: string;
-  userId: string;
+  userId: string | null;
 }
 
 interface Props {
-  userId: string;
+  userId: string | null;
   id: string;
 }
 
@@ -156,7 +156,7 @@ const PeakListDetail = (props: Props) => {
     );
   } else if (data !== undefined) {
     const { peakList, user } = data;
-    if (!peakList || !user) {
+    if (!peakList) {
       return (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}
@@ -172,7 +172,8 @@ const PeakListDetail = (props: Props) => {
       } else {
         mountains = [];
       }
-      const completedAscents = user.mountains !== null ? user.mountains : [];
+      const completedAscents =
+        user && user.mountains !== null ? user.mountains : [];
       const statesOrRegions = getStatesOrRegion(mountains, getFluentString);
       const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
       const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();

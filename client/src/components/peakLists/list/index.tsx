@@ -29,7 +29,7 @@ import ListPeakLists, { PeakListDatum } from './ListPeakLists';
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
-    $userId: ID!,
+    $userId: ID,
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
@@ -92,7 +92,7 @@ const SEARCH_PEAK_LISTS = gql`
 
 interface SuccessResponse {
   peakLists: PeakListDatum[];
-  user: {
+  user: null | {
     id: User['id'];
     peakLists: Array<{
       id: PeakList['id'];
@@ -102,7 +102,7 @@ interface SuccessResponse {
 }
 
 interface Variables {
-  userId: string;
+  userId: string | null;
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
@@ -119,20 +119,20 @@ export const ADD_PEAK_LIST_TO_USER = gql`
   }
 `;
 
-export interface AddRemovePeakListSuccessResponse {
+export type AddRemovePeakListSuccessResponse = null | {
   id: User['id'];
   peakLists: {
     id: PeakList['id'];
   };
-}
+};
 
 export interface AddRemovePeakListVariables {
-  userId: string;
+  userId: string | null;
   peakListId: string;
 }
 
 interface Props extends RouteComponentProps {
-  userId: string;
+  userId: string | null;
 }
 
 const PeakListPage = (props: Props) => {
@@ -181,7 +181,11 @@ const PeakListPage = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS, {
-    variables: { searchQuery, pageNumber, nPerPage, userId },
+    variables: {
+      searchQuery,
+      pageNumber,
+      nPerPage,
+      userId },
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
@@ -195,7 +199,7 @@ const PeakListPage = (props: Props) => {
 
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
-  const beginList = (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}});
+  const beginList = userId ? (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}}) : null;
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
@@ -212,16 +216,18 @@ const PeakListPage = (props: Props) => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
+
     const { peakLists, user } = data;
-    if (!peakLists || !user) {
+    if (!peakLists) {
       list = (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
-      const usersLists = user.peakLists.map(peakList => peakList.id);
-      const completedAscents = user.mountains !== null ? user.mountains : [];
+      const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
+      const completedAscents =
+        user && user.mountains !== null ? user.mountains : [];
       const nextBtn = peakLists.length === nPerPage ? (
         <Next onClick={incrementPageNumber}>
           {getFluentString('global-text-value-navigation-next')}

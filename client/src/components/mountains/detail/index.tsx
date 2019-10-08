@@ -9,7 +9,7 @@ import BackButton from '../../sharedComponents/BackButton';
 import MountainDetail from './MountainDetail';
 
 interface Props extends RouteComponentProps {
-  userId: string;
+  userId: string | null;
 }
 
 const MountainDetailPage = (props: Props) => {

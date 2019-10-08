@@ -22,6 +22,7 @@ global-error-retrieving-data = There was an error retrieving the data. Please tr
 global-text-value-modal-email = Email
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
+global-text-value-modal-sign-up-today = Start tracking your progress towards your hiking goals in as little as 2 clicks
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains

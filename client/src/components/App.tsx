@@ -159,6 +159,21 @@ const App: React.FC = () => {
   } else {
     userRoutes = (
       <Switch>
+        <Route exact path={Routes.ListsWithDetail}
+          render={(props) => <PeakListPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.ListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.ListDetailWithMountainDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.MountainSearchWithDetail}
+          render={(props) => <ListMountainsPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.MountainDetail}
+          render={(props) => <MountainDetailPage {...props} userId={null} />}
+        />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         <Route path={Routes.Login} component={LoginPage} />
       </Switch>
