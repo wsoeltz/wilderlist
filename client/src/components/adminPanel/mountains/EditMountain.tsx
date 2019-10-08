@@ -64,7 +64,7 @@ const EditMountain = (props: Props) => {
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (name !== '' && latitude !== null && longitude !== null
-      && elevation !== null && prominence !== null && selectedState !== null) {
+      && elevation !== null && selectedState !== null) {
       editMountain({
         id: mountainId,
         name,
@@ -183,8 +183,7 @@ const EditMountain = (props: Props) => {
         <CreateButton type='submit' disabled={
           name === '' || longitude === null || isNaN(longitude) ||
           latitude === null || isNaN(latitude) || elevation === null ||
-          isNaN(elevation) || prominence === null || isNaN(prominence) ||
-          selectedState === null || selectedState === ''}
+          isNaN(elevation) || selectedState === null || selectedState === ''}
         >
           Update Mountain
         </CreateButton>

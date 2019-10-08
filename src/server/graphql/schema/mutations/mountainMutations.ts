@@ -157,7 +157,7 @@ const mountainMutations: any = {
               }
             },
           );
-          const fields = (prominence) ? { name, state: stateId, latitude, longitude, elevation, prominence }
+          const fields = prominence !== undefined ? { name, state: stateId, latitude, longitude, elevation, prominence }
             : { name, state: stateId, latitude, longitude, elevation };
           const newMountain = await Mountain.findOneAndUpdate({
               _id: id,
@@ -166,7 +166,7 @@ const mountainMutations: any = {
             {new: true});
           return newMountain;
         } else if (mountain !== null) {
-          const fields = (prominence) ? { name, latitude, longitude, elevation, prominence }
+          const fields = prominence !== undefined ? { name, latitude, longitude, elevation, prominence }
             : { name, latitude, longitude, elevation };
           const newMountain = await Mountain.findOneAndUpdate({
               _id: id,
