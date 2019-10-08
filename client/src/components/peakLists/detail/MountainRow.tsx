@@ -143,6 +143,12 @@ const MarkDoneButton = styled(ButtonSecondary)`
   }
 `;
 
+const NotAvailable = styled.div`
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-size: 0.8rem;
+`;
+
 const CompletedDate = ({date}: {date: string}) => {
   return (
     <CompletedDateText>
@@ -479,8 +485,10 @@ const MountainRow = (props: Props) => {
     }
   }
 
-  const elevation = mountain.elevation !== null ? formatNumberWithCommas(mountain.elevation) + ' ft' : 'N/A';
-  const prominence = mountain.prominence !== null ? formatNumberWithCommas(mountain.prominence) + ' ft' : 'N/A';
+  const elevation = mountain.elevation !== null
+    ? formatNumberWithCommas(mountain.elevation) + ' ft' : <NotAvailable>Not Available</NotAvailable>;
+  const prominence = mountain.prominence !== null
+    ? formatNumberWithCommas(mountain.prominence) + ' ft' : <NotAvailable>Not Available</NotAvailable>;
 
   let columnDetailContent: React.ReactElement<any> | null;
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {

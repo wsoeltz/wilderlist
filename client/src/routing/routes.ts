@@ -4,6 +4,7 @@ export enum Routes {
   ListsWithDetail = '/lists/:id',
   ListDetail = '/list/:id',
   ListDetailWithMountainDetail = '/list/:id/mountain/:mountainId',
+  MountainSearchWithDetail = '/mountains/:id',
   MountainDetail = '/mountain/:id',
   FriendsWithProfile = '/users/:id',
   UserProfile = '/user/:id',

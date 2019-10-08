@@ -29,6 +29,8 @@ global-text-value-dates = Dates
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
+global-text-value-latitude = Latitude
+global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-ascent-dates = Ascent Dates
@@ -65,6 +67,7 @@ global-text-value-submit = Submit
 header-text-login-with-google = Login With Google
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Lists
+header-text-menu-item-mountains = Mountains
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
@@ -140,21 +143,25 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
     [state] within
     *[region] throughout
 } { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft {
-  $highest-also-most-prominent ->
-    [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is
-    *[false] , { $highest-mountain-name } is
-} {
-  $highest-also-most-prominent ->
-    [true] both the
-    *[false] the
-} highest point {
-  $highest-also-most-prominent ->
-    [true] and the most prominent peak on { $list-name }.
-    *[false] on { $list-name }.
-} {
-  $highest-also-most-prominent ->
-    [true] The smallest mountain is
-    *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence. The smallest mountain is
+  $incomplete-prominence ->
+  *[true] , { $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is
+  [false] {
+    $highest-also-most-prominent ->
+      [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is
+      *[false] , { $highest-mountain-name } is
+  } {
+    $highest-also-most-prominent ->
+      [true] both the
+      *[false] the
+  } highest point {
+    $highest-also-most-prominent ->
+      [true] and the most prominent peak on { $list-name }.
+      *[false] on { $list-name }.
+  } {
+    $highest-also-most-prominent ->
+      [true] The smallest mountain is
+      *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence.
+  }
 } { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
 mountain-completion-modal-toggle-btn-full-date = Full Date

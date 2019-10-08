@@ -45,7 +45,7 @@ const AddMountain = (props: Props) => {
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (name !== '' && latitude !== null && longitude !== null
-      && elevation !== null && prominence !== null && selectedState !== null) {
+      && elevation !== null && selectedState !== null) {
       addMountain({
         name,
         latitude,
@@ -145,8 +145,7 @@ const AddMountain = (props: Props) => {
         <CreateButton type='submit' disabled={
           name === '' || longitude === null || isNaN(longitude) ||
           latitude === null || isNaN(latitude) || elevation === null ||
-          isNaN(elevation) || prominence === null || isNaN(prominence) ||
-          selectedState === null || selectedState === ''}
+          isNaN(elevation) || selectedState === null || selectedState === ''}
         >
           Add Mountain
         </CreateButton>

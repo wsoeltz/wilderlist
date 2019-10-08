@@ -34,7 +34,7 @@ const gridLines = {
 const headerHeight = 5; // in rem
 const smallHeaderHeight = 3; // in rem
 
-export const smallHeaderBreakpoint = 800;
+export const smallHeaderBreakpoint = 1000;
 
 const Grid = styled.div`
   height: 100vh;

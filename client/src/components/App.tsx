@@ -30,6 +30,7 @@ import AdminUsers from './adminPanel/AdminUsers';
 import Dashboard from './dashboard';
 import LoginPage from './login';
 import MountainDetailPage from './mountains/detail';
+import ListMountainsPage from './mountains/list';
 import ComparePeakListPage from './peakLists/compare';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
@@ -122,6 +123,9 @@ const App: React.FC = () => {
         />
         <Route exact path={Routes.ListDetailWithMountainDetail}
           render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.MountainSearchWithDetail}
+          render={(props) => <ListMountainsPage {...props} userId={user._id} />}
         />
         <Route exact path={Routes.MountainDetail}
           render={(props) => <MountainDetailPage {...props} userId={user._id} />}

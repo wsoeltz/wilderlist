@@ -73,6 +73,12 @@ const Divider = styled.div`
   }
 `;
 
+const NotAvailable = styled.div`
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-size: 0.8rem;
+`;
+
 const GET_MOUNTAIN_DETAIL = gql`
   query getMountain($id: ID!, $userId: ID!) {
     mountain(id: $id) {
@@ -170,7 +176,9 @@ const MountainDetail = (props: Props) => {
         </PlaceholderText>
       );
     } else {
-      const { name, elevation, prominence, state, lists, latitude, longitude } = mountain;
+      const { name, elevation, state, lists, latitude, longitude } = mountain;
+      const prominence = mountain.prominence === null || mountain.prominence === undefined
+        ? <NotAvailable>Not Available</NotAvailable> : mountain.prominence + 'ft;';
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
         (completedMountain) => completedMountain.mountain.id === id);
@@ -205,7 +213,7 @@ const MountainDetail = (props: Props) => {
           </HorizontalContentItem>
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-prominence')}:</ItemTitleShort>
-            <strong>{prominence}ft</strong>
+            <strong>{prominence}</strong>
           </HorizontalContentItem>
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
