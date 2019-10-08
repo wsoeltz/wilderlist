@@ -61,6 +61,7 @@ const UserMenuListContainer = styled.div`
   position: absolute;
   z-index: 500;
   bottom: 0;
+  right: 0;
   transform: translateY(100%);
   display: flex;
   flex-direction: column;

@@ -78,6 +78,23 @@ const RootQuery = new GraphQLObjectType({
           .sort({ name: 1 });
       },
     },
+    mountainSearch: {
+      type: new GraphQLList(MountainType),
+      args: {
+        searchQuery: { type: new GraphQLNonNull(GraphQLString) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+        pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+        return Mountain
+          .find({
+            name: { $regex: searchQuery, $options: 'i' },
+          })
+          .limit(nPerPage)
+          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+          .sort({ name: 1 });
+      },
+    },
     mountain: {
       type: MountainType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },

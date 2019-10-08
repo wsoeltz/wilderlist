@@ -8,7 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import { Routes } from '../../routing/routes';
-import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
+import { friendsWithUserProfileLink, searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -46,10 +46,10 @@ const LogoContainer = styled(Link)`
       width: 200%;
     }
 
-    @media(max-width: 600px) {
+    @media(max-width: 650px) {
       transform: scale(0.55);
     }
-    @media(max-width: 450px) {
+    @media(max-width: 560px) {
       transform: scale(0.5);
     }
   }
@@ -71,6 +71,16 @@ const NavLink = styled(Link)`
 
   @media(max-width: ${smallHeaderBreakpoint}px) {
     min-width: 20px;
+  }
+
+  @media(max-width: 470px) {
+    padding: 0 0.5rem;
+  }
+
+  @media(max-width: 360px) {
+    &.header-dashboard-link {
+      display: none;
+    }
   }
 `;
 
@@ -104,6 +114,7 @@ const Header = (props: RouteComponentProps) => {
 
   const peakListsPath = searchListDetailLink('search');
   const usersPath = friendsWithUserProfileLink('search');
+  const mountainPath = searchMountainsDetailLink('search');
 
   const createLink = (route: string, label: string) => {
     let normalizedPathname: string;
@@ -111,11 +122,14 @@ const Header = (props: RouteComponentProps) => {
       normalizedPathname = usersPath;
     } else if (pathname.includes('list')) {
       normalizedPathname = peakListsPath;
+    } else if (pathname.includes('mountain')) {
+      normalizedPathname = mountainPath;
     } else {
       normalizedPathname = pathname;
     }
+    const className = route === Routes.Dashboard ? 'header-dashboard-link' : undefined;
     const Container = route === normalizedPathname ? ActiveNavLink : InactiveNavLink;
-    return <Container to={route}>{label}</Container>;
+    return <Container className={className} to={route}>{label}</Container>;
   };
 
   const renderProp = (user: User | null) => {
@@ -127,6 +141,7 @@ const Header = (props: RouteComponentProps) => {
           <MainNav>
             {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
             {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+            {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
             {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
           </MainNav>
           <UserMenu
