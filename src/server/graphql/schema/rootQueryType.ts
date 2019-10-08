@@ -125,7 +125,7 @@ const RootQuery = new GraphQLObjectType({
     },
     user: {
       type: UserType,
-      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { id: { type: GraphQLID } },
       resolve(parnetValue, { id }) {
         return User.findById(id);
       },

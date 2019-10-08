@@ -19,7 +19,7 @@ import BackButton from '../../sharedComponents/BackButton';
 import PeakListDetail from './PeakListDetail';
 
 interface Props extends RouteComponentProps {
-  userId: string;
+  userId: string | null;
 }
 
 const PeakListDetailPage = (props: Props) => {

@@ -187,7 +187,7 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
 
 interface Props {
   peakList: PeakListDatum;
-  active: boolean;
+  active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];

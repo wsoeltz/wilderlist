@@ -59,7 +59,7 @@ interface Variables {
 }
 
 interface Props extends RouteComponentProps {
-  userId: string;
+  userId: string | null;
 }
 
 const MountainSearchPage = (props: Props) => {

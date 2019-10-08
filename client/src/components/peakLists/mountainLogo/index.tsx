@@ -132,14 +132,14 @@ interface Props {
   title: string;
   shortName: string;
   variant: PeakListVariants;
-  active: boolean;
+  active: boolean | null;
   completed: boolean;
 }
 
 const MountainLogo = (props: Props) => {
   const { id, title, shortName, variant, active, completed } = props;
   const titleId = 'mountainLogoTitle-' + id;
-  const colorSet = active === true ? getColorSetFromVariant(variant) : colorSetGray;
+  const colorSet = active === true || active === null ? getColorSetFromVariant(variant) : colorSetGray;
   const shortNameSize = shortName.length > 7 ? '0.7rem' : '1rem';
   const shortNameStroke = shortName.length > 7 ? '0.5' : '0.7';
   const variantName = variant === PeakListVariants.standard ? null : (

@@ -80,7 +80,7 @@ const NotAvailable = styled.div`
 `;
 
 const GET_MOUNTAIN_DETAIL = gql`
-  query getMountain($id: ID!, $userId: ID!) {
+  query getMountain($id: ID!, $userId: ID) {
     mountain(id: $id) {
       id
       name
@@ -132,7 +132,7 @@ interface QuerySuccessResponse {
       id: PeakList['id'];
     }>;
   };
-  user: {
+  user: null | {
     id: User['name'];
     mountains: User['mountains'];
   };
@@ -140,11 +140,11 @@ interface QuerySuccessResponse {
 
 interface QueryVariables {
   id: string;
-  userId: string;
+  userId: string | null;
 }
 
 interface Props {
-  userId: string;
+  userId: string | null;
   id: string;
 }
 
@@ -169,7 +169,7 @@ const MountainDetail = (props: Props) => {
     );
   } else if (data !== undefined) {
     const { mountain, user } = data;
-    if (!mountain || !user) {
+    if (!mountain) {
       return (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}
@@ -199,6 +199,15 @@ const MountainDetail = (props: Props) => {
         );
 
       const {lat, long} = convertDMS(latitude, longitude);
+      const ascentList = !userId ? null : (
+        <AscentsList
+          completedDates={completedDates}
+          userId={userId}
+          mountainId={id}
+          mountainName={name}
+          getFluentString={getFluentString}
+        />
+      );
       return (
         <>
           <h1>{name}</h1>
@@ -248,13 +257,7 @@ const MountainDetail = (props: Props) => {
             mountainName={name}
             numLists={lists.length}
           />
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
-          />
+          {ascentList}
         </>
       );
     }

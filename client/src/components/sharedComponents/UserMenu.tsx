@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
+import raw from 'raw.macro';
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,8 +9,10 @@ import { comparePeakListLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
+  lightBaseColor,
   lightBorderColor,
   lightFontWeight,
+  semiBoldFontBoldWeight,
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
@@ -109,6 +112,35 @@ const UserImage = styled.img`
   }
 `;
 
+export const LoginWithGoogleButton = styled.a`
+  background-color: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  grid-area: google-btn;
+  margin: auto 20px;
+  max-height: 40px;
+  max-width: 200px;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #efefef;
+  }
+
+  svg {
+
+    rect {
+      fill: none;
+    }
+    text {
+      fill: ${lightBaseColor};
+      font-size: 14px;
+      font-weight: ${semiBoldFontBoldWeight};
+    }
+  }
+
+`;
+
 const Caret = styled(FontAwesomeIcon)`
   margin-left: 0.6rem;
 `;
@@ -161,28 +193,10 @@ interface UserMenuComponentProps {
   getFluentString: GetString;
 }
 
-const UserMenuComponent = (props: UserMenuComponentProps) => {
-  const {
-    userMenuOpen, setUserMenuOpen, user, getFluentString,
-  } = props;
+type Props = UserMenuComponentProps |
+  { user: null,  getFluentString: GetString };
 
-  const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
-    ? (
-        <UserMenuLink to={Routes.Admin}>
-          {getFluentString('header-text-menu-item-admin-panel')}
-        </UserMenuLink>
-      )
-    : null;
-  const userMenuList = userMenuOpen === true
-    ? (
-        <UserMenuList
-          user={user}
-          adminPanel={adminPanel}
-          closeUserMenu={() => setUserMenuOpen(false)}
-          getFluentString={getFluentString} />
-        )
-    : null;
-
+const UserMenuComponent = (props: Props) => {
   const userMenuButtonEl = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -196,21 +210,56 @@ const UserMenuComponent = (props: UserMenuComponentProps) => {
     }
   }, [userMenuButtonEl]);
 
-  return (
-    <UserMenu>
-      <UserButton
-        ref={userMenuButtonEl}
-        onClick={() => setUserMenuOpen(!userMenuOpen)}
-      >
-        <UserImage src={user.profilePictureUrl} />
-        <UserName>
-          {user.name}
-        </UserName>
-        <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
-      </UserButton>
-      {userMenuList}
-    </UserMenu>
-  );
+  if (props.user) {
+    const {
+      userMenuOpen, setUserMenuOpen, user, getFluentString,
+    } = props;
+
+    const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
+      ? (
+          <UserMenuLink to={Routes.Admin}>
+            {getFluentString('header-text-menu-item-admin-panel')}
+          </UserMenuLink>
+        )
+      : null;
+    const userMenuList = userMenuOpen === true
+      ? (
+          <UserMenuList
+            user={user}
+            adminPanel={adminPanel}
+            closeUserMenu={() => setUserMenuOpen(false)}
+            getFluentString={getFluentString} />
+          )
+      : null;
+
+    return (
+      <UserMenu>
+        <UserButton
+          ref={userMenuButtonEl}
+          onClick={() => setUserMenuOpen(!userMenuOpen)}
+        >
+          <UserImage src={user.profilePictureUrl} />
+          <UserName>
+            {user.name}
+          </UserName>
+          <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
+        </UserButton>
+        {userMenuList}
+      </UserMenu>
+    );
+  } else {
+
+    return (
+      <UserMenu>
+        <LoginWithGoogleButton href='/auth/google'
+          dangerouslySetInnerHTML={{
+            __html: raw('../../assets/images/google-signin-button/btn_google_light_normal_ios.svg'),
+            }}
+            title={props.getFluentString('header-text-login-with-google')}
+        />
+      </UserMenu>
+    );
+  }
 };
 
 export default UserMenuComponent;
