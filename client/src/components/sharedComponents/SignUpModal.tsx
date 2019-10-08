@@ -16,6 +16,11 @@ const Root = styled.div`
   text-align: center;
 `;
 
+const Title = styled.h2`
+  font-size: 1.3rem;
+  line-height: 1.3;
+`;
+
 const LoginButton = styled(LoginWithGoogleButton)`
   margin: 40px auto;
   max-width: 200px;
@@ -36,11 +41,11 @@ const SignUpModal = (props: Props) => {
   return (
     <Modal
       onClose={onCancel}
-      width={'500px'}
+      width={'400px'}
       height={'auto'}
     >
       <Root>
-        <h3>{getFluentString('global-text-value-modal-sign-up-today')}</h3>
+        <Title>{getFluentString('global-text-value-modal-sign-up-today')}</Title>
         <LoginButton href='/auth/google'
           dangerouslySetInnerHTML={{
             __html: raw('../../assets/images/google-signin-button/btn_google_light_normal_ios.svg'),

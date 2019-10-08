@@ -1,11 +1,13 @@
 import { GetString } from 'fluent-react';
 import raw from 'raw.macro';
 import React, {useContext} from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
-import {lightBaseColor, semiBoldFontBoldWeight} from '../../styling/styleUtils';
+import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
+import {lightBaseColor, linkColor, semiBoldFontBoldWeight} from '../../styling/styleUtils';
 import { getBrowser } from '../../Utils';
 
 const {browser} = getBrowser();
@@ -38,20 +40,22 @@ const ContentRoot = styled.div`
   padding: 2rem;
 
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto auto 1fr;
+  grid-template-rows: 1fr auto auto 75px 1fr;
   grid-template-areas: "t"
                        "logo"
                        "google-btn"
+                       "nav"
                        "text";
   grid-row-gap: 2rem;
 
   @media (min-width: ${mobileWidth}px) {
     padding-right: 6rem;
     grid-template-columns: 1fr 800px;
-    grid-template-rows: 1fr auto 200px 100px;
+    grid-template-rows: 1fr auto auto 75px 1fr;
     grid-template-areas: "t t"
                          "l logo"
                          "l google-btn"
+                         "l nav"
                          "l text";
   }
 `;
@@ -102,6 +106,34 @@ const LoginWithGoogleButton = styled.a`
   }
 `;
 
+const NavContainer = styled.div`
+  grid-area: nav;
+  color: #fff;
+  font-family: DeliciousRomanWeb;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 2rem;
+  text-align: center;
+`;
+
+const NavButton = styled(Link)`
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    color: ${linkColor};
+    background-color: #fff;
+  }
+`;
+
 const TextContainer = styled.div`
   grid-area: text;
   color: #fff;
@@ -110,7 +142,7 @@ const TextContainer = styled.div`
   text-align: center;
 
   @media (min-width: ${mobileWidth}px) {
-    font-size: 2.1rem;
+    font-size: 2.15rem;
     margin-left: auto;
     text-align: left;
   }
@@ -136,6 +168,10 @@ const LoginPage = () => {
             }}
             title={getFluentString('header-text-login-with-google')}
         />
+        <NavContainer>
+          <NavButton to={searchListDetailLink('search')}>Search Lists</NavButton>
+          <NavButton to={searchMountainsDetailLink('search')}>Search Mountains</NavButton>
+        </NavContainer>
         <TextContainer>
           {getFluentString('login-page-tagline-text')}
         </TextContainer>

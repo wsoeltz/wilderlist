@@ -199,15 +199,6 @@ const MountainDetail = (props: Props) => {
         );
 
       const {lat, long} = convertDMS(latitude, longitude);
-      const ascentList = !userId ? null : (
-        <AscentsList
-          completedDates={completedDates}
-          userId={userId}
-          mountainId={id}
-          mountainName={name}
-          getFluentString={getFluentString}
-        />
-      );
       return (
         <>
           <h1>{name}</h1>
@@ -257,7 +248,13 @@ const MountainDetail = (props: Props) => {
             mountainName={name}
             numLists={lists.length}
           />
-          {ascentList}
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
+          />
         </>
       );
     }
