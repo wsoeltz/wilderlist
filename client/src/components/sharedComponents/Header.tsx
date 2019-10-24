@@ -25,7 +25,7 @@ const HeaderContainer = styled(HeaderContainerBase)`
   display: flex;
   justify-content: flex-end;
   position: relative;
-  z-index: 100;
+  z-index: 450;
 `;
 
 const LogoContainer = styled(Link)`
