@@ -31,7 +31,6 @@ import {
   horizontalPadding,
   monthColumns,
   nameColumn,
-  prominenceColumn,
   seasonColumns,
   smallPadding,
 } from './MountainRow';
@@ -273,9 +272,6 @@ const MountainTable = (props: Props) => {
       <>
         <TitleCell style={{gridColumn: elevationColumn}}>
           {getFluentString('global-text-value-elevation')}
-        </TitleCell>
-        <TitleCell style={{gridColumn: prominenceColumn}}>
-          {getFluentString('global-text-value-prominence')}
         </TitleCell>
         <MountainColumnTitleButton>
           {getFluentString('global-text-value-done')}

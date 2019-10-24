@@ -140,31 +140,11 @@ peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
 peak-list-detail-filter-mountains = Filter mountains
 
-peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located {
+peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located ⁨{
   $state-or-region ->
     [state] within
     *[region] throughout
-} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft {
-  $incomplete-prominence ->
-  *[true] , { $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is
-  [false] {
-    $highest-also-most-prominent ->
-      [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is
-      *[false] , { $highest-mountain-name } is
-  } {
-    $highest-also-most-prominent ->
-      [true] both the
-      *[false] the
-  } highest point {
-    $highest-also-most-prominent ->
-      [true] and the most prominent peak on { $list-name }.
-      *[false] on { $list-name }.
-  } {
-    $highest-also-most-prominent ->
-      [true] The smallest mountain is
-      *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence.
-  }
-} { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
@@ -191,7 +171,7 @@ mountain-detail-add-ascent-date = Add Ascent Date
 mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
-mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak, { ORDINAL_NUMBER($prominence-rank) } most prominent
+mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
