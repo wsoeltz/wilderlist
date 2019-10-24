@@ -32,14 +32,12 @@ const GET_MOUNTAINS_INCLUDE_LISTS = gql`
         mountains {
           id
           elevation
-          prominence
         }
         parent {
           id
           mountains {
             id
             elevation
-            prominence
           }
         }
       }
@@ -50,7 +48,6 @@ const GET_MOUNTAINS_INCLUDE_LISTS = gql`
 interface MountainDatum {
   id: Mountain['id'];
   elevation: Mountain['elevation'];
-  prominence: Mountain['prominence'];
 }
 
 interface QuerySuccessResponse {
@@ -121,7 +118,6 @@ const IncludedLists = (props: Props) => {
         mountains = [];
       }
       const elevationRank = getRank(mountains, 'elevation');
-      const prominenceRank = getRank(mountains, 'prominence');
       return (
         <BasicListItem key={list.id}>
           <BoldLink
@@ -132,7 +128,6 @@ const IncludedLists = (props: Props) => {
           {' '}
           {getFluentString('mountain-detail-lists-mountain-appears-on-ranks', {
             'elevation-rank': elevationRank,
-            'prominence-rank': prominenceRank,
           })}
         </BasicListItem>
       );

@@ -28,7 +28,6 @@ const GET_PEAK_LIST = gql`
         latitude
         longitude
         elevation
-        prominence
         state {
           id
           name
@@ -49,7 +48,6 @@ const GET_PEAK_LIST = gql`
           latitude
           longitude
           elevation
-          prominence
           state {
             id
             name

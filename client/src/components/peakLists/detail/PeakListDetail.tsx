@@ -28,7 +28,6 @@ const GET_PEAK_LIST = gql`
         latitude
         longitude
         elevation
-        prominence
         state {
           id
           name
@@ -49,7 +48,6 @@ const GET_PEAK_LIST = gql`
           latitude
           longitude
           elevation
-          prominence
           state {
             id
             name
@@ -86,7 +84,6 @@ export interface MountainDatum {
   latitude: Mountain['latitude'];
   longitude: Mountain['longitude'];
   elevation: Mountain['elevation'];
-  prominence: Mountain['prominence'];
   state: {
     id: State['id'];
     name: State['name'];
@@ -177,10 +174,6 @@ const PeakListDetail = (props: Props) => {
       const statesOrRegions = getStatesOrRegion(mountains, getFluentString);
       const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
       const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
-      const mountainsSortedByProminence = sortBy(mountains, ['prominence']).reverse();
-      const highestAlsoMostProminent = mountainsSortedByElevation[0].id === mountainsSortedByProminence[0].id;
-      const incompleteProminence =
-        mountainsSortedByProminence[0].prominence === undefined || mountainsSortedByProminence[0].prominence === null;
       const paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
         'list-name': peakList.name,
         'number-of-peaks': mountains.length,
@@ -188,11 +181,6 @@ const PeakListDetail = (props: Props) => {
         'state-region-name': statesOrRegions,
         'highest-mountain-name': mountainsSortedByElevation[0].name,
         'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
-        'incomplete-prominence': incompleteProminence.toString(),
-        'highest-also-most-prominent': highestAlsoMostProminent.toString(),
-        'most-prominent-peak-name': mountainsSortedByProminence[0].name,
-        'most-prominent-value': mountainsSortedByProminence[0].prominence,
-        'most-prominent-elevation': mountainsSortedByProminence[0].elevation,
         'smallest-mountain-name':
           mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
         'smallest-mountain-elevation':

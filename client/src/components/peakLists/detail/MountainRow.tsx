@@ -32,8 +32,7 @@ import {
 
 export const nameColumn = 1;
 export const elevationColumn = 2;
-export const prominenceColumn = 3;
-export const buttonColumn = 4;
+export const buttonColumn = 3;
 export const horizontalPadding = 0.6; // in rem
 export const smallPadding = 0.5; // in rem
 export const extraSmallPadding = 0.3; // in rem
@@ -487,15 +486,12 @@ const MountainRow = (props: Props) => {
 
   const elevation = mountain.elevation !== null
     ? formatNumberWithCommas(mountain.elevation) + ' ft' : <NotAvailable>Not Available</NotAvailable>;
-  const prominence = mountain.prominence !== null
-    ? formatNumberWithCommas(mountain.prominence) + ' ft' : <NotAvailable>Not Available</NotAvailable>;
 
   let columnDetailContent: React.ReactElement<any> | null;
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     columnDetailContent = (
       <>
         <TableCell style={{backgroundColor, gridColumn: elevationColumn}}>{elevation}</TableCell>
-        <TableCell style={{backgroundColor, gridColumn: prominenceColumn}}>{prominence}</TableCell>
         <MountainButton style={{backgroundColor}}>
           {peakCompletedContent}
         </MountainButton>
