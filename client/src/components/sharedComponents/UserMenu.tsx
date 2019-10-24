@@ -197,7 +197,7 @@ type Props = UserMenuComponentProps |
   { user: null,  getFluentString: GetString };
 
 const UserMenuComponent = (props: Props) => {
-  const userMenuButtonEl = useRef<HTMLButtonElement | null>(null);
+  const userMenuButtonEl = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (userMenuButtonEl.current !== null) {
@@ -210,6 +210,7 @@ const UserMenuComponent = (props: Props) => {
     }
   }, [userMenuButtonEl]);
 
+  let output: React.ReactElement<any>;
   if (props.user) {
     const {
       userMenuOpen, setUserMenuOpen, user, getFluentString,
@@ -232,10 +233,10 @@ const UserMenuComponent = (props: Props) => {
           )
       : null;
 
-    return (
+    output = (
       <UserMenu>
         <UserButton
-          ref={userMenuButtonEl}
+
           onClick={() => setUserMenuOpen(!userMenuOpen)}
         >
           <UserImage src={user.profilePictureUrl} />
@@ -249,7 +250,7 @@ const UserMenuComponent = (props: Props) => {
     );
   } else {
 
-    return (
+    output = (
       <UserMenu>
         <LoginWithGoogleButton href='/auth/google'
           dangerouslySetInnerHTML={{
@@ -260,6 +261,11 @@ const UserMenuComponent = (props: Props) => {
       </UserMenu>
     );
   }
+  return (
+    <div ref={userMenuButtonEl}>
+      {output}
+    </div>
+  );
 };
 
 export default UserMenuComponent;
