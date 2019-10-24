@@ -265,6 +265,9 @@ const ImportAscentsModal = (props: Props) => {
   const onMountainNamesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
     const valueArray = pastedValue.split(/\r?\n/);
+    if (valueArray[valueArray.length - 1] === '') {
+      valueArray.pop();
+    }
     const hasEmptyString = valueArray.indexOf('');
     if (valueArray.length > mountains.length || !pastedValue || hasEmptyString !== -1) {
       setCleanedMountains(null);
@@ -345,6 +348,11 @@ const ImportAscentsModal = (props: Props) => {
   const onMountainDatesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
     const valueArray = pastedValue.split(/\r?\n/);
+    if (cleanedMountains !== null &&
+        valueArray.length === cleanedMountains.length + 1 &&
+        valueArray[valueArray.length - 1] === '') {
+      valueArray.pop();
+    }
     if (valueArray.length > mountains.length || !pastedValue) {
       setCleanedDates(null);
     } else {
