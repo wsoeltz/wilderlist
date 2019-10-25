@@ -130,7 +130,12 @@ const Header = (props: Props) => {
   };
 
   const signUpModal = isSignUpModal === false ? null : (
-    <SignUpModal onCancel={closeSignUpModal}/>
+    <SignUpModal
+      text={getFluentString('global-text-value-modal-sign-up-today', {
+        'list-short-name': shortName,
+      })}
+      onCancel={closeSignUpModal}
+    />
   );
 
   const areYouSureModal = isRemoveListModalOpen === false ? null : (
