@@ -95,7 +95,12 @@ const AscentsList = (props: Props) => {
   } else {
     if (!userId) {
       editMountainModal = (
-        <SignUpModal onCancel={closeEditMountainModalModal}/>
+        <SignUpModal
+          text={getFluentString('global-text-value-modal-sign-up-today-ascents-list', {
+            'mountain-name': mountainName,
+          })}
+          onCancel={closeEditMountainModalModal}
+        />
       );
     } else {
       editMountainModal = editMountainId === null ? null : (

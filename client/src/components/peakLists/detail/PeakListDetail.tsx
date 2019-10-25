@@ -206,6 +206,7 @@ const PeakListDetail = (props: Props) => {
             mountains={mountains}
             type={type}
             peakListId={peakList.id}
+            peakListShortName={peakList.shortName}
           />
         </>
       );
