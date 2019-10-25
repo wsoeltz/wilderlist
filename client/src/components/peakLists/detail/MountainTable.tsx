@@ -31,7 +31,6 @@ import {
   horizontalPadding,
   monthColumns,
   nameColumn,
-  prominenceColumn,
   seasonColumns,
   smallPadding,
 } from './MountainRow';
@@ -135,10 +134,11 @@ interface Props {
   user: UserDatum | null;
   type: PeakListVariants;
   peakListId: string;
+  peakListShortName: string;
 }
 
 const MountainTable = (props: Props) => {
-  const { mountains, user, type, peakListId } = props;
+  const { mountains, user, type, peakListId, peakListShortName } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -156,7 +156,12 @@ const MountainTable = (props: Props) => {
   } else {
     if (!user) {
       editMountainModal = (
-        <SignUpModal onCancel={closeEditMountainModalModal}/>
+        <SignUpModal
+          text={getFluentString('global-text-value-modal-sign-up-today', {
+            'list-short-name': peakListShortName,
+          })}
+          onCancel={closeEditMountainModalModal}
+        />
       );
     } else {
       if (type === PeakListVariants.standard) {
@@ -246,6 +251,15 @@ const MountainTable = (props: Props) => {
     } else {
       importAscentsModal = null;
     }
+  } else if (isImportModalOpen === true) {
+    importAscentsModal = (
+        <SignUpModal
+          text={getFluentString('global-text-value-modal-sign-up-today', {
+            'list-short-name': peakListShortName,
+          })}
+          onCancel={() => setIsImportModalOpen(false)}
+        />
+    );
   } else {
     importAscentsModal = null;
   }
@@ -273,9 +287,6 @@ const MountainTable = (props: Props) => {
       <>
         <TitleCell style={{gridColumn: elevationColumn}}>
           {getFluentString('global-text-value-elevation')}
-        </TitleCell>
-        <TitleCell style={{gridColumn: prominenceColumn}}>
-          {getFluentString('global-text-value-prominence')}
         </TitleCell>
         <MountainColumnTitleButton>
           {getFluentString('global-text-value-done')}

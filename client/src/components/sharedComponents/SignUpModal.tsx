@@ -29,11 +29,12 @@ const LoginButton = styled(LoginWithGoogleButton)`
 `;
 
 interface Props {
+  text: string;
   onCancel: () => void;
 }
 
 const SignUpModal = (props: Props) => {
-  const { onCancel } = props;
+  const { text, onCancel } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -45,7 +46,7 @@ const SignUpModal = (props: Props) => {
       height={'auto'}
     >
       <Root>
-        <Title>{getFluentString('global-text-value-modal-sign-up-today')}</Title>
+        <Title>{text}</Title>
         <LoginButton href='/auth/google'
           dangerouslySetInnerHTML={{
             __html: raw('../../assets/images/google-signin-button/btn_google_light_normal_ios.svg'),

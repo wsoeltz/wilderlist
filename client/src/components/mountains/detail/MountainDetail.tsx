@@ -9,7 +9,7 @@ import {
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
-import { convertDMS } from '../../../Utils';
+import { convertDMS, mobileSize } from '../../../Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
@@ -59,6 +59,11 @@ const LatLongContainer = styled.div`
     display: flex;
     flex-direction: column;
   }
+  @media (min-width: ${mobileSize}px) and (max-width: 1490px) {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const Divider = styled.div`
@@ -73,19 +78,12 @@ const Divider = styled.div`
   }
 `;
 
-const NotAvailable = styled.div`
-  text-transform: uppercase;
-  opacity: 0.7;
-  font-size: 0.8rem;
-`;
-
 const GET_MOUNTAIN_DETAIL = gql`
   query getMountain($id: ID!, $userId: ID) {
     mountain(id: $id) {
       id
       name
       elevation
-      prominence
       latitude
       longitude
       state {
@@ -117,7 +115,6 @@ interface QuerySuccessResponse {
     id: Mountain['name'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
-    prominence: Mountain['prominence'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
     state: {
@@ -177,8 +174,6 @@ const MountainDetail = (props: Props) => {
       );
     } else {
       const { name, elevation, state, lists, latitude, longitude } = mountain;
-      const prominence = mountain.prominence === null || mountain.prominence === undefined
-        ? <NotAvailable>Not Available</NotAvailable> : mountain.prominence + 'ft;';
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
         (completedMountain) => completedMountain.mountain.id === id);
@@ -210,10 +205,6 @@ const MountainDetail = (props: Props) => {
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
             <strong>{elevation}ft</strong>
-          </HorizontalContentItem>
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('global-text-value-prominence')}:</ItemTitleShort>
-            <strong>{prominence}</strong>
           </HorizontalContentItem>
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
