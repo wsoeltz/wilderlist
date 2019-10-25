@@ -17,9 +17,10 @@ global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
-global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilerlistapp@gmail.com
+global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
 
 global-text-value-modal-email = Email
+global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
 global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } today
@@ -37,6 +38,7 @@ global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-ascent-dates = Ascent Dates
 global-text-value-done = Done
+global-text-value-today = Today
 global-text-value-summer = Summer
 global-text-value-fall = Fall
 global-text-value-winter = Winter
@@ -160,6 +162,13 @@ mountain-completion-modal-text-note-four-season =
   <strong>4-Season</strong> lists require dates to be in between the official solstice and equinox for a given season and year. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
+
+mountain-completion-modal-text-add-wilderlist-friends = Add Wilderlist Friends To Ascent
+mountain-completion-modal-text-add-other-friends = Add Other Friends To Ascent
+mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderness to add them
+mountain-completion-modal-text-add-email-button = Add Email
+
+mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
 
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>

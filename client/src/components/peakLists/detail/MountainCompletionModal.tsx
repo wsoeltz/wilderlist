@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
@@ -13,9 +13,11 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   GhostButton,
+  InputBase,
+  lightBorderColor,
   warningColor,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakListVariants, User } from '../../../types/graphQLTypes';
+import { FriendStatus, Mountain, PeakListVariants, User } from '../../../types/graphQLTypes';
 import {
   convertFieldsToDate,
   getMonthIndex,
@@ -23,14 +25,49 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import './react-datepicker.custom.css';
+
+const mobileWidth = 400; // in px
+const lightBlue = '#d1e2e9';
+
+const ColumnRoot = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+`;
+
+const DateColumn = styled.div`
+  padding-right: 1rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding-right: 0;
+  }
+`;
+
+const FriendColumn = styled.div`
+  padding-left: 1rem;
+  border-left: 1px solid ${lightBorderColor};
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-gap: 2rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    margin-top: 2rem;
+    padding-left: 0;
+    border-left: 0;
+  }
+`;
 
 const DateInputContainer = styled.div`
   display: grid;
   grid-template-rows: auto auto;
   grid-row-gap: 1rem;
-  min-height: 385px;
 
   /* This is necessary as datepicker wraps the datepicker
      in a blank div with no class name that can't be removed */
@@ -129,9 +166,78 @@ const ToggleTypeButton = styled(GhostButton)`
 
   &.active,
   &:hover {
-    background-color: #d1e2e9;
+    background-color: ${lightBlue};
   }
 `;
+
+const FriendsList = styled.div`
+  max-height: 200px;
+  margin-top: 1rem;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  border: 1px solid ${lightBorderColor};
+`;
+
+const Friend = styled.label`
+  display: block;
+  padding: 8px;
+  display: flex;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${lightBorderColor};
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${lightBlue};
+  }
+`;
+
+const FriendsTitle = styled.h4`
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+  font-size: 0.8rem;
+`;
+
+const EmailInput = styled(InputBase)`
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+`;
+
+const AddEmailButton = styled(ButtonPrimary)`
+  width: 100%;
+`;
+
+const Checkbox = styled.input`
+  margin-right: 1rem;
+`;
+
+const RemoveIcon = styled.div`
+  margin-left: auto;
+`;
+
+const GET_FRIENDS = gql`
+  query getFriends($userId: ID) {
+    user(id: $userId) {
+      id
+      friends {
+        user {
+          id
+          name
+        }
+        status
+      }
+    }
+  }
+`;
+
+interface FriendsDatum {
+  user: {
+    id: User['id'];
+    friends: User['friends'];
+  };
+}
 
 export const ADD_MOUNTAIN_COMPLETION = gql`
   mutation addMountainCompletion(
@@ -201,6 +307,9 @@ const MountainCompletionModal = (props: Props) => {
     mountainName,
   } = props;
 
+  const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
+    variables: { userId },
+  });
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [completionDay, setCompletionDay] = useState<string>('');
@@ -209,6 +318,37 @@ const MountainCompletionModal = (props: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [dateType, setDateType] = useState<DateType>(DateType.full);
+  const [emailInput, setEmailInput] = useState<string>('');
+  const [emailList, setEmailList] = useState<string[]>([]);
+  const [userList, setUserList] = useState<string[]>([]);
+
+  const updateEmailList = () => {
+    if (!emailList.includes(emailInput)) {
+      setEmailList([...emailList, emailInput]);
+      setEmailInput('');
+    }
+  };
+
+  const onEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13 || e.which === 13) {
+      updateEmailList();
+    }
+  };
+
+  const removeEmailFromList = (email: string) => {
+    const newEmailList = emailList.filter(e => e !== email);
+    setEmailList([...newEmailList]);
+  };
+
+  const toggleUserList = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      const newUserList = [...userList, e.target.value];
+      setUserList([...newUserList]);
+    } else {
+      const newUserList = userList.filter(usedId => usedId !== e.target.value);
+      setUserList([...newUserList]);
+    }
+  };
 
   const setDates = (date: Date | null) => {
     if (date !== null) {
@@ -246,6 +386,8 @@ const MountainCompletionModal = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
+    // Use the emailList and userList to send proper notifications
+    // console.log({emailList, userList});
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     if (completedDate.error !== undefined) {
       setErrorMessage(completedDate.error);
@@ -256,7 +398,7 @@ const MountainCompletionModal = (props: Props) => {
     }
   };
 
-  const error = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
+  const errorNote = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
   const today = new Date();
   const years: number[] = [];
   for (let i = 1900; i < today.getFullYear() + 1; i++) {
@@ -462,7 +604,7 @@ const MountainCompletionModal = (props: Props) => {
           onChange={date => setDates(date)}
           filterDate={filterDate}
           inline={true}
-          todayButton={'Today'}
+          todayButton={getFluentString('global-text-value-today')}
           showMonthDropdown={true}
           showYearDropdown={true}
           dropdownMode={'select'}
@@ -497,6 +639,75 @@ const MountainCompletionModal = (props: Props) => {
     datePickers = null;
   }
 
+  let friendsList: React.ReactElement<any> | null;
+  if (loading === true) {
+    friendsList = <LoadingSpinner />;
+  } else if (error !== undefined) {
+    console.error(error);
+    friendsList =  (
+      <NoDateText>
+        <small>
+          {getFluentString('global-error-retrieving-data')}
+        </small>
+      </NoDateText>
+    );
+  } else if (data !== undefined) {
+    const { user } = data;
+    if (!user) {
+      friendsList = (
+        <NoDateText>
+          <small>
+            {getFluentString('global-error-retrieving-data')}
+          </small>
+        </NoDateText>
+      );
+    } else {
+      const { friends } = user;
+      if (friends && friends.length) {
+        const friendElements: Array<React.ReactElement<any>> = [];
+        friends.forEach(f => {
+          if (f.status === FriendStatus.friends) {
+            friendElements.push(
+              <Friend htmlFor={f.user.id} key={f.user.id}>
+                <Checkbox
+                  id={f.user.id} type='checkbox'
+                  value={f.user.id}
+                  onChange={toggleUserList}
+                />
+                {f.user.name}
+              </Friend>,
+            );
+          }
+        });
+        if (friendElements.length) {
+          friendsList = (
+            <FriendsList>
+              {friendElements}
+            </FriendsList>
+          );
+        } else {
+          friendsList = (
+            <NoDateText>
+              <small>
+                {getFluentString('mountain-completion-modal-text-no-friends-yet')}
+              </small>
+            </NoDateText>
+          );
+        }
+      } else {
+        friendsList = (
+          <NoDateText>
+            <small>
+              {getFluentString('mountain-completion-modal-text-no-friends-yet')}
+            </small>
+          </NoDateText>
+        );
+      }
+    }
+  } else {
+    friendsList = null;
+  }
+
   const isConfirmDisabled = () => {
     if (dateType === DateType.full &&
       (completionDay === '' || completionMonth === '' || completionYear === '')) {
@@ -514,18 +725,66 @@ const MountainCompletionModal = (props: Props) => {
     return false;
   };
 
+  const emailListItems = emailList.map((email, i) => (
+    <Friend
+      key={email + i}
+      onClick={() => removeEmailFromList(email)}
+    >
+      {email}
+      <RemoveIcon>×</RemoveIcon>
+    </Friend>
+  ));
+  const emailListElement = emailListItems.length ? (
+    <FriendsList>
+      {emailListItems}
+    </FriendsList>
+  ) : null;
+
   return (
     <Modal
       onClose={closeEditMountainModalModal}
-      width={'400px'}
+      width={'500px'}
       height={'auto'}
     >
       <TitleText>{title}</TitleText>
-      {toggleButtons}
-      <DateInputContainer>
-        {datePickers}
-      </DateInputContainer>
-      {error}
+      <ColumnRoot>
+        <DateColumn>
+          {toggleButtons}
+          <DateInputContainer>
+            {datePickers}
+          </DateInputContainer>
+        </DateColumn>
+        <FriendColumn>
+          <div>
+            <FriendsTitle>
+              {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
+            </FriendsTitle>
+            {friendsList}
+          </div>
+          <div>
+            <FriendsTitle>
+              {getFluentString('mountain-completion-modal-text-add-other-friends')}
+            </FriendsTitle>
+            <small>
+              {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
+            </small>
+            <EmailInput
+              placeholder={getFluentString('global-text-value-modal-email-address')}
+              value={emailInput}
+              onChange={e => setEmailInput(e.target.value)}
+              onKeyPress={onEnterPress}
+            />
+            <AddEmailButton
+              disabled={emailInput === ''}
+              onClick={updateEmailList}
+            >
+              {getFluentString('mountain-completion-modal-text-add-email-button')}
+            </AddEmailButton>
+            {emailListElement}
+          </div>
+        </FriendColumn>
+      </ColumnRoot>
+      {errorNote}
       {textNote}
       <ButtonWrapper>
         <CancelButton onClick={closeEditMountainModalModal}>
