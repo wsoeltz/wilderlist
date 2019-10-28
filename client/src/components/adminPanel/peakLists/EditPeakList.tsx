@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import {
   ButtonSecondary,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakList, PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakList, PeakListVariants, State } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   SuccessResponse as PeakListDatum,
@@ -47,6 +47,11 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
     mountains {
       id
       name
+      elevation
+      state {
+        id
+        abbreviation
+      }
     }
   }
 `;
@@ -162,6 +167,11 @@ interface SuccessResponse {
   mountains: Array<{
     id: Mountain['id'];
     name: Mountain['name'];
+    elevation: Mountain['elevation'];
+    state: {
+      id: State['id'];
+      abbreviation: State['abbreviation'];
+    }
   }>;
 }
 
@@ -352,7 +362,7 @@ const EditPeakList = (props: Props) => {
           <Checkbox
             key={mountain.id}
             id={mountain.id}
-            name={mountain.name}
+            name={mountain.name + ' ' + mountain.state.abbreviation + ' ' + mountain.elevation}
             defaultChecked={
               (data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
             }
