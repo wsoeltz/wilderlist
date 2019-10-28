@@ -272,6 +272,28 @@ export interface MountainCompletionVariables {
   date: string;
 }
 
+const ADD_ASCENT_NOTIFICATION = gql`
+  mutation addAscentNotification(
+    $userId: ID!,
+    $friendId: ID!,
+    $mountainId: ID!,
+    $date: String!
+    ) {
+    addAscentNotification(
+      userId: $userId,
+      friendId: $friendId,
+      mountainId: $mountainId,
+      date: $date
+    ) {
+      id
+    }
+  }
+`;
+
+interface AscentNotificationVariables extends MountainCompletionVariables {
+  friendId: string;
+}
+
 enum DateType {
   full = 'full',
   monthYear = 'monthYear',
@@ -312,6 +334,8 @@ const MountainCompletionModal = (props: Props) => {
   });
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+  const [addAscentNotification] =
+    useMutation<{id: string}, AscentNotificationVariables>(ADD_ASCENT_NOTIFICATION);
   const [completionDay, setCompletionDay] = useState<string>('');
   const [completionMonth, setCompletionMonth] = useState<string>('');
   const [completionYear, setCompletionYear] = useState<string>('');
@@ -394,6 +418,11 @@ const MountainCompletionModal = (props: Props) => {
     } else {
       setErrorMessage(undefined);
       addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
+      userList.forEach(friendId => {
+        addAscentNotification({ variables: {
+          userId, friendId, mountainId, date: completedDate.date,
+        }});
+      });
       closeEditMountainModalModal();
     }
   };
