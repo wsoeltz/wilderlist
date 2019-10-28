@@ -14,6 +14,12 @@ interface CompletedMountainMutationArgs {
   mountainId: string;
   date: string;
 }
+interface AscentNotificationMutationArgs {
+  userId: string;
+  friendId: string;
+  mountainId: string;
+  date: string;
+}
 
 const userMutations: any = {
   addPeakListToUser: {
@@ -343,6 +349,35 @@ const userMutations: any = {
         {new: true});
         dataloaders.userLoader.clear(id).prime(id, user);
         return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addAscentNotification: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      friendId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      date: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: AscentNotificationMutationArgs) {
+      const { userId, friendId, mountainId, date } = args;
+      try {
+        await User.findOneAndUpdate({
+          _id: friendId,
+          $or: [
+            {'ascentNotifications.user': { $ne: userId }},
+            {'ascentNotifications.mountain': { $ne: mountainId }},
+            {'ascentNotifications.date': { $ne: date }},
+          ],
+        }, {
+          $push: { ascentNotifications: {
+            user: userId, mountain: mountainId, date,
+          } },
+        });
+        return await User.findOne({_id: friendId});
       } catch (err) {
         return err;
       }
