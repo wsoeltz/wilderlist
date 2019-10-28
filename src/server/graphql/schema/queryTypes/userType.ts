@@ -39,6 +39,17 @@ const UserSchema = new Schema({
     },
     dates: [{ type: String }],
   }],
+  ascentNotifications: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    mountain: {
+      type: Schema.Types.ObjectId,
+      ref: 'mountain',
+    },
+    date: { type: String },
+  }],
 });
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
@@ -83,6 +94,36 @@ const FriendsType = new GraphQLObjectType({
   }),
 });
 
+const AscentNotificationType: any = new GraphQLObjectType({
+  name: 'AscentNotificationType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    mountain: {
+      type: MountainType,
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        try {
+          return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    date: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
   fields: () => ({
@@ -107,6 +148,7 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountains: { type: new GraphQLList(CompletedMountainsType) },
+    ascentNotifications: { type: new GraphQLList(AscentNotificationType) },
   }),
 });
 

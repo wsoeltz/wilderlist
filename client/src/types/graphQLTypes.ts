@@ -63,6 +63,13 @@ export interface Friend {
   status: FriendStatus;
 }
 
+export interface AscentNotification {
+  _id: string;
+  user: User;
+  mountain: Mountain;
+  date: string;
+}
+
 export interface User {
   _id: string;
   id: string;
@@ -77,4 +84,5 @@ export interface User {
   hideEmail: boolean | null;
   hideProfilePicture: boolean | null;
   hideProfileInSearch: boolean | null;
+  ascentNotifications: AscentNotification[] | null;
 }
