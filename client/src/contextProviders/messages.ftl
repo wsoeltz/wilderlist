@@ -165,7 +165,7 @@ mountain-completion-modal-text-note-grid =
 
 mountain-completion-modal-text-add-wilderlist-friends = Add Wilderlist Friends To Ascent
 mountain-completion-modal-text-add-other-friends = Add Other Friends To Ascent
-mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderness to add them
+mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderlist to add them
 mountain-completion-modal-text-add-email-button = Add Email
 
 mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
