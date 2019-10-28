@@ -383,6 +383,25 @@ const userMutations: any = {
       }
     },
   },
+  clearAscentNotification: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      date: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any,
+                  {userId, mountainId, date}: {userId: string, mountainId: string, date: string}) {
+      try {
+        await User.findOneAndUpdate({ _id: userId },
+          {$pull: { ascentNotifications: { mountain: mountainId, date } }},
+        );
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
 };
 
 export default userMutations;
