@@ -18,6 +18,7 @@ import {
   warningColor,
 } from '../../../styling/styleUtils';
 import { FriendStatus, Mountain, PeakListVariants, User } from '../../../types/graphQLTypes';
+import sendInvites from '../../../utilities/sendInvites';
 import {
   convertFieldsToDate,
   getMonthIndex,
@@ -410,8 +411,6 @@ const MountainCompletionModal = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
-    // Use the emailList and userList to send proper notifications
-    // console.log({emailList, userList});
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     if (completedDate.error !== undefined) {
       setErrorMessage(completedDate.error);
@@ -423,6 +422,7 @@ const MountainCompletionModal = (props: Props) => {
           userId, friendId, mountainId, date: completedDate.date,
         }});
       });
+      sendInvites({mountainName, emailList, date: completedDate.date});
       closeEditMountainModalModal();
     }
   };
