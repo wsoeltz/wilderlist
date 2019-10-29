@@ -11,6 +11,7 @@ global-text-value-modal-cancel = Cancel
 global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
+global-text-value-on = on
 global-text-value-back = Back
 global-text-value-loading = Loading
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
@@ -78,6 +79,8 @@ header-text-menu-item-logout = Logout
 header-text-menu-my-profile = My Profile
 header-text-menu-settings = Settings
 header-text-menu-privacy-policy = Privacy & Usage Policy
+
+notification-bar-ascent-marked = marked you as hiking
 
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
