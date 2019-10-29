@@ -60,3 +60,46 @@ export const getType = (type: PeakListVariants) => {
     return '';
   }
 };
+
+interface DateObject {
+  dateAsNumber: number;
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+const formatDate = ({ day, month, year }: { day: number, month: number, year: number }) => {
+  // if year isn't known
+    // return 'unknown date'
+  // else if just year (or year and day, but no month) is known
+    // return just year '2018'
+  // else if year && month is known
+    // return month and year '3/2018'
+  // else if everything is known
+    // return full date 3/16/2018
+  if (isNaN(year)) {
+    return 'unknown date';
+  }
+  if (isNaN(month)) {
+    return year.toString();
+  }
+  if (isNaN(day)) {
+    return month + '/' + year;
+  }
+  return month + '/' + day + '/' + year;
+};
+
+export const formatStringDate = (date: string) => {
+  const dateParts = date.split('-');
+  const dateObject: DateObject = {
+    dateAsNumber: parseInt(date.replace(/-/g, ''), 10),
+    year: parseInt(dateParts[0], 10),
+    month: parseInt(dateParts[1], 10),
+    day: parseInt(dateParts[2], 10),
+    hour: parseInt(dateParts[3], 10),
+    minute: parseInt(dateParts[4], 10),
+  };
+  return formatDate(dateObject);
+};

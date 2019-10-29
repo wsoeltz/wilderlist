@@ -1,4 +1,7 @@
 import { createTransport } from 'nodemailer';
+import ascentEmailTemplate, {
+  TemplateInput as AscentTemplateContent,
+} from './emailTemplates/ascentEmail';
 
 const transport = createTransport({
   service: 'Gmail',
@@ -8,30 +11,15 @@ const transport = createTransport({
   },
 });
 
-interface EmailInput {
-  to: string;
-  subject: string;
-  message: string;
-}
-
-const logoWidth = 432;
-const logoHeight = 156;
-
-export const sendEmail = ({to, subject, message}: EmailInput) => {
+export const sendAscentEmailNotification = (input: AscentTemplateContent) => {
+  const {
+    mountainName, user, userEmail, date,
+  } = input;
   const mailOptions = {
-    from: process.env.GMAIL_USERNAME,
-    to,
-    subject,
-    html: `
-    <div style="text-align: center; font-family: Arial, sans-serif;">
-      <img src="" width="${logoWidth * 0.6}" height="${logoHeight * 0.6}" />
-      <h1>${subject}</h1>
-      <p>${message}</p>
-      <a href="https://www.wilderlist.app/">
-        Log-in to Wilderlist
-      </a>
-    </div>
-    `,
+    from: `Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    to: userEmail,
+    subject: `${user} marked you as hiking ${mountainName} on ${date}`,
+    html: ascentEmailTemplate(input),
   };
   transport.sendMail(mailOptions, (error) => {
     if (error) {
