@@ -64,7 +64,7 @@ export interface Friend {
 }
 
 export interface AscentNotification {
-  _id: string;
+  id: string;
   user: User;
   mountain: Mountain;
   date: string;

@@ -88,6 +88,10 @@ export const regularFontWeight = 400;
 export const semiBoldFontBoldWeight = 600;
 export const boldFontWeight = 700;
 
+export const SemiBold = styled.strong`
+  font-weight: ${semiBoldFontBoldWeight};
+`;
+
 export const standardContainerPadding = '1rem';
 
 export const linkStyles = `
