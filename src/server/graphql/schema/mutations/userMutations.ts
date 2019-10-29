@@ -5,7 +5,10 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { sendAscentEmailNotification } from '../../../notifications/email';
 import { FriendStatus } from '../../graphQLTypes';
+import { formatStringDate } from '../../Utils';
+import { Mountain } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import UserType, { User } from '../queryTypes/userType';
 
@@ -365,7 +368,7 @@ const userMutations: any = {
     async resolve(_unused: any, args: AscentNotificationMutationArgs) {
       const { userId, friendId, mountainId, date } = args;
       try {
-        await User.findOneAndUpdate({
+        const friend = await User.findOneAndUpdate({
           _id: friendId,
           $or: [
             {'ascentNotifications.user': { $ne: userId }},
@@ -377,6 +380,16 @@ const userMutations: any = {
             user: userId, mountain: mountainId, date,
           } },
         });
+        const me = await User.findOne({_id: userId});
+        const mountain = await Mountain.findOne({_id: mountainId});
+        if (me && friend && mountain) {
+          sendAscentEmailNotification({
+            mountainName: mountain.name,
+            user: me.name,
+            userEmail: friend.email,
+            date: formatStringDate(date),
+          });
+        }
         return await User.findOne({_id: friendId});
       } catch (err) {
         return err;
