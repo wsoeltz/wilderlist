@@ -16,11 +16,11 @@ export default (input: TemplateInput) => {
     <div style="text-align: center">
       <img style="max-width: 250px; display:inline-block;" src="https://www.wilderlist.app/wilderlist-logo.png" />
     </div>
-    <h1 style="text-align: center;font-size: 20px;">You have a pending ascent for<br />${mountainName}</h1>
-    <p style="font-size: 17px;line-height: 1.7;"><strong>${user}</strong> marked you as hiking <strong>${mountainName}</strong> on <strong>${date}</strong>. Go to your Wilderlist account to confirm your ascent now.</p>
+    <h1 style="text-align: center;font-size: 20px;">Create an account on Wilderlist to start tracking your hiking progress</h1>
+    <p style="font-size: 17px;line-height: 1.7;"><strong>${user}</strong> marked you as hiking <strong>${mountainName}</strong> on <strong>${date}</strong>. Sign up for a free account with Wilderlist to start tracking and sharing your progress towards the New Hampshire 4000 Footers, Adirondack 46, 52 with a View, New England 100 Highest, and more today.</p>
     <div style="text-align: center;">
       <a href="https://www.wilderlist.app/" style="display: inline-block;padding: 8px 18px;border-radius: 4px;color:#fff;background-color:#668434;text-decoration: none;">
-        Log in to Wilderlist
+        Sign up with Wilderlist now
       </a>
     </div>
     <img style="max-width: 100%; margin-top: 60px;" src="https://www.wilderlist.app/mountain-range.png" />
