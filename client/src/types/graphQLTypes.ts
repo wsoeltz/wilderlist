@@ -84,5 +84,6 @@ export interface User {
   hideEmail: boolean | null;
   hideProfilePicture: boolean | null;
   hideProfileInSearch: boolean | null;
+  disableEmailNotifications: boolean | null;
   ascentNotifications: AscentNotification[] | null;
 }

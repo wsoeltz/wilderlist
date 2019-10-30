@@ -21,6 +21,7 @@ const UserSchema = new Schema({
   hideEmail: { type: Boolean },
   hideProfilePicture: { type: Boolean },
   hideProfileInSearch: { type: Boolean },
+  disableEmailNotifications: { type: Boolean },
   friends: [{
     user: {
       type: Schema.Types.ObjectId,
@@ -136,6 +137,7 @@ const UserType: any = new GraphQLObjectType({
     hideEmail: { type: GraphQLBoolean },
     hideProfilePicture: { type: GraphQLBoolean },
     hideProfileInSearch: { type: GraphQLBoolean },
+    disableEmailNotifications: { type: GraphQLBoolean },
     friends: { type: new GraphQLList(FriendsType) },
     peakLists: {
       type: new GraphQLList(PeakListType),
