@@ -5,7 +5,11 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { sendAscentEmailNotification } from '../../../notifications/email';
+import {
+  sendAscentEmailNotification,
+  sendFriendRequestEmailNotification,
+  sendAcceptFriendRequestEmailNotification,
+} from '../../../notifications/email';
 import { FriendStatus } from '../../graphQLTypes';
 import { formatStringDate } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
@@ -196,6 +200,10 @@ const userMutations: any = {
               status: FriendStatus.recieved,
             } },
           });
+          sendFriendRequestEmailNotification({
+            userName: user.name,
+            userEmail: friend.email,
+          });
           return User.findById(userId);
         }
       } catch (err) {
@@ -227,6 +235,11 @@ const userMutations: any = {
             'friends.user': userId,
           }, {
             $set: { 'friends.$.status': FriendStatus.friends },
+          });
+          await sendAcceptFriendRequestEmailNotification({
+            userId,
+            userName: user.name,
+            userEmail: friend.email,
           });
           return User.findById(userId);
         }
