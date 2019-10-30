@@ -22,7 +22,7 @@ import {
   successColor,
   successColorLight,
 } from '../../../styling/styleUtils';
-import { Mountain } from '../../../types/graphQLTypes';
+import { Mountain, State } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
 import {
@@ -169,6 +169,11 @@ export const genericWords = [
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
+  elevation: Mountain['elevation'];
+  state: {
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  };
 }
 export interface DateDatum {
   day: number;
@@ -424,7 +429,7 @@ const ImportAscentsModal = (props: Props) => {
     : cleanedMountains.map((mtn, i) => {
     const fixMountain = (newMountain: MountainDatum) => {
       const newPeaks = cleanedMountains;
-      newPeaks[i] = { id: newMountain.id, name: newMountain.name };
+      newPeaks[i] = { ...newMountain };
       setCleanedMountains([...newPeaks]);
     };
     const fixDate = (value: string | undefined, dayMonthYear: keyof DateDatum) => {
