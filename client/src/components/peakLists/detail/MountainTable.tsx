@@ -33,6 +33,7 @@ import {
   nameColumn,
   seasonColumns,
   smallPadding,
+  stateColumn,
 } from './MountainRow';
 import {
   MountainDatum,
@@ -287,6 +288,9 @@ const MountainTable = (props: Props) => {
       <>
         <TitleCell style={{gridColumn: elevationColumn}}>
           {getFluentString('global-text-value-elevation')}
+        </TitleCell>
+        <TitleCell style={{gridColumn: stateColumn}}>
+          {getFluentString('global-text-value-state')}
         </TitleCell>
         <MountainColumnTitleButton>
           {getFluentString('global-text-value-done')}

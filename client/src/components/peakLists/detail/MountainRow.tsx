@@ -32,7 +32,8 @@ import {
 
 export const nameColumn = 1;
 export const elevationColumn = 2;
-export const buttonColumn = 3;
+export const stateColumn = 3;
+export const buttonColumn = 4;
 export const horizontalPadding = 0.6; // in rem
 export const smallPadding = 0.5; // in rem
 export const extraSmallPadding = 0.3; // in rem
@@ -492,6 +493,9 @@ const MountainRow = (props: Props) => {
     columnDetailContent = (
       <>
         <TableCell style={{backgroundColor, gridColumn: elevationColumn}}>{elevation}</TableCell>
+        <TableCell style={{backgroundColor, gridColumn: stateColumn}}>
+          {mountain.state.abbreviation}
+        </TableCell>
         <MountainButton style={{backgroundColor}}>
           {peakCompletedContent}
         </MountainButton>
