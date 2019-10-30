@@ -71,6 +71,7 @@ const GET_USER_PROFILE_DATA = gql`
       hideEmail
       hideProfilePicture
       hideProfileInSearch
+      disableEmailNotifications
     }
   }
 `;
@@ -84,6 +85,7 @@ interface QuerySucces {
     hideEmail: User['hideEmail'];
     hideProfilePicture: User['hideProfilePicture'];
     hideProfileInSearch: User['hideProfileInSearch'];
+    disableEmailNotifications: User['disableEmailNotifications'];
   };
 }
 
@@ -110,6 +112,14 @@ const SET_HIDE_PROFILE_PICTURE = gql`
 const SET_HIDE_PROFILE_IN_SEARCH_RESULTS = gql`
   mutation setHideProfileInSearchResults($id: ID!, $value: Boolean!) {
     user: setHideProfileInSearchResults(id: $id, value: $value) {
+      id
+    }
+  }
+`;
+
+const SET_DISABLE_EMAIL_NOTIFICATIONS = gql`
+  mutation setDisableEmailNotifications($id: ID!, $value: Boolean!) {
+    user: setDisableEmailNotifications(id: $id, value: $value) {
       id
     }
   }
@@ -148,6 +158,10 @@ const Settings = ({userId}: Props) => {
     useMutation<MutationSucces, MutationVariables>(SET_HIDE_PROFILE_IN_SEARCH_RESULTS, {
       refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
     });
+  const [setDisableEmailNotifications] =
+    useMutation<MutationSucces, MutationVariables>(SET_DISABLE_EMAIL_NOTIFICATIONS, {
+      refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
+    });
 
   let output: React.ReactElement | null;
   if (loading === true) {
@@ -158,7 +172,7 @@ const Settings = ({userId}: Props) => {
   } else if (data !== undefined) {
     const { user: {
       name, email, profilePictureUrl,
-      hideEmail, hideProfilePicture, hideProfileInSearch,
+      hideEmail, hideProfilePicture, hideProfileInSearch, disableEmailNotifications,
     } } = data;
     output = (
       <>
@@ -218,6 +232,26 @@ const Settings = ({userId}: Props) => {
                   htmlFor={'display-user-profile-in-search'}
                 >
                   {getFluentString('settings-page-display-profile-in-search')}
+                </PrivacyToggleLabel>
+              </PrivacyToggleItem>
+            </Section>
+            <Section>
+              <h3>{getFluentString('settings-page-notification-settings')}</h3>
+              <PrivacyToggleItem>
+                <PrivacyToggleBox
+                  type='checkbox'
+                  id={'disable-email-notifications'}
+                  checked={!disableEmailNotifications}
+                  onChange={
+                    () => setDisableEmailNotifications({
+                      variables: {id: userId, value: !disableEmailNotifications},
+                    })
+                  }
+                />
+                <PrivacyToggleLabel
+                  htmlFor={'disable-email-notifications'}
+                >
+                  {getFluentString('settings-page-notification-settings-email')}
                 </PrivacyToggleLabel>
               </PrivacyToggleItem>
             </Section>

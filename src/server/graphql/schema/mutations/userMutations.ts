@@ -357,6 +357,28 @@ const userMutations: any = {
       }
     },
   },
+  setDisableEmailNotifications: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      value: { type: GraphQLNonNull(GraphQLBoolean) },
+    },
+    async resolve(_unused: any,
+                  { id, value }: { id: string , value: boolean},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const user = await User.findOneAndUpdate({
+          _id: id,
+        },
+        { disableEmailNotifications: value },
+        {new: true});
+        dataloaders.userLoader.clear(id).prime(id, user);
+        return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
   addAscentNotification: {
     type: UserType,
     args: {
@@ -382,7 +404,7 @@ const userMutations: any = {
         });
         const me = await User.findOne({_id: userId});
         const mountain = await Mountain.findOne({_id: mountainId});
-        if (me && friend && mountain) {
+        if (me && friend && mountain && !friend.disableEmailNotifications) {
           sendAscentEmailNotification({
             mountainName: mountain.name,
             user: me.name,

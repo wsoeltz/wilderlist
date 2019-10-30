@@ -91,6 +91,9 @@ settings-page-display-email = Display your email address on your profile
 settings-page-display-profile-picture = Display your Profile Picture on your profile
 settings-page-display-profile-in-search = Have your account appear in search results
 
+settings-page-notification-settings = Notifications Settings
+settings-page-notification-settings-email = Email Notifications
+
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>wilderlistapp@gmail.com</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
 
