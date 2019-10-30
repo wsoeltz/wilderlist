@@ -8,10 +8,10 @@ import expressGraphQL from 'express-graphql';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import googleAuth from './auth/google';
-import notificationRoutes from './notifications';
 import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
 import requireLogin from './middleware/requireLogin';
+import notificationRoutes from './notifications';
 
 require('./auth/passport');
 

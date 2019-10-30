@@ -6,9 +6,9 @@ import {
   GraphQLString,
 } from 'graphql';
 import {
+  sendAcceptFriendRequestEmailNotification,
   sendAscentEmailNotification,
   sendFriendRequestEmailNotification,
-  sendAcceptFriendRequestEmailNotification,
 } from '../../../notifications/email';
 import { FriendStatus } from '../../graphQLTypes';
 import { formatStringDate } from '../../Utils';

@@ -1,6 +1,6 @@
 import { Express } from 'express';
-import { sendAscentInviteEmailNotification } from './email';
 import { formatStringDate } from '../graphql/Utils';
+import { sendAscentInviteEmailNotification } from './email';
 
 const notificationRoutes = (app: Express) => {
   app.get('/api/ascent-invite', (req, res) => {

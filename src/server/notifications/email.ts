@@ -1,11 +1,11 @@
 import { createTransport } from 'nodemailer';
+import acceptFriendRequestEmailTemplate from './emailTemplates/acceptFriendRequestEmail';
 import ascentEmailTemplate, {
   TemplateInput as AscentTemplateContent,
 } from './emailTemplates/ascentEmail';
 import ascentInviteEmailTemplate from './emailTemplates/ascentInviteEmail';
-import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
 import friendRequestEmailTemplate from './emailTemplates/friendRequestEmail';
-import acceptFriendRequestEmailTemplate from './emailTemplates/acceptFriendRequestEmail';
+import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
 
 const transport = createTransport({
   service: 'Gmail',
@@ -65,9 +65,8 @@ export const sendWelcomeEmail = (userEmail: string) => {
   });
 };
 
-
 export const sendFriendRequestEmailNotification = (
-  {userEmail, userName}:{userEmail: string, userName: string}) => {
+  {userEmail, userName}: {userEmail: string, userName: string}) => {
   const firstName = userName.split(' ').shift();
   const mailOptions = {
     from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
@@ -83,7 +82,7 @@ export const sendFriendRequestEmailNotification = (
 };
 
 export const sendAcceptFriendRequestEmailNotification = (
-  {userEmail, userName, userId}:{userEmail: string, userName: string, userId: string}) => {
+  {userEmail, userName, userId}: {userEmail: string, userName: string, userId: string}) => {
   const firstName = userName.split(' ').shift();
   const mailOptions = {
     from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
