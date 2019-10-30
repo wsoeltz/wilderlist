@@ -4,6 +4,8 @@ import ascentEmailTemplate, {
 } from './emailTemplates/ascentEmail';
 import ascentInviteEmailTemplate from './emailTemplates/ascentInviteEmail';
 import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
+import friendRequestEmailTemplate from './emailTemplates/friendRequestEmail';
+import acceptFriendRequestEmailTemplate from './emailTemplates/acceptFriendRequestEmail';
 
 const transport = createTransport({
   service: 'Gmail',
@@ -55,6 +57,39 @@ export const sendWelcomeEmail = (userEmail: string) => {
     to: userEmail,
     subject: `Welcome to Wilderlist!`,
     html: welcomeEmailTemplate(userEmail),
+  };
+  transport.sendMail(mailOptions, (error) => {
+    if (error) {
+      console.error(error);
+    }
+  });
+};
+
+
+export const sendFriendRequestEmailNotification = (
+  {userEmail, userName}:{userEmail: string, userName: string}) => {
+  const firstName = userName.split(' ').shift();
+  const mailOptions = {
+    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    to: userEmail,
+    subject: `${userName} has added you as a friend on Wilderlist`,
+    html: friendRequestEmailTemplate({userName, userEmail}),
+  };
+  transport.sendMail(mailOptions, (error) => {
+    if (error) {
+      console.error(error);
+    }
+  });
+};
+
+export const sendAcceptFriendRequestEmailNotification = (
+  {userEmail, userName, userId}:{userEmail: string, userName: string, userId: string}) => {
+  const firstName = userName.split(' ').shift();
+  const mailOptions = {
+    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    to: userEmail,
+    subject: `${userName} is now your friend on Wilderlist`,
+    html: acceptFriendRequestEmailTemplate({userName, userEmail, userId}),
   };
   transport.sendMail(mailOptions, (error) => {
     if (error) {
