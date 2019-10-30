@@ -78,6 +78,12 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
   }
 `;
 
+interface ClearNotificationVariables {
+  userId: string;
+  mountainId: string | null;
+  date: string;
+}
+
 const slideDown = keyframes`
   0%   {
     opacity: 0;
@@ -119,7 +125,7 @@ const NotificationBar = (props: Props) => {
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [clearAscentNotification] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(CLEAR_ASCENT_NOTIFICATION);
+    useMutation<MountainCompletionSuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
 
   const {loading, error, data} = useQuery<SuccessResponse, {userId: string}>(GET_NOTIFICATIONS, {
     variables: { userId },
@@ -134,38 +140,44 @@ const NotificationBar = (props: Props) => {
     const { user } = data;
     if (user && user.ascentNotifications && user.ascentNotifications.length) {
       const { id, user: friend, mountain, date } = user.ascentNotifications[0];
+      const mountainId = mountain ? mountain.id : null;
       const dismissNotification = () => {
         clearAscentNotification({variables: {
-          userId, mountainId: mountain.id, date,
+          userId, mountainId, date,
         }});
       };
-      const onConfirm = () => {
-        addMountainCompletion({variables: {
-          userId, mountainId: mountain.id, date,
-        }});
+      if (friend && mountain && mountainId) {
+        const onConfirm = () => {
+          addMountainCompletion({variables: {
+            userId, mountainId, date,
+          }});
+          dismissNotification();
+        };
+        return (
+          <Root key={id}>
+            <div>
+              <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
+              {' '}
+              {getFluentString('notification-bar-ascent-marked')}
+              {' '}
+              <Link to={mountainDetailLink(mountainId)}><SemiBold>{mountain.name}</SemiBold></Link>
+              {' '}
+              {getFluentString('global-text-value-on')}
+              {' '}
+              <SemiBold>{formatStringDate(date)}</SemiBold>
+            </div>
+            <ConfirmButton onClick={onConfirm}>
+              Confirm
+            </ConfirmButton>
+            <GhostButton onClick={dismissNotification}>
+              Dismiss
+            </GhostButton>
+          </Root>
+        );
+      } else {
         dismissNotification();
-      };
-      return (
-        <Root key={id}>
-          <div>
-            <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
-            {' '}
-            {getFluentString('notification-bar-ascent-marked')}
-            {' '}
-            <Link to={mountainDetailLink(mountain.id)}><SemiBold>{mountain.name}</SemiBold></Link>
-            {' '}
-            {getFluentString('global-text-value-on')}
-            {' '}
-            <SemiBold>{formatStringDate(date)}</SemiBold>
-          </div>
-          <ConfirmButton onClick={onConfirm}>
-            Confirm
-          </ConfirmButton>
-          <GhostButton onClick={dismissNotification}>
-            Dismiss
-          </GhostButton>
-        </Root>
-      );
+        return null;
+      }
     } else {
       return null;
     }

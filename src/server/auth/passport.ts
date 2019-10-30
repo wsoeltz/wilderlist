@@ -4,6 +4,7 @@ import passport, { Profile } from 'passport';
 import { Strategy as GoogleStrategy} from 'passport-google-oauth20';
 import { PermissionTypes, User as IUser } from '../graphql/graphQLTypes';
 import { User } from '../graphql/schema/queryTypes/userType';
+import { sendWelcomeEmail } from '../notifications/email';
 
 // Setup Google OAuth
 if (process.env.GOOGLE_CLIENT_ID === undefined) {
@@ -64,6 +65,7 @@ passport.use(new GoogleStrategy({
           permissions: PermissionTypes.standard,
         }).save();
         done(undefined, user);
+        sendWelcomeEmail(email);
       }
     } catch (err) {
       throw new Error('Unable to use Google Strategy');
