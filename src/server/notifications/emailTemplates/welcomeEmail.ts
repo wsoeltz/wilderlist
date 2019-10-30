@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title></title>
-</head>
-<body>
+/* tslint:disable:max-line-length */
+export default (userEmail: string) => {
+  return `
   <div style="max-width: 450px; margin: auto;font-family: Arial, sans-serif; line-height: 1.4;color: #333333;">
     <div style="text-align: center">
       <img style="max-width: 250px; display:inline-block;" src="https://www.wilderlist.app/wilderlist-logo.png" />
@@ -36,10 +33,10 @@
         393 Broadway, Cambridge, MA 02139 | 508-517-6476
         <br /><a href="https://www.wilderlist.app/" style="color:#2b5b37;">Wilderlist</a> | <a href="mailto:wilderlistapp@gmail.com" style="color:#2b5b37;">wilderlistapp@gmail.com</a>
         <br />
-        <br />This message was sent to <a href="mailto:wsoeltz@gmail.com" style="color:#2b5b37;">wsoeltz@gmail.com</a> by <a href="https://www.wilderlist.app/" style="color:#2b5b37;">Wilderlist</a>.
+        <br />This message was sent to <a href="mailto:${userEmail}" style="color:#2b5b37;">${userEmail}</a> by <a href="https://www.wilderlist.app/" style="color:#2b5b37;">Wilderlist</a>.
         <br ><a href="https://www.wilderlist.app/user-settings" style="color:#2b5b37;">Unsubscribe through your Wilderlist account here</a>.
       </p>
     </div>
   </div>
-</body>
-</html>
+  `;
+};

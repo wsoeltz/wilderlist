@@ -400,15 +400,21 @@ const userMutations: any = {
     type: UserType,
     args: {
       userId: { type: GraphQLNonNull(GraphQLID) },
-      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLID },
       date: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any,
                   {userId, mountainId, date}: {userId: string, mountainId: string, date: string}) {
       try {
-        await User.findOneAndUpdate({ _id: userId },
-          {$pull: { ascentNotifications: { mountain: mountainId, date } }},
-        );
+        if (mountainId) {
+          await User.findOneAndUpdate({ _id: userId },
+            {$pull: { ascentNotifications: { mountain: mountainId, date } }},
+          );
+        } else {
+          await User.findOneAndUpdate({ _id: userId },
+            {$pull: { ascentNotifications: { date } }},
+          );
+        }
         return await User.findOne({_id: userId});
       } catch (err) {
         return err;
