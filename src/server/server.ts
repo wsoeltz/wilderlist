@@ -11,6 +11,7 @@ import googleAuth from './auth/google';
 import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
 import requireLogin from './middleware/requireLogin';
+import notificationRoutes from './notifications';
 
 require('./auth/passport');
 
@@ -73,6 +74,9 @@ app.use('/graphql', requireLogin, expressGraphQL({
   },
 }));
 ///// End MongoDb Connection Setup
+
+// Send invites to ascent added emails
+notificationRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve up production assets

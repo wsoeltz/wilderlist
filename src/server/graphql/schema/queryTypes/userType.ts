@@ -21,6 +21,7 @@ const UserSchema = new Schema({
   hideEmail: { type: Boolean },
   hideProfilePicture: { type: Boolean },
   hideProfileInSearch: { type: Boolean },
+  disableEmailNotifications: { type: Boolean },
   friends: [{
     user: {
       type: Schema.Types.ObjectId,
@@ -38,6 +39,17 @@ const UserSchema = new Schema({
       ref: 'mountain',
     },
     dates: [{ type: String }],
+  }],
+  ascentNotifications: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    mountain: {
+      type: Schema.Types.ObjectId,
+      ref: 'mountain',
+    },
+    date: { type: String },
   }],
 });
 
@@ -83,6 +95,36 @@ const FriendsType = new GraphQLObjectType({
   }),
 });
 
+const AscentNotificationType: any = new GraphQLObjectType({
+  name: 'AscentNotificationType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    mountain: {
+      type: MountainType,
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        try {
+          return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    date: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
   fields: () => ({
@@ -95,6 +137,7 @@ const UserType: any = new GraphQLObjectType({
     hideEmail: { type: GraphQLBoolean },
     hideProfilePicture: { type: GraphQLBoolean },
     hideProfileInSearch: { type: GraphQLBoolean },
+    disableEmailNotifications: { type: GraphQLBoolean },
     friends: { type: new GraphQLList(FriendsType) },
     peakLists: {
       type: new GraphQLList(PeakListType),
@@ -107,6 +150,7 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountains: { type: new GraphQLList(CompletedMountainsType) },
+    ascentNotifications: { type: new GraphQLList(AscentNotificationType) },
   }),
 });
 

@@ -11,15 +11,17 @@ global-text-value-modal-cancel = Cancel
 global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
+global-text-value-on = on
 global-text-value-back = Back
 global-text-value-loading = Loading
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
-global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilerlistapp@gmail.com
+global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
 
 global-text-value-modal-email = Email
+global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
 global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } today
@@ -37,6 +39,7 @@ global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-ascent-dates = Ascent Dates
 global-text-value-done = Done
+global-text-value-today = Today
 global-text-value-summer = Summer
 global-text-value-fall = Fall
 global-text-value-winter = Winter
@@ -77,6 +80,8 @@ header-text-menu-my-profile = My Profile
 header-text-menu-settings = Settings
 header-text-menu-privacy-policy = Privacy & Usage Policy
 
+notification-bar-ascent-marked = marked you as hiking
+
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
@@ -85,6 +90,9 @@ settings-page-privacy-settings = Privacy Settings
 settings-page-display-email = Display your email address on your profile
 settings-page-display-profile-picture = Display your Profile Picture on your profile
 settings-page-display-profile-in-search = Have your account appear in search results
+
+settings-page-notification-settings = Notifications Settings
+settings-page-notification-settings-email = Email Notifications
 
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>wilderlistapp@gmail.com</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
@@ -160,6 +168,13 @@ mountain-completion-modal-text-note-four-season =
   <strong>4-Season</strong> lists require dates to be in between the official solstice and equinox for a given season and year. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
+
+mountain-completion-modal-text-add-wilderlist-friends = Add Wilderlist Friends To Ascent
+mountain-completion-modal-text-add-other-friends = Add Other Friends To Ascent
+mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderlist to add them
+mountain-completion-modal-text-add-email-button = Add Email
+
+mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
 
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>

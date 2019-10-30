@@ -19,16 +19,16 @@ export interface DateObject {
 
 export const getDates = (dates: CompletedMountain['dates']) => {
     const parsedDates: DateObject[] = dates.map(date => {
-    const dateParts = date.split('-');
-    return {
-      dateAsNumber: parseInt(date.replace(/-/g, ''), 10),
-      year: parseInt(dateParts[0], 10),
-      month: parseInt(dateParts[1], 10),
-      day: parseInt(dateParts[2], 10),
-      hour: parseInt(dateParts[3], 10),
-      minute: parseInt(dateParts[4], 10),
-    };
-  });
+      const dateParts = date.split('-');
+      return {
+        dateAsNumber: parseInt(date.replace(/-/g, ''), 10),
+        year: parseInt(dateParts[0], 10),
+        month: parseInt(dateParts[1], 10),
+        day: parseInt(dateParts[2], 10),
+        hour: parseInt(dateParts[3], 10),
+        minute: parseInt(dateParts[4], 10),
+      };
+    });
     return sortBy(parsedDates, ({dateAsNumber}) => dateAsNumber);
 };
 
@@ -148,6 +148,19 @@ export const formatDate = ({ day, month, year }: { day: number, month: number, y
     return month + '/' + year;
   }
   return month + '/' + day + '/' + year;
+};
+
+export const formatStringDate = (date: string) => {
+  const dateParts = date.split('-');
+  const dateObject: DateObject = {
+    dateAsNumber: parseInt(date.replace(/-/g, ''), 10),
+    year: parseInt(dateParts[0], 10),
+    month: parseInt(dateParts[1], 10),
+    day: parseInt(dateParts[2], 10),
+    hour: parseInt(dateParts[3], 10),
+    minute: parseInt(dateParts[4], 10),
+  };
+  return formatDate(dateObject);
 };
 
 export const formatGridDate = (date: DateObject) => {

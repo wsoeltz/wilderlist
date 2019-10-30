@@ -31,6 +31,7 @@ const GET_PEAK_LIST = gql`
         state {
           id
           name
+          abbreviation
           regions {
             id
             name
@@ -51,6 +52,7 @@ const GET_PEAK_LIST = gql`
           state {
             id
             name
+            abbreviation
             regions {
               id
               name
@@ -87,6 +89,7 @@ export interface MountainDatum {
   state: {
     id: State['id'];
     name: State['name'];
+    abbreviation: State['abbreviation'];
     regions: Array<{
       id: Region['id'];
       name: Region['name'];

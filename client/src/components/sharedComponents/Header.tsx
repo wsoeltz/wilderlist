@@ -18,6 +18,7 @@ import {
 } from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
+import NotificationBar from './NotificationBar';
 import UserMenu from './UserMenu';
 
 const HeaderContainer = styled(HeaderContainerBase)`
@@ -136,45 +137,54 @@ const Header = (props: RouteComponentProps) => {
     if (user) {
       return (
         <>
-          <MainNav>
-            {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
-            {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
-            {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
-            {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
-          </MainNav>
-          <UserMenu
-            userMenuOpen={userMenuOpen}
-            setUserMenuOpen={setUserMenuOpen}
-            user={user}
-            getFluentString={getFluentString}
-          />
+          <HeaderContainer>
+            <LogoContainer to={Routes.Dashboard}>
+              {getFluentString('global-text-value-wilderlist-name')}
+              <Logo />
+            </LogoContainer>
+            <MainNav>
+              {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
+              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
+              {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
+            </MainNav>
+            <UserMenu
+              userMenuOpen={userMenuOpen}
+              setUserMenuOpen={setUserMenuOpen}
+              user={user}
+              getFluentString={getFluentString}
+            />
+          </HeaderContainer>
+          <NotificationBar userId={user._id} />
         </>
       );
     } else {
       return (
         <>
-          <MainNav>
-            {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
-            {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
-          </MainNav>
-          <UserMenu
-            user={user}
-            getFluentString={getFluentString}
-          />
+          <HeaderContainer>
+            <LogoContainer to={Routes.Dashboard}>
+              {getFluentString('global-text-value-wilderlist-name')}
+              <Logo />
+            </LogoContainer>
+            <MainNav>
+              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
+            </MainNav>
+            <UserMenu
+              user={user}
+              getFluentString={getFluentString}
+            />
+          </HeaderContainer>
         </>
       );
     }
   };
   return (
-    <HeaderContainer>
-      <LogoContainer to={Routes.Dashboard}>
-        {getFluentString('global-text-value-wilderlist-name')}
-        <Logo />
-      </LogoContainer>
+    <>
       <UserContext.Consumer
         children={renderProp}
       />
-    </HeaderContainer>
+    </>
   );
 };
 

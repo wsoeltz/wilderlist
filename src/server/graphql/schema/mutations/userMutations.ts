@@ -5,12 +5,25 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import {
+  sendAcceptFriendRequestEmailNotification,
+  sendAscentEmailNotification,
+  sendFriendRequestEmailNotification,
+} from '../../../notifications/email';
 import { FriendStatus } from '../../graphQLTypes';
+import { formatStringDate } from '../../Utils';
+import { Mountain } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import UserType, { User } from '../queryTypes/userType';
 
 interface CompletedMountainMutationArgs {
   userId: string;
+  mountainId: string;
+  date: string;
+}
+interface AscentNotificationMutationArgs {
+  userId: string;
+  friendId: string;
   mountainId: string;
   date: string;
 }
@@ -187,6 +200,10 @@ const userMutations: any = {
               status: FriendStatus.recieved,
             } },
           });
+          sendFriendRequestEmailNotification({
+            userName: user.name,
+            userEmail: friend.email,
+          });
           return User.findById(userId);
         }
       } catch (err) {
@@ -218,6 +235,11 @@ const userMutations: any = {
             'friends.user': userId,
           }, {
             $set: { 'friends.$.status': FriendStatus.friends },
+          });
+          await sendAcceptFriendRequestEmailNotification({
+            userId,
+            userName: user.name,
+            userEmail: friend.email,
           });
           return User.findById(userId);
         }
@@ -343,6 +365,92 @@ const userMutations: any = {
         {new: true});
         dataloaders.userLoader.clear(id).prime(id, user);
         return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  setDisableEmailNotifications: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      value: { type: GraphQLNonNull(GraphQLBoolean) },
+    },
+    async resolve(_unused: any,
+                  { id, value }: { id: string , value: boolean},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const user = await User.findOneAndUpdate({
+          _id: id,
+        },
+        { disableEmailNotifications: value },
+        {new: true});
+        dataloaders.userLoader.clear(id).prime(id, user);
+        return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addAscentNotification: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      friendId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      date: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: AscentNotificationMutationArgs) {
+      const { userId, friendId, mountainId, date } = args;
+      try {
+        const friend = await User.findOneAndUpdate({
+          _id: friendId,
+          $or: [
+            {'ascentNotifications.user': { $ne: userId }},
+            {'ascentNotifications.mountain': { $ne: mountainId }},
+            {'ascentNotifications.date': { $ne: date }},
+          ],
+        }, {
+          $push: { ascentNotifications: {
+            user: userId, mountain: mountainId, date,
+          } },
+        });
+        const me = await User.findOne({_id: userId});
+        const mountain = await Mountain.findOne({_id: mountainId});
+        if (me && friend && mountain && !friend.disableEmailNotifications) {
+          sendAscentEmailNotification({
+            mountainName: mountain.name,
+            user: me.name,
+            userEmail: friend.email,
+            date: formatStringDate(date),
+          });
+        }
+        return await User.findOne({_id: friendId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  clearAscentNotification: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLID },
+      date: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any,
+                  {userId, mountainId, date}: {userId: string, mountainId: string, date: string}) {
+      try {
+        if (mountainId) {
+          await User.findOneAndUpdate({ _id: userId },
+            {$pull: { ascentNotifications: { mountain: mountainId, date } }},
+          );
+        } else {
+          await User.findOneAndUpdate({ _id: userId },
+            {$pull: { ascentNotifications: { date } }},
+          );
+        }
+        return await User.findOne({_id: userId});
       } catch (err) {
         return err;
       }
