@@ -8,16 +8,13 @@ import friendRequestEmailTemplate from './emailTemplates/friendRequestEmail';
 import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
 
 const transport = createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
+  service: 'Godaddy',
+  host: 'smtp.office365.com',
   secure: true,
+  port: 587,
   auth: {
-    type: 'OAuth2',
-    user: process.env.GMAIL_USERNAME,
-    clientId: process.env.GOOGLE_EMAIL_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_EMAIL_CLIENT_SECRET,
-    refreshToken: process.env.GOOGLE_EMAIL_CLIENT_REFRESH_TOKEN,
-    accessToken: process.env.GOOGLE_EMAIL_CLIENT_ACCESS_TOKEN,
+    user: process.env.GODADDY_USERNAME,
+    pass: process.env.GODADDY_PASSWORD,
   },
 });
 
@@ -27,16 +24,15 @@ export const sendAscentEmailNotification = (input: AscentTemplateContent) => {
   } = input;
   const firstName = user.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${user} marked you as hiking ${mountainName} on ${date}`,
     html: ascentEmailTemplate(input),
   };
   transport.sendMail(mailOptions, (error) => {
     if (error) {
-        console.error(error);
+      console.error(error);
     }
-    transport.close();
   });
 };
 
@@ -46,7 +42,7 @@ export const sendAscentInviteEmailNotification = (input: AscentTemplateContent) 
   } = input;
   const firstName = user.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${user} marked you as hiking ${mountainName} on ${date}`,
     html: ascentInviteEmailTemplate(input),
@@ -55,13 +51,12 @@ export const sendAscentInviteEmailNotification = (input: AscentTemplateContent) 
     if (error) {
       console.error(error);
     }
-    transport.close();
   });
 };
 
 export const sendWelcomeEmail = (userEmail: string) => {
   const mailOptions = {
-    from: `Kyle via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `Kyle via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `Welcome to Wilderlist!`,
     html: welcomeEmailTemplate(userEmail),
@@ -70,7 +65,6 @@ export const sendWelcomeEmail = (userEmail: string) => {
     if (error) {
       console.error(error);
     }
-    transport.close();
   });
 };
 
@@ -78,7 +72,7 @@ export const sendFriendRequestEmailNotification = (
   {userEmail, userName}: {userEmail: string, userName: string}) => {
   const firstName = userName.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${userName} has added you as a friend on Wilderlist`,
     html: friendRequestEmailTemplate({userName, userEmail}),
@@ -87,7 +81,6 @@ export const sendFriendRequestEmailNotification = (
     if (error) {
       console.error(error);
     }
-    transport.close();
   });
 };
 
@@ -95,7 +88,7 @@ export const sendAcceptFriendRequestEmailNotification = (
   {userEmail, userName, userId}: {userEmail: string, userName: string, userId: string}) => {
   const firstName = userName.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${userName} is now your friend on Wilderlist`,
     html: acceptFriendRequestEmailTemplate({userName, userEmail, userId}),
@@ -104,6 +97,5 @@ export const sendAcceptFriendRequestEmailNotification = (
     if (error) {
       console.error(error);
     }
-    transport.close();
   });
 };
