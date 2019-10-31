@@ -8,10 +8,16 @@ import friendRequestEmailTemplate from './emailTemplates/friendRequestEmail';
 import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
 
 const transport = createTransport({
-  service: 'Gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
+    type: 'OAuth2',
     user: process.env.GMAIL_USERNAME,
-    pass: process.env.GMAIL_PASSWORD,
+    clientId: process.env.GOOGLE_EMAIL_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_EMAIL_CLIENT_SECRET,
+    refreshToken: process.env.GOOGLE_EMAIL_CLIENT_REFRESH_TOKEN,
+    accessToken: process.env.GOOGLE_EMAIL_CLIENT_ACCESS_TOKEN,
   },
 });
 
@@ -28,8 +34,9 @@ export const sendAscentEmailNotification = (input: AscentTemplateContent) => {
   };
   transport.sendMail(mailOptions, (error) => {
     if (error) {
-      console.error(error);
+        console.error(error);
     }
+    transport.close();
   });
 };
 
@@ -48,6 +55,7 @@ export const sendAscentInviteEmailNotification = (input: AscentTemplateContent) 
     if (error) {
       console.error(error);
     }
+    transport.close();
   });
 };
 
@@ -62,6 +70,7 @@ export const sendWelcomeEmail = (userEmail: string) => {
     if (error) {
       console.error(error);
     }
+    transport.close();
   });
 };
 
@@ -78,6 +87,7 @@ export const sendFriendRequestEmailNotification = (
     if (error) {
       console.error(error);
     }
+    transport.close();
   });
 };
 
@@ -94,5 +104,6 @@ export const sendAcceptFriendRequestEmailNotification = (
     if (error) {
       console.error(error);
     }
+    transport.close();
   });
 };
