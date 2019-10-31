@@ -52,7 +52,6 @@ const HelpText = styled(HelpTextBase)`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 2rem;
   display: flex;
 `;
 
@@ -343,11 +342,21 @@ const ImportAscentsModal = (props: Props) => {
     confirmButton = null;
   }
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {getFluentString('global-text-value-modal-cancel')}
+      </CancelButton>
+      {confirmButton}
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'900px'}
       height={'auto'}
+      actions={actions}
     >
       <h2>{getFluentString('import-ascents-title')}</h2>
       <p
@@ -415,12 +424,6 @@ const ImportAscentsModal = (props: Props) => {
       </HelpTextContainer>
       {errorMessage}
       {successOutput}
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-cancel')}
-        </CancelButton>
-        {confirmButton}
-      </ButtonWrapper>
     </Modal>
   );
 };
