@@ -1,3 +1,7 @@
 .leaflet-popup-content-wrapper {
   text-align: center;
 }
+
+.leaflet-bottom, .leaflet-right {
+  z-index: 400;
+}
