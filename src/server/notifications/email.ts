@@ -8,10 +8,13 @@ import friendRequestEmailTemplate from './emailTemplates/friendRequestEmail';
 import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
 
 const transport = createTransport({
-  service: 'Gmail',
+  service: 'Godaddy',
+  host: 'smtp.office365.com',
+  secure: true,
+  port: 587,
   auth: {
-    user: process.env.GMAIL_USERNAME,
-    pass: process.env.GMAIL_PASSWORD,
+    user: process.env.GODADDY_USERNAME,
+    pass: process.env.GODADDY_PASSWORD,
   },
 });
 
@@ -21,7 +24,7 @@ export const sendAscentEmailNotification = (input: AscentTemplateContent) => {
   } = input;
   const firstName = user.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${user} marked you as hiking ${mountainName} on ${date}`,
     html: ascentEmailTemplate(input),
@@ -39,7 +42,7 @@ export const sendAscentInviteEmailNotification = (input: AscentTemplateContent) 
   } = input;
   const firstName = user.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${user} marked you as hiking ${mountainName} on ${date}`,
     html: ascentInviteEmailTemplate(input),
@@ -53,7 +56,7 @@ export const sendAscentInviteEmailNotification = (input: AscentTemplateContent) 
 
 export const sendWelcomeEmail = (userEmail: string) => {
   const mailOptions = {
-    from: `Kyle via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `Kyle via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `Welcome to Wilderlist!`,
     html: welcomeEmailTemplate(userEmail),
@@ -69,7 +72,7 @@ export const sendFriendRequestEmailNotification = (
   {userEmail, userName}: {userEmail: string, userName: string}) => {
   const firstName = userName.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${userName} has added you as a friend on Wilderlist`,
     html: friendRequestEmailTemplate({userName, userEmail}),
@@ -85,7 +88,7 @@ export const sendAcceptFriendRequestEmailNotification = (
   {userEmail, userName, userId}: {userEmail: string, userName: string, userId: string}) => {
   const firstName = userName.split(' ').shift();
   const mailOptions = {
-    from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    from: `${firstName} via Wilderlist <${process.env.GODADDY_USERNAME}>`,
     to: userEmail,
     subject: `${userName} is now your friend on Wilderlist`,
     html: acceptFriendRequestEmailTemplate({userName, userEmail, userId}),
