@@ -39,11 +39,18 @@ const SignUpModal = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const actions = (
+    <GhostButton onClick={onCancel}>
+      {getFluentString('global-text-value-modal-close')}
+    </GhostButton>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'400px'}
       height={'auto'}
+      actions={actions}
     >
       <Root>
         <Title>{text}</Title>
@@ -53,9 +60,6 @@ const SignUpModal = (props: Props) => {
             }}
             title={getFluentString('header-text-login-with-google')}
         />
-        <GhostButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-close')}
-        </GhostButton>
       </Root>
     </Modal>
   );

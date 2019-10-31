@@ -78,7 +78,6 @@ const DateInputContainer = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 1rem;
   display: flex;
   justify-content: flex-end;
 `;
@@ -769,11 +768,26 @@ const MountainCompletionModal = (props: Props) => {
     </FriendsList>
   ) : null;
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={closeEditMountainModalModal}>
+        {getFluentString('global-text-value-modal-cancel')}
+      </CancelButton>
+      <ButtonPrimary
+        onClick={() => validateAndAddMountainCompletion(editMountainId)}
+        disabled={isConfirmDisabled()}
+      >
+        {getFluentString('global-text-value-modal-mark-complete')}
+      </ButtonPrimary>
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={closeEditMountainModalModal}
       width={'500px'}
       height={'auto'}
+      actions={actions}
     >
       <TitleText>{title}</TitleText>
       <ColumnRoot>
@@ -815,17 +829,6 @@ const MountainCompletionModal = (props: Props) => {
       </ColumnRoot>
       {errorNote}
       {textNote}
-      <ButtonWrapper>
-        <CancelButton onClick={closeEditMountainModalModal}>
-          {getFluentString('global-text-value-modal-cancel')}
-        </CancelButton>
-        <ButtonPrimary
-          onClick={() => validateAndAddMountainCompletion(editMountainId)}
-          disabled={isConfirmDisabled()}
-        >
-          {getFluentString('global-text-value-modal-mark-complete')}
-        </ButtonPrimary>
-      </ButtonWrapper>
     </Modal>
   );
 };

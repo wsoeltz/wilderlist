@@ -115,19 +115,23 @@ const AreYouSureModal = (props: Props) => {
     </ForecastContainer>
   );
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {getFluentString('global-text-value-modal-close')}
+      </CancelButton>
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'400px'}
       height={'auto'}
+      actions={actions}
     >
       {todayContent}
       {tonightContent}
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-close')}
-        </CancelButton>
-      </ButtonWrapper>
     </Modal>
   );
 };
