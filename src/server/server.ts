@@ -5,6 +5,7 @@ import cookieSession from 'cookie-session';
 import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
+import { redirectToHTTPS } from 'express-http-to-https';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import googleAuth from './auth/google';
@@ -16,6 +17,8 @@ import notificationRoutes from './notifications';
 require('./auth/passport');
 
 const app = express();
+
+app.use(redirectToHTTPS([/localhost:(\d{4})/], undefined, 301));
 
 if (!process.env.COOKIE_KEY) {
   throw new Error('You must provide a COOKIE_KEY');

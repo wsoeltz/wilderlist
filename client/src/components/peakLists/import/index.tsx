@@ -70,7 +70,6 @@ const ExpectedDate = styled(OutputTitle)`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 2rem;
   display: flex;
 `;
 
@@ -565,11 +564,21 @@ const ImportAscentsModal = (props: Props) => {
       ? <SubmitButton onClick={onConfirm}>{getFluentString('global-text-value-submit')}</SubmitButton>
       : null;
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {getFluentString('global-text-value-modal-cancel')}
+      </CancelButton>
+      {submitBtn}
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'80%'}
       height={'auto'}
+      actions={actions}
     >
       <h2>{getFluentString('import-ascents-title')}</h2>
       <p>{getFluentString('import-ascents-para-1')}</p>
@@ -617,12 +626,6 @@ const ImportAscentsModal = (props: Props) => {
       {successMessage}
       {errorMessage}
       {table}
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-cancel')}
-        </CancelButton>
-        {submitBtn}
-      </ButtonWrapper>
     </Modal>
   );
 };
