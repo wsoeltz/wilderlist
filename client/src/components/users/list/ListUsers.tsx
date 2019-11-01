@@ -27,18 +27,17 @@ export interface UserDatum {
 }
 
 export interface FriendDatum {
-  user: {
-    id: User['id'],
-  };
+  user: UserDatum;
   status: FriendStatus;
 }
 
 interface Props {
-  userData: UserDatum[];
+  userData: UserDatum[] | null;
   currentUserId: string;
   friendsList: FriendDatum[];
   showCurrentUser: boolean;
   noResultsText: string;
+  noFriendsText: string;
   openInSidebar: boolean;
   sortByStatus: boolean;
 }
@@ -46,9 +45,12 @@ interface Props {
 const ListUsers = (props: Props) => {
   const {
     userData, currentUserId, showCurrentUser, friendsList, noResultsText,
-    openInSidebar, sortByStatus,
+    openInSidebar, sortByStatus, noFriendsText,
   } = props;
 
+  if (userData === null) {
+    return <NoResults dangerouslySetInnerHTML={{__html: noFriendsText}} />;
+  }
   if (userData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
