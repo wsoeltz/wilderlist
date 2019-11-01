@@ -255,6 +255,7 @@ const Dashboard = (props: Props) => {
           currentUserId={userId}
           friendsList={friends}
           noResultsText={''}
+          noFriendsText={''}
           openInSidebar={false}
           sortByStatus={true}
         />
