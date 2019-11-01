@@ -71,6 +71,30 @@ const SEARCH_USERS = gql`
       friends {
         user {
           id
+          name
+          profilePictureUrl
+          hideProfilePicture
+          peakLists {
+            id
+            shortName
+            type
+            mountains {
+              id
+            }
+            parent {
+              id
+              mountains {
+                id
+              }
+            }
+          }
+          mountains {
+            mountain {
+              id
+              name
+            }
+            dates
+          }
         }
         status
       }
@@ -182,14 +206,27 @@ const UserList = (props: Props) => {
     const noResultsText = getFluentString('global-text-value-no-users-found-for-term', {
       term: searchQuery,
     });
+    const noFriendsText = getFluentString('dashboard-empty-state-no-friends-text');
+    let userData: UserDatum[] | null;
+    if (searchQuery === '') {
+      const friendsData = friends.map(({user}) => user);
+      if (friendsData && friendsData.length) {
+        userData = friendsData;
+      } else {
+        userData = null;
+      }
+    } else {
+      userData = users;
+    }
     list = (
       <>
         <ListUsers
-          userData={users}
+          userData={userData}
           showCurrentUser={false}
           currentUserId={userId}
           friendsList={friends}
           noResultsText={noResultsText}
+          noFriendsText={noFriendsText}
           openInSidebar={true}
           sortByStatus={false}
         />
