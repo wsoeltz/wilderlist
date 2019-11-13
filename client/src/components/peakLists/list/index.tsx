@@ -13,6 +13,8 @@ import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,
+  ContentLeftSmall,
+  ContentRightLarge,
   ContentRightSmall,
   SearchContainer,
 } from '../../../styling/Grid';
@@ -171,6 +173,7 @@ export enum ViewMode {
   Compact = 'Compact',
 }
 
+const localStorageViewModeVariable = 'listPeakListLocalStorageViewModeVariable';
 const cardViewNPerPage = 15;
 const compactViewNPerPage = 50;
 
@@ -181,10 +184,17 @@ interface Props extends RouteComponentProps {
 const PeakListPage = (props: Props) => {
   const { userId, match, location, history } = props;
   const { id }: any = match.params;
-  const { query, page } = queryString.parse(location.search);
+  const { query, page, origin } = queryString.parse(location.search);
 
-  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Compact);
-  const [nPerPage, setNPerPage] = useState<number>(compactViewNPerPage);
+  const initialViewMode = ( (origin && origin === 'dashboard')
+    || localStorage.getItem(localStorageViewModeVariable) === ViewMode.Card)
+    ? ViewMode.Card : ViewMode.Compact;
+  const initialNPerPage = ( (origin && origin === 'dashboard')
+    || localStorage.getItem(localStorageViewModeVariable) === ViewMode.Card)
+    ? cardViewNPerPage : compactViewNPerPage;
+
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
+  const [nPerPage, setNPerPage] = useState<number>(initialNPerPage);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -203,12 +213,14 @@ const PeakListPage = (props: Props) => {
 
   const setViewToCard = () => {
     if (viewMode === ViewMode.Compact) {
+      localStorage.setItem(localStorageViewModeVariable, ViewMode.Card);
       setViewMode(ViewMode.Card);
       setNPerPage(cardViewNPerPage);
     }
   };
   const setViewToCompact = () => {
     if (viewMode === ViewMode.Card) {
+      localStorage.setItem(localStorageViewModeVariable, ViewMode.Compact);
       setViewMode(ViewMode.Compact);
       setNPerPage(compactViewNPerPage);
     }
@@ -354,9 +366,12 @@ const PeakListPage = (props: Props) => {
       )
     : ( <PeakListDetail userId={userId} id={id} />);
 
+  const ListContainer = viewMode === ViewMode.Card ? ContentLeftLarge : ContentLeftSmall;
+  const DetailContainer = viewMode === ViewMode.Card ? ContentRightSmall : ContentRightLarge;
+
   return (
     <>
-      <ContentLeftLarge>
+      <ListContainer>
         <SearchContainer>
           <SearchAndFilterContainer>
             <StandardSearch
@@ -382,12 +397,12 @@ const PeakListPage = (props: Props) => {
         <ContentBody ref={listContainerElm}>
           {list}
         </ContentBody>
-      </ContentLeftLarge>
-      <ContentRightSmall>
+      </ListContainer>
+      <DetailContainer>
         <ContentBody>
           {listDetail}
         </ContentBody>
-      </ContentRightSmall>
+      </DetailContainer>
     </>
   );
 };
