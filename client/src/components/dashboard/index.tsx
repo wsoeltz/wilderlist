@@ -154,7 +154,7 @@ const Dashboard = (props: Props) => {
   const { userId, history } = props;
 
   const searchPeakLists = (value: string) => {
-    const url = searchListDetailLink('search') + '?query=' + value + '&page=' + 1;
+    const url = searchListDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
     history.push(url);
   };
   const searchFriends = (value: string) => {
