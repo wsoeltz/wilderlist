@@ -30,10 +30,10 @@ import { UserContext } from '../../App';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { formatDate, getLatestAscent, getType } from '../Utils';
-import { PeakListDatum } from './ListPeakLists';
+import { CardPeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
-const GET_STATES_AND_REGIONS = gql`
+export const GET_STATES_AND_REGIONS = gql`
   query getStatesAndRegions($id: ID!) {
     peakList(id: $id) {
       id
@@ -70,7 +70,7 @@ interface StateDatum {
   regions: RegionDatum[];
 }
 
-interface SuccessResponse {
+export interface SuccessResponse {
   peakList: null | {
     id: PeakList['id'];
     mountains: null | Array<{
@@ -80,7 +80,7 @@ interface SuccessResponse {
   };
 }
 
-interface Variables {
+export interface Variables {
   id: string;
 }
 
@@ -229,7 +229,7 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
 };
 
 interface Props {
-  peakList: PeakListDatum;
+  peakList: CardPeakListDatum;
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;

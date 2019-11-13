@@ -124,6 +124,30 @@ export const Card = styled.div`
   }
 `;
 
+export const CardLinkWrapper = styled(DynamicLink)`
+  display: block;
+  color: inherit;
+  text-decoration: inherit;
+
+  &:hover {
+    color: inherit;
+  }
+`;
+
+export const CardTitle = styled.h1`
+  font-size: 1.3rem;
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+`;
+
+export const CardSubtitle = styled.div`
+  color: ${lightBaseColor};
+  margin: 0.4rem 0;
+  display: flex;
+  justify-content: space-between;
+  font-weight: ${semiBoldFontBoldWeight};
+`;
+
 export const borderRadius = 6; // in px
 
 const ButtonBase = styled.button`
