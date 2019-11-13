@@ -17,7 +17,7 @@ import {
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { completedPeaks } from '../Utils';
-import PeakListCard, {MountainList} from './PeakListCard';
+import PeakListCard from './PeakListCard';
 import PeakListTrophy from './PeakListTrophy';
 
 const SectionTitle = styled.h3`
@@ -91,7 +91,7 @@ const ListPeakLists = (props: Props) => {
   const trophies: Array<React.ReactElement<any> | null> = [];
   const peakLists = peakListData.map(peakList => {
     const { parent, type } = peakList;
-    let mountains: MountainList[];
+    let mountains: Array<{id: Mountain['id']}>;
     if (parent !== null && parent.mountains !== null) {
       mountains = parent.mountains;
     } else if (peakList.mountains !== null) {

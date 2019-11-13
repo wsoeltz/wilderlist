@@ -45,33 +45,11 @@ const SEARCH_PEAK_LISTS = gql`
       type
       mountains {
         id
-        state {
-          id
-          name
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
       }
       parent {
         id
         mountains {
           id
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
         }
       }
     }
@@ -155,7 +133,7 @@ const PeakListPage = (props: Props) => {
     const url = searchListDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
-  const nPerPage = 5;
+  const nPerPage = 15;
 
   useEffect(() => {
     if (typeof query === 'string') {
