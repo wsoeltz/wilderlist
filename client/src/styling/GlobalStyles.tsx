@@ -7,7 +7,9 @@ import {
   faChevronLeft,
   faChevronRight,
   faEnvelope,
+  faList,
   faSearch,
+  faThList,
 } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components';
 import {
@@ -21,6 +23,7 @@ import {
 library.add(
   faCaretDown, faCaretUp, faSearch, faCalendarAlt,
   faCheck, faEnvelope, faChevronLeft, faChevronRight,
+  faList, faThList,
 );
 
 const GlobalStyles = createGlobalStyle`

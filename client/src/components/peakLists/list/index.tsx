@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
@@ -19,7 +20,8 @@ import {
   SearchContainer,
 } from '../../../styling/Grid';
 import {
-  ButtonPrimary,
+  GhostButton,
+  lightBlue,
   Next,
   PaginationContainer,
   PlaceholderText,
@@ -38,6 +40,22 @@ const SearchAndFilterContainer = styled.div`
 
 const ViewModeContainer = styled.div`
   display: flex;
+`;
+
+const ViewModeButton = styled(GhostButton)`
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &:first-child {
+    margin-left: 0.5rem;
+  }
+`;
+
+const ListIcon = styled(FontAwesomeIcon)`
+  font-size: 1.1rem;
 `;
 
 const SEARCH_PEAK_LISTS = gql`
@@ -381,16 +399,24 @@ const PeakListPage = (props: Props) => {
               initialQuery={initialSearchQuery}
             />
             <ViewModeContainer>
-              <ButtonPrimary
+              <ViewModeButton
                 onClick={setViewToCard}
+                style={{
+                  backgroundColor: viewMode === ViewMode.Card ? lightBlue : undefined,
+                }}
               >
-                Card
-              </ButtonPrimary>
-              <ButtonPrimary
+                {getFluentString('global-text-value-detail-view')}
+                <ListIcon icon='th-list' />
+              </ViewModeButton>
+              <ViewModeButton
                 onClick={setViewToCompact}
+                style={{
+                  backgroundColor: viewMode === ViewMode.Compact ? lightBlue : undefined,
+                }}
               >
-                List
-              </ButtonPrimary>
+                {getFluentString('global-text-value-list-view')}
+                <ListIcon icon='list' />
+              </ViewModeButton>
             </ViewModeContainer>
           </SearchAndFilterContainer>
         </SearchContainer>
