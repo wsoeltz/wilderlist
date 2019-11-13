@@ -4,7 +4,7 @@ import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import { tertiaryColor } from '../../../styling/styleUtils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { PeakListDatum } from './ListPeakLists';
+import { CardPeakListDatum } from './ListPeakLists';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -35,7 +35,7 @@ const Root = styled.div`
 `;
 
 interface Props {
-  peakList: PeakListDatum;
+  peakList: CardPeakListDatum;
 }
 
 const PeakListCard = ({peakList}: Props) => {
