@@ -26,6 +26,7 @@ import {
   PaginationContainer,
   PlaceholderText,
   Prev,
+  ButtonTertiary,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
@@ -35,7 +36,39 @@ import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPe
 
 const SearchAndFilterContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 100px 1fr auto;
+`;
+
+const LocationFilter = styled.div`
+  position: relative;
+`;
+
+const SelectButton = styled(ButtonTertiary)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  padding-right: 0;
+`;
+
+const LocationText = styled.div`
+  margin-left: 0.4rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const MapIcon = styled(FontAwesomeIcon)`
+  font-size: 1rem;
+  opacity: 0.5;
 `;
 
 const ViewModeContainer = styled.div`
@@ -392,6 +425,12 @@ const PeakListPage = (props: Props) => {
       <ListContainer>
         <SearchContainer>
           <SearchAndFilterContainer>
+            <LocationFilter>
+              <SelectButton>
+                <MapIcon icon='map-marker-alt' />
+                <LocationText>Everywhere</LocationText>
+              </SelectButton>
+            </LocationFilter>
             <StandardSearch
               placeholder='Search lists'
               setSearchQuery={searchPeakLists}

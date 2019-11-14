@@ -10,6 +10,7 @@ export interface State {
   abbreviation: string;
   regions: Region[];
   mountains: Mountain[];
+  peakLists: PeakList[] | null;
 }
 
 export interface Mountain {
@@ -40,6 +41,7 @@ export interface PeakList {
   users: User[];
   numUsers: number;
   searchString: string;
+  states: State[] | null;
 }
 
 export enum PermissionTypes {

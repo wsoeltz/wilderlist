@@ -9,6 +9,7 @@ import {
 import mongoose, { Schema } from 'mongoose';
 import { PeakList as IPeakList } from '../../graphQLTypes';
 import MountainType from './mountainType';
+import StateType from './stateType';
 import UserType from './userType';
 
 type PeakListSchemaType = mongoose.Document & IPeakList;
@@ -30,6 +31,10 @@ const PeakListSchema = new Schema({
   numUsers: { type: Number, required: true },
   parent: { type: Schema.Types.ObjectId },
   searchString: { type: String, required: true },
+  states: [{
+    type: Schema.Types.ObjectId,
+    ref: 'state',
+  }],
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -95,6 +100,16 @@ const PeakListType: any = new GraphQLObjectType({
       },
     },
     searchString: { type: GraphQLString },
+    states:  {
+      type: new GraphQLList(StateType),
+      async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
+        try {
+          return await stateLoader.loadMany(parentValue.states);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 

@@ -9,6 +9,7 @@ import { State as IState } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
 import { Region } from '../queryTypes/regionType';
+import { PeakList } from '../queryTypes/peakListType';
 import StateType, { State } from '../queryTypes/stateType';
 
 const stateMutations: any = {
@@ -47,6 +48,7 @@ const stateMutations: any = {
           { state: null }, function(error, model) {
             if (error) { console.error(error); } } );
         await removeConnections(State, id, 'regions', Region, 'states');
+        await removeConnections(State, id, 'peakLists', PeakList, 'states');
         return State.findByIdAndDelete(id);
       } catch (err) {
         return err;
