@@ -5,10 +5,14 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { Mountain as IMountain } from '../../graphQLTypes';
-import { PeakList as IPeakList } from '../../graphQLTypes';
+import {
+  Mountain as IMountain,
+  PeakList as IPeakList,
+  State as IState,
+} from '../../graphQLTypes';
 import { getType, removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
+import { State } from '../queryTypes/stateType';
 import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
 import { User } from '../queryTypes/userType';
 
@@ -18,6 +22,7 @@ interface AddPeakListVariables {
   type: IPeakList['type'];
   mountains: IMountain[];
   parent: IPeakList;
+  states: IState[];
 }
 
 const peakListMutations: any = {
@@ -28,11 +33,12 @@ const peakListMutations: any = {
       shortName: { type: GraphQLNonNull(GraphQLString) },
       type: {type: GraphQLNonNull(PeakListVariants) },
       mountains: { type: new GraphQLList(GraphQLID)},
+      states: { type: new GraphQLList(GraphQLID)},
       parent: {type: GraphQLID },
     },
     resolve(_unused: any, input: AddPeakListVariables) {
       const {
-        name, shortName, type, mountains, parent,
+        name, shortName, type, mountains, parent, states,
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
@@ -40,7 +46,7 @@ const peakListMutations: any = {
         const newPeakList = new PeakList({
           name, shortName, mountains,
           type, parent, numUsers: 0,
-          searchString,
+          searchString, states,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -48,6 +54,19 @@ const peakListMutations: any = {
               { $push: {lists: newPeakList.id} },
               function(err, model) {
                 PeakList.update({ $push: { mountains: id } });
+                if (err) {
+                  console.error(err);
+                }
+              },
+            );
+          });
+        }
+        if (states !== undefined) {
+          states.forEach((id) => {
+            State.findByIdAndUpdate(id,
+              { $push: {peakLists: newPeakList.id} },
+              function(err, model) {
+                PeakList.update({ $push: { states: id } });
                 if (err) {
                   console.error(err);
                 }
@@ -68,6 +87,7 @@ const peakListMutations: any = {
       try {
         await removeConnections(PeakList, id, 'mountains', Mountain, 'lists');
         await removeConnections(PeakList, id, 'users', User, 'peakLists');
+        await removeConnections(PeakList, id, 'states', State, 'peakLists');
         return PeakList.findByIdAndDelete(id);
       } catch (err) {
         return err;
@@ -146,6 +166,84 @@ const peakListMutations: any = {
             },
           );
           return list;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addStateToPeakList: {
+    type: PeakListType,
+    args: {
+      listId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string}) {
+      try {
+        const list = await PeakList.findById(listId);
+        const state = await State.findById(stateId);
+        if (list !== null && state !== null) {
+          await State.findOneAndUpdate({
+              _id: stateId,
+              peakLists: { $ne: listId },
+            },
+            { $push: {peakLists: listId} },
+            function(err: any, model: any) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await PeakList.findOneAndUpdate({
+              _id: listId,
+              states: { $ne: stateId },
+            },
+            { $push: {states: stateId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return await PeakList.findById(listId);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeStateFromPeakList: {
+    type: PeakListType,
+    args: {
+      listId: { type: GraphQLNonNull(GraphQLID) },
+      stateId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string}) {
+      try {
+        const list = await PeakList.findById(listId);
+        const state = await State.findById(stateId);
+        if (list !== null && state !== null) {
+          await State.findOneAndUpdate({
+              _id: stateId,
+            },
+            { $pull: {peakLists: listId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await PeakList.findOneAndUpdate({
+              _id: listId,
+            },
+            { $pull: {states: stateId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return await PeakList.findById(listId);
         }
       } catch (err) {
         return err;

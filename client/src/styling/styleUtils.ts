@@ -183,6 +183,15 @@ export const ButtonSecondary = styled(ButtonBase)`
   }
 `;
 
+export const ButtonTertiary = styled(ButtonBase)`
+  color: ${baseColor};
+    background-color: ${tertiaryColor};
+
+  &:hover {
+  background-color: ${lightBorderColor};
+  }
+`;
+
 export const ButtonWarning = styled(ButtonBase)`
   background-color: ${warningColor};
 

@@ -9,7 +9,7 @@ import {
   ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
-import { PeakList, PeakListVariants } from '../../types/graphQLTypes';
+import { PeakList, PeakListVariants, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AddPeakList from './peakLists/AddPeakList';
@@ -29,6 +29,10 @@ export const GET_PEAK_LISTS = gql`
         name
         type
       }
+      states {
+        id
+        name
+      }
     }
   }
 `;
@@ -39,6 +43,7 @@ const ADD_PEAK_LIST = gql`
     $shortName: String!,
     $type: PeakListVariants!,
     $mountains: [ID],
+    $states: [ID],
     $parent: ID,
   ) {
     addPeakList(
@@ -46,6 +51,7 @@ const ADD_PEAK_LIST = gql`
       shortName: $shortName,
       type: $type,
       mountains: $mountains,
+      states: $states,
       parent: $parent,
     ) {
       id
@@ -54,6 +60,10 @@ const ADD_PEAK_LIST = gql`
       type
       searchString
       mountains {
+        id
+        name
+      }
+      states {
         id
         name
       }
@@ -70,6 +80,7 @@ export interface AddPeakListVariables {
   shortName: string;
   type: PeakListVariants;
   mountains: string[];
+  states: string[];
   parent: string | null;
 }
 
@@ -92,6 +103,10 @@ export interface PeakListDatum {
     name: PeakList['name'];
     type: PeakList['type'];
   };
+  states: Array<{
+    id: State['id'];
+    name: State['name'];
+  }>;
 }
 
 export interface SuccessResponse {
