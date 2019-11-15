@@ -188,16 +188,17 @@ export const BigText = styled.span`
 `;
 
 export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
+  const sortedStates = sortBy(statesArray, ['name']);
   // If there are 3 or less states, just show the states
-  if (statesArray.length === 1) {
-    return statesArray[0].name;
-  } else if (statesArray.length === 2) {
-    return statesArray[0].name + ' & ' + statesArray[1].name;
-  } else if (statesArray.length === 3) {
-    return statesArray[0].name + ', ' + statesArray[1].name + ' & ' + statesArray[2].name;
-  } else if (statesArray.length > 2) {
+  if (sortedStates.length === 1) {
+    return sortedStates[0].name;
+  } else if (sortedStates.length === 2) {
+    return sortedStates[0].name + ' & ' + sortedStates[1].name;
+  } else if (sortedStates.length === 3) {
+    return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
+  } else if (sortedStates.length > 2) {
     const regionsArray: RegionDatum[] = [];
-    statesArray.forEach(({regions}) => {
+    sortedStates.forEach(({regions}) => {
       regions.forEach(region => {
         if (regionsArray.filter(({id}) => id === region.id).length === 0) {
           regionsArray.push(region);
@@ -211,7 +212,7 @@ export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: Ge
       return regionsArray[0].name;
     } else {
       const inclusiveRegions = regionsArray.filter(
-        (region) => statesArray.every(({regions}) => regions.includes(region)));
+        (region) => sortedStates.every(({regions}) => regions.includes(region)));
       if (inclusiveRegions.length === 1) {
         return inclusiveRegions[0].name;
       } else if (inclusiveRegions.length > 1) {
