@@ -12,8 +12,8 @@ import {
 } from '../../graphQLTypes';
 import { getType, removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
-import { State } from '../queryTypes/stateType';
 import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
+import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
 
 interface AddPeakListVariables {

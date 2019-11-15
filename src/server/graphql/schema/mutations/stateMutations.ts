@@ -8,8 +8,8 @@ import {
 import { State as IState } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
-import { Region } from '../queryTypes/regionType';
 import { PeakList } from '../queryTypes/peakListType';
+import { Region } from '../queryTypes/regionType';
 import StateType, { State } from '../queryTypes/stateType';
 
 const stateMutations: any = {

@@ -20,13 +20,13 @@ import {
   SearchContainer,
 } from '../../../styling/Grid';
 import {
+  ButtonTertiary,
   GhostButton,
   lightBlue,
   Next,
   PaginationContainer,
   PlaceholderText,
   Prev,
-  ButtonTertiary,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';

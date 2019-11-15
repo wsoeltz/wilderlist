@@ -176,14 +176,14 @@ const AddPeakList = (props: Props) => {
             } else {
               return false;
             }
-          })
+          }),
         );
       }
     }
   };
 
-    const sortedMountains = sortBy(data.mountains, ['name']);
-    const mountainList = sortedMountains.map(mountain => {
+  const sortedMountains = sortBy(data.mountains, ['name']);
+  const mountainList = sortedMountains.map(mountain => {
       if (mountain.name.toLowerCase().includes(mountainSearchQuery.toLowerCase())) {
         return (
           <Checkbox
@@ -197,7 +197,7 @@ const AddPeakList = (props: Props) => {
         return null;
       }
     });
-    mountains = <>{mountainList}</>;
+  mountains = <>{mountainList}</>;
   } else {
     mountains = null;
   }
