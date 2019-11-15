@@ -67,6 +67,7 @@ global-text-value-open-for-winter = Open for Winter
 global-text-value-open-for = Open for
 global-text-value-open-for-every-month-except = Open for every month except
 global-text-value-open-for-every-season-except = Open for every season except
+global-text-value-complete = Complete
 global-text-value-completed-on = Completed on
 global-text-value-completed-in-every-month = Completed in every month
 global-text-value-completed-in-every-season = Completed in every season

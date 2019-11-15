@@ -146,6 +146,7 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
     ) {
       id
       name
+      shortName
       type
       parent {
         id

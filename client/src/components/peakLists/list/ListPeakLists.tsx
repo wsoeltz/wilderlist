@@ -12,8 +12,6 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
-  Region,
-  State,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { completedPeaks } from '../Utils';
@@ -38,17 +36,6 @@ const TrophyContainer = styled.div`
 
 interface MountainDatum {
   id: Mountain['id'];
-  state: {
-    id: State['id'];
-    name: State['name'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-      states: Array<{
-        id: State['id'],
-      }>
-    }>
-  };
 }
 
 export interface CardPeakListDatum {
@@ -66,6 +53,7 @@ export interface CardPeakListDatum {
 export interface CompactPeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
+  shortName: PeakList['shortName'];
   type: PeakList['type'];
   parent: {
     id: PeakList['id'];
@@ -205,6 +193,7 @@ const ListPeakLists = (props: Props) => {
           active={active}
           listAction={listAction}
           actionText={actionText}
+          completedAscents={completedAscents}
         />
       );
     });

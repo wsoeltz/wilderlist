@@ -12,19 +12,35 @@ import {
 } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  Card,
+  Card as CardBase,
   CardLinkWrapper,
   CardSubtitle,
   CardTitle,
 } from '../../../styling/styleUtils';
+import { getColorSetFromVariant } from '../../../styling/styleUtils';
+import {
+  CompletedMountain,
+  Mountain,
+  PeakListVariants,
+ } from '../../../types/graphQLTypes';
+import {
+  failIfValidOrNonExhaustive,
+  roundPercentToSingleDecimal,
+} from '../../../Utils';
 import { getType } from '../Utils';
+import { completedPeaks } from '../Utils';
 import { CompactPeakListDatum } from './ListPeakLists';
 import {
   GET_STATES_AND_REGIONS,
   getStatesOrRegion,
+  StateDatum,
   SuccessResponse,
   Variables,
 } from './PeakListCard';
+
+const Card = styled(CardBase)`
+  border-left-width: 8px;
+`;
 
 const SubtleText = styled.div`
   text-transform: uppercase;
@@ -37,16 +53,24 @@ interface Props {
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
+  completedAscents: CompletedMountain[];
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, type, parent},
-    active, listAction, actionText,
+    peakList: {id, name, shortName, type, parent},
+    active, listAction, actionText, completedAscents,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const actionButtonOnClick = (e: React.SyntheticEvent) => {
+    preventNavigation(e);
+    if (listAction !== null) {
+      listAction(id);
+    }
+  };
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
     variables: {id: parent ? parent.id : id} });
@@ -55,42 +79,72 @@ const PeakListCard = (props: Props) => {
     console.error(error);
   }
 
-  const mountainList =
-    loading === false && data !== undefined && data.peakList && data.peakList.mountains
-      ? data.peakList.mountains : [];
-
-  const actionButtonOnClick = (e: React.SyntheticEvent) => {
-    preventNavigation(e);
-    if (listAction !== null) {
-      listAction(id);
+  let statesArray: StateDatum[] = [];
+  let cornerContent: React.ReactElement<any> | null;
+  if (loading === false && data !== undefined && data.peakList) {
+    const { peakList } = data;
+    if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
+      statesArray = [...peakList.parent.states];
+    } else if (peakList.states && peakList.states.length) {
+      statesArray = [...peakList.states];
     }
-  };
-  const actionButton = active === false && listAction !== null
-    ? (
+
+    if (active === true) {
+      let mountains: Array<{id: Mountain['id']}>;
+      if (peakList.parent !== null && peakList.parent.mountains !== null) {
+        mountains = peakList.parent.mountains;
+      } else if (peakList.mountains !== null) {
+        mountains = peakList.mountains;
+      } else {
+        mountains = [];
+      }
+
+      const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
+      let totalRequiredAscents: number;
+      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+        totalRequiredAscents = mountains.length;
+      } else if (type === PeakListVariants.fourSeason) {
+        totalRequiredAscents = mountains.length * 4;
+      } else if (type === PeakListVariants.grid) {
+        totalRequiredAscents = mountains.length * 12;
+      } else {
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+        totalRequiredAscents = 0;
+      }
+
+      const percentComplete = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
+
+      cornerContent = (
+        <SubtleText>
+          {percentComplete}% {getFluentString('global-text-value-complete')}
+        </SubtleText>
+      );
+    } else {
+      cornerContent = (
         <ButtonPrimary onClick={actionButtonOnClick}>
           {actionText}
         </ButtonPrimary>
-      ) : (
-      <SubtleText>
-        List Active
-      </SubtleText>
-    );
+      );
+    }
+  } else {
+    cornerContent = null;
+  }
 
   return (
       <CardLinkWrapper
         mobileURL={listDetailWithMountainDetailLink(id, 'none')}
         desktopURL={searchListDetailLink(id)}
       >
-        <Card>
+        <Card style={{borderLeftColor: getColorSetFromVariant(type).tertiary}}>
           <CardTitle>
-            {name}{getType(type)}
+            {shortName} - {name}{getType(type)}
           </CardTitle>
           <CardSubtitle>
             <div>
-              {getStatesOrRegion(mountainList, getFluentString)}
+              {getStatesOrRegion(statesArray, getFluentString)}
             </div>
             <div>
-              {actionButton}
+              {cornerContent}
             </div>
           </CardSubtitle>
         </Card>
