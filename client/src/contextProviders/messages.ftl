@@ -41,6 +41,7 @@ global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
 global-text-value-location = Location
+global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Ascent Dates
 global-text-value-done = Done
 global-text-value-today = Today
