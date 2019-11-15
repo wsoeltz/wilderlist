@@ -8,9 +8,9 @@ import {
   faChevronRight,
   faEnvelope,
   faList,
+  faMapMarkerAlt,
   faSearch,
   faThList,
-  faMapMarkerAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components';
 import {
