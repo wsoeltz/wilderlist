@@ -33,14 +33,11 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
+import LocationFilter from './LocationFilter';
 
 const SearchAndFilterContainer = styled.div`
   display: grid;
   grid-template-columns: 100px 1fr auto;
-`;
-
-const LocationFilter = styled.div`
-  position: relative;
 `;
 
 const SelectButton = styled(ButtonTertiary)`
@@ -249,6 +246,8 @@ const PeakListPage = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [locationSearchValue, setLocationSearchValue] = useState<string>('Everywhere');
+
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
@@ -425,10 +424,12 @@ const PeakListPage = (props: Props) => {
       <ListContainer>
         <SearchContainer>
           <SearchAndFilterContainer>
-            <LocationFilter>
+            <LocationFilter
+              changeLocation={setLocationSearchValue}
+            >
               <SelectButton>
                 <MapIcon icon='map-marker-alt' />
-                <LocationText>Everywhere</LocationText>
+                <LocationText>{locationSearchValue}</LocationText>
               </SelectButton>
             </LocationFilter>
             <StandardSearch
