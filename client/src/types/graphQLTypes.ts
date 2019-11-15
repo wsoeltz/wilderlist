@@ -42,6 +42,7 @@ export interface PeakList {
   numUsers: number;
   searchString: string;
   states: State[] | null;
+  children: PeakList[] | null;
 }
 
 export enum PermissionTypes {

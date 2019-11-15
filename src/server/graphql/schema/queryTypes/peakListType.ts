@@ -110,6 +110,16 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    children:  {
+      type: new GraphQLList(PeakListType),
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          return PeakList.find({ parent: parentValue.id });
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 
