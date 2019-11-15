@@ -12,6 +12,7 @@ import Header from '../detail/Header';
 import {
   MountainDatum,
   PeakListDatum,
+  StateDatum,
 } from '../detail/PeakListDetail';
 import ComparisonTable from './ComparisonTable';
 
@@ -22,13 +23,27 @@ const GET_PEAK_LIST = gql`
       name
       shortName
       type
+      states {
+        id
+        name
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
       mountains {
         id
         name
         latitude
         longitude
         elevation
-        state {
+      }
+      parent {
+        id
+        states {
           id
           name
           regions {
@@ -39,26 +54,12 @@ const GET_PEAK_LIST = gql`
             }
           }
         }
-      }
-      parent {
-        id
         mountains {
           id
           name
           latitude
           longitude
           elevation
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
         }
       }
     }
@@ -186,6 +187,13 @@ const ComparePeakListPage = (props: Props) => {
       }
       const userCompletedAscents = user.mountains !== null ? user.mountains : [];
       const myCompletedAscents = me.mountains !== null ? me.mountains : [];
+      let statesArray: StateDatum[] = [];
+      if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
+        statesArray = [...peakList.parent.states];
+      } else if (peakList.states && peakList.states.length) {
+        statesArray = [...peakList.states];
+      }
+
       return (
         <>
           <Header
@@ -195,6 +203,7 @@ const ComparePeakListPage = (props: Props) => {
             completedAscents={myCompletedAscents}
             comparisonUser={user}
             comparisonAscents={userCompletedAscents}
+            statesArray={statesArray}
           />
           <ComparisonTable
             user={user}

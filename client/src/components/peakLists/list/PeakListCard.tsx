@@ -37,9 +37,23 @@ export const GET_STATES_AND_REGIONS = gql`
   query getStatesAndRegions($id: ID!) {
     peakList(id: $id) {
       id
+      states {
+        id
+        name
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
       mountains {
         id
-        state {
+      }
+      parent {
+        id
+        states {
           id
           name
           regions {
@@ -47,9 +61,11 @@ export const GET_STATES_AND_REGIONS = gql`
             name
             states {
               id
-              name
             }
           }
+        }
+        mountains {
+          id
         }
       }
     }
@@ -64,7 +80,7 @@ interface RegionDatum {
   }>;
 }
 
-interface StateDatum {
+export interface StateDatum {
   id: State['id'];
   name: State['name'];
   regions: RegionDatum[];
@@ -73,10 +89,17 @@ interface StateDatum {
 export interface SuccessResponse {
   peakList: null | {
     id: PeakList['id'];
+    states: null | StateDatum[];
     mountains: null | Array<{
       id: PeakList['id'];
-      state: null | StateDatum;
     }>
+    parent: null | {
+      id: PeakList['id'];
+      states: null | StateDatum[];
+      mountains: null | Array<{
+        id: PeakList['id'];
+      }>
+    }
   };
 }
 
@@ -164,22 +187,8 @@ export const BigText = styled.span`
   font-weight: ${boldFontWeight};
 `;
 
-interface MountainList {
-  id: Mountain['id'];
-  state: null | StateDatum;
-}
-
-// export const getStatesOrRegion = () => {
-export const getStatesOrRegion = (mountains: MountainList[], getFluentString: GetString) => {
+export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
   // If there are 3 or less states, just show the states
-  const statesArray: StateDatum[] = [];
-  mountains.forEach(({state}) => {
-    if (state) {
-      if (statesArray.filter(({id}) => id === state.id).length === 0) {
-        statesArray.push(state);
-      }
-    }
-  });
   if (statesArray.length === 1) {
     return statesArray[0].name;
   } else if (statesArray.length === 2) {
@@ -259,10 +268,6 @@ const PeakListCard = (props: Props) => {
     console.error(error);
   }
 
-  const mountainList =
-    loading === false && data !== undefined && data.peakList && data.peakList.mountains
-      ? data.peakList.mountains : [];
-
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
     if (listAction !== null) {
@@ -308,13 +313,22 @@ const PeakListCard = (props: Props) => {
       </>
     );
   } else {
+
+    let statesArray: StateDatum[] = [];
+    if (loading === false && data !== undefined && data.peakList) {
+      if (data.peakList.parent && data.peakList.parent.states && data.peakList.parent.states.length) {
+        statesArray = [...data.peakList.parent.states];
+      } else if (data.peakList.states && data.peakList.states.length) {
+        statesArray = [...data.peakList.states];
+      }
+    }
     listInfoContent = (
       <>
         <span>
           <BigText>{totalRequiredAscents}</BigText>
           {getFluentString('peak-list-text-total-ascents')}
         </span>
-        <TextRight>{getStatesOrRegion(mountainList, getFluentString)}</TextRight>
+        <TextRight>{getStatesOrRegion(statesArray, getFluentString)}</TextRight>
       </>
     );
   }
