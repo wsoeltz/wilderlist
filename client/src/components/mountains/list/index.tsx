@@ -21,21 +21,31 @@ import {
   PlaceholderText,
   Prev,
 } from '../../../styling/styleUtils';
+import { State } from '../../../types/graphQLTypes';
+import {
+  LocationText,
+  MapIcon,
+  SearchAndFilterContainer,
+  SelectButton,
+} from '../../peakLists/list';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, { MountainDatum } from './ListMountains';
+import LocationFilter from './LocationFilter';
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
+    $state: ID,
   ) {
     mountains: mountainSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      state: $state,
     ) {
       id
       name
@@ -56,6 +66,7 @@ interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
+  state: string | null;
 }
 
 interface Props extends RouteComponentProps {
@@ -70,6 +81,9 @@ const MountainSearchPage = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [locationSearchValue, setLocationSearchValue] = useState<string>('Everywhere');
+  const [selectedState, setSelectedState] = useState<State['id'] | null>(null);
+
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
@@ -108,7 +122,7 @@ const MountainSearchPage = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage },
+    variables: { searchQuery, pageNumber, nPerPage, state: selectedState },
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
@@ -185,12 +199,23 @@ const MountainSearchPage = (props: Props) => {
     <>
       <ContentLeftSmall>
         <SearchContainer>
-          <StandardSearch
-            placeholder='Search mountains'
-            setSearchQuery={searchMountains}
-            focusOnMount={true}
-            initialQuery={initialSearchQuery}
-          />
+          <SearchAndFilterContainer>
+            <LocationFilter
+              changeLocation={setLocationSearchValue}
+              setSelectedState={setSelectedState}
+            >
+              <SelectButton>
+                <MapIcon icon='map-marker-alt' />
+                <LocationText>{locationSearchValue}</LocationText>
+              </SelectButton>
+            </LocationFilter>
+            <StandardSearch
+              placeholder='Search mountains'
+              setSearchQuery={searchMountains}
+              focusOnMount={true}
+              initialQuery={initialSearchQuery}
+            />
+          </SearchAndFilterContainer>
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}

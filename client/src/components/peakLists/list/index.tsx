@@ -36,12 +36,12 @@ import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
 import LocationFilter from './LocationFilter';
 
-const SearchAndFilterContainer = styled.div`
+export const SearchAndFilterContainer = styled.div`
   display: grid;
   grid-template-columns: 100px 1fr auto;
 `;
 
-const SelectButton = styled(ButtonTertiary)`
+export const SelectButton = styled(ButtonTertiary)`
   position: absolute;
   top: 0;
   left: 0;
@@ -57,14 +57,14 @@ const SelectButton = styled(ButtonTertiary)`
   padding-right: 0;
 `;
 
-const LocationText = styled.div`
+export const LocationText = styled.div`
   margin-left: 0.4rem;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
-const MapIcon = styled(FontAwesomeIcon)`
+export const MapIcon = styled(FontAwesomeIcon)`
   font-size: 1rem;
   opacity: 0.5;
 `;
