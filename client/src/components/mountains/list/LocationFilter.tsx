@@ -3,70 +3,32 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { sortBy } from 'lodash';
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  ButtonTertiary,
-  lightBorderColor,
   PlaceholderText,
-  tertiaryColor,
 } from '../../../styling/styleUtils';
-import { PeakList, State } from '../../../types/graphQLTypes';
+import { Mountain, State } from '../../../types/graphQLTypes';
+import {
+  Button,
+  DropdownWrapper,
+  HorizontalRule,
+  ListItem,
+  LoadingSpinnerWrapper,
+  Root,
+} from '../../peakLists/list/LocationFilter';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 
-export const Root = styled.div`
-  position: relative;
-  height: 100%;
-`;
-
-export const Button = styled.div`
-  height: 100%;
-`;
-
-export const LoadingSpinnerWrapper = styled.div`
-  padding: 1rem;
-`;
-
-export const DropdownWrapper = styled.div`
-  position: absolute;
-  top: 100%;
-  width: 200px;
-  background-color: ${tertiaryColor};
-  z-index: 100;
-  border: 1px solid ${lightBorderColor};
-  border-radius: 4px;
-  max-height: 200px;
-  overflow: auto;
-`;
-
-export const ListItem = styled(ButtonTertiary)`
-  width: 100%;
-  text-align: left;
-  border-radius: 0;
-  background-color: transparent;
-  padding: 0.5rem;
-`;
-
-export const HorizontalRule = styled.hr`
-  background-color: ${lightBorderColor};
-  height: 1px;
-  border: none;
-  margin: 0 0.5rem;
-`;
-
-const GET_STATES_WITH_LISTS = gql`
+const GET_STATES_WITH_MOUNTAINS = gql`
   query {
     states {
       id
       name
       abbreviation
-      peakLists {
+      mountains {
         id
-        children {
-          id
-        }
+        name
       }
     }
   }
@@ -76,11 +38,8 @@ interface SuccessResponse {
   states: null | Array<{
     id: State['id'];
     name: State['name'];
-    peakLists: Array<{
-      id: PeakList['id'];
-      children: null | Array<{
-        id: PeakList['id'];
-      }>;
+    mountains: Array<{
+      id: Mountain['id'];
     }>
   }>;
 }
@@ -88,11 +47,11 @@ interface SuccessResponse {
 interface Props {
   children: JSX.Element;
   changeLocation: (name: string) => void;
-  setSelectionArray: (array: Array<PeakList['id']> | null) => void;
+  setSelectedState: (stateId: State['id'] | null) => void;
 }
 
 const LocationFilter = (props: Props) => {
-  const { children, changeLocation, setSelectionArray } = props;
+  const { children, changeLocation, setSelectedState } = props;
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -125,7 +84,7 @@ const LocationFilter = (props: Props) => {
     };
   });
 
-  const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES_WITH_LISTS);
+  const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES_WITH_MOUNTAINS);
 
   let dropdown: React.ReactElement<any> | null;
   if (isMenuOpen === true) {
@@ -150,25 +109,18 @@ const LocationFilter = (props: Props) => {
       const { states } = data;
       const sortedStates = states ? sortBy(states, ['name']) : null;
       const stateList = sortedStates ? sortedStates.map(state => {
-        const allListsForState: Array<PeakList['id']> = [];
-        if (state.peakLists && state.peakLists.length) {
-          state.peakLists.forEach(list => {
-            allListsForState.push(list.id);
-            if (list.children && list.children.length) {
-              list.children.forEach(childList => allListsForState.push(childList.id));
-            }
-          });
+        if (state.mountains && state.mountains.length) {
           const onClick = () => {
             setIsMenuOpen(false);
             changeLocation(state.name);
-            setSelectionArray(allListsForState);
+            setSelectedState(state.id);
           };
           return (
             <ListItem
               onClick={onClick}
               key={state.id}
             >
-              {state.name} ({allListsForState.length})
+              {state.name} ({state.mountains.length})
             </ListItem>
           );
         } else {
@@ -178,7 +130,7 @@ const LocationFilter = (props: Props) => {
       const everyWhereOnClick = () => {
         setIsMenuOpen(false);
         changeLocation(getFluentString('global-text-value-everywhere'));
-        setSelectionArray(null);
+        setSelectedState(null);
       };
       dropdown = (
         <DropdownWrapper ref={menuNode}>
