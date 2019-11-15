@@ -29,6 +29,7 @@ import {
   Prev,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
+import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
@@ -332,9 +333,10 @@ const PeakListPage = (props: Props) => {
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
+    const GhostCard = viewMode === ViewMode.Card ? GhostPeakListCard : GhostMountainCard;
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
-      loadingCards.push(<GhostPeakListCard key={i} />);
+      loadingCards.push(<GhostCard key={i} />);
     }
     list = <>{loadingCards}</>;
   } else if (error !== undefined) {
