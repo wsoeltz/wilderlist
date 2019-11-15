@@ -64,6 +64,9 @@ const GET_STATES_WITH_LISTS = gql`
       abbreviation
       peakLists {
         id
+        children {
+          id
+        }
       }
     }
   }
@@ -75,6 +78,9 @@ interface SuccessResponse {
     name: State['name'];
     peakLists: Array<{
       id: PeakList['id'];
+      children: null | Array<{
+        id: PeakList['id'];
+      }>;
     }>
   }>;
 }
@@ -82,10 +88,11 @@ interface SuccessResponse {
 interface Props {
   children: JSX.Element;
   changeLocation: (name: string) => void;
+  setSelectionArray: (array: Array<PeakList['id']> | null) => void;
 }
 
 const LocationFilter = (props: Props) => {
-  const { children, changeLocation } = props;
+  const { children, changeLocation, setSelectionArray } = props;
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -143,17 +150,25 @@ const LocationFilter = (props: Props) => {
       const { states } = data;
       const sortedStates = states ? sortBy(states, ['name']) : null;
       const stateList = sortedStates ? sortedStates.map(state => {
+        const allListsForState: Array<PeakList['id']> = [];
         if (state.peakLists && state.peakLists.length) {
+          state.peakLists.forEach(list => {
+            allListsForState.push(list.id);
+            if (list.children && list.children.length) {
+              list.children.forEach(childList => allListsForState.push(childList.id));
+            }
+          });
           const onClick = () => {
             setIsMenuOpen(false);
             changeLocation(state.name);
+            setSelectionArray(allListsForState);
           };
           return (
             <ListItem
               onClick={onClick}
               key={state.id}
             >
-              {state.name} ({state.peakLists.length})
+              {state.name} ({allListsForState.length})
             </ListItem>
           );
         } else {
@@ -163,6 +178,7 @@ const LocationFilter = (props: Props) => {
       const everyWhereOnClick = () => {
         setIsMenuOpen(false);
         changeLocation(getFluentString('global-text-value-everywhere'));
+        setSelectionArray(null);
       };
       dropdown = (
         <DropdownWrapper ref={menuNode}>

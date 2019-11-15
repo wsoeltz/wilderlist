@@ -94,11 +94,13 @@ const SEARCH_PEAK_LISTS = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
+    $selectionArray: [ID],
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      selectionArray: $selectionArray,
     ) {
       id
       name
@@ -134,11 +136,13 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
+    $selectionArray: [ID],
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      selectionArray: $selectionArray,
     ) {
       id
       name
@@ -191,6 +195,7 @@ interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
+  selectionArray: Array<PeakList['id']> | null;
 }
 
 export const ADD_PEAK_LIST_TO_USER = gql`
@@ -247,6 +252,7 @@ const PeakListPage = (props: Props) => {
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [locationSearchValue, setLocationSearchValue] = useState<string>('Everywhere');
+  const [selectionArray, setSelectionArray] = useState<Array<PeakList['id']> | null>(null);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -305,7 +311,9 @@ const PeakListPage = (props: Props) => {
       searchQuery,
       pageNumber,
       nPerPage,
-      userId },
+      userId,
+      selectionArray,
+    },
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
@@ -426,6 +434,7 @@ const PeakListPage = (props: Props) => {
           <SearchAndFilterContainer>
             <LocationFilter
               changeLocation={setLocationSearchValue}
+              setSelectionArray={setSelectionArray}
             >
               <SelectButton>
                 <MapIcon icon='map-marker-alt' />
