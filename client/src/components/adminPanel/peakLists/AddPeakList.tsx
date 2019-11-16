@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
-import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakListVariants, State } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   AddPeakListVariables,
@@ -22,11 +22,15 @@ import {
   SelectionPanel,
 } from '../sharedStyles';
 
-const GET_MOUNTAINS = gql`
-  query ListMountains{
+const GET_MOUNTAINS_AND_STATES = gql`
+  query ListMountainsAndStates{
     mountains {
       id
       name
+      state {
+        id
+        name
+      }
     }
   }
 `;
@@ -35,23 +39,28 @@ interface SuccessResponse {
   mountains: Array<{
     id: Mountain['id'];
     name: Mountain['name'];
+    state: {
+      id: State['id'];
+      name: State['name'];
+    }
   }>;
 }
 
 interface CheckboxProps {
-  name: string;
-  id: string;
-  toggleItem: (id: string, name: string, checked: boolean) => void;
+  mountain: MountainDatum;
+  toggleItem: (mountain: MountainDatum, checked: boolean) => void;
   startChecked: boolean;
 }
 
-const Checkbox = ({name, id, toggleItem, startChecked}: CheckboxProps) => {
+const Checkbox = ({mountain, toggleItem, startChecked}: CheckboxProps) => {
+  const {
+    id, name,
+  } = mountain;
   const [checked, setChecked] = useState<boolean>(startChecked);
-
   const onChange = () => {
     const checkedWillBe = !checked;
     setChecked(checkedWillBe);
-    toggleItem(id, name, checkedWillBe);
+    toggleItem(mountain, checkedWillBe);
   };
 
   return (
@@ -66,12 +75,16 @@ const Checkbox = ({name, id, toggleItem, startChecked}: CheckboxProps) => {
       <CheckboxLabel htmlFor={`state-checkbox-${id}`}>{name}</CheckboxLabel>
     </CheckboxRoot>
   );
-
 };
 
 interface MountainDatum {
-  name: Mountain['name'];
   id: Mountain['id'];
+  name: Mountain['name'];
+  state: StateDatum | null;
+}
+interface StateDatum {
+  id: State['id'];
+  name: State['name'];
 }
 
 interface Props {
@@ -86,17 +99,19 @@ const AddPeakList = (props: Props) => {
   const [name, setName] = useState<string>('');
   const [shortName, setShortName] = useState<string>('');
   const [selectedMountains, setSelectedMountains] = useState<MountainDatum[]>([]);
+  const [selectedStates, setSelectedStates] = useState<StateDatum[]>([]);
   const [type, setType] = useState<PeakListVariants>(PeakListVariants.standard);
   const [parent, setParent] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [mountainSearchQuery, setMountainSearchQuery] = useState<string>('');
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (type !== null) {
       const selectedMountainIds = selectedMountains.map(({id}) => id);
+      const selectedStateIds = selectedStates.map(({id}) => id);
       addPeakList({
         name, shortName, mountains: selectedMountainIds,
-        type, parent,
+        type, parent, states: selectedStateIds,
       });
     }
     cancel();
@@ -114,18 +129,13 @@ const AddPeakList = (props: Props) => {
     }
   };
 
-  const toggleMountainListItem = (id: string, mountainName: string, checked: boolean) => {
-    if (checked === true) {
-      setSelectedMountains([...selectedMountains, {id, name: mountainName}]);
-    } else if (checked === false) {
-      setSelectedMountains(selectedMountains.filter(idInList => idInList.id !== id));
-    }
-  };
-
   const sortedSelectedMountains = sortBy(selectedMountains, ['name']);
   const selectedMountainsLi = sortedSelectedMountains.map(mountain => <li key={mountain.id}>{mountain.name}</li>);
 
-  const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS);
+  const sortedSelectedStates = sortBy(selectedStates, ['name']);
+  const selectedStatesLi = sortedSelectedStates.map(state => <li key={state.id}>{state.name}</li>);
+
+  const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS_AND_STATES);
 
   let mountains: React.ReactElement | null;
   if (loading === true) {
@@ -134,14 +144,51 @@ const AddPeakList = (props: Props) => {
     mountains = null;
     console.error(error);
   } else if (data !== undefined) {
-    const sortedMountains = sortBy(data.mountains, ['name']);
-    const mountainList = sortedMountains.map(mountain => {
-      if (mountain.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+
+  const toggleMountainListItem = (mountain: MountainDatum, checked: boolean) => {
+    const {
+      id, name: mountainName, state,
+    } = mountain;
+    if (checked === true) {
+      setSelectedMountains([...selectedMountains, {id, name: mountainName, state}]);
+      if (state && state.id) {
+        if (selectedStates.find(st => st.id === state.id) === undefined) {
+          setSelectedStates([...selectedStates, {
+            id: state.id,
+            name: state.name,
+          }]);
+        }
+      }
+    } else if (checked === false) {
+      const newSelectedMountains = selectedMountains.filter(mtn => mtn.id !== id);
+      setSelectedMountains([...newSelectedMountains]);
+      const stateExists = newSelectedMountains.find(mtn => {
+        if (mtn && mtn.state && mtn.state.id && state && state.id) {
+          return mtn.state.id === state.id;
+        } else {
+          return false;
+        }
+      });
+      if (stateExists === undefined) {
+        setSelectedStates(selectedStates.filter(st => {
+            if (state && state.id) {
+              return st.id !== state.id;
+            } else {
+              return false;
+            }
+          }),
+        );
+      }
+    }
+  };
+
+  const sortedMountains = sortBy(data.mountains, ['name']);
+  const mountainList = sortedMountains.map(mountain => {
+      if (mountain.name.toLowerCase().includes(mountainSearchQuery.toLowerCase())) {
         return (
           <Checkbox
             key={mountain.id}
-            id={mountain.id}
-            name={mountain.name}
+            mountain={mountain}
             toggleItem={toggleMountainListItem}
             startChecked={false}
           />
@@ -150,7 +197,7 @@ const AddPeakList = (props: Props) => {
         return null;
       }
     });
-    mountains = <>{mountainList}</>;
+  mountains = <>{mountainList}</>;
   } else {
     mountains = null;
   }
@@ -167,7 +214,7 @@ const AddPeakList = (props: Props) => {
   };
 
   const filterMountains = (value: string) => {
-    setSearchQuery(value);
+    setMountainSearchQuery(value);
   };
 
   return (
@@ -215,7 +262,7 @@ const AddPeakList = (props: Props) => {
               placeholder={'Filter mountains'}
               setSearchQuery={filterMountains}
               focusOnMount={false}
-              initialQuery={searchQuery}
+              initialQuery={mountainSearchQuery}
             />
             {mountains}
           </CheckboxContainer>
@@ -223,6 +270,14 @@ const AddPeakList = (props: Props) => {
             <strong>Selected Mountains</strong>
             <ol>
               {selectedMountainsLi}
+            </ol>
+          </SelectedItemsContainer>
+        </SelectionPanel>
+        <SelectionPanel>
+          <SelectedItemsContainer>
+            <strong>Selected States</strong>
+            <ol>
+              {selectedStatesLi}
             </ol>
           </SelectedItemsContainer>
         </SelectionPanel>

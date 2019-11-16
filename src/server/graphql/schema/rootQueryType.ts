@@ -45,10 +45,16 @@ const RootQuery = new GraphQLObjectType({
         searchQuery: { type: new GraphQLNonNull(GraphQLString) },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+        selectionArray: { type: GraphQLList(GraphQLID) },
       },
-      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage, selectionArray}) {
+        const filter = selectionArray && selectionArray.length
+          ? { searchString: { $regex: searchQuery, $options: 'i' },
+              _id : { $in : selectionArray },
+            }
+          : { searchString: { $regex: searchQuery, $options: 'i' } };
         return PeakList
-          .find({ searchString: { $regex: searchQuery, $options: 'i' } })
+          .find(filter)
           .limit(nPerPage)
           .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
           .sort({ numUsers: -1, name: 1 });
@@ -84,12 +90,16 @@ const RootQuery = new GraphQLObjectType({
         searchQuery: { type: new GraphQLNonNull(GraphQLString) },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+        state: { type: GraphQLID },
       },
-      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage, state}) {
+        const filter = state
+          ? { name: { $regex: searchQuery, $options: 'i' },
+              state,
+            }
+          : { name: { $regex: searchQuery, $options: 'i' } };
         return Mountain
-          .find({
-            name: { $regex: searchQuery, $options: 'i' },
-          })
+          .find(filter)
           .limit(nPerPage)
           .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
           .sort({ name: 1 });

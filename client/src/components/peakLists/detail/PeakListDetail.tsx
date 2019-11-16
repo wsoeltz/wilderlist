@@ -30,6 +30,25 @@ const GET_PEAK_LIST = gql`
         elevation
         state {
           id
+          abbreviation
+        }
+      }
+      states {
+        id
+        name
+        abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
+      parent {
+        id
+        states {
+          id
           name
           abbreviation
           regions {
@@ -40,9 +59,6 @@ const GET_PEAK_LIST = gql`
             }
           }
         }
-      }
-      parent {
-        id
         mountains {
           id
           name
@@ -51,15 +67,7 @@ const GET_PEAK_LIST = gql`
           elevation
           state {
             id
-            name
             abbreviation
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
           }
         }
       }
@@ -80,6 +88,19 @@ const GET_PEAK_LIST = gql`
   }
 `;
 
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  abbreviation: State['abbreviation'];
+  regions: Array<{
+    id: Region['id'];
+    name: Region['name'];
+    states: Array<{
+      id: State['id'],
+    }>
+  }>;
+}
+
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
@@ -88,15 +109,7 @@ export interface MountainDatum {
   elevation: Mountain['elevation'];
   state: {
     id: State['id'];
-    name: State['name'];
     abbreviation: State['abbreviation'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-      states: Array<{
-        id: State['id'],
-      }>
-    }>
   };
 }
 
@@ -106,9 +119,11 @@ export interface PeakListDatum {
   shortName: PeakList['shortName'];
   type: PeakList['type'];
   mountains: MountainDatum[] | null;
+  states: StateDatum[] | null;
   parent: {
     id: PeakList['id'];
     mountains: MountainDatum[] | null;
+    states: StateDatum[] | null;
   } | null;
 }
 
@@ -134,10 +149,11 @@ interface Variables {
 interface Props {
   userId: string | null;
   id: string;
+  mountainId: string | undefined;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id } = props;
+  const { userId, id, mountainId } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -145,6 +161,7 @@ const PeakListDetail = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
   });
+  let statesArray: StateDatum[] = [];
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {
@@ -174,7 +191,13 @@ const PeakListDetail = (props: Props) => {
       }
       const completedAscents =
         user && user.mountains !== null ? user.mountains : [];
-      const statesOrRegions = getStatesOrRegion(mountains, getFluentString);
+
+      if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
+        statesArray = [...peakList.parent.states];
+      } else if (peakList.states && peakList.states.length) {
+        statesArray = [...peakList.states];
+      }
+      const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
       const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
       const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
       const paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
@@ -189,6 +212,10 @@ const PeakListDetail = (props: Props) => {
         'smallest-mountain-elevation':
           mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
       });
+
+      const activeMountain = mountains.find(mtn => mtn.id === mountainId);
+      const highlightedMountain = activeMountain ? [activeMountain] : undefined;
+
       return (
         <>
           <Header
@@ -196,10 +223,12 @@ const PeakListDetail = (props: Props) => {
             mountains={mountains}
             peakList={peakList}
             completedAscents={completedAscents}
+            statesArray={statesArray}
           />
           <Map
             id={peakList.id}
             coordinates={mountains}
+            highlighted={highlightedMountain}
           />
           <p>
             {paragraphText}

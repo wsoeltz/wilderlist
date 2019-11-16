@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,

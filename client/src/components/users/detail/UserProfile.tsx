@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { History } from 'history';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -12,7 +12,8 @@ import { PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext, IAppContext } from '../../App';
-import ListPeakLists, { PeakListDatum } from '../../peakLists/list/ListPeakLists';
+import { ViewMode } from '../../peakLists/list';
+import ListPeakLists, { CardPeakListDatum } from '../../peakLists/list/ListPeakLists';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Header from './Header';
 
@@ -95,7 +96,7 @@ export interface UserDatum {
   hideProfilePicture: User['hideProfilePicture'];
   profilePictureUrl: User['profilePictureUrl'];
   mountains: User['mountains'];
-  peakLists: PeakListDatum[];
+  peakLists: CardPeakListDatum[];
 }
 
 interface QuerySuccessResponse {
@@ -188,6 +189,7 @@ const UserProfile = (props: Props) => {
             />
             <ListContainer>
               <ListPeakLists
+                viewMode={ViewMode.Card}
                 peakListData={peakLists}
                 userListData={userListData}
                 listAction={compareAscents}

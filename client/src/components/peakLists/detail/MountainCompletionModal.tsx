@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import React, { useContext, useState } from 'react';
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -14,6 +14,7 @@ import {
   ButtonSecondary,
   GhostButton,
   InputBase,
+  lightBlue,
   lightBorderColor,
   warningColor,
 } from '../../../styling/styleUtils';
@@ -31,7 +32,6 @@ import Modal from '../../sharedComponents/Modal';
 import './react-datepicker.custom.css';
 
 const mobileWidth = 400; // in px
-const lightBlue = '#d1e2e9';
 
 const ColumnRoot = styled.div`
   display: grid;

@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
@@ -16,8 +16,9 @@ import {
 } from '../../styling/Grid';
 import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
 import { FriendStatus, PeakList, User } from '../../types/graphQLTypes';
+import { ViewMode } from '../peakLists/list';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
-import ListPeakLists, { PeakListDatum } from '../peakLists/list/ListPeakLists';
+import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import GhostUserCard from '../users/list/GhostUserCard';
 import ListUsers, { UserDatum } from '../users/list/ListUsers';
@@ -109,7 +110,7 @@ const GET_USERS_PEAK_LISTS = gql`
 interface SuccessResponse {
   user: {
     id: User['id'];
-    peakLists: PeakListDatum[];
+    peakLists: CardPeakListDatum[];
     mountains: User['mountains'];
     friends: Array<{
       user: UserDatum
@@ -153,7 +154,7 @@ const Dashboard = (props: Props) => {
   const { userId, history } = props;
 
   const searchPeakLists = (value: string) => {
-    const url = searchListDetailLink('search') + '?query=' + value + '&page=' + 1;
+    const url = searchListDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
     history.push(url);
   };
   const searchFriends = (value: string) => {
@@ -217,6 +218,7 @@ const Dashboard = (props: Props) => {
       const completedAscents = mountains !== null ? mountains : [];
       peakListsList = (
         <ListPeakLists
+          viewMode={ViewMode.Card}
           peakListData={peakLists}
           userListData={usersLists}
           listAction={null}

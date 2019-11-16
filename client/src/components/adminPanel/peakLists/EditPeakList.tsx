@@ -34,14 +34,26 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       name
       shortName
       type
+      states {
+        id
+        name
+      }
       mountains {
         id
         name
+        state {
+          id
+          name
+        }
       }
       parent {
         id
         name
         type
+        states {
+          id
+          name
+        }
       }
     }
     mountains {
@@ -50,6 +62,7 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       elevation
       state {
         id
+        name
         abbreviation
       }
     }
@@ -152,6 +165,41 @@ const CHANGE_PEAK_LIST_PARENT = gql`
   }
 `;
 
+const REMOVE_STATE_FROM_PEAK_LIST = gql`
+  mutation($listId: ID!, $stateId: ID!) {
+    removeStateFromPeakList(listId: $listId, stateId: $stateId) {
+      id
+      name
+      shortName
+      type
+      states {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const ADD_STATE_TO_PEAK_LIST = gql`
+  mutation($listId: ID!, $stateId: ID!) {
+    addStateToPeakList(listId: $listId, stateId: $stateId) {
+      id
+      name
+      shortName
+      type
+      states {
+        id
+        name
+      }
+    }
+  }
+`;
+
+interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+}
+
 interface SuccessResponse {
   peakList: {
     id: PeakList['id'];
@@ -161,7 +209,9 @@ interface SuccessResponse {
     mountains: Array<{
       id: Mountain['id'];
       name: Mountain['name'];
+      state: StateDatum;
     }>
+    states: StateDatum[];
     parent: PeakList['parent'] | null;
   };
   mountains: Array<{
@@ -170,6 +220,7 @@ interface SuccessResponse {
     elevation: Mountain['elevation'];
     state: {
       id: State['id'];
+      name: State['name'];
       abbreviation: State['abbreviation'];
     }
   }>;
@@ -182,6 +233,11 @@ interface QueryVariables {
 interface AdjustMountainVariables {
   listId: string;
   itemId: string;
+}
+
+interface AdjustStateVariables {
+  listId: string;
+  stateId: string;
 }
 
 interface ChangeNameVariables {
@@ -269,6 +325,13 @@ const EditPeakList = (props: Props) => {
   const [addItemToPeakList] = useMutation<SuccessResponse, AdjustMountainVariables>(ADD_MOUNTAIN_TO_PEAK_LIST, {
     refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
   });
+  const [removeStateFromPeakList] = useMutation<SuccessResponse, AdjustStateVariables>
+    (REMOVE_STATE_FROM_PEAK_LIST, {
+      refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
+    });
+  const [addStateToPeakList] = useMutation<SuccessResponse, AdjustStateVariables>(ADD_STATE_TO_PEAK_LIST, {
+    refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
+  });
   const [changePeakListName] = useMutation<SuccessResponse, ChangeNameVariables>(CHANGE_PEAK_LIST_NAME);
   const [changePeakListShortName] = useMutation<SuccessResponse, ChangeShortNameVariables>(CHANGE_PEAK_LIST_SHORT_NAME);
   const [adjustPeakListVariant] = useMutation<SuccessResponse, ChangeVariantVariables>(CHANGE_PEAK_LIST_VARIANT);
@@ -280,10 +343,12 @@ const EditPeakList = (props: Props) => {
   let type: React.ReactElement | null;
   let parent: React.ReactElement | null;
   let selectedMountains: React.ReactElement[] | null;
+  let selectedStatesLi: React.ReactElement[] | null;
   if (loading === true) {
     name = null;
     shortName = null;
     selectedMountains = null;
+    selectedStatesLi = null;
     mountains = (<p>Loading</p>);
     type = null;
     parent = null;
@@ -291,11 +356,15 @@ const EditPeakList = (props: Props) => {
     name = null;
     shortName = null;
     selectedMountains = null;
+    selectedStatesLi = null;
     mountains = null;
     type = null;
     parent = null;
     console.error(error);
   } else if (data !== undefined) {
+    const {
+      peakList,
+    } = data;
     if (editingName === false) {
       const setEditNameToTrue = () => {
         setEditingName(true);
@@ -326,6 +395,7 @@ const EditPeakList = (props: Props) => {
       name = null;
     }
     selectedMountains = null;
+    selectedStatesLi = null;
     if (editingShortName === false) {
       const setEditShortNameToTrue = () => {
         setEditingShortName(true);
@@ -355,9 +425,39 @@ const EditPeakList = (props: Props) => {
     } else {
       shortName = null;
     }
+
+    const sortedSelectedStates = peakList.states ? sortBy(peakList.states, ['name']) : [];
+    selectedStatesLi = sortedSelectedStates.map(state => <li key={state.id}>{state.name}</li>);
+
     const sortedMountains = sortBy(data.mountains, ['name']);
     const mountainList = sortedMountains.map(mountain => {
       if (mountain.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+
+        const addItemAndState = (itemId: string) => {
+          const { state } = mountain;
+          addItemToPeakList({ variables: {listId: peakListId, itemId}});
+          if (state && state.id) {
+            if (peakList.states && peakList.states.find(st => st.id === state.id) === undefined) {
+              addStateToPeakList({ variables: {listId: peakListId, stateId: state.id}});
+            }
+          }
+        };
+        const removeItemAndState = (itemId: string) => {
+          const { state } = mountain;
+          removeItemFromPeakList({ variables: {listId: peakListId, itemId}});
+          const newSelectedMountains = peakList.mountains.filter(mtn => mtn.id !== itemId);
+          const stateExists = newSelectedMountains.find(mtn => {
+            if (mtn && mtn.state && mtn.state.id && state && state.id) {
+              return mtn.state.id === state.id;
+            } else {
+              return false;
+            }
+          });
+          if (stateExists === undefined) {
+            removeStateFromPeakList({ variables: {listId: peakListId, stateId: state.id}});
+          }
+        };
+
         return (
           <Checkbox
             key={mountain.id}
@@ -366,8 +466,8 @@ const EditPeakList = (props: Props) => {
             defaultChecked={
               (data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
             }
-            removeItemFromPeakList={(itemId) => removeItemFromPeakList({ variables: {listId: peakListId, itemId}}) }
-            addItemToPeakList={(itemId) => addItemToPeakList({ variables: {listId: peakListId, itemId}}) }
+            removeItemFromPeakList={removeItemAndState}
+            addItemToPeakList={addItemAndState}
           />
         );
       } else {
@@ -378,9 +478,6 @@ const EditPeakList = (props: Props) => {
     const sortedSelectedMountains = sortBy(data.peakList.mountains, ['name']);
     selectedMountains = sortedSelectedMountains.map(
       mountain => <li key={'selected-' + mountain.id}>{mountain.name}</li>);
-    const {
-      peakList,
-    } = data;
     const updateType = (value: string) => {
       let newType: PeakListVariants;
       if (value === 'standard') {
@@ -438,6 +535,7 @@ const EditPeakList = (props: Props) => {
     name = null;
     shortName = null;
     selectedMountains = null;
+    selectedStatesLi = null;
     mountains = null;
     type = null;
     parent = null;
@@ -467,6 +565,14 @@ const EditPeakList = (props: Props) => {
             <strong>Selected Mountains</strong>
             <ol>
               {selectedMountains}
+            </ol>
+          </SelectedItemsContainer>
+        </SelectionPanel>
+        <SelectionPanel>
+          <SelectedItemsContainer>
+            <strong>Selected States</strong>
+            <ol>
+              {selectedStatesLi}
             </ol>
           </SelectedItemsContainer>
         </SelectionPanel>

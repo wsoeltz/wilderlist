@@ -3,6 +3,10 @@ global-text-value-wilderlist-name = Wilderlist
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous
 
+global-text-value-list-view = List
+global-text-value-detail-view = Detail
+
+
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
@@ -37,6 +41,7 @@ global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
 global-text-value-location = Location
+global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Ascent Dates
 global-text-value-done = Done
 global-text-value-today = Today
@@ -62,6 +67,7 @@ global-text-value-open-for-winter = Open for Winter
 global-text-value-open-for = Open for
 global-text-value-open-for-every-month-except = Open for every month except
 global-text-value-open-for-every-season-except = Open for every season except
+global-text-value-complete = Complete
 global-text-value-completed-on = Completed on
 global-text-value-completed-in-every-month = Completed in every month
 global-text-value-completed-in-every-season = Completed in every season

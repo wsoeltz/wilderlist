@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -29,6 +29,7 @@ import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import {
   MountainDatum,
   PeakListDatum,
+  StateDatum,
   UserDatum,
 } from './PeakListDetail';
 
@@ -88,6 +89,7 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
 
 interface Props {
   mountains: MountainDatum[];
+  statesArray: StateDatum[];
   peakList: PeakListDatum;
   user: UserDatum | null;
   completedAscents: CompletedMountain[];
@@ -98,7 +100,7 @@ interface Props {
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents, comparisonUser, comparisonAscents,
+    completedAscents, comparisonUser, comparisonAscents, statesArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -243,7 +245,7 @@ const Header = (props: Props) => {
       <TitleContent>
         <Title>{name}{getType(type)}</Title>
         <ListInfo>
-          {getStatesOrRegion(mountains, getFluentString)}
+          {getStatesOrRegion(statesArray, getFluentString)}
         </ListInfo>
         <ListInfo>
           {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}

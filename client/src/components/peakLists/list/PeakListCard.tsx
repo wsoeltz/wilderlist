@@ -1,7 +1,9 @@
+import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
+import gql from 'graphql-tag';
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -19,6 +21,7 @@ import {
 import {
   CompletedMountain,
   Mountain,
+  PeakList,
   Region,
   State,
   User,
@@ -27,8 +30,82 @@ import { UserContext } from '../../App';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { formatDate, getLatestAscent, getType } from '../Utils';
-import { PeakListDatum } from './ListPeakLists';
+import { CardPeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
+
+export const GET_STATES_AND_REGIONS = gql`
+  query getStatesAndRegions($id: ID!) {
+    peakList(id: $id) {
+      id
+      states {
+        id
+        name
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
+      mountains {
+        id
+      }
+      parent {
+        id
+        states {
+          id
+          name
+          regions {
+            id
+            name
+            states {
+              id
+            }
+          }
+        }
+        mountains {
+          id
+        }
+      }
+    }
+  }
+`;
+
+interface RegionDatum {
+  id: Region['id'];
+  name: Region['name'];
+  states: Array<{
+    id: State['id'],
+  }>;
+}
+
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  regions: RegionDatum[];
+}
+
+export interface SuccessResponse {
+  peakList: null | {
+    id: PeakList['id'];
+    states: null | StateDatum[];
+    mountains: null | Array<{
+      id: PeakList['id'];
+    }>
+    parent: null | {
+      id: PeakList['id'];
+      states: null | StateDatum[];
+      mountains: null | Array<{
+        id: PeakList['id'];
+      }>
+    }
+  };
+}
+
+export interface Variables {
+  id: string;
+}
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -110,42 +187,18 @@ export const BigText = styled.span`
   font-weight: ${boldFontWeight};
 `;
 
-interface RegionDatum {
-  id: Region['id'];
-  name: Region['name'];
-  states: Array<{
-    id: State['id'],
-  }>;
-}
-
-interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  regions: RegionDatum[];
-}
-
-export interface MountainList {
-  id: Mountain['id'];
-  state: StateDatum;
-}
-
-export const getStatesOrRegion = (mountains: MountainList[], getFluentString: GetString) => {
+export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
+  const sortedStates = sortBy(statesArray, ['name']);
   // If there are 3 or less states, just show the states
-  const statesArray: StateDatum[] = [];
-  mountains.forEach(({state}) => {
-    if (statesArray.filter(({id}) => id === state.id).length === 0) {
-      statesArray.push(state);
-    }
-  });
-  if (statesArray.length === 1) {
-    return statesArray[0].name;
-  } else if (statesArray.length === 2) {
-    return statesArray[0].name + ' & ' + statesArray[1].name;
-  } else if (statesArray.length === 3) {
-    return statesArray[0].name + ', ' + statesArray[1].name + ' & ' + statesArray[2].name;
-  } else if (statesArray.length > 2) {
+  if (sortedStates.length === 1) {
+    return sortedStates[0].name;
+  } else if (sortedStates.length === 2) {
+    return sortedStates[0].name + ' & ' + sortedStates[1].name;
+  } else if (sortedStates.length === 3) {
+    return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
+  } else if (sortedStates.length > 2) {
     const regionsArray: RegionDatum[] = [];
-    statesArray.forEach(({regions}) => {
+    sortedStates.forEach(({regions}) => {
       regions.forEach(region => {
         if (regionsArray.filter(({id}) => id === region.id).length === 0) {
           regionsArray.push(region);
@@ -159,7 +212,7 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
       return regionsArray[0].name;
     } else {
       const inclusiveRegions = regionsArray.filter(
-        (region) => statesArray.every(({regions}) => regions.includes(region)));
+        (region) => sortedStates.every(({regions}) => regions.includes(region)));
       if (inclusiveRegions.length === 1) {
         return inclusiveRegions[0].name;
       } else if (inclusiveRegions.length > 1) {
@@ -186,13 +239,13 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
 };
 
 interface Props {
-  peakList: PeakListDatum;
+  peakList: CardPeakListDatum;
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
   profileView: boolean;
-  mountains: MountainList[];
+  mountains: Array<{id: Mountain['id']}>;
   numCompletedAscents: number;
   totalRequiredAscents: number;
   isMe: boolean;
@@ -208,6 +261,13 @@ const PeakListCard = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
+    variables: {id: parent ? parent.id : id} });
+
+  if (error) {
+    console.error(error);
+  }
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -254,13 +314,22 @@ const PeakListCard = (props: Props) => {
       </>
     );
   } else {
+
+    let statesArray: StateDatum[] = [];
+    if (loading === false && data !== undefined && data.peakList) {
+      if (data.peakList.parent && data.peakList.parent.states && data.peakList.parent.states.length) {
+        statesArray = [...data.peakList.parent.states];
+      } else if (data.peakList.states && data.peakList.states.length) {
+        statesArray = [...data.peakList.states];
+      }
+    }
     listInfoContent = (
       <>
         <span>
           <BigText>{totalRequiredAscents}</BigText>
           {getFluentString('peak-list-text-total-ascents')}
         </span>
-        <TextRight>{getStatesOrRegion(mountains, getFluentString)}</TextRight>
+        <TextRight>{getStatesOrRegion(statesArray, getFluentString)}</TextRight>
       </>
     );
   }

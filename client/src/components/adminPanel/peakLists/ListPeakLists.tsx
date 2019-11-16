@@ -48,8 +48,9 @@ const ListStates = (props: Props) => {
     const { peakLists } = data;
     const peakListElms = peakLists.map(peakList => {
       if (peakList.searchString.toLowerCase().includes(searchQuery.toLowerCase())) {
-        const { type, parent } = peakList;
+        const { type, parent, states } = peakList;
         let parentCopy: React.ReactElement<any> | null;
+        let stateCopy: React.ReactElement<any> | null;
         if (parent !== null) {
           parentCopy = (
             <div>
@@ -61,11 +62,29 @@ const ListStates = (props: Props) => {
         } else {
           parentCopy = null;
         }
+        if (states !== null && states.length) {
+          const stateElms = states.map(st => st.name + ', ');
+          stateCopy = (
+            <div>
+              <small>
+                States: {stateElms}
+              </small>
+            </div>
+          );
+        } else {
+          stateCopy = null;
+        }
+        const content = (
+          <>
+            {parentCopy}
+            {stateCopy}
+          </>
+        );
         return (
           <ListItem
             key={peakList.id}
             title={`${peakList.name} (${peakList.shortName}) - ${type}`}
-            content={parentCopy}
+            content={content}
             onEdit={() => editPeakList(peakList.id)}
             onDelete={() => setPeakListToDelete(peakList)}
           />

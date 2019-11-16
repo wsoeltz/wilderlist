@@ -36,7 +36,7 @@ const UserProfilePage = (props: Props) => {
     if (!Types.ObjectId.isValid(peakListId)) {
       comparison = <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>;
     } else {
-      comparison = <PeakListDetail userId={userId} id={peakListId} />;
+      comparison = <PeakListDetail userId={userId} id={peakListId} mountainId={undefined} />;
     }
   } else {
     if (peakListId === 'all') {

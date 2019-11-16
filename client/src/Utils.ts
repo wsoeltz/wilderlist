@@ -306,3 +306,7 @@ export const states = [
   'wisconsin',
   'wyoming',
 ];
+
+export const roundPercentToSingleDecimal = (numerator: number, denominator: number) => {
+  return Math.round((100 * (numerator / denominator)) * 10) / 10;
+};

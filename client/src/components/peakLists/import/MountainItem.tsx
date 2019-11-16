@@ -1,7 +1,7 @@
 import { GetString } from 'fluent-react';
 import {sortBy} from 'lodash';
 import React, {useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { baseColor, InputBase, lightBorderColor, warningColor } from '../../../styling/styleUtils';
 import { TableCellBase } from '../detail/MountainRow';
 import { DateDatum, MountainDatum } from './index';

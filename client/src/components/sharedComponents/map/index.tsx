@@ -1,7 +1,7 @@
 import { GetString } from 'fluent-react';
 import L from 'leaflet';
 import React, {useContext, useEffect} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -35,10 +35,11 @@ const defaultCoordinates = {
 interface Props {
   id: string;
   coordinates: Coordinate[];
+  highlighted?: Coordinate[];
 }
 
 const Map = (props: Props) => {
-  const { id, coordinates} = props;
+  const { id, coordinates, highlighted} = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -89,7 +90,18 @@ const Map = (props: Props) => {
           fillOpacity: 0.5,
           radius: 50,
         }).addTo(map);
+
         circle.bindPopup(`<strong>${name}</strong><br />${elevation}ft`);
+
+        if (highlighted) {
+          const circleIsHighlighted = highlighted.find(
+            coord => coord.name === name && coord.latitude === latitude && coord.longitude === longitude,
+          );
+          if (circleIsHighlighted) {
+            circle.openPopup();
+          }
+        }
+
         return circle;
       });
 
@@ -106,7 +118,7 @@ const Map = (props: Props) => {
       window.removeEventListener('keydown', enableScroll);
       window.removeEventListener('keydown', disbleScroll);
     };
-  }, [mapid, coordinates, attribution]);
+  }, [mapid, coordinates, attribution, highlighted]);
 
   return (
     <Root>

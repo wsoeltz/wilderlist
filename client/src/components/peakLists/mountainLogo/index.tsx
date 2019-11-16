@@ -1,6 +1,6 @@
 /* tslint:disable:max-line-length */
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { ColorSet, colorSetGray, getColorSetFromVariant } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import Badge from './Badge';
