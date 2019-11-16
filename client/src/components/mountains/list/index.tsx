@@ -96,7 +96,7 @@ const MountainSearchPage = (props: Props) => {
     const url = searchMountainsDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
-  const nPerPage = 15;
+  const nPerPage = 50;
 
   useEffect(() => {
     if (typeof query === 'string') {

@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import {intersection, sortBy} from 'lodash';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
 import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-dates.png';
 import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';

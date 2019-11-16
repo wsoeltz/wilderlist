@@ -1,7 +1,7 @@
 import { GetString } from 'fluent-react';
 import raw from 'raw.macro';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import { tertiaryColor } from '../../../styling/styleUtils';
 import DynamicLink from '../../sharedComponents/DynamicLink';

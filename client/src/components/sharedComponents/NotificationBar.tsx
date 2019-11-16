@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import { Link } from 'react-router-dom';
-import styled, {keyframes} from 'styled-components';
+import styled, {keyframes} from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';

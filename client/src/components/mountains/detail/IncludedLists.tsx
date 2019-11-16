@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import {
   lightBorderColor,

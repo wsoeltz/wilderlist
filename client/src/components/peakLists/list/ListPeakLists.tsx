@@ -1,7 +1,7 @@
 import { GetString } from 'fluent-react';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';

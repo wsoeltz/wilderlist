@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { borderRadius } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
 
