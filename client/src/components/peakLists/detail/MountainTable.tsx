@@ -1,7 +1,7 @@
 import { GetString } from 'fluent-react';
 import { sortBy } from 'lodash';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -56,6 +56,7 @@ export const TitleBase = styled.div`
   position: sticky;
   top: -1rem;
   background-color: #fff;
+  z-index: 50;
 
   @media ${smallColumnMediaQuery} {
     font-size: 0.8rem;

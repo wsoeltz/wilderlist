@@ -1,6 +1,6 @@
 import { GetString } from 'fluent-react';
 import React, {useContext, useEffect, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import HikingProjectSvgLogo from '../../../assets/images/hiking-project-logo.svg';
 import {
   AppLocalizationAndBundleContext,

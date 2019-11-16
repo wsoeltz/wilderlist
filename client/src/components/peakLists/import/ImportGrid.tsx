@@ -4,7 +4,7 @@ import csv from 'csvtojson';
 import { GetString } from 'fluent-react';
 import raw from 'raw.macro';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import FileUploadImgUrl from '../../../assets/images/import-gifs/import-grid/file-upload.png';
 import NewButtonImgUrl from '../../../assets/images/import-gifs/import-grid/new-button.png';
 import PublishToWebLinkImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web-link.png';

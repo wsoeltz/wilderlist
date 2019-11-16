@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Routes } from '../../routing/routes';
 import { PreContentHeaderFull } from '../../styling/Grid';
 import { standardContainerPadding } from '../../styling/styleUtils';

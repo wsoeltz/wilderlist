@@ -1,6 +1,6 @@
 /* tslint:disable:max-line-length */
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import GlobalStyles from '../styling/GlobalStyles';
 
 const Root = styled.div`

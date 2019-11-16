@@ -149,10 +149,11 @@ interface Variables {
 interface Props {
   userId: string | null;
   id: string;
+  mountainId: string | undefined;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id } = props;
+  const { userId, id, mountainId } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -211,6 +212,10 @@ const PeakListDetail = (props: Props) => {
         'smallest-mountain-elevation':
           mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
       });
+
+      const activeMountain = mountains.find(mtn => mtn.id === mountainId);
+      const highlightedMountain = activeMountain ? [activeMountain] : undefined;
+
       return (
         <>
           <Header
@@ -223,6 +228,7 @@ const PeakListDetail = (props: Props) => {
           <Map
             id={peakList.id}
             coordinates={mountains}
+            highlighted={highlightedMountain}
           />
           <p>
             {paragraphText}

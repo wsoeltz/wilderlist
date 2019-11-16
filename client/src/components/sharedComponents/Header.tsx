@@ -2,7 +2,7 @@ import { GetString } from 'fluent-react';
 import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import Logo from '../../assets/logo/Logo';
 import {
   AppLocalizationAndBundleContext,

@@ -1,6 +1,6 @@
 /* tslint:disable:max-line-length */
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 const LetterPath = styled.path`
   @media(max-width: 560px) {

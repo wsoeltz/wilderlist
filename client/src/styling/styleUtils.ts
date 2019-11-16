@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';

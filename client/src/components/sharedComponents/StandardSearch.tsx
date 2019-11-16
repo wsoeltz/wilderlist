@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { debounce } from 'lodash';
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   lightBorderColor,
   lightFontWeight,

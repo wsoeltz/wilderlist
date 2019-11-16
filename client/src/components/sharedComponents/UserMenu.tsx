@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import raw from 'raw.macro';
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Routes } from '../../routing/routes';
 import { comparePeakListLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';

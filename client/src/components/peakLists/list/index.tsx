@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -425,7 +425,7 @@ const PeakListPage = (props: Props) => {
     ? (
         <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>
       )
-    : ( <PeakListDetail userId={userId} id={id} />);
+    : ( <PeakListDetail userId={userId} id={id} mountainId={undefined} />);
 
   const ListContainer = viewMode === ViewMode.Card ? ContentLeftLarge : ContentLeftSmall;
   const DetailContainer = viewMode === ViewMode.Card ? ContentRightSmall : ContentRightLarge;

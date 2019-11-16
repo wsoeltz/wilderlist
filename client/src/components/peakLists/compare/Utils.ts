@@ -1,5 +1,8 @@
 import { GetString } from 'fluent-react';
-import startCase from 'lodash/startCase';
+import {
+  startCase,
+  // toUpper,
+} from 'lodash';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   formatDate,
@@ -372,36 +375,23 @@ export const getGoalText = (
   ascentGoals: AscentGoals | undefined, getFluentString: GetString) => {
   if (ascentGoals !== undefined) {
     if (ascentGoals.grid.goal === true) {
-      const {monthsNeeded, monthsCompleted} = getGridGoals(ascentGoals.grid);
+      const {monthsNeeded} = getGridGoals(ascentGoals.grid);
       if (monthsNeeded.length === 12) {
         return {text: getFluentString('global-text-value-open'), open: true};
       } else if (monthsNeeded.length === 0) {
         return {text: getFluentString('global-text-value-completed-in-every-month'), open: false};
       } else if (monthsNeeded.length === 1) {
         return {
-          text: getFluentString('global-text-value-open-for') + ' ' + startCase(monthsNeeded[0]),
+          text: getFluentString('global-text-value-open-for') + ' ' + startCase(monthsNeeded[0]).slice(0, 3),
           open: false,
-        };
-      } else if (monthsCompleted.length < monthsNeeded.length) {
-        const monthList = monthsCompleted.reduce((text, month, index) => {
-          if (index === 0) {
-            return text = startCase(month);
-          }
-          const divider = index === monthsCompleted.length - 1 ? ' & ' : ', ';
-          return text = text + divider + startCase(month);
-        }, '');
-        return {
-          text: getFluentString('global-text-value-open-for-every-month-except')
-                + ' ' + monthList,
-          open: true,
         };
       } else {
         const monthList = monthsNeeded.reduce((text, month, index) => {
           if (index === 0) {
-            return text = startCase(month);
+            return text = startCase(month).slice(0, 3);
           }
           const divider = index === monthsNeeded.length - 1 ? ' & ' : ', ';
-          return text = text + divider + startCase(month);
+          return text = text + divider + startCase(month).slice(0, 3);
         }, '');
         return {
           text: getFluentString('global-text-value-open-for')

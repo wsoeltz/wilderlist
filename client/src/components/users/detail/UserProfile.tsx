@@ -3,7 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { History } from 'history';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';

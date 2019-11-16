@@ -12,7 +12,7 @@ import {
   faSearch,
   faThList,
 } from '@fortawesome/free-solid-svg-icons';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from 'styled-components/macro';
 import {
   baseColor,
   lightBaseColor,
