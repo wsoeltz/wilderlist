@@ -95,7 +95,7 @@ const Map = (props: Props) => {
 
         if (highlighted) {
           const circleIsHighlighted = highlighted.find(
-            coord => coord.name === name && coord.latitude === latitude && coord.longitude === longitude
+            coord => coord.name === name && coord.latitude === latitude && coord.longitude === longitude,
           );
           if (circleIsHighlighted) {
             circle.openPopup();
