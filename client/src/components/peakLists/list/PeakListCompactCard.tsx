@@ -119,12 +119,14 @@ const PeakListCard = (props: Props) => {
           {percentComplete}% {getFluentString('global-text-value-complete')}
         </SubtleText>
       );
-    } else {
+    } else if (listAction !== null) {
       cornerContent = (
         <ButtonPrimary onClick={actionButtonOnClick}>
           {actionText}
         </ButtonPrimary>
       );
+    } else {
+      cornerContent = null;
     }
   } else {
     cornerContent = null;
