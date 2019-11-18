@@ -93,8 +93,14 @@ const formatDate = ({ day, month, year }: { day: number, month: number, year: nu
 
 export const formatStringDate = (date: string) => {
   const dateParts = date.split('-');
+  const dateAsNumber = parseInt(
+        dateParts[0]
+        + dateParts[1].replace(/X/g, '0')
+        + dateParts[2].replace(/X/g, '0')
+        + dateParts[3].replace(/X/g, '0'),
+        10);
   const dateObject: DateObject = {
-    dateAsNumber: parseInt(date.replace(/-/g, ''), 10),
+    dateAsNumber,
     year: parseInt(dateParts[0], 10),
     month: parseInt(dateParts[1], 10),
     day: parseInt(dateParts[2], 10),
