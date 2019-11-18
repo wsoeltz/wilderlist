@@ -34,6 +34,7 @@ import {
   seasonColumns,
   smallPadding,
   stateColumn,
+  MountainDatumWithDate,
 } from './MountainRow';
 import {
   MountainDatum,
@@ -305,7 +306,7 @@ const MountainTable = (props: Props) => {
     return {...mountain, completionDates};
   })
 
-  let sortedMountains: MountainDatum[];
+  let sortedMountains: MountainDatumWithDate[];
   if (sortingBy === SortingCategories.name) {
     sortedMountains = sortBy(mountainsWithDates, mountain => mountain.name);
   } else if (sortingBy === SortingCategories.state) {
@@ -383,7 +384,6 @@ const MountainTable = (props: Props) => {
         mountain={mountain}
         type={type}
         setEditMountainId={setMountainToEdit}
-        userMountains={userMountains}
         peakListId={peakListId}
       />
     ),

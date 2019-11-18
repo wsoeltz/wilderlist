@@ -11,7 +11,7 @@ import {
   failIfValidOrNonExhaustive,
 } from '../../../Utils';
 
-type VariableDate = {
+export type VariableDate = {
   type: PeakListVariants.standard;
   standard: DateObject | undefined;
 } | {
