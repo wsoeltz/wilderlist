@@ -39,6 +39,7 @@ import {
   MountainDatum,
   UserDatum,
 } from './PeakListDetail';
+import getCompletionDates from './getCompletionDates';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
@@ -131,6 +132,20 @@ export interface MountainToEdit {
   target: Months | Seasons | null;
 }
 
+enum SortingCategories {
+  name = 'name',
+  elevation = 'elevation',
+  state = 'state',
+  date = 'date',
+}
+
+type SortingBy = SortingCategories | Seasons | Months;
+
+enum SortingDirection {
+  ascending = 'ascending',
+  descending = 'descending',
+}
+
 interface Props {
   mountains: MountainDatum[];
   user: UserDatum | null;
@@ -148,6 +163,23 @@ const MountainTable = (props: Props) => {
   const [mountainToEdit, setMountainToEdit] = useState<MountainToEdit | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const [sortingBy, setSortingBy] = useState<SortingBy>(SortingCategories.elevation);
+  const [sortingDirection, setSortingDirection] = useState<SortingDirection>(SortingDirection.descending);
+
+  const toggleSortDirection = () => {
+    const newDirection = sortingDirection === SortingDirection.ascending
+    ? SortingDirection.descending : SortingDirection.ascending;
+    setSortingDirection(newDirection);
+  }
+
+  const setSorting = (sortValue: SortingBy) => {
+    if (sortValue === sortingBy) {
+      toggleSortDirection();
+    } else {
+      setSortingBy(sortValue);
+    }
+  }
 
   const closeEditMountainModalModal = () => {
     setMountainToEdit(null);
@@ -267,8 +299,82 @@ const MountainTable = (props: Props) => {
   }
 
   const userMountains = (user && user.mountains) ? user.mountains : [];
-  const mountainsByElevation = sortBy(mountains, mountain => mountain.elevation).reverse();
-  const filteredMountains = mountainsByElevation.filter(
+
+  const mountainsWithDates = mountains.map(mountain => {
+    const completionDates = getCompletionDates({type, mountain, userMountains});
+    return {...mountain, completionDates};
+  })
+
+  let sortedMountains: MountainDatum[];
+  if (sortingBy === SortingCategories.name) {
+    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.name);
+  } else if (sortingBy === SortingCategories.state) {
+    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.state.abbreviation);
+  } else if (sortingBy === SortingCategories.elevation) {
+    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.elevation);
+  } else if (sortingBy === SortingCategories.date) {
+    sortedMountains = sortBy(mountainsWithDates, ({completionDates}) => {
+      if (completionDates !== null && completionDates.type) {
+        if (completionDates.type === PeakListVariants.standard) {
+          const dateObject = completionDates.standard;
+          if (dateObject) {
+            return isNaN(dateObject.dateAsNumber) ? 0 : dateObject.dateAsNumber;
+          }
+        } else if (completionDates.type === PeakListVariants.winter) {
+          const dateObject = completionDates.winter;
+          if (dateObject) {
+            return isNaN(dateObject.dateAsNumber) ? 0 : dateObject.dateAsNumber;
+          }
+        }
+      }
+      return undefined;
+    });
+  } else if (sortingBy === Seasons.summer ||
+             sortingBy === Seasons.fall ||
+             sortingBy === Seasons.winter ||
+             sortingBy === Seasons.spring) {
+    sortedMountains = sortBy(mountainsWithDates, ({completionDates}) => {
+      if (completionDates !== null && completionDates.type) {
+        if (completionDates.type === PeakListVariants.fourSeason) {
+          const dateObject = completionDates[sortingBy];
+          if (dateObject) {
+            return isNaN(dateObject.dateAsNumber) ? 0 : dateObject.dateAsNumber;
+          }
+        }
+      }
+      return undefined;
+    });
+  } else if (sortingBy === Months.january ||
+             sortingBy === Months.february ||
+             sortingBy === Months.march ||
+             sortingBy === Months.april ||
+             sortingBy === Months.may ||
+             sortingBy === Months.june ||
+             sortingBy === Months.july ||
+             sortingBy === Months.august ||
+             sortingBy === Months.september ||
+             sortingBy === Months.october ||
+             sortingBy === Months.november ||
+             sortingBy === Months.december) {
+    sortedMountains = sortBy(mountainsWithDates, ({completionDates}) => {
+      if (completionDates !== null && completionDates.type) {
+        if (completionDates.type === PeakListVariants.grid) {
+          const dateObject = completionDates[sortingBy];
+          if (dateObject) {
+            return isNaN(dateObject.dateAsNumber) ? 0 : dateObject.dateAsNumber;
+          }
+        }
+      }
+      return undefined;
+    });
+  } else {
+    failIfValidOrNonExhaustive(sortingBy, 'Invalid sort ' + sortingBy);
+    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.elevation);
+  }
+  if (sortingDirection === SortingDirection.descending) {
+    sortedMountains.reverse();
+  }
+  const filteredMountains = sortedMountains.filter(
     ({name}) => name.toLowerCase().includes(searchQuery.toLowerCase()));
   const mountainRows = filteredMountains.map((mountain, index) => (
       <MountainRow
@@ -287,13 +393,21 @@ const MountainTable = (props: Props) => {
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     titleColumns = (
       <>
-        <TitleCell style={{gridColumn: elevationColumn}}>
+        <TitleCell
+          style={{gridColumn: elevationColumn}}
+          onClick={() => setSorting(SortingCategories.elevation)}
+        >
           {getFluentString('global-text-value-elevation')}
         </TitleCell>
-        <TitleCell style={{gridColumn: stateColumn}}>
+        <TitleCell
+          style={{gridColumn: stateColumn}}
+          onClick={() => setSorting(SortingCategories.state)}
+        >
           {getFluentString('global-text-value-state')}
         </TitleCell>
-        <MountainColumnTitleButton>
+        <MountainColumnTitleButton
+          onClick={() => setSorting(SortingCategories.date)}
+        >
           {getFluentString('global-text-value-done')}
         </MountainColumnTitleButton>
       </>
@@ -301,16 +415,28 @@ const MountainTable = (props: Props) => {
   } else if (type === PeakListVariants.fourSeason) {
     titleColumns = (
       <>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.summer]}}>
+        <TitleCell
+          style={{gridColumn: seasonColumns[Seasons.summer]}}
+          onClick={() => setSorting(Seasons.summer)}
+        >
           {getFluentString('global-text-value-summer')}
         </TitleCell>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.fall]}}>
+        <TitleCell
+          style={{gridColumn: seasonColumns[Seasons.fall]}}
+          onClick={() => setSorting(Seasons.fall)}
+        >
           {getFluentString('global-text-value-fall')}
         </TitleCell>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.winter]}}>
+        <TitleCell
+          style={{gridColumn: seasonColumns[Seasons.winter]}}
+          onClick={() => setSorting(Seasons.winter)}
+        >
           {getFluentString('global-text-value-winter')}
         </TitleCell>
-        <TitleCell style={{gridColumn: seasonColumns[Seasons.spring]}}>
+        <TitleCell
+          style={{gridColumn: seasonColumns[Seasons.spring]}}
+          onClick={() => setSorting(Seasons.spring)}
+        >
           {getFluentString('global-text-value-spring')}
         </TitleCell>
       </>
@@ -318,40 +444,76 @@ const MountainTable = (props: Props) => {
   } else if (type === PeakListVariants.grid) {
     titleColumns = (
       <>
-        <GridTitle style={{gridColumn: monthColumns[Months.january]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.january]}}
+          onClick={() => setSorting(Months.january)}
+        >
           {getFluentString('global-text-value-month-short-jan')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.february]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.february]}}
+          onClick={() => setSorting(Months.february)}
+        >
           {getFluentString('global-text-value-month-short-feb')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.march]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.march]}}
+          onClick={() => setSorting(Months.march)}
+        >
           {getFluentString('global-text-value-month-short-mar')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.april]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.april]}}
+          onClick={() => setSorting(Months.april)}
+        >
           {getFluentString('global-text-value-month-short-apr')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.may]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.may]}}
+          onClick={() => setSorting(Months.may)}
+        >
           {getFluentString('global-text-value-month-short-may')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.june]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.june]}}
+          onClick={() => setSorting(Months.june)}
+        >
           {getFluentString('global-text-value-month-short-jun')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.july]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.july]}}
+          onClick={() => setSorting(Months.july)}
+        >
           {getFluentString('global-text-value-month-short-jul')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.august]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.august]}}
+          onClick={() => setSorting(Months.august)}
+        >
           {getFluentString('global-text-value-month-short-aug')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.september]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.september]}}
+          onClick={() => setSorting(Months.september)}
+        >
           {getFluentString('global-text-value-month-short-sep')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.october]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.october]}}
+          onClick={() => setSorting(Months.october)}
+        >
           {getFluentString('global-text-value-month-short-oct')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.november]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.november]}}
+          onClick={() => setSorting(Months.november)}
+        >
           {getFluentString('global-text-value-month-short-nov')}
         </GridTitle>
-        <GridTitle style={{gridColumn: monthColumns[Months.december]}}>
+        <GridTitle
+          style={{gridColumn: monthColumns[Months.december]}}
+          onClick={() => setSorting(Months.december)}
+        >
           {getFluentString('global-text-value-month-short-dec')}
         </GridTitle>
       </>
@@ -397,7 +559,9 @@ const MountainTable = (props: Props) => {
       </FilterBar>
       <div style={{minHeight: mountains.length * 32}}>
         <Root>
-          <MountainColumnTitleName>
+          <MountainColumnTitleName
+            onClick={() => setSorting(SortingCategories.name)}
+          >
             {getFluentString('global-text-value-mountain')}
           </MountainColumnTitleName>
           {titleColumns}
