@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import { sortBy } from 'lodash';
 import React, {useContext, useState} from 'react';
@@ -10,6 +11,8 @@ import {
   lightBorderColor,
   placeholderColor,
   semiBoldFontBoldWeight,
+  tertiaryColor,
+  // baseColor,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
@@ -22,6 +25,7 @@ import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
+import getCompletionDates from './getCompletionDates';
 import MountainCompletionModal from './MountainCompletionModal';
 import MountainRow from './MountainRow';
 import {
@@ -30,17 +34,16 @@ import {
   extraSmallPadding,
   horizontalPadding,
   monthColumns,
+  MountainDatumWithDate,
   nameColumn,
   seasonColumns,
   smallPadding,
   stateColumn,
-  MountainDatumWithDate,
 } from './MountainRow';
 import {
   MountainDatum,
   UserDatum,
 } from './PeakListDetail';
-import getCompletionDates from './getCompletionDates';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
@@ -60,6 +63,11 @@ export const TitleBase = styled.div`
   background-color: #fff;
   z-index: 50;
 
+  &:hover {
+    cursor: pointer;
+    background-color: ${tertiaryColor};
+  }
+
   @media ${smallColumnMediaQuery} {
     font-size: 0.8rem;
     padding: ${smallPadding}rem;
@@ -73,6 +81,7 @@ export const TitleBase = styled.div`
 export const MountainColumnTitleName = styled(TitleBase)`
   grid-column: ${nameColumn};
   font-size: 1.2rem;
+  align-items: center;
 
   @media ${smallColumnMediaQuery} {
     font-size: 0.95rem;
@@ -95,6 +104,7 @@ const MountainColumnTitleButton = styled(TitleBase)`
   grid-column: ${buttonColumn};
   font-size: 1.2rem;
   justify-content: flex-end;
+  align-items: center;
 
   @media ${smallColumnMediaQuery} {
     font-size: 0.95rem;
@@ -122,6 +132,11 @@ const ImportAscentsButtonContainer = styled.div`
   margin: 1rem 0;
 `;
 
+const SortIcon = styled(FontAwesomeIcon)`
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+`;
+
 export const FilterBar = styled.div`
   margin-bottom: 1rem;
   font-size: 75%;
@@ -147,6 +162,13 @@ enum SortingDirection {
   descending = 'descending',
 }
 
+// Sort icon strings come from font awesome
+enum DirectionIcon {
+  sortNone = 'sort',
+  sortUp = 'sort-up',
+  sortDown = 'sort-down',
+}
+
 interface Props {
   mountains: MountainDatum[];
   user: UserDatum | null;
@@ -168,11 +190,14 @@ const MountainTable = (props: Props) => {
   const [sortingBy, setSortingBy] = useState<SortingBy>(SortingCategories.elevation);
   const [sortingDirection, setSortingDirection] = useState<SortingDirection>(SortingDirection.descending);
 
+  const sortIcon = sortingDirection === SortingDirection.ascending
+    ? DirectionIcon.sortUp : DirectionIcon.sortDown;
+
   const toggleSortDirection = () => {
     const newDirection = sortingDirection === SortingDirection.ascending
     ? SortingDirection.descending : SortingDirection.ascending;
     setSortingDirection(newDirection);
-  }
+  };
 
   const setSorting = (sortValue: SortingBy) => {
     if (sortValue === sortingBy) {
@@ -180,7 +205,7 @@ const MountainTable = (props: Props) => {
     } else {
       setSortingBy(sortValue);
     }
-  }
+  };
 
   const closeEditMountainModalModal = () => {
     setMountainToEdit(null);
@@ -304,13 +329,13 @@ const MountainTable = (props: Props) => {
   const mountainsWithDates = mountains.map(mountain => {
     const completionDates = getCompletionDates({type, mountain, userMountains});
     return {...mountain, completionDates};
-  })
+  });
 
   let sortedMountains: MountainDatumWithDate[];
   if (sortingBy === SortingCategories.name) {
-    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.name);
+    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.name).reverse();
   } else if (sortingBy === SortingCategories.state) {
-    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.state.abbreviation);
+    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.state.abbreviation).reverse();
   } else if (sortingBy === SortingCategories.elevation) {
     sortedMountains = sortBy(mountainsWithDates, mountain => mountain.elevation);
   } else if (sortingBy === SortingCategories.date) {
@@ -398,17 +423,38 @@ const MountainTable = (props: Props) => {
           onClick={() => setSorting(SortingCategories.elevation)}
         >
           {getFluentString('global-text-value-elevation')}
+          <SortIcon
+            icon={sortingBy === SortingCategories.elevation
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === SortingCategories.elevation ? 1 : 0.3,
+            }}
+          />
         </TitleCell>
         <TitleCell
           style={{gridColumn: stateColumn}}
           onClick={() => setSorting(SortingCategories.state)}
         >
           {getFluentString('global-text-value-state')}
+          <SortIcon
+            icon={sortingBy === SortingCategories.state
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === SortingCategories.state ? 1 : 0.3,
+            }}
+          />
         </TitleCell>
         <MountainColumnTitleButton
           onClick={() => setSorting(SortingCategories.date)}
         >
           {getFluentString('global-text-value-done')}
+          <SortIcon
+            icon={sortingBy === SortingCategories.date
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === SortingCategories.date ? 1 : 0.3,
+            }}
+          />
         </MountainColumnTitleButton>
       </>
     );
@@ -420,24 +466,52 @@ const MountainTable = (props: Props) => {
           onClick={() => setSorting(Seasons.summer)}
         >
           {getFluentString('global-text-value-summer')}
+          <SortIcon
+            icon={sortingBy === Seasons.summer
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Seasons.summer ? 1 : 0.3,
+            }}
+          />
         </TitleCell>
         <TitleCell
           style={{gridColumn: seasonColumns[Seasons.fall]}}
           onClick={() => setSorting(Seasons.fall)}
         >
           {getFluentString('global-text-value-fall')}
+          <SortIcon
+            icon={sortingBy === Seasons.fall
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Seasons.fall ? 1 : 0.3,
+            }}
+          />
         </TitleCell>
         <TitleCell
           style={{gridColumn: seasonColumns[Seasons.winter]}}
           onClick={() => setSorting(Seasons.winter)}
         >
           {getFluentString('global-text-value-winter')}
+          <SortIcon
+            icon={sortingBy === Seasons.winter
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Seasons.winter ? 1 : 0.3,
+            }}
+          />
         </TitleCell>
         <TitleCell
           style={{gridColumn: seasonColumns[Seasons.spring]}}
           onClick={() => setSorting(Seasons.spring)}
         >
           {getFluentString('global-text-value-spring')}
+          <SortIcon
+            icon={sortingBy === Seasons.spring
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Seasons.spring ? 1 : 0.3,
+            }}
+          />
         </TitleCell>
       </>
     );
@@ -449,72 +523,156 @@ const MountainTable = (props: Props) => {
           onClick={() => setSorting(Months.january)}
         >
           {getFluentString('global-text-value-month-short-jan')}
+          <SortIcon
+            icon={sortingBy === Months.january
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.january ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.february]}}
           onClick={() => setSorting(Months.february)}
         >
           {getFluentString('global-text-value-month-short-feb')}
+          <SortIcon
+            icon={sortingBy === Months.february
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.february ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.march]}}
           onClick={() => setSorting(Months.march)}
         >
           {getFluentString('global-text-value-month-short-mar')}
+          <SortIcon
+            icon={sortingBy === Months.march
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.march ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.april]}}
           onClick={() => setSorting(Months.april)}
         >
           {getFluentString('global-text-value-month-short-apr')}
+          <SortIcon
+            icon={sortingBy === Months.april
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.april ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.may]}}
           onClick={() => setSorting(Months.may)}
         >
           {getFluentString('global-text-value-month-short-may')}
+          <SortIcon
+            icon={sortingBy === Months.may
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.may ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.june]}}
           onClick={() => setSorting(Months.june)}
         >
           {getFluentString('global-text-value-month-short-jun')}
+          <SortIcon
+            icon={sortingBy === Months.june
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.june ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.july]}}
           onClick={() => setSorting(Months.july)}
         >
           {getFluentString('global-text-value-month-short-jul')}
+          <SortIcon
+            icon={sortingBy === Months.july
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.july ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.august]}}
           onClick={() => setSorting(Months.august)}
         >
           {getFluentString('global-text-value-month-short-aug')}
+          <SortIcon
+            icon={sortingBy === Months.august
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.august ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.september]}}
           onClick={() => setSorting(Months.september)}
         >
           {getFluentString('global-text-value-month-short-sep')}
+          <SortIcon
+            icon={sortingBy === Months.september
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.september ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.october]}}
           onClick={() => setSorting(Months.october)}
         >
           {getFluentString('global-text-value-month-short-oct')}
+          <SortIcon
+            icon={sortingBy === Months.october
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.october ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.november]}}
           onClick={() => setSorting(Months.november)}
         >
           {getFluentString('global-text-value-month-short-nov')}
+          <SortIcon
+            icon={sortingBy === Months.november
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.november ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.december]}}
           onClick={() => setSorting(Months.december)}
         >
           {getFluentString('global-text-value-month-short-dec')}
+          <SortIcon
+            icon={sortingBy === Months.december
+              ? sortIcon : DirectionIcon.sortNone}
+            style={{
+              opacity: sortingBy === Months.december ? 1 : 0.3,
+            }}
+          />
         </GridTitle>
       </>
     );
@@ -563,6 +721,13 @@ const MountainTable = (props: Props) => {
             onClick={() => setSorting(SortingCategories.name)}
           >
             {getFluentString('global-text-value-mountain')}
+            <SortIcon
+              icon={sortingBy === SortingCategories.name
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === SortingCategories.name ? 1 : 0.3,
+              }}
+            />
           </MountainColumnTitleName>
           {titleColumns}
           {mountainRows}

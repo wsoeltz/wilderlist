@@ -1,5 +1,7 @@
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
-import { MountainDatum } from './PeakListDetail';
+import {
+  failIfValidOrNonExhaustive,
+} from '../../../Utils';
 import {
   DateObject,
   getFourSeasonCompletion,
@@ -7,9 +9,7 @@ import {
   getStandardCompletion,
   getWinterCompletion,
 } from '../Utils';
-import {
-  failIfValidOrNonExhaustive,
-} from '../../../Utils';
+import { MountainDatum } from './PeakListDetail';
 
 export type VariableDate = {
   type: PeakListVariants.standard;
@@ -37,7 +37,7 @@ export type VariableDate = {
   october: DateObject | undefined;
   november: DateObject | undefined;
   december: DateObject | undefined;
-}
+};
 
 interface Input {
   type: PeakListVariants;
@@ -74,7 +74,7 @@ export default (input: Input) => {
         const {summer, fall, spring, winter} = completedDate;
         allDates = {
           type: PeakListVariants.fourSeason,
-          summer, fall, winter, spring 
+          summer, fall, winter, spring,
         };
       } else {
         allDates = null;
@@ -114,4 +114,4 @@ export default (input: Input) => {
   }
 
   return allDates;
-}
+};

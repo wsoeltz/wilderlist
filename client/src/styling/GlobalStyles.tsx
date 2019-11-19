@@ -10,6 +10,9 @@ import {
   faList,
   faMapMarkerAlt,
   faSearch,
+  faSort,
+  faSortDown,
+  faSortUp,
   faThList,
 } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components/macro';
@@ -24,7 +27,8 @@ import {
 library.add(
   faCaretDown, faCaretUp, faSearch, faCalendarAlt,
   faCheck, faEnvelope, faChevronLeft, faChevronRight,
-  faList, faThList, faMapMarkerAlt,
+  faList, faThList, faMapMarkerAlt, faSort, faSortDown,
+  faSortUp,
 );
 
 const GlobalStyles = createGlobalStyle`

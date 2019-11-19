@@ -21,11 +21,11 @@ import {
   formatDate,
   formatGridDate,
 } from '../Utils';
+import {VariableDate} from './getCompletionDates';
 import { MountainToEdit } from './MountainTable';
 import {
   MountainDatum,
 } from './PeakListDetail';
-import {VariableDate} from './getCompletionDates';
 
 export const nameColumn = 1;
 export const elevationColumn = 2;
