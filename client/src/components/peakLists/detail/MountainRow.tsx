@@ -32,7 +32,7 @@ export const elevationColumn = 2;
 export const stateColumn = 3;
 export const buttonColumn = 4;
 export const horizontalPadding = 0.6; // in rem
-export const smallPadding = 0.5; // in rem
+export const smallPadding = 0.4; // in rem
 export const extraSmallPadding = 0.3; // in rem
 
 export const seasonColumns = {
