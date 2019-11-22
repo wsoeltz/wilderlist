@@ -44,27 +44,6 @@ const SEARCH_USERS = gql`
       name
       profilePictureUrl
       hideProfilePicture
-      peakLists {
-        id
-        shortName
-        type
-        mountains {
-          id
-        }
-        parent {
-          id
-          mountains {
-            id
-          }
-        }
-      }
-      mountains {
-        mountain {
-          id
-          name
-        }
-        dates
-      }
     }
     me: user(id: $id) {
       id
@@ -74,27 +53,6 @@ const SEARCH_USERS = gql`
           name
           profilePictureUrl
           hideProfilePicture
-          peakLists {
-            id
-            shortName
-            type
-            mountains {
-              id
-            }
-            parent {
-              id
-              mountains {
-                id
-              }
-            }
-          }
-          mountains {
-            mountain {
-              id
-              name
-            }
-            dates
-          }
         }
         status
       }
