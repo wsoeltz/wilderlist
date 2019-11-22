@@ -28,7 +28,7 @@ const PlaceholderButton = styled(ButtonPrimaryLink)`
 `;
 
 const GET_USERS_PEAK_LISTS = gql`
-  query SearchPeakLists($userId: ID!) {
+  query GetUsersFriends($userId: ID!) {
     user(id: $userId) {
       id
       peakLists {
@@ -74,6 +74,14 @@ const GET_USERS_PEAK_LISTS = gql`
         }
         dates
       }
+    }
+  }
+`;
+
+const GET_USERS_FRIENDS = gql`
+  query GetFriendsForUser($userId: ID!) {
+    user(id: $userId) {
+      id
       friends {
         user {
           id
@@ -107,11 +115,17 @@ const GET_USERS_PEAK_LISTS = gql`
   }
 `;
 
-interface SuccessResponse {
+interface PeakListsSuccessResponse {
   user: {
     id: User['id'];
     peakLists: CardPeakListDatum[];
     mountains: User['mountains'];
+  };
+}
+
+interface FirendsSuccessResponse {
+  user: {
+    id: User['id'];
     friends: Array<{
       user: UserDatum
       status: FriendStatus;
@@ -165,37 +179,37 @@ const Dashboard = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_USERS_PEAK_LISTS, {
+  const {
+    loading: listLoading,
+    error: listsError,
+    data: listsData,
+  } = useQuery<PeakListsSuccessResponse, Variables>(GET_USERS_PEAK_LISTS, {
+    variables: { userId },
+  });
+  const {
+    loading: friendsLoading,
+    error: friendsError,
+    data: friendsData,
+  } = useQuery<FirendsSuccessResponse, Variables>(GET_USERS_FRIENDS, {
     variables: { userId },
   });
 
   let peakListsList: React.ReactElement<any> | null;
-  let friendsList: React.ReactElement<any> | null;
-  if (loading === true) {
+  if (listLoading === true) {
     const loadingListCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingListCards.push(<GhostPeakListCard key={i} />);
     }
     peakListsList = <>{loadingListCards}</>;
-
-    const loadingUserCards: Array<React.ReactElement<any>> = [];
-    for (let i = 0; i < 5; i++) {
-      loadingUserCards.push(<GhostUserCard key={i} />);
-    }
-    friendsList = <>{loadingUserCards}</>;
-  } else if (error !== undefined) {
-    console.error(error);
+  } else if (listsError !== undefined) {
+    console.error(listsError);
     peakListsList = (
       <PlaceholderText>
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>);
-    friendsList = (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>);
-  } else if (data !== undefined) {
-    const { user } = data;
-    const { peakLists, friends, mountains } = user;
+  } else if (listsData !== undefined) {
+    const { user } = listsData;
+    const { peakLists, mountains } = user;
     if (peakLists.length === 0) {
       peakListsList = (
         <PlaceholderText>
@@ -231,6 +245,30 @@ const Dashboard = (props: Props) => {
         />
       );
     }
+  } else {
+    peakListsList = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
+  }
+
+  let friendsList: React.ReactElement<any> | null;
+  if (friendsLoading === true) {
+    const loadingUserCards: Array<React.ReactElement<any>> = [];
+    for (let i = 0; i < 5; i++) {
+      loadingUserCards.push(<GhostUserCard key={i} />);
+    }
+    friendsList = <>{loadingUserCards}</>;
+  } else if (friendsError !== undefined) {
+    console.error(friendsError);
+    friendsList = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>);
+  } else if (friendsData !== undefined) {
+    const { user } = friendsData;
+    const { friends } = user;
     if (friends.length === 0) {
       friendsList = (
         <PlaceholderText>
@@ -264,14 +302,11 @@ const Dashboard = (props: Props) => {
       );
     }
   } else {
-    peakListsList = (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>);
     friendsList = (
       <PlaceholderText>
         {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>);
+      </PlaceholderText>
+    );
   }
 
   return (
