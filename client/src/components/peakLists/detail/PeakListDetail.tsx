@@ -197,21 +197,29 @@ const PeakListDetail = (props: Props) => {
       } else if (peakList.states && peakList.states.length) {
         statesArray = [...peakList.states];
       }
-      const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
-      const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-      const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
-      const paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
-        'list-name': peakList.name,
-        'number-of-peaks': mountains.length,
-        'state-or-region': isStateOrRegion.toString(),
-        'state-region-name': statesOrRegions,
-        'highest-mountain-name': mountainsSortedByElevation[0].name,
-        'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
-        'smallest-mountain-name':
-          mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-        'smallest-mountain-elevation':
-          mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
-      });
+
+      let paragraphText: string;
+      if (mountains && mountains.length) {
+        const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
+        const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+        const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+        paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
+          'list-name': peakList.name,
+          'number-of-peaks': mountains.length,
+          'state-or-region': isStateOrRegion.toString(),
+          'state-region-name': statesOrRegions,
+          'highest-mountain-name': mountainsSortedByElevation[0].name,
+          'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+          'smallest-mountain-name':
+            mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
+          'smallest-mountain-elevation':
+            mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+        });
+      } else {
+        paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
+          'list-name': peakList.name,
+        });
+      }
 
       const activeMountain = mountains.find(mtn => mtn.id === mountainId);
       const highlightedMountain = activeMountain ? [activeMountain] : undefined;

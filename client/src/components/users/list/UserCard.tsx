@@ -271,7 +271,7 @@ const getListsInProgress =
         failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
       }
-      if (numCompletedAscents === totalRequiredAscents) {// list complete
+      if (totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {// list complete
         completedLists.push(list.shortName + getType(list.type));
       } else { // list is incomplete
         listsInProgress.push(list.shortName + getType(list.type));
