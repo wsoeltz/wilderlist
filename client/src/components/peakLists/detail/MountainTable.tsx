@@ -189,12 +189,68 @@ enum SortingDirection {
   descending = 'descending',
 }
 
+const getInitialCategory = (value: any, type: PeakListVariants) => {
+  if ( value === SortingCategories.name
+    || value === SortingCategories.elevation) {
+    return value as SortingBy;
+  }
+  if ( ( type === PeakListVariants.standard
+       || type === PeakListVariants.winter)
+    && ( value === SortingCategories.state
+      || value === SortingCategories.date )
+    ) {
+    return value as SortingBy;
+  }
+  if ( type === PeakListVariants.fourSeason
+      && (
+           value === Seasons.summer
+        || value === Seasons.fall
+        || value === Seasons.winter
+        || value === Seasons.spring
+      )
+    ) {
+    return value as SortingBy;
+  }
+  if ( type === PeakListVariants.grid
+      && (
+           value === Months.january
+        || value === Months.february
+        || value === Months.march
+        || value === Months.april
+        || value === Months.may
+        || value === Months.june
+        || value === Months.july
+        || value === Months.august
+        || value === Months.september
+        || value === Months.october
+        || value === Months.november
+        || value === Months.december
+      )
+    ) {
+    return value as SortingBy;
+  }
+  return SortingCategories.name;
+};
+
+const localStorageSortingCategoryVariable = 'localStorageSortingCategoryVariable';
+const localStorageSortingDirectionVariable = 'localStorageSortingDirectionVariable';
+
 // Sort icon strings come from font awesome
 enum DirectionIcon {
   sortNone = 'sort',
   sortUp = 'sort-up',
   sortDown = 'sort-down',
 }
+
+const getInitialDirection = (value: any) => {
+  if ( value === SortingDirection.ascending
+    || value === SortingDirection.descending
+    ) {
+    return value as SortingDirection;
+  } else {
+    return SortingDirection.descending;
+  }
+};
 
 interface Props {
   mountains: MountainDatum[];
@@ -214,8 +270,14 @@ const MountainTable = (props: Props) => {
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const [sortingBy, setSortingBy] = useState<SortingBy>(SortingCategories.elevation);
-  const [sortingDirection, setSortingDirection] = useState<SortingDirection>(SortingDirection.descending);
+  const localSortCategory = localStorage.getItem(localStorageSortingCategoryVariable);
+  const localSortDirection = localStorage.getItem(localStorageSortingDirectionVariable);
+
+  const initialSortCategory = getInitialCategory(localSortCategory, type);
+  const initialSortDirection = getInitialDirection(localSortDirection);
+
+  const [sortingBy, setSortingBy] = useState<SortingBy>(initialSortCategory);
+  const [sortingDirection, setSortingDirection] = useState<SortingDirection>(initialSortDirection);
 
   const sortIcon = sortingDirection === SortingDirection.ascending
     ? DirectionIcon.sortUp : DirectionIcon.sortDown;
@@ -223,6 +285,7 @@ const MountainTable = (props: Props) => {
   const toggleSortDirection = () => {
     const newDirection = sortingDirection === SortingDirection.ascending
     ? SortingDirection.descending : SortingDirection.ascending;
+    localStorage.setItem(localStorageSortingDirectionVariable, newDirection);
     setSortingDirection(newDirection);
   };
 
@@ -230,6 +293,7 @@ const MountainTable = (props: Props) => {
     if (sortValue === sortingBy) {
       toggleSortDirection();
     } else {
+      localStorage.setItem(localStorageSortingCategoryVariable, sortValue);
       setSortingBy(sortValue);
     }
   };
