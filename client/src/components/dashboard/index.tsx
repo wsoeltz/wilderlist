@@ -38,33 +38,11 @@ const GET_USERS_PEAK_LISTS = gql`
         type
         mountains {
           id
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
         }
         parent {
           id
           mountains {
             id
-            state {
-              id
-              name
-              regions {
-                id
-                name
-                states {
-                  id
-                }
-              }
-            }
           }
         }
       }
