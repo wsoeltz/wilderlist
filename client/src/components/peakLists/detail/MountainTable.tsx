@@ -107,6 +107,10 @@ const GridTitle = styled(TitleCell)`
   }
 `;
 
+const FourSeasonTitle = styled(TitleCell)`
+  flex-wrap: nowrap;
+`;
+
 const MountainColumnTitleButton = styled(TitleBase)`
   grid-column: ${buttonColumn};
   font-size: 1.1rem;
@@ -139,17 +143,24 @@ const ImportAscentsButtonContainer = styled.div`
   margin: 1rem 0;
 `;
 
+const SortIconContainer = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const SortIcon = styled(FontAwesomeIcon)`
   font-size: 0.8rem;
   margin: 0 .25rem;
 `;
 
-const GridCellText = styled.div`
+const CompressedCellText = styled.div`
   flex-grow: 1;
   text-align: center;
 `;
 
-const GridSortIcon = styled(SortIcon)`
+const GridSortIconContainer = styled(SortIconContainer)`
   flex-grow: 1;
 `;
 
@@ -439,104 +450,110 @@ const MountainTable = (props: Props) => {
           onClick={() => setSorting(SortingCategories.elevation)}
         >
           {getFluentString('global-text-value-elevation')}
-          <SortIcon
-            icon={sortingBy === SortingCategories.elevation
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === SortingCategories.elevation ? 1 : 0.3,
-            }}
-          />
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === SortingCategories.elevation
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === SortingCategories.elevation ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
         </TitleCell>
         <TitleCell
           style={{gridColumn: stateColumn}}
           onClick={() => setSorting(SortingCategories.state)}
         >
           {getFluentString('global-text-value-state')}
-          <SortIcon
-            icon={sortingBy === SortingCategories.state
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === SortingCategories.state ? 1 : 0.3,
-            }}
-          />
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === SortingCategories.state
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === SortingCategories.state ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
         </TitleCell>
         <MountainColumnTitleButton
           onClick={() => setSorting(SortingCategories.date)}
         >
           {getFluentString('global-text-value-done')}
-          <SortIcon
-            icon={sortingBy === SortingCategories.date
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === SortingCategories.date ? 1 : 0.3,
-            }}
-          />
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === SortingCategories.date
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === SortingCategories.date ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
         </MountainColumnTitleButton>
       </>
     );
   } else if (type === PeakListVariants.fourSeason) {
     titleColumns = (
       <>
-        <TitleCell
+        <FourSeasonTitle
           style={{gridColumn: seasonColumns[Seasons.summer]}}
           onClick={() => setSorting(Seasons.summer)}
         >
-          <GridCellText>
-            {getFluentString('global-text-value-summer')}
-          </GridCellText>
-          <SortIcon
-            icon={sortingBy === Seasons.summer
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Seasons.summer ? 1 : 0.3,
-            }}
-          />
-        </TitleCell>
-        <TitleCell
+          {getFluentString('global-text-value-summer')}
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === Seasons.summer
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Seasons.summer ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
+        </FourSeasonTitle>
+        <FourSeasonTitle
           style={{gridColumn: seasonColumns[Seasons.fall]}}
           onClick={() => setSorting(Seasons.fall)}
         >
-          <GridCellText>
-            {getFluentString('global-text-value-fall')}
-          </GridCellText>
-          <SortIcon
-            icon={sortingBy === Seasons.fall
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Seasons.fall ? 1 : 0.3,
-            }}
-          />
-        </TitleCell>
-        <TitleCell
+          {getFluentString('global-text-value-fall')}
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === Seasons.fall
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Seasons.fall ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
+        </FourSeasonTitle>
+        <FourSeasonTitle
           style={{gridColumn: seasonColumns[Seasons.winter]}}
           onClick={() => setSorting(Seasons.winter)}
         >
-          <GridCellText>
-            {getFluentString('global-text-value-winter')}
-          </GridCellText>
-          <SortIcon
-            icon={sortingBy === Seasons.winter
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Seasons.winter ? 1 : 0.3,
-            }}
-          />
-        </TitleCell>
-        <TitleCell
+          {getFluentString('global-text-value-winter')}
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === Seasons.winter
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Seasons.winter ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
+        </FourSeasonTitle>
+        <FourSeasonTitle
           style={{gridColumn: seasonColumns[Seasons.spring]}}
           onClick={() => setSorting(Seasons.spring)}
         >
-          <GridCellText>
-            {getFluentString('global-text-value-spring')}
-          </GridCellText>
-          <SortIcon
-            icon={sortingBy === Seasons.spring
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Seasons.spring ? 1 : 0.3,
-            }}
-          />
-        </TitleCell>
+          {getFluentString('global-text-value-spring')}
+          <SortIconContainer>
+            <SortIcon
+              icon={sortingBy === Seasons.spring
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Seasons.spring ? 1 : 0.3,
+              }}
+            />
+          </SortIconContainer>
+        </FourSeasonTitle>
       </>
     );
   } else if (type === PeakListVariants.grid) {
@@ -546,181 +563,205 @@ const MountainTable = (props: Props) => {
           style={{gridColumn: monthColumns[Months.january]}}
           onClick={() => setSorting(Months.january)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-jan')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.january
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.january ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.january
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.january ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.february]}}
           onClick={() => setSorting(Months.february)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-feb')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.february
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.february ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.february
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.february ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.march]}}
           onClick={() => setSorting(Months.march)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-mar')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.march
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.march ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.march
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.march ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.april]}}
           onClick={() => setSorting(Months.april)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-apr')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.april
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.april ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.april
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.april ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.may]}}
           onClick={() => setSorting(Months.may)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-may')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.may
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.may ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.may
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.may ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.june]}}
           onClick={() => setSorting(Months.june)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-jun')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.june
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.june ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.june
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.june ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.july]}}
           onClick={() => setSorting(Months.july)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-jul')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.july
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.july ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.july
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.july ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.august]}}
           onClick={() => setSorting(Months.august)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-aug')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.august
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.august ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.august
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.august ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.september]}}
           onClick={() => setSorting(Months.september)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-sep')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.september
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.september ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.september
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.september ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.october]}}
           onClick={() => setSorting(Months.october)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-oct')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.october
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.october ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.october
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.october ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.november]}}
           onClick={() => setSorting(Months.november)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-nov')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.november
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.november ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.november
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.november ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
         <GridTitle
           style={{gridColumn: monthColumns[Months.december]}}
           onClick={() => setSorting(Months.december)}
         >
-          <GridCellText>
+          <CompressedCellText>
             {getFluentString('global-text-value-month-short-dec')}
-          </GridCellText>
-          <GridSortIcon
-            icon={sortingBy === Months.december
-              ? sortIcon : DirectionIcon.sortNone}
-            style={{
-              opacity: sortingBy === Months.december ? 1 : 0.3,
-            }}
-          />
+          </CompressedCellText>
+          <GridSortIconContainer>
+            <SortIcon
+              icon={sortingBy === Months.december
+                ? sortIcon : DirectionIcon.sortNone}
+              style={{
+                opacity: sortingBy === Months.december ? 1 : 0.3,
+              }}
+            />
+          </GridSortIconContainer>
         </GridTitle>
       </>
     );
@@ -769,13 +810,15 @@ const MountainTable = (props: Props) => {
             onClick={() => setSorting(SortingCategories.name)}
           >
             {getFluentString('global-text-value-mountain')}
-            <SortIcon
-              icon={sortingBy === SortingCategories.name
-                ? sortIcon : DirectionIcon.sortNone}
-              style={{
-                opacity: sortingBy === SortingCategories.name ? 1 : 0.3,
-              }}
-            />
+            <SortIconContainer>
+              <SortIcon
+                icon={sortingBy === SortingCategories.name
+                  ? sortIcon : DirectionIcon.sortNone}
+                style={{
+                  opacity: sortingBy === SortingCategories.name ? 1 : 0.3,
+                }}
+              />
+            </SortIconContainer>
           </MountainColumnTitleName>
           {titleColumns}
           {mountainRows}
