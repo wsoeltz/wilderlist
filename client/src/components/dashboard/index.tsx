@@ -65,27 +65,6 @@ const GET_USERS_FRIENDS = gql`
           id
           name
           profilePictureUrl
-          peakLists {
-            id
-            shortName
-            type
-            mountains {
-              id
-            }
-            parent {
-              id
-              mountains {
-                id
-              }
-            }
-          }
-          mountains {
-            mountain {
-              id
-              name
-            }
-            dates
-          }
         }
         status
       }
