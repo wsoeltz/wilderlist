@@ -20,12 +20,7 @@ export interface DateObject {
 export const getDates = (dates: CompletedMountain['dates']) => {
     const parsedDates: DateObject[] = dates.map(date => {
       const dateParts = date.split('-');
-      const dateAsNumber = parseInt(
-        dateParts[0]
-        + dateParts[1].replace(/X/g, '0')
-        + dateParts[2].replace(/X/g, '0')
-        + dateParts[3].replace(/X/g, '0'),
-        10);
+      const dateAsNumber = parseInt(date.replace(/X/g, '0').split('-').join(''), 10);
       return {
         dateAsNumber,
         year: parseInt(dateParts[0], 10),
@@ -158,12 +153,7 @@ export const formatDate = ({ day, month, year }: { day: number, month: number, y
 
 export const formatStringDate = (date: string) => {
   const dateParts = date.split('-');
-  const dateAsNumber = parseInt(
-        dateParts[0]
-        + dateParts[1].replace(/X/g, '0')
-        + dateParts[2].replace(/X/g, '0')
-        + dateParts[3].replace(/X/g, '0'),
-        10);
+  const dateAsNumber = parseInt(date.replace(/X/g, '0').split('-').join(''), 10);
   const dateObject: DateObject = {
     dateAsNumber,
     year: parseInt(dateParts[0], 10),
@@ -399,20 +389,8 @@ export const getLatestAscent =  (
     });
   }
 
-  const ascentsNotNaN = ascents.filter(
-    ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
-  if (ascentsNotNaN.length) {
-    const sortedAscentsNotNaN = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
-    if (sortedAscentsNotNaN.length) {
-      return sortedAscentsNotNaN[sortedAscentsNotNaN.length - 1];
-    }
-  }
-  const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
-  const sortedAscentsYearOnly = ascentsYearOnly.length
-    ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
-    : sortBy(ascents, ['year', 'month', 'day']);
-
-  return sortedAscentsYearOnly[sortedAscentsYearOnly.length - 1];
+  const sortedAscents = sortBy(ascents, ['dateAsNumber']);
+  return sortedAscents[sortedAscents.length - 1];
 };
 
 type DateWithName = DateObject & { name: string };

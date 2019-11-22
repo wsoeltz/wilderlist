@@ -155,6 +155,7 @@ peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
 peak-list-detail-filter-mountains = Filter mountains
 
+peak-list-detail-list-overview-empty = { $list-name } does not yet have any mountains associated with it.
 peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located ⁨{
   $state-or-region ->
     [state] within

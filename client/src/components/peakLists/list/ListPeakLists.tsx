@@ -121,7 +121,7 @@ const ListPeakLists = (props: Props) => {
         totalRequiredAscents = 0;
       }
 
-      if (showTrophies === true && numCompletedAscents === totalRequiredAscents) {
+      if (showTrophies === true && totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {
         trophies.push(
           <PeakListTrophy
             peakList={peakList}

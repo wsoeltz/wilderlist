@@ -363,7 +363,7 @@ const PeakListCard = (props: Props) => {
               shortName={shortName}
               variant={type}
               active={active}
-              completed={numCompletedAscents === totalRequiredAscents}
+              completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
             />
           </LogoContainer>
           {actionButton}
