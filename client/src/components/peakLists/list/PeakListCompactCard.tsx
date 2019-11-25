@@ -112,19 +112,22 @@ const PeakListCard = (props: Props) => {
         totalRequiredAscents = 0;
       }
 
-      const percentComplete = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
+      const percent = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
+      const percentComplete = isNaN(percent) ? 0 : percent;
 
       cornerContent = (
         <SubtleText>
           {percentComplete}% {getFluentString('global-text-value-complete')}
         </SubtleText>
       );
-    } else {
+    } else if (listAction !== null) {
       cornerContent = (
         <ButtonPrimary onClick={actionButtonOnClick}>
           {actionText}
         </ButtonPrimary>
       );
+    } else {
+      cornerContent = null;
     }
   } else {
     cornerContent = null;

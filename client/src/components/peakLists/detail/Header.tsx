@@ -215,7 +215,9 @@ const Header = (props: Props) => {
     if (latestDate !== undefined) {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': (!(isNaN(latestDate.day) || isNaN(latestDate.month))).toString(),
+        'has-full-date': ( !(isNaN(latestDate.day) || isNaN(latestDate.month)) // incomplete date is false
+          || (isNaN(latestDate.day) && isNaN(latestDate.month) && isNaN(latestDate.year)) // NO date is true
+          ).toString(),
       });
       latestDateText = (
         <>
@@ -258,7 +260,7 @@ const Header = (props: Props) => {
           shortName={shortName}
           variant={type}
           active={active}
-          completed={numCompletedAscents === totalRequiredAscents}
+          completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
         />
       </LogoContainer>
       <BeginRemoveListButtonContainer>

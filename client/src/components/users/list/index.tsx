@@ -44,27 +44,6 @@ const SEARCH_USERS = gql`
       name
       profilePictureUrl
       hideProfilePicture
-      peakLists {
-        id
-        shortName
-        type
-        mountains {
-          id
-        }
-        parent {
-          id
-          mountains {
-            id
-          }
-        }
-      }
-      mountains {
-        mountain {
-          id
-          name
-        }
-        dates
-      }
     }
     me: user(id: $id) {
       id
@@ -74,27 +53,6 @@ const SEARCH_USERS = gql`
           name
           profilePictureUrl
           hideProfilePicture
-          peakLists {
-            id
-            shortName
-            type
-            mountains {
-              id
-            }
-            parent {
-              id
-              mountains {
-                id
-              }
-            }
-          }
-          mountains {
-            mountain {
-              id
-              name
-            }
-            dates
-          }
         }
         status
       }
@@ -195,18 +153,6 @@ const UserList = (props: Props) => {
     );
   } else if (data !== undefined) {
     const { users, me: {friends} } = data;
-    const nextBtn = users.length === nPerPage ? (
-      <Next onClick={incrementPageNumber}>
-        {getFluentString('global-text-value-navigation-next')}
-      </Next> ) : null;
-    const prevBtn = pageNumber > 1 ? (
-      <Prev onClick={decrementPageNumber}>
-        {getFluentString('global-text-value-navigation-prev')}
-      </Prev> ) : null;
-    const noResultsText = getFluentString('global-text-value-no-users-found-for-term', {
-      term: searchQuery,
-    });
-    const noFriendsText = getFluentString('dashboard-empty-state-no-friends-text');
     let userData: UserDatum[] | null;
     if (searchQuery === '') {
       const friendsData = friends.map(({user}) => user);
@@ -218,6 +164,18 @@ const UserList = (props: Props) => {
     } else {
       userData = users;
     }
+    const nextBtn = searchQuery !== '' && userData && userData.length === nPerPage ? (
+      <Next onClick={incrementPageNumber}>
+        {getFluentString('global-text-value-navigation-next')}
+      </Next> ) : null;
+    const prevBtn = pageNumber > 1 ? (
+      <Prev onClick={decrementPageNumber}>
+        {getFluentString('global-text-value-navigation-prev')}
+      </Prev> ) : null;
+    const noResultsText = getFluentString('global-text-value-no-users-found-for-term', {
+      term: searchQuery,
+    });
+    const noFriendsText = getFluentString('dashboard-empty-state-no-friends-text');
     list = (
       <>
         <ListUsers
