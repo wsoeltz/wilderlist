@@ -412,23 +412,10 @@ export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
       }
     }
   });
-  const ascentsNotNaN = ascents.filter(
-    ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
-  if (ascentsNotNaN.length) {
-    const sortedAscentsNotNaN = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
-    if (sortedAscentsNotNaN.length) {
-      const {name, ...date} = sortedAscentsNotNaN[sortedAscentsNotNaN.length - 1];
-      return {name, date };
-    }
-  }
-  const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
-  const sortedAscentsYearOnly = ascentsYearOnly.length
-    ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
-    : sortBy(ascents, ['year', 'month', 'day']);
-
-  if (sortedAscentsYearOnly.length) {
-    const {name, ...date} = sortedAscentsYearOnly[sortedAscentsYearOnly.length - 1];
-    return {name, date };
+  if (ascents.length) {
+    const sortedAscents = sortBy(ascents, ['dateAsNumber']).reverse();
+    const {name, ...date} = sortedAscents[0];
+    return {name, date};
   }
   return null;
 };
