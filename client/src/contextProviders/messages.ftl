@@ -209,7 +209,7 @@ user-profile-compare-ascents = Compare Ascents
 user-profile-compare-completed-by = completed by { $user-name }
 user-profile-no-lists = { $user-name } has not started any lists.
 user-profile-no-recent-ascents = No recent ascents
-user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
+user-profile-latest-ascents = Hiked { $mountain-name } { $preposition } { $date }
 user-profile-sent-you-a-friend-request = { $name } sent you a friend request.
 user-profile-compare-ascents-placeholder = Click "Compare Ascents" on a list on the left to compare your progress
 

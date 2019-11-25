@@ -280,6 +280,11 @@ const getListsInProgress =
     return { completedLists, listsInProgress };
 };
 
+enum Preposition {
+  on = 'on',
+  in = 'in',
+}
+
 interface Props {
   user: UserDatum;
   friendStatus: FriendStatus | null;
@@ -411,8 +416,20 @@ const UserCard = (props: Props) => {
     if (mountains !== null) {
       const latestAscent = getLatestOverallAscent(mountains);
       if (latestAscent !== null) {
+        let preposition: Preposition;
+        if (isNaN(latestAscent.date.year)) {
+          preposition = Preposition.on;
+        } else if (isNaN(latestAscent.date.month)) {
+          preposition = Preposition.in;
+        } else if (isNaN(latestAscent.date.day)) {
+          preposition = Preposition.in;
+        } else {
+          preposition = Preposition.on;
+        }
+
         ascentText = getFluentString('user-profile-latest-ascents', {
           'mountain-name': latestAscent.name,
+          'preposition': preposition,
           'date': formatDate(latestAscent.date),
         });
       } else {
