@@ -12,7 +12,6 @@ import {
   placeholderColor,
   semiBoldFontBoldWeight,
   tertiaryColor,
-  // baseColor,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
@@ -23,6 +22,7 @@ import {
 } from '../../../Utils';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
+import ExportAscentsModal from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import getCompletionDates from './getCompletionDates';
@@ -137,7 +137,7 @@ const Note = styled.div`
   }
 `;
 
-const ImportAscentsButtonContainer = styled.div`
+const ImportExportAscentsButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin: 1rem 0;
@@ -268,6 +268,7 @@ const MountainTable = (props: Props) => {
 
   const [mountainToEdit, setMountainToEdit] = useState<MountainToEdit | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const localSortCategory = localStorage.getItem(localStorageSortingCategoryVariable);
@@ -834,6 +835,29 @@ const MountainTable = (props: Props) => {
     titleColumns = null;
   }
 
+  let exportAscentsModal: React.ReactElement<any> | null;
+  if (user && isExportModalOpen === true) {
+    exportAscentsModal = (
+      <ExportAscentsModal
+        listShortName={peakListShortName}
+        type={type}
+        mountains={sortedMountains}
+        onCancel={() => setIsExportModalOpen(false)}
+      />
+     );
+  } else if (isImportModalOpen === true) {
+    exportAscentsModal = (
+        <SignUpModal
+          text={getFluentString('global-text-value-modal-sign-up-today', {
+            'list-short-name': peakListShortName,
+          })}
+          onCancel={() => setIsExportModalOpen(false)}
+        />
+    );
+  } else {
+    exportAscentsModal = null;
+  }
+
   const gridNote = type === PeakListVariants.grid
     ? (<Note dangerouslySetInnerHTML={{
           __html: getFluentString('mountain-table-grid-date-note-text'),
@@ -843,13 +867,11 @@ const MountainTable = (props: Props) => {
   const importButton =
     (type === PeakListVariants.standard || type === PeakListVariants.winter || peakListId === NH48_GRID_OBJECT_ID)
     ? (
-      <ImportAscentsButtonContainer>
         <ButtonPrimary
           onClick={() => setIsImportModalOpen(true)}
         >
           {getFluentString('mountain-table-import-button')}
         </ButtonPrimary>
-      </ImportAscentsButtonContainer>
     ) : null;
 
   const filterMountains = (value: string) => {
@@ -859,7 +881,14 @@ const MountainTable = (props: Props) => {
   return (
     <>
       {gridNote}
-      {importButton}
+      <ImportExportAscentsButtonContainer>
+        {importButton}
+        <ButtonPrimary
+          onClick={() => setIsExportModalOpen(true)}
+        >
+          {getFluentString('mountain-table-export-button')}
+        </ButtonPrimary>
+      </ImportExportAscentsButtonContainer>
       <FilterBar>
         <StandardSearch
           placeholder={getFluentString('peak-list-detail-filter-mountains')}
@@ -888,6 +917,7 @@ const MountainTable = (props: Props) => {
           {mountainRows}
           {editMountainModal}
           {importAscentsModal}
+          {exportAscentsModal}
         </Root>
       </div>
     </>
