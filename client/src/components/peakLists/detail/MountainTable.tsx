@@ -143,6 +143,10 @@ const ImportExportAscentsButtonContainer = styled.div`
   margin: 1rem 0;
 `;
 
+const ExportButton = styled(ButtonPrimary)`
+  margin-left: 1.5rem;
+`;
+
 const SortIconContainer = styled.div`
   height: 100%;
   display: flex;
@@ -883,11 +887,11 @@ const MountainTable = (props: Props) => {
       {gridNote}
       <ImportExportAscentsButtonContainer>
         {importButton}
-        <ButtonPrimary
+        <ExportButton
           onClick={() => setIsExportModalOpen(true)}
         >
           {getFluentString('mountain-table-export-button')}
-        </ButtonPrimary>
+        </ExportButton>
       </ImportExportAscentsButtonContainer>
       <FilterBar>
         <StandardSearch
