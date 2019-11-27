@@ -24,6 +24,7 @@ import {
   getStatesOrRegion,
   TextRight,
 } from '../list/PeakListCard';
+import PeakProgressBar from '../list/PeakProgressBar';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import {
@@ -36,7 +37,7 @@ import {
 const Root = styled.div`
   display: grid;
   grid-template-columns: 12.5rem 1fr auto;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   grid-column-gap: 1rem;
 `;
 
@@ -74,6 +75,11 @@ const ActiveListContentContainer = styled(ListInfo)`
   justify-content: space-between;
   grid-column: 1 / 4;
   grid-row: 4;
+`;
+
+const ProgressBarContainer = styled.div`
+  grid-column: 1 / 4;
+  grid-row: 5;
 `;
 
 export const REMOVE_PEAK_LIST_FROM_USER = gql`
@@ -228,13 +234,23 @@ const Header = (props: Props) => {
       latestDateText = <>{getFluentString('peak-list-text-no-completed-ascent')}</>;
     }
     listInfoContent = (
-      <ActiveListContentContainer>
-        <div>
-          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
-          {getFluentString('peak-list-text-total-ascents')}
-        </div>
-        <TextRight>{latestDateText}</TextRight>
-      </ActiveListContentContainer>
+      <>
+        <ActiveListContentContainer>
+          <div>
+            <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+            {getFluentString('peak-list-text-total-ascents')}
+          </div>
+          <TextRight>{latestDateText}</TextRight>
+        </ActiveListContentContainer>
+        <ProgressBarContainer>
+          <PeakProgressBar
+            variant={active === true ? type : null}
+            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+            total={totalRequiredAscents}
+            id={id}
+          />
+        </ProgressBarContainer>
+      </>
     );
 
   } else {
