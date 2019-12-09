@@ -849,7 +849,7 @@ const MountainTable = (props: Props) => {
         onCancel={() => setIsExportModalOpen(false)}
       />
      );
-  } else if (isImportModalOpen === true) {
+  } else if (isExportModalOpen === true) {
     exportAscentsModal = (
         <SignUpModal
           text={getFluentString('global-text-value-modal-sign-up-today', {
