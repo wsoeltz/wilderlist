@@ -9,6 +9,7 @@ import { redirectToHTTPS } from 'express-http-to-https';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import googleAuth from './auth/google';
+import redditAuth from './auth/reddit';
 import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
 import requireLogin from './middleware/requireLogin';
@@ -36,6 +37,8 @@ app.use(passport.session());
 
 // Setup OAuth with Google
 googleAuth(app);
+// Setup OAuth with Reddit
+redditAuth(app);
 
 if (process.env.NODE_ENV === 'development') {
   // Allow all cors requests on development

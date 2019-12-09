@@ -171,9 +171,12 @@ const Settings = ({userId}: Props) => {
     console.error(error);
   } else if (data !== undefined) {
     const { user: {
-      name, email, profilePictureUrl,
+      name, profilePictureUrl,
       hideEmail, hideProfilePicture, hideProfileInSearch, disableEmailNotifications,
     } } = data;
+
+    const email = data.user.email ? data.user.email : '---';
+
     output = (
       <>
         <SettingsContainer>

@@ -200,10 +200,12 @@ const userMutations: any = {
               status: FriendStatus.recieved,
             } },
           });
-          sendFriendRequestEmailNotification({
-            userName: user.name,
-            userEmail: friend.email,
-          });
+          if (friend.email) {
+            sendFriendRequestEmailNotification({
+              userName: user.name,
+              userEmail: friend.email,
+            });
+          }
           return User.findById(userId);
         }
       } catch (err) {
@@ -236,11 +238,13 @@ const userMutations: any = {
           }, {
             $set: { 'friends.$.status': FriendStatus.friends },
           });
-          await sendAcceptFriendRequestEmailNotification({
-            userId,
-            userName: user.name,
-            userEmail: friend.email,
-          });
+          if (friend.email) {
+            await sendAcceptFriendRequestEmailNotification({
+              userId,
+              userName: user.name,
+              userEmail: friend.email,
+            });
+          }
           return User.findById(userId);
         }
       } catch (err) {
@@ -417,7 +421,8 @@ const userMutations: any = {
         });
         const me = await User.findOne({_id: userId});
         const mountain = await Mountain.findOne({_id: mountainId});
-        if (me && friend && mountain && !friend.disableEmailNotifications) {
+        if (me && friend && mountain &&
+            !friend.disableEmailNotifications && friend.email) {
           sendAscentEmailNotification({
             mountainName: mountain.name,
             user: me.name,
