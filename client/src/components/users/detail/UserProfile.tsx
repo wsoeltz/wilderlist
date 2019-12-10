@@ -27,6 +27,7 @@ const GET_USER = gql`
       id
       name
       email
+      redditId
       profilePictureUrl
       hideEmail
       hideProfilePicture
@@ -92,6 +93,7 @@ export interface UserDatum {
   id: User['name'];
   name: User['name'];
   email: User['email'];
+  redditId: User['redditId'];
   hideEmail: User['hideEmail'];
   hideProfilePicture: User['hideProfilePicture'];
   profilePictureUrl: User['profilePictureUrl'];
