@@ -68,17 +68,17 @@ const NavLink = styled(Link)`
   text-decoration: none;
   text-transform: uppercase;
   min-width: 90px;
-  padding: 0 1rem;
+  padding: 0 0.75rem;
 
   @media(max-width: ${smallHeaderBreakpoint}px) {
     min-width: 20px;
   }
 
   @media(max-width: 470px) {
-    padding: 0 0.5rem;
+    padding: 0 0.4rem;
   }
 
-  @media(max-width: 360px) {
+  @media(max-width: 370px) {
     &.header-dashboard-link {
       display: none;
     }
