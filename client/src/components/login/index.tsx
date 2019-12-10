@@ -1,3 +1,8 @@
+import {
+  faGoogle,
+  faReddit,
+} from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import raw from 'raw.macro';
 import React, {useContext} from 'react';
@@ -7,7 +12,11 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
-import {lightBaseColor, linkColor, semiBoldFontBoldWeight} from '../../styling/styleUtils';
+import {
+  lightBaseColor,
+  linkColor,
+  semiBoldFontBoldWeight,
+} from '../../styling/styleUtils';
 import { getBrowser } from '../../Utils';
 
 const {browser} = getBrowser();
@@ -68,33 +77,51 @@ const LogoContainer = styled.div`
   }
 `;
 
-const LoginWithGoogleButton = styled.a`
+export const googleBlue = '#4285f4';
+export const redditRed = '#ff4500';
+
+export const LoginButtonBase = styled.a`
   background-color: #fff;
   border-radius: 4px;
   display: flex;
   align-items: center;
-  grid-area: google-btn;
-  margin: auto;
-  max-height: 50px;
-  max-width: 220px;
+  margin: auto 20px;
+  max-height: 40px;
+  min-width: 168px;
+  max-width: 200px;
   text-decoration: none;
-
+  border: 1px solid #efefef;
+  color: ${lightBaseColor};
+  font-weight: ${semiBoldFontBoldWeight};
 
   &:hover {
+    color: ${lightBaseColor};
     background-color: #efefef;
   }
+`;
 
-  svg {
+export const BrandIcon = styled(FontAwesomeIcon)`
+  font-size: 20px;
+  margin-left: 8px;
+`;
 
-    rect {
-      fill: none;
-    }
-    text {
-      fill: ${lightBaseColor};
-      font-size: 14px;
-      font-weight: ${semiBoldFontBoldWeight};
-    }
-  }
+export const LoginText = styled.span`
+  font-size: 14px;
+  padding: 8px;
+`;
+
+const SplashScreenLoginButton = styled(LoginButtonBase)`
+  padding: 4px 6px;
+  margin-bottom: 1rem;
+`;
+
+const LoginButtonsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  grid-area: google-btn;
+  margin: auto;
 
   @media (min-width: ${mobileWidth}px) {
     transform: translateY(-60%);
@@ -102,9 +129,45 @@ const LoginWithGoogleButton = styled.a`
     margin-top: 0;
     margin-bottom: 0;
     max-height: 66px;
-    max-width: 286px;
   }
 `;
+
+// const LoginWithGoogleButton = styled.a`
+//   background-color: #fff;
+//   border-radius: 4px;
+//   display: flex;
+//   align-items: center;
+//   grid-area: google-btn;
+//   margin: auto;
+//   max-height: 50px;
+//   max-width: 220px;
+//   text-decoration: none;
+
+//   &:hover {
+//     background-color: #efefef;
+//   }
+
+//   svg {
+
+//     rect {
+//       fill: none;
+//     }
+//     text {
+//       fill: ${lightBaseColor};
+//       font-size: 14px;
+//       font-weight: ${semiBoldFontBoldWeight};
+//     }
+//   }
+
+//   @media (min-width: ${mobileWidth}px) {
+//     transform: translateY(-60%);
+//     margin-right: 0;
+//     margin-top: 0;
+//     margin-bottom: 0;
+//     max-height: 66px;
+//     max-width: 286px;
+//   }
+// `;
 
 const NavContainer = styled.div`
   grid-area: nav;
@@ -162,12 +225,27 @@ const LoginPage = () => {
           }}
           title={getFluentString('global-text-value-wilderlist-name')}
         />
-        <LoginWithGoogleButton href='/auth/google'
-          dangerouslySetInnerHTML={{
-            __html: raw('../../assets/images/google-signin-button/btn_google_light_normal_ios.svg'),
-            }}
-            title={getFluentString('header-text-login-with-google')}
-        />
+        <LoginButtonsContainer>
+          <SplashScreenLoginButton href='/auth/google'>
+            <BrandIcon
+              icon={faGoogle}
+              style={{color: googleBlue}}
+            />
+            <LoginText>
+              {getFluentString('header-text-login-with-google')}
+            </LoginText>
+          </SplashScreenLoginButton>
+          <SplashScreenLoginButton href='/auth/reddit'>
+            <BrandIcon
+              icon={faReddit}
+              style={{color: redditRed}}
+            />
+            <LoginText>
+              {getFluentString('header-text-login-with-reddit')}
+            </LoginText>
+          </SplashScreenLoginButton>
+        </LoginButtonsContainer>
+
         <NavContainer>
           <NavButton to={searchListDetailLink('search')}>Search Lists</NavButton>
           <NavButton to={searchMountainsDetailLink('search')}>Search Mountains</NavButton>

@@ -75,7 +75,8 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 
 global-text-value-submit = Submit
 
-header-text-login-with-google = Login With Google
+header-text-login-with-google = Sign in With Google
+header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Lists
 header-text-menu-item-mountains = Mountains
