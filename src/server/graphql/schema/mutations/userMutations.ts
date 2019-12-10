@@ -308,6 +308,28 @@ const userMutations: any = {
       }
     },
   },
+  updateEmail: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      value: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any,
+                  { id, value }: { id: string , value: string},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const user = await User.findOneAndUpdate({
+          _id: id,
+        },
+        { email: value },
+        {new: true});
+        dataloaders.userLoader.clear(id).prime(id, user);
+        return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
   setHideEmail: {
     type: UserType,
     args: {

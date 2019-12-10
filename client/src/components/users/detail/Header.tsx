@@ -1,4 +1,7 @@
 import { useMutation } from '@apollo/react-hooks';
+import {
+  faReddit,
+} from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import React, {useContext, useState} from 'react';
@@ -276,7 +279,7 @@ const Header = (props: Props) => {
           {getFluentString('global-text-value-modal-reddit')}:
         </ContactLabel>
         <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
-          <EmailIcon icon='reddit' />
+          <EmailIcon icon={faReddit} />
           u/{name}
         </BoldLink>
       </ListInfo>
@@ -296,7 +299,7 @@ const Header = (props: Props) => {
             {getFluentString('global-text-value-modal-reddit')}:
           </ContactLabel>
           <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
-            <EmailIcon icon='reddit' />
+            <EmailIcon icon={faReddit} />
             u/{name}
           </BoldLink>
         </ListInfo>
