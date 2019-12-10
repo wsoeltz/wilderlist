@@ -76,6 +76,9 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 
 global-text-value-submit = Submit
 
+global-text-value-edit = Edit
+global-text-value-save = Save
+
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard
@@ -93,6 +96,8 @@ notification-bar-ascent-marked = marked you as hiking
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
+
+settings-page-sync-your-account-reddit = To update your profile picture, you must change it from your Reddit account and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
 
 settings-page-privacy-settings = Privacy Settings
 settings-page-display-email = Display your email address on your profile
