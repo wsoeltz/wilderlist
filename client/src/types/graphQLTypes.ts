@@ -76,9 +76,10 @@ export interface AscentNotification {
 export interface User {
   _id: string;
   id: string;
-  googleId: string;
+  googleId: string | null;
+  redditId: string | null;
   name: string;
-  email: string;
+  email: string | null;
   profilePictureUrl: string;
   friends: Friend[] | null;
   peakLists: PeakList[] | null;

@@ -24,6 +24,7 @@ global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Cont
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
 
+global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
 global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
@@ -75,7 +76,11 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 
 global-text-value-submit = Submit
 
-header-text-login-with-google = Login With Google
+global-text-value-edit = Edit
+global-text-value-save = Save
+
+header-text-login-with-google = Sign in With Google
+header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Lists
 header-text-menu-item-mountains = Mountains
@@ -91,6 +96,8 @@ notification-bar-ascent-marked = marked you as hiking
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
+
+settings-page-sync-your-account-reddit = To update your profile picture, you must change it from your Reddit account and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
 
 settings-page-privacy-settings = Privacy Settings
 settings-page-display-email = Display your email address on your profile

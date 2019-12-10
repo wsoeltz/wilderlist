@@ -14,6 +14,7 @@ type UserSchemaType = mongoose.Document & IUser;
 
 const UserSchema = new Schema({
   googleId: { type: String},
+  redditId: { type: String},
   name: { type: String },
   email: { type: String },
   profilePictureUrl: { type: String },
@@ -131,6 +132,7 @@ const UserType: any = new GraphQLObjectType({
     id: { type: GraphQLID },
     permissions: { type: GraphQLString },
     googleId: { type: GraphQLString},
+    redditId: { type: GraphQLString},
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     profilePictureUrl: { type: GraphQLString },

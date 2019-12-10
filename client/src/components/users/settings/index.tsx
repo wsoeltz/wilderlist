@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -11,12 +11,12 @@ import {
   ContentLeftLarge,
 } from '../../../styling/Grid';
 import {
+  ButtonPrimary,
   InputBase,
   lightBaseColor,
   lightBorderColor,
 } from '../../../styling/styleUtils';
 import { User } from '../../../types/graphQLTypes';
-// import { UserContext } from '../../App';
 
 const SettingsContainer = styled.div`
   display: grid;
@@ -30,14 +30,28 @@ const ProfileImg = styled.img`
   border-radius: 2000px;
 `;
 
-const DisabledInput = styled(InputBase)`
+const StandardInput = styled(InputBase)`
+  margin-bottom: 1rem;
+`;
+
+const DisabledInput = styled(StandardInput)`
   opacity: 0.7;
   background-color: ${lightBorderColor};
-  margin-bottom: 1rem;
 
   &:hover {
     cursor: not-allowed;
   }
+`;
+
+const EditInputContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+`;
+
+const InputButton = styled(ButtonPrimary)`
+  margin-bottom: 1rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 `;
 
 const InputTitle = styled.label`
@@ -67,6 +81,7 @@ const GET_USER_PROFILE_DATA = gql`
       id
       name
       email
+      redditId
       profilePictureUrl
       hideEmail
       hideProfilePicture
@@ -76,11 +91,12 @@ const GET_USER_PROFILE_DATA = gql`
   }
 `;
 
-interface QuerySucces {
+interface QuerySuccess {
   user: {
     id: User['id'];
     name: User['name'];
     email: User['email'];
+    redditId: User['redditId'];
     profilePictureUrl: User['profilePictureUrl'];
     hideEmail: User['hideEmail'];
     hideProfilePicture: User['hideProfilePicture'];
@@ -92,6 +108,14 @@ interface QuerySucces {
 interface QueryVariables {
   id: string;
 }
+
+const UPDATE_EMAIL = gql`
+  mutation updateEmail($id: ID!, $value: String!) {
+    user: updateEmail(id: $id, value: $value) {
+      id
+    }
+  }
+`;
 
 const SET_HIDE_EMAIL = gql`
   mutation setHideEmail($id: ID!, $value: Boolean!) {
@@ -125,7 +149,7 @@ const SET_DISABLE_EMAIL_NOTIFICATIONS = gql`
   }
 `;
 
-interface MutationSucces {
+interface MutationSuccess {
   user: {
     id: User['id'];
   };
@@ -136,6 +160,11 @@ interface MutationVariables {
   value: boolean;
 }
 
+interface EditEmailVariables {
+  id: string;
+  value: string;
+}
+
 interface Props {
   userId: string;
 }
@@ -144,22 +173,35 @@ const Settings = ({userId}: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {loading, error, data} = useQuery<QuerySucces, QueryVariables>(GET_USER_PROFILE_DATA, {
+  const [emailValue, setEmailValue] = useState<string>('');
+  const [editEmail, setEditEmail] = useState<boolean>(false);
+  const emailRefElm = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (emailRefElm && emailRefElm.current && editEmail === true) {
+      emailRefElm.current.focus();
+    }
+  }, [emailRefElm, editEmail]);
+
+  const {loading, error, data} = useQuery<QuerySuccess, QueryVariables>(GET_USER_PROFILE_DATA, {
     variables: { id: userId },
   });
 
-  const [setHideEmail] = useMutation<MutationSucces, MutationVariables>(SET_HIDE_EMAIL, {
+  const [updateEmail] = useMutation<MutationSuccess, EditEmailVariables>(UPDATE_EMAIL, {
     refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
   });
-  const [setHideProfilePicture] = useMutation<MutationSucces, MutationVariables>(SET_HIDE_PROFILE_PICTURE, {
+  const [setHideEmail] = useMutation<MutationSuccess, MutationVariables>(SET_HIDE_EMAIL, {
+    refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
+  });
+  const [setHideProfilePicture] = useMutation<MutationSuccess, MutationVariables>(SET_HIDE_PROFILE_PICTURE, {
     refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
   });
   const [setHideProfileInSearchResults] =
-    useMutation<MutationSucces, MutationVariables>(SET_HIDE_PROFILE_IN_SEARCH_RESULTS, {
+    useMutation<MutationSuccess, MutationVariables>(SET_HIDE_PROFILE_IN_SEARCH_RESULTS, {
       refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
     });
   const [setDisableEmailNotifications] =
-    useMutation<MutationSucces, MutationVariables>(SET_DISABLE_EMAIL_NOTIFICATIONS, {
+    useMutation<MutationSuccess, MutationVariables>(SET_DISABLE_EMAIL_NOTIFICATIONS, {
       refetchQueries: () => [{query: GET_USER_PROFILE_DATA, variables: {id: userId}}],
     });
 
@@ -171,9 +213,47 @@ const Settings = ({userId}: Props) => {
     console.error(error);
   } else if (data !== undefined) {
     const { user: {
-      name, email, profilePictureUrl,
+      name, profilePictureUrl, redditId,
       hideEmail, hideProfilePicture, hideProfileInSearch, disableEmailNotifications,
     } } = data;
+    let email: React.ReactElement<any> | null;
+    if (redditId) {
+      if (data.user.email && editEmail === false && emailValue === '') {
+        setEmailValue(data.user.email);
+      }
+      const InputContainer = editEmail === false ? DisabledInput : StandardInput;
+      const buttonText = editEmail === false ? 'global-text-value-edit' : 'global-text-value-save';
+      const onInputClick = () => {
+        const editEmailWillBe = !editEmail;
+        if (editEmailWillBe === false) {
+          updateEmail({ variables: {id: userId, value: emailValue}});
+        }
+        setEditEmail(editEmailWillBe);
+      };
+      email = (
+        <EditInputContainer>
+          <InputContainer
+            value={emailValue}
+            readOnly={!editEmail}
+            onChange={e => setEmailValue(e.target.value)}
+            ref={emailRefElm}
+          />
+          <InputButton
+            onClick={onInputClick}
+          >
+            {getFluentString(buttonText)}
+          </InputButton>
+        </EditInputContainer>
+      );
+    } else {
+      email = data.user.email
+        ? ( <DisabledInput value={data.user.email} readOnly={true} /> )
+        : ( <DisabledInput value={'-------'} readOnly={true} /> );
+    }
+    const helpTextFluentString = redditId
+      ? 'settings-page-sync-your-account-reddit'
+      : 'settings-page-sync-your-account-help';
+
     output = (
       <>
         <SettingsContainer>
@@ -186,8 +266,8 @@ const Settings = ({userId}: Props) => {
               <InputTitle>{getFluentString('global-text-value-name')}</InputTitle>
               <DisabledInput value={name} readOnly={true} />
               <InputTitle>{getFluentString('global-text-value-modal-email')}</InputTitle>
-              <DisabledInput value={email} readOnly={true} />
-              <p dangerouslySetInnerHTML={{__html: getFluentString('settings-page-sync-your-account-help')}} />
+              {email}
+              <p dangerouslySetInnerHTML={{__html: getFluentString(helpTextFluentString)}} />
             </Section>
             <Section>
               <h3>{getFluentString('settings-page-privacy-settings')}</h3>
