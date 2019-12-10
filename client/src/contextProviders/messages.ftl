@@ -24,6 +24,7 @@ global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Cont
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
 
+global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
 global-text-value-modal-email-address = Email Address
 global-text-value-name = Name

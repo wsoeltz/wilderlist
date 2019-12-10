@@ -150,7 +150,7 @@ interface Props {
 
 const Header = (props: Props) => {
   const {
-    user: { name, email, profilePictureUrl }, user,
+    user: { name, email, profilePictureUrl, redditId }, user,
     currentUserId, friendStatus,
   } = props;
 
@@ -266,7 +266,44 @@ const Header = (props: Props) => {
     </div>
   );
 
-  const emailOutput = user.hideEmail === true ? null : (
+  let emailOutput: React.ReactElement<any> | null;
+  if (user.hideEmail === true) {
+    emailOutput = null;
+  } else if (redditId) {
+    emailOutput = !user.email ? (
+      <ListInfo>
+        <ContactLabel>
+          {getFluentString('global-text-value-modal-reddit')}:
+        </ContactLabel>
+        <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
+          <EmailIcon icon='reddit' />
+          u/{name}
+        </BoldLink>
+      </ListInfo>
+      ) : (
+      <>
+        <ListInfo>
+          <ContactLabel>
+            {getFluentString('global-text-value-modal-email')}:
+          </ContactLabel>
+          <BoldLink href={`mailto:${email}`}>
+            <EmailIcon icon='envelope' />
+            {email}
+          </BoldLink>
+        </ListInfo>
+        <ListInfo>
+          <ContactLabel>
+            {getFluentString('global-text-value-modal-reddit')}:
+          </ContactLabel>
+          <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
+            <EmailIcon icon='reddit' />
+            u/{name}
+          </BoldLink>
+        </ListInfo>
+      </>
+    );
+  } else if (user.email) {
+    emailOutput = (
       <ListInfo>
         <ContactLabel>
           {getFluentString('global-text-value-modal-email')}:
@@ -277,6 +314,9 @@ const Header = (props: Props) => {
         </BoldLink>
       </ListInfo>
     );
+  } else {
+    emailOutput = null;
+  }
 
   const profilePicture = user.hideProfilePicture === true ? (
       <ProfilePictureContainer>
