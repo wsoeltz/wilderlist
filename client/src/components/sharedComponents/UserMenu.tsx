@@ -1,6 +1,10 @@
+import {
+  faGoogle,
+  faReddit,
+} from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
-import raw from 'raw.macro';
+// import raw from 'raw.macro';
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -9,13 +13,18 @@ import { comparePeakListLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
-  lightBaseColor,
   lightBorderColor,
   lightFontWeight,
-  semiBoldFontBoldWeight,
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
+import {
+  BrandIcon as BrandIconBase,
+  googleBlue,
+  LoginButtonBase,
+  LoginText as LoginTextBase,
+  redditRed,
+} from '../login';
 
 const UserMenu = styled.div`
   min-width: 200px;
@@ -112,33 +121,51 @@ const UserImage = styled.img`
   }
 `;
 
-export const LoginWithGoogleButton = styled.a`
-  background-color: #fff;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  grid-area: google-btn;
-  margin: auto 20px;
-  max-height: 40px;
-  max-width: 200px;
-  text-decoration: none;
+const loginButtonMediumSmallScreen = 850; // in px
+const loginButtonSmallScreen = 630; // in px
 
-  &:hover {
-    background-color: #efefef;
+const LoginButton = styled(LoginButtonBase)`
+  &:first-child:not(:last-child) {
+    margin-right: 0;
   }
 
-  svg {
-
-    rect {
-      fill: none;
-    }
-    text {
-      fill: ${lightBaseColor};
-      font-size: 14px;
-      font-weight: ${semiBoldFontBoldWeight};
-    }
+  @media(max-width: ${loginButtonMediumSmallScreen}px) {
+    margin: auto 10px;
+    min-width: 122px;
   }
 
+  @media(max-width: ${loginButtonSmallScreen}px) {
+    margin: auto 5px;
+    min-width: 65px;
+  }
+`;
+const BrandIcon = styled(BrandIconBase)`
+  @media(max-width: ${loginButtonMediumSmallScreen}px) {
+    font-size: 16px;
+    margin-left: 4px;
+  }
+
+  @media(max-width: ${loginButtonSmallScreen}px) {
+    font-size: 14px;
+    padding: 4px 0;
+  }
+`;
+const LoginText = styled(LoginTextBase)`
+  @media(max-width: ${loginButtonMediumSmallScreen}px) {
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  @media(max-width: ${loginButtonSmallScreen}px) {
+    font-size: 0;
+    padding: 0;
+
+    &:after {
+      content: 'Sign in';
+      font-size: 10px;
+      padding: 6px;
+    }
+  }
 `;
 
 const Caret = styled(FontAwesomeIcon)`
@@ -252,12 +279,24 @@ const UserMenuComponent = (props: Props) => {
 
     output = (
       <UserMenu>
-        <LoginWithGoogleButton href='/auth/google'
-          dangerouslySetInnerHTML={{
-            __html: raw('../../assets/images/google-signin-button/btn_google_light_normal_ios.svg'),
-            }}
-            title={props.getFluentString('header-text-login-with-google')}
-        />
+        <LoginButton href='/auth/google'>
+          <BrandIcon
+            icon={faGoogle}
+            style={{color: googleBlue}}
+          />
+          <LoginText>
+            {props.getFluentString('header-text-login-with-google')}
+          </LoginText>
+        </LoginButton>
+        <LoginButton href='/auth/reddit'>
+          <BrandIcon
+            icon={faReddit}
+            style={{color: redditRed}}
+          />
+          <LoginText>
+            {props.getFluentString('header-text-login-with-reddit')}
+          </LoginText>
+        </LoginButton>
       </UserMenu>
     );
   }
