@@ -1,24 +1,46 @@
-import { GetString } from 'fluent-react';
-import L from 'leaflet';
-import React, {useContext, useEffect} from 'react';
+import sortBy from 'lodash/sortBy';
+import React, {
+  useEffect,
+  useState,
+} from 'react';
+import ReactMapboxGl, {
+  Feature,
+  Layer,
+  MapContext,
+  Popup,
+  RotationControl,
+  ZoomControl,
+} from 'react-mapbox-gl';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import icon from './images/marker-icon.png';
-import iconShadow from './images/marker-shadow.png';
-import './leaflet.css';
-import './leaflet.custom.css';
+import { warmRedColor } from '../../../styling/styleUtils';
+
+const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
+
+const Mapbox = ReactMapboxGl({
+  accessToken,
+  maxZoom: 16,
+  scrollZoom: false,
+});
 
 const Root = styled.div`
   margin: 2rem 0;
 `;
 
-const MapDiv = styled.div`
-  height: 500px;
-  width: 100%;
-  overflow: hidden;
+const StyledPopup = styled.div`
+  text-align: center;
 `;
+
+const getMinMax = (coordinates: Coordinate[]) => {
+  const sortedByLat = sortBy(coordinates, ['latitude']);
+  const sortedByLong = sortBy(coordinates, ['longitude']);
+
+  const minLat = sortedByLat[sortedByLat.length - 1].latitude;
+  const maxLat = sortedByLat[0].latitude;
+  const minLong = sortedByLong[sortedByLong.length - 1].longitude;
+  const maxLong = sortedByLong[0].longitude;
+
+  return { minLat, maxLat, minLong, maxLong };
+};
 
 interface Coordinate {
   latitude: number;
@@ -27,11 +49,6 @@ interface Coordinate {
   elevation: number;
 }
 
-const defaultCoordinates = {
-  latitude: 43.216461,
-  longitude: -73.5346381,
-};
-
 interface Props {
   id: string;
   coordinates: Coordinate[];
@@ -39,92 +56,122 @@ interface Props {
 }
 
 const Map = (props: Props) => {
-  const { id, coordinates, highlighted} = props;
+  const { coordinates, highlighted } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const { minLat, maxLat, minLong, maxLong } = getMinMax(coordinates);
 
-  const mapid = `map-${id}`;
-  const attribution =  getFluentString('map-text-attribution');
+  let initialCenter: [number, number];
+  if (highlighted && highlighted.length === 1) {
+    initialCenter = [highlighted[0].longitude, highlighted[0].latitude];
+  } else if (coordinates.length) {
+    initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
+  } else {
+    initialCenter = [-73.5346381, 43.216461];
+  }
+
+  const [popupInfo, setPopupInfo] = useState<Coordinate | null>(null);
+  const [center, setCenter] = useState<[number, number]>(initialCenter);
+  const [fitBounds, setFitBounds] =
+    useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
+  const [map, setMap] = useState<any>(null);
 
   useEffect(() => {
-    const DefaultIcon = L.icon({
-      iconUrl: icon,
-      shadowUrl: iconShadow,
-    });
-
-    const startLatitude = defaultCoordinates.latitude;
-    const startLongitude = defaultCoordinates.longitude;
-
-    const map = L.map(mapid, {
-      dragging: !L.Browser.mobile,
-      tap: !L.Browser.mobile,
-    }).setView([startLatitude, startLongitude], 7);
-
-    const enableScroll = (e: KeyboardEvent) => {
-      if (e.shiftKey) {
-        map.scrollWheelZoom.enable();
+    const enableZoom = (e: KeyboardEvent) => {
+      if (e.shiftKey && map) {
+        map.scrollZoom.enable();
       }
     };
-    const disbleScroll = () => {
-      map.scrollWheelZoom.disable();
-    };
-
-    disbleScroll();
-
-    window.addEventListener('keydown', enableScroll);
-    window.addEventListener('keyup', disbleScroll);
-
-    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution,
-    }).addTo(map);
-
-    L.Marker.prototype.options.icon = DefaultIcon;
-
-    if (coordinates.length !== 0) {
-      const markers = coordinates.map(({name, latitude, longitude, elevation}) => {
-        const circle = L.circle([latitude, longitude], {
-          color: 'red',
-          fillColor: '#f03',
-          fillOpacity: 0.5,
-          radius: 50,
-        }).addTo(map);
-
-        circle.bindPopup(`<strong>${name}</strong><br />${elevation}ft`);
-
-        if (highlighted) {
-          const circleIsHighlighted = highlighted.find(
-            coord => coord.name === name && coord.latitude === latitude && coord.longitude === longitude,
-          );
-          if (circleIsHighlighted) {
-            circle.openPopup();
-          }
-        }
-
-        return circle;
-      });
-
-      const group = new L.featureGroup([...markers]);
-      map.fitBounds(group.getBounds());
-      if (coordinates.length === 1) {
-        map.setZoom(14);
+    const disableZoom = () => {
+      if (map) {
+        map.scrollZoom.disable();
       }
-
-    }
+    };
+    document.body.addEventListener('keydown', enableZoom);
+    document.body.addEventListener('keyup', disableZoom);
     return () => {
-      map.off();
-      map.remove();
-      window.removeEventListener('keydown', enableScroll);
-      window.removeEventListener('keydown', disbleScroll);
+      document.body.removeEventListener('keydown', enableZoom);
+      document.body.removeEventListener('keyup', disableZoom);
     };
-  }, [mapid, coordinates, attribution, highlighted]);
+  }, [map]);
+
+  useEffect(() => {
+    const coords = getMinMax(coordinates);
+    setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+  }, [coordinates]);
+
+  useEffect(() => {
+    if (highlighted && highlighted.length === 1) {
+      setPopupInfo({...highlighted[0]});
+      setCenter([highlighted[0].longitude, highlighted[0].latitude]);
+    } else if (coordinates.length === 1) {
+      setPopupInfo({...coordinates[0]});
+      setCenter([coordinates[0].longitude, coordinates[0].latitude]);
+    }
+  }, [highlighted, setPopupInfo, setCenter, coordinates]);
+
+  const togglePointer = (mapEl: any, cursor: string) => {
+    mapEl.getCanvas().style.cursor = cursor;
+  };
+
+  const features = coordinates.map(point => {
+    const onClick = () => {
+      setPopupInfo({...point});
+      setCenter([point.longitude, point.latitude]);
+    };
+    return (
+      <Feature
+        coordinates={[point.longitude, point.latitude]}
+        onClick={onClick}
+        onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
+        onMouseLeave={(event: any) => togglePointer(event.map, '')}
+        key={'' + point.latitude + point.longitude}
+      />
+    );
+  });
+
+  const popup = !popupInfo ? <></> : (
+    <Popup
+      coordinates={[popupInfo.longitude, popupInfo.latitude]}
+    >
+      <StyledPopup>
+        <strong>{popupInfo.name}</strong>
+        <br />
+        {popupInfo.elevation}ft
+      </StyledPopup>
+    </Popup>
+  );
+
+  const mapRenderProps = (mapEl: any) => {
+    setMap(mapEl);
+    return null;
+  };
 
   return (
     <Root>
-      <MapDiv id={mapid} />
+      <Mapbox
+        // eslint-disable-next-line
+        style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
+        containerStyle={{
+          height: '500px',
+          width: '100%',
+        }}
+        center={center}
+        onClick={() => setPopupInfo(null)}
+        fitBounds={fitBounds}
+        fitBoundsOptions={{padding: 50, linear: true}}
+        movingMethod={'flyTo'}
+      >
+        <ZoomControl />
+        <RotationControl style={{ top: 80 }} />
+        <Layer type='circle' id='marker' paint={{ 'circle-color': warmRedColor, 'circle-radius': 5 }}>
+          {features}
+        </Layer>
+        {popup}
+        <MapContext.Consumer children={mapRenderProps} />
+      </Mapbox>
     </Root>
   );
+
 };
 
 export default Map;

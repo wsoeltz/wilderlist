@@ -21,6 +21,8 @@ import {
 } from './sharedStyling';
 import WeatherReport from './WeatherReport';
 
+const mountainDetailMapKey = 'mountainDetailMapKey';
+
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
 
@@ -200,7 +202,7 @@ const MountainDetail = (props: Props) => {
           <Map
             id={id}
             coordinates={[mountain]}
-            key={`map-id-${id}`}
+            key={mountainDetailMapKey}
           />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
