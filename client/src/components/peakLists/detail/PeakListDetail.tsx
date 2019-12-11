@@ -15,6 +15,8 @@ import { isState } from '../Utils';
 import Header from './Header';
 import MountainTable from './MountainTable';
 
+const peakListDetailMapKey = 'peakListDetailMapKey';
+
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID) {
     peakList(id: $id) {
@@ -237,6 +239,7 @@ const PeakListDetail = (props: Props) => {
             id={peakList.id}
             coordinates={mountains}
             highlighted={highlightedMountain}
+            key={peakListDetailMapKey}
           />
           <p>
             {paragraphText}
