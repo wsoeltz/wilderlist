@@ -86,11 +86,19 @@ const Map = (props: Props) => {
         map.scrollZoom.disable();
       }
     };
+    const disableDragPanOnTouchDevics = () => {
+      if (map) {
+        map.dragPan.disable();
+      }
+    }
     document.body.addEventListener('keydown', enableZoom);
     document.body.addEventListener('keyup', disableZoom);
+    document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
+
     return () => {
       document.body.removeEventListener('keydown', enableZoom);
       document.body.removeEventListener('keyup', disableZoom);
+      document.body.removeEventListener('touchstart', disableDragPanOnTouchDevics);
     };
   }, [map]);
 
