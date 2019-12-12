@@ -12,7 +12,11 @@ import ReactMapboxGl, {
   ZoomControl,
 } from 'react-mapbox-gl';
 import styled from 'styled-components/macro';
-import { warmRedColor } from '../../../styling/styleUtils';
+import {
+  warmRedColor,
+  placeholderColor,
+  semiBoldFontBoldWeight,
+} from '../../../styling/styleUtils';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -29,6 +33,20 @@ const Root = styled.div`
 const StyledPopup = styled.div`
   text-align: center;
 `;
+
+const ClosePopup = styled.div`
+  position: absolute;
+  top: -0.1rem;
+  right: 0.1rem;
+  font-size: 0.9rem;
+  font-weight: ${semiBoldFontBoldWeight};
+  color: ${placeholderColor};
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 
 const getMinMax = (coordinates: Coordinate[]) => {
   const sortedByLat = sortBy(coordinates, ['latitude']);
@@ -145,6 +163,7 @@ const Map = (props: Props) => {
         <strong>{popupInfo.name}</strong>
         <br />
         {popupInfo.elevation}ft
+        <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
       </StyledPopup>
     </Popup>
   );
