@@ -66,12 +66,14 @@
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.14",
+    "mapbox-gl": "^1.6.0",
     "mongoose": "^5.6.5",
     "nodemailer": "^6.3.1",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-reddit": "^0.2.4",
     "react-csv": "^1.1.2",
+    "react-mapbox-gl": "^4.8.1",
     "rimraf": "^2.6.3"
   }
 }

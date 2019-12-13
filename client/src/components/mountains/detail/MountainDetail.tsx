@@ -8,8 +8,12 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import { Mountain, PeakList, PeakListVariants, Region, State, User } from '../../../types/graphQLTypes';
 import { convertDMS, mobileSize } from '../../../Utils';
+import {
+  VariableDate,
+} from '../../peakLists/detail/getCompletionDates';
+import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
@@ -20,6 +24,8 @@ import {
   ItemTitle,
 } from './sharedStyling';
 import WeatherReport from './WeatherReport';
+
+const mountainDetailMapKey = 'mountainDetailMapKey';
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -194,13 +200,19 @@ const MountainDetail = (props: Props) => {
         );
 
       const {lat, long} = convertDMS(latitude, longitude);
+      const completionDates: VariableDate | null = completedDates !== undefined && completedDates.dates.length ? {
+        type: PeakListVariants.standard,
+        standard: getDates(completedDates.dates)[0],
+      } : null;
       return (
         <>
           <h1>{name}</h1>
           <Map
             id={id}
-            coordinates={[mountain]}
-            key={`map-id-${id}`}
+            coordinates={[{...mountain, completionDates}]}
+            peakListType={PeakListVariants.standard}
+            userId={userId}
+            key={mountainDetailMapKey}
           />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
