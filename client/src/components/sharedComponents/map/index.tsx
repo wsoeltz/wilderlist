@@ -1,5 +1,7 @@
+import { GetString } from 'fluent-react';
 import sortBy from 'lodash/sortBy';
 import React, {
+  useContext,
   useEffect,
   useState,
 } from 'react';
@@ -13,20 +15,28 @@ import ReactMapboxGl, {
 } from 'react-mapbox-gl';
 import styled from 'styled-components/macro';
 import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
+import {
   lightBorderColor,
+  linkStyles,
   placeholderColor,
   semiBoldFontBoldWeight,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import { PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
+import MountainCompletionModal from '../../peakLists/detail/MountainCompletionModal';
 import {
   formatDate,
   formatGridDate,
 } from '../../peakLists/Utils';
+import DynamicLink from '../DynamicLink';
+import SignUpModal from '../SignUpModal';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -148,6 +158,12 @@ const SeasonLabelEnd = styled(LegendItem)`
   color: ${endColor};
   justify-content: center;
 `;
+const AddAscentButton = styled.button`
+  ${linkStyles}
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.6rem;
+`;
 
 const getMinMax = (coordinates: Coordinate[]) => {
   const sortedByLat = sortBy(coordinates, ['latitude']);
@@ -162,6 +178,7 @@ const getMinMax = (coordinates: Coordinate[]) => {
 };
 
 interface Coordinate {
+  id: string;
   latitude: number;
   longitude: number;
   name: string;
@@ -172,13 +189,17 @@ type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
 
 interface Props {
   id: string;
+  userId: string | null;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
   peakListType: PeakListVariants;
 }
 
 const Map = (props: Props) => {
-  const { coordinates, highlighted, peakListType } = props;
+  const { id, coordinates, highlighted, peakListType, userId } = props;
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const { minLat, maxLat, minLong, maxLong } = getMinMax(coordinates);
 
@@ -192,6 +213,10 @@ const Map = (props: Props) => {
   }
 
   const [popupInfo, setPopupInfo] = useState<CoordinateWithDates | null>(null);
+  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
+  const closeEditMountainModalModal = () => {
+    setEditMountainId(null);
+  };
   const [center, setCenter] = useState<[number, number]>(initialCenter);
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
@@ -355,15 +380,57 @@ const Map = (props: Props) => {
     return null;
   };
 
+  let editMountainModal: React.ReactElement<any> | null;
+  if (editMountainId === null || popupInfo === null) {
+    editMountainModal = null;
+  } else {
+    if (!userId) {
+      editMountainModal = (
+        <SignUpModal
+          text={getFluentString('global-text-value-modal-sign-up-today-ascents-list', {
+            'mountain-name': popupInfo.name,
+          })}
+          onCancel={closeEditMountainModalModal}
+        />
+      );
+    } else {
+      editMountainModal = editMountainId === null ? null : (
+        <MountainCompletionModal
+          editMountainId={editMountainId}
+          closeEditMountainModalModal={closeEditMountainModalModal}
+          userId={userId}
+          mountainName={popupInfo.name}
+          variant={PeakListVariants.standard}
+        />
+      );
+    }
+  }
+
+  const getDesktopUrl = (mountainId: Mountain['id']) => {
+    if (id === mountainId) {
+      return mountainDetailLink(mountainId);
+    } else {
+      return listDetailWithMountainDetailLink(id, mountainId);
+    }
+  };
+
   const popup = !popupInfo ? <></> : (
     <Popup
       coordinates={[popupInfo.longitude, popupInfo.latitude]}
     >
       <StyledPopup>
-        <strong>{popupInfo.name}</strong>
+        <DynamicLink
+          mobileURL={mountainDetailLink(popupInfo.id)}
+          desktopURL={getDesktopUrl(popupInfo.id)}
+        >
+          <strong>{popupInfo.name}</strong>
+        </DynamicLink>
         <br />
         {popupInfo.elevation}ft
         {renderCompletionDates(popupInfo.completionDates)}
+        <div>
+          <AddAscentButton onClick={() => setEditMountainId(popupInfo.id)}>Add Ascent</AddAscentButton>
+        </div>
         <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
       </StyledPopup>
     </Popup>
@@ -474,6 +541,7 @@ const Map = (props: Props) => {
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
       {colorScaleLegend}
+      {editMountainModal}
     </Root>
   );
 
