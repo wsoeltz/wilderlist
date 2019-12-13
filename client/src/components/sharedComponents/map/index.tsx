@@ -13,10 +13,13 @@ import ReactMapboxGl, {
 } from 'react-mapbox-gl';
 import styled from 'styled-components/macro';
 import {
+  lightBorderColor,
   placeholderColor,
   semiBoldFontBoldWeight,
+  tertiaryColor,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
@@ -35,6 +38,7 @@ const Mapbox = ReactMapboxGl({
 
 const Root = styled.div`
   margin: 2rem 0;
+  border: 1px solid ${lightBorderColor};
 `;
 
 const StyledPopup = styled.div`
@@ -69,20 +73,45 @@ const GridNumbers = styled.div`
   letter-spacing: -1px;
 `;
 
+const ColorScaleLegend = styled.div`
+  padding: 0.6rem 0;
+  border-top: 1px solid ${lightBorderColor};
+  background-color: ${tertiaryColor};
+  display: flex;
+  justify-content: center;
+`;
+const LegendItem = styled.div`
+  margin: 0 0.3rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const Circle = styled.div`
+  width: 15px;
+  height: 15px;
+  border-radius: 4000px;
+  margin-bottom: 0.2rem;
+`;
+
+const startColor = '#dc4900';
+const endColor = '#145500';
+
 const twoColorScale: [string, string] = [
-  '#dc4900',
-  '#145500',
+  startColor,
+  endColor,
 ];
 const fiveColorScale: [string, string, string, string, string] = [
-  '#dc4900',
+  startColor,
   '#cb9e00',
   '#99b900',
   '#4a8900',
-  '#145500',
+  endColor,
 ];
 const thirteenColorScale:
   [string, string, string, string, string, string, string, string, string, string, string, string, string] = [
-  '#dc4900',
+  startColor,
   '#d37700',
   '#ce9200',
   '#cb9e00',
@@ -94,8 +123,31 @@ const thirteenColorScale:
   '#7ca900',
   '#629900',
   '#4a8900',
-  '#145500',
+  endColor,
 ];
+
+const GridLegendLabel = styled(LegendItem)`
+  white-space: nowrap;
+  width: 15px;
+`;
+
+const GridLabelStart = styled(GridLegendLabel)`
+  align-items: flex-start;
+  color: ${startColor};
+`;
+const GridLabelEnd = styled(GridLegendLabel)`
+  align-items: flex-end;
+  color: ${endColor};
+`;
+
+const SeasonLabelStart = styled(LegendItem)`
+  color: ${startColor};
+  justify-content: center;
+`;
+const SeasonLabelEnd = styled(LegendItem)`
+  color: ${endColor};
+  justify-content: center;
+`;
 
 const getMinMax = (coordinates: Coordinate[]) => {
   const sortedByLat = sortBy(coordinates, ['latitude']);
@@ -122,10 +174,11 @@ interface Props {
   id: string;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
+  peakListType: PeakListVariants;
 }
 
 const Map = (props: Props) => {
-  const { coordinates, highlighted } = props;
+  const { coordinates, highlighted, peakListType } = props;
 
   const { minLat, maxLat, minLong, maxLong } = getMinMax(coordinates);
 
@@ -316,6 +369,69 @@ const Map = (props: Props) => {
     </Popup>
   );
 
+  let colorScaleLegend: React.ReactElement<any> | null;
+  if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
+    colorScaleLegend = (
+      <ColorScaleLegend>
+        <LegendItem>
+          <Circle style={{backgroundColor: twoColorScale[0]}} />
+          Not Done
+        </LegendItem>
+        <LegendItem>
+          <Circle style={{backgroundColor: twoColorScale[1]}} />
+          Done
+        </LegendItem>
+      </ColorScaleLegend>
+    );
+  } else if (peakListType === PeakListVariants.fourSeason) {
+    const seasonCircles = fiveColorScale.map((c) => {
+      return (
+        <LegendItem key={c}>
+          <Circle style={{backgroundColor: c}} />
+        </LegendItem>
+      );
+    });
+    colorScaleLegend = (
+      <ColorScaleLegend>
+        <SeasonLabelStart>
+          No Seasons
+        </SeasonLabelStart>
+        {seasonCircles}
+        <SeasonLabelEnd>
+          All Seasons
+        </SeasonLabelEnd>
+      </ColorScaleLegend>
+    );
+  } else if (peakListType === PeakListVariants.grid) {
+    const monthCircles = thirteenColorScale.map((c, i) => {
+      if (i === 0 || i === 12) {
+        return null;
+      } else {
+        return (
+          <LegendItem key={c}>
+            <Circle style={{backgroundColor: c}} />
+          </LegendItem>
+        );
+      }
+    });
+    colorScaleLegend = (
+      <ColorScaleLegend>
+        <GridLabelStart>
+          <Circle style={{backgroundColor: thirteenColorScale[0]}} />
+          No Months
+        </GridLabelStart>
+        {monthCircles}
+        <GridLabelEnd>
+          <Circle style={{backgroundColor: thirteenColorScale[12]}} />
+          All Months
+        </GridLabelEnd>
+      </ColorScaleLegend>
+    );
+  } else {
+    failIfValidOrNonExhaustive(peakListType, 'invalid value for ' + peakListType);
+    colorScaleLegend = null;
+  }
+
   const mapRenderProps = (mapEl: any) => {
     setMap(mapEl);
     return null;
@@ -357,6 +473,7 @@ const Map = (props: Props) => {
         {popup}
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
+      {colorScaleLegend}
     </Root>
   );
 

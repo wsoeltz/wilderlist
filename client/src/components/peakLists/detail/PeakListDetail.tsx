@@ -247,6 +247,7 @@ const PeakListDetail = (props: Props) => {
             id={peakList.id}
             coordinates={mountainsWithDates}
             highlighted={highlightedMountain}
+            peakListType={type}
             key={peakListDetailMapKey}
           />
           <p>
