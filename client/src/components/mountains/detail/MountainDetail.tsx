@@ -8,8 +8,12 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import { Mountain, PeakList, PeakListVariants, Region, State, User } from '../../../types/graphQLTypes';
 import { convertDMS, mobileSize } from '../../../Utils';
+import {
+  VariableDate,
+} from '../../peakLists/detail/getCompletionDates';
+import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
@@ -196,12 +200,16 @@ const MountainDetail = (props: Props) => {
         );
 
       const {lat, long} = convertDMS(latitude, longitude);
+      const completionDates: VariableDate | null = completedDates !== undefined && completedDates.dates.length ? {
+        type: PeakListVariants.standard,
+        standard: getDates(completedDates.dates)[0],
+      } : null;
       return (
         <>
           <h1>{name}</h1>
           <Map
             id={id}
-            coordinates={[mountain]}
+            coordinates={[{...mountain, completionDates}]}
             key={mountainDetailMapKey}
           />
           <HorizontalContentItem>

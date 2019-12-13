@@ -12,6 +12,7 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
+import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable from './MountainTable';
 
@@ -223,7 +224,14 @@ const PeakListDetail = (props: Props) => {
         });
       }
 
-      const activeMountain = mountains.find(mtn => mtn.id === mountainId);
+      const userMountains = (user && user.mountains) ? user.mountains : [];
+
+      const mountainsWithDates = mountains.map(mountain => {
+        const completionDates = getCompletionDates({type, mountain, userMountains});
+        return {...mountain, completionDates};
+      });
+
+      const activeMountain = mountainsWithDates.find(mtn => mtn.id === mountainId);
       const highlightedMountain = activeMountain ? [activeMountain] : undefined;
 
       return (
@@ -237,7 +245,7 @@ const PeakListDetail = (props: Props) => {
           />
           <Map
             id={peakList.id}
-            coordinates={mountains}
+            coordinates={mountainsWithDates}
             highlighted={highlightedMountain}
             key={peakListDetailMapKey}
           />
@@ -246,7 +254,7 @@ const PeakListDetail = (props: Props) => {
           </p>
           <MountainTable
             user={user}
-            mountains={mountains}
+            mountains={mountainsWithDates}
             type={type}
             peakListId={peakList.id}
             peakListShortName={peakList.shortName}
