@@ -8,6 +8,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import { getStatesOrRegion } from '../list/PeakListCard';
@@ -164,113 +165,127 @@ const PeakListDetail = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
   });
-  let statesArray: StateDatum[] = [];
-  if (loading === true) {
-    return <LoadingSpinner />;
-  } else if (error !== undefined) {
-    console.error(error);
-    return  (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>
-    );
-  } else if (data !== undefined) {
-    const { peakList, user } = data;
-    if (!peakList) {
+
+  const renderProp = (me: User | null) => {
+    let statesArray: StateDatum[] = [];
+    if (loading === true) {
+      return <LoadingSpinner />;
+    } else if (error !== undefined) {
+      console.error(error);
+      return  (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
+    } else if (data !== undefined) {
+      const { peakList, user } = data;
+      if (!peakList) {
+        return (
+          <PlaceholderText>
+            {getFluentString('global-error-retrieving-data')}
+          </PlaceholderText>
+        );
+      } else {
+        const {parent, type} = peakList;
+        let mountains: MountainDatum[];
+        if (parent !== null && parent.mountains !== null) {
+          mountains = parent.mountains;
+        } else if (peakList.mountains !== null) {
+          mountains = peakList.mountains;
+        } else {
+          mountains = [];
+        }
+        const completedAscents =
+          user && user.mountains !== null ? user.mountains : [];
+
+        if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
+          statesArray = [...peakList.parent.states];
+        } else if (peakList.states && peakList.states.length) {
+          statesArray = [...peakList.states];
+        }
+
+        let paragraphText: string;
+        if (mountains && mountains.length) {
+          const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
+          const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+          const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+          paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
+            'list-name': peakList.name,
+            'number-of-peaks': mountains.length,
+            'state-or-region': isStateOrRegion.toString(),
+            'state-region-name': statesOrRegions,
+            'highest-mountain-name': mountainsSortedByElevation[0].name,
+            'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+            'smallest-mountain-name':
+              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
+            'smallest-mountain-elevation':
+              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+          });
+        } else {
+          paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
+            'list-name': peakList.name,
+          });
+        }
+
+        const userMountains = (user && user.mountains) ? user.mountains : [];
+
+        const mountainsWithDates = mountains.map(mountain => {
+          const completionDates = getCompletionDates({type, mountain, userMountains});
+          return {...mountain, completionDates};
+        });
+
+        const activeMountain = mountainsWithDates.find(mtn => mtn.id === mountainId);
+        const highlightedMountain = activeMountain ? [activeMountain] : undefined;
+
+        const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
+
+        return (
+          <>
+            <Header
+              user={user}
+              mountains={mountains}
+              peakList={peakList}
+              completedAscents={completedAscents}
+              statesArray={statesArray}
+              isOtherUser={isOtherUser}
+            />
+            <Map
+              id={peakList.id}
+              coordinates={mountainsWithDates}
+              highlighted={highlightedMountain}
+              peakListType={type}
+              userId={userId}
+              key={peakListDetailMapKey}
+            />
+            <p>
+              {paragraphText}
+            </p>
+            <MountainTable
+              user={user}
+              mountains={mountainsWithDates}
+              type={type}
+              peakListId={peakList.id}
+              peakListShortName={peakList.shortName}
+            />
+          </>
+        );
+      }
+    } else {
       return (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}
         </PlaceholderText>
       );
-    } else {
-      const {parent, type} = peakList;
-      let mountains: MountainDatum[];
-      if (parent !== null && parent.mountains !== null) {
-        mountains = parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
-      const completedAscents =
-        user && user.mountains !== null ? user.mountains : [];
-
-      if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
-        statesArray = [...peakList.parent.states];
-      } else if (peakList.states && peakList.states.length) {
-        statesArray = [...peakList.states];
-      }
-
-      let paragraphText: string;
-      if (mountains && mountains.length) {
-        const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
-        const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-        const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
-        paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
-          'list-name': peakList.name,
-          'number-of-peaks': mountains.length,
-          'state-or-region': isStateOrRegion.toString(),
-          'state-region-name': statesOrRegions,
-          'highest-mountain-name': mountainsSortedByElevation[0].name,
-          'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
-          'smallest-mountain-name':
-            mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-          'smallest-mountain-elevation':
-            mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
-        });
-      } else {
-        paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
-          'list-name': peakList.name,
-        });
-      }
-
-      const userMountains = (user && user.mountains) ? user.mountains : [];
-
-      const mountainsWithDates = mountains.map(mountain => {
-        const completionDates = getCompletionDates({type, mountain, userMountains});
-        return {...mountain, completionDates};
-      });
-
-      const activeMountain = mountainsWithDates.find(mtn => mtn.id === mountainId);
-      const highlightedMountain = activeMountain ? [activeMountain] : undefined;
-
-      return (
-        <>
-          <Header
-            user={user}
-            mountains={mountains}
-            peakList={peakList}
-            completedAscents={completedAscents}
-            statesArray={statesArray}
-          />
-          <Map
-            id={peakList.id}
-            coordinates={mountainsWithDates}
-            highlighted={highlightedMountain}
-            peakListType={type}
-            userId={userId}
-            key={peakListDetailMapKey}
-          />
-          <p>
-            {paragraphText}
-          </p>
-          <MountainTable
-            user={user}
-            mountains={mountainsWithDates}
-            type={type}
-            peakListId={peakList.id}
-            peakListShortName={peakList.shortName}
-          />
-        </>
-      );
     }
-  } else {
-    return (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>
-    );
-  }
+  };
+
+  return (
+    <>
+      <UserContext.Consumer
+        children={renderProp}
+      />
+    </>
+  );
 };
 
 export default PeakListDetail;

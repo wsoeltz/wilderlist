@@ -24,7 +24,7 @@ interface Props extends RouteComponentProps {
 
 const PeakListDetailPage = (props: Props) => {
   const { userId, match } = props;
-  const { id, mountainId }: any = match.params;
+  const { id, mountainId, friendId, peakListId }: any = match.params;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -38,6 +38,8 @@ const PeakListDetailPage = (props: Props) => {
     : (
         <MountainDetail userId={userId} id={mountainId} />
       );
+  const peakListUser = Types.ObjectId.isValid(friendId) ? friendId : userId;
+  const listId = Types.ObjectId.isValid(peakListId) ? peakListId : id;
 
   return (
     <>
@@ -46,7 +48,7 @@ const PeakListDetailPage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          <PeakListDetail userId={userId} id={id} mountainId={mountainId} />
+          <PeakListDetail userId={peakListUser} id={listId} mountainId={mountainId} />
         </ContentBody>
       </ContentLeftLarge>
       <ContentRightSmall>
