@@ -29,8 +29,11 @@ global-text-value-modal-email = Email
 global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
-global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } today
-global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks today
+global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-import = Import your data for { $list-short-name } in just a few clicks
+global-text-value-modal-sign-up-today-export = Export your data for { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
+
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
@@ -45,6 +48,7 @@ global-text-value-location = Location
 global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Ascent Dates
 global-text-value-done = Done
+global-text-value-not-done = Not Done
 global-text-value-today = Today
 global-text-value-summer = Summer
 global-text-value-fall = Fall
@@ -231,7 +235,13 @@ user-card-completed = Completed
 user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
-map-text-attribution = Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)
+map-completed = Completed
+map-completed-in-winter = Completed in winter
+map-add-ascent = Add Ascent
+map-no-seasons = No Seasons
+map-all-seasons = All Seasons
+map-no-months = No Months
+map-all-months = All Months
 
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.

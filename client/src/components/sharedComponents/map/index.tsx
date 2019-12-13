@@ -320,7 +320,7 @@ const Map = (props: Props) => {
         if (dates.standard !== undefined) {
           return (
             <Date>
-              <strong>Completed: </strong>
+              <strong>{getFluentString('map-completed')}: </strong>
               {formatDate(dates.standard)}
             </Date>
           );
@@ -330,7 +330,7 @@ const Map = (props: Props) => {
         if (dates.winter !== undefined) {
           return (
             <Date>
-              <strong>Completed in Winter: </strong>
+              <strong>{getFluentString('map-completed-in-winter')}: </strong>
               {formatDate(dates.winter)}
             </Date>
           );
@@ -429,7 +429,9 @@ const Map = (props: Props) => {
         {popupInfo.elevation}ft
         {renderCompletionDates(popupInfo.completionDates)}
         <div>
-          <AddAscentButton onClick={() => setEditMountainId(popupInfo.id)}>Add Ascent</AddAscentButton>
+          <AddAscentButton onClick={() => setEditMountainId(popupInfo.id)}>
+            {getFluentString('map-add-ascent')}
+          </AddAscentButton>
         </div>
         <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
       </StyledPopup>
@@ -442,11 +444,11 @@ const Map = (props: Props) => {
       <ColorScaleLegend>
         <LegendItem>
           <Circle style={{backgroundColor: twoColorScale[0]}} />
-          Not Done
+          {getFluentString('global-text-value-not-done')}
         </LegendItem>
         <LegendItem>
           <Circle style={{backgroundColor: twoColorScale[1]}} />
-          Done
+          {getFluentString('global-text-value-done')}
         </LegendItem>
       </ColorScaleLegend>
     );
@@ -461,11 +463,11 @@ const Map = (props: Props) => {
     colorScaleLegend = (
       <ColorScaleLegend>
         <SeasonLabelStart>
-          No Seasons
+          {getFluentString('map-no-seasons')}
         </SeasonLabelStart>
         {seasonCircles}
         <SeasonLabelEnd>
-          All Seasons
+          {getFluentString('map-all-seasons')}
         </SeasonLabelEnd>
       </ColorScaleLegend>
     );
@@ -485,12 +487,12 @@ const Map = (props: Props) => {
       <ColorScaleLegend>
         <GridLabelStart>
           <Circle style={{backgroundColor: thirteenColorScale[0]}} />
-          No Months
+          {getFluentString('map-no-months')}
         </GridLabelStart>
         {monthCircles}
         <GridLabelEnd>
           <Circle style={{backgroundColor: thirteenColorScale[12]}} />
-          All Months
+          {getFluentString('map-all-months')}
         </GridLabelEnd>
       </ColorScaleLegend>
     );
