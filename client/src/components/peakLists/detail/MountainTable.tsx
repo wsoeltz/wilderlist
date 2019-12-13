@@ -304,6 +304,18 @@ const MountainTable = (props: Props) => {
   const closeEditMountainModalModal = () => {
     setMountainToEdit(null);
   };
+
+  let peakListShortNameWithType: string;
+  if (type === PeakListVariants.standard) {
+    peakListShortNameWithType = peakListShortName;
+  } else if (type === PeakListVariants.fourSeason) {
+    peakListShortNameWithType = peakListShortName + ': 4-Season';
+  } else if (type === PeakListVariants.grid || PeakListVariants.winter) {
+    peakListShortNameWithType = peakListShortName + ' ' + type.replace(/^\w/, c => c.toUpperCase());
+  } else {
+    peakListShortNameWithType = peakListShortName;
+  }
+
   let editMountainModal: React.ReactElement<any> | null;
   if (mountainToEdit === null) {
     editMountainModal = null;
@@ -312,7 +324,7 @@ const MountainTable = (props: Props) => {
       editMountainModal = (
         <SignUpModal
           text={getFluentString('global-text-value-modal-sign-up-today', {
-            'list-short-name': peakListShortName,
+            'list-short-name': peakListShortNameWithType,
           })}
           onCancel={closeEditMountainModalModal}
         />
@@ -408,8 +420,8 @@ const MountainTable = (props: Props) => {
   } else if (isImportModalOpen === true) {
     importAscentsModal = (
         <SignUpModal
-          text={getFluentString('global-text-value-modal-sign-up-today', {
-            'list-short-name': peakListShortName,
+          text={getFluentString('global-text-value-modal-sign-up-today-import', {
+            'list-short-name': peakListShortNameWithType,
           })}
           onCancel={() => setIsImportModalOpen(false)}
         />
@@ -843,8 +855,8 @@ const MountainTable = (props: Props) => {
   } else if (isExportModalOpen === true) {
     exportAscentsModal = (
         <SignUpModal
-          text={getFluentString('global-text-value-modal-sign-up-today', {
-            'list-short-name': peakListShortName,
+          text={getFluentString('global-text-value-modal-sign-up-today-export', {
+            'list-short-name': peakListShortNameWithType,
           })}
           onCancel={() => setIsExportModalOpen(false)}
         />
