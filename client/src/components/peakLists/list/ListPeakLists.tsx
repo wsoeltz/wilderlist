@@ -78,15 +78,13 @@ type Props = BaseProps & (
     viewMode: ViewMode.Compact;
     peakListData: CompactPeakListDatum[];
   }
-) & ({ profileView: false } | {
-  profileView: true;
-  isMe: boolean;
-});
+) & ({ profileId: string | undefined });
 
 const ListPeakLists = (props: Props) => {
   const {
     userListData, listAction, actionText,
     completedAscents, noResultsText, showTrophies,
+    profileId,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -125,12 +123,12 @@ const ListPeakLists = (props: Props) => {
         trophies.push(
           <PeakListTrophy
             peakList={peakList}
+            profileId={profileId}
             key={peakList.id}
           />,
         );
         return null;
       }
-      const isMe = props.profileView === true ? props.isMe : false;
       const active = userListData ? userListData.includes(peakList.id) : null;
       return (
         <PeakListCard
@@ -139,12 +137,11 @@ const ListPeakLists = (props: Props) => {
           listAction={listAction}
           actionText={actionText}
           completedAscents={completedAscents}
-          profileView={props.profileView}
+          profileId={profileId}
           key={peakList.id}
           mountains={mountains}
           numCompletedAscents={numCompletedAscents}
           totalRequiredAscents={totalRequiredAscents}
-          isMe={isMe}
         />
       );
     });

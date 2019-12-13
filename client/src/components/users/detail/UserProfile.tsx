@@ -180,8 +180,6 @@ const UserProfile = (props: Props) => {
           'user-name': user.name,
         });
 
-        const isMe = user.id === userId;
-
         return (
           <>
             <Header
@@ -197,10 +195,9 @@ const UserProfile = (props: Props) => {
                 listAction={compareAscents}
                 actionText={getFluentString('user-profile-compare-ascents')}
                 completedAscents={completedAscents}
-                profileView={true}
+                profileId={user.id}
                 noResultsText={noResultsText}
                 showTrophies={true}
-                isMe={isMe}
               />
             </ListContainer>
           </>

@@ -9,6 +9,7 @@ import {
 import {
   ButtonPrimary,
   GhostButton,
+  lightBorderColor,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
@@ -55,6 +56,14 @@ const BeginRemoveListButtonContainer = styled.div`
   text-align: right;
 `;
 
+const FriendHeader = styled.h3`
+  grid-column: 1 / 4;
+  grid-row: 1;
+  text-align: center;
+  padding-bottom: 0.7rem;
+  border-bottom: 2px solid ${lightBorderColor};
+`;
+
 const Title = styled.h1`
   margin-bottom: 0.5rem;
   margin-top: 0;
@@ -99,6 +108,7 @@ interface Props {
   peakList: PeakListDatum;
   user: UserDatum | null;
   completedAscents: CompletedMountain[];
+  isOtherUser?: boolean;
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
 }
@@ -106,7 +116,7 @@ interface Props {
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents, comparisonUser, comparisonAscents, statesArray,
+    completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -179,6 +189,14 @@ const Header = (props: Props) => {
       {getFluentString('peak-list-detail-text-remove-list')}
     </GhostButton>
    ) ;
+
+  const topLevelHeading = isOtherUser === true && user !== null ? (
+     <FriendHeader>Viewing list for {user.name}</FriendHeader>
+   ) : (
+      <BeginRemoveListButtonContainer>
+        {beginRemoveButton}
+      </BeginRemoveListButtonContainer>
+    );
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
   let totalRequiredAscents: number;
@@ -279,9 +297,7 @@ const Header = (props: Props) => {
           completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
         />
       </LogoContainer>
-      <BeginRemoveListButtonContainer>
-        {beginRemoveButton}
-      </BeginRemoveListButtonContainer>
+      {topLevelHeading}
       {listInfoContent}
       {areYouSureModal}
       {signUpModal}

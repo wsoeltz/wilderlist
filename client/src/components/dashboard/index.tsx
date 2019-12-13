@@ -195,10 +195,9 @@ const Dashboard = (props: Props) => {
           listAction={null}
           actionText={''}
           completedAscents={completedAscents}
-          profileView={true}
+          profileId={undefined}
           noResultsText={''}
           showTrophies={true}
-          isMe={false}
         />
       );
     }
