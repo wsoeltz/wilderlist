@@ -13,10 +13,17 @@ import ReactMapboxGl, {
 } from 'react-mapbox-gl';
 import styled from 'styled-components/macro';
 import {
-  warmRedColor,
   placeholderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
+import { PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  VariableDate,
+} from '../../peakLists/detail/getCompletionDates';
+import {
+  formatDate,
+  formatGridDate,
+} from '../../peakLists/Utils';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -47,6 +54,48 @@ const ClosePopup = styled.div`
   }
 `;
 
+const PopupDates = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const Date = styled.div`
+  margin: 0 0.5rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+`;
+
+const GridNumbers = styled.div`
+  letter-spacing: -1px;
+`;
+
+const twoColorScale: [string, string] = [
+  '#dc4900',
+  '#145500',
+];
+const fiveColorScale: [string, string, string, string, string] = [
+  '#dc4900',
+  '#cb9e00',
+  '#99b900',
+  '#4a8900',
+  '#145500',
+];
+const thirteenColorScale:
+  [string, string, string, string, string, string, string, string, string, string, string, string, string] = [
+  '#dc4900',
+  '#d37700',
+  '#ce9200',
+  '#cb9e00',
+  '#c8aa00',
+  '#c5b500',
+  '#b5bf00',
+  '#99b900',
+  '#8ab100',
+  '#7ca900',
+  '#629900',
+  '#4a8900',
+  '#145500',
+];
 
 const getMinMax = (coordinates: Coordinate[]) => {
   const sortedByLat = sortBy(coordinates, ['latitude']);
@@ -67,10 +116,12 @@ interface Coordinate {
   elevation: number;
 }
 
+type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
+
 interface Props {
   id: string;
-  coordinates: Coordinate[];
-  highlighted?: Coordinate[];
+  coordinates: CoordinateWithDates[];
+  highlighted?: CoordinateWithDates[];
 }
 
 const Map = (props: Props) => {
@@ -87,7 +138,7 @@ const Map = (props: Props) => {
     initialCenter = [-73.5346381, 43.216461];
   }
 
-  const [popupInfo, setPopupInfo] = useState<Coordinate | null>(null);
+  const [popupInfo, setPopupInfo] = useState<CoordinateWithDates | null>(null);
   const [center, setCenter] = useState<[number, number]>(initialCenter);
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
@@ -108,7 +159,7 @@ const Map = (props: Props) => {
       if (map) {
         map.dragPan.disable();
       }
-    }
+    };
     document.body.addEventListener('keydown', enableZoom);
     document.body.addEventListener('keyup', disableZoom);
     document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
@@ -140,20 +191,116 @@ const Map = (props: Props) => {
   };
 
   const features = coordinates.map(point => {
+    const { completionDates } = point;
     const onClick = () => {
       setPopupInfo({...point});
       setCenter([point.longitude, point.latitude]);
     };
+    let circleColor: string;
+    if (completionDates === null) {
+      circleColor = twoColorScale[0];
+    } else if (completionDates.type === PeakListVariants.standard) {
+      circleColor = completionDates.standard !== undefined ? twoColorScale[1] : twoColorScale[0];
+    } else if (completionDates.type === PeakListVariants.winter) {
+      circleColor = completionDates.winter !== undefined ? twoColorScale[1] : twoColorScale[0];
+    } else if (completionDates.type === PeakListVariants.fourSeason) {
+      let completionCount: number = 0;
+      Object.keys(completionDates).forEach(function(season: keyof VariableDate) {
+        if (season !== 'type' && completionDates[season] !== undefined) {
+          completionCount += 1;
+        }
+      });
+      circleColor = fiveColorScale[completionCount];
+    } else if (completionDates.type === PeakListVariants.grid) {
+      let completionCount: number = 0;
+      Object.keys(completionDates).forEach(function(month: keyof VariableDate) {
+        if (month !== 'type' && completionDates[month] !== undefined) {
+          completionCount += 1;
+        }
+      });
+      circleColor = thirteenColorScale[completionCount];
+    } else {
+      circleColor = twoColorScale[1];
+    }
     return (
       <Feature
         coordinates={[point.longitude, point.latitude]}
         onClick={onClick}
         onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
+        properties={{
+          'circle-color': circleColor,
+        }}
         key={'' + point.latitude + point.longitude}
       />
     );
   });
+
+  const renderCompletionDates = (dates: VariableDate | null) => {
+    if (dates) {
+      if (dates.type === PeakListVariants.standard) {
+        if (dates.standard !== undefined) {
+          return (
+            <Date>
+              <strong>Completed: </strong>
+              {formatDate(dates.standard)}
+            </Date>
+          );
+        }
+      }
+      if (dates.type === PeakListVariants.winter) {
+        if (dates.winter !== undefined) {
+          return (
+            <Date>
+              <strong>Completed in Winter: </strong>
+              {formatDate(dates.winter)}
+            </Date>
+          );
+        }
+      }
+      if (dates.type === PeakListVariants.fourSeason) {
+        const datesElm: Array<React.ReactElement<any>> = [];
+        Object.keys(dates).forEach(function(season: keyof VariableDate) {
+          if (season !== 'type' && dates[season] !== undefined) {
+            const seasonAsString = season as string;
+            datesElm.push(
+              <Date key={season}>
+                <strong>{seasonAsString}</strong>
+                <div>{formatDate(dates[season])}</div>
+              </Date>,
+            );
+          }
+        });
+        return (
+          <PopupDates>
+            {datesElm}
+          </PopupDates>
+        );
+      }
+      if (dates.type === PeakListVariants.grid) {
+        const datesElm: Array<React.ReactElement<any>> = [];
+        Object.keys(dates).forEach(function(month: keyof VariableDate) {
+          if (month !== 'type' && dates[month] !== undefined) {
+            const monthAsString = month as string;
+            const monthNameArray = monthAsString.match(/.{1,3}/g);
+            const monthName = monthNameArray !== null && monthNameArray.length ? monthNameArray[0] : '';
+            datesElm.push(
+              <Date key={monthName}>
+                <strong>{monthName}</strong>
+                <GridNumbers>{formatGridDate(dates[month])}</GridNumbers>
+              </Date>,
+            );
+          }
+        });
+        return (
+          <PopupDates>
+            {datesElm}
+          </PopupDates>
+        );
+      }
+    }
+    return null;
+  };
 
   const popup = !popupInfo ? <></> : (
     <Popup
@@ -163,6 +310,7 @@ const Map = (props: Props) => {
         <strong>{popupInfo.name}</strong>
         <br />
         {popupInfo.elevation}ft
+        {renderCompletionDates(popupInfo.completionDates)}
         <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
       </StyledPopup>
     </Popup>
@@ -190,7 +338,20 @@ const Map = (props: Props) => {
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
-        <Layer type='circle' id='marker' paint={{ 'circle-color': warmRedColor, 'circle-radius': 5 }}>
+        <Layer
+          type='circle'
+          id='marker'
+          paint={{
+            'circle-color': ['get', 'circle-color'],
+            'circle-radius': {
+              base: 5,
+              stops: [
+                [1, 4],
+                [10, 10],
+              ],
+            },
+          }}
+        >
           {features}
         </Layer>
         {popup}

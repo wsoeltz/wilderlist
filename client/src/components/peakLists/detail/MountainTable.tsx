@@ -25,7 +25,6 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import ExportAscentsModal from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
-import getCompletionDates from './getCompletionDates';
 import MountainCompletionModal from './MountainCompletionModal';
 import MountainRow from './MountainRow';
 import {
@@ -41,7 +40,6 @@ import {
   stateColumn,
 } from './MountainRow';
 import {
-  MountainDatum,
   UserDatum,
 } from './PeakListDetail';
 
@@ -257,7 +255,7 @@ const getInitialDirection = (value: any) => {
 };
 
 interface Props {
-  mountains: MountainDatum[];
+  mountains: MountainDatumWithDate[];
   user: UserDatum | null;
   type: PeakListVariants;
   peakListId: string;
@@ -420,22 +418,15 @@ const MountainTable = (props: Props) => {
     importAscentsModal = null;
   }
 
-  const userMountains = (user && user.mountains) ? user.mountains : [];
-
-  const mountainsWithDates = mountains.map(mountain => {
-    const completionDates = getCompletionDates({type, mountain, userMountains});
-    return {...mountain, completionDates};
-  });
-
   let sortedMountains: MountainDatumWithDate[];
   if (sortingBy === SortingCategories.name) {
-    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.name).reverse();
+    sortedMountains = sortBy(mountains, mountain => mountain.name).reverse();
   } else if (sortingBy === SortingCategories.state) {
-    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.state.abbreviation).reverse();
+    sortedMountains = sortBy(mountains, mountain => mountain.state.abbreviation).reverse();
   } else if (sortingBy === SortingCategories.elevation) {
-    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.elevation);
+    sortedMountains = sortBy(mountains, mountain => mountain.elevation);
   } else if (sortingBy === SortingCategories.date) {
-    sortedMountains = sortBy(mountainsWithDates, ({completionDates}) => {
+    sortedMountains = sortBy(mountains, ({completionDates}) => {
       if (completionDates !== null && completionDates.type) {
         if (completionDates.type === PeakListVariants.standard) {
           const dateObject = completionDates.standard;
@@ -455,7 +446,7 @@ const MountainTable = (props: Props) => {
              sortingBy === Seasons.fall ||
              sortingBy === Seasons.winter ||
              sortingBy === Seasons.spring) {
-    sortedMountains = sortBy(mountainsWithDates, ({completionDates}) => {
+    sortedMountains = sortBy(mountains, ({completionDates}) => {
       if (completionDates !== null && completionDates.type) {
         if (completionDates.type === PeakListVariants.fourSeason) {
           const dateObject = completionDates[sortingBy];
@@ -478,7 +469,7 @@ const MountainTable = (props: Props) => {
              sortingBy === Months.october ||
              sortingBy === Months.november ||
              sortingBy === Months.december) {
-    sortedMountains = sortBy(mountainsWithDates, ({completionDates}) => {
+    sortedMountains = sortBy(mountains, ({completionDates}) => {
       if (completionDates !== null && completionDates.type) {
         if (completionDates.type === PeakListVariants.grid) {
           const dateObject = completionDates[sortingBy];
@@ -491,7 +482,7 @@ const MountainTable = (props: Props) => {
     });
   } else {
     failIfValidOrNonExhaustive(sortingBy, 'Invalid sort ' + sortingBy);
-    sortedMountains = sortBy(mountainsWithDates, mountain => mountain.elevation);
+    sortedMountains = sortBy(mountains, mountain => mountain.elevation);
   }
   if (sortingDirection === SortingDirection.descending) {
     sortedMountains.reverse();
