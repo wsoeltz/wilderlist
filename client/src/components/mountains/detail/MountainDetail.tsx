@@ -211,6 +211,7 @@ const MountainDetail = (props: Props) => {
             id={id}
             coordinates={[{...mountain, completionDates}]}
             peakListType={PeakListVariants.standard}
+            userId={userId}
             key={mountainDetailMapKey}
           />
           <HorizontalContentItem>
