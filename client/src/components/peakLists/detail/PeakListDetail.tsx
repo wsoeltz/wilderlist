@@ -3,10 +3,16 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
+import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { PlaceholderText } from '../../../styling/styleUtils';
+import { listDetailLink } from '../../../routing/Utils';
+import {
+  ButtonPrimaryLink,
+  lightBorderColor,
+  PlaceholderText,
+} from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -15,9 +21,40 @@ import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
-import MountainTable from './MountainTable';
+import MountainTable, {topOfPageBuffer} from './MountainTable';
 
 const peakListDetailMapKey = 'peakListDetailMapKey';
+
+export const friendHeaderHeight = 2.6; // in rem
+
+const FriendHeader = styled.h3`
+  height: ${friendHeaderHeight}rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 250;
+  position: sticky;
+  top: ${topOfPageBuffer}rem;
+  background-color: #fff;
+  border-bottom: 2px solid ${lightBorderColor};
+  margin-top: 0;
+`;
+
+const Text = styled.div`
+  flex-shrink: 1;
+  margin-right: 1rem;
+  height: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: translate(0, 25%);
+`;
+
+const LinkButton = styled(ButtonPrimaryLink)`
+  flex-shrink: 0;
+  padding: 0.4rem;
+  font-size: 0.7rem;
+`;
 
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID) {
@@ -239,8 +276,20 @@ const PeakListDetail = (props: Props) => {
 
         const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
 
+        const friendHeader = isOtherUser === true && user !== null ? (
+           <FriendHeader>
+            <Text>
+              Viewing list for {user.name}
+            </Text>
+            <LinkButton to={listDetailLink(peakList.id)}>
+              View your progress
+            </LinkButton>
+           </FriendHeader>
+         ) : null;
+
         return (
           <>
+            {friendHeader}
             <Header
               user={user}
               mountains={mountains}

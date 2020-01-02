@@ -9,7 +9,6 @@ import {
 import {
   ButtonPrimary,
   GhostButton,
-  lightBorderColor,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
@@ -54,14 +53,6 @@ const BeginRemoveListButtonContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
   text-align: right;
-`;
-
-const FriendHeader = styled.h3`
-  grid-column: 1 / 4;
-  grid-row: 1;
-  text-align: center;
-  padding-bottom: 0.7rem;
-  border-bottom: 2px solid ${lightBorderColor};
 `;
 
 const Title = styled.h1`
@@ -190,9 +181,7 @@ const Header = (props: Props) => {
     </GhostButton>
    ) ;
 
-  const topLevelHeading = isOtherUser === true && user !== null ? (
-     <FriendHeader>Viewing list for {user.name}</FriendHeader>
-   ) : (
+  const topLevelHeading = isOtherUser === true && user !== null ? null : (
       <BeginRemoveListButtonContainer>
         {beginRemoveButton}
       </BeginRemoveListButtonContainer>

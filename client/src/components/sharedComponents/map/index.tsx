@@ -423,8 +423,8 @@ const Map = (props: Props) => {
       >
         <strong>{mtnName}</strong>
       </DynamicLink>
-    )
-  }
+    );
+  };
 
   const getAddAscentButton = (mtnId: string) => {
     return isOtherUser ? null : (
@@ -434,7 +434,7 @@ const Map = (props: Props) => {
         </AddAscentButton>
       </div>
     );
-  }
+  };
 
   const popup = !popupInfo ? <></> : (
     <Popup
