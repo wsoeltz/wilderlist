@@ -128,6 +128,10 @@ const CompletedDateText = styled.div`
   text-align: center;
 `;
 
+const EmptyDate = styled.div`
+  text-align: center;
+`;
+
 const MountainButton = styled(TableCellBase)`
   grid-column: ${buttonColumn};
   justify-content: flex-end;
@@ -163,15 +167,16 @@ interface Props {
   type: PeakListVariants;
   setEditMountainId: (mountainToEdit: MountainToEdit) => void;
   peakListId: string;
+  isOtherUser: boolean;
 }
 
 const MountainRow = (props: Props) => {
-  const { index, mountain, type, setEditMountainId, peakListId } = props;
+  const { index, mountain, type, setEditMountainId, peakListId, isOtherUser } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
   const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
   const completeButton = (target: Months | Seasons | null) => {
-      return (
+      return isOtherUser ? (<EmptyDate>{'—'}</EmptyDate>) : (
       <MarkDoneButton onClick={() => setEditMountainId({
         id: mountain.id, name: mountain.name, target,
       })}>
@@ -498,15 +503,19 @@ const MountainRow = (props: Props) => {
   const NameContainer = type === PeakListVariants.grid || type === PeakListVariants.fourSeason
     ? GridNameCell : NameCell;
 
+  const mountainName = isOtherUser === true ? (<>{mountain.name}</>) : (
+    <MountainName
+      mobileURL={mountainDetailLink(mountain.id)}
+      desktopURL={listDetailWithMountainDetailLink(peakListId, mountain.id)}
+    >
+      {mountain.name}
+    </MountainName>
+  );
+
   return (
     <>
       <NameContainer style={{backgroundColor}}>
-        <MountainName
-          mobileURL={mountainDetailLink(mountain.id)}
-          desktopURL={listDetailWithMountainDetailLink(peakListId, mountain.id)}
-        >
-          {mountain.name}
-        </MountainName>
+        {mountainName}
       </NameContainer>
       {columnDetailContent}
     </>

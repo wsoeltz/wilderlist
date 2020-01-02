@@ -255,6 +255,7 @@ const PeakListDetail = (props: Props) => {
               highlighted={highlightedMountain}
               peakListType={type}
               userId={userId}
+              isOtherUser={isOtherUser}
               key={peakListDetailMapKey}
             />
             <p>
@@ -266,6 +267,7 @@ const PeakListDetail = (props: Props) => {
               type={type}
               peakListId={peakList.id}
               peakListShortName={peakList.shortName}
+              isOtherUser={isOtherUser}
             />
           </>
         );

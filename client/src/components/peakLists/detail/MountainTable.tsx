@@ -260,10 +260,11 @@ interface Props {
   type: PeakListVariants;
   peakListId: string;
   peakListShortName: string;
+  isOtherUser?: boolean;
 }
 
 const MountainTable = (props: Props) => {
-  const { mountains, user, type, peakListId, peakListShortName } = props;
+  const { mountains, user, type, peakListId, peakListShortName, isOtherUser } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -509,6 +510,7 @@ const MountainTable = (props: Props) => {
         type={type}
         setEditMountainId={setMountainToEdit}
         peakListId={peakListId}
+        isOtherUser={isOtherUser !== undefined ? isOtherUser : false}
       />
     ),
   );

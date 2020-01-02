@@ -193,10 +193,11 @@ interface Props {
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
   peakListType: PeakListVariants;
+  isOtherUser?: boolean;
 }
 
 const Map = (props: Props) => {
-  const { id, coordinates, highlighted, peakListType, userId } = props;
+  const { id, coordinates, highlighted, peakListType, userId, isOtherUser } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -414,25 +415,37 @@ const Map = (props: Props) => {
     }
   };
 
+  const getMountainPopupName = (mtnId: string, mtnName: string) => {
+    return isOtherUser ? <strong>{mtnName}</strong> : (
+      <DynamicLink
+        mobileURL={mountainDetailLink(mtnId)}
+        desktopURL={getDesktopUrl(mtnId)}
+      >
+        <strong>{mtnName}</strong>
+      </DynamicLink>
+    )
+  }
+
+  const getAddAscentButton = (mtnId: string) => {
+    return isOtherUser ? null : (
+      <div>
+        <AddAscentButton onClick={() => setEditMountainId(mtnId)}>
+          {getFluentString('map-add-ascent')}
+        </AddAscentButton>
+      </div>
+    );
+  }
+
   const popup = !popupInfo ? <></> : (
     <Popup
       coordinates={[popupInfo.longitude, popupInfo.latitude]}
     >
       <StyledPopup>
-        <DynamicLink
-          mobileURL={mountainDetailLink(popupInfo.id)}
-          desktopURL={getDesktopUrl(popupInfo.id)}
-        >
-          <strong>{popupInfo.name}</strong>
-        </DynamicLink>
+        {getMountainPopupName(popupInfo.id, popupInfo.name)}
         <br />
         {popupInfo.elevation}ft
         {renderCompletionDates(popupInfo.completionDates)}
-        <div>
-          <AddAscentButton onClick={() => setEditMountainId(popupInfo.id)}>
-            {getFluentString('map-add-ascent')}
-          </AddAscentButton>
-        </div>
+        {getAddAscentButton(popupInfo.id)}
         <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
       </StyledPopup>
     </Popup>
