@@ -91,3 +91,19 @@ export interface User {
   disableEmailNotifications: boolean | null;
   ascentNotifications: AscentNotification[] | null;
 }
+
+export interface TripReport {
+  id: string;
+  date: string;
+  author: User['id'];
+  mountains: Mountain[];
+  users: User[];
+  perfectConditions: boolean | null;
+  mud: number | null;
+  water: number | null;
+  ice: number | null;
+  snow: number | null;
+  obstacles: number | null;
+  notes: string | null;
+  link: string | null;
+}
