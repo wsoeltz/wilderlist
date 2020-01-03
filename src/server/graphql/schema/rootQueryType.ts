@@ -10,6 +10,7 @@ import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
+import TripReportType, { TripReport } from './queryTypes/tripReportType';
 import UserType, { User } from './queryTypes/userType';
 
 const RootQuery = new GraphQLObjectType({
@@ -105,6 +106,12 @@ const RootQuery = new GraphQLObjectType({
           .sort({ name: 1 });
       },
     },
+    tripReports: {
+      type: new GraphQLList(TripReportType),
+      async resolve() {
+        return TripReport.find({});
+      },
+    },
     mountain: {
       type: MountainType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
@@ -138,6 +145,41 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       resolve(parnetValue, { id }) {
         return User.findById(id);
+      },
+    },
+    tripReport: {
+      type: TripReportType,
+      args: { id: { type: GraphQLID } },
+      resolve(parnetValue, { id }) {
+        return TripReport.findById(id);
+      },
+    },
+    tripReportByAuthorDateAndMountain: {
+      type: TripReportType,
+      args: {
+        author: { type: GraphQLNonNull(GraphQLID) },
+        date: { type: GraphQLNonNull(GraphQLString) },
+        mountain: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parentValue, { author, date, mountain}) {
+        return TripReport
+          .findOne({
+            author, date,
+            mountains: mountain,
+          });
+      },
+    },
+    tripReportsForMountain: {
+      type: new GraphQLList(TripReportType),
+      args: {
+        mountain: { type: GraphQLNonNull(GraphQLID) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, {mountain, nPerPage}) {
+        return TripReport
+          .find({mountains: mountain})
+          .limit(nPerPage)
+          .sort({ date: -1 });
       },
     },
   }),
