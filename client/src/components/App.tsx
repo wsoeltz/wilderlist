@@ -115,6 +115,9 @@ const App: React.FC = () => {
         <Route exact path={Routes.Dashboard}
           render={(props) => <Dashboard {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.DashboardWithPeakListDetail}
+          render={(props) => <Dashboard {...props} userId={user._id} />}
+        />
         <Route exact path={Routes.ListsWithDetail}
           render={(props) => <PeakListPage {...props} userId={user._id} />}
         />

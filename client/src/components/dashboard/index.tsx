@@ -10,15 +10,18 @@ import {
 import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
+  ContentHeader,
   ContentLeftLarge,
   ContentRightSmall,
   SearchContainer,
 } from '../../styling/Grid';
 import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
 import { FriendStatus, PeakList, User } from '../../types/graphQLTypes';
+import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
+import BackButton from '../sharedComponents/BackButton';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import GhostUserCard from '../users/list/GhostUserCard';
 import ListUsers, { UserDatum } from '../users/list/ListUsers';
@@ -122,7 +125,8 @@ interface Props extends RouteComponentProps {
 }
 
 const Dashboard = (props: Props) => {
-  const { userId, history } = props;
+  const { userId, history, match } = props;
+  const { peakListId }: any = match.params;
 
   const searchPeakLists = (value: string) => {
     const url = searchListDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
@@ -198,6 +202,7 @@ const Dashboard = (props: Props) => {
           profileId={undefined}
           noResultsText={''}
           showTrophies={true}
+          dashboardView={true}
         />
       );
     }
@@ -209,16 +214,20 @@ const Dashboard = (props: Props) => {
     );
   }
 
-  let friendsList: React.ReactElement<any> | null;
-  if (friendsLoading === true) {
+  let rightSideContent: React.ReactElement<any> | null;
+  if (peakListId !== undefined) {
+    rightSideContent = (
+      <PeakListDetail userId={userId} id={peakListId} mountainId={undefined}/>
+    );
+  } else if (friendsLoading === true) {
     const loadingUserCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 5; i++) {
       loadingUserCards.push(<GhostUserCard key={i} />);
     }
-    friendsList = <>{loadingUserCards}</>;
+    rightSideContent = <>{loadingUserCards}</>;
   } else if (friendsError !== undefined) {
     console.error(friendsError);
-    friendsList = (
+    rightSideContent = (
       <PlaceholderText>
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>);
@@ -226,7 +235,7 @@ const Dashboard = (props: Props) => {
     const { user } = friendsData;
     const { friends } = user;
     if (friends.length === 0) {
-      friendsList = (
+      rightSideContent = (
         <PlaceholderText>
           <div>
             <p>
@@ -244,7 +253,7 @@ const Dashboard = (props: Props) => {
       );
     } else {
       const friendsAsUsersArray = friends.map(friend => friend.user);
-      friendsList = (
+      rightSideContent = (
         <ListUsers
           userData={friendsAsUsersArray}
           showCurrentUser={false}
@@ -258,12 +267,27 @@ const Dashboard = (props: Props) => {
       );
     }
   } else {
-    friendsList = (
+    rightSideContent = (
       <PlaceholderText>
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }
+
+  const rightSideUtility = peakListId !== undefined ? (
+      <ContentHeader>
+        <BackButton />
+      </ContentHeader>
+    ) : (
+      <SearchContainer>
+        <StandardSearch
+          placeholder='Search users'
+          setSearchQuery={searchFriends}
+          focusOnMount={false}
+          initialQuery={''}
+        />
+      </SearchContainer>
+    );
 
   return (
     <>
@@ -281,16 +305,9 @@ const Dashboard = (props: Props) => {
         </ContentBody>
       </ContentLeftLarge>
       <ContentRightSmall>
-        <SearchContainer>
-          <StandardSearch
-            placeholder='Search users'
-            setSearchQuery={searchFriends}
-            focusOnMount={false}
-            initialQuery={''}
-          />
-        </SearchContainer>
+        {rightSideUtility}
         <ContentBody>
-          {friendsList}
+          {rightSideContent}
         </ContentBody>
       </ContentRightSmall>
     </>

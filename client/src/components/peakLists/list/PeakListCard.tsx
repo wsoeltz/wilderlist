@@ -8,6 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  dashboardWithListDetailLink,
   listDetailWithMountainDetailLink,
   otherUserPeakListDetailLink,
   otherUserPeakListLink,
@@ -247,7 +248,7 @@ interface Props {
   mountains: Array<{id: Mountain['id']}>;
   numCompletedAscents: number;
   totalRequiredAscents: number;
-  // profileView: boolean;
+  dashboardView: boolean;
   profileId?: string;
 }
 
@@ -256,7 +257,7 @@ const PeakListCard = (props: Props) => {
     peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
     mountains, numCompletedAscents,
-    totalRequiredAscents, profileId,
+    totalRequiredAscents, profileId, dashboardView,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -335,8 +336,14 @@ const PeakListCard = (props: Props) => {
   }
   const mountainLogoId = parent === null ? id : parent.id;
 
-  const desktopURL = profileId !== undefined
-    ? otherUserPeakListLink(profileId, id) : searchListDetailLink(id);
+  let desktopURL: string;
+  if (profileId !== undefined) {
+    desktopURL = otherUserPeakListLink(profileId, id);
+  } else if (dashboardView === true) {
+    desktopURL = dashboardWithListDetailLink(id);
+  } else {
+    desktopURL = searchListDetailLink(id);
+  }
   const mobileURL = profileId !== undefined
     ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
   return (
