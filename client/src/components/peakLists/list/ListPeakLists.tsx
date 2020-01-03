@@ -68,6 +68,7 @@ interface BaseProps {
   noResultsText: string;
   showTrophies: boolean;
   viewMode: ViewMode;
+  dashboardView?: boolean;
 }
 
 type Props = BaseProps & (
@@ -84,7 +85,7 @@ const ListPeakLists = (props: Props) => {
   const {
     userListData, listAction, actionText,
     completedAscents, noResultsText, showTrophies,
-    profileId,
+    profileId, dashboardView,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -124,6 +125,7 @@ const ListPeakLists = (props: Props) => {
           <PeakListTrophy
             peakList={peakList}
             profileId={profileId}
+            dashboardView={dashboardView === true ? true : false}
             key={peakList.id}
           />,
         );
@@ -142,6 +144,7 @@ const ListPeakLists = (props: Props) => {
           mountains={mountains}
           numCompletedAscents={numCompletedAscents}
           totalRequiredAscents={totalRequiredAscents}
+          dashboardView={dashboardView === true ? true : false}
         />
       );
     });

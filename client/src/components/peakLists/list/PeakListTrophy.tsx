@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import {
+  dashboardWithListDetailLink,
   listDetailWithMountainDetailLink,
   otherUserPeakListDetailLink,
   otherUserPeakListLink,
@@ -42,14 +43,21 @@ const Root = styled.div`
 interface Props {
   peakList: CardPeakListDatum;
   profileId: string | undefined;
+  dashboardView: boolean;
 }
 
-const PeakListCard = ({peakList, profileId}: Props) => {
+const PeakListCard = ({peakList, profileId, dashboardView}: Props) => {
   const { id, name, shortName, parent, type  } = peakList;
 
   const mountainLogoId = parent === null ? id : parent.id;
-  const desktopURL = profileId !== undefined
-    ? otherUserPeakListLink(profileId, id) : searchListDetailLink(id);
+  let desktopURL: string;
+  if (profileId !== undefined) {
+    desktopURL = otherUserPeakListLink(profileId, id);
+  } else if (dashboardView === true) {
+    desktopURL = dashboardWithListDetailLink(id);
+  } else {
+    desktopURL = searchListDetailLink(id);
+  }
   const mobileURL = profileId !== undefined
     ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
   return (

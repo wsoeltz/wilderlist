@@ -1,6 +1,7 @@
 export enum Routes {
   Login = '/',
   Dashboard = '/',
+  DashboardWithPeakListDetail = '/dashboard/list/:peakListId',
   ListsWithDetail = '/lists/:id',
   ListDetail = '/list/:id',
   ListDetailWithMountainDetail = '/list/:id/mountain/:mountainId',
