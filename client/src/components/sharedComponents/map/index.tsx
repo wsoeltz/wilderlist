@@ -30,7 +30,7 @@ import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
-import MountainCompletionModal from '../../peakLists/detail/MountainCompletionModal';
+import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   formatDate,
   formatGridDate,
@@ -396,7 +396,7 @@ const Map = (props: Props) => {
       );
     } else {
       editMountainModal = editMountainId === null ? null : (
-        <MountainCompletionModal
+        <NewAscentReport
           editMountainId={editMountainId}
           closeEditMountainModalModal={closeEditMountainModalModal}
           userId={userId}

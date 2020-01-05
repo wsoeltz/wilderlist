@@ -2,7 +2,6 @@
 import {
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLString,
@@ -18,12 +17,20 @@ interface AddTripReportVariables extends ITripReport {
 
 const conditionsExist = (input: AddTripReportVariables) => {
   const {
-    mountains, users, perfectConditions,
-    mud, ice, snow, obstacles, notes, link,
+    mountains, users, notes, link,
+    mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
+    iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,
+    snowIceMonorailUnstable, snowIcePostholes, snowMinor, snowPackedPowder,
+    snowUnpackedPowder, snowDrifts, snowSticky, snowSlush, obstaclesBlowdown,
+    obstaclesOther,
   } = input;
   return (
-    (mountains && mountains.length > 1) || (users && users.length > 1) ||
-    perfectConditions || mud || ice || snow || obstacles || notes || link
+    (mountains && mountains.length > 1) || (users && users.length > 1) || notes || link ||
+    mudMinor || mudMajor || waterSlipperyRocks || waterOnTrail || leavesSlippery ||
+    iceBlack || iceBlue || iceCrust || snowIceFrozenGranular || snowIceMonorailStable ||
+    snowIceMonorailUnstable || snowIcePostholes || snowMinor || snowPackedPowder ||
+    snowUnpackedPowder || snowDrifts || snowSticky || snowSlush || obstaclesBlowdown ||
+    obstaclesOther
   );
 };
 
@@ -35,14 +42,28 @@ const tripReportMutations: any = {
       author: { type: GraphQLNonNull(GraphQLID) },
       mountains: { type: new GraphQLList(GraphQLID)},
       users: { type: new GraphQLList(GraphQLID)},
-      perfectConditions: { type: GraphQLBoolean },
-      mud: { type: GraphQLInt },
-      water: { type: GraphQLInt },
-      ice: { type: GraphQLInt },
-      snow: { type: GraphQLInt },
-      obstacles: { type: GraphQLInt },
       notes: { type: GraphQLString },
       link: { type: GraphQLString },
+      mudMinor: { type: GraphQLBoolean },
+      mudMajor: { type: GraphQLBoolean },
+      waterSlipperyRocks: { type: GraphQLBoolean },
+      waterOnTrail: { type: GraphQLBoolean },
+      leavesSlippery: { type: GraphQLBoolean },
+      iceBlack: { type: GraphQLBoolean },
+      iceBlue: { type: GraphQLBoolean },
+      iceCrust: { type: GraphQLBoolean },
+      snowIceFrozenGranular: { type: GraphQLBoolean },
+      snowIceMonorailStable: { type: GraphQLBoolean },
+      snowIceMonorailUnstable: { type: GraphQLBoolean },
+      snowIcePostholes: { type: GraphQLBoolean },
+      snowMinor: { type: GraphQLBoolean },
+      snowPackedPowder: { type: GraphQLBoolean },
+      snowUnpackedPowder: { type: GraphQLBoolean },
+      snowDrifts: { type: GraphQLBoolean },
+      snowSticky: { type: GraphQLBoolean },
+      snowSlush: { type: GraphQLBoolean },
+      obstaclesBlowdown: { type: GraphQLBoolean },
+      obstaclesOther: { type: GraphQLBoolean },
     },
     async resolve(_unused: any, input: AddTripReportVariables) {
       // check if report for date, mountain, and author already exists
@@ -72,14 +93,28 @@ const tripReportMutations: any = {
       author: { type: GraphQLNonNull(GraphQLID) },
       mountains: { type: new GraphQLList(GraphQLID)},
       users: { type: new GraphQLList(GraphQLID)},
-      perfectConditions: { type: GraphQLBoolean },
-      mud: { type: GraphQLInt },
-      water: { type: GraphQLInt },
-      ice: { type: GraphQLInt },
-      snow: { type: GraphQLInt },
-      obstacles: { type: GraphQLInt },
       notes: { type: GraphQLString },
       link: { type: GraphQLString },
+      mudMinor: { type: GraphQLBoolean },
+      mudMajor: { type: GraphQLBoolean },
+      waterSlipperyRocks: { type: GraphQLBoolean },
+      waterOnTrail: { type: GraphQLBoolean },
+      leavesSlippery: { type: GraphQLBoolean },
+      iceBlack: { type: GraphQLBoolean },
+      iceBlue: { type: GraphQLBoolean },
+      iceCrust: { type: GraphQLBoolean },
+      snowIceFrozenGranular: { type: GraphQLBoolean },
+      snowIceMonorailStable: { type: GraphQLBoolean },
+      snowIceMonorailUnstable: { type: GraphQLBoolean },
+      snowIcePostholes: { type: GraphQLBoolean },
+      snowMinor: { type: GraphQLBoolean },
+      snowPackedPowder: { type: GraphQLBoolean },
+      snowUnpackedPowder: { type: GraphQLBoolean },
+      snowDrifts: { type: GraphQLBoolean },
+      snowSticky: { type: GraphQLBoolean },
+      snowSlush: { type: GraphQLBoolean },
+      obstaclesBlowdown: { type: GraphQLBoolean },
+      obstaclesOther: { type: GraphQLBoolean },
     },
     async resolve(_unused: any, input: ITripReport) {
       const { id, ...fields} = input;

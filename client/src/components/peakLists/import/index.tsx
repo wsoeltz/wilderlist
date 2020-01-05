@@ -29,7 +29,7 @@ import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../detail/MountainCompletionModal';
+} from '../detail/completionModal/MountainCompletionModal';
 import {
   horizontalPadding,
 } from '../detail/MountainRow';

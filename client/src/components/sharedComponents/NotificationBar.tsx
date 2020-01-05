@@ -20,7 +20,7 @@ import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../peakLists/detail/MountainCompletionModal';
+} from '../peakLists/detail/completionModal/MountainCompletionModal';
 import { formatStringDate } from '../peakLists/Utils';
 
 const GET_NOTIFICATIONS = gql`
