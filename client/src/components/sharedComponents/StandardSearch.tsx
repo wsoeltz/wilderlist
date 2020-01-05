@@ -10,6 +10,7 @@ import {
 
 const SearchContainer = styled.label`
   position: relative;
+  display: flex;
 `;
 
 const magnifyingGlassSize = 1.5; // in rem

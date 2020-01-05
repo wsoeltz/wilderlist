@@ -338,11 +338,11 @@ trip-report-condition-name = {
     [obstaclesOther] Obstacles - Other
 }
 
-trip-report-add-additional-mtns-title = Add Additional Mountains (Optional)
+trip-report-add-additional-mtns-title = Add Additional Mountains
 trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
 
-trip-report-notes-title = Report (Optional)
+trip-report-notes-title = Report
 trip-report-notes-placeholder = Share more details about your trip. What trails did you take? Any recommended traction? Water crossings? Parking information? Trail-maintenance? Bugs?
 
-trip-report-link-title = Link (Optional)
+trip-report-link-title = Link
 trip-report-link-placeholder = https://example.com
