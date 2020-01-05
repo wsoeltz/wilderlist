@@ -14,6 +14,7 @@ const NewAscentReport = (props: Props) => {
       initialStartDate={null}
       initialDateType={DateType.full}
       initialUserList={[]}
+      initialMountainList={[]}
       initialConditions={{
         mudMinor: false,
         mudMajor: false,

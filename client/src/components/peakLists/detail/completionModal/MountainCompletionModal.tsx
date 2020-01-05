@@ -36,6 +36,7 @@ import {
 import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
 import './react-datepicker.custom.css';
+import AdditionalMountains from './AdditionalMountains';
 
 const mobileWidth = 400; // in px
 
@@ -194,7 +195,7 @@ const ToggleTypeButton = styled(GhostButton)`
   }
 `;
 
-const CheckboxList = styled.div`
+export const CheckboxList = styled.div`
   max-height: 200px;
   margin-top: 1rem;
   overflow: auto;
@@ -375,6 +376,7 @@ type PropsWithConditions = Props & {
   initialConditions: Conditions;
   initialTripNotes: string;
   initialLink: string;
+  initialMountainList: Mountain[];
 };
 
 const MountainCompletionModal = (props: PropsWithConditions) => {
@@ -383,6 +385,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     mountainName, initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
+    initialMountainList
   } = props;
 
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
@@ -401,6 +404,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [emailInput, setEmailInput] = useState<string>('');
   const [emailList, setEmailList] = useState<string[]>([]);
   const [userList, setUserList] = useState<string[]>(initialUserList);
+  const [mountainList, setMountainList] = useState<Mountain[]>(initialMountainList);
 
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
 
@@ -906,12 +910,16 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       <TripReportRoot>
         <ColumnRoot>
           <RightColumn>
-              <SectionTitle>
-                {getFluentString('trip-report-add-additional-mtns-title')}
-              </SectionTitle>
-              <small>
-                {getFluentString('trip-report-add-additional-mtns-desc')}
-              </small>
+            <SectionTitle>
+              {getFluentString('trip-report-add-additional-mtns-title')}
+            </SectionTitle>
+            <small>
+              {getFluentString('trip-report-add-additional-mtns-desc')}
+            </small>
+            <AdditionalMountains
+              selectedMountains={mountainList}
+              setSelectedMountains={setMountainList}
+            />
           </RightColumn>
           <LeftColumn>
             <SectionTitle>
