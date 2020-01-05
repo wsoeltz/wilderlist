@@ -19,11 +19,11 @@ import {
   warningColor,
 } from '../../../../styling/styleUtils';
 import {
+  Conditions,
   FriendStatus,
   Mountain,
   PeakListVariants,
   User,
-  Conditions,
 } from '../../../../types/graphQLTypes';
 import sendInvites from '../../../../utilities/sendInvites';
 import {
@@ -225,7 +225,7 @@ const SectionTitle = styled.h4`
   font-size: 0.8rem;
 `;
 
-const EmailInput = styled(InputBase)`
+const Input = styled(InputBase)`
   margin-top: 1rem;
   margin-bottom: 0.6rem;
 `;
@@ -240,6 +240,22 @@ const Checkbox = styled.input`
 
 const RemoveIcon = styled.div`
   margin-left: auto;
+`;
+
+const ReportContent = styled.div`
+  margin-top: 1.6rem;
+`;
+
+const ReportTextarea = styled.textarea`
+  margin: 1rem 0;
+  padding: 8px;
+  box-sizing: border-box;
+  border: solid 1px #dcdcdc;
+  font-size: 1rem;
+  font-weight: 200;
+  width: 100%;
+  min-height: 6rem;
+  line-height: 1.4;
 `;
 
 const GET_FRIENDS = gql`
@@ -352,19 +368,21 @@ export type Props = BaseProps & Restrictions;
 type PropsWithConditions = Props & {
   initialCompletionDay: string;
   initialCompletionMonth: string;
-  initialCompletionYear:string ;
+  initialCompletionYear: string ;
   initialStartDate: Date | null;
   initialDateType: DateType;
   initialUserList: string[];
   initialConditions: Conditions;
-}
+  initialTripNotes: string;
+  initialLink: string;
+};
 
 const MountainCompletionModal = (props: PropsWithConditions) => {
   const {
     editMountainId, closeEditMountainModalModal, userId, textNote,
     mountainName, initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
-    initialUserList, initialConditions,
+    initialUserList, initialConditions, initialTripNotes, initialLink,
   } = props;
 
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
@@ -811,6 +829,19 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     </CheckboxList>
   ) : null;
 
+  const conditionsList = Object.keys(conditions).map(function(key: keyof Conditions) {
+    return (
+      <CheckboxLabel htmlFor={`${key}-condition-checkbox`}>
+        <Checkbox
+          id={`${key}-condition-checkbox`} type='checkbox'
+          checked={conditions[key] ? true : false}
+          onChange={() => updateCondition(key)}
+        />
+        {getFluentString('trip-report-condition-name', {key})}
+      </CheckboxLabel>
+    );
+  });
+
   const actions = (
     <ButtonWrapper>
       <CancelButton onClick={closeEditMountainModalModal}>
@@ -854,7 +885,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
             <small>
               {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
             </small>
-            <EmailInput
+            <Input
               placeholder={getFluentString('global-text-value-modal-email-address')}
               value={emailInput}
               onChange={e => setEmailInput(e.target.value)}
@@ -876,34 +907,34 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         <ColumnRoot>
           <RightColumn>
               <SectionTitle>
-                Add Additional Mountains (Optional)
+                {getFluentString('trip-report-add-additional-mtns-title')}
               </SectionTitle>
               <small>
-                {'Only add peaks ascended on this day. For multi-day trips, add those ascents separately.'}
+                {getFluentString('trip-report-add-additional-mtns-desc')}
               </small>
           </RightColumn>
           <LeftColumn>
             <SectionTitle>
-              Conditions (Optional)
+              {getFluentString('trip-report-conditions-title')}
             </SectionTitle>
             <CheckboxList>
-              <CheckboxLabel htmlFor={'mud-condition-checkbox'}>
-                <Checkbox
-                  id={'mud-condition-checkbox'} type='checkbox'
-                  checked={conditions.mudMinor ? true : false}
-                  onChange={() => updateCondition('mudMinor')}
-                />
-                Mud - Minor
-              </CheckboxLabel>
+              {conditionsList}
             </CheckboxList>
           </LeftColumn>
         </ColumnRoot>
-        <div>
-          <label>Report (Optional)</label>
-          <textarea />
-          <label>Link (Optional)</label>
-          <input type='text' />
-        </div>
+        <ReportContent>
+          <SectionTitle>{getFluentString('trip-report-notes-title')}</SectionTitle>
+          <ReportTextarea
+            placeholder={getFluentString('trip-report-notes-placeholder')}
+            defaultValue={initialTripNotes}
+          />
+          <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
+          <Input
+            type='text'
+            placeholder={getFluentString('trip-report-link-placeholder')}
+            defaultValue={initialLink}
+          />
+        </ReportContent>
       </TripReportRoot>
     </Modal>
   );

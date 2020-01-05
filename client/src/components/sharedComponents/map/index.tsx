@@ -27,10 +27,10 @@ import {
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
-import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   formatDate,
   formatGridDate,
@@ -163,6 +163,7 @@ const AddAscentButton = styled.button`
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.6rem;
+  background-color: transparent;
 `;
 
 const getMinMax = (coordinates: Coordinate[]) => {

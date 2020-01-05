@@ -173,6 +173,9 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
     *[region] throughout
 } { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
+peak-list-detail-friend-viewing-list = Viewing list for { $username }
+peak-list-detail-friend-view-your-progress-button = View your progress
+
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
 mountain-completion-modal-toggle-btn-year-only = Year Only
@@ -306,3 +309,40 @@ local-trails-hiking-project-beta = Beta
 local-trails-hiking-project-via-the = via the
 local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
 local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.
+
+trip-report-conditions-title = Conditions
+
+trip-report-condition-name = {
+  $key ->
+    *[other] ---
+    [mudMinor] Mud - Minor
+    [mudMajor] Mud - Major
+    [waterSlipperyRocks] Water - Slippery Rocks
+    [waterOnTrail] Water - Significant On Trail
+    [leavesSlippery] Leaves - Slippery
+    [iceBlack] Ice - Minor
+    [iceBlack] Ice - Black
+    [iceBlue] Ice - Blue
+    [iceCrust] Ice - Crust
+    [snowMinor] Snow - Minor
+    [snowIceFrozenGranular] Snow - Frozen Granular
+    [snowIceMonorailStable] Snow - Monorail (Stable)
+    [snowIceMonorailUnstable] Snow - Monorail (Unstable)
+    [snowIcePostholes] Snow - Postholes
+    [snowPackedPowder] Snow - Packed Powder
+    [snowUnpackedPowder] Snow - Unpacked Powder
+    [snowDrifts] Snow - Drifts
+    [snowSticky] Snow - Sticky
+    [snowSlush] Snow - Slush
+    [obstaclesBlowdown] Obstacles - Blowdown
+    [obstaclesOther] Obstacles - Other
+}
+
+trip-report-add-additional-mtns-title = Add Additional Mountains (Optional)
+trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
+
+trip-report-notes-title = Report (Optional)
+trip-report-notes-placeholder = Share more details about your trip. What trails did you take? Any recommended traction? Water crossings? Parking information? Trail-maintenance? Bugs?
+
+trip-report-link-title = Link (Optional)
+trip-report-link-placeholder = https://example.com
