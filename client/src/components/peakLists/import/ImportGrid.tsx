@@ -25,7 +25,7 @@ import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../detail/MountainCompletionModal';
+} from '../detail/completionModal/MountainCompletionModal';
 import {
   BigNumber,
   HelpText as HelpTextBase,

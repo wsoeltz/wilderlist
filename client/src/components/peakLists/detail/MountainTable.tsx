@@ -25,7 +25,7 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import ExportAscentsModal from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
-import MountainCompletionModal from './MountainCompletionModal';
+import NewAscentReport from './completionModal/NewAscentReport';
 import MountainRow from './MountainRow';
 import {
   buttonColumn,
@@ -340,7 +340,7 @@ const MountainTable = (props: Props) => {
           __html: getFluentString('mountain-completion-modal-text-note-standard'),
         }} />;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -354,7 +354,7 @@ const MountainTable = (props: Props) => {
           __html: getFluentString('mountain-completion-modal-text-note-winter'),
         }} />;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -369,7 +369,7 @@ const MountainTable = (props: Props) => {
         }} />;
         const season = mountainToEdit.target as Seasons;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -385,7 +385,7 @@ const MountainTable = (props: Props) => {
         }} />;
         const month = mountainToEdit.target as Months;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}

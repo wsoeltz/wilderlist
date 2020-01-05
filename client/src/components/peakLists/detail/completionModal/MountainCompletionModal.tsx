@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+} from '../../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -17,18 +17,24 @@ import {
   lightBlue,
   lightBorderColor,
   warningColor,
-} from '../../../styling/styleUtils';
-import { FriendStatus, Mountain, PeakListVariants, User } from '../../../types/graphQLTypes';
-import sendInvites from '../../../utilities/sendInvites';
+} from '../../../../styling/styleUtils';
+import {
+  FriendStatus,
+  Mountain,
+  PeakListVariants,
+  User,
+  Conditions,
+} from '../../../../types/graphQLTypes';
+import sendInvites from '../../../../utilities/sendInvites';
 import {
   convertFieldsToDate,
   getMonthIndex,
   getSeason,
   Months,
   Seasons,
-} from '../../../Utils';
-import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Modal from '../../sharedComponents/Modal';
+} from '../../../../Utils';
+import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
+import Modal from '../../../sharedComponents/Modal';
 import './react-datepicker.custom.css';
 
 const mobileWidth = 400; // in px
@@ -43,16 +49,34 @@ const ColumnRoot = styled.div`
   }
 `;
 
-const DateColumn = styled.div`
+const TripReportRoot = styled.div`
+  margin-top: 2rem;
+`;
+
+const LeftColumn = styled.div`
   padding-right: 1rem;
+  grid-column: 1;
+  grid-row: 1;
 
   @media (max-width: ${mobileWidth}px) {
     padding-right: 0;
+    grid-row: auto;
   }
 `;
 
-const FriendColumn = styled.div`
+const RightColumn = styled.div`
   padding-left: 1rem;
+  grid-column: 2;
+  grid-row: 1;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding-left: 0;
+    grid-row: auto;
+    grid-column: 1;
+  }
+`;
+
+const FriendColumn = styled(RightColumn)`
   border-left: 1px solid ${lightBorderColor};
   display: grid;
   grid-template-rows: auto 1fr;
@@ -170,7 +194,7 @@ const ToggleTypeButton = styled(GhostButton)`
   }
 `;
 
-const FriendsList = styled.div`
+const CheckboxList = styled.div`
   max-height: 200px;
   margin-top: 1rem;
   overflow: auto;
@@ -179,10 +203,11 @@ const FriendsList = styled.div`
   border: 1px solid ${lightBorderColor};
 `;
 
-const Friend = styled.label`
+const CheckboxLabel = styled.label`
   display: block;
-  padding: 8px;
+  padding: 0.5rem;
   display: flex;
+  align-items: center;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${lightBorderColor};
@@ -194,7 +219,7 @@ const Friend = styled.label`
   }
 `;
 
-const FriendsTitle = styled.h4`
+const SectionTitle = styled.h4`
   margin-top: 0;
   margin-bottom: 0.2rem;
   font-size: 0.8rem;
@@ -294,7 +319,7 @@ interface AscentNotificationVariables extends MountainCompletionVariables {
   friendId: string;
 }
 
-enum DateType {
+export enum DateType {
   full = 'full',
   monthYear = 'monthYear',
   yearOnly = 'yearOnly',
@@ -307,6 +332,7 @@ interface BaseProps {
   closeEditMountainModalModal: () => void;
   userId: string;
   textNote?: React.ReactElement<any> | null;
+
 }
 
 type Restrictions = {
@@ -321,12 +347,24 @@ type Restrictions = {
   month: Months;
 };
 
-type Props = BaseProps & Restrictions;
+export type Props = BaseProps & Restrictions;
 
-const MountainCompletionModal = (props: Props) => {
+type PropsWithConditions = Props & {
+  initialCompletionDay: string;
+  initialCompletionMonth: string;
+  initialCompletionYear:string ;
+  initialStartDate: Date | null;
+  initialDateType: DateType;
+  initialUserList: string[];
+  initialConditions: Conditions;
+}
+
+const MountainCompletionModal = (props: PropsWithConditions) => {
   const {
     editMountainId, closeEditMountainModalModal, userId, textNote,
-    mountainName,
+    mountainName, initialCompletionDay, initialCompletionMonth,
+    initialCompletionYear, initialStartDate, initialDateType,
+    initialUserList, initialConditions,
   } = props;
 
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
@@ -336,15 +374,20 @@ const MountainCompletionModal = (props: Props) => {
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [addAscentNotification] =
     useMutation<{id: string}, AscentNotificationVariables>(ADD_ASCENT_NOTIFICATION);
-  const [completionDay, setCompletionDay] = useState<string>('');
-  const [completionMonth, setCompletionMonth] = useState<string>('');
-  const [completionYear, setCompletionYear] = useState<string>('');
+  const [completionDay, setCompletionDay] = useState<string>(initialCompletionDay);
+  const [completionMonth, setCompletionMonth] = useState<string>(initialCompletionMonth);
+  const [completionYear, setCompletionYear] = useState<string>(initialCompletionYear);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [dateType, setDateType] = useState<DateType>(DateType.full);
+  const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
+  const [dateType, setDateType] = useState<DateType>(initialDateType);
   const [emailInput, setEmailInput] = useState<string>('');
   const [emailList, setEmailList] = useState<string[]>([]);
-  const [userList, setUserList] = useState<string[]>([]);
+  const [userList, setUserList] = useState<string[]>(initialUserList);
+
+  const [conditions, setConditions] = useState<Conditions>({...initialConditions});
+
+  const updateCondition = (key: keyof Conditions) =>
+    setConditions({...conditions, [key]: !conditions[key]});
 
   const updateEmailList = () => {
     if (!emailList.includes(emailInput)) {
@@ -696,22 +739,22 @@ const MountainCompletionModal = (props: Props) => {
         friends.forEach(f => {
           if (f.status === FriendStatus.friends) {
             friendElements.push(
-              <Friend htmlFor={f.user.id} key={f.user.id}>
+              <CheckboxLabel htmlFor={f.user.id} key={f.user.id}>
                 <Checkbox
                   id={f.user.id} type='checkbox'
                   value={f.user.id}
                   onChange={toggleUserList}
                 />
                 {f.user.name}
-              </Friend>,
+              </CheckboxLabel>,
             );
           }
         });
         if (friendElements.length) {
           friendsList = (
-            <FriendsList>
+            <CheckboxList>
               {friendElements}
-            </FriendsList>
+            </CheckboxList>
           );
         } else {
           friendsList = (
@@ -754,18 +797,18 @@ const MountainCompletionModal = (props: Props) => {
   };
 
   const emailListItems = emailList.map((email, i) => (
-    <Friend
+    <CheckboxLabel
       key={email + i}
       onClick={() => removeEmailFromList(email)}
     >
       {email}
       <RemoveIcon>×</RemoveIcon>
-    </Friend>
+    </CheckboxLabel>
   ));
   const emailListElement = emailListItems.length ? (
-    <FriendsList>
+    <CheckboxList>
       {emailListItems}
-    </FriendsList>
+    </CheckboxList>
   ) : null;
 
   const actions = (
@@ -785,29 +828,29 @@ const MountainCompletionModal = (props: Props) => {
   return (
     <Modal
       onClose={closeEditMountainModalModal}
-      width={'550px'}
+      width={'600px'}
       height={'auto'}
       actions={actions}
     >
       <TitleText>{title}</TitleText>
       <ColumnRoot>
-        <DateColumn>
+        <LeftColumn>
           {toggleButtons}
           <DateInputContainer>
             {datePickers}
           </DateInputContainer>
-        </DateColumn>
+        </LeftColumn>
         <FriendColumn>
           <div>
-            <FriendsTitle>
+            <SectionTitle>
               {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
-            </FriendsTitle>
+            </SectionTitle>
             {friendsList}
           </div>
           <div>
-            <FriendsTitle>
+            <SectionTitle>
               {getFluentString('mountain-completion-modal-text-add-other-friends')}
-            </FriendsTitle>
+            </SectionTitle>
             <small>
               {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
             </small>
@@ -829,6 +872,39 @@ const MountainCompletionModal = (props: Props) => {
       </ColumnRoot>
       {errorNote}
       {textNote}
+      <TripReportRoot>
+        <ColumnRoot>
+          <RightColumn>
+              <SectionTitle>
+                Add Additional Mountains (Optional)
+              </SectionTitle>
+              <small>
+                {'Only add peaks ascended on this day. For multi-day trips, add those ascents separately.'}
+              </small>
+          </RightColumn>
+          <LeftColumn>
+            <SectionTitle>
+              Conditions (Optional)
+            </SectionTitle>
+            <CheckboxList>
+              <CheckboxLabel htmlFor={'mud-condition-checkbox'}>
+                <Checkbox
+                  id={'mud-condition-checkbox'} type='checkbox'
+                  checked={conditions.mudMinor ? true : false}
+                  onChange={() => updateCondition('mudMinor')}
+                />
+                Mud - Minor
+              </CheckboxLabel>
+            </CheckboxList>
+          </LeftColumn>
+        </ColumnRoot>
+        <div>
+          <label>Report (Optional)</label>
+          <textarea />
+          <label>Link (Optional)</label>
+          <input type='text' />
+        </div>
+      </TripReportRoot>
     </Modal>
   );
 };

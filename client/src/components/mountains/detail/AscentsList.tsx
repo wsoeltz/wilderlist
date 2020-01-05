@@ -10,10 +10,11 @@ import {
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
-import MountainCompletionModal, {
+import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
+import {
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../../peakLists/detail/MountainCompletionModal';
+} from '../../peakLists/detail/completionModal/MountainCompletionModal';
 import {
   DateObject,
   formatDate,
@@ -104,7 +105,7 @@ const AscentsList = (props: Props) => {
       );
     } else {
       editMountainModal = editMountainId === null ? null : (
-        <MountainCompletionModal
+        <NewAscentReport
           editMountainId={editMountainId}
           closeEditMountainModalModal={closeEditMountainModalModal}
           userId={userId}

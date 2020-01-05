@@ -92,18 +92,35 @@ export interface User {
   ascentNotifications: AscentNotification[] | null;
 }
 
-export interface TripReport {
+export interface Conditions {
+  mudMinor: boolean | null;
+  mudMajor: boolean | null;
+  waterSlipperyRocks: boolean | null;
+  waterOnTrail: boolean | null;
+  leavesSlippery: boolean | null;
+  iceBlack: boolean | null;
+  iceBlue: boolean | null;
+  iceCrust: boolean | null;
+  snowIceFrozenGranular: boolean | null;
+  snowIceMonorailStable: boolean | null;
+  snowIceMonorailUnstable: boolean | null;
+  snowIcePostholes: boolean | null;
+  snowMinor: boolean | null;
+  snowPackedPowder: boolean | null;
+  snowUnpackedPowder: boolean | null;
+  snowDrifts: boolean | null;
+  snowSticky: boolean | null;
+  snowSlush: boolean | null;
+  obstaclesBlowdown: boolean | null;
+  obstaclesOther: boolean | null;
+}
+
+export interface TripReport extends Conditions {
   id: string;
   date: string;
   author: User['id'];
   mountains: Mountain[];
   users: User[];
-  perfectConditions: boolean | null;
-  mud: number | null;
-  water: number | null;
-  ice: number | null;
-  snow: number | null;
-  obstacles: number | null;
   notes: string | null;
   link: string | null;
 }
