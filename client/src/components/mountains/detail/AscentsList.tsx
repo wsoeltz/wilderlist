@@ -10,11 +10,11 @@ import {
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
-import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
 } from '../../peakLists/detail/completionModal/MountainCompletionModal';
+import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   DateObject,
   formatDate,

@@ -1,7 +1,7 @@
 import React from 'react';
 import MountainCompletionModal, {
-  Props,
   DateType,
+  Props,
 } from './MountainCompletionModal';
 
 const NewAscentReport = (props: Props) => {
@@ -36,8 +36,10 @@ const NewAscentReport = (props: Props) => {
         obstaclesBlowdown: false,
         obstaclesOther: false,
       }}
+      initialTripNotes={''}
+      initialLink={''}
     />
   );
-}
+};
 
 export default NewAscentReport;

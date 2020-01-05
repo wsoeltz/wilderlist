@@ -279,10 +279,10 @@ const PeakListDetail = (props: Props) => {
         const friendHeader = isOtherUser === true && user !== null ? (
            <FriendHeader>
             <Text>
-              Viewing list for {user.name}
+              {getFluentString('peak-list-detail-friend-viewing-list', {username: user.name})}
             </Text>
             <LinkButton to={listDetailLink(peakList.id)}>
-              View your progress
+              {getFluentString('peak-list-detail-friend-view-your-progress-button')}
             </LinkButton>
            </FriendHeader>
          ) : null;
