@@ -35,8 +35,8 @@ import {
 } from '../../../../Utils';
 import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
+import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
-import AdditionalMountains from './AdditionalMountains';
 
 const mobileWidth = 400; // in px
 
@@ -349,7 +349,6 @@ interface BaseProps {
   closeEditMountainModalModal: () => void;
   userId: string;
   textNote?: React.ReactElement<any> | null;
-
 }
 
 type Restrictions = {
@@ -385,7 +384,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     mountainName, initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
-    initialMountainList
+    initialMountainList,
   } = props;
 
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
@@ -404,7 +403,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [emailInput, setEmailInput] = useState<string>('');
   const [emailList, setEmailList] = useState<string[]>([]);
   const [userList, setUserList] = useState<string[]>(initialUserList);
-  const [mountainList, setMountainList] = useState<Mountain[]>(initialMountainList);
+  const [mountainList, setMountainList] = useState<MountainDatum[]>(initialMountainList);
 
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
 
@@ -835,7 +834,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const conditionsList = Object.keys(conditions).map(function(key: keyof Conditions) {
     return (
-      <CheckboxLabel htmlFor={`${key}-condition-checkbox`}>
+      <CheckboxLabel
+        htmlFor={`${key}-condition-checkbox`}
+        key={key}
+      >
         <Checkbox
           id={`${key}-condition-checkbox`} type='checkbox'
           checked={conditions[key] ? true : false}
@@ -917,6 +919,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
               {getFluentString('trip-report-add-additional-mtns-desc')}
             </small>
             <AdditionalMountains
+              targetMountainId={editMountainId}
               selectedMountains={mountainList}
               setSelectedMountains={setMountainList}
             />
