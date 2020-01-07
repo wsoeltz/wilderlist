@@ -24,6 +24,7 @@ import {
   ItemTitle,
 } from './sharedStyling';
 import WeatherReport from './WeatherReport';
+import TripReports from './TripReports';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
 
@@ -214,6 +215,13 @@ const MountainDetail = (props: Props) => {
             userId={userId}
             key={mountainDetailMapKey}
           />
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
+          />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
             <strong>{elevation}ft</strong>
@@ -240,6 +248,7 @@ const MountainDetail = (props: Props) => {
             latitude={latitude}
             longitude={longitude}
           />
+          <TripReports mountainId={id} />
           <LocalTrails
             mountainName={mountain.name}
             latitude={latitude}
@@ -250,13 +259,6 @@ const MountainDetail = (props: Props) => {
             mountainId={id}
             mountainName={name}
             numLists={lists.length}
-          />
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
           />
         </>
       );

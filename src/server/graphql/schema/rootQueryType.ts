@@ -177,7 +177,33 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parentValue, {mountain, nPerPage}) {
         return TripReport
-          .find({mountains: mountain})
+          .find({
+            mountains: mountain,
+            $or: [
+              {notes: { $ne: null }},
+              {link: { $ne: null }},
+              {mudMinor: { $eq: true }},
+              {mudMajor: { $eq: true }},
+              {waterSlipperyRocks: { $eq: true }},
+              {waterOnTrail: { $eq: true }},
+              {leavesSlippery: { $eq: true }},
+              {iceBlack: { $eq: true }},
+              {iceBlue: { $eq: true }},
+              {iceCrust: { $eq: true }},
+              {snowIceFrozenGranular: { $eq: true }},
+              {snowIceMonorailStable: { $eq: true }},
+              {snowIceMonorailUnstable: { $eq: true }},
+              {snowIcePostholes: { $eq: true }},
+              {snowMinor: { $eq: true }},
+              {snowPackedPowder: { $eq: true }},
+              {snowUnpackedPowder: { $eq: true }},
+              {snowDrifts: { $eq: true }},
+              {snowSticky: { $eq: true }},
+              {snowSlush: { $eq: true }},
+              {obstaclesBlowdown: { $eq: true }},
+              {obstaclesOther: { $eq: true }},
+            ],
+          })
           .limit(nPerPage)
           .sort({ date: -1 });
       },
