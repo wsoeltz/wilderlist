@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
@@ -23,6 +23,7 @@ import {
   FriendStatus,
   Mountain,
   PeakListVariants,
+  TripReport,
   User,
 } from '../../../../types/graphQLTypes';
 import sendInvites from '../../../../utilities/sendInvites';
@@ -303,6 +304,28 @@ export const ADD_MOUNTAIN_COMPLETION = gql`
   }
 `;
 
+const REMOVE_MOUNTAIN_COMPLETION = gql`
+  mutation removeMountainCompletion(
+    $userId: ID!,
+    $mountainId: ID!,
+    $date: String!
+    ) {
+    removeMountainCompletion(
+      userId: $userId,
+      mountainId: $mountainId,
+      date: $date
+    ) {
+      id
+      mountains {
+        mountain {
+          id
+        }
+        dates
+      }
+    }
+  }
+`;
+
 export interface MountainCompletionSuccessResponse {
   id: User['id'];
   mountains: User['mountains'];
@@ -314,17 +337,17 @@ export interface MountainCompletionVariables {
   date: string;
 }
 
-const ADD_ASCENT_NOTIFICATION = gql`
-  mutation addAscentNotification(
+const ADD_ASCENT_NOTIFICATIONS = gql`
+  mutation addAscentNotifications(
     $userId: ID!,
     $friendId: ID!,
-    $mountainId: ID!,
+    $mountainIds: [ID],
     $date: String!
     ) {
-    addAscentNotification(
+    addAscentNotifications(
       userId: $userId,
       friendId: $friendId,
-      mountainId: $mountainId,
+      mountainIds: $mountainIds,
       date: $date
     ) {
       id
@@ -332,8 +355,105 @@ const ADD_ASCENT_NOTIFICATION = gql`
   }
 `;
 
-interface AscentNotificationVariables extends MountainCompletionVariables {
+interface AscentNotificationsVariables {
+  userId: string;
+  mountainIds: string[];
+  date: string;
   friendId: string;
+}
+
+const ADD_TRIP_REPORT = gql`
+  mutation addTripReport(
+    $date: String!,
+    $author: ID!,
+    $mountains: [ID],
+    $users: [ID],
+    $notes: String,
+    $link: String,
+    $mudMinor: Boolean,
+    $mudMajor: Boolean,
+    $waterSlipperyRocks: Boolean,
+    $waterOnTrail: Boolean,
+    $leavesSlippery: Boolean,
+    $iceBlack: Boolean,
+    $iceBlue: Boolean,
+    $iceCrust: Boolean,
+    $snowIceFrozenGranular: Boolean,
+    $snowIceMonorailStable: Boolean,
+    $snowIceMonorailUnstable: Boolean,
+    $snowIcePostholes: Boolean,
+    $snowMinor: Boolean,
+    $snowPackedPowder: Boolean,
+    $snowUnpackedPowder: Boolean,
+    $snowDrifts: Boolean,
+    $snowSticky: Boolean,
+    $snowSlush: Boolean,
+    $obstaclesBlowdown: Boolean,
+    $obstaclesOther: Boolean,
+  ) {
+    addTripReport(
+      date: $date,
+      author: $author,
+      mountains: $mountains,
+      users: $users,
+      notes: $notes,
+      link: $link,
+      mudMinor: $mudMinor,
+      mudMajor: $mudMajor,
+      waterSlipperyRocks: $waterSlipperyRocks,
+      waterOnTrail: $waterOnTrail,
+      leavesSlippery: $leavesSlippery,
+      iceBlack: $iceBlack,
+      iceBlue: $iceBlue,
+      iceCrust: $iceCrust,
+      snowIceFrozenGranular: $snowIceFrozenGranular,
+      snowIceMonorailStable: $snowIceMonorailStable,
+      snowIceMonorailUnstable: $snowIceMonorailUnstable,
+      snowIcePostholes: $snowIcePostholes,
+      snowMinor: $snowMinor,
+      snowPackedPowder: $snowPackedPowder,
+      snowUnpackedPowder: $snowUnpackedPowder,
+      snowDrifts: $snowDrifts,
+      snowSticky: $snowSticky,
+      snowSlush: $snowSlush,
+      obstaclesBlowdown: $obstaclesBlowdown,
+      obstaclesOther: $obstaclesOther,
+    ) {
+      id
+    }
+  }
+`;
+
+interface AddTripReportVariables {
+  date: TripReport['date'];
+  author: string;
+  mountains: string[];
+  users: string[];
+  notes: TripReport['notes'];
+  link: TripReport['link'];
+  mudMinor: TripReport['mudMinor'];
+  mudMajor: TripReport['mudMajor'];
+  waterSlipperyRocks: TripReport['waterSlipperyRocks'];
+  waterOnTrail: TripReport['waterOnTrail'];
+  leavesSlippery: TripReport['leavesSlippery'];
+  iceBlack: TripReport['iceBlack'];
+  iceBlue: TripReport['iceBlue'];
+  iceCrust: TripReport['iceCrust'];
+  snowIceFrozenGranular: TripReport['snowIceFrozenGranular'];
+  snowIceMonorailStable: TripReport['snowIceMonorailStable'];
+  snowIceMonorailUnstable: TripReport['snowIceMonorailUnstable'];
+  snowIcePostholes: TripReport['snowIcePostholes'];
+  snowMinor: TripReport['snowMinor'];
+  snowPackedPowder: TripReport['snowPackedPowder'];
+  snowUnpackedPowder: TripReport['snowUnpackedPowder'];
+  snowDrifts: TripReport['snowDrifts'];
+  snowSticky: TripReport['snowSticky'];
+  snowSlush: TripReport['snowSlush'];
+  obstaclesBlowdown: TripReport['obstaclesBlowdown'];
+  obstaclesOther: TripReport['obstaclesOther'];
+}
+interface AddTripReportSuccess {
+  id: TripReport['id'];
 }
 
 export enum DateType {
@@ -366,6 +486,7 @@ type Restrictions = {
 export type Props = BaseProps & Restrictions;
 
 type PropsWithConditions = Props & {
+  tripReportId: string | undefined;
   initialCompletionDay: string;
   initialCompletionMonth: string;
   initialCompletionYear: string ;
@@ -384,16 +505,23 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     mountainName, initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
-    initialMountainList,
+    initialMountainList, tripReportId,
   } = props;
+
+  const tripNotesEl = useRef<HTMLTextAreaElement | null>(null);
+  const tripLinkEl = useRef<HTMLInputElement | null>(null);
 
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
     variables: { userId },
   });
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
-  const [addAscentNotification] =
-    useMutation<{id: string}, AscentNotificationVariables>(ADD_ASCENT_NOTIFICATION);
+  const [removeMountainCompletion] =
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
+  const [addTripReport] =
+    useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT);
+  const [addAscentNotifications] =
+    useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
   const [completionDay, setCompletionDay] = useState<string>(initialCompletionDay);
   const [completionMonth, setCompletionMonth] = useState<string>(initialCompletionMonth);
   const [completionYear, setCompletionYear] = useState<string>(initialCompletionYear);
@@ -475,17 +603,85 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
+    const initialCompletionDate = convertFieldsToDate(initialCompletionDay,
+      initialCompletionMonth, initialCompletionYear);
     if (completedDate.error !== undefined) {
       setErrorMessage(completedDate.error);
     } else {
       setErrorMessage(undefined);
+      // if editing and the date has changed from initialCompletionDate, first delete the ascent
+      // then add it. This should happen for main mountain as well as all within the
+      // mountainList
+      if (initialCompletionDate.date !== undefined && initialCompletionDate.date !== completedDate.date) {
+        // initial date exists (being edited) and has been changed.
+        // DELETE original date
+        removeMountainCompletion({ variables: { userId, mountainId, date: initialCompletionDate.date}});
+      }
+      // regardless of above outcome, add the date. Duplicate dates are ignored.
       addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
-      userList.forEach(friendId => {
-        addAscentNotification({ variables: {
-          userId, friendId, mountainId, date: completedDate.date,
+      // then create a trip report (if no conditions it will be handled on the server)
+      if (tripReportId === undefined) {
+        // if no tripReportId, add the trip report
+        const tripNotes =
+          tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
+          ? tripNotesEl.current.value : null;
+        const tripLink =
+          tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
+          ? tripLinkEl.current.value : null;
+        const mountainIds = mountainList.map(mtn => mtn.id);
+        addTripReport({ variables: {
+          date: completedDate.date,
+          author: userId,
+          mountains: [mountainId, ...mountainIds],
+          users: userList,
+          notes: tripNotes,
+          link: tripLink,
+          ...conditions,
         }});
-      });
-      sendInvites({mountainName, emailList, date: completedDate.date});
+
+        // SEND 1 email to each user with all of the mountains names,
+        // but add a notification to their account for every mountain
+        // selected
+        userList.forEach(friendId => {
+          addAscentNotifications({ variables: {
+            userId, friendId, mountainIds: [mountainId, ...mountainIds], date: completedDate.date,
+          }});
+        });
+      } /* else {
+        edit the trip report with tripReportId
+
+        const newMountains = find mountains that did not exist on initialMountainList
+        const updatedInitialUsers = remove users that are no longer on userList compared to initalUserList
+        SEND notification for newMountains to updatedInitialUsers
+
+        const newUsers = find users that do not exist on updatedInitialUsers
+        SEND notification for full mountainList to newUsers
+
+        for remaining mountains (those that exist only on initialMountainList)
+          find NEW users and send
+      } */
+
+      // SEND invites for all mountains to all entered emails
+        // mountainName should dynamically adjust based on the number of
+        // additional mountains being sent (so that only a single email is sent)
+      let mountainNames: string;
+      if (mountainList.length === 0) {
+        mountainNames = mountainName;
+      } else if (mountainList.length === 1) {
+        mountainNames = `${mountainName} and ${mountainList[0].name}`;
+      } else {
+        mountainNames = mountainName + ', ';
+        mountainList.forEach((mtn, i) => {
+          if (i === mountainList.length - 2) {
+            mountainNames += mtn.name + ' and ';
+          } else if (i === mountainList.length - 1) {
+            mountainNames += mtn.name;
+          } else {
+            mountainNames += mtn.name + ', ';
+          }
+        });
+      }
+      sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
       closeEditMountainModalModal();
     }
   };
@@ -938,12 +1134,14 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
           <ReportTextarea
             placeholder={getFluentString('trip-report-notes-placeholder')}
             defaultValue={initialTripNotes}
+            ref={tripNotesEl}
           />
           <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
           <Input
             type='text'
             placeholder={getFluentString('trip-report-link-placeholder')}
             defaultValue={initialLink}
+            ref={tripLinkEl}
           />
         </ReportContent>
       </TripReportRoot>

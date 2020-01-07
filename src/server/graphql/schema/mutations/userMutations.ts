@@ -2,6 +2,7 @@
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
@@ -11,7 +12,7 @@ import {
   sendFriendRequestEmailNotification,
 } from '../../../notifications/email';
 import { FriendStatus } from '../../graphQLTypes';
-import { formatStringDate } from '../../Utils';
+import { asyncForEach, formatStringDate } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import UserType, { User } from '../queryTypes/userType';
@@ -24,7 +25,7 @@ interface CompletedMountainMutationArgs {
 interface AscentNotificationMutationArgs {
   userId: string;
   friendId: string;
-  mountainId: string;
+  mountainIds: string[];
   date: string;
 }
 
@@ -418,35 +419,69 @@ const userMutations: any = {
       }
     },
   },
-  addAscentNotification: {
+  addAscentNotifications: {
     type: UserType,
     args: {
       userId: { type: GraphQLNonNull(GraphQLID) },
       friendId: { type: GraphQLNonNull(GraphQLID) },
-      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      mountainIds: { type: new GraphQLList(GraphQLID)},
       date: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any, args: AscentNotificationMutationArgs) {
-      const { userId, friendId, mountainId, date } = args;
+      const { userId, friendId, mountainIds, date } = args;
       try {
-        const friend = await User.findOneAndUpdate({
-          _id: friendId,
-          $or: [
-            {'ascentNotifications.user': { $ne: userId }},
-            {'ascentNotifications.mountain': { $ne: mountainId }},
-            {'ascentNotifications.date': { $ne: date }},
-          ],
-        }, {
-          $push: { ascentNotifications: {
-            user: userId, mountain: mountainId, date,
-          } },
+        const friend = await User.findOne({ _id: friendId });
+        const mountainList: string[] = [];
+        await asyncForEach(mountainIds, async (mountainId: string) => {
+          if (friend) {
+            const completedMountain = friend && friend.mountains ?
+              friend.mountains.find((mtn: any) => {
+                return (mtn.mountain.toString() === mountainId);
+              }) : undefined;
+            const dateAlreadyExists = completedMountain
+              ? completedMountain.dates.find(d => d === date) : undefined;
+            if (!dateAlreadyExists) {
+              await User.findOneAndUpdate({
+                _id: friendId,
+                $or: [
+                  {'ascentNotifications.user': { $ne: userId }},
+                  {'ascentNotifications.mountain': { $ne: mountainId }},
+                  {'ascentNotifications.date': { $ne: date }},
+                ],
+              }, {
+                $push: { ascentNotifications: {
+                  user: userId, mountain: mountainId, date,
+                } },
+              });
+              const mountain = await Mountain.findOne({_id: mountainId});
+              if (mountain) {
+                mountainList.push(mountain.name);
+              }
+            }
+          }
         });
         const me = await User.findOne({_id: userId});
-        const mountain = await Mountain.findOne({_id: mountainId});
-        if (me && friend && mountain &&
+        if (me && friend && mountainList.length &&
             !friend.disableEmailNotifications && friend.email) {
+          let mountainNames: string;
+          if (mountainList.length === 1) {
+            mountainNames = mountainList[0];
+          } else if (mountainList.length === 2) {
+            mountainNames = `${mountainList[0]} and ${mountainList[1]}`;
+          } else {
+            mountainNames = '';
+            mountainList.forEach((mtn, i) => {
+              if (i === mountainList.length - 2) {
+                mountainNames += mtn + ' and ';
+              } else if (i === mountainList.length - 1) {
+                mountainNames += mtn;
+              } else {
+                mountainNames += mtn + ', ';
+              }
+            });
+          }
           sendAscentEmailNotification({
-            mountainName: mountain.name,
+            mountainName: mountainNames,
             user: me.name,
             userEmail: friend.email,
             date: formatStringDate(date),
