@@ -72,7 +72,7 @@ const tripReportMutations: any = {
         const existingReport = await TripReport
             .findOne({
               author, date,
-              mountains: mountains[0],
+              mountains: { $in: mountains },
             });
         if (existingReport === null && conditionsExist(input)) {
           // create and return a new trip report
