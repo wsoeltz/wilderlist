@@ -38,6 +38,10 @@ import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
+import {
+  GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
+  nPerPage,
+} from '../../../mountains/detail/TripReports';
 
 const mobileWidth = 400; // in px
 
@@ -391,7 +395,7 @@ const ADD_TRIP_REPORT = gql`
     $obstaclesBlowdown: Boolean,
     $obstaclesOther: Boolean,
   ) {
-    addTripReport(
+    tripReport: addTripReport(
       date: $date,
       author: $author,
       mountains: $mountains,
@@ -519,7 +523,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [removeMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
   const [addTripReport] =
-    useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT);
+    useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
+      refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
+        mountain: editMountainId, nPerPage }}],
+    });
   const [addAscentNotifications] =
     useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
   const [completionDay, setCompletionDay] = useState<string>(initialCompletionDay);
@@ -647,31 +654,22 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
           ...conditions,
         }});
 
-        // SEND 1 email to each user with all of the mountains names,
-        // but add a notification to their account for every mountain
-        // selected
-        userList.forEach(friendId => {
-          addAscentNotifications({ variables: {
-            userId, friendId, mountainIds, date: completedDate.date,
-          }});
-        });
       } /* else {
         edit the trip report with tripReportId
-
-        const newMountains = find mountains that did not exist on initialMountainList
-        const updatedInitialUsers = remove users that are no longer on userList compared to initalUserList
-        SEND notification for newMountains to updatedInitialUsers
-
-        const newUsers = find users that do not exist on updatedInitialUsers
-        SEND notification for full mountainList to newUsers
-
-        for remaining mountains (those that exist only on initialMountainList)
-          find NEW users and send
       } */
 
+      // SEND 1 email to each user with all of the mountains names,
+      // but add a notification to their account for every mountain
+      // selected. Handled by the backend
+      userList.forEach(friendId => {
+        addAscentNotifications({ variables: {
+          userId, friendId, mountainIds, date: completedDate.date,
+        }});
+      });
       // SEND invites for all mountains to all entered emails
         // mountainName should dynamically adjust based on the number of
         // additional mountains being sent (so that only a single email is sent)
+        // Handled by the backend
       let mountainNames: string;
       if (mountainList.length === 0) {
         mountainNames = mountainName;

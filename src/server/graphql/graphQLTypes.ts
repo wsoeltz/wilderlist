@@ -118,7 +118,7 @@ export interface Conditions {
 export interface TripReport extends Conditions {
   id: string;
   date: string;
-  author: User['id'];
+  author: User;
   mountains: Mountain[];
   users: User[];
   notes: string | null;
