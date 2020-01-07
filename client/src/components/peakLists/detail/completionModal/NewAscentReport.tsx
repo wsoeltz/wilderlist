@@ -8,6 +8,7 @@ const NewAscentReport = (props: Props) => {
   return (
     <MountainCompletionModal
       {...props}
+      tripReportId={undefined}
       initialCompletionDay={''}
       initialCompletionMonth={''}
       initialCompletionYear={''}
