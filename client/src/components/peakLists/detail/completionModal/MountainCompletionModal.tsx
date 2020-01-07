@@ -609,16 +609,25 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       setErrorMessage(completedDate.error);
     } else {
       setErrorMessage(undefined);
+      const mountainIds = [mountainId, ...mountainList.map(mtn => mtn.id)];
       // if editing and the date has changed from initialCompletionDate, first delete the ascent
       // then add it. This should happen for main mountain as well as all within the
       // mountainList
       if (initialCompletionDate.date !== undefined && initialCompletionDate.date !== completedDate.date) {
         // initial date exists (being edited) and has been changed.
         // DELETE original date
-        removeMountainCompletion({ variables: { userId, mountainId, date: initialCompletionDate.date}});
+        mountainIds.forEach(mtn => {
+          removeMountainCompletion({ variables: {
+            userId, mountainId: mtn, date: initialCompletionDate.date,
+          }});
+        });
       }
       // regardless of above outcome, add the date. Duplicate dates are ignored.
-      addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
+      mountainIds.forEach(mtn => {
+        addMountainCompletion({ variables:
+          {userId, mountainId: mtn, date: completedDate.date},
+        });
+      });
       // then create a trip report (if no conditions it will be handled on the server)
       if (tripReportId === undefined) {
         // if no tripReportId, add the trip report
@@ -628,11 +637,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         const tripLink =
           tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
           ? tripLinkEl.current.value : null;
-        const mountainIds = mountainList.map(mtn => mtn.id);
         addTripReport({ variables: {
           date: completedDate.date,
           author: userId,
-          mountains: [mountainId, ...mountainIds],
+          mountains: mountainIds,
           users: userList,
           notes: tripNotes,
           link: tripLink,
@@ -644,7 +652,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         // selected
         userList.forEach(friendId => {
           addAscentNotifications({ variables: {
-            userId, friendId, mountainIds: [mountainId, ...mountainIds], date: completedDate.date,
+            userId, friendId, mountainIds, date: completedDate.date,
           }});
         });
       } /* else {
