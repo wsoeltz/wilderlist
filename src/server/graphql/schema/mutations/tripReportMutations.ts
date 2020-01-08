@@ -25,7 +25,7 @@ const conditionsExist = (input: AddTripReportVariables) => {
     obstaclesOther,
   } = input;
   return (
-    (mountains && mountains.length > 1) || (users && users.length > 1) || notes || link ||
+    (mountains && mountains.length > 1) || (users && users.length > 0) || notes || link ||
     mudMinor || mudMajor || waterSlipperyRocks || waterOnTrail || leavesSlippery ||
     iceBlack || iceBlue || iceCrust || snowIceFrozenGranular || snowIceMonorailStable ||
     snowIceMonorailUnstable || snowIcePostholes || snowMinor || snowPackedPowder ||

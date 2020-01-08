@@ -1,7 +1,5 @@
-import { useMutation } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
-import gql from 'graphql-tag';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import {
@@ -9,18 +7,13 @@ import {
   GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
-import { convertFieldsToDate } from '../../../Utils';
-import {
-  MountainCompletionSuccessResponse,
-  MountainCompletionVariables,
-} from '../../peakLists/detail/completionModal/MountainCompletionModal';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
+import EditAscentReport from '../../peakLists/detail/completionModal/EditAscentReport';
 import {
   DateObject,
   formatDate,
   getDates,
 } from '../../peakLists/Utils';
-import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   AscentListItem,
@@ -38,39 +31,6 @@ const CalendarButton = styled(FontAwesomeIcon)`
   margin-right: 0.5rem;
 `;
 
-const REMOVE_MOUNTAIN_COMPLETION = gql`
-  mutation removeMountainCompletion(
-    $userId: ID!,
-    $mountainId: ID!,
-    $date: String!
-    ) {
-    removeMountainCompletion(
-      userId: $userId,
-      mountainId: $mountainId,
-      date: $date
-    ) {
-      id
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-  }
-`;
-
-const getDateAsString = (date: DateObject) => {
-  const day = isNaN(date.day) ? '' : date.day;
-  const month = isNaN(date.month) ? '' : date.month;
-  const year = isNaN(date.year) ? '' : date.year;
-  const result = convertFieldsToDate(day.toString(), month.toString(), year.toString());
-  if (result.error || result.date === undefined) {
-    return '';
-  }
-  return result.date;
-};
-
 interface Props {
   completedDates: CompletedMountain | undefined;
   userId: string | null;
@@ -82,32 +42,32 @@ interface Props {
 const AscentsList = (props: Props) => {
   const { completedDates, userId, mountainId, mountainName, getFluentString } = props;
 
-  const [removeMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
+  const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
-  const closeEditMountainModalModal = () => {
+  const closeAscentModalModal = () => {
     setEditMountainId(null);
+    setDateToEdit(null);
   };
 
-  let editMountainModal: React.ReactElement<any> | null;
+  let ascentModal: React.ReactElement<any> | null;
   if (editMountainId === null) {
-    editMountainModal = null;
+    ascentModal = null;
   } else {
     if (!userId) {
-      editMountainModal = (
+      ascentModal = (
         <SignUpModal
           text={getFluentString('global-text-value-modal-sign-up-today-ascents-list', {
             'mountain-name': mountainName,
           })}
-          onCancel={closeEditMountainModalModal}
+          onCancel={closeAscentModalModal}
         />
       );
     } else {
-      editMountainModal = editMountainId === null ? null : (
+      ascentModal = editMountainId === null ? null : (
         <NewAscentReport
           editMountainId={editMountainId}
-          closeEditMountainModalModal={closeEditMountainModalModal}
+          closeEditMountainModalModal={closeAscentModalModal}
           userId={userId}
           mountainName={mountainName}
           variant={PeakListVariants.standard}
@@ -116,29 +76,15 @@ const AscentsList = (props: Props) => {
     }
   }
 
-  const [dateToRemove, setDateToRemove] = useState<DateObject | null>(null);
-
-  const closeAreYouSureModal = () => {
-    setDateToRemove(null);
-  };
-
-  const confirmRemove = () => {
-    if (userId && dateToRemove !== null) {
-      removeMountainCompletion({ variables: { userId, mountainId, date: getDateAsString(dateToRemove)}});
-    }
-    closeAreYouSureModal();
-  };
-
-  const areYouSureModal = dateToRemove === null ? null : (
-    <AreYouSureModal
-      onConfirm={confirmRemove}
-      onCancel={closeAreYouSureModal}
-      title={getFluentString('global-text-value-are-you-sure-modal')}
-      text={getFluentString('mountain-detail-remove-ascent-modal-text', {
-        date: formatDate(dateToRemove),
-      })}
-      confirmText={getFluentString('global-text-value-modal-confirm')}
-      cancelText={getFluentString('global-text-value-modal-cancel')}
+  const editAscentModal =
+    dateToEdit === null || userId === null ? null : (
+    <EditAscentReport
+      editMountainId={mountainId}
+      closeEditMountainModalModal={closeAscentModalModal}
+      userId={userId}
+      mountainName={mountainName}
+      variant={PeakListVariants.standard}
+      date={dateToEdit}
     />
   );
 
@@ -150,10 +96,10 @@ const AscentsList = (props: Props) => {
         <strong>{formatDate(date)}</strong>
         <GhostButton
           onClick={
-            () => setDateToRemove(date)
+            () => setDateToEdit(date)
           }
         >
-          {getFluentString('mountain-detail-remove-ascent')}
+          {getFluentString('trip-reports-view-edit-button')}
         </GhostButton>
       </AscentListItem>
     ));
@@ -164,7 +110,7 @@ const AscentsList = (props: Props) => {
           <CalendarButton icon='calendar-alt' />
           {getFluentString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
-        {areYouSureModal}
+        {editAscentModal}
       </>
     );
   } else {
@@ -184,7 +130,7 @@ const AscentsList = (props: Props) => {
     <VerticalContentItem>
       <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
       {output}
-      {editMountainModal}
+      {ascentModal}
     </VerticalContentItem>
   );
 };
