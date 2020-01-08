@@ -356,3 +356,4 @@ trip-report-external-link-title = External Link
 trip-report-hiked-with = Hiked With
 trip-report-no-reports = There are no recent trips reports for { $mountain-name }
 trip-reports-load-more-button = Load More Reports
+trip-reports-view-edit-button = View/Edit Report

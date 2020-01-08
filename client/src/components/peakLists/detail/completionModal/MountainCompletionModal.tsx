@@ -108,12 +108,12 @@ const DateInputContainer = styled.div`
   }
 `;
 
-const ButtonWrapper = styled.div`
+export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
-const CancelButton = styled(ButtonSecondary)`
+export const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
 `;
 
@@ -367,63 +367,66 @@ interface AscentNotificationsVariables {
   friendId: string;
 }
 
+const addTripReportVariableDeclerations = `
+  $date: String!,
+  $author: ID!,
+  $mountains: [ID],
+  $users: [ID],
+  $notes: String,
+  $link: String,
+  $mudMinor: Boolean,
+  $mudMajor: Boolean,
+  $waterSlipperyRocks: Boolean,
+  $waterOnTrail: Boolean,
+  $leavesSlippery: Boolean,
+  $iceBlack: Boolean,
+  $iceBlue: Boolean,
+  $iceCrust: Boolean,
+  $snowIceFrozenGranular: Boolean,
+  $snowIceMonorailStable: Boolean,
+  $snowIceMonorailUnstable: Boolean,
+  $snowIcePostholes: Boolean,
+  $snowMinor: Boolean,
+  $snowPackedPowder: Boolean,
+  $snowUnpackedPowder: Boolean,
+  $snowDrifts: Boolean,
+  $snowSticky: Boolean,
+  $snowSlush: Boolean,
+  $obstaclesBlowdown: Boolean,
+  $obstaclesOther: Boolean,
+`;
+const addTripReportVariableParameters = `
+  date: $date,
+  author: $author,
+  mountains: $mountains,
+  users: $users,
+  notes: $notes,
+  link: $link,
+  mudMinor: $mudMinor,
+  mudMajor: $mudMajor,
+  waterSlipperyRocks: $waterSlipperyRocks,
+  waterOnTrail: $waterOnTrail,
+  leavesSlippery: $leavesSlippery,
+  iceBlack: $iceBlack,
+  iceBlue: $iceBlue,
+  iceCrust: $iceCrust,
+  snowIceFrozenGranular: $snowIceFrozenGranular,
+  snowIceMonorailStable: $snowIceMonorailStable,
+  snowIceMonorailUnstable: $snowIceMonorailUnstable,
+  snowIcePostholes: $snowIcePostholes,
+  snowMinor: $snowMinor,
+  snowPackedPowder: $snowPackedPowder,
+  snowUnpackedPowder: $snowUnpackedPowder,
+  snowDrifts: $snowDrifts,
+  snowSticky: $snowSticky,
+  snowSlush: $snowSlush,
+  obstaclesBlowdown: $obstaclesBlowdown,
+  obstaclesOther: $obstaclesOther,
+`;
+
 const ADD_TRIP_REPORT = gql`
-  mutation addTripReport(
-    $date: String!,
-    $author: ID!,
-    $mountains: [ID],
-    $users: [ID],
-    $notes: String,
-    $link: String,
-    $mudMinor: Boolean,
-    $mudMajor: Boolean,
-    $waterSlipperyRocks: Boolean,
-    $waterOnTrail: Boolean,
-    $leavesSlippery: Boolean,
-    $iceBlack: Boolean,
-    $iceBlue: Boolean,
-    $iceCrust: Boolean,
-    $snowIceFrozenGranular: Boolean,
-    $snowIceMonorailStable: Boolean,
-    $snowIceMonorailUnstable: Boolean,
-    $snowIcePostholes: Boolean,
-    $snowMinor: Boolean,
-    $snowPackedPowder: Boolean,
-    $snowUnpackedPowder: Boolean,
-    $snowDrifts: Boolean,
-    $snowSticky: Boolean,
-    $snowSlush: Boolean,
-    $obstaclesBlowdown: Boolean,
-    $obstaclesOther: Boolean,
-  ) {
-    tripReport: addTripReport(
-      date: $date,
-      author: $author,
-      mountains: $mountains,
-      users: $users,
-      notes: $notes,
-      link: $link,
-      mudMinor: $mudMinor,
-      mudMajor: $mudMajor,
-      waterSlipperyRocks: $waterSlipperyRocks,
-      waterOnTrail: $waterOnTrail,
-      leavesSlippery: $leavesSlippery,
-      iceBlack: $iceBlack,
-      iceBlue: $iceBlue,
-      iceCrust: $iceCrust,
-      snowIceFrozenGranular: $snowIceFrozenGranular,
-      snowIceMonorailStable: $snowIceMonorailStable,
-      snowIceMonorailUnstable: $snowIceMonorailUnstable,
-      snowIcePostholes: $snowIcePostholes,
-      snowMinor: $snowMinor,
-      snowPackedPowder: $snowPackedPowder,
-      snowUnpackedPowder: $snowUnpackedPowder,
-      snowDrifts: $snowDrifts,
-      snowSticky: $snowSticky,
-      snowSlush: $snowSlush,
-      obstaclesBlowdown: $obstaclesBlowdown,
-      obstaclesOther: $obstaclesOther,
-    ) {
+  mutation addTripReport( ${addTripReportVariableDeclerations} ) {
+    tripReport: addTripReport( ${addTripReportVariableParameters} ) {
       id
     }
   }
@@ -458,6 +461,22 @@ interface AddTripReportVariables {
   obstaclesOther: TripReport['obstaclesOther'];
 }
 interface AddTripReportSuccess {
+  id: TripReport['id'];
+}
+
+const EDIT_TRIP_REPORT = gql`
+  mutation editTripReport( $id: ID!, ${addTripReportVariableDeclerations} ) {
+    tripReport: editTripReport( id: $id, ${addTripReportVariableParameters} ) {
+      id
+    }
+  }
+`;
+
+interface EditTripReportVariables extends AddTripReportVariables {
+  id: TripReport['id'];
+}
+
+interface EditTripReportSuccess extends AddTripReportSuccess {
   id: TripReport['id'];
 }
 
@@ -515,9 +534,9 @@ export type Props = BaseProps & Restrictions;
 
 type PropsWithConditions = Props & {
   tripReportId: string | undefined;
-  initialCompletionDay: string;
-  initialCompletionMonth: string;
-  initialCompletionYear: string ;
+  initialCompletionDay: string | null;
+  initialCompletionMonth: string | null;
+  initialCompletionYear: string | null ;
   initialStartDate: Date | null;
   initialDateType: DateType;
   initialUserList: string[];
@@ -550,12 +569,20 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
       refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
         mountain: editMountainId, nPerPage }}],
-    });
+  });
+  const [editTripReport] =
+    useMutation<EditTripReportSuccess, EditTripReportVariables>(EDIT_TRIP_REPORT, {
+      refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
+        mountain: editMountainId, nPerPage }}],
+  });
   const [addAscentNotifications] =
     useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
-  const [completionDay, setCompletionDay] = useState<string>(initialCompletionDay);
-  const [completionMonth, setCompletionMonth] = useState<string>(initialCompletionMonth);
-  const [completionYear, setCompletionYear] = useState<string>(initialCompletionYear);
+  const [completionDay, setCompletionDay] = useState<string>
+    (initialCompletionDay !== null ? initialCompletionDay : '');
+  const [completionMonth, setCompletionMonth] = useState<string>
+    (initialCompletionMonth !== null ? initialCompletionMonth : '');
+  const [completionYear, setCompletionYear] = useState<string>
+    (initialCompletionYear !== null ? initialCompletionYear : '');
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [dateType, setDateType] = useState<DateType>(initialDateType);
@@ -634,8 +661,9 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
-    const initialCompletionDate = convertFieldsToDate(initialCompletionDay,
-      initialCompletionMonth, initialCompletionYear);
+    const initialCompletionDate =
+      initialCompletionDay !== null && initialCompletionMonth !== null && initialCompletionYear !== null
+      ? convertFieldsToDate(initialCompletionDay, initialCompletionMonth, initialCompletionYear) : null;
     if (tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
       && !isValidURL(tripLinkEl.current.value)) {
       setErrorMessage('Link must be a valid URL that starts with http:// or https://');
@@ -647,12 +675,22 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       // if editing and the date has changed from initialCompletionDate, first delete the ascent
       // then add it. This should happen for main mountain as well as all within the
       // mountainList
-      if (initialCompletionDate.date !== undefined && initialCompletionDate.date !== completedDate.date) {
+      if (initialCompletionDate !== null &&
+          initialCompletionDate.date !== undefined &&
+          initialCompletionDate.date !== completedDate.date) {
         // initial date exists (being edited) and has been changed.
         // DELETE original date
         mountainIds.forEach(mtn => {
           removeMountainCompletion({ variables: {
             userId, mountainId: mtn, date: initialCompletionDate.date,
+          }});
+        });
+      }
+      if (initialDateType === DateType.none && dateType !== DateType.none) {
+        // if changing an unknown date to a known date
+        mountainIds.forEach(mtn => {
+          removeMountainCompletion({ variables: {
+            userId, mountainId: mtn, date: 'XXXX-XX-XX-XX-XX',
           }});
         });
       }
@@ -697,9 +735,41 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
           }});
         }
 
-      } /* else {
-        edit the trip report with tripReportId
-      } */
+      }  else {
+        // edit the trip report with tripReportId
+
+        // if no tripReportId, add the trip report
+        if (dateType === DateType.full) {
+          // if there is a full date type, then edit the report with the users settings
+          const tripNotes =
+            tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
+            ? tripNotesEl.current.value : null;
+          const tripLink =
+            tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
+            ? tripLinkEl.current.value : null;
+          editTripReport({ variables: {
+            id: tripReportId,
+            date: completedDate.date,
+            author: userId,
+            mountains: mountainIds,
+            users: userList,
+            notes: tripNotes,
+            link: tripLink,
+            ...conditions,
+          }});
+        } else {
+          editTripReport({ variables: {
+            id: tripReportId,
+            date: completedDate.date,
+            author: userId,
+            mountains: mountainIds,
+            users: userList,
+            notes: null,
+            link: null,
+            ...nullConditions,
+          }});
+        }
+      } 
 
       // SEND 1 email to each user with all of the mountains names,
       // but add a notification to their account for every mountain
@@ -839,7 +909,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         <ToggleTypeButton
           onClick={() => {
             setDates(null);
-            setYearOnly('2019');
+            setYearOnly(new Date().getFullYear().toString());
             setDateType(DateType.yearOnly);
           }}
           className={dateType === DateType.yearOnly ? 'active' : ''}
@@ -948,7 +1018,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
           renderCustomHeader={dateType === DateType.monthYear ? undefined : renderCustomHeader}
           fixedHeight={true}
           calendarClassName={'mountain-completion-modal-datepicker'}
-          openToDate={initialDate}
+          openToDate={initialStartDate ? initialStartDate : initialDate}
           showMonthYearPicker={dateType === DateType.monthYear}
         />
       </>
@@ -1009,6 +1079,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
                 <Checkbox
                   id={f.user.id} type='checkbox'
                   value={f.user.id}
+                  checked={userList.indexOf(f.user.id) !== -1}
                   onChange={toggleUserList}
                 />
                 {f.user.name}
@@ -1077,7 +1148,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     </CheckboxList>
   ) : null;
 
-  const conditionsListItems = Object.keys(conditions).map(function(key: keyof Conditions) {
+  // use nullConditions keys as it is defined to always be the same as the
+  // interface Conditions, whereas the prop conditions could recieve unknown
+  // keys from the database (such as __typename)
+  const conditionsListItems = Object.keys(nullConditions).map(function(key: keyof Conditions) {
     return (
       <CheckboxLabel
         htmlFor={`${key}-condition-checkbox`}
