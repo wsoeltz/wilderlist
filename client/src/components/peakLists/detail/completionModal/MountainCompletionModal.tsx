@@ -17,6 +17,7 @@ import {
   lightBlue,
   lightBorderColor,
   warningColor,
+  ButtonWarning,
 } from '../../../../styling/styleUtils';
 import {
   Conditions,
@@ -35,6 +36,7 @@ import {
   Months,
   Seasons,
 } from '../../../../Utils';
+import { formatStringDate } from '../../Utils';
 import {
   GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
   nPerPage,
@@ -43,6 +45,7 @@ import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
+import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
 
 const mobileWidth = 400; // in px
 
@@ -115,6 +118,10 @@ export const ButtonWrapper = styled.div`
 
 export const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+`;
+
+const DeleteButton = styled(ButtonWarning)`
+  margin-right: auto;
 `;
 
 const Error = styled.p`
@@ -480,6 +487,22 @@ interface EditTripReportSuccess extends AddTripReportSuccess {
   id: TripReport['id'];
 }
 
+const DELETE_TRIP_REPORT = gql`
+  mutation deleteTripReport($id: ID!) {
+    tripReport: deleteTripReport(id: $id) {
+      id
+    }
+  }
+`;
+
+interface DeleteTripReportVariables {
+  id: TripReport['id'];
+}
+
+interface DeleteTripReportSuccess {
+  id: TripReport['id'];
+}
+
 export enum DateType {
   full = 'full',
   monthYear = 'monthYear',
@@ -575,8 +598,14 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
         mountain: editMountainId, nPerPage }}],
   });
+  const [deleteTripReport] =
+    useMutation<DeleteTripReportSuccess, DeleteTripReportVariables>(DELETE_TRIP_REPORT, {
+      refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
+        mountain: editMountainId, nPerPage }}],
+  });
   const [addAscentNotifications] =
     useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
+
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');
   const [completionMonth, setCompletionMonth] = useState<string>
@@ -590,6 +619,8 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [emailList, setEmailList] = useState<string[]>([]);
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [mountainList, setMountainList] = useState<MountainDatum[]>(initialMountainList);
+
+  const [isAreYouSureModalOpen, setIsAreYouSureModalOpen] = useState<boolean>(false);
 
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
 
@@ -804,6 +835,44 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       closeEditMountainModalModal();
     }
   };
+
+  const getDateToDelete = () => {
+    const initialCompletionDate =
+      initialCompletionDay !== null && initialCompletionMonth !== null && initialCompletionYear !== null
+      ? convertFieldsToDate(initialCompletionDay, initialCompletionMonth, initialCompletionYear) : null;
+    const dateToDelete = initialCompletionDate !== null && initialCompletionDate.date !== undefined
+      ? initialCompletionDate.date : 'XXXX-XX-XX-XX-XX';
+    return dateToDelete;
+  }
+
+  const deleteAscent = () => {
+    const dateToDelete = getDateToDelete();
+
+    const mountainIds = [editMountainId, ...mountainList.map(mtn => mtn.id)];
+    mountainIds.forEach(mtn => {
+      removeMountainCompletion({ variables: {
+        userId, mountainId: mtn, date: dateToDelete,
+      }});
+    });
+
+    if (tripReportId) {
+      deleteTripReport({variables: {id: tripReportId}});
+    }
+    closeEditMountainModalModal();
+  }
+
+  const areYouSureModal = isAreYouSureModalOpen === false ? null : (
+    <AreYouSureModal
+      onConfirm={deleteAscent}
+      onCancel={() => setIsAreYouSureModalOpen(false)}
+      title={'Confirm delete'}
+      text={'Are your sure you want to delete your ascent on '
+        + formatStringDate(getDateToDelete()) +
+        '? This cannot be undone.'}
+      confirmText={'Confirm'}
+      cancelText={'Cancel'}
+    />
+  );
 
   const errorNote = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
   const today = new Date();
@@ -1195,8 +1264,16 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     </ReportContent>
   ) : null;
 
+  const deleteAscentButton =
+    tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
+      <DeleteButton onClick={() => setIsAreYouSureModalOpen(true)}>
+        Delete Ascent
+      </DeleteButton>
+    ) : null;
+
   const actions = (
     <ButtonWrapper>
+      {deleteAscentButton}
       <CancelButton onClick={closeEditMountainModalModal}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
@@ -1210,77 +1287,80 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   );
 
   return (
-    <Modal
-      onClose={closeEditMountainModalModal}
-      width={'600px'}
-      height={'auto'}
-      actions={actions}
-    >
-      <TitleText>{title}</TitleText>
-      <ColumnRoot>
-        <LeftColumn>
-          {toggleButtons}
-          <DateInputContainer>
-            {datePickers}
-          </DateInputContainer>
-        </LeftColumn>
-        <FriendColumn>
-          <div>
-            <SectionTitle>
-              {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
-            </SectionTitle>
-            {friendsList}
-          </div>
-          <div>
-            <SectionTitle>
-              {getFluentString('mountain-completion-modal-text-add-other-friends')}
-            </SectionTitle>
-            <small>
-              {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
-            </small>
-            <Input
-              placeholder={getFluentString('global-text-value-modal-email-address')}
-              value={emailInput}
-              onChange={e => setEmailInput(e.target.value)}
-              onKeyPress={onEnterPress}
-            />
-            <AddEmailButton
-              disabled={emailInput === ''}
-              onClick={updateEmailList}
-            >
-              {getFluentString('mountain-completion-modal-text-add-email-button')}
-            </AddEmailButton>
-            {emailListElement}
-          </div>
-        </FriendColumn>
-      </ColumnRoot>
-      {errorNote}
-      {textNote}
-      <TripReportRoot>
+    <>
+      <Modal
+        onClose={closeEditMountainModalModal}
+        width={'600px'}
+        height={'auto'}
+        actions={actions}
+      >
+        <TitleText>{title}</TitleText>
         <ColumnRoot>
-          <RightColumn>
-            <SectionTitle>
-              {getFluentString('trip-report-add-additional-mtns-title')}
-            </SectionTitle>
-            <small>
-              {getFluentString('trip-report-add-additional-mtns-desc')}
-            </small>
-            <AdditionalMountains
-              targetMountainId={editMountainId}
-              selectedMountains={mountainList}
-              setSelectedMountains={setMountainList}
-            />
-          </RightColumn>
           <LeftColumn>
-            <SectionTitle>
-              {getFluentString('trip-report-conditions-title')}
-            </SectionTitle>
-            {conditionsList}
+            {toggleButtons}
+            <DateInputContainer>
+              {datePickers}
+            </DateInputContainer>
           </LeftColumn>
+          <FriendColumn>
+            <div>
+              <SectionTitle>
+                {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
+              </SectionTitle>
+              {friendsList}
+            </div>
+            <div>
+              <SectionTitle>
+                {getFluentString('mountain-completion-modal-text-add-other-friends')}
+              </SectionTitle>
+              <small>
+                {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
+              </small>
+              <Input
+                placeholder={getFluentString('global-text-value-modal-email-address')}
+                value={emailInput}
+                onChange={e => setEmailInput(e.target.value)}
+                onKeyPress={onEnterPress}
+              />
+              <AddEmailButton
+                disabled={emailInput === ''}
+                onClick={updateEmailList}
+              >
+                {getFluentString('mountain-completion-modal-text-add-email-button')}
+              </AddEmailButton>
+              {emailListElement}
+            </div>
+          </FriendColumn>
         </ColumnRoot>
-        {reportContent}
-      </TripReportRoot>
-    </Modal>
+        {errorNote}
+        {textNote}
+        <TripReportRoot>
+          <ColumnRoot>
+            <RightColumn>
+              <SectionTitle>
+                {getFluentString('trip-report-add-additional-mtns-title')}
+              </SectionTitle>
+              <small>
+                {getFluentString('trip-report-add-additional-mtns-desc')}
+              </small>
+              <AdditionalMountains
+                targetMountainId={editMountainId}
+                selectedMountains={mountainList}
+                setSelectedMountains={setMountainList}
+              />
+            </RightColumn>
+            <LeftColumn>
+              <SectionTitle>
+                {getFluentString('trip-report-conditions-title')}
+              </SectionTitle>
+              {conditionsList}
+            </LeftColumn>
+          </ColumnRoot>
+          {reportContent}
+        </TripReportRoot>
+      </Modal>
+      {areYouSureModal}
+    </>
   );
 };
 
