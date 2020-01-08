@@ -23,8 +23,8 @@ import {
   ContentItem,
   ItemTitle,
 } from './sharedStyling';
-import WeatherReport from './WeatherReport';
 import TripReports from './TripReports';
+import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
 
@@ -248,7 +248,10 @@ const MountainDetail = (props: Props) => {
             latitude={latitude}
             longitude={longitude}
           />
-          <TripReports mountainId={id} />
+          <TripReports
+            mountainId={id}
+            mountainName={mountain.name}
+          />
           <LocalTrails
             mountainName={mountain.name}
             latitude={latitude}

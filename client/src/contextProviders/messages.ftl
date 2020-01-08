@@ -347,5 +347,11 @@ trip-report-notes-placeholder = Share more details about your trip. What trails 
 trip-report-link-title = Link
 trip-report-link-placeholder = https://example.com
 
-trip-reports-title = Trip Reports
+trip-report-invalid-date-format = Trip conditions and reports are not available for partial or unknown dates.
+
+trip-reports-title = Latest Trip Reports
 trip-report-read-full-report = Read Full Report
+
+trip-report-external-link-title = External Link
+trip-report-hiked-with = Hiked With
+trip-report-no-reports = There are no recent trips reports for { $mountain-name }

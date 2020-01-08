@@ -31,17 +31,18 @@ import {
   convertFieldsToDate,
   getMonthIndex,
   getSeason,
+  isValidURL,
   Months,
   Seasons,
 } from '../../../../Utils';
-import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
-import Modal from '../../../sharedComponents/Modal';
-import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
-import './react-datepicker.custom.css';
 import {
   GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
   nPerPage,
 } from '../../../mountains/detail/TripReports';
+import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
+import Modal from '../../../sharedComponents/Modal';
+import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
+import './react-datepicker.custom.css';
 
 const mobileWidth = 400; // in px
 
@@ -487,6 +488,29 @@ type Restrictions = {
   month: Months;
 };
 
+const nullConditions: Conditions = {
+  mudMinor: null,
+  mudMajor: null,
+  waterSlipperyRocks: null,
+  waterOnTrail: null,
+  leavesSlippery: null,
+  iceBlack: null,
+  iceBlue: null,
+  iceCrust: null,
+  snowIceFrozenGranular: null,
+  snowIceMonorailStable: null,
+  snowIceMonorailUnstable: null,
+  snowIcePostholes: null,
+  snowMinor: null,
+  snowPackedPowder: null,
+  snowUnpackedPowder: null,
+  snowDrifts: null,
+  snowSticky: null,
+  snowSlush: null,
+  obstaclesBlowdown: null,
+  obstaclesOther: null,
+};
+
 export type Props = BaseProps & Restrictions;
 
 type PropsWithConditions = Props & {
@@ -612,7 +636,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     const initialCompletionDate = convertFieldsToDate(initialCompletionDay,
       initialCompletionMonth, initialCompletionYear);
-    if (completedDate.error !== undefined) {
+    if (tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
+      && !isValidURL(tripLinkEl.current.value)) {
+      setErrorMessage('Link must be a valid URL that starts with http:// or https://');
+    } else if (completedDate.error !== undefined) {
       setErrorMessage(completedDate.error);
     } else {
       setErrorMessage(undefined);
@@ -638,21 +665,37 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       // then create a trip report (if no conditions it will be handled on the server)
       if (tripReportId === undefined) {
         // if no tripReportId, add the trip report
-        const tripNotes =
-          tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
-          ? tripNotesEl.current.value : null;
-        const tripLink =
-          tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
-          ? tripLinkEl.current.value : null;
-        addTripReport({ variables: {
-          date: completedDate.date,
-          author: userId,
-          mountains: mountainIds,
-          users: userList,
-          notes: tripNotes,
-          link: tripLink,
-          ...conditions,
-        }});
+        if (dateType === DateType.full) {
+          // if there is a full date type, then generate the report with the users settings
+          const tripNotes =
+            tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
+            ? tripNotesEl.current.value : null;
+          const tripLink =
+            tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
+            ? tripLinkEl.current.value : null;
+          addTripReport({ variables: {
+            date: completedDate.date,
+            author: userId,
+            mountains: mountainIds,
+            users: userList,
+            notes: tripNotes,
+            link: tripLink,
+            ...conditions,
+          }});
+        } else {
+          // otherwise only create a report to track additional mountains and users
+          // this is to prevent the user from changing conditions/report values,
+          // switching to an invalid date format, and submitting
+          addTripReport({ variables: {
+            date: completedDate.date,
+            author: userId,
+            mountains: mountainIds,
+            users: userList,
+            notes: null,
+            link: null,
+            ...nullConditions,
+          }});
+        }
 
       } /* else {
         edit the trip report with tripReportId
@@ -1034,7 +1077,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     </CheckboxList>
   ) : null;
 
-  const conditionsList = Object.keys(conditions).map(function(key: keyof Conditions) {
+  const conditionsListItems = Object.keys(conditions).map(function(key: keyof Conditions) {
     return (
       <CheckboxLabel
         htmlFor={`${key}-condition-checkbox`}
@@ -1049,6 +1092,34 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       </CheckboxLabel>
     );
   });
+
+  const conditionsList = dateType === DateType.full ? (
+    <CheckboxList>
+      {conditionsListItems}
+    </CheckboxList>
+  ) : (
+    <small>
+      {getFluentString('trip-report-invalid-date-format')}
+    </small>
+  );
+
+  const reportContent = dateType === DateType.full ? (
+    <ReportContent>
+      <SectionTitle>{getFluentString('trip-report-notes-title')}</SectionTitle>
+      <ReportTextarea
+        placeholder={getFluentString('trip-report-notes-placeholder')}
+        defaultValue={initialTripNotes}
+        ref={tripNotesEl}
+      />
+      <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
+      <Input
+        type='text'
+        placeholder={getFluentString('trip-report-link-placeholder')}
+        defaultValue={initialLink}
+        ref={tripLinkEl}
+      />
+    </ReportContent>
+  ) : null;
 
   const actions = (
     <ButtonWrapper>
@@ -1130,26 +1201,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
             <SectionTitle>
               {getFluentString('trip-report-conditions-title')}
             </SectionTitle>
-            <CheckboxList>
-              {conditionsList}
-            </CheckboxList>
+            {conditionsList}
           </LeftColumn>
         </ColumnRoot>
-        <ReportContent>
-          <SectionTitle>{getFluentString('trip-report-notes-title')}</SectionTitle>
-          <ReportTextarea
-            placeholder={getFluentString('trip-report-notes-placeholder')}
-            defaultValue={initialTripNotes}
-            ref={tripNotesEl}
-          />
-          <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
-          <Input
-            type='text'
-            placeholder={getFluentString('trip-report-link-placeholder')}
-            defaultValue={initialLink}
-            ref={tripLinkEl}
-          />
-        </ReportContent>
+        {reportContent}
       </TripReportRoot>
     </Modal>
   );
