@@ -340,3 +340,8 @@ const getDistanceFromLatLonInKm = ({lat1, lon1, lat2, lon2}: DistanceInput) => {
 
 export const getDistanceFromLatLonInMiles = (input: DistanceInput) =>
   getDistanceFromLatLonInKm(input) * 0.62137;
+
+export const isValidURL = (link: string) => {
+  const urlRegex = new RegExp(/^(http|https)(:\/\/)?[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/, 'i');
+  return urlRegex.test(link);
+};

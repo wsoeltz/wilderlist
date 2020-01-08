@@ -23,6 +23,7 @@
     "fluent": "^0.13.0",
     "fluent-react": "^0.9.0",
     "normalize.css": "^8.0.1",
+    "polished": "^3.4.2",
     "query-string": "^6.8.3",
     "raw.macro": "^0.3.0",
     "react": "^16.8.6",
