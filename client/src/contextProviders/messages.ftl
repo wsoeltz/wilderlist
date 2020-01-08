@@ -348,3 +348,4 @@ trip-report-link-title = Link
 trip-report-link-placeholder = https://example.com
 
 trip-reports-title = Trip Reports
+trip-report-read-full-report = Read Full Report

@@ -3,7 +3,15 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { TripReport, Conditions } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import { PlaceholderText } from '../../../styling/styleUtils';
+import {
+  PlaceholderText,
+  SemiBold,
+  lightBlue,
+  LinkButton as LinkButtonBase,
+  semiBoldFontBoldWeight,
+  // lightBaseColor,
+  boldFontWeight,
+} from '../../../styling/styleUtils';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -12,10 +20,33 @@ import {
   BasicListItem,
   ItemTitle,
   VerticalContentItem,
+  BoldLink,
 } from './sharedStyling';
 import {
   formatStringDate,
 } from '../../peakLists/Utils';
+import { userProfileLink } from '../../../routing/Utils';
+import styled from 'styled-components';
+
+const ReportBody = styled.div`
+  margin: 0.5rem 0 0.5rem 1rem;
+  padding-left: 0.8rem;
+  border-left: 1px solid ${lightBlue};
+`;
+
+const LinkButton = styled(LinkButtonBase)`
+  font-weight: ${semiBoldFontBoldWeight};
+`;
+
+const SectionTitle = styled.div`
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: ${boldFontWeight};
+`;
+
+const Section = styled.section`
+  margin-bottom: 0.8rem;
+`;
 
 export const nPerPage = 7;
 
@@ -140,17 +171,17 @@ const TripReports = ({mountainId}: Props) => {
         conditionsList = null;
       } else if (allConditionsArray.length === 1) {
         conditionsList = (
-          <div>
-            <strong>Trail Conditions: </strong>
+          <Section>
+            <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
             {allConditionsArray[0]}
-          </div>
+          </Section>
         );
       } else if (allConditionsArray.length === 2) {
         conditionsList = (
-          <div>
-            <strong>Trail Conditions: </strong>
+          <Section>
+            <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
             {allConditionsArray[0] + ' and ' + allConditionsArray[1]}
-          </div>
+          </Section>
         );
       } else {
         let conditionsText = '';
@@ -164,35 +195,51 @@ const TripReports = ({mountainId}: Props) => {
           }
         });
         conditionsList = (
-          <div>
-            <strong>Trail Conditions: </strong>
+          <Section>
+            <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
             {conditionsText}
-          </div>
+          </Section>
         );
       }
 
       const notes = report.notes ? (
-        <div>
-          <strong>
+        <Section>
+          <SectionTitle>
             {getFluentString('trip-report-notes-title')}
-          </strong>
+          </SectionTitle>
           <div>
             {report.notes}
           </div>
-        </div>
+        </Section>
       ) : null;
-      const link = report.link ? <a href={report.link}>{report.link}</a> : null;
+      const link = report.link ? (
+        <Section>
+          {// eslint-disable-next-line
+          <a href={report.link} rel="noopener" target="_blank">{report.link}</a>
+          }
+        </Section>
+      ) : null;
 
       return (
         <BasicListItem key={report.id}>
-          <div>
-            <strong>
-              {formatStringDate(report.date)} by {report.author.name}
-            </strong>
-          </div>
-          {conditionsList}
-          {notes}
-          {link}
+          <SemiBold>
+            {'On '}
+            <LinkButton>
+              {formatStringDate(report.date)}
+            </LinkButton>
+            {' by '}
+            <BoldLink to={userProfileLink(report.author.id)}>
+              {report.author.name}
+            </BoldLink>
+          </SemiBold>
+          <ReportBody>
+            {conditionsList}
+            {notes}
+            {link}
+            <LinkButton>
+              {getFluentString('trip-report-read-full-report')}
+            </LinkButton>
+          </ReportBody>
         </BasicListItem>
       );
     });

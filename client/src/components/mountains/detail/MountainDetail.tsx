@@ -215,13 +215,6 @@ const MountainDetail = (props: Props) => {
             userId={userId}
             key={mountainDetailMapKey}
           />
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
-          />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
             <strong>{elevation}ft</strong>
@@ -244,6 +237,13 @@ const MountainDetail = (props: Props) => {
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
+          />
           <WeatherReport
             latitude={latitude}
             longitude={longitude}
