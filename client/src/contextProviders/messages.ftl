@@ -346,3 +346,5 @@ trip-report-notes-placeholder = Share more details about your trip. What trails 
 
 trip-report-link-title = Link
 trip-report-link-placeholder = https://example.com
+
+trip-reports-title = Trip Reports

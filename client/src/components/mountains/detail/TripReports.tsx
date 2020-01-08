@@ -13,6 +13,9 @@ import {
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
+import {
+  formatStringDate,
+} from '../../peakLists/Utils';
 
 export const nPerPage = 7;
 
@@ -126,27 +129,67 @@ const TripReports = ({mountainId}: Props) => {
   } else if (data !== undefined) {
     const { tripReports } = data;
     const reportList = tripReports.map(report => {
-      const conditionsList = Object.keys(report).map(function(key: keyof TripReport) {
+      const allConditionsArray: string[] = [];
+      Object.keys(report).forEach(function(key: keyof TripReport) {
         if (isCondition(key) && report[key]) {
-          return (
-            <div
-              key={report.id + key}
-            >
-              {getFluentString('trip-report-condition-name', {key})}
-            </div>
-          );
-        } else {
-          return null;
+          allConditionsArray.push(getFluentString('trip-report-condition-name', {key}));
         }
       });
+      let conditionsList: React.ReactElement<any> | null;
+      if (allConditionsArray.length === 0) {
+        conditionsList = null;
+      } else if (allConditionsArray.length === 1) {
+        conditionsList = (
+          <div>
+            <strong>Trail Conditions: </strong>
+            {allConditionsArray[0]}
+          </div>
+        );
+      } else if (allConditionsArray.length === 2) {
+        conditionsList = (
+          <div>
+            <strong>Trail Conditions: </strong>
+            {allConditionsArray[0] + ' and ' + allConditionsArray[1]}
+          </div>
+        );
+      } else {
+        let conditionsText = '';
+        allConditionsArray.forEach((condition, i) => {
+          if (i === allConditionsArray.length - 2) {
+            conditionsText += condition + ' and ';
+          } else if (i === allConditionsArray.length - 1) {
+            conditionsText += condition;
+          } else {
+            conditionsText += condition + ', ';
+          }
+        });
+        conditionsList = (
+          <div>
+            <strong>Trail Conditions: </strong>
+            {conditionsText}
+          </div>
+        );
+      }
 
-      const notes = report.notes ? <div>{report.notes}</div> : null;
+      const notes = report.notes ? (
+        <div>
+          <strong>
+            {getFluentString('trip-report-notes-title')}
+          </strong>
+          <div>
+            {report.notes}
+          </div>
+        </div>
+      ) : null;
       const link = report.link ? <a href={report.link}>{report.link}</a> : null;
 
       return (
         <BasicListItem key={report.id}>
-          <div>{report.date}</div>
-          <div>{report.author.name}</div>
+          <div>
+            <strong>
+              {formatStringDate(report.date)} by {report.author.name}
+            </strong>
+          </div>
           {conditionsList}
           {notes}
           {link}
@@ -161,10 +204,10 @@ const TripReports = ({mountainId}: Props) => {
   return (
     <VerticalContentItem>
       <ItemTitle>
-        {getFluentString('local-trails-hiking-project-nearby-route')}
+        {getFluentString('trip-reports-title')}
       </ItemTitle>
       {output}
-    </VerticalContentItem>  
+    </VerticalContentItem>
   );
 
 }
