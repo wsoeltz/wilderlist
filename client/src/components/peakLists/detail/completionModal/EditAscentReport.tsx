@@ -105,9 +105,9 @@ const EditAscentReport = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const day = date.day.toString();
-  const month = date.month.toString();
-  const year = date.year.toString();
+  const day = !isNaN(date.day) ? date.day.toString() : '';
+  const month = !isNaN(date.month) ? date.month.toString() : '';
+  const year = !isNaN(date.year) ? date.year.toString() : '';
   const parsedDate = convertFieldsToDate(day, month, year);
   const stringDate = parsedDate.date ? parsedDate.date : 'XXXX-XX-XX-XX-XX';
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, {
