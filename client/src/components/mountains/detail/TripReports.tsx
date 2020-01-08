@@ -142,6 +142,9 @@ interface Props {
 const TripReports = ({mountainId, mountainName}: Props) => {
 
   const [fullReport, setFullReport] = useState<TripReport | null>(null);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const loadMoreReports = () => setPageNumber(pageNumber + 1);
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -154,7 +157,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
   );
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, {
-    variables: { mountain: mountainId, nPerPage },
+    variables: { mountain: mountainId, nPerPage: nPerPage * pageNumber },
   });
 
   let output: React.ReactElement<any> | null;
@@ -286,7 +289,19 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           </ReportContainer>
         );
       });
-      output = <>{reportList}</>;
+      
+      const loadMoreButton = tripReports.length === nPerPage * pageNumber ? (
+        <GhostButton onClick={loadMoreReports}>
+          {getFluentString('trip-reports-load-more-button')}
+        </GhostButton>
+      ) : null;
+
+      output = (
+        <>
+          {reportList}
+          {loadMoreButton}
+        </>
+      );
     } else {
       output = (
         <BasicListItem>
