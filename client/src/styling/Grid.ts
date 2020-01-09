@@ -107,7 +107,7 @@ export const SearchContainer = styled(ContentHeader)`
   padding: ${standardContainerPadding};
 `;
 
-const urlBarPadding = '5vh'; // padding buffer to account for the url changing on mobile devices
+const urlBarPadding = '8vh'; // padding buffer to account for the url changing on mobile devices
 
 export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};

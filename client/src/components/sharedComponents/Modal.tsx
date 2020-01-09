@@ -64,6 +64,12 @@ const Actions = styled.div`
   grid-row: 2;
   border-bottom-left-radius: ${borderRadius}px;
   border-bottom-right-radius: ${borderRadius}px;
+
+  @media(max-width: 600px) {
+    padding-bottom: 6vh;
+    position: sticky;
+    bottom: 0;
+  }
 `;
 
 interface Props {
