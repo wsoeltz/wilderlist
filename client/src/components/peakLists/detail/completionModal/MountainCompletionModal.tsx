@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
+import uniq from 'lodash/uniq';
 import React, { useContext, useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -12,12 +13,12 @@ import {
 import {
   ButtonPrimary,
   ButtonSecondary,
+  ButtonWarning,
   GhostButton,
   InputBase,
   lightBlue,
   lightBorderColor,
   warningColor,
-  ButtonWarning,
 } from '../../../../styling/styleUtils';
 import {
   Conditions,
@@ -29,25 +30,24 @@ import {
 } from '../../../../types/graphQLTypes';
 import sendInvites from '../../../../utilities/sendInvites';
 import {
+  asyncForEach,
   convertFieldsToDate,
   getMonthIndex,
   getSeason,
   isValidURL,
   Months,
   Seasons,
-  asyncForEach,
 } from '../../../../Utils';
-import { formatStringDate } from '../../Utils';
 import {
   GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
   nPerPage,
 } from '../../../mountains/detail/TripReports';
+import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
 import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
+import { formatStringDate } from '../../Utils';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
-import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
-import uniq from 'lodash/uniq';
 
 const mobileWidth = 400; // in px
 
@@ -855,7 +855,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     const dateToDelete = initialCompletionDate !== null && initialCompletionDate.date !== undefined
       ? initialCompletionDate.date : 'XXXX-XX-XX-XX-XX';
     return dateToDelete;
-  }
+  };
 
   const deleteAscent = () => {
     const dateToDelete = getDateToDelete();
@@ -871,7 +871,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       deleteTripReport({variables: {id: tripReportId}});
     }
     closeEditMountainModalModal();
-  }
+  };
 
   const areYouSureModal = isAreYouSureModalOpen === false ? null : (
     <AreYouSureModal
@@ -1154,7 +1154,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       if (friends && friends.length) {
         const friendElements: Array<React.ReactElement<any>> = [];
         friends.forEach(f => {
-          if (f.status === FriendStatus.friends) {
+          if (f.status === FriendStatus.friends && f.user) {
             friendElements.push(
               <CheckboxLabel htmlFor={f.user.id} key={f.user.id}>
                 <Checkbox

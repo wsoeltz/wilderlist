@@ -7,8 +7,8 @@ import {
   GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
-import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import EditAscentReport from '../../peakLists/detail/completionModal/EditAscentReport';
+import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   DateObject,
   formatDate,

@@ -183,7 +183,7 @@ const MountainDetail = (props: Props) => {
       const { name, elevation, state, lists, latitude, longitude } = mountain;
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
-        (completedMountain) => completedMountain.mountain.id === id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
 
       const regions = state.regions.map((region, index) => {
         if (index === state.regions.length - 1 ) {

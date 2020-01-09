@@ -6,6 +6,7 @@ import {
   ButtonSecondary,
 } from '../../../styling/styleUtils';
 import { Region, State } from '../../../types/graphQLTypes';
+import { notEmpty } from '../../../Utils';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import { GET_REGIONS } from '../AdminRegions';
 import { GET_STATES } from '../AdminStates';
@@ -255,20 +256,22 @@ const EditRegion = (props: Props) => {
     } else {
       abbreviation = null;
     }
+    const filteredSelectedRegions = data.state.regions.filter(notEmpty);
+
     const sortedRegions = sortBy(data.regions, ['name']);
     const regionList = sortedRegions.map(region => {
       return (
         <Checkbox
           id={region.id}
           name={region.name}
-          defaultChecked={(data.state.regions.filter(stateRegion => stateRegion.id === region.id).length > 0)}
+          defaultChecked={(filteredSelectedRegions.filter(stateRegion => stateRegion.id === region.id).length > 0)}
           removeRegionFromState={(regionId) => removeRegionFromState({ variables: {regionId, stateId}}) }
           addRegionToState={(regionId) => addRegionToState({ variables: {regionId, stateId}}) }
         />
       );
     });
     regions = <>{regionList}</>;
-    const sortedSelectedRegion = sortBy(data.state.regions, ['name']);
+    const sortedSelectedRegion = sortBy(filteredSelectedRegions, ['name']);
     selectedRegions = sortedSelectedRegion.map(state => <li key={'selected-' + state.id}>{state.name}</li>);
   } else {
     name = null;

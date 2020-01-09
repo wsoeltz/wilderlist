@@ -52,7 +52,7 @@ export default (input: Input) => {
 
   let allDates: VariableDate | null;
   const completedDates = userMountains.find(
-    (completedMountain) => completedMountain.mountain.id === mountain.id);
+    (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
   if (completedDates !== undefined) {
     if (type === PeakListVariants.standard) {
       const completedDate = getStandardCompletion(completedDates);

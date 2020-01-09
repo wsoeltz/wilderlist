@@ -80,7 +80,7 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
 
 interface ClearNotificationVariables {
   userId: string;
-  mountainId: string | null;
+  mountainId: string;
   date: string;
 }
 
@@ -142,9 +142,11 @@ const NotificationBar = (props: Props) => {
       const { id, user: friend, mountain, date } = user.ascentNotifications[0];
       const mountainId = mountain ? mountain.id : null;
       const dismissNotification = () => {
-        clearAscentNotification({variables: {
-          userId, mountainId, date,
-        }});
+        if (mountainId) {
+          clearAscentNotification({variables: {
+            userId, mountainId, date,
+          }});
+        }
       };
       if (friend && mountain && mountainId) {
         const onConfirm = () => {

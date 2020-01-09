@@ -4,6 +4,7 @@ import {
   failIfValidOrNonExhaustive,
   getSeason,
   Months,
+  notEmpty,
   Seasons,
   states,
 } from '../../Utils';
@@ -189,7 +190,7 @@ export const completedPeaks = (
   if (variant === PeakListVariants.standard) {
     const ascents = mountains.filter(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getStandardCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -202,7 +203,7 @@ export const completedPeaks = (
   } else if (variant === PeakListVariants.winter) {
     const ascents = mountains.filter(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getWinterCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -216,7 +217,7 @@ export const completedPeaks = (
     let numAscents: number = 0;
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getFourSeasonCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -241,7 +242,7 @@ export const completedPeaks = (
     let numAscents: number = 0;
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getGridCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -300,7 +301,7 @@ export const getLatestAscent =  (
   if (variant === PeakListVariants.standard) {
       mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getStandardCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -311,7 +312,7 @@ export const getLatestAscent =  (
   } else if (variant === PeakListVariants.winter) {
       mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getWinterCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -322,7 +323,7 @@ export const getLatestAscent =  (
   } else if (variant === PeakListVariants.fourSeason) {
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getFourSeasonCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -344,7 +345,7 @@ export const getLatestAscent =  (
   } else if (variant === PeakListVariants.grid) {
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getGridCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -399,15 +400,22 @@ export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
   if (mountains.length === 0) {
     return null;
   }
-  const mountainList = mountains.map(({mountain: { id }}) => ({id}));
+  const mountainList = mountains.map(({mountain}) => {
+    if (mountain) {
+      return mountain.id;
+    } else {
+      return null;
+    }
+  });
+  const filteredMountainList = mountainList.filter(notEmpty);
   const ascents: DateWithName[] = [];
-  mountainList.forEach(({id}) => {
+  filteredMountainList.forEach(id => {
     const dates = mountains.find(
-      ({mountain}) => mountain.id === id);
+      ({mountain}) => mountain && mountain.id === id);
     if (dates !== undefined) {
       const datesCompleted = getDates(dates.dates);
       const dateCompleted = datesCompleted[datesCompleted.length - 1];
-      if (dateCompleted !== null && dateCompleted !== undefined) {
+      if (dateCompleted !== null && dateCompleted !== undefined && dates.mountain) {
         ascents.push({name: dates.mountain.name, ...dateCompleted});
       }
     }
