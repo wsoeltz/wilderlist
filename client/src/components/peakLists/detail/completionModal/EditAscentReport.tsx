@@ -1,25 +1,26 @@
-import React, {useContext} from 'react';
-import MountainCompletionModal, {
-  DateType,
-  Props as BaseProps,
-  ButtonWrapper,
-  CancelButton,
-} from './MountainCompletionModal';
-import {
-  DateObject,
-} from '../../Utils';
-import {
-  convertFieldsToDate,
-} from '../../../../Utils';
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import { TripReport } from '../../../../types/graphQLTypes';
-import Modal from '../../../sharedComponents/Modal';
+import React, {useContext} from 'react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../../contextProviders/getFluentLocalizationContext';
-import { GetString } from 'fluent-react';
 import { PlaceholderText } from '../../../../styling/styleUtils';
+import { TripReport } from '../../../../types/graphQLTypes';
+import {
+  convertFieldsToDate,
+  notEmpty,
+} from '../../../../Utils';
+import Modal from '../../../sharedComponents/Modal';
+import {
+  DateObject,
+} from '../../Utils';
+import MountainCompletionModal, {
+  ButtonWrapper,
+  CancelButton,
+  DateType,
+  Props as BaseProps,
+} from './MountainCompletionModal';
 
 const GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE = gql`
   query tripReportByAuthorDateAndMountain
@@ -93,11 +94,11 @@ const getDateType = ({day, month, year}: DateObject) => {
   } else {
     return DateType.none;
   }
-}
+};
 
 type Props = BaseProps & {
   date: DateObject;
-}
+};
 
 const EditAscentReport = (props: Props) => {
   const {editMountainId, userId, date} = props;
@@ -189,8 +190,12 @@ const EditAscentReport = (props: Props) => {
         date: __unusedDate, author: __unusedAuthor,
         ...conditions
       } = tripReport;
-      const userList = users.map(user => user.id);
-      const mountainList = mountains.filter(mtn => mtn.id !== props.editMountainId);
+
+      const filteredMountains = tripReport.mountains.filter(notEmpty);
+      const filteredUsers = tripReport.users.filter(notEmpty);
+
+      const userList = filteredUsers.map(user => user.id);
+      const mountainList = filteredMountains.filter(mtn => mtn.id !== props.editMountainId);
       return (
         <MountainCompletionModal
           {...props}

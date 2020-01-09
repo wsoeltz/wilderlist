@@ -261,6 +261,14 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           </Section>
         ) : null;
 
+        const authorName = report.author !== null ? (
+          <BoldLink to={userProfileLink(report.author.id)}>
+            {report.author.name}
+          </BoldLink>
+        ) : (
+          <span>{getFluentString('global-text-value-generic-user')}</span>
+        );
+
         return (
           <ReportContainer key={report.id}>
             <ReportHeader>
@@ -270,9 +278,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
                   {formatStringDate(report.date)}
                 </LinkButton>
                 {' by '}
-                <BoldLink to={userProfileLink(report.author.id)}>
-                  {report.author.name}
-                </BoldLink>
+                {authorName}
               </SemiBold>
               <ReadFullReportButton
                 className='read-full-report-button'
@@ -289,7 +295,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           </ReportContainer>
         );
       });
-      
+
       const loadMoreButton = tripReports.length === nPerPage * pageNumber ? (
         <GhostButton onClick={loadMoreReports}>
           {getFluentString('trip-reports-load-more-button')}

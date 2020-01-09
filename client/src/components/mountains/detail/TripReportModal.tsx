@@ -15,6 +15,7 @@ import {
 } from '../../../types/graphQLTypes';
 import {
   isValidURL,
+  notEmpty,
 } from '../../../Utils';
 import {
   formatStringDate,
@@ -52,6 +53,8 @@ interface Props {
 
 const AreYouSureModal = (props: Props) => {
   const { tripReport, onClose } = props;
+
+  const { author } = tripReport;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -110,33 +113,35 @@ const AreYouSureModal = (props: Props) => {
     );
   }
 
+  const filteredMountains = tripReport.mountains.filter(notEmpty);
+
   let mountainList: React.ReactElement<any> | null;
-  if (tripReport.mountains.length === 0) {
+  if (filteredMountains.length === 0) {
     mountainList = null;
-  } else if (tripReport.mountains.length === 1) {
+  } else if (filteredMountains.length === 1) {
     mountainList = (
       <Section>
         <SectionTitle>{getFluentString('global-text-value-mountain')}: </SectionTitle>
-        {tripReport.mountains[0].name}
+        {filteredMountains[0].name}
       </Section>
     );
-  } else if (tripReport.mountains.length === 2) {
+  } else if (filteredMountains.length === 2) {
     mountainList = (
       <Section>
         <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
-        {tripReport.mountains[0].name + ' and ' + tripReport.mountains[1].name}
+        {filteredMountains[0].name + ' and ' + filteredMountains[1].name}
       </Section>
     );
   } else {
     const mountainsText: Array<React.ReactElement<any>> = [];
-    tripReport.mountains.forEach((mountain, i) => {
-      if (i === tripReport.mountains.length - 2) {
+    filteredMountains.forEach((mountain, i) => {
+      if (i === filteredMountains.length - 2) {
         mountainsText.push(
           <React.Fragment  key={mountain.id + tripReport.id}>
             {mountain.name + ' and '}
           </React.Fragment>,
         );
-      } else if (i === tripReport.mountains.length - 1) {
+      } else if (i === filteredMountains.length - 1) {
         mountainsText.push(
           <React.Fragment key={mountain.id + tripReport.id}>{mountain.name}</React.Fragment>,
         );
@@ -156,35 +161,37 @@ const AreYouSureModal = (props: Props) => {
     );
   }
 
+  const filteredUsers = tripReport.users.filter(notEmpty);
+
   let userList: React.ReactElement<any> | null;
-  if (tripReport.users.length === 0) {
+  if (filteredUsers.length === 0) {
     userList = null;
-  } else if (tripReport.users.length === 1) {
+  } else if (filteredUsers.length === 1) {
     userList = (
       <Section>
         <SectionTitle>{getFluentString('trip-report-hiked-with')}: </SectionTitle>
-        <Link to={userProfileLink(tripReport.users[0].id)}>
-          {tripReport.users[0].name}
+        <Link to={userProfileLink(filteredUsers[0].id)}>
+          {filteredUsers[0].name}
         </Link>
       </Section>
     );
-  } else if (tripReport.users.length === 2) {
+  } else if (filteredUsers.length === 2) {
     userList = (
       <Section>
         <SectionTitle>{getFluentString('trip-report-hiked-with')}: </SectionTitle>
-        <Link to={userProfileLink(tripReport.users[0].id)}>
-          {tripReport.users[0].name}
+        <Link to={userProfileLink(filteredUsers[0].id)}>
+          {filteredUsers[0].name}
         </Link>
         {' and '}
-        <Link to={userProfileLink(tripReport.users[1].id)}>
-          {tripReport.users[1].name}
+        <Link to={userProfileLink(filteredUsers[1].id)}>
+          {filteredUsers[1].name}
         </Link>
       </Section>
     );
   } else {
     const usersText: Array<React.ReactElement<any>> = [];
-    tripReport.users.forEach((user, i) => {
-      if (i === tripReport.users.length - 2) {
+    filteredUsers.forEach((user, i) => {
+      if (i === filteredUsers.length - 2) {
         usersText.push(
           <React.Fragment  key={user.id + tripReport.id}>
             <Link to={userProfileLink(user.id)}>
@@ -193,7 +200,7 @@ const AreYouSureModal = (props: Props) => {
             {' and '}
           </React.Fragment>,
         );
-      } else if (i === tripReport.users.length - 1) {
+      } else if (i === filteredUsers.length - 1) {
         usersText.push(
           <React.Fragment key={user.id + tripReport.id}>
             <Link to={userProfileLink(user.id)}>
@@ -253,6 +260,14 @@ const AreYouSureModal = (props: Props) => {
     </ButtonWrapper>
   );
 
+  const authorName = author !== null ? (
+    <BoldLink to={userProfileLink(author.id)}>
+      {author.name}
+    </BoldLink>
+  ) : (
+    <span>{getFluentString('global-text-value-generic-user')}</span>
+  );
+
   return (
     <Modal
       onClose={onClose}
@@ -265,9 +280,7 @@ const AreYouSureModal = (props: Props) => {
           {'On '}
           {formatStringDate(tripReport.date)}
           {' by '}
-          <BoldLink to={userProfileLink(tripReport.author.id)}>
-            {tripReport.author.name}
-          </BoldLink>
+          {authorName}
         </Title>
       </ReportHeader>
       <ReportBody>

@@ -7,8 +7,9 @@ import {
   ContentHeader,
   ContentLeftLarge as UserListColumn,
 } from '../../styling/Grid';
-import { Friend, User } from '../../types/graphQLTypes';
+import { User } from '../../types/graphQLTypes';
 import { asyncForEach } from '../../Utils';
+import { notEmpty } from '../../Utils';
 import { REMOVE_PEAK_LIST_FROM_USER } from '../peakLists/detail/Header';
 import {
   AddRemovePeakListSuccessResponse,
@@ -88,7 +89,8 @@ const AdminUsers = () => {
         );
       }
       if (friends) {
-        await asyncForEach(friends, ({user: {id: friendId}}: Friend) =>
+        const filteredFriends = friends.filter(notEmpty);
+        await asyncForEach(filteredFriends, ({user: {id: friendId}}: {user: {id: string}}) =>
           removeFriendMutation({variables: {friendId, userId}}),
         );
       }

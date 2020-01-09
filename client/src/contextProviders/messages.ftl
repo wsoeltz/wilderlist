@@ -6,6 +6,8 @@ global-text-value-navigation-prev = Previous
 global-text-value-list-view = List
 global-text-value-detail-view = Detail
 
+global-text-value-generic-user = Wilderlist User
+
 
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
