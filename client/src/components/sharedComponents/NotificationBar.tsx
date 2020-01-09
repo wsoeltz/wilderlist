@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled, {keyframes} from 'styled-components/macro';
 import {
@@ -15,12 +15,13 @@ import {
   lowWarningColorLight,
   SemiBold,
 } from '../../styling/styleUtils';
-import { User } from '../../types/graphQLTypes';
+import { PeakListVariants, User } from '../../types/graphQLTypes';
+import AscentReportFromNotification from '../peakLists/detail/completionModal/AscentReportFromNotification';
 import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../peakLists/detail/MountainCompletionModal';
+} from '../peakLists/detail/completionModal/MountainCompletionModal';
 import { formatStringDate } from '../peakLists/Utils';
 
 const GET_NOTIFICATIONS = gql`
@@ -36,6 +37,13 @@ const GET_NOTIFICATIONS = gql`
         mountain {
           id
           name
+          state {
+            id
+            abbreviation
+          }
+          latitude
+          longitude
+          elevation
         }
         date
       }
@@ -43,20 +51,20 @@ const GET_NOTIFICATIONS = gql`
   }
 `;
 
-interface SuccessResponse {
+export interface SuccessResponse {
   user: null | {
     id: User['id'];
     ascentNotifications: User['ascentNotifications'];
   };
 }
 
-const CLEAR_ASCENT_NOTIFICATION = gql`
+export const CLEAR_ASCENT_NOTIFICATION = gql`
   mutation clearAscentNotification(
     $userId: ID!,
-    $mountainId: ID!,
+    $mountainId: ID,
     $date: String!
     ) {
-    clearAscentNotification(
+    user: clearAscentNotification(
       userId: $userId,
       mountainId: $mountainId,
       date: $date
@@ -71,6 +79,13 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
         mountain {
           id
           name
+          state {
+            id
+            abbreviation
+          }
+          latitude
+          longitude
+          elevation
         }
         date
       }
@@ -78,7 +93,7 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
   }
 `;
 
-interface ClearNotificationVariables {
+export interface ClearNotificationVariables {
   userId: string;
   mountainId: string | null;
   date: string;
@@ -87,16 +102,15 @@ interface ClearNotificationVariables {
 const slideDown = keyframes`
   0%   {
     opacity: 0;
-    height: 0px;
+    min-height: 0px;
   }
   100% {
     opacity: 1;
-    height: 50px;
+    min-height: 50px;
   }
 `;
 
 const Root = styled(PreContentHeaderFull)`
-  height: 50px;
   overflow: hidden;
   background-color: ${lowWarningColorLight};
   padding: 0 1rem;
@@ -108,8 +122,21 @@ const Root = styled(PreContentHeaderFull)`
   animation: ${slideDown} 0.5s ease-in-out forwards;
 `;
 
+const buttonSize = '0.7rem';
+
 const ConfirmButton = styled(ButtonPrimary)`
   margin: 0 1rem;
+  font-size: ${buttonSize};
+`;
+
+const TripReportButton = styled(ButtonPrimary)`
+  margin-right: 1rem;
+  font-size: ${buttonSize};
+  white-space: nowrap;
+`;
+
+const DismissButton = styled(GhostButton)`
+  font-size: ${buttonSize};
 `;
 
 interface Props {
@@ -122,10 +149,12 @@ const NotificationBar = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
+
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [clearAscentNotification] =
-    useMutation<MountainCompletionSuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
+    useMutation<SuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
 
   const {loading, error, data} = useQuery<SuccessResponse, {userId: string}>(GET_NOTIFICATIONS, {
     variables: { userId },
@@ -153,6 +182,20 @@ const NotificationBar = (props: Props) => {
           }});
           dismissNotification();
         };
+
+        const ascentReportModal = isAscentReportModalOpen === false ? null : (
+          <AscentReportFromNotification
+            editMountainId={mountainId}
+            closeEditMountainModalModal={() => setIsAscentReportModalOpen(false)}
+            userId={user.id}
+            textNote={null}
+            mountainName={mountain.name}
+            variant={PeakListVariants.standard}
+            date={date}
+            ascentNotifications={user.ascentNotifications}
+          />
+        );
+
         return (
           <Root key={id}>
             <div>
@@ -169,9 +212,13 @@ const NotificationBar = (props: Props) => {
             <ConfirmButton onClick={onConfirm}>
               Confirm
             </ConfirmButton>
-            <GhostButton onClick={dismissNotification}>
+            <TripReportButton onClick={() => setIsAscentReportModalOpen(true)}>
+              Create Trip Report
+            </TripReportButton>
+            <DismissButton onClick={dismissNotification}>
               Dismiss
-            </GhostButton>
+            </DismissButton>
+            {ascentReportModal}
           </Root>
         );
       } else {

@@ -6,6 +6,8 @@ global-text-value-navigation-prev = Previous
 global-text-value-list-view = List
 global-text-value-detail-view = Detail
 
+global-text-value-generic-user = Wilderlist User
+
 
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
@@ -46,7 +48,7 @@ global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-everywhere = Everywhere
-global-text-value-ascent-dates = Ascent Dates
+global-text-value-ascent-dates = Your Ascents
 global-text-value-done = Done
 global-text-value-not-done = Not Done
 global-text-value-today = Today
@@ -172,6 +174,9 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
     [state] within
     *[region] throughout
 } { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+
+peak-list-detail-friend-viewing-list = Viewing list for { $username }
+peak-list-detail-friend-view-your-progress-button = View your progress
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
@@ -306,3 +311,51 @@ local-trails-hiking-project-beta = Beta
 local-trails-hiking-project-via-the = via the
 local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
 local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.
+
+trip-report-conditions-title = Conditions
+
+trip-report-condition-name = {
+  $key ->
+    *[other] ---
+    [mudMinor] Mud - Minor
+    [mudMajor] Mud - Major
+    [waterSlipperyRocks] Water - Slippery Rocks
+    [waterOnTrail] Water - Significant On Trail
+    [leavesSlippery] Leaves - Slippery
+    [iceBlack] Ice - Minor
+    [iceBlack] Ice - Black
+    [iceBlue] Ice - Blue
+    [iceCrust] Ice - Crust
+    [snowMinor] Snow - Minor
+    [snowIceFrozenGranular] Snow - Frozen Granular
+    [snowIceMonorailStable] Snow - Monorail (Stable)
+    [snowIceMonorailUnstable] Snow - Monorail (Unstable)
+    [snowIcePostholes] Snow - Postholes
+    [snowPackedPowder] Snow - Packed Powder
+    [snowUnpackedPowder] Snow - Unpacked Powder
+    [snowDrifts] Snow - Drifts
+    [snowSticky] Snow - Sticky
+    [snowSlush] Snow - Slush
+    [obstaclesBlowdown] Obstacles - Blowdown
+    [obstaclesOther] Obstacles - Other
+}
+
+trip-report-add-additional-mtns-title = Add Additional Mountains
+trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
+
+trip-report-notes-title = Report
+trip-report-notes-placeholder = Share more details about your trip. What trails did you take? Any recommended traction? Water crossings? Parking information? Trail-maintenance? Bugs?
+
+trip-report-link-title = Link
+trip-report-link-placeholder = https://example.com
+
+trip-report-invalid-date-format = Trip conditions and reports are not available for partial or unknown dates.
+
+trip-reports-title = Latest Trip Reports
+trip-report-read-full-report = Read Full Report
+
+trip-report-external-link-title = External Link
+trip-report-hiked-with = Hiked With
+trip-report-no-reports = There are no recent trips reports for { $mountain-name }
+trip-reports-load-more-button = Load More Reports
+trip-reports-view-edit-button = View/Edit Report

@@ -380,7 +380,7 @@ const PeakListPage = (props: Props) => {
             listAction={beginList}
             actionText={'Begin List'}
             completedAscents={completedAscents}
-            profileView={false}
+            profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}
           />
@@ -395,7 +395,7 @@ const PeakListPage = (props: Props) => {
             listAction={beginList}
             actionText={'Begin List'}
             completedAscents={completedAscents}
-            profileView={false}
+            profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}
           />

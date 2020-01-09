@@ -132,43 +132,6 @@ const LoginButtonsContainer = styled.div`
   }
 `;
 
-// const LoginWithGoogleButton = styled.a`
-//   background-color: #fff;
-//   border-radius: 4px;
-//   display: flex;
-//   align-items: center;
-//   grid-area: google-btn;
-//   margin: auto;
-//   max-height: 50px;
-//   max-width: 220px;
-//   text-decoration: none;
-
-//   &:hover {
-//     background-color: #efefef;
-//   }
-
-//   svg {
-
-//     rect {
-//       fill: none;
-//     }
-//     text {
-//       fill: ${lightBaseColor};
-//       font-size: 14px;
-//       font-weight: ${semiBoldFontBoldWeight};
-//     }
-//   }
-
-//   @media (min-width: ${mobileWidth}px) {
-//     transform: translateY(-60%);
-//     margin-right: 0;
-//     margin-top: 0;
-//     margin-bottom: 0;
-//     max-height: 66px;
-//     max-width: 286px;
-//   }
-// `;
-
 const NavContainer = styled.div`
   grid-area: nav;
   color: #fff;

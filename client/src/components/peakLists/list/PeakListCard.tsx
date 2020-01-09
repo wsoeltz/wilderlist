@@ -8,8 +8,10 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  comparePeakListLink,
+  dashboardWithListDetailLink,
   listDetailWithMountainDetailLink,
+  otherUserPeakListDetailLink,
+  otherUserPeakListLink,
   preventNavigation,
   searchListDetailLink,
 } from '../../../routing/Utils';
@@ -24,9 +26,8 @@ import {
   PeakList,
   Region,
   State,
-  User,
+  // User,
 } from '../../../types/graphQLTypes';
-import { UserContext } from '../../App';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { formatDate, getLatestAscent, getType } from '../Utils';
@@ -244,19 +245,19 @@ interface Props {
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
-  profileView: boolean;
   mountains: Array<{id: Mountain['id']}>;
   numCompletedAscents: number;
   totalRequiredAscents: number;
-  isMe: boolean;
+  dashboardView: boolean;
+  profileId?: string;
 }
 
 const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
-    profileView, mountains, numCompletedAscents,
-    totalRequiredAscents, isMe,
+    mountains, numCompletedAscents,
+    totalRequiredAscents, profileId, dashboardView,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -275,7 +276,7 @@ const PeakListCard = (props: Props) => {
       listAction(id);
     }
   };
-  const actionButton = (active === false || profileView === true) && listAction !== null
+  const actionButton = (active === false || profileId !== undefined) && listAction !== null
     ? (
       <ActionButtonContainer>
         <ButtonPrimary onClick={actionButtonOnClick}>
@@ -283,7 +284,7 @@ const PeakListCard = (props: Props) => {
         </ButtonPrimary>
       </ActionButtonContainer> ) : null;
 
-  const Title = (active === false || profileView === true) && listAction !== null
+  const Title = (active === false || profileId !== undefined) && listAction !== null
     ? TitleBase : TitleFull;
 
   let listInfoContent: React.ReactElement<any>;
@@ -335,54 +336,46 @@ const PeakListCard = (props: Props) => {
   }
   const mountainLogoId = parent === null ? id : parent.id;
 
-  const renderProp = (user: User | null) => {
-    let desktopURL: string;
-    if (profileView === true) {
-      if (isMe === true) {
-        const userId = user !== null ? user._id : 'none';
-        desktopURL = comparePeakListLink(userId, id);
-      } else {
-        desktopURL = listDetailWithMountainDetailLink(id, 'none');
-      }
-    } else {
-      desktopURL = searchListDetailLink(id);
-    }
-    return (
-      <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
-        <Root>
-          <Title>
-            {name}{getType(type)}
-          </Title>
-          <ListInfo>
-            {listInfoContent}
-          </ListInfo>
-          <LogoContainer>
-            <MountainLogo
-              id={mountainLogoId}
-              title={name}
-              shortName={shortName}
-              variant={type}
-              active={active}
-              completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
-            />
-          </LogoContainer>
-          {actionButton}
-          <ProgressBarContainer>
-            <PeakProgressBar
-              variant={active === true ? type : null}
-              completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
-              total={totalRequiredAscents}
-              id={id}
-            />
-          </ProgressBarContainer>
-        </Root>
-      </LinkWrapper>
-    );
-  };
+  let desktopURL: string;
+  if (profileId !== undefined) {
+    desktopURL = otherUserPeakListLink(profileId, id);
+  } else if (dashboardView === true) {
+    desktopURL = dashboardWithListDetailLink(id);
+  } else {
+    desktopURL = searchListDetailLink(id);
+  }
+  const mobileURL = profileId !== undefined
+    ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
   return (
-    <UserContext.Consumer
-      children={renderProp}
-    />
+    <LinkWrapper mobileURL={mobileURL} desktopURL={desktopURL}>
+      <Root>
+        <Title>
+          {name}{getType(type)}
+        </Title>
+        <ListInfo>
+          {listInfoContent}
+        </ListInfo>
+        <LogoContainer>
+          <MountainLogo
+            id={mountainLogoId}
+            title={name}
+            shortName={shortName}
+            variant={type}
+            active={active}
+            completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
+          />
+        </LogoContainer>
+        {actionButton}
+        <ProgressBarContainer>
+          <PeakProgressBar
+            variant={active === true ? type : null}
+            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+            total={totalRequiredAscents}
+            id={id}
+          />
+        </ProgressBarContainer>
+      </Root>
+    </LinkWrapper>
   );
 };
 

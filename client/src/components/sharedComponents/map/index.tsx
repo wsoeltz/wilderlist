@@ -27,10 +27,10 @@ import {
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
-import MountainCompletionModal from '../../peakLists/detail/MountainCompletionModal';
 import {
   formatDate,
   formatGridDate,
@@ -163,6 +163,7 @@ const AddAscentButton = styled.button`
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.6rem;
+  background-color: transparent;
 `;
 
 const getMinMax = (coordinates: Coordinate[]) => {
@@ -193,10 +194,11 @@ interface Props {
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
   peakListType: PeakListVariants;
+  isOtherUser?: boolean;
 }
 
 const Map = (props: Props) => {
-  const { id, coordinates, highlighted, peakListType, userId } = props;
+  const { id, coordinates, highlighted, peakListType, userId, isOtherUser } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -395,7 +397,7 @@ const Map = (props: Props) => {
       );
     } else {
       editMountainModal = editMountainId === null ? null : (
-        <MountainCompletionModal
+        <NewAscentReport
           editMountainId={editMountainId}
           closeEditMountainModalModal={closeEditMountainModalModal}
           userId={userId}
@@ -414,25 +416,37 @@ const Map = (props: Props) => {
     }
   };
 
+  const getMountainPopupName = (mtnId: string, mtnName: string) => {
+    return isOtherUser ? <strong>{mtnName}</strong> : (
+      <DynamicLink
+        mobileURL={mountainDetailLink(mtnId)}
+        desktopURL={getDesktopUrl(mtnId)}
+      >
+        <strong>{mtnName}</strong>
+      </DynamicLink>
+    );
+  };
+
+  const getAddAscentButton = (mtnId: string) => {
+    return isOtherUser ? null : (
+      <div>
+        <AddAscentButton onClick={() => setEditMountainId(mtnId)}>
+          {getFluentString('map-add-ascent')}
+        </AddAscentButton>
+      </div>
+    );
+  };
+
   const popup = !popupInfo ? <></> : (
     <Popup
       coordinates={[popupInfo.longitude, popupInfo.latitude]}
     >
       <StyledPopup>
-        <DynamicLink
-          mobileURL={mountainDetailLink(popupInfo.id)}
-          desktopURL={getDesktopUrl(popupInfo.id)}
-        >
-          <strong>{popupInfo.name}</strong>
-        </DynamicLink>
+        {getMountainPopupName(popupInfo.id, popupInfo.name)}
         <br />
         {popupInfo.elevation}ft
         {renderCompletionDates(popupInfo.completionDates)}
-        <div>
-          <AddAscentButton onClick={() => setEditMountainId(popupInfo.id)}>
-            {getFluentString('map-add-ascent')}
-          </AddAscentButton>
-        </div>
+        {getAddAscentButton(popupInfo.id)}
         <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
       </StyledPopup>
     </Popup>
@@ -507,7 +521,9 @@ const Map = (props: Props) => {
   };
 
   return (
-    <Root>
+    <Root
+      style={{pointerEvents: !map ? 'none' : undefined}}
+    >
       <Mapbox
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}

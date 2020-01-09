@@ -115,6 +115,9 @@ const App: React.FC = () => {
         <Route exact path={Routes.Dashboard}
           render={(props) => <Dashboard {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.DashboardWithPeakListDetail}
+          render={(props) => <Dashboard {...props} userId={user._id} />}
+        />
         <Route exact path={Routes.ListsWithDetail}
           render={(props) => <PeakListPage {...props} userId={user._id} />}
         />
@@ -139,7 +142,13 @@ const App: React.FC = () => {
         <Route exact path={Routes.UserSettings}
           render={(props) => <UserSettings {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.ComparePeakList}
+        <Route exact path={Routes.OtherUserPeakList}
+          render={(props) => <UserProfile {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.OtherUserPeakListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.OtherUserPeakListCompare}
           render={(props) => <UserProfile {...props} userId={user._id} />}
         />
         <Route exact path={Routes.ComparePeakListIsolated}

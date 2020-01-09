@@ -119,7 +119,9 @@ const Header = (props: RouteComponentProps) => {
 
   const createLink = (route: string, label: string) => {
     let normalizedPathname: string;
-    if (pathname.includes('user') && !pathname.includes('settings')) {
+    if (pathname.includes('dashboard')) {
+      normalizedPathname = '/';
+    } else if (pathname.includes('user') && !pathname.includes('settings')) {
       normalizedPathname = usersPath;
     } else if (pathname.includes('list')) {
       normalizedPathname = peakListsPath;

@@ -74,7 +74,7 @@ export const getAscentGoals = (
     listMountains.forEach(mountain => {
       const goalIndex = ascentGoals.findIndex((goal) => goal.mountainId === mountain.id);
       const completedDates = mountainList.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       // If a peak has been completed, push to the array the information
       if (completedDates !== undefined) {
         if (type === PeakListVariants.standard) {

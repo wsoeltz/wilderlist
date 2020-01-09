@@ -99,6 +99,7 @@ interface Props {
   peakList: PeakListDatum;
   user: UserDatum | null;
   completedAscents: CompletedMountain[];
+  isOtherUser?: boolean;
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
 }
@@ -106,7 +107,7 @@ interface Props {
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents, comparisonUser, comparisonAscents, statesArray,
+    completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -179,6 +180,12 @@ const Header = (props: Props) => {
       {getFluentString('peak-list-detail-text-remove-list')}
     </GhostButton>
    ) ;
+
+  const topLevelHeading = isOtherUser === true && user !== null ? null : (
+      <BeginRemoveListButtonContainer>
+        {beginRemoveButton}
+      </BeginRemoveListButtonContainer>
+    );
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
   let totalRequiredAscents: number;
@@ -279,9 +286,7 @@ const Header = (props: Props) => {
           completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
         />
       </LogoContainer>
-      <BeginRemoveListButtonContainer>
-        {beginRemoveButton}
-      </BeginRemoveListButtonContainer>
+      {topLevelHeading}
       {listInfoContent}
       {areYouSureModal}
       {signUpModal}

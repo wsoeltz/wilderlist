@@ -1,16 +1,16 @@
 export interface Region {
   id: string;
   name: string;
-  states: State[];
+  states: Array<State | null>;
 }
 
 export interface State {
   id: string;
   name: string;
   abbreviation: string;
-  regions: Region[];
-  mountains: Mountain[];
-  peakLists: PeakList[] | null;
+  regions: Array<Region | null>;
+  mountains: Array<Mountain | null>;
+  peakLists: Array<PeakList | null> | null;
 }
 
 export interface Mountain {
@@ -21,7 +21,7 @@ export interface Mountain {
   longitude: number;
   elevation: number;
   prominence: number | null;
-  lists: PeakList[];
+  lists: Array<PeakList | null>;
 }
 
 export enum PeakListVariants {
@@ -37,12 +37,12 @@ export interface PeakList {
   shortName: string;
   type: PeakListVariants;
   parent: PeakList | null;
-  mountains: Mountain[];
-  users: User[];
+  mountains: Array<Mountain | null>;
+  users: Array<User | null>;
   numUsers: number;
   searchString: string;
-  states: State[] | null;
-  children: PeakList[] | null;
+  states: Array<State | null> | null;
+  children: Array<PeakList | null> | null;
 }
 
 export enum PermissionTypes {
@@ -51,7 +51,7 @@ export enum PermissionTypes {
 }
 
 export interface CompletedMountain {
-  mountain: Mountain;
+  mountain: Mountain | null;
   dates: string[];
 }
 
@@ -62,7 +62,7 @@ export enum FriendStatus {
 }
 
 export interface Friend {
-  user: User;
+  user: User | null;
   status: FriendStatus;
 }
 
@@ -82,7 +82,7 @@ export interface User {
   email: string | null;
   profilePictureUrl: string;
   friends: Friend[] | null;
-  peakLists: PeakList[] | null;
+  peakLists: Array<PeakList | null> | null;
   mountains: CompletedMountain[] | null;
   permissions: PermissionTypes;
   hideEmail: boolean | null;
@@ -90,4 +90,37 @@ export interface User {
   hideProfileInSearch: boolean | null;
   disableEmailNotifications: boolean | null;
   ascentNotifications: AscentNotification[] | null;
+}
+
+export interface Conditions {
+  mudMinor: boolean | null;
+  mudMajor: boolean | null;
+  waterSlipperyRocks: boolean | null;
+  waterOnTrail: boolean | null;
+  leavesSlippery: boolean | null;
+  iceBlack: boolean | null;
+  iceBlue: boolean | null;
+  iceCrust: boolean | null;
+  snowIceFrozenGranular: boolean | null;
+  snowIceMonorailStable: boolean | null;
+  snowIceMonorailUnstable: boolean | null;
+  snowIcePostholes: boolean | null;
+  snowMinor: boolean | null;
+  snowPackedPowder: boolean | null;
+  snowUnpackedPowder: boolean | null;
+  snowDrifts: boolean | null;
+  snowSticky: boolean | null;
+  snowSlush: boolean | null;
+  obstaclesBlowdown: boolean | null;
+  obstaclesOther: boolean | null;
+}
+
+export interface TripReport extends Conditions {
+  id: string;
+  date: string;
+  author: User | null;
+  mountains: Array<Mountain | null>;
+  users: Array<User | null>;
+  notes: string | null;
+  link: string | null;
 }

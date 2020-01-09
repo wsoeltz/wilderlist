@@ -25,7 +25,7 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import ExportAscentsModal from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
-import MountainCompletionModal from './MountainCompletionModal';
+import NewAscentReport from './completionModal/NewAscentReport';
 import MountainRow from './MountainRow';
 import {
   buttonColumn,
@@ -40,10 +40,13 @@ import {
   stateColumn,
 } from './MountainRow';
 import {
+  friendHeaderHeight,
   UserDatum,
 } from './PeakListDetail';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
+
+export const topOfPageBuffer = 0 - 1; // in rem
 
 export const Root = styled.div`
   display: grid;
@@ -58,7 +61,6 @@ export const TitleBase = styled.div`
   padding: ${horizontalPadding}rem;
   border-bottom: solid 2px ${lightBorderColor};
   position: sticky;
-  top: -1rem;
   background-color: #fff;
   z-index: 50;
 
@@ -260,10 +262,11 @@ interface Props {
   type: PeakListVariants;
   peakListId: string;
   peakListShortName: string;
+  isOtherUser?: boolean;
 }
 
 const MountainTable = (props: Props) => {
-  const { mountains, user, type, peakListId, peakListShortName } = props;
+  const { mountains, user, type, peakListId, peakListShortName, isOtherUser } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -301,6 +304,8 @@ const MountainTable = (props: Props) => {
     }
   };
 
+  const top = isOtherUser === true ? (friendHeaderHeight + topOfPageBuffer) + 'rem' : topOfPageBuffer + 'rem';
+
   const closeEditMountainModalModal = () => {
     setMountainToEdit(null);
   };
@@ -335,7 +340,7 @@ const MountainTable = (props: Props) => {
           __html: getFluentString('mountain-completion-modal-text-note-standard'),
         }} />;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -349,7 +354,7 @@ const MountainTable = (props: Props) => {
           __html: getFluentString('mountain-completion-modal-text-note-winter'),
         }} />;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -364,7 +369,7 @@ const MountainTable = (props: Props) => {
         }} />;
         const season = mountainToEdit.target as Seasons;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -380,7 +385,7 @@ const MountainTable = (props: Props) => {
         }} />;
         const month = mountainToEdit.target as Months;
         editMountainModal = (
-          <MountainCompletionModal
+          <NewAscentReport
             editMountainId={mountainToEdit.id}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
@@ -509,6 +514,7 @@ const MountainTable = (props: Props) => {
         type={type}
         setEditMountainId={setMountainToEdit}
         peakListId={peakListId}
+        isOtherUser={isOtherUser !== undefined ? isOtherUser : false}
       />
     ),
   );
@@ -518,7 +524,7 @@ const MountainTable = (props: Props) => {
     titleColumns = (
       <>
         <TitleCell
-          style={{gridColumn: elevationColumn}}
+          style={{top, gridColumn: elevationColumn}}
           onClick={() => setSorting(SortingCategories.elevation)}
         >
           {getFluentString('global-text-value-elevation')}
@@ -533,7 +539,7 @@ const MountainTable = (props: Props) => {
           </SortIconContainer>
         </TitleCell>
         <TitleCell
-          style={{gridColumn: stateColumn}}
+          style={{top, gridColumn: stateColumn}}
           onClick={() => setSorting(SortingCategories.state)}
         >
           {getFluentString('global-text-value-state')}
@@ -548,6 +554,7 @@ const MountainTable = (props: Props) => {
           </SortIconContainer>
         </TitleCell>
         <MountainColumnTitleButton
+          style={{top}}
           onClick={() => setSorting(SortingCategories.date)}
         >
           {getFluentString('global-text-value-done')}
@@ -567,7 +574,7 @@ const MountainTable = (props: Props) => {
     titleColumns = (
       <>
         <FourSeasonTitle
-          style={{gridColumn: seasonColumns[Seasons.summer]}}
+          style={{top, gridColumn: seasonColumns[Seasons.summer]}}
           onClick={() => setSorting(Seasons.summer)}
         >
           {getFluentString('global-text-value-summer')}
@@ -582,7 +589,7 @@ const MountainTable = (props: Props) => {
           </SortIconContainer>
         </FourSeasonTitle>
         <FourSeasonTitle
-          style={{gridColumn: seasonColumns[Seasons.fall]}}
+          style={{top, gridColumn: seasonColumns[Seasons.fall]}}
           onClick={() => setSorting(Seasons.fall)}
         >
           {getFluentString('global-text-value-fall')}
@@ -597,7 +604,7 @@ const MountainTable = (props: Props) => {
           </SortIconContainer>
         </FourSeasonTitle>
         <FourSeasonTitle
-          style={{gridColumn: seasonColumns[Seasons.winter]}}
+          style={{top, gridColumn: seasonColumns[Seasons.winter]}}
           onClick={() => setSorting(Seasons.winter)}
         >
           {getFluentString('global-text-value-winter')}
@@ -612,7 +619,7 @@ const MountainTable = (props: Props) => {
           </SortIconContainer>
         </FourSeasonTitle>
         <FourSeasonTitle
-          style={{gridColumn: seasonColumns[Seasons.spring]}}
+          style={{top, gridColumn: seasonColumns[Seasons.spring]}}
           onClick={() => setSorting(Seasons.spring)}
         >
           {getFluentString('global-text-value-spring')}
@@ -632,7 +639,7 @@ const MountainTable = (props: Props) => {
     titleColumns = (
       <>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.january]}}
+          style={{top, gridColumn: monthColumns[Months.january]}}
           onClick={() => setSorting(Months.january)}
         >
           <CompressedCellText>
@@ -649,7 +656,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.february]}}
+          style={{top, gridColumn: monthColumns[Months.february]}}
           onClick={() => setSorting(Months.february)}
         >
           <CompressedCellText>
@@ -666,7 +673,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.march]}}
+          style={{top, gridColumn: monthColumns[Months.march]}}
           onClick={() => setSorting(Months.march)}
         >
           <CompressedCellText>
@@ -683,7 +690,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.april]}}
+          style={{top, gridColumn: monthColumns[Months.april]}}
           onClick={() => setSorting(Months.april)}
         >
           <CompressedCellText>
@@ -700,7 +707,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.may]}}
+          style={{top, gridColumn: monthColumns[Months.may]}}
           onClick={() => setSorting(Months.may)}
         >
           <CompressedCellText>
@@ -717,7 +724,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.june]}}
+          style={{top, gridColumn: monthColumns[Months.june]}}
           onClick={() => setSorting(Months.june)}
         >
           <CompressedCellText>
@@ -734,7 +741,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.july]}}
+          style={{top, gridColumn: monthColumns[Months.july]}}
           onClick={() => setSorting(Months.july)}
         >
           <CompressedCellText>
@@ -751,7 +758,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.august]}}
+          style={{top, gridColumn: monthColumns[Months.august]}}
           onClick={() => setSorting(Months.august)}
         >
           <CompressedCellText>
@@ -768,7 +775,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.september]}}
+          style={{top, gridColumn: monthColumns[Months.september]}}
           onClick={() => setSorting(Months.september)}
         >
           <CompressedCellText>
@@ -785,7 +792,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.october]}}
+          style={{top, gridColumn: monthColumns[Months.october]}}
           onClick={() => setSorting(Months.october)}
         >
           <CompressedCellText>
@@ -802,7 +809,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.november]}}
+          style={{top, gridColumn: monthColumns[Months.november]}}
           onClick={() => setSorting(Months.november)}
         >
           <CompressedCellText>
@@ -819,7 +826,7 @@ const MountainTable = (props: Props) => {
           </GridSortIconContainer>
         </GridTitle>
         <GridTitle
-          style={{gridColumn: monthColumns[Months.december]}}
+          style={{top, gridColumn: monthColumns[Months.december]}}
           onClick={() => setSorting(Months.december)}
         >
           <CompressedCellText>
@@ -907,6 +914,7 @@ const MountainTable = (props: Props) => {
       <div style={{minHeight: mountains.length * 32}}>
         <Root>
           <MountainColumnTitleName
+            style={{top}}
             onClick={() => setSorting(SortingCategories.name)}
           >
             {getFluentString('global-text-value-mountain')}

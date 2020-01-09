@@ -23,6 +23,7 @@ import {
   ContentItem,
   ItemTitle,
 } from './sharedStyling';
+import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
@@ -182,7 +183,7 @@ const MountainDetail = (props: Props) => {
       const { name, elevation, state, lists, latitude, longitude } = mountain;
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
-        (completedMountain) => completedMountain.mountain.id === id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
 
       const regions = state.regions.map((region, index) => {
         if (index === state.regions.length - 1 ) {
@@ -236,9 +237,20 @@ const MountainDetail = (props: Props) => {
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
+          />
           <WeatherReport
             latitude={latitude}
             longitude={longitude}
+          />
+          <TripReports
+            mountainId={id}
+            mountainName={mountain.name}
           />
           <LocalTrails
             mountainName={mountain.name}
@@ -250,13 +262,6 @@ const MountainDetail = (props: Props) => {
             mountainId={id}
             mountainName={name}
             numLists={lists.length}
-          />
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
           />
         </>
       );
