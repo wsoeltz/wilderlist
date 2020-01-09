@@ -521,7 +521,9 @@ const Map = (props: Props) => {
   };
 
   return (
-    <Root>
+    <Root
+      style={{pointerEvents: !map ? 'none' : undefined}}
+    >
       <Mapbox
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
