@@ -35,6 +35,7 @@ import {
   isValidURL,
   Months,
   Seasons,
+  asyncForEach,
 } from '../../../../Utils';
 import { formatStringDate } from '../../Utils';
 import {
@@ -46,6 +47,7 @@ import Modal from '../../../sharedComponents/Modal';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
 import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
+import uniq from 'lodash/uniq';
 
 const mobileWidth = 400; // in px
 
@@ -690,7 +692,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const validateAndAddMountainCompletion = (mountainId: Mountain['id']) => {
+  const validateAndAddMountainCompletion = async (mountainId: Mountain['id']) => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     const initialCompletionDate =
       initialCompletionDay !== null && initialCompletionMonth !== null && initialCompletionYear !== null
@@ -702,7 +704,12 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       setErrorMessage(completedDate.error);
     } else {
       setErrorMessage(undefined);
+      closeEditMountainModalModal();
+
       const mountainIds = [mountainId, ...mountainList.map(mtn => mtn.id)];
+      const initialMountainIds = initialMountainList.map(mtn => mtn.id);
+      // remove all dates from all mtns, old and new. dates will be readded to new and existing mtns
+      const uniqueAllMountainIds = uniq([...mountainIds, ...initialMountainIds]);
       // if editing and the date has changed from initialCompletionDate, first delete the ascent
       // then add it. This should happen for main mountain as well as all within the
       // mountainList
@@ -711,20 +718,26 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
           initialCompletionDate.date !== completedDate.date) {
         // initial date exists (being edited) and has been changed.
         // DELETE original date
-        mountainIds.forEach(mtn => {
-          removeMountainCompletion({ variables: {
+        await asyncForEach(uniqueAllMountainIds, async (mtn: string) => {
+          await removeMountainCompletion({ variables: {
             userId, mountainId: mtn, date: initialCompletionDate.date,
           }});
         });
       }
       if (initialDateType === DateType.none && dateType !== DateType.none) {
         // if changing an unknown date to a known date
-        mountainIds.forEach(mtn => {
-          removeMountainCompletion({ variables: {
+        await asyncForEach(uniqueAllMountainIds, async (mtn: string) => {
+          await removeMountainCompletion({ variables: {
             userId, mountainId: mtn, date: 'XXXX-XX-XX-XX-XX',
           }});
         });
       }
+      // mountains may have changed even if date hasn't, so remove mountains from all current date
+      await asyncForEach(uniqueAllMountainIds, async (mtn: string) => {
+        await removeMountainCompletion({ variables: {
+          userId, mountainId: mtn, date: completedDate.date,
+        }});
+      });
       // regardless of above outcome, add the date. Duplicate dates are ignored.
       mountainIds.forEach(mtn => {
         addMountainCompletion({ variables:
@@ -800,7 +813,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
             ...nullConditions,
           }});
         }
-      } 
+      }
 
       // SEND 1 email to each user with all of the mountains names,
       // but add a notification to their account for every mountain
@@ -832,7 +845,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         });
       }
       sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
-      closeEditMountainModalModal();
     }
   };
 
