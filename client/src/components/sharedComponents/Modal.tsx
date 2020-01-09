@@ -35,6 +35,10 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr auto;
   max-height: 90%;
+
+  @media(max-width: 600px) {
+    max-height: 100%;
+  }
 `;
 
 const Content = styled.div`

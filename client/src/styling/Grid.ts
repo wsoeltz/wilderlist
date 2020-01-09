@@ -106,6 +106,9 @@ export const ContentHeader = styled.div`
 export const SearchContainer = styled(ContentHeader)`
   padding: ${standardContainerPadding};
 `;
+
+const urlBarPadding = '5vh'; // padding buffer to account for the url changing on mobile devices
+
 export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};
   position: relative;
@@ -121,6 +124,10 @@ export const ContentBody = styled.div`
   }
   ::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, .1);
+  }
+
+  @media(max-width: 600px) {
+    padding-bottom: ${urlBarPadding};
   }
 `;
 
