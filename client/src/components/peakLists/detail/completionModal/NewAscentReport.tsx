@@ -1,6 +1,6 @@
 import React from 'react';
+import { DateType } from '../../Utils';
 import MountainCompletionModal, {
-  DateType,
   Props,
 } from './MountainCompletionModal';
 

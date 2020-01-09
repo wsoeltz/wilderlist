@@ -14,11 +14,11 @@ import {
 import Modal from '../../../sharedComponents/Modal';
 import {
   DateObject,
+  getDateType,
 } from '../../Utils';
 import MountainCompletionModal, {
   ButtonWrapper,
   CancelButton,
-  DateType,
   Props as BaseProps,
 } from './MountainCompletionModal';
 
@@ -83,18 +83,6 @@ interface QueryVariables {
   mountain: string;
   date: string;
 }
-
-const getDateType = ({day, month, year}: DateObject) => {
-  if (day && month && year) {
-    return DateType.full;
-  } else if (month && year) {
-    return DateType.monthYear;
-  } else if (year) {
-    return DateType.yearOnly;
-  } else {
-    return DateType.none;
-  }
-};
 
 type Props = BaseProps & {
   date: DateObject;

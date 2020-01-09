@@ -18,6 +18,13 @@ export interface DateObject {
   minute: number;
 }
 
+export enum DateType {
+  full = 'full',
+  monthYear = 'monthYear',
+  yearOnly = 'yearOnly',
+  none = 'none',
+}
+
 export const getDates = (dates: CompletedMountain['dates']) => {
     const parsedDates: DateObject[] = dates.map(date => {
       const dateParts = date.split('-');
@@ -32,6 +39,18 @@ export const getDates = (dates: CompletedMountain['dates']) => {
       };
     });
     return sortBy(parsedDates, ({dateAsNumber}) => dateAsNumber);
+};
+
+export const getDateType = ({day, month, year}: DateObject) => {
+  if (day && month && year) {
+    return DateType.full;
+  } else if (month && year) {
+    return DateType.monthYear;
+  } else if (year) {
+    return DateType.yearOnly;
+  } else {
+    return DateType.none;
+  }
 };
 
 const isDateInSeason = (day: number, month: number, year: number, season: Seasons) => {

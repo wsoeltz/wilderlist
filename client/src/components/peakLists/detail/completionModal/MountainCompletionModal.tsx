@@ -45,7 +45,12 @@ import {
 import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
 import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
-import { formatStringDate } from '../../Utils';
+import {
+  CLEAR_ASCENT_NOTIFICATION,
+  ClearNotificationVariables,
+  SuccessResponse as ClearNotificationsSuccess,
+} from '../../../sharedComponents/NotificationBar';
+import { DateType, formatStringDate } from '../../Utils';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
 
@@ -505,13 +510,6 @@ interface DeleteTripReportSuccess {
   id: TripReport['id'];
 }
 
-export enum DateType {
-  full = 'full',
-  monthYear = 'monthYear',
-  yearOnly = 'yearOnly',
-  none = 'none',
-}
-
 interface BaseProps {
   editMountainId: string;
   mountainName: string;
@@ -607,6 +605,9 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   });
   const [addAscentNotifications] =
     useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
+
+  const [clearAscentNotification] =
+    useMutation<ClearNotificationsSuccess, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');
@@ -723,6 +724,11 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
             userId, mountainId: mtn, date: initialCompletionDate.date,
           }});
         });
+        mountainIds.forEach(mtn => {
+          clearAscentNotification({variables: {
+            userId, mountainId: mtn, date: initialCompletionDate.date,
+          }});
+        });
       }
       if (initialDateType === DateType.none && dateType !== DateType.none) {
         // if changing an unknown date to a known date
@@ -743,6 +749,9 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         addMountainCompletion({ variables:
           {userId, mountainId: mtn, date: completedDate.date},
         });
+        clearAscentNotification({variables: {
+          userId, mountainId: mtn, date: completedDate.date,
+        }});
       });
       // then create a trip report (if no conditions it will be handled on the server)
       if (tripReportId === undefined) {
