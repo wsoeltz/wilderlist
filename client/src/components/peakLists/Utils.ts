@@ -4,6 +4,7 @@ import {
   failIfValidOrNonExhaustive,
   getSeason,
   Months,
+  notEmpty,
   Seasons,
   states,
 } from '../../Utils';
@@ -17,19 +18,39 @@ export interface DateObject {
   minute: number;
 }
 
+export enum DateType {
+  full = 'full',
+  monthYear = 'monthYear',
+  yearOnly = 'yearOnly',
+  none = 'none',
+}
+
 export const getDates = (dates: CompletedMountain['dates']) => {
     const parsedDates: DateObject[] = dates.map(date => {
-    const dateParts = date.split('-');
-    return {
-      dateAsNumber: parseInt(date.replace(/-/g, ''), 10),
-      year: parseInt(dateParts[0], 10),
-      month: parseInt(dateParts[1], 10),
-      day: parseInt(dateParts[2], 10),
-      hour: parseInt(dateParts[3], 10),
-      minute: parseInt(dateParts[4], 10),
-    };
-  });
+      const dateParts = date.split('-');
+      const dateAsNumber = parseInt(date.replace(/X/g, '0').split('-').join(''), 10);
+      return {
+        dateAsNumber,
+        year: parseInt(dateParts[0], 10),
+        month: parseInt(dateParts[1], 10),
+        day: parseInt(dateParts[2], 10),
+        hour: parseInt(dateParts[3], 10),
+        minute: parseInt(dateParts[4], 10),
+      };
+    });
     return sortBy(parsedDates, ({dateAsNumber}) => dateAsNumber);
+};
+
+export const getDateType = ({day, month, year}: DateObject) => {
+  if (day && month && year) {
+    return DateType.full;
+  } else if (month && year) {
+    return DateType.monthYear;
+  } else if (year) {
+    return DateType.yearOnly;
+  } else {
+    return DateType.none;
+  }
 };
 
 const isDateInSeason = (day: number, month: number, year: number, season: Seasons) => {
@@ -150,6 +171,20 @@ export const formatDate = ({ day, month, year }: { day: number, month: number, y
   return month + '/' + day + '/' + year;
 };
 
+export const formatStringDate = (date: string) => {
+  const dateParts = date.split('-');
+  const dateAsNumber = parseInt(date.replace(/X/g, '0').split('-').join(''), 10);
+  const dateObject: DateObject = {
+    dateAsNumber,
+    year: parseInt(dateParts[0], 10),
+    month: parseInt(dateParts[1], 10),
+    day: parseInt(dateParts[2], 10),
+    hour: parseInt(dateParts[3], 10),
+    minute: parseInt(dateParts[4], 10),
+  };
+  return formatDate(dateObject);
+};
+
 export const formatGridDate = (date: DateObject) => {
     const { day, month, year } = date;
   // if year isn't known
@@ -174,7 +209,7 @@ export const completedPeaks = (
   if (variant === PeakListVariants.standard) {
     const ascents = mountains.filter(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getStandardCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -187,7 +222,7 @@ export const completedPeaks = (
   } else if (variant === PeakListVariants.winter) {
     const ascents = mountains.filter(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getWinterCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -201,7 +236,7 @@ export const completedPeaks = (
     let numAscents: number = 0;
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getFourSeasonCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -226,7 +261,7 @@ export const completedPeaks = (
     let numAscents: number = 0;
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getGridCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -285,7 +320,7 @@ export const getLatestAscent =  (
   if (variant === PeakListVariants.standard) {
       mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getStandardCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -296,7 +331,7 @@ export const getLatestAscent =  (
   } else if (variant === PeakListVariants.winter) {
       mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getWinterCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -307,7 +342,7 @@ export const getLatestAscent =  (
   } else if (variant === PeakListVariants.fourSeason) {
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getFourSeasonCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -329,7 +364,7 @@ export const getLatestAscent =  (
   } else if (variant === PeakListVariants.grid) {
     mountains.forEach(mountain => {
       const dates = completedAscents.find(
-        (completedMountain) => completedMountain.mountain.id === mountain.id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
       if (dates !== undefined) {
         const dateCompleted = getGridCompletion(dates);
         if (dateCompleted !== null && dateCompleted !== undefined) {
@@ -374,20 +409,8 @@ export const getLatestAscent =  (
     });
   }
 
-  const ascentsNotNaN = ascents.filter(
-    ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
-  if (ascentsNotNaN.length) {
-    const sortedAscentsNotNaN = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
-    if (sortedAscentsNotNaN.length) {
-      return sortedAscentsNotNaN[sortedAscentsNotNaN.length - 1];
-    }
-  }
-  const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
-  const sortedAscentsYearOnly = ascentsYearOnly.length
-    ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
-    : sortBy(ascents, ['year', 'month', 'day']);
-
-  return sortedAscentsYearOnly[sortedAscentsYearOnly.length - 1];
+  const sortedAscents = sortBy(ascents, ['dateAsNumber']);
+  return sortedAscents[sortedAscents.length - 1];
 };
 
 type DateWithName = DateObject & { name: string };
@@ -396,36 +419,30 @@ export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
   if (mountains.length === 0) {
     return null;
   }
-  const mountainList = mountains.map(({mountain: { id }}) => ({id}));
+  const mountainList = mountains.map(({mountain}) => {
+    if (mountain) {
+      return mountain.id;
+    } else {
+      return null;
+    }
+  });
+  const filteredMountainList = mountainList.filter(notEmpty);
   const ascents: DateWithName[] = [];
-  mountainList.forEach(({id}) => {
+  filteredMountainList.forEach(id => {
     const dates = mountains.find(
-      ({mountain}) => mountain.id === id);
+      ({mountain}) => mountain && mountain.id === id);
     if (dates !== undefined) {
       const datesCompleted = getDates(dates.dates);
       const dateCompleted = datesCompleted[datesCompleted.length - 1];
-      if (dateCompleted !== null && dateCompleted !== undefined) {
+      if (dateCompleted !== null && dateCompleted !== undefined && dates.mountain) {
         ascents.push({name: dates.mountain.name, ...dateCompleted});
       }
     }
   });
-  const ascentsNotNaN = ascents.filter(
-    ({year, month, day}) => !isNaN(year) && !isNaN(month) && !isNaN(day));
-  if (ascentsNotNaN.length) {
-    const sortedAscentsNotNaN = sortBy(ascentsNotNaN, ['year', 'month', 'day']);
-    if (sortedAscentsNotNaN.length) {
-      const {name, ...date} = sortedAscentsNotNaN[sortedAscentsNotNaN.length - 1];
-      return {name, date };
-    }
-  }
-  const ascentsYearOnly = ascents.filter(({year}) => !isNaN(year));
-  const sortedAscentsYearOnly = ascentsYearOnly.length
-    ? sortBy(ascentsYearOnly, ['year', 'month', 'day'])
-    : sortBy(ascents, ['year', 'month', 'day']);
-
-  if (sortedAscentsYearOnly.length) {
-    const {name, ...date} = sortedAscentsYearOnly[sortedAscentsYearOnly.length - 1];
-    return {name, date };
+  if (ascents.length) {
+    const sortedAscents = sortBy(ascents, ['dateAsNumber']).reverse();
+    const {name, ...date} = sortedAscents[0];
+    return {name, date};
   }
   return null;
 };

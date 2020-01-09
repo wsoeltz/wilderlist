@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -13,6 +13,7 @@ import {
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
@@ -23,18 +24,20 @@ import {
   getStatesOrRegion,
   TextRight,
 } from '../list/PeakListCard';
+import PeakProgressBar from '../list/PeakProgressBar';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import {
   MountainDatum,
   PeakListDatum,
+  StateDatum,
   UserDatum,
 } from './PeakListDetail';
 
 const Root = styled.div`
   display: grid;
   grid-template-columns: 12.5rem 1fr auto;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   grid-column-gap: 1rem;
 `;
 
@@ -74,6 +77,11 @@ const ActiveListContentContainer = styled(ListInfo)`
   grid-row: 4;
 `;
 
+const ProgressBarContainer = styled.div`
+  grid-column: 1 / 4;
+  grid-row: 5;
+`;
+
 export const REMOVE_PEAK_LIST_FROM_USER = gql`
   mutation removePeakListFromUser($userId: ID!, $peakListId: ID!) {
     removePeakListFromUser(userId: $userId, peakListId: $peakListId) {
@@ -87,9 +95,11 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
 
 interface Props {
   mountains: MountainDatum[];
+  statesArray: StateDatum[];
   peakList: PeakListDatum;
-  user: UserDatum;
+  user: UserDatum | null;
   completedAscents: CompletedMountain[];
+  isOtherUser?: boolean;
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
 }
@@ -97,7 +107,7 @@ interface Props {
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents, comparisonUser, comparisonAscents,
+    completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -109,15 +119,33 @@ const Header = (props: Props) => {
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
+  const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
 
+  const openSignUpModal = () => {
+    setIsSignUpModal(true);
+  };
+  const closeSignUpModal = () => {
+    setIsSignUpModal(false);
+  };
   const closeAreYouSureModal = () => {
     setIsRemoveListModalOpen(false);
   };
 
   const confirmRemove = () => {
-    removePeakListFromUser({variables: {userId: user.id,  peakListId: id}});
+    if (user && user.id) {
+      removePeakListFromUser({variables: {userId: user.id,  peakListId: id}});
+    }
     closeAreYouSureModal();
   };
+
+  const signUpModal = isSignUpModal === false ? null : (
+    <SignUpModal
+      text={getFluentString('global-text-value-modal-sign-up-today', {
+        'list-short-name': shortName,
+      })}
+      onCancel={closeSignUpModal}
+    />
+  );
 
   const areYouSureModal = isRemoveListModalOpen === false ? null : (
     <AreYouSureModal
@@ -132,10 +160,19 @@ const Header = (props: Props) => {
     />
   );
 
-  const usersLists = user.peakLists.map((list) => list.id);
-  const active = usersLists.includes(peakList.id);
-  const beginRemoveButton = active === false ? (
-    <ButtonPrimary onClick={() => addPeakListToUser({variables: {userId: user.id,  peakListId: id}})}>
+  const usersLists = user ? user.peakLists.map((list) => list.id) : [];
+  const active = user ? usersLists.includes(peakList.id) : null;
+
+  const beginList = () => {
+    if (user) {
+      addPeakListToUser({variables: {userId: user.id,  peakListId: id}});
+    } else {
+      openSignUpModal();
+    }
+  };
+
+  const beginRemoveButton = active === false || !user ? (
+    <ButtonPrimary onClick={beginList}>
       {getFluentString('peak-list-detail-text-begin-list')}
     </ButtonPrimary>
    ) : (
@@ -143,6 +180,12 @@ const Header = (props: Props) => {
       {getFluentString('peak-list-detail-text-remove-list')}
     </GhostButton>
    ) ;
+
+  const topLevelHeading = isOtherUser === true && user !== null ? null : (
+      <BeginRemoveListButtonContainer>
+        {beginRemoveButton}
+      </BeginRemoveListButtonContainer>
+    );
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
   let totalRequiredAscents: number;
@@ -158,7 +201,7 @@ const Header = (props: Props) => {
   }
 
   let listInfoContent: React.ReactElement<any> | null;
-  if (comparisonUser !== undefined && comparisonAscents !== undefined) {
+  if (user && comparisonUser !== undefined && comparisonAscents !== undefined) {
 
     const numFriendsCompletedAscents = completedPeaks(mountains, comparisonAscents, type);
 
@@ -185,7 +228,9 @@ const Header = (props: Props) => {
     if (latestDate !== undefined) {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': (!(isNaN(latestDate.day) || isNaN(latestDate.month))).toString(),
+        'has-full-date': ( !(isNaN(latestDate.day) || isNaN(latestDate.month)) // incomplete date is false
+          || (isNaN(latestDate.day) && isNaN(latestDate.month) && isNaN(latestDate.year)) // NO date is true
+          ).toString(),
       });
       latestDateText = (
         <>
@@ -196,13 +241,23 @@ const Header = (props: Props) => {
       latestDateText = <>{getFluentString('peak-list-text-no-completed-ascent')}</>;
     }
     listInfoContent = (
-      <ActiveListContentContainer>
-        <div>
-          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
-          {getFluentString('peak-list-text-total-ascents')}
-        </div>
-        <TextRight>{latestDateText}</TextRight>
-      </ActiveListContentContainer>
+      <>
+        <ActiveListContentContainer>
+          <div>
+            <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+            {getFluentString('peak-list-text-total-ascents')}
+          </div>
+          <TextRight>{latestDateText}</TextRight>
+        </ActiveListContentContainer>
+        <ProgressBarContainer>
+          <PeakProgressBar
+            variant={active === true ? type : null}
+            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+            total={totalRequiredAscents}
+            id={id}
+          />
+        </ProgressBarContainer>
+      </>
     );
 
   } else {
@@ -215,7 +270,7 @@ const Header = (props: Props) => {
       <TitleContent>
         <Title>{name}{getType(type)}</Title>
         <ListInfo>
-          {getStatesOrRegion(mountains, getFluentString)}
+          {getStatesOrRegion(statesArray, getFluentString)}
         </ListInfo>
         <ListInfo>
           {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
@@ -228,14 +283,13 @@ const Header = (props: Props) => {
           shortName={shortName}
           variant={type}
           active={active}
-          completed={numCompletedAscents === totalRequiredAscents}
+          completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
         />
       </LogoContainer>
-      <BeginRemoveListButtonContainer>
-        {beginRemoveButton}
-      </BeginRemoveListButtonContainer>
+      {topLevelHeading}
       {listInfoContent}
       {areYouSureModal}
+      {signUpModal}
     </Root>
   );
 };

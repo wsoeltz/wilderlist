@@ -2,14 +2,18 @@ import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
-import { convertDMS } from '../../../Utils';
+import { Mountain, PeakList, PeakListVariants, Region, State, User } from '../../../types/graphQLTypes';
+import { convertDMS, mobileSize } from '../../../Utils';
+import {
+  VariableDate,
+} from '../../peakLists/detail/getCompletionDates';
+import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import AscentsList from './AscentsList';
@@ -19,7 +23,10 @@ import {
   ContentItem,
   ItemTitle,
 } from './sharedStyling';
+import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
+
+const mountainDetailMapKey = 'mountainDetailMapKey';
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -59,6 +66,11 @@ const LatLongContainer = styled.div`
     display: flex;
     flex-direction: column;
   }
+  @media (min-width: ${mobileSize}px) and (max-width: 1490px) {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const Divider = styled.div`
@@ -74,12 +86,11 @@ const Divider = styled.div`
 `;
 
 const GET_MOUNTAIN_DETAIL = gql`
-  query getMountain($id: ID!, $userId: ID!) {
+  query getMountain($id: ID!, $userId: ID) {
     mountain(id: $id) {
       id
       name
       elevation
-      prominence
       latitude
       longitude
       state {
@@ -111,7 +122,6 @@ interface QuerySuccessResponse {
     id: Mountain['name'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
-    prominence: Mountain['prominence'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
     state: {
@@ -126,7 +136,7 @@ interface QuerySuccessResponse {
       id: PeakList['id'];
     }>;
   };
-  user: {
+  user: null | {
     id: User['name'];
     mountains: User['mountains'];
   };
@@ -134,11 +144,11 @@ interface QuerySuccessResponse {
 
 interface QueryVariables {
   id: string;
-  userId: string;
+  userId: string | null;
 }
 
 interface Props {
-  userId: string;
+  userId: string | null;
   id: string;
 }
 
@@ -163,17 +173,17 @@ const MountainDetail = (props: Props) => {
     );
   } else if (data !== undefined) {
     const { mountain, user } = data;
-    if (!mountain || !user) {
+    if (!mountain) {
       return (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
-      const { name, elevation, prominence, state, lists, latitude, longitude } = mountain;
+      const { name, elevation, state, lists, latitude, longitude } = mountain;
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
-        (completedMountain) => completedMountain.mountain.id === id);
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
 
       const regions = state.regions.map((region, index) => {
         if (index === state.regions.length - 1 ) {
@@ -191,21 +201,23 @@ const MountainDetail = (props: Props) => {
         );
 
       const {lat, long} = convertDMS(latitude, longitude);
+      const completionDates: VariableDate | null = completedDates !== undefined && completedDates.dates.length ? {
+        type: PeakListVariants.standard,
+        standard: getDates(completedDates.dates)[0],
+      } : null;
       return (
         <>
           <h1>{name}</h1>
           <Map
             id={id}
-            coordinates={[mountain]}
-            key={`map-id-${id}`}
+            coordinates={[{...mountain, completionDates}]}
+            peakListType={PeakListVariants.standard}
+            userId={userId}
+            key={mountainDetailMapKey}
           />
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
             <strong>{elevation}ft</strong>
-          </HorizontalContentItem>
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('global-text-value-prominence')}:</ItemTitleShort>
-            <strong>{prominence}ft</strong>
           </HorizontalContentItem>
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
@@ -225,9 +237,20 @@ const MountainDetail = (props: Props) => {
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
+          />
           <WeatherReport
             latitude={latitude}
             longitude={longitude}
+          />
+          <TripReports
+            mountainId={id}
+            mountainName={mountain.name}
           />
           <LocalTrails
             mountainName={mountain.name}
@@ -239,13 +262,6 @@ const MountainDetail = (props: Props) => {
             mountainId={id}
             mountainName={name}
             numLists={lists.length}
-          />
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
           />
         </>
       );

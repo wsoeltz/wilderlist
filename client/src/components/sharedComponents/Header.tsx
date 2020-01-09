@@ -2,13 +2,13 @@ import { GetString } from 'fluent-react';
 import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import Logo from '../../assets/logo/Logo';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import { Routes } from '../../routing/routes';
-import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
+import { friendsWithUserProfileLink, searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -18,6 +18,7 @@ import {
 } from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
+import NotificationBar from './NotificationBar';
 import UserMenu from './UserMenu';
 
 const HeaderContainer = styled(HeaderContainerBase)`
@@ -25,7 +26,7 @@ const HeaderContainer = styled(HeaderContainerBase)`
   display: flex;
   justify-content: flex-end;
   position: relative;
-  z-index: 100;
+  z-index: 450;
 `;
 
 const LogoContainer = styled(Link)`
@@ -46,10 +47,10 @@ const LogoContainer = styled(Link)`
       width: 200%;
     }
 
-    @media(max-width: 600px) {
+    @media(max-width: 650px) {
       transform: scale(0.55);
     }
-    @media(max-width: 450px) {
+    @media(max-width: 560px) {
       transform: scale(0.5);
     }
   }
@@ -67,10 +68,20 @@ const NavLink = styled(Link)`
   text-decoration: none;
   text-transform: uppercase;
   min-width: 90px;
-  padding: 0 1rem;
+  padding: 0 0.75rem;
 
   @media(max-width: ${smallHeaderBreakpoint}px) {
     min-width: 20px;
+  }
+
+  @media(max-width: 470px) {
+    padding: 0 0.4rem;
+  }
+
+  @media(max-width: 370px) {
+    &.header-dashboard-link {
+      display: none;
+    }
   }
 `;
 
@@ -104,53 +115,78 @@ const Header = (props: RouteComponentProps) => {
 
   const peakListsPath = searchListDetailLink('search');
   const usersPath = friendsWithUserProfileLink('search');
+  const mountainPath = searchMountainsDetailLink('search');
 
   const createLink = (route: string, label: string) => {
     let normalizedPathname: string;
-    if (pathname.includes('user') && !pathname.includes('settings')) {
+    if (pathname.includes('dashboard')) {
+      normalizedPathname = '/';
+    } else if (pathname.includes('user') && !pathname.includes('settings')) {
       normalizedPathname = usersPath;
     } else if (pathname.includes('list')) {
       normalizedPathname = peakListsPath;
+    } else if (pathname.includes('mountain')) {
+      normalizedPathname = mountainPath;
     } else {
       normalizedPathname = pathname;
     }
+    const className = route === Routes.Dashboard ? 'header-dashboard-link' : undefined;
     const Container = route === normalizedPathname ? ActiveNavLink : InactiveNavLink;
-    return <Container to={route}>{label}</Container>;
+    return <Container className={className} to={route}>{label}</Container>;
   };
 
   const renderProp = (user: User | null) => {
-    if (user === null) {
-      return null;
-    } else if (user) {
+    if (user) {
       return (
         <>
-          <MainNav>
-            {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
-            {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
-            {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
-          </MainNav>
-          <UserMenu
-            userMenuOpen={userMenuOpen}
-            setUserMenuOpen={setUserMenuOpen}
-            user={user}
-            getFluentString={getFluentString}
-          />
+          <HeaderContainer>
+            <LogoContainer to={Routes.Dashboard}>
+              {getFluentString('global-text-value-wilderlist-name')}
+              <Logo />
+            </LogoContainer>
+            <MainNav>
+              {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
+              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
+              {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
+            </MainNav>
+            <UserMenu
+              userMenuOpen={userMenuOpen}
+              setUserMenuOpen={setUserMenuOpen}
+              user={user}
+              getFluentString={getFluentString}
+            />
+          </HeaderContainer>
+          <NotificationBar userId={user._id} />
         </>
       );
     } else {
-      return null;
+      return (
+        <>
+          <HeaderContainer>
+            <LogoContainer to={Routes.Dashboard}>
+              {getFluentString('global-text-value-wilderlist-name')}
+              <Logo />
+            </LogoContainer>
+            <MainNav>
+              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
+              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
+            </MainNav>
+            <UserMenu
+              user={user}
+              getFluentString={getFluentString}
+            />
+          </HeaderContainer>
+        </>
+      );
     }
   };
   return (
-    <HeaderContainer>
-      <LogoContainer to={Routes.Dashboard}>
-        {getFluentString('global-text-value-wilderlist-name')}
-        <Logo />
-      </LogoContainer>
+    <>
       <UserContext.Consumer
         children={renderProp}
       />
-    </HeaderContainer>
+    </>
   );
 };
 

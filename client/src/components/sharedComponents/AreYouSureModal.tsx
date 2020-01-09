@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   ButtonSecondary,
   ButtonWarning,
@@ -27,22 +27,26 @@ interface Props {
 const AreYouSureModal = (props: Props) => {
   const { onConfirm, onCancel, title, text, confirmText, cancelText } = props;
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {cancelText}
+      </CancelButton>
+      <ButtonWarning onClick={onConfirm}>
+        {confirmText}
+      </ButtonWarning>
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'300px'}
       height={'auto'}
+      actions={actions}
     >
       <h3>{title}</h3>
       <p dangerouslySetInnerHTML={{__html: text}} />
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {cancelText}
-        </CancelButton>
-        <ButtonWarning onClick={onConfirm}>
-          {confirmText}
-        </ButtonWarning>
-      </ButtonWrapper>
     </Modal>
   );
 };

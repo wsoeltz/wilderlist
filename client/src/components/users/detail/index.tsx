@@ -5,6 +5,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { Routes } from '../../../routing/routes';
 import {
   ContentBody,
   ContentHeader,
@@ -31,26 +32,40 @@ const UserProfilePage = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  let comparison: React.ReactElement<any> | null;
+  let peakListPanel: React.ReactElement<any> | null;
   if (id === userId) {
     if (!Types.ObjectId.isValid(peakListId)) {
-      comparison = <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>;
+      peakListPanel = <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>;
     } else {
-      comparison = <PeakListDetail userId={userId} id={peakListId} />;
+      peakListPanel = <PeakListDetail userId={userId} id={peakListId} mountainId={undefined} />;
     }
   } else {
-    if (peakListId === 'all') {
-      comparison = <CompareAllMountains userId={userId} id={profileId} />;
-    } else if (!Types.ObjectId.isValid(peakListId)) {
-      comparison = <PlaceholderText>{getFluentString('user-profile-compare-ascents-placeholder')}</PlaceholderText>;
-    } else {
-      comparison = (
-        <PeakListComparison
-          userId={userId}
-          friendId={profileId}
-          peakListId={peakListId}
+    if (match.path === Routes.OtherUserPeakListCompare) {
+      if (peakListId === 'all') {
+        peakListPanel = <CompareAllMountains userId={userId} id={profileId} />;
+      } else if (!Types.ObjectId.isValid(peakListId)) {
+        peakListPanel = (
+          <PlaceholderText>{getFluentString('user-profile-compare-ascents-placeholder')}</PlaceholderText>
+        );
+      } else {
+        peakListPanel = (
+          <PeakListComparison
+            userId={userId}
+            friendId={profileId}
+            peakListId={peakListId}
+          />
+        );
+      }
+    } else if (match.path === Routes.OtherUserPeakList) {
+      peakListPanel = (
+        <PeakListDetail
+          userId={profileId}
+          id={peakListId}
+          mountainId={undefined}
         />
       );
+    } else {
+      peakListPanel = null;
     }
   }
 
@@ -70,7 +85,7 @@ const UserProfilePage = (props: Props) => {
       </ContentLeftLarge>
       <ContentRightSmall>
         <ContentBody>
-          {comparison}
+          {peakListPanel}
         </ContentBody>
       </ContentRightSmall>
     </>

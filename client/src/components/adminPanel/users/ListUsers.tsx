@@ -1,6 +1,6 @@
 import { ApolloError } from 'apollo-boost';
 import React, {useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { LinkButton } from '../../../styling/styleUtils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { SuccessResponse, UserDatum } from '../AdminUsers';

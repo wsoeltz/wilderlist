@@ -1,44 +1,27 @@
 import React from 'react';
 import { NoResults } from '../../../styling/styleUtils';
-import { FriendStatus, Mountain, PeakList, User } from '../../../types/graphQLTypes';
+import { FriendStatus, User } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
-
-interface BasicMountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-}
 
 export interface UserDatum {
   id: User['id'];
   name: User['name'];
   profilePictureUrl: User['profilePictureUrl'];
   hideProfilePicture: User['hideProfilePicture'];
-  peakLists: Array<{
-    id: PeakList['id'];
-    shortName: PeakList['shortName'];
-    type: PeakList['type'];
-    mountains: BasicMountainDatum[];
-    parent: {
-      id: PeakList['id'];
-      mountains: BasicMountainDatum[];
-    } | null;
-  }>;
-  mountains: User['mountains'];
 }
 
 export interface FriendDatum {
-  user: {
-    id: User['id'],
-  };
+  user: UserDatum;
   status: FriendStatus;
 }
 
 interface Props {
-  userData: UserDatum[];
+  userData: UserDatum[] | null;
   currentUserId: string;
   friendsList: FriendDatum[];
   showCurrentUser: boolean;
   noResultsText: string;
+  noFriendsText: string;
   openInSidebar: boolean;
   sortByStatus: boolean;
 }
@@ -46,9 +29,12 @@ interface Props {
 const ListUsers = (props: Props) => {
   const {
     userData, currentUserId, showCurrentUser, friendsList, noResultsText,
-    openInSidebar, sortByStatus,
+    openInSidebar, sortByStatus, noFriendsText,
   } = props;
 
+  if (userData === null) {
+    return <NoResults dangerouslySetInnerHTML={{__html: noFriendsText}} />;
+  }
   if (userData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }

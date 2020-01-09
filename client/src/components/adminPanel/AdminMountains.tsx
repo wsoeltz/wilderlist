@@ -8,8 +8,10 @@ import {
   ContentLeftLarge as MountainListColumn,
   ContentRightSmall as MountainEditColumn,
 } from '../../styling/Grid';
+import { ButtonPrimary } from '../../styling/styleUtils';
 import { Mountain } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';
 import EditMountain from './mountains/EditMountain';
@@ -27,6 +29,7 @@ export const GET_MOUNTAINS = gql`
       state {
         id
         name
+        abbreviation
       }
     }
   }
@@ -130,6 +133,7 @@ const AdminMountains = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS);
   const [editMountainPanel, setEditMountainPanel] = useState<EditMountainPanelEnum>(EditMountainPanelEnum.Empty);
   const [mountainToEdit, setMountainToEdit] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const clearEditMountainPanel = () => {
     setEditMountainPanel(EditMountainPanelEnum.Empty);
     setMountainToEdit(null);
@@ -170,9 +174,9 @@ const AdminMountains = () => {
       setEditMountainPanel(EditMountainPanelEnum.New);
     };
     editPanel = (
-      <button onClick={createNewButtonClick}>
+      <ButtonPrimary onClick={createNewButtonClick}>
         Create new mountain
-      </button>
+      </ButtonPrimary>
     );
   } else if (editMountainPanel === EditMountainPanelEnum.New) {
     editPanel = (
@@ -213,11 +217,21 @@ const AdminMountains = () => {
     clearEditMountainPanel();
   };
 
+  const filterMountains = (value: string) => {
+    setSearchQuery(value);
+  };
+
   return (
     <>
       <MountainListColumn>
         <ContentHeader>
           <h2>Mountains</h2>
+          <StandardSearch
+            placeholder={'Filter mountains'}
+            setSearchQuery={filterMountains}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
         </ContentHeader>
         <ContentBody>
           <ListMountains
@@ -226,6 +240,7 @@ const AdminMountains = () => {
             data={data}
             deleteMountain={deleteMountain}
             editMountain={editMountain}
+            searchQuery={searchQuery}
           />
         </ContentBody>
       </MountainListColumn>

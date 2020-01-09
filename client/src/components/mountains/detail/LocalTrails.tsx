@@ -1,10 +1,11 @@
 import { GetString } from 'fluent-react';
 import React, {useContext, useEffect, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import HikingProjectSvgLogo from '../../../assets/images/hiking-project-logo.svg';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { SemiBold } from '../../../styling/styleUtils';
 import getTrails from '../../../utilities/getTrails';
 import { genericWords } from '../../peakLists/import';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -107,7 +108,7 @@ const LocalTrails = ({mountainName, latitude, longitude}: Props) => {
           mtnNameSafe.some(function(v) { return v.length > 1 && trail.summary.toLowerCase().indexOf(v) >= 0; })) {
         trailElements.unshift(
           <BasicListItem key={trail.id}>
-            <a href={trail.url} target='_blank' rel='noopener noreferrer'><strong>{trail.name}</strong></a>
+            <a href={trail.url} target='_blank' rel='noopener noreferrer'><SemiBold>{trail.name}</SemiBold></a>
             {' - '}
             {getFluentString('local-trails-hiking-project-feet-elevation', {
               miles: trail.length,

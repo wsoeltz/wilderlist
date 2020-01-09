@@ -1,7 +1,7 @@
 import { GetString } from 'fluent-react';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -12,12 +12,12 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
-  Region,
-  State,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { completedPeaks } from '../Utils';
-import PeakListCard, {MountainList} from './PeakListCard';
+import { ViewMode } from './index';
+import PeakListCard from './PeakListCard';
+import PeakListCompactCard from './PeakListCompactCard';
 import PeakListTrophy from './PeakListTrophy';
 
 const SectionTitle = styled.h3`
@@ -36,20 +36,9 @@ const TrophyContainer = styled.div`
 
 interface MountainDatum {
   id: Mountain['id'];
-  state: {
-    id: State['id'];
-    name: State['name'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-      states: Array<{
-        id: State['id'],
-      }>
-    }>
-  };
 }
 
-export interface PeakListDatum {
+export interface CardPeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
   shortName: PeakList['shortName'];
@@ -61,120 +50,161 @@ export interface PeakListDatum {
   } | null;
 }
 
+export interface CompactPeakListDatum {
+  id: PeakList['id'];
+  name: PeakList['name'];
+  shortName: PeakList['shortName'];
+  type: PeakList['type'];
+  parent: {
+    id: PeakList['id'];
+  } | null;
+}
+
 interface BaseProps {
-  peakListData: PeakListDatum[];
-  userListData: Array<PeakList['id']>;
+  userListData: Array<PeakList['id']> | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
   noResultsText: string;
   showTrophies: boolean;
+  viewMode: ViewMode;
+  dashboardView?: boolean;
 }
 
-type Props = BaseProps & ({ profileView: false } | {
-  profileView: true;
-  isMe: boolean;
-});
+type Props = BaseProps & (
+  {
+    viewMode: ViewMode.Card;
+    peakListData: CardPeakListDatum[];
+  } | {
+    viewMode: ViewMode.Compact;
+    peakListData: CompactPeakListDatum[];
+  }
+) & ({ profileId: string | undefined });
 
 const ListPeakLists = (props: Props) => {
   const {
-    peakListData, userListData, listAction, actionText,
+    userListData, listAction, actionText,
     completedAscents, noResultsText, showTrophies,
+    profileId, dashboardView,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  if (peakListData.length === 0) {
+  if (props.peakListData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
   const trophies: Array<React.ReactElement<any> | null> = [];
-  const peakLists = peakListData.map(peakList => {
-    const { parent, type } = peakList;
-    let mountains: MountainList[];
-    if (parent !== null && parent.mountains !== null) {
-      mountains = parent.mountains;
-    } else if (peakList.mountains !== null) {
-      mountains = peakList.mountains;
-    } else {
-      mountains = [];
-    }
-
-    const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
-    let totalRequiredAscents: number;
-    if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-      totalRequiredAscents = mountains.length;
-    } else if (type === PeakListVariants.fourSeason) {
-      totalRequiredAscents = mountains.length * 4;
-    } else if (type === PeakListVariants.grid) {
-      totalRequiredAscents = mountains.length * 12;
-    } else {
-      failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
-      totalRequiredAscents = 0;
-    }
-
-    if (showTrophies === true && numCompletedAscents === totalRequiredAscents) {
-      trophies.push(
-        <PeakListTrophy
-          peakList={peakList}
-          key={peakList.id}
-        />,
-      );
-      return null;
-    }
-    const isMe = props.profileView === true ? props.isMe : false;
-    const active = userListData.includes(peakList.id);
-    return (
-      <PeakListCard
-        peakList={peakList}
-        active={active}
-        listAction={listAction}
-        actionText={actionText}
-        completedAscents={completedAscents}
-        profileView={props.profileView}
-        key={peakList.id}
-        mountains={mountains}
-        numCompletedAscents={numCompletedAscents}
-        totalRequiredAscents={totalRequiredAscents}
-        isMe={isMe}
-      />
-    );
-  });
-
-  const sortedPeakLists = showTrophies === true
-    ? sortBy(peakLists, (list) => {
-      if (list !== null) {
-        const { numCompletedAscents, totalRequiredAscents } = list.props;
-        return numCompletedAscents / totalRequiredAscents;
+  if (props.viewMode === ViewMode.Card) {
+    const peakLists = props.peakListData.map(peakList => {
+      const { parent, type } = peakList;
+      let mountains: Array<{id: Mountain['id']}>;
+      if (parent !== null && parent.mountains !== null) {
+        mountains = parent.mountains;
+      } else if (peakList.mountains !== null) {
+        mountains = peakList.mountains;
+      } else {
+        mountains = [];
       }
-    }).reverse()
-    : peakLists;
 
-  const trophyContent = showTrophies === true && trophies.length > 0 ? (
-    <>
-      <SectionTitle>
-        {getFluentString('user-profile-lists-completed')}
-      </SectionTitle>
-      <TrophyContainer>
-        {trophies}
-      </TrophyContainer>
-    </>
-  ) : null;
+      const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
+      let totalRequiredAscents: number;
+      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+        totalRequiredAscents = mountains.length;
+      } else if (type === PeakListVariants.fourSeason) {
+        totalRequiredAscents = mountains.length * 4;
+      } else if (type === PeakListVariants.grid) {
+        totalRequiredAscents = mountains.length * 12;
+      } else {
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+        totalRequiredAscents = 0;
+      }
 
-  const inProgressTitle = showTrophies === true ? (
-    <>
-      <SectionTitle>
-        {getFluentString('user-profile-lists-in-progress')}
-      </SectionTitle>
-    </>
-  ) : null;
-  return (
-    <>
-      {trophyContent}
-      {inProgressTitle}
-      {sortedPeakLists}
-    </>
-  );
+      if (showTrophies === true && totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {
+        trophies.push(
+          <PeakListTrophy
+            peakList={peakList}
+            profileId={profileId}
+            dashboardView={dashboardView === true ? true : false}
+            key={peakList.id}
+          />,
+        );
+        return null;
+      }
+      const active = userListData ? userListData.includes(peakList.id) : null;
+      return (
+        <PeakListCard
+          peakList={peakList}
+          active={active}
+          listAction={listAction}
+          actionText={actionText}
+          completedAscents={completedAscents}
+          profileId={profileId}
+          key={peakList.id}
+          mountains={mountains}
+          numCompletedAscents={numCompletedAscents}
+          totalRequiredAscents={totalRequiredAscents}
+          dashboardView={dashboardView === true ? true : false}
+        />
+      );
+    });
+
+    const sortedPeakLists = showTrophies === true
+      ? sortBy(peakLists, (list) => {
+        if (list !== null) {
+          const { numCompletedAscents, totalRequiredAscents } = list.props;
+          return numCompletedAscents / totalRequiredAscents;
+        }
+      }).reverse()
+      : peakLists;
+
+    const trophyContent = showTrophies === true && trophies.length > 0 ? (
+      <>
+        <SectionTitle>
+          {getFluentString('user-profile-lists-completed')}
+        </SectionTitle>
+        <TrophyContainer>
+          {trophies}
+        </TrophyContainer>
+      </>
+    ) : null;
+
+    const inProgressTitle = showTrophies === true ? (
+      <>
+        <SectionTitle>
+          {getFluentString('user-profile-lists-in-progress')}
+        </SectionTitle>
+      </>
+    ) : null;
+    return (
+      <>
+        {trophyContent}
+        {inProgressTitle}
+        {sortedPeakLists}
+      </>
+    );
+  } else if (props.viewMode === ViewMode.Compact) {
+    const peakListCards = props.peakListData.map(list => {
+    const active = userListData ? userListData.includes(list.id) : null;
+    return (
+        <PeakListCompactCard
+          key={list.id}
+          peakList={list}
+          active={active}
+          listAction={listAction}
+          actionText={actionText}
+          completedAscents={completedAscents}
+        />
+      );
+    });
+    return (
+      <>
+        {peakListCards}
+      </>
+    );
+  } else {
+    return null;
+  }
 };
 
 export default ListPeakLists;

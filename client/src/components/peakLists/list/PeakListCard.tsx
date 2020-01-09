@@ -1,13 +1,17 @@
+import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
+import gql from 'graphql-tag';
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  comparePeakListLink,
+  dashboardWithListDetailLink,
   listDetailWithMountainDetailLink,
+  otherUserPeakListDetailLink,
+  otherUserPeakListLink,
   preventNavigation,
   searchListDetailLink,
 } from '../../../routing/Utils';
@@ -19,16 +23,90 @@ import {
 import {
   CompletedMountain,
   Mountain,
+  PeakList,
   Region,
   State,
-  User,
+  // User,
 } from '../../../types/graphQLTypes';
-import { UserContext } from '../../App';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { formatDate, getLatestAscent, getType } from '../Utils';
-import { PeakListDatum } from './ListPeakLists';
+import { CardPeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
+
+export const GET_STATES_AND_REGIONS = gql`
+  query getStatesAndRegions($id: ID!) {
+    peakList(id: $id) {
+      id
+      states {
+        id
+        name
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
+      mountains {
+        id
+      }
+      parent {
+        id
+        states {
+          id
+          name
+          regions {
+            id
+            name
+            states {
+              id
+            }
+          }
+        }
+        mountains {
+          id
+        }
+      }
+    }
+  }
+`;
+
+interface RegionDatum {
+  id: Region['id'];
+  name: Region['name'];
+  states: Array<{
+    id: State['id'],
+  }>;
+}
+
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  regions: RegionDatum[];
+}
+
+export interface SuccessResponse {
+  peakList: null | {
+    id: PeakList['id'];
+    states: null | StateDatum[];
+    mountains: null | Array<{
+      id: PeakList['id'];
+    }>
+    parent: null | {
+      id: PeakList['id'];
+      states: null | StateDatum[];
+      mountains: null | Array<{
+        id: PeakList['id'];
+      }>
+    }
+  };
+}
+
+export interface Variables {
+  id: string;
+}
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -110,42 +188,18 @@ export const BigText = styled.span`
   font-weight: ${boldFontWeight};
 `;
 
-interface RegionDatum {
-  id: Region['id'];
-  name: Region['name'];
-  states: Array<{
-    id: State['id'],
-  }>;
-}
-
-interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  regions: RegionDatum[];
-}
-
-export interface MountainList {
-  id: Mountain['id'];
-  state: StateDatum;
-}
-
-export const getStatesOrRegion = (mountains: MountainList[], getFluentString: GetString) => {
+export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
+  const sortedStates = sortBy(statesArray, ['name']);
   // If there are 3 or less states, just show the states
-  const statesArray: StateDatum[] = [];
-  mountains.forEach(({state}) => {
-    if (statesArray.filter(({id}) => id === state.id).length === 0) {
-      statesArray.push(state);
-    }
-  });
-  if (statesArray.length === 1) {
-    return statesArray[0].name;
-  } else if (statesArray.length === 2) {
-    return statesArray[0].name + ' & ' + statesArray[1].name;
-  } else if (statesArray.length === 3) {
-    return statesArray[0].name + ', ' + statesArray[1].name + ' & ' + statesArray[2].name;
-  } else if (statesArray.length > 2) {
+  if (sortedStates.length === 1) {
+    return sortedStates[0].name;
+  } else if (sortedStates.length === 2) {
+    return sortedStates[0].name + ' & ' + sortedStates[1].name;
+  } else if (sortedStates.length === 3) {
+    return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
+  } else if (sortedStates.length > 2) {
     const regionsArray: RegionDatum[] = [];
-    statesArray.forEach(({regions}) => {
+    sortedStates.forEach(({regions}) => {
       regions.forEach(region => {
         if (regionsArray.filter(({id}) => id === region.id).length === 0) {
           regionsArray.push(region);
@@ -159,7 +213,7 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
       return regionsArray[0].name;
     } else {
       const inclusiveRegions = regionsArray.filter(
-        (region) => statesArray.every(({regions}) => regions.includes(region)));
+        (region) => sortedStates.every(({regions}) => regions.includes(region)));
       if (inclusiveRegions.length === 1) {
         return inclusiveRegions[0].name;
       } else if (inclusiveRegions.length > 1) {
@@ -186,28 +240,35 @@ export const getStatesOrRegion = (mountains: MountainList[], getFluentString: Ge
 };
 
 interface Props {
-  peakList: PeakListDatum;
-  active: boolean;
+  peakList: CardPeakListDatum;
+  active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   completedAscents: CompletedMountain[];
-  profileView: boolean;
-  mountains: MountainList[];
+  mountains: Array<{id: Mountain['id']}>;
   numCompletedAscents: number;
   totalRequiredAscents: number;
-  isMe: boolean;
+  dashboardView: boolean;
+  profileId?: string;
 }
 
 const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, shortName, parent, type},
     active, listAction, actionText, completedAscents,
-    profileView, mountains, numCompletedAscents,
-    totalRequiredAscents, isMe,
+    mountains, numCompletedAscents,
+    totalRequiredAscents, profileId, dashboardView,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
+    variables: {id: parent ? parent.id : id} });
+
+  if (error) {
+    console.error(error);
+  }
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -215,7 +276,7 @@ const PeakListCard = (props: Props) => {
       listAction(id);
     }
   };
-  const actionButton = (active === false || profileView === true) && listAction !== null
+  const actionButton = (active === false || profileId !== undefined) && listAction !== null
     ? (
       <ActionButtonContainer>
         <ButtonPrimary onClick={actionButtonOnClick}>
@@ -223,7 +284,7 @@ const PeakListCard = (props: Props) => {
         </ButtonPrimary>
       </ActionButtonContainer> ) : null;
 
-  const Title = (active === false || profileView === true) && listAction !== null
+  const Title = (active === false || profileId !== undefined) && listAction !== null
     ? TitleBase : TitleFull;
 
   let listInfoContent: React.ReactElement<any>;
@@ -254,66 +315,67 @@ const PeakListCard = (props: Props) => {
       </>
     );
   } else {
+
+    let statesArray: StateDatum[] = [];
+    if (loading === false && data !== undefined && data.peakList) {
+      if (data.peakList.parent && data.peakList.parent.states && data.peakList.parent.states.length) {
+        statesArray = [...data.peakList.parent.states];
+      } else if (data.peakList.states && data.peakList.states.length) {
+        statesArray = [...data.peakList.states];
+      }
+    }
     listInfoContent = (
       <>
         <span>
           <BigText>{totalRequiredAscents}</BigText>
           {getFluentString('peak-list-text-total-ascents')}
         </span>
-        <TextRight>{getStatesOrRegion(mountains, getFluentString)}</TextRight>
+        <TextRight>{getStatesOrRegion(statesArray, getFluentString)}</TextRight>
       </>
     );
   }
   const mountainLogoId = parent === null ? id : parent.id;
 
-  const renderProp = (user: User | null) => {
-    let desktopURL: string;
-    if (profileView === true) {
-      if (isMe === true) {
-        const userId = user !== null ? user._id : 'none';
-        desktopURL = comparePeakListLink(userId, id);
-      } else {
-        desktopURL = listDetailWithMountainDetailLink(id, 'none');
-      }
-    } else {
-      desktopURL = searchListDetailLink(id);
-    }
-    return (
-      <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
-        <Root>
-          <Title>
-            {name}{getType(type)}
-          </Title>
-          <ListInfo>
-            {listInfoContent}
-          </ListInfo>
-          <LogoContainer>
-            <MountainLogo
-              id={mountainLogoId}
-              title={name}
-              shortName={shortName}
-              variant={type}
-              active={active}
-              completed={numCompletedAscents === totalRequiredAscents}
-            />
-          </LogoContainer>
-          {actionButton}
-          <ProgressBarContainer>
-            <PeakProgressBar
-              variant={active === true ? type : null}
-              completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
-              total={totalRequiredAscents}
-              id={id}
-            />
-          </ProgressBarContainer>
-        </Root>
-      </LinkWrapper>
-    );
-  };
+  let desktopURL: string;
+  if (profileId !== undefined) {
+    desktopURL = otherUserPeakListLink(profileId, id);
+  } else if (dashboardView === true) {
+    desktopURL = dashboardWithListDetailLink(id);
+  } else {
+    desktopURL = searchListDetailLink(id);
+  }
+  const mobileURL = profileId !== undefined
+    ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
   return (
-    <UserContext.Consumer
-      children={renderProp}
-    />
+    <LinkWrapper mobileURL={mobileURL} desktopURL={desktopURL}>
+      <Root>
+        <Title>
+          {name}{getType(type)}
+        </Title>
+        <ListInfo>
+          {listInfoContent}
+        </ListInfo>
+        <LogoContainer>
+          <MountainLogo
+            id={mountainLogoId}
+            title={name}
+            shortName={shortName}
+            variant={type}
+            active={active}
+            completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
+          />
+        </LogoContainer>
+        {actionButton}
+        <ProgressBarContainer>
+          <PeakProgressBar
+            variant={active === true ? type : null}
+            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+            total={totalRequiredAscents}
+            id={id}
+          />
+        </ProgressBarContainer>
+      </Root>
+    </LinkWrapper>
   );
 };
 

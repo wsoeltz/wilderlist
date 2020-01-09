@@ -5,16 +5,21 @@ import cookieSession from 'cookie-session';
 import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
+import { redirectToHTTPS } from 'express-http-to-https';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import googleAuth from './auth/google';
+import redditAuth from './auth/reddit';
 import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
 import requireLogin from './middleware/requireLogin';
+import notificationRoutes from './notifications';
 
 require('./auth/passport');
 
 const app = express();
+
+app.use(redirectToHTTPS([/localhost:(\d{4})/], undefined, 301));
 
 if (!process.env.COOKIE_KEY) {
   throw new Error('You must provide a COOKIE_KEY');
@@ -32,6 +37,8 @@ app.use(passport.session());
 
 // Setup OAuth with Google
 googleAuth(app);
+// Setup OAuth with Reddit
+redditAuth(app);
 
 if (process.env.NODE_ENV === 'development') {
   // Allow all cors requests on development
@@ -63,15 +70,19 @@ mongoose.connection
   // tslint:disable-next-line
     .on('error', error => console.log('Error connecting to MongoLab:', error));
 
+const graphiql = process.env.NODE_ENV === 'development' ? true : false;
 app.use(bodyParser.json());
 app.use('/graphql', requireLogin, expressGraphQL({
   schema,
-  graphiql: true,
+  graphiql,
   context: {
     dataloaders: buildDataloaders(),
   },
 }));
 ///// End MongoDb Connection Setup
+
+// Send invites to ascent added emails
+notificationRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve up production assets

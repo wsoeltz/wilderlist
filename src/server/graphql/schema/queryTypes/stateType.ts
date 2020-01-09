@@ -7,6 +7,7 @@ import {
 import mongoose, { Schema } from 'mongoose';
 import { State as IState } from '../../graphQLTypes';
 import MountainType from './mountainType';
+import PeakListType from './peakListType';
 import RegionType from './regionType';
 
 type StateSchemaType = mongoose.Document & IState;
@@ -22,6 +23,10 @@ const StateSchema = new Schema({
   mountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
+  }],
+  peakLists: [{
+    type: Schema.Types.ObjectId,
+    ref: 'peakList',
   }],
 });
 
@@ -48,6 +53,16 @@ const StateType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.loadMany(parentValue.mountains);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    peakLists: {
+      type: new GraphQLList(PeakListType),
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          return await peakListLoader.loadMany(parentValue.peakLists);
         } catch (err) {
           return err;
         }

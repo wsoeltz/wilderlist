@@ -1,5 +1,9 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+  faGoogle,
+  faReddit,
+} from '@fortawesome/free-brands-svg-icons';
+import {
   faCalendarAlt,
   faCaretDown,
   faCaretUp,
@@ -7,9 +11,16 @@ import {
   faChevronLeft,
   faChevronRight,
   faEnvelope,
+  faFileCsv,
+  faList,
+  faMapMarkerAlt,
   faSearch,
+  faSort,
+  faSortDown,
+  faSortUp,
+  faThList,
 } from '@fortawesome/free-solid-svg-icons';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from 'styled-components/macro';
 import {
   baseColor,
   lightBaseColor,
@@ -21,6 +32,8 @@ import {
 library.add(
   faCaretDown, faCaretUp, faSearch, faCalendarAlt,
   faCheck, faEnvelope, faChevronLeft, faChevronRight,
+  faList, faThList, faMapMarkerAlt, faSort, faSortDown,
+  faSortUp, faFileCsv, faGoogle, faReddit,
 );
 
 const GlobalStyles = createGlobalStyle`

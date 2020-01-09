@@ -3,20 +3,61 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
+import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { PlaceholderText } from '../../../styling/styleUtils';
+import { listDetailLink } from '../../../routing/Utils';
+import {
+  ButtonPrimaryLink,
+  lightBorderColor,
+  PlaceholderText,
+} from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
+import getCompletionDates from './getCompletionDates';
 import Header from './Header';
-import MountainTable from './MountainTable';
+import MountainTable, {topOfPageBuffer} from './MountainTable';
+
+const peakListDetailMapKey = 'peakListDetailMapKey';
+
+export const friendHeaderHeight = 2.6; // in rem
+
+const FriendHeader = styled.h3`
+  height: ${friendHeaderHeight}rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 250;
+  position: sticky;
+  top: ${topOfPageBuffer}rem;
+  background-color: #fff;
+  border-bottom: 2px solid ${lightBorderColor};
+  margin-top: 0;
+`;
+
+const Text = styled.div`
+  flex-shrink: 1;
+  margin-right: 1rem;
+  height: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: translate(0, 25%);
+`;
+
+const LinkButton = styled(ButtonPrimaryLink)`
+  flex-shrink: 0;
+  padding: 0.4rem;
+  font-size: 0.7rem;
+`;
 
 const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID!) {
+  query getPeakList($id: ID!, $userId: ID) {
     peakList(id: $id) {
       id
       name
@@ -28,10 +69,29 @@ const GET_PEAK_LIST = gql`
         latitude
         longitude
         elevation
-        prominence
         state {
           id
+          abbreviation
+        }
+      }
+      states {
+        id
+        name
+        abbreviation
+        regions {
+          id
           name
+          states {
+            id
+          }
+        }
+      }
+      parent {
+        id
+        states {
+          id
+          name
+          abbreviation
           regions {
             id
             name
@@ -40,26 +100,15 @@ const GET_PEAK_LIST = gql`
             }
           }
         }
-      }
-      parent {
-        id
         mountains {
           id
           name
           latitude
           longitude
           elevation
-          prominence
           state {
             id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
+            abbreviation
           }
         }
       }
@@ -80,23 +129,28 @@ const GET_PEAK_LIST = gql`
   }
 `;
 
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  abbreviation: State['abbreviation'];
+  regions: Array<{
+    id: Region['id'];
+    name: Region['name'];
+    states: Array<{
+      id: State['id'],
+    }>
+  }>;
+}
+
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
   latitude: Mountain['latitude'];
   longitude: Mountain['longitude'];
   elevation: Mountain['elevation'];
-  prominence: Mountain['prominence'];
   state: {
     id: State['id'];
-    name: State['name'];
-    regions: Array<{
-      id: Region['id'];
-      name: Region['name'];
-      states: Array<{
-        id: State['id'],
-      }>
-    }>
+    abbreviation: State['abbreviation'];
   };
 }
 
@@ -106,9 +160,11 @@ export interface PeakListDatum {
   shortName: PeakList['shortName'];
   type: PeakList['type'];
   mountains: MountainDatum[] | null;
+  states: StateDatum[] | null;
   parent: {
     id: PeakList['id'];
     mountains: MountainDatum[] | null;
+    states: StateDatum[] | null;
   } | null;
 }
 
@@ -123,21 +179,22 @@ export interface UserDatum {
 
 interface SuccessResponse {
   peakList: PeakListDatum;
-  user: UserDatum;
+  user: UserDatum | null;
 }
 
 interface Variables {
   id: string;
-  userId: string;
+  userId: string | null;
 }
 
 interface Props {
-  userId: string;
+  userId: string | null;
   id: string;
+  mountainId: string | undefined;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id } = props;
+  const { userId, id, mountainId } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -145,86 +202,141 @@ const PeakListDetail = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
   });
-  if (loading === true) {
-    return <LoadingSpinner />;
-  } else if (error !== undefined) {
-    console.error(error);
-    return  (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>
-    );
-  } else if (data !== undefined) {
-    const { peakList, user } = data;
-    if (!peakList || !user) {
+
+  const renderProp = (me: User | null) => {
+    let statesArray: StateDatum[] = [];
+    if (loading === true) {
+      return <LoadingSpinner />;
+    } else if (error !== undefined) {
+      console.error(error);
+      return  (
+        <PlaceholderText>
+          {getFluentString('global-error-retrieving-data')}
+        </PlaceholderText>
+      );
+    } else if (data !== undefined) {
+      const { peakList, user } = data;
+      if (!peakList) {
+        return (
+          <PlaceholderText>
+            {getFluentString('global-error-retrieving-data')}
+          </PlaceholderText>
+        );
+      } else {
+        const {parent, type} = peakList;
+        let mountains: MountainDatum[];
+        if (parent !== null && parent.mountains !== null) {
+          mountains = parent.mountains;
+        } else if (peakList.mountains !== null) {
+          mountains = peakList.mountains;
+        } else {
+          mountains = [];
+        }
+        const completedAscents =
+          user && user.mountains !== null ? user.mountains : [];
+
+        if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
+          statesArray = [...peakList.parent.states];
+        } else if (peakList.states && peakList.states.length) {
+          statesArray = [...peakList.states];
+        }
+
+        let paragraphText: string;
+        if (mountains && mountains.length) {
+          const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
+          const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+          const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+          paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
+            'list-name': peakList.name,
+            'number-of-peaks': mountains.length,
+            'state-or-region': isStateOrRegion.toString(),
+            'state-region-name': statesOrRegions,
+            'highest-mountain-name': mountainsSortedByElevation[0].name,
+            'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+            'smallest-mountain-name':
+              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
+            'smallest-mountain-elevation':
+              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+          });
+        } else {
+          paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
+            'list-name': peakList.name,
+          });
+        }
+
+        const userMountains = (user && user.mountains) ? user.mountains : [];
+
+        const mountainsWithDates = mountains.map(mountain => {
+          const completionDates = getCompletionDates({type, mountain, userMountains});
+          return {...mountain, completionDates};
+        });
+
+        const activeMountain = mountainsWithDates.find(mtn => mtn.id === mountainId);
+        const highlightedMountain = activeMountain ? [activeMountain] : undefined;
+
+        const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
+
+        const friendHeader = isOtherUser === true && user !== null ? (
+           <FriendHeader>
+            <Text>
+              {getFluentString('peak-list-detail-friend-viewing-list', {username: user.name})}
+            </Text>
+            <LinkButton to={listDetailLink(peakList.id)}>
+              {getFluentString('peak-list-detail-friend-view-your-progress-button')}
+            </LinkButton>
+           </FriendHeader>
+         ) : null;
+
+        return (
+          <>
+            {friendHeader}
+            <Header
+              user={user}
+              mountains={mountains}
+              peakList={peakList}
+              completedAscents={completedAscents}
+              statesArray={statesArray}
+              isOtherUser={isOtherUser}
+            />
+            <Map
+              id={peakList.id}
+              coordinates={mountainsWithDates}
+              highlighted={highlightedMountain}
+              peakListType={type}
+              userId={userId}
+              isOtherUser={isOtherUser}
+              key={peakListDetailMapKey}
+            />
+            <p>
+              {paragraphText}
+            </p>
+            <MountainTable
+              user={user}
+              mountains={mountainsWithDates}
+              type={type}
+              peakListId={peakList.id}
+              peakListShortName={peakList.shortName}
+              isOtherUser={isOtherUser}
+            />
+          </>
+        );
+      }
+    } else {
       return (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}
         </PlaceholderText>
       );
-    } else {
-      const {parent, type} = peakList;
-      let mountains: MountainDatum[];
-      if (parent !== null && parent.mountains !== null) {
-        mountains = parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
-      const completedAscents = user.mountains !== null ? user.mountains : [];
-      const statesOrRegions = getStatesOrRegion(mountains, getFluentString);
-      const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-      const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
-      const mountainsSortedByProminence = sortBy(mountains, ['prominence']).reverse();
-      const highestAlsoMostProminent = mountainsSortedByElevation[0].id === mountainsSortedByProminence[0].id;
-      const paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
-        'list-name': peakList.name,
-        'number-of-peaks': mountains.length,
-        'state-or-region': isStateOrRegion.toString(),
-        'state-region-name': statesOrRegions,
-        'highest-mountain-name': mountainsSortedByElevation[0].name,
-        'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
-        'highest-also-most-prominent': highestAlsoMostProminent.toString(),
-        'most-prominent-peak-name': mountainsSortedByProminence[0].name,
-        'most-prominent-value': mountainsSortedByProminence[0].prominence,
-        'most-prominent-elevation': mountainsSortedByProminence[0].elevation,
-        'smallest-mountain-name':
-          mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-        'smallest-mountain-elevation':
-          mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
-      });
-      return (
-        <>
-          <Header
-            user={user}
-            mountains={mountains}
-            peakList={peakList}
-            completedAscents={completedAscents}
-          />
-          <Map
-            id={peakList.id}
-            coordinates={mountains}
-          />
-          <p>
-            {paragraphText}
-          </p>
-          <MountainTable
-            user={user}
-            mountains={mountains}
-            type={type}
-            peakListId={peakList.id}
-          />
-        </>
-      );
     }
-  } else {
-    return (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>
-    );
-  }
+  };
+
+  return (
+    <>
+      <UserContext.Consumer
+        children={renderProp}
+      />
+    </>
+  );
 };
 
 export default PeakListDetail;

@@ -3,6 +3,12 @@ global-text-value-wilderlist-name = Wilderlist
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous
 
+global-text-value-list-view = List
+global-text-value-detail-view = Detail
+
+global-text-value-generic-user = Wilderlist User
+
+
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
@@ -11,17 +17,25 @@ global-text-value-modal-cancel = Cancel
 global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
+global-text-value-on = on
 global-text-value-back = Back
 global-text-value-loading = Loading
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
-global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilerlistapp@gmail.com
+global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
 
+global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
+global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
+global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-import = Import your data for { $list-short-name } in just a few clicks
+global-text-value-modal-sign-up-today-export = Export your data for { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
+
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
@@ -29,10 +43,15 @@ global-text-value-dates = Dates
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
+global-text-value-latitude = Latitude
+global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
 global-text-value-location = Location
-global-text-value-ascent-dates = Ascent Dates
+global-text-value-everywhere = Everywhere
+global-text-value-ascent-dates = Your Ascents
 global-text-value-done = Done
+global-text-value-not-done = Not Done
+global-text-value-today = Today
 global-text-value-summer = Summer
 global-text-value-fall = Fall
 global-text-value-winter = Winter
@@ -55,6 +74,7 @@ global-text-value-open-for-winter = Open for Winter
 global-text-value-open-for = Open for
 global-text-value-open-for-every-month-except = Open for every month except
 global-text-value-open-for-every-season-except = Open for every season except
+global-text-value-complete = Complete
 global-text-value-completed-on = Completed on
 global-text-value-completed-in-every-month = Completed in every month
 global-text-value-completed-in-every-season = Completed in every season
@@ -62,9 +82,14 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 
 global-text-value-submit = Submit
 
-header-text-login-with-google = Login With Google
+global-text-value-edit = Edit
+global-text-value-save = Save
+
+header-text-login-with-google = Sign in With Google
+header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Lists
+header-text-menu-item-mountains = Mountains
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
@@ -72,14 +97,21 @@ header-text-menu-my-profile = My Profile
 header-text-menu-settings = Settings
 header-text-menu-privacy-policy = Privacy & Usage Policy
 
+notification-bar-ascent-marked = marked you as hiking
+
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
+
+settings-page-sync-your-account-reddit = To update your profile picture, you must change it from your Reddit account and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
 
 settings-page-privacy-settings = Privacy Settings
 settings-page-display-email = Display your email address on your profile
 settings-page-display-profile-picture = Display your Profile Picture on your profile
 settings-page-display-profile-in-search = Have your account appear in search results
+
+settings-page-notification-settings = Notifications Settings
+settings-page-notification-settings-email = Email Notifications
 
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>wilderlistapp@gmail.com</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
@@ -113,6 +145,7 @@ dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 
 list-search-list-detail-placeholder = Select a list on the left to see more details
+mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details
 list-detail-mountain-detail-placeholder = Select a mountain to see more details
 
 peak-list-text-latest-ascent = {
@@ -135,28 +168,21 @@ peak-list-detail-text-remove-list = Remove List
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
 peak-list-detail-filter-mountains = Filter mountains
 
-peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located {
+peak-list-detail-list-overview-empty = { $list-name } does not yet have any mountains associated with it.
+peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located ⁨{
   $state-or-region ->
     [state] within
     *[region] throughout
-} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft {
-  $highest-also-most-prominent ->
-    [true] and { $most-prominent-value }ft of prominence, { $highest-mountain-name } is
-    *[false] , { $highest-mountain-name } is
-} {
-  $highest-also-most-prominent ->
-    [true] both the
-    *[false] the
-} highest point {
-  $highest-also-most-prominent ->
-    [true] and the most prominent peak on { $list-name }.
-    *[false] on { $list-name }.
-} {
-  $highest-also-most-prominent ->
-    [true] The smallest mountain is
-    *[false] However, the most prominent peak is { $most-prominent-peak-name } at { $most-prominent-elevation }ft high and { $most-prominent-value }ft of prominence. The smallest mountain is
-} { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
+peak-list-detail-friend-viewing-list = Viewing list for { $username }
+peak-list-detail-friend-view-your-progress-button = View your progress
+
+mountain-completion-modal-toggle-btn-full-date = Full Date
+mountain-completion-modal-toggle-btn-month-year = Month / Year
+mountain-completion-modal-toggle-btn-year-only = Year Only
+mountain-completion-modal-toggle-btn-no-date = No Date
+mountain-completion-modal-no-date = Mark complete with no date.
 mountain-completion-modal-text-note-standard =
   Entering a date is optional for <strong>Standard</strong> lists. However an unspecific date may not count towards other lists that contain this peak.
 mountain-completion-modal-text-note-winter =
@@ -166,10 +192,19 @@ mountain-completion-modal-text-note-four-season =
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 
+mountain-completion-modal-text-add-wilderlist-friends = Add Wilderlist Friends To Ascent
+mountain-completion-modal-text-add-other-friends = Add Other Friends To Ascent
+mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderlist to add them
+mountain-completion-modal-text-add-email-button = Add Email
+
+mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
+
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
 mountain-table-import-button = Import Ascents from Spreadsheet
+mountain-table-export-button = Export Ascents
+download-csv-button = Download CSV
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent
@@ -177,7 +212,7 @@ mountain-detail-add-ascent-date = Add Ascent Date
 mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
-mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak, { ORDINAL_NUMBER($prominence-rank) } most prominent
+mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
@@ -192,7 +227,7 @@ user-profile-compare-ascents = Compare Ascents
 user-profile-compare-completed-by = completed by { $user-name }
 user-profile-no-lists = { $user-name } has not started any lists.
 user-profile-no-recent-ascents = No recent ascents
-user-profile-latest-ascents = Hiked { $mountain-name } on { $date }
+user-profile-latest-ascents = Hiked { $mountain-name } { $preposition } { $date }
 user-profile-sent-you-a-friend-request = { $name } sent you a friend request.
 user-profile-compare-ascents-placeholder = Click "Compare Ascents" on a list on the left to compare your progress
 
@@ -205,7 +240,13 @@ user-card-completed = Completed
 user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
-map-text-attribution = Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)
+map-completed = Completed
+map-completed-in-winter = Completed in winter
+map-add-ascent = Add Ascent
+map-no-seasons = No Seasons
+map-all-seasons = All Seasons
+map-no-months = No Months
+map-all-months = All Months
 
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.
@@ -270,3 +311,51 @@ local-trails-hiking-project-beta = Beta
 local-trails-hiking-project-via-the = via the
 local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
 local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.
+
+trip-report-conditions-title = Conditions
+
+trip-report-condition-name = {
+  $key ->
+    *[other] ---
+    [mudMinor] Mud - Minor
+    [mudMajor] Mud - Major
+    [waterSlipperyRocks] Water - Slippery Rocks
+    [waterOnTrail] Water - Significant On Trail
+    [leavesSlippery] Leaves - Slippery
+    [iceBlack] Ice - Minor
+    [iceBlack] Ice - Black
+    [iceBlue] Ice - Blue
+    [iceCrust] Ice - Crust
+    [snowMinor] Snow - Minor
+    [snowIceFrozenGranular] Snow - Frozen Granular
+    [snowIceMonorailStable] Snow - Monorail (Stable)
+    [snowIceMonorailUnstable] Snow - Monorail (Unstable)
+    [snowIcePostholes] Snow - Postholes
+    [snowPackedPowder] Snow - Packed Powder
+    [snowUnpackedPowder] Snow - Unpacked Powder
+    [snowDrifts] Snow - Drifts
+    [snowSticky] Snow - Sticky
+    [snowSlush] Snow - Slush
+    [obstaclesBlowdown] Obstacles - Blowdown
+    [obstaclesOther] Obstacles - Other
+}
+
+trip-report-add-additional-mtns-title = Add Additional Mountains
+trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
+
+trip-report-notes-title = Report
+trip-report-notes-placeholder = Share more details about your trip. What trails did you take? Any recommended traction? Water crossings? Parking information? Trail-maintenance? Bugs?
+
+trip-report-link-title = Link
+trip-report-link-placeholder = https://example.com
+
+trip-report-invalid-date-format = Trip conditions and reports are not available for partial or unknown dates.
+
+trip-reports-title = Latest Trip Reports
+trip-report-read-full-report = Read Full Report
+
+trip-report-external-link-title = External Link
+trip-report-hiked-with = Hiked With
+trip-report-no-reports = There are no recent trips reports for { $mountain-name }
+trip-reports-load-more-button = Load More Reports
+trip-reports-view-edit-button = View/Edit Report

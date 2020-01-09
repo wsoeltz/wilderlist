@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { mobileSize } from '../Utils';
 import { standardContainerPadding } from './styleUtils';
 
@@ -34,7 +34,7 @@ const gridLines = {
 const headerHeight = 5; // in rem
 const smallHeaderHeight = 3; // in rem
 
-export const smallHeaderBreakpoint = 800;
+export const smallHeaderBreakpoint = 1000;
 
 const Grid = styled.div`
   height: 100vh;
@@ -112,15 +112,15 @@ export const ContentBody = styled.div`
   padding: ${standardContainerPadding};
   overflow: auto;
   ::-webkit-scrollbar {
-      -webkit-appearance: none;
-      width: 7px;
+    -webkit-appearance: none;
+    width: 7px;
   }
   ::-webkit-scrollbar-thumb {
-      border-radius: 4px;
-      background-color: rgba(0, 0, 0, .3);
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .3);
   }
   ::-webkit-scrollbar-track {
-      background-color: rgba(0, 0, 0, .1);
+    background-color: rgba(0, 0, 0, .1);
   }
 `;
 

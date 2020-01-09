@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import {intersection, sortBy} from 'lodash';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
 import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-dates.png';
 import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';
@@ -22,14 +22,14 @@ import {
   successColor,
   successColorLight,
 } from '../../../styling/styleUtils';
-import { Mountain } from '../../../types/graphQLTypes';
+import { Mountain, State } from '../../../types/graphQLTypes';
 import { convertFieldsToDate } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
 import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../detail/MountainCompletionModal';
+} from '../detail/completionModal/MountainCompletionModal';
 import {
   horizontalPadding,
 } from '../detail/MountainRow';
@@ -70,7 +70,6 @@ const ExpectedDate = styled(OutputTitle)`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 2rem;
   display: flex;
 `;
 
@@ -169,6 +168,11 @@ export const genericWords = [
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
+  elevation: Mountain['elevation'];
+  state: {
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  };
 }
 export interface DateDatum {
   day: number;
@@ -265,6 +269,9 @@ const ImportAscentsModal = (props: Props) => {
   const onMountainNamesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
     const valueArray = pastedValue.split(/\r?\n/);
+    if (valueArray[valueArray.length - 1] === '') {
+      valueArray.pop();
+    }
     const hasEmptyString = valueArray.indexOf('');
     if (valueArray.length > mountains.length || !pastedValue || hasEmptyString !== -1) {
       setCleanedMountains(null);
@@ -345,6 +352,11 @@ const ImportAscentsModal = (props: Props) => {
   const onMountainDatesPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const pastedValue = e.target.value;
     const valueArray = pastedValue.split(/\r?\n/);
+    if (cleanedMountains !== null &&
+        valueArray.length === cleanedMountains.length + 1 &&
+        valueArray[valueArray.length - 1] === '') {
+      valueArray.pop();
+    }
     if (valueArray.length > mountains.length || !pastedValue) {
       setCleanedDates(null);
     } else {
@@ -416,7 +428,7 @@ const ImportAscentsModal = (props: Props) => {
     : cleanedMountains.map((mtn, i) => {
     const fixMountain = (newMountain: MountainDatum) => {
       const newPeaks = cleanedMountains;
-      newPeaks[i] = { id: newMountain.id, name: newMountain.name };
+      newPeaks[i] = { ...newMountain };
       setCleanedMountains([...newPeaks]);
     };
     const fixDate = (value: string | undefined, dayMonthYear: keyof DateDatum) => {
@@ -552,11 +564,21 @@ const ImportAscentsModal = (props: Props) => {
       ? <SubmitButton onClick={onConfirm}>{getFluentString('global-text-value-submit')}</SubmitButton>
       : null;
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {getFluentString('global-text-value-modal-cancel')}
+      </CancelButton>
+      {submitBtn}
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'80%'}
       height={'auto'}
+      actions={actions}
     >
       <h2>{getFluentString('import-ascents-title')}</h2>
       <p>{getFluentString('import-ascents-para-1')}</p>
@@ -604,12 +626,6 @@ const ImportAscentsModal = (props: Props) => {
       {successMessage}
       {errorMessage}
       {table}
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-cancel')}
-        </CancelButton>
-        {submitBtn}
-      </ButtonWrapper>
     </Modal>
   );
 };

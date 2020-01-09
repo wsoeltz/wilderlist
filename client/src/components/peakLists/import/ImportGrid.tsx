@@ -4,7 +4,7 @@ import csv from 'csvtojson';
 import { GetString } from 'fluent-react';
 import raw from 'raw.macro';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import FileUploadImgUrl from '../../../assets/images/import-gifs/import-grid/file-upload.png';
 import NewButtonImgUrl from '../../../assets/images/import-gifs/import-grid/new-button.png';
 import PublishToWebLinkImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web-link.png';
@@ -25,7 +25,7 @@ import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../detail/MountainCompletionModal';
+} from '../detail/completionModal/MountainCompletionModal';
 import {
   BigNumber,
   HelpText as HelpTextBase,
@@ -52,7 +52,6 @@ const HelpText = styled(HelpTextBase)`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 2rem;
   display: flex;
 `;
 
@@ -343,11 +342,21 @@ const ImportAscentsModal = (props: Props) => {
     confirmButton = null;
   }
 
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {getFluentString('global-text-value-modal-cancel')}
+      </CancelButton>
+      {confirmButton}
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'900px'}
       height={'auto'}
+      actions={actions}
     >
       <h2>{getFluentString('import-ascents-title')}</h2>
       <p
@@ -415,12 +424,6 @@ const ImportAscentsModal = (props: Props) => {
       </HelpTextContainer>
       {errorMessage}
       {successOutput}
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-cancel')}
-        </CancelButton>
-        {confirmButton}
-      </ButtonWrapper>
     </Modal>
   );
 };

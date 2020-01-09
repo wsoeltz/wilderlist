@@ -1,6 +1,6 @@
 import { GetString } from 'fluent-react';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -77,8 +77,8 @@ const WindSpeed = styled.div`
 
 interface Props {
   onCancel: () => void;
-  today: Forecast;
-  tonight: Forecast;
+  today: Forecast | null;
+  tonight: Forecast | null;
 }
 
 const AreYouSureModal = (props: Props) => {
@@ -87,7 +87,7 @@ const AreYouSureModal = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const todayContent = today.name === tonight.name ? null : (
+  const todayContent = today === null ? null : (
     <ForecastContainer>
       <ForecastTitle>{today.name}</ForecastTitle>
       <ForecastImgContainer>
@@ -101,29 +101,37 @@ const AreYouSureModal = (props: Props) => {
     </ForecastContainer>
   );
 
+  const tonightContent = tonight === null ? null : (
+    <ForecastContainer>
+      <ForecastTitle>{tonight.name}</ForecastTitle>
+      <ForecastImgContainer>
+        <ForecastImg src={tonight.icon} />
+      </ForecastImgContainer>
+      <ForecastContent>
+        <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°</TempLow>
+        <WindSpeed>{getFluentString('weather-forecast-wind')} {tonight.windSpeed} {tonight.windDirection}</WindSpeed>
+        <ForecastText>{tonight.detailedForecast}</ForecastText>
+      </ForecastContent>
+    </ForecastContainer>
+  );
+
+  const actions = (
+    <ButtonWrapper>
+      <CancelButton onClick={onCancel}>
+        {getFluentString('global-text-value-modal-close')}
+      </CancelButton>
+    </ButtonWrapper>
+  );
+
   return (
     <Modal
       onClose={onCancel}
       width={'400px'}
       height={'auto'}
+      actions={actions}
     >
       {todayContent}
-      <ForecastContainer>
-        <ForecastTitle>{tonight.name}</ForecastTitle>
-        <ForecastImgContainer>
-          <ForecastImg src={tonight.icon} />
-        </ForecastImgContainer>
-        <ForecastContent>
-          <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°</TempLow>
-          <WindSpeed>{getFluentString('weather-forecast-wind')} {tonight.windSpeed} {tonight.windDirection}</WindSpeed>
-          <ForecastText>{tonight.detailedForecast}</ForecastText>
-        </ForecastContent>
-      </ForecastContainer>
-      <ButtonWrapper>
-        <CancelButton onClick={onCancel}>
-          {getFluentString('global-text-value-modal-close')}
-        </CancelButton>
-      </ButtonWrapper>
+      {tonightContent}
     </Modal>
   );
 };

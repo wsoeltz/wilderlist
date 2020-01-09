@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { borderRadius } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
 
@@ -31,14 +31,40 @@ const Overlay = styled.div`
 const Container = styled.div`
   background-color: #fff;
   position: relative;
-  padding: 1rem;
   border-radius: ${borderRadius}px;
+  display: grid;
+  grid-template-rows: 1fr auto;
   max-height: 90%;
+`;
+
+const Content = styled.div`
+  grid-row: 1;
+  padding: 1rem;
   overflow: auto;
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .3);
+  }
+  ::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, .1);
+  }
+`;
+
+const Actions = styled.div`
+  padding: 1rem;
+  background-color: #f1f1f1;
+  grid-row: 2;
+  border-bottom-left-radius: ${borderRadius}px;
+  border-bottom-right-radius: ${borderRadius}px;
 `;
 
 interface Props {
   children: React.ReactNode;
+  actions: React.ReactNode;
   onClose: () => void;
   width: string;
   height: string;
@@ -46,7 +72,7 @@ interface Props {
 
 const Modal = (props: Props) => {
   const {
-    children, onClose, width, height,
+    children, onClose, width, height, actions,
   } = props;
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
   const [isModalRendered, setIsModalRendered] = useState<boolean>(false);
@@ -64,7 +90,12 @@ const Modal = (props: Props) => {
       <Root>
         <Overlay onClick={onClose} />
         <Container style={{ maxWidth: width, height }}>
-          {children}
+          <Content>
+            {children}
+          </Content>
+          <Actions>
+            {actions}
+          </Actions>
         </Container>
       </Root>
     ), overlayPortalContainerNodeRef.current);

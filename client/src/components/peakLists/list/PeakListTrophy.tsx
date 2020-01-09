@@ -1,10 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
-import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
+import styled from 'styled-components/macro';
+import {
+  dashboardWithListDetailLink,
+  listDetailWithMountainDetailLink,
+  otherUserPeakListDetailLink,
+  otherUserPeakListLink,
+  searchListDetailLink,
+} from '../../../routing/Utils';
 import { tertiaryColor } from '../../../styling/styleUtils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { PeakListDatum } from './ListPeakLists';
+import { CardPeakListDatum } from './ListPeakLists';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -35,16 +41,27 @@ const Root = styled.div`
 `;
 
 interface Props {
-  peakList: PeakListDatum;
+  peakList: CardPeakListDatum;
+  profileId: string | undefined;
+  dashboardView: boolean;
 }
 
-const PeakListCard = ({peakList}: Props) => {
-  const { id, name, shortName, parent, type } = peakList;
+const PeakListCard = ({peakList, profileId, dashboardView}: Props) => {
+  const { id, name, shortName, parent, type  } = peakList;
 
   const mountainLogoId = parent === null ? id : parent.id;
-  const desktopURL = listDetailWithMountainDetailLink(id, 'none');
+  let desktopURL: string;
+  if (profileId !== undefined) {
+    desktopURL = otherUserPeakListLink(profileId, id);
+  } else if (dashboardView === true) {
+    desktopURL = dashboardWithListDetailLink(id);
+  } else {
+    desktopURL = searchListDetailLink(id);
+  }
+  const mobileURL = profileId !== undefined
+    ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
   return (
-    <LinkWrapper mobileURL={listDetailWithMountainDetailLink(id, 'none')} desktopURL={desktopURL}>
+    <LinkWrapper mobileURL={mobileURL} desktopURL={desktopURL}>
       <Root>
           <MountainLogo
             id={mountainLogoId}

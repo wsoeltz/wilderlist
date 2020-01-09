@@ -5,6 +5,7 @@ import { Mountain } from './graphql/schema/queryTypes/mountainType';
 import { PeakList } from './graphql/schema/queryTypes/peakListType';
 import { Region } from './graphql/schema/queryTypes/regionType';
 import { State } from './graphql/schema/queryTypes/stateType';
+import { TripReport } from './graphql/schema/queryTypes/tripReportType';
 import { User } from './graphql/schema/queryTypes/userType';
 
 export default () => ({
@@ -35,6 +36,12 @@ export default () => ({
   userLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => User.findOne({_id: key})),
+    ),
+    {cacheKeyFn: key => key.toString()},
+  ),
+  tripReportLoader: new DataLoader(
+    async keys => Promise.all(
+      keys.map(key => TripReport.findOne({_id: key})),
     ),
     {cacheKeyFn: key => key.toString()},
   ),

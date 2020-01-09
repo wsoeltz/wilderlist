@@ -1,6 +1,7 @@
 import { GetString } from 'fluent-react';
+import {sortBy} from 'lodash';
 import React, {useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { baseColor, InputBase, lightBorderColor, warningColor } from '../../../styling/styleUtils';
 import { TableCellBase } from '../detail/MountainRow';
 import { DateDatum, MountainDatum } from './index';
@@ -101,8 +102,11 @@ const MountainItem = (props: Props) => {
     officialMountain, userInput, mountains, fixMountain,
     duplicate, date, dateInput, index, fixDate, getFluentString,
   } = props;
-  const options = mountains.map(mtn => {
-    return <option value={mtn.id} key={mtn.id}>{mtn.name}</option>;
+  const sortedMountains = sortBy(mountains, ['name', 'elevation']);
+  const options = sortedMountains.map(mtn => {
+    return <option value={mtn.id} key={mtn.id}>
+      {mtn.name} ({mtn.state.abbreviation}) - {mtn.elevation}ft
+    </option>;
   });
   const onMountainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target) {

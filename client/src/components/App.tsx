@@ -10,7 +10,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   appLocalizationAndBundle as fluentValue,
   AppLocalizationAndBundleContext as FluentText,
@@ -30,6 +30,7 @@ import AdminUsers from './adminPanel/AdminUsers';
 import Dashboard from './dashboard';
 import LoginPage from './login';
 import MountainDetailPage from './mountains/detail';
+import ListMountainsPage from './mountains/list';
 import ComparePeakListPage from './peakLists/compare';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
@@ -114,6 +115,9 @@ const App: React.FC = () => {
         <Route exact path={Routes.Dashboard}
           render={(props) => <Dashboard {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.DashboardWithPeakListDetail}
+          render={(props) => <Dashboard {...props} userId={user._id} />}
+        />
         <Route exact path={Routes.ListsWithDetail}
           render={(props) => <PeakListPage {...props} userId={user._id} />}
         />
@@ -122,6 +126,9 @@ const App: React.FC = () => {
         />
         <Route exact path={Routes.ListDetailWithMountainDetail}
           render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.MountainSearchWithDetail}
+          render={(props) => <ListMountainsPage {...props} userId={user._id} />}
         />
         <Route exact path={Routes.MountainDetail}
           render={(props) => <MountainDetailPage {...props} userId={user._id} />}
@@ -135,7 +142,13 @@ const App: React.FC = () => {
         <Route exact path={Routes.UserSettings}
           render={(props) => <UserSettings {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.ComparePeakList}
+        <Route exact path={Routes.OtherUserPeakList}
+          render={(props) => <UserProfile {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.OtherUserPeakListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.OtherUserPeakListCompare}
           render={(props) => <UserProfile {...props} userId={user._id} />}
         />
         <Route exact path={Routes.ComparePeakListIsolated}
@@ -155,6 +168,21 @@ const App: React.FC = () => {
   } else {
     userRoutes = (
       <Switch>
+        <Route exact path={Routes.ListsWithDetail}
+          render={(props) => <PeakListPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.ListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.ListDetailWithMountainDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.MountainSearchWithDetail}
+          render={(props) => <ListMountainsPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.MountainDetail}
+          render={(props) => <MountainDetailPage {...props} userId={null} />}
+        />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         <Route path={Routes.Login} component={LoginPage} />
       </Switch>

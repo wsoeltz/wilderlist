@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
@@ -27,6 +27,8 @@ export const successColorLight = '#d0e3b1';
 
 export const coolBlueColor = '#3a29c3';
 export const warmRedColor = '#d92a21';
+
+export const lightBlue = '#d1e2e9';
 
 export interface ColorSet {
   primary: string;
@@ -88,6 +90,10 @@ export const regularFontWeight = 400;
 export const semiBoldFontBoldWeight = 600;
 export const boldFontWeight = 700;
 
+export const SemiBold = styled.strong`
+  font-weight: ${semiBoldFontBoldWeight};
+`;
+
 export const standardContainerPadding = '1rem';
 
 export const linkStyles = `
@@ -120,6 +126,30 @@ export const Card = styled.div`
   }
 `;
 
+export const CardLinkWrapper = styled(DynamicLink)`
+  display: block;
+  color: inherit;
+  text-decoration: inherit;
+
+  &:hover {
+    color: inherit;
+  }
+`;
+
+export const CardTitle = styled.h1`
+  font-size: 1.3rem;
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+`;
+
+export const CardSubtitle = styled.div`
+  color: ${lightBaseColor};
+  margin: 0.4rem 0;
+  display: flex;
+  justify-content: space-between;
+  font-weight: ${semiBoldFontBoldWeight};
+`;
+
 export const borderRadius = 6; // in px
 
 const ButtonBase = styled.button`
@@ -150,6 +180,15 @@ export const ButtonSecondary = styled(ButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
+  }
+`;
+
+export const ButtonTertiary = styled(ButtonBase)`
+  color: ${baseColor};
+    background-color: ${tertiaryColor};
+
+  &:hover {
+  background-color: ${lightBorderColor};
   }
 `;
 

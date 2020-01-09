@@ -1,9 +1,13 @@
+import { rgba } from 'polished';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
+  boldFontWeight,
   lightBaseColor,
+  lightBlue,
   lightBorderColor,
   semiBoldFontBoldWeight,
+  tertiaryColor,
 } from '../../../styling/styleUtils';
 
 export const ItemTitle = styled.div`
@@ -46,4 +50,53 @@ export const AscentListItem = styled(BasicListItem)`
 
 export const BoldLink = styled(Link)`
   font-weight: ${semiBoldFontBoldWeight};
+`;
+
+export const SectionTitle = styled.div`
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: ${boldFontWeight};
+  margin-bottom: 0.2rem
+`;
+
+export const Section = styled.section`
+  line-height: 1.6;
+
+  &:not(:last-child) {
+    margin-bottom: 0.8rem;
+  }
+`;
+
+export const Condition = styled.span`
+  background-color: ${rgba(lightBlue, 0.5)};
+`;
+
+export const ReportContainer = styled(BasicListItem)`
+  padding: 0.5rem 0;
+
+  &:hover {
+    background-color: ${tertiaryColor};
+
+    .read-full-report-button {
+      visibility: visible;
+    }
+  }
+`;
+
+export const ReportHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const ReportBody = styled.div`
+  margin-left: 1rem;
+  padding-left: 0.8rem;
+  border-left: 1px solid ${lightBlue};
+`;
+export const ExternalLink = styled.a`
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;

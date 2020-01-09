@@ -1,8 +1,13 @@
+import {
+  faGoogle,
+  faReddit,
+} from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
+// import raw from 'raw.macro';
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Routes } from '../../routing/routes';
 import { comparePeakListLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
@@ -13,6 +18,13 @@ import {
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
+import {
+  BrandIcon as BrandIconBase,
+  googleBlue,
+  LoginButtonBase,
+  LoginText as LoginTextBase,
+  redditRed,
+} from '../login';
 
 const UserMenu = styled.div`
   min-width: 200px;
@@ -61,6 +73,7 @@ const UserMenuListContainer = styled.div`
   position: absolute;
   z-index: 500;
   bottom: 0;
+  right: 0;
   transform: translateY(100%);
   display: flex;
   flex-direction: column;
@@ -105,6 +118,53 @@ const UserImage = styled.img`
 
   @media(max-width: ${smallHeaderBreakpoint}px) {
     margin-right: 0;
+  }
+`;
+
+const loginButtonMediumSmallScreen = 850; // in px
+const loginButtonSmallScreen = 630; // in px
+
+const LoginButton = styled(LoginButtonBase)`
+  &:first-child:not(:last-child) {
+    margin-right: 0;
+  }
+
+  @media(max-width: ${loginButtonMediumSmallScreen}px) {
+    margin: auto 10px;
+    min-width: 122px;
+  }
+
+  @media(max-width: ${loginButtonSmallScreen}px) {
+    margin: auto 5px;
+    min-width: 65px;
+  }
+`;
+const BrandIcon = styled(BrandIconBase)`
+  @media(max-width: ${loginButtonMediumSmallScreen}px) {
+    font-size: 16px;
+    margin-left: 4px;
+  }
+
+  @media(max-width: ${loginButtonSmallScreen}px) {
+    font-size: 14px;
+    padding: 4px 0;
+  }
+`;
+const LoginText = styled(LoginTextBase)`
+  @media(max-width: ${loginButtonMediumSmallScreen}px) {
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  @media(max-width: ${loginButtonSmallScreen}px) {
+    font-size: 0;
+    padding: 0;
+
+    &:after {
+      content: 'Sign in';
+      font-size: 10px;
+      padding: 6px;
+    }
   }
 `;
 
@@ -160,29 +220,11 @@ interface UserMenuComponentProps {
   getFluentString: GetString;
 }
 
-const UserMenuComponent = (props: UserMenuComponentProps) => {
-  const {
-    userMenuOpen, setUserMenuOpen, user, getFluentString,
-  } = props;
+type Props = UserMenuComponentProps |
+  { user: null,  getFluentString: GetString };
 
-  const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
-    ? (
-        <UserMenuLink to={Routes.Admin}>
-          {getFluentString('header-text-menu-item-admin-panel')}
-        </UserMenuLink>
-      )
-    : null;
-  const userMenuList = userMenuOpen === true
-    ? (
-        <UserMenuList
-          user={user}
-          adminPanel={adminPanel}
-          closeUserMenu={() => setUserMenuOpen(false)}
-          getFluentString={getFluentString} />
-        )
-    : null;
-
-  const userMenuButtonEl = useRef<HTMLButtonElement | null>(null);
+const UserMenuComponent = (props: Props) => {
+  const userMenuButtonEl = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (userMenuButtonEl.current !== null) {
@@ -195,20 +237,73 @@ const UserMenuComponent = (props: UserMenuComponentProps) => {
     }
   }, [userMenuButtonEl]);
 
+  let output: React.ReactElement<any>;
+  if (props.user) {
+    const {
+      userMenuOpen, setUserMenuOpen, user, getFluentString,
+    } = props;
+
+    const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
+      ? (
+          <UserMenuLink to={Routes.Admin}>
+            {getFluentString('header-text-menu-item-admin-panel')}
+          </UserMenuLink>
+        )
+      : null;
+    const userMenuList = userMenuOpen === true
+      ? (
+          <UserMenuList
+            user={user}
+            adminPanel={adminPanel}
+            closeUserMenu={() => setUserMenuOpen(false)}
+            getFluentString={getFluentString} />
+          )
+      : null;
+
+    output = (
+      <UserMenu>
+        <UserButton
+
+          onClick={() => setUserMenuOpen(!userMenuOpen)}
+        >
+          <UserImage src={user.profilePictureUrl} />
+          <UserName>
+            {user.name}
+          </UserName>
+          <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
+        </UserButton>
+        {userMenuList}
+      </UserMenu>
+    );
+  } else {
+
+    output = (
+      <UserMenu>
+        <LoginButton href='/auth/google'>
+          <BrandIcon
+            icon={faGoogle}
+            style={{color: googleBlue}}
+          />
+          <LoginText>
+            {props.getFluentString('header-text-login-with-google')}
+          </LoginText>
+        </LoginButton>
+        <LoginButton href='/auth/reddit'>
+          <BrandIcon
+            icon={faReddit}
+            style={{color: redditRed}}
+          />
+          <LoginText>
+            {props.getFluentString('header-text-login-with-reddit')}
+          </LoginText>
+        </LoginButton>
+      </UserMenu>
+    );
+  }
   return (
-    <UserMenu>
-      <UserButton
-        ref={userMenuButtonEl}
-        onClick={() => setUserMenuOpen(!userMenuOpen)}
-      >
-        <UserImage src={user.profilePictureUrl} />
-        <UserName>
-          {user.name}
-        </UserName>
-        <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
-      </UserButton>
-      {userMenuList}
-    </UserMenu>
+    <div ref={userMenuButtonEl}>
+      {output}
+    </div>
   );
 };
 

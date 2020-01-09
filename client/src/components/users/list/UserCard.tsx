@@ -1,8 +1,8 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -15,6 +15,8 @@ import {
 } from '../../../styling/styleUtils';
 import {
   FriendStatus,
+  Mountain,
+  PeakList,
   PeakListVariants,
   User,
 } from '../../../types/graphQLTypes';
@@ -27,6 +29,63 @@ import {
 } from '../../peakLists/Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import { UserDatum } from './ListUsers';
+
+const GET_PEAK_LIST_DATA_FOR_USER = gql`
+  query getPeakListDataForUser($id: ID!) {
+    user(id: $id) {
+      id
+      peakLists {
+        id
+        shortName
+        type
+        mountains {
+          id
+        }
+        parent {
+          id
+          mountains {
+            id
+          }
+        }
+      }
+      mountains {
+        mountain {
+          id
+          name
+        }
+        dates
+      }
+    }
+  }
+`;
+
+interface BasicMountainDatum {
+  id: Mountain['id'];
+  name: Mountain['name'];
+}
+
+interface PeakListDatum {
+  id: PeakList['id'];
+  shortName: PeakList['shortName'];
+  type: PeakList['type'];
+  mountains: BasicMountainDatum[];
+  parent: {
+    id: PeakList['id'];
+    mountains: BasicMountainDatum[];
+  } | null;
+}
+
+interface PeakListsForUserVariables {
+  id: string;
+}
+
+interface PeakListsForUserResponse {
+  user: {
+    id: User['id'];
+    peakLists: PeakListDatum[];
+    mountains: User['mountains'];
+  };
+}
 
 export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
@@ -184,7 +243,7 @@ const DeclineButton = styled(GhostButton)`
 `;
 
 const getListsInProgress =
-  (peakLists: UserDatum['peakLists'], completedAscents: UserDatum['mountains']) => {
+  (peakLists: PeakListDatum[], completedAscents: User['mountains']) => {
     if (completedAscents === null) {
       return { completedLists: [], listsInProgress: peakLists };
     }
@@ -212,7 +271,7 @@ const getListsInProgress =
         failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
       }
-      if (numCompletedAscents === totalRequiredAscents) {// list complete
+      if (totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {// list complete
         completedLists.push(list.shortName + getType(list.type));
       } else { // list is incomplete
         listsInProgress.push(list.shortName + getType(list.type));
@@ -220,6 +279,11 @@ const getListsInProgress =
     });
     return { completedLists, listsInProgress };
 };
+
+enum Preposition {
+  on = 'on',
+  in = 'in',
+}
 
 interface Props {
   user: UserDatum;
@@ -233,6 +297,11 @@ const UserCard = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const {loading, error, data} =
+    useQuery<PeakListsForUserResponse, PeakListsForUserVariables>(GET_PEAK_LIST_DATA_FOR_USER, {
+      variables: { id: user.id },
+    });
 
   const [sendFriendRequestMutation] =
     useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
@@ -255,81 +324,125 @@ const UserCard = (props: Props) => {
     removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
   };
 
-  const { completedLists, listsInProgress } = getListsInProgress(user.peakLists, user.mountains);
   const numListsToShow = 3;
   let completedListsElement: React.ReactElement<any> | null;
-  if (completedLists.length === 0) {
-    completedListsElement = null;
-  } else {
-    let listShortNames: string = '';
-    for (let i = 0; i < numListsToShow; i++) {
-      if (completedLists.length - 1 === i) { // last element in array
-        if (listsInProgress.length === numListsToShow) {
-          listShortNames = listShortNames + ' & ';
-        }
-        listShortNames = listShortNames + completedLists[i];
-        break;
-      } else if (i > 0) { //not last element or first element
-        listShortNames = listShortNames + ', ' + completedLists[i];
-      } else {
-        listShortNames = listShortNames + completedLists[i];
-        if (completedLists.length === 2) {
-          listShortNames = listShortNames + ' & ';
-        }
-      }
-      if (i === numListsToShow - 1 && completedLists.length > numListsToShow) {
-        listShortNames =
-          listShortNames + ' & ' +
-          (completedLists.length - numListsToShow) + ' ' +
-          getFluentString('global-text-value-more');
-      }
-    }
-    completedListsElement = (
-      <SubtitleSmall>
-        <TextTitle>
-          {getFluentString('user-card-completed')}: </TextTitle>
-        {listShortNames}
-      </SubtitleSmall>
-    );
-  }
   let listsInProgressElement: React.ReactElement<any> | null;
-  if (listsInProgress.length === 0) {
-    listsInProgressElement = (
-      <SubtitleSmall>
-        <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
-        {getFluentString('user-card-not-currently-working-on')}
-      </SubtitleSmall>
-    );
-  } else {
-    let listShortNames: string = '';
-    for (let i = 0; i < numListsToShow; i++) {
-      if (listsInProgress.length - 1 === i) { // last element in array
-        if (listsInProgress.length === numListsToShow) {
-          listShortNames = listShortNames + ' & ';
+  let ascentText: string;
+  if (loading === true) {
+    completedListsElement = null;
+    listsInProgressElement = null;
+    ascentText = '';
+  } else if (error !== undefined) {
+    console.error(error);
+    completedListsElement = null;
+    listsInProgressElement = null;
+    ascentText = '';
+  } else if (data !== undefined) {
+    const { user: {peakLists, mountains}} = data;
+    const { completedLists, listsInProgress } = getListsInProgress(peakLists, mountains);
+    if (completedLists.length === 0) {
+      completedListsElement = null;
+    } else {
+      let listShortNames: string = '';
+      for (let i = 0; i < numListsToShow; i++) {
+        if (completedLists.length - 1 === i) { // last element in array
+          if (listsInProgress.length === numListsToShow) {
+            listShortNames = listShortNames + ' & ';
+          }
+          listShortNames = listShortNames + completedLists[i];
+          break;
+        } else if (i > 0) { //not last element or first element
+          listShortNames = listShortNames + ', ' + completedLists[i];
+        } else {
+          listShortNames = listShortNames + completedLists[i];
+          if (completedLists.length === 2) {
+            listShortNames = listShortNames + ' & ';
+          }
         }
-        listShortNames = listShortNames + listsInProgress[i];
-        break;
-      } else if (i > 0) { //not last element or first element
-        listShortNames = listShortNames + ', ' + listsInProgress[i];
-      } else {
-        listShortNames = listShortNames + listsInProgress[i];
-        if (listsInProgress.length === 2) {
-          listShortNames = listShortNames + ' & ';
+        if (i === numListsToShow - 1 && completedLists.length > numListsToShow) {
+          listShortNames =
+            listShortNames + ' & ' +
+            (completedLists.length - numListsToShow) + ' ' +
+            getFluentString('global-text-value-more');
         }
       }
-      if (i === numListsToShow - 1 && listsInProgress.length > numListsToShow) {
-        listShortNames =
-          listShortNames + ' & ' +
-          (listsInProgress.length - numListsToShow) + ' ' +
-          getFluentString('global-text-value-more');
-      }
+      completedListsElement = (
+        <SubtitleSmall>
+          <TextTitle>
+            {getFluentString('user-card-completed')}: </TextTitle>
+          {listShortNames}
+        </SubtitleSmall>
+      );
     }
-    listsInProgressElement = (
-      <SubtitleSmall>
-        <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
-        {listShortNames}
-      </SubtitleSmall>
-    );
+    if (listsInProgress.length === 0) {
+      listsInProgressElement = (
+        <SubtitleSmall>
+          <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
+          {getFluentString('user-card-not-currently-working-on')}
+        </SubtitleSmall>
+      );
+    } else {
+      let listShortNames: string = '';
+      for (let i = 0; i < numListsToShow; i++) {
+        if (listsInProgress.length - 1 === i) { // last element in array
+          if (listsInProgress.length === numListsToShow) {
+            listShortNames = listShortNames + ' & ';
+          }
+          listShortNames = listShortNames + listsInProgress[i];
+          break;
+        } else if (i > 0) { //not last element or first element
+          listShortNames = listShortNames + ', ' + listsInProgress[i];
+        } else {
+          listShortNames = listShortNames + listsInProgress[i];
+          if (listsInProgress.length === 2) {
+            listShortNames = listShortNames + ' & ';
+          }
+        }
+        if (i === numListsToShow - 1 && listsInProgress.length > numListsToShow) {
+          listShortNames =
+            listShortNames + ' & ' +
+            (listsInProgress.length - numListsToShow) + ' ' +
+            getFluentString('global-text-value-more');
+        }
+      }
+      listsInProgressElement = (
+        <SubtitleSmall>
+          <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
+          {listShortNames}
+        </SubtitleSmall>
+      );
+    }
+
+    if (mountains !== null) {
+      const latestAscent = getLatestOverallAscent(mountains);
+      if (latestAscent !== null) {
+        let preposition: Preposition;
+        if (isNaN(latestAscent.date.year)) {
+          preposition = Preposition.on;
+        } else if (isNaN(latestAscent.date.month)) {
+          preposition = Preposition.in;
+        } else if (isNaN(latestAscent.date.day)) {
+          preposition = Preposition.in;
+        } else {
+          preposition = Preposition.on;
+        }
+
+        ascentText = getFluentString('user-profile-latest-ascents', {
+          'mountain-name': latestAscent.name,
+          'preposition': preposition,
+          'date': formatDate(latestAscent.date),
+        });
+      } else {
+        ascentText = getFluentString('user-profile-no-recent-ascents');
+      }
+    } else {
+      ascentText = getFluentString('user-profile-no-recent-ascents');
+    }
+
+  } else {
+    completedListsElement = null;
+    listsInProgressElement = null;
+    ascentText = '';
   }
 
   let cardContent: React.ReactElement<any> | null;
@@ -351,21 +464,6 @@ const UserCard = (props: Props) => {
       </>
     );
   } else if (friendStatus === FriendStatus.friends) {
-    const { mountains } = user;
-    let ascentText: string;
-    if (mountains !== null) {
-      const latestAscent = getLatestOverallAscent(mountains);
-      if (latestAscent !== null) {
-        ascentText = getFluentString('user-profile-latest-ascents', {
-          'mountain-name': latestAscent.name,
-          'date': formatDate(latestAscent.date),
-        });
-      } else {
-        ascentText = getFluentString('user-profile-no-recent-ascents');
-      }
-    } else {
-      ascentText = getFluentString('user-profile-no-recent-ascents');
-    }
     cardContent = (
       <>
         <TextContainer>

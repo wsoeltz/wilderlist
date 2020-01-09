@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import CaltopoLogoImageUrl from '../assets/images/caltopo-logo.png';
 import GoogleMapsLogoImageUrl from '../assets/images/google-maps-logo.png';
 
