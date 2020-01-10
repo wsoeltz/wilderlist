@@ -73,6 +73,12 @@ export interface AscentNotification {
   date: string;
 }
 
+export interface PeakListNote {
+  id: string;
+  peakList: PeakList | null;
+  text: string;
+}
+
 export interface User {
   _id: string;
   id: string;
@@ -90,6 +96,7 @@ export interface User {
   hideProfileInSearch: boolean | null;
   disableEmailNotifications: boolean | null;
   ascentNotifications: AscentNotification[] | null;
+  peakListNotes: Array<PeakListNote | null> | null;
 }
 
 export interface Conditions {

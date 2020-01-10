@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
@@ -51,6 +52,20 @@ const UserSchema = new Schema({
       ref: 'mountain',
     },
     date: { type: String },
+  }],
+  peakListNotes: [{
+    peakList: {
+      type: Schema.Types.ObjectId,
+      ref: 'list',
+    },
+    text: { type: String },
+  }],
+  mountainNotes: [{
+    mountain: {
+      type: Schema.Types.ObjectId,
+      ref: 'mountain',
+    },
+    text: { type: String },
   }],
 });
 
@@ -126,6 +141,46 @@ const AscentNotificationType: any = new GraphQLObjectType({
   }),
 });
 
+const PeakListNotesType: any = new GraphQLObjectType({
+  name: 'PeakListNotesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    peakList: {
+      type: PeakListType,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          return await peakListLoader.load(parentValue.peakList);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    text: {
+      type: GraphQLString,
+    },
+  }),
+});
+
+const MountainNotesType: any = new GraphQLObjectType({
+  name: 'MountainNotesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    mountain: {
+      type: MountainType,
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        try {
+          return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    text: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
   fields: () => ({
@@ -153,6 +208,58 @@ const UserType: any = new GraphQLObjectType({
     },
     mountains: { type: new GraphQLList(CompletedMountainsType) },
     ascentNotifications: { type: new GraphQLList(AscentNotificationType) },
+    peakListNotes: { type: new GraphQLList(PeakListNotesType) },
+    peakListNote: {
+      type: PeakListNotesType,
+      args: {
+        peakListId: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parentValue, {peakListId}) {
+        try {
+          const { peakListNotes } = parentValue;
+          if (peakListNotes && peakListNotes.length) {
+            const targetPeakListNote = peakListNotes.find((note: any) => {
+              return note.peakList.toString() === peakListId.toString();
+            });
+            if (targetPeakListNote) {
+              return targetPeakListNote;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    mountainNotes: { type: new GraphQLList(MountainNotesType) },
+    mountainNote: {
+      type: MountainNotesType,
+      args: {
+        mountainId: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parentValue, {mountainId}) {
+        try {
+          const { mountainNotes } = parentValue;
+          if (mountainNotes && mountainNotes.length) {
+            const targetMountainNote = mountainNotes.find((note: any) => {
+              return note.mountain.toString() === mountainId.toString();
+            });
+            if (targetMountainNote) {
+              return targetMountainNote;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 
