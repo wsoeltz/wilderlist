@@ -28,6 +28,16 @@ interface AscentNotificationMutationArgs {
   mountainIds: string[];
   date: string;
 }
+interface PeakListNoteMutationArgs {
+  userId: string;
+  peakListId: string;
+  text: string;
+}
+interface MountainNoteMutationArgs {
+  userId: string;
+  mountainId: string;
+  text: string;
+}
 
 const userMutations: any = {
   addPeakListToUser: {
@@ -512,6 +522,134 @@ const userMutations: any = {
             {$pull: { ascentNotifications: { date } }},
           );
         }
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addPeakListNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      peakListId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: PeakListNoteMutationArgs) {
+      const { userId, peakListId, text } = args;
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'peakListNotes.peakList': { $ne: peakListId },
+        }, {
+          $addToSet: { peakListNotes: {peakList: peakListId, text} },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  editPeakListNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      peakListId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: PeakListNoteMutationArgs) {
+      const { userId, peakListId, text } = args;
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'peakListNotes.peakList': { $eq: peakListId },
+        }, { 'peakListNotes.$.text': text },
+        );
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  deletePeakListNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      peakListId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, args: PeakListNoteMutationArgs) {
+      const { userId, peakListId } = args;
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'peakListNotes.peakList': { $eq: peakListId },
+        }, {
+          $pull: { peakListNotes: { peakList: peakListId } },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addMountainNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: MountainNoteMutationArgs) {
+      const { userId, mountainId, text } = args;
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountainNotes.mountain': { $ne: mountainId },
+        }, {
+          $addToSet: { mountainNotes: {mountain: mountainId, text} },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  editMountainNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: MountainNoteMutationArgs) {
+      const { userId, mountainId, text } = args;
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountainNotes.mountain': { $eq: mountainId },
+        }, { 'mountainNotes.$.text': text },
+        );
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  deleteMountainNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, args: MountainNoteMutationArgs) {
+      const { userId, mountainId } = args;
+      try {
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'mountainNotes.mountain': { $eq: mountainId },
+        }, {
+          $pull: { mountainNotes: { mountain: mountainId } },
+        });
         return await User.findOne({_id: userId});
       } catch (err) {
         return err;

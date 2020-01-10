@@ -99,6 +99,10 @@ const EditAscentReport = (props: Props) => {
   const year = !isNaN(date.year) ? date.year.toString() : '';
   const parsedDate = convertFieldsToDate(day, month, year);
   const stringDate = parsedDate.date ? parsedDate.date : 'XXXX-XX-XX-XX-XX';
+
+  const refetchQuery = {query: GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, variables: {
+        author: userId, mountain: editMountainId, date: stringDate }};
+
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, {
     variables: {
       author: userId,
@@ -139,6 +143,7 @@ const EditAscentReport = (props: Props) => {
         <MountainCompletionModal
           {...props}
           tripReportId={undefined}
+          refetchQuery={refetchQuery}
           initialCompletionDay={day}
           initialCompletionMonth={month}
           initialCompletionYear={year}
@@ -188,6 +193,7 @@ const EditAscentReport = (props: Props) => {
         <MountainCompletionModal
           {...props}
           tripReportId={id}
+          refetchQuery={refetchQuery}
           initialCompletionDay={day}
           initialCompletionMonth={month}
           initialCompletionYear={year}

@@ -94,7 +94,7 @@ export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
   }
 `;
 
-interface SuccessResponse {
+export interface SuccessResponse {
   tripReports: TripReport[];
 }
 

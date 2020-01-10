@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -17,8 +17,9 @@ import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLT
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
+import UserNote from '../../sharedComponents/UserNote';
 import { getStatesOrRegion } from '../list/PeakListCard';
-import { isState } from '../Utils';
+import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
@@ -125,6 +126,10 @@ const GET_PEAK_LIST = gql`
         }
         dates
       }
+      peakListNote(peakListId: $id) {
+        id
+        text
+      }
     }
   }
 `;
@@ -177,14 +182,63 @@ export interface UserDatum {
   mountains: User['mountains'];
 }
 
+interface UserDatumWithNote extends UserDatum {
+  peakListNote: User['peakListNote'];
+}
+
 interface SuccessResponse {
   peakList: PeakListDatum;
-  user: UserDatum | null;
+  user: UserDatumWithNote | null;
 }
 
 interface Variables {
   id: string;
   userId: string | null;
+}
+
+const ADD_PEAKLIST_NOTE = gql`
+  mutation($userId: ID!, $peakListId: ID!, $text: String!) {
+    user: addPeakListNote(
+      userId: $userId,
+      peakListId: $peakListId,
+      text: $text
+    ) {
+      id
+      peakListNote(peakListId: $peakListId) {
+        id
+        text
+      }
+    }
+  }
+`;
+
+const EDIT_PEAKLIST_NOTE = gql`
+  mutation($userId: ID!, $peakListId: ID!, $text: String!) {
+    user: editPeakListNote(
+      userId: $userId,
+      peakListId: $peakListId,
+      text: $text
+    ) {
+      id
+      peakListNote(peakListId: $peakListId) {
+        id
+        text
+      }
+    }
+  }
+`;
+
+interface PeakListNoteSuccess {
+  user: {
+    id: User['id'];
+    peakListNote: User['peakListNote'];
+  };
+}
+
+interface PeakListNoteVariables {
+  userId: string;
+  peakListId: string;
+  text: string;
 }
 
 interface Props {
@@ -202,6 +256,9 @@ const PeakListDetail = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
   });
+
+  const [addPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(ADD_PEAKLIST_NOTE);
+  const [editPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(EDIT_PEAKLIST_NOTE);
 
   const renderProp = (me: User | null) => {
     let statesArray: StateDatum[] = [];
@@ -287,6 +344,22 @@ const PeakListDetail = (props: Props) => {
            </FriendHeader>
          ) : null;
 
+        const peakListNote = user && user.peakListNote ? user.peakListNote : null;
+        const defaultNoteText = peakListNote && peakListNote.text ? peakListNote.text : '';
+        const notesPlaceholderText = getFluentString('user-notes-placeholder', {
+          name: peakList.name + getType(type),
+        });
+
+        const saveNote = (text: string) => {
+          if (user && peakList) {
+            if (peakListNote === null) {
+              addPeakListNote({variables: {userId: user.id, peakListId: peakList.id, text}});
+            } else {
+              editPeakListNote({variables: {userId: user.id, peakListId: peakList.id, text}});
+            }
+          }
+        };
+
         return (
           <>
             {friendHeader}
@@ -310,6 +383,12 @@ const PeakListDetail = (props: Props) => {
             <p>
               {paragraphText}
             </p>
+            <UserNote
+              placeholder={notesPlaceholderText}
+              defaultValue={defaultNoteText}
+              onSave={saveNote}
+              key={defaultNoteText}
+            />
             <MountainTable
               user={user}
               mountains={mountainsWithDates}

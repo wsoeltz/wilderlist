@@ -178,6 +178,8 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
 peak-list-detail-friend-viewing-list = Viewing list for { $username }
 peak-list-detail-friend-view-your-progress-button = View your progress
 
+user-notes-placeholder = Keep your own personal notes for { $name } here.
+
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
 mountain-completion-modal-toggle-btn-year-only = Year Only
