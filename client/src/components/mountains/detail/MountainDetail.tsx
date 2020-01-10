@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, { useContext } from 'react';
@@ -16,6 +16,7 @@ import {
 import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
+import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
 import LocalTrails from './LocalTrails';
@@ -113,6 +114,10 @@ const GET_MOUNTAIN_DETAIL = gql`
         }
         dates
       }
+      mountainNote(mountainId: $id) {
+        id
+        text
+      }
     }
   }
 `;
@@ -139,12 +144,58 @@ interface QuerySuccessResponse {
   user: null | {
     id: User['name'];
     mountains: User['mountains'];
+    mountainNote: User['mountainNote'];
   };
 }
 
 interface QueryVariables {
   id: string;
   userId: string | null;
+}
+
+const ADD_MOUNTAIN_NOTE = gql`
+  mutation($userId: ID!, $mountainId: ID!, $text: String!) {
+    user: addMountainNote(
+      userId: $userId,
+      mountainId: $mountainId,
+      text: $text
+    ) {
+      id
+      mountainNote(mountainId: $mountainId) {
+        id
+        text
+      }
+    }
+  }
+`;
+
+const EDIT_MOUNTAIN_NOTE = gql`
+  mutation($userId: ID!, $mountainId: ID!, $text: String!) {
+    user: editMountainNote(
+      userId: $userId,
+      mountainId: $mountainId,
+      text: $text
+    ) {
+      id
+      mountainNote(mountainId: $mountainId) {
+        id
+        text
+      }
+    }
+  }
+`;
+
+interface MountainNoteSuccess {
+  user: {
+    id: User['id'];
+    mountainNote: User['mountainNote'];
+  };
+}
+
+interface MountainNoteVariables {
+  userId: string;
+  mountainId: string;
+  text: string;
 }
 
 interface Props {
@@ -161,6 +212,9 @@ const MountainDetail = (props: Props) => {
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
   });
+
+  const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
+  const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
 
   if (loading === true) {
     return <LoadingSpinner />;
@@ -205,6 +259,21 @@ const MountainDetail = (props: Props) => {
         type: PeakListVariants.standard,
         standard: getDates(completedDates.dates)[0],
       } : null;
+
+      const mountainNote = user && user.mountainNote ? user.mountainNote : null;
+      const defaultNoteText = mountainNote && mountainNote.text ? mountainNote.text : '';
+      const notesPlaceholderText = getFluentString('user-notes-placeholder', {name: mountain.name});
+
+      const saveNote = (text: string) => {
+        if (user && mountain) {
+          if (mountainNote === null) {
+            addMountainNote({variables: {userId: user.id, mountainId: mountain.id, text}});
+          } else {
+            editMountainNote({variables: {userId: user.id, mountainId: mountain.id, text}});
+          }
+        }
+      };
+
       return (
         <>
           <h1>{name}</h1>
@@ -237,13 +306,6 @@ const MountainDetail = (props: Props) => {
             <strong>{state.name}</strong>
           </HorizontalContentItem>
           {regionsContent}
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
-          />
           <WeatherReport
             latitude={latitude}
             longitude={longitude}
@@ -262,6 +324,21 @@ const MountainDetail = (props: Props) => {
             mountainId={id}
             mountainName={name}
             numLists={lists.length}
+          />
+          <ContentItem>
+            <UserNote
+              placeholder={notesPlaceholderText}
+              defaultValue={defaultNoteText}
+              onSave={saveNote}
+              key={defaultNoteText}
+            />
+          </ContentItem>
+          <AscentsList
+            completedDates={completedDates}
+            userId={userId}
+            mountainId={id}
+            mountainName={name}
+            getFluentString={getFluentString}
           />
         </>
       );

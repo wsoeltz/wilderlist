@@ -79,6 +79,12 @@ export interface PeakListNote {
   text: string;
 }
 
+export interface MountainNote {
+  id: string;
+  mountain: Mountain | null;
+  text: string;
+}
+
 export interface User {
   _id: string;
   id: string;
@@ -97,6 +103,9 @@ export interface User {
   disableEmailNotifications: boolean | null;
   ascentNotifications: AscentNotification[] | null;
   peakListNotes: Array<PeakListNote | null> | null;
+  peakListNote: PeakListNote | null;
+  mountainNotes: Array<MountainNote | null> | null;
+  mountainNote: MountainNote | null;
 }
 
 export interface Conditions {
