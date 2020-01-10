@@ -442,6 +442,41 @@ const ADD_TRIP_REPORT = gql`
   mutation addTripReport( ${addTripReportVariableDeclerations} ) {
     tripReport: addTripReport( ${addTripReportVariableParameters} ) {
       id
+      date
+      author {
+        id
+        name
+      }
+      mountains {
+        id
+        name
+      }
+      users {
+        id
+        name
+      }
+      notes
+      link
+      mudMinor
+      mudMajor
+      waterSlipperyRocks
+      waterOnTrail
+      leavesSlippery
+      iceBlack
+      iceBlue
+      iceCrust
+      snowIceFrozenGranular
+      snowIceMonorailStable
+      snowIceMonorailUnstable
+      snowIcePostholes
+      snowMinor
+      snowPackedPowder
+      snowUnpackedPowder
+      snowDrifts
+      snowSticky
+      snowSlush
+      obstaclesBlowdown
+      obstaclesOther
     }
   }
 `;
@@ -475,13 +510,48 @@ interface AddTripReportVariables {
   obstaclesOther: TripReport['obstaclesOther'];
 }
 interface AddTripReportSuccess {
-  id: TripReport['id'];
+  tripReport: TripReport;
 }
 
 const EDIT_TRIP_REPORT = gql`
   mutation editTripReport( $id: ID!, ${addTripReportVariableDeclerations} ) {
     tripReport: editTripReport( id: $id, ${addTripReportVariableParameters} ) {
       id
+      date
+      author {
+        id
+        name
+      }
+      mountains {
+        id
+        name
+      }
+      users {
+        id
+        name
+      }
+      notes
+      link
+      mudMinor
+      mudMajor
+      waterSlipperyRocks
+      waterOnTrail
+      leavesSlippery
+      iceBlack
+      iceBlue
+      iceCrust
+      snowIceFrozenGranular
+      snowIceMonorailStable
+      snowIceMonorailUnstable
+      snowIcePostholes
+      snowMinor
+      snowPackedPowder
+      snowUnpackedPowder
+      snowDrifts
+      snowSticky
+      snowSlush
+      obstaclesBlowdown
+      obstaclesOther
     }
   }
 `;
@@ -490,23 +560,50 @@ interface EditTripReportVariables extends AddTripReportVariables {
   id: TripReport['id'];
 }
 
-interface EditTripReportSuccess extends AddTripReportSuccess {
-  id: TripReport['id'];
-}
-
 const DELETE_TRIP_REPORT = gql`
   mutation deleteTripReport($id: ID!) {
     tripReport: deleteTripReport(id: $id) {
       id
+      date
+      author {
+        id
+        name
+      }
+      mountains {
+        id
+        name
+      }
+      users {
+        id
+        name
+      }
+      notes
+      link
+      mudMinor
+      mudMajor
+      waterSlipperyRocks
+      waterOnTrail
+      leavesSlippery
+      iceBlack
+      iceBlue
+      iceCrust
+      snowIceFrozenGranular
+      snowIceMonorailStable
+      snowIceMonorailUnstable
+      snowIcePostholes
+      snowMinor
+      snowPackedPowder
+      snowUnpackedPowder
+      snowDrifts
+      snowSticky
+      snowSlush
+      obstaclesBlowdown
+      obstaclesOther
     }
   }
 `;
 
 interface DeleteTripReportVariables {
-  id: TripReport['id'];
-}
-
-interface DeleteTripReportSuccess {
   id: TripReport['id'];
 }
 
@@ -557,6 +654,7 @@ export type Props = BaseProps & Restrictions;
 
 type PropsWithConditions = Props & {
   tripReportId: string | undefined;
+  refetchQuery: {query: any, variables: any} | undefined;
   initialCompletionDay: string | null;
   initialCompletionMonth: string | null;
   initialCompletionYear: string | null ;
@@ -575,7 +673,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     mountainName, initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
-    initialMountainList, tripReportId,
+    initialMountainList, tripReportId, refetchQuery,
   } = props;
 
   const tripNotesEl = useRef<HTMLTextAreaElement | null>(null);
@@ -584,24 +682,31 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
     variables: { userId },
   });
+
+  const refetchQueries: Array<{query: any, variables: any}> = [
+    {query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
+    mountain: editMountainId, nPerPage }},
+  ];
+
+  if (refetchQuery !== undefined) {
+    refetchQueries.push(refetchQuery);
+  }
+
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [removeMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
   const [addTripReport] =
     useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
-      refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
-        mountain: editMountainId, nPerPage }}],
+      refetchQueries: () => [...refetchQueries],
   });
   const [editTripReport] =
-    useMutation<EditTripReportSuccess, EditTripReportVariables>(EDIT_TRIP_REPORT, {
-      refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
-        mountain: editMountainId, nPerPage }}],
+    useMutation<AddTripReportSuccess, EditTripReportVariables>(EDIT_TRIP_REPORT, {
+      refetchQueries: () => [...refetchQueries],
   });
   const [deleteTripReport] =
-    useMutation<DeleteTripReportSuccess, DeleteTripReportVariables>(DELETE_TRIP_REPORT, {
-      refetchQueries: () => [{query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
-        mountain: editMountainId, nPerPage }}],
+    useMutation<AddTripReportSuccess, DeleteTripReportVariables>(DELETE_TRIP_REPORT, {
+      refetchQueries: () => [...refetchQueries],
   });
   const [addAscentNotifications] =
     useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
