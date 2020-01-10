@@ -576,7 +576,7 @@ const ImportAscentsModal = (props: Props) => {
   return (
     <Modal
       onClose={onCancel}
-      width={'80%'}
+      width={'900px'}
       height={'auto'}
       actions={actions}
     >
