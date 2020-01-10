@@ -705,6 +705,13 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       setErrorMessage(completedDate.error);
     } else {
       setErrorMessage(undefined);
+      const tripNotes =
+        tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
+        ? tripNotesEl.current.value : null;
+      const tripLink =
+        tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
+        ? tripLinkEl.current.value : null;
+
       closeEditMountainModalModal();
 
       const mountainIds = [mountainId, ...mountainList.map(mtn => mtn.id)];
@@ -758,12 +765,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         // if no tripReportId, add the trip report
         if (dateType === DateType.full) {
           // if there is a full date type, then generate the report with the users settings
-          const tripNotes =
-            tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
-            ? tripNotesEl.current.value : null;
-          const tripLink =
-            tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
-            ? tripLinkEl.current.value : null;
           addTripReport({ variables: {
             date: completedDate.date,
             author: userId,
@@ -794,12 +795,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         // if no tripReportId, add the trip report
         if (dateType === DateType.full) {
           // if there is a full date type, then edit the report with the users settings
-          const tripNotes =
-            tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
-            ? tripNotesEl.current.value : null;
-          const tripLink =
-            tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
-            ? tripLinkEl.current.value : null;
           editTripReport({ variables: {
             id: tripReportId,
             date: completedDate.date,
