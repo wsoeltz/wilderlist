@@ -66,7 +66,7 @@ const Actions = styled.div`
   border-bottom-right-radius: ${borderRadius}px;
 
   @media(max-width: 600px) {
-    padding-bottom: 6vh;
+    padding-bottom: 7vh;
     position: sticky;
     bottom: 0;
   }
