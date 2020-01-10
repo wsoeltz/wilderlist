@@ -1,7 +1,15 @@
+import {
+  faGoogle,
+  faReddit,
+} from '@fortawesome/free-brands-svg-icons';
+import { GetString } from 'fluent-react';
 import {rgba} from 'polished';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import TextareaAutosize from 'react-autosize-textarea';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   lightBaseColor,
@@ -10,6 +18,14 @@ import {
   placeholderColor,
   tertiaryColor,
 } from '../../styling/styleUtils';
+import { UserContext } from '../App';
+import {
+  BrandIcon,
+  googleBlue,
+  LoginButtonBase,
+  LoginText,
+  redditRed,
+} from '../login';
 
 const Title = styled.div`
   padding: 0.5rem 0;
@@ -45,6 +61,14 @@ const ButtonContainer = styled.div`
   background-color: ${tertiaryColor};
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+`;
+
+const LoginButton = styled(LoginButtonBase)`
+  margin: 0.5rem 0.5rem;
+  max-width: 200px;
+  max-height: 50px;
+  border: 1px solid ${lightBorderColor};
 `;
 
 interface Props {
@@ -57,8 +81,45 @@ const UserNote = (props: Props) => {
   const {placeholder, defaultValue, onSave} = props;
   const [value, setValue] = useState<string>(defaultValue);
 
+  const user = useContext(UserContext);
+
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value);
   const buttonText = defaultValue !== value ? 'Save Changes' : 'All Changes Saved';
+
+  const buttons = !user ? (
+    <ButtonContainer>
+      <LoginButton href='/auth/google'>
+        <BrandIcon
+          icon={faGoogle}
+          style={{color: googleBlue}}
+        />
+        <LoginText>
+          {getFluentString('header-text-login-with-google')}
+        </LoginText>
+      </LoginButton>
+      <LoginButton href='/auth/reddit'>
+        <BrandIcon
+          icon={faReddit}
+          style={{color: redditRed}}
+        />
+        <LoginText>
+          {getFluentString('header-text-login-with-reddit')}
+        </LoginText>
+      </LoginButton>
+    </ButtonContainer>
+    ) : (
+    <ButtonContainer>
+      <ButtonPrimary
+        onClick={() => onSave(value)}
+        disabled={defaultValue === value}
+      >
+        {buttonText}
+      </ButtonPrimary>
+    </ButtonContainer>
+  );
 
   return (
     <>
@@ -70,14 +131,7 @@ const UserNote = (props: Props) => {
         rows={2}
         async={true}
       />
-      <ButtonContainer>
-        <ButtonPrimary
-          onClick={() => onSave(value)}
-          disabled={defaultValue === value}
-        >
-          {buttonText}
-        </ButtonPrimary>
-      </ButtonContainer>
+      {buttons}
     </>
   );
 };
