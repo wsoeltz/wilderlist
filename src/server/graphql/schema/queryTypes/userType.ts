@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -8,7 +9,7 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { User as IUser } from '../../graphQLTypes';
-import MountainType from './mountainType';
+import MountainType, {Mountain} from './mountainType';
 import PeakListType from './peakListType';
 
 type UserSchemaType = mongoose.Document & IUser;
@@ -67,6 +68,7 @@ const UserSchema = new Schema({
     },
     text: { type: String },
   }],
+  mountainPermissions: { type: Number },
 });
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
@@ -260,6 +262,18 @@ const UserType: any = new GraphQLObjectType({
         }
       },
     },
+    authoredMountains: {
+      type: new GraphQLList(MountainType),
+      resolve(parentValue) {
+        try {
+          const { _id } = parentValue;
+          return Mountain.find({author: _id});
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    mountainPermissions: { type: GraphQLInt },
   }),
 });
 

@@ -62,6 +62,7 @@ mongoose.connect(process.env.MONGO_URI, {
   dbName: process.env.MONGO_DATABASE_NAME,
   useCreateIndex: true,
   useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 mongoose.connection

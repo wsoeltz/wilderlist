@@ -210,14 +210,14 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           );
         } else {
           const conditionsText: Array<React.ReactElement<any>> = [];
-          allConditionsArray.forEach((condition, i) => {
-            if (i === allConditionsArray.length - 2) {
+          allConditionsArray.forEach((condition, j) => {
+            if (j === allConditionsArray.length - 2) {
               conditionsText.push(
                 <React.Fragment  key={condition + report.id}>
                   <Condition>{condition}</Condition>{' and '}
                 </React.Fragment>,
               );
-            } else if (i === allConditionsArray.length - 1) {
+            } else if (j === allConditionsArray.length - 1) {
               conditionsText.push(
                 <Condition key={condition + report.id}>{condition}</Condition>,
               );

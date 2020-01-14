@@ -7,12 +7,20 @@ import {
   GraphQLString,
 } from 'graphql';
 import {
+  CreatedItemStatus as CreatedItemStatusEnum,
   Mountain as IMountain,
+  MountainFlag as MountainFlagEnum,
+  PermissionTypes,
 } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
-import MountainType, { Mountain } from '../queryTypes/mountainType';
+import MountainType, {
+  CreatedItemStatus,
+  Mountain,
+  MountainFlag,
+} from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
+import { User } from '../queryTypes/userType';
 
 const mountainMutations: any = {
   addMountain: {
@@ -25,10 +33,27 @@ const mountainMutations: any = {
       prominence: { type: GraphQLFloat },
       state: { type: GraphQLID },
       lists: { type: new GraphQLList(GraphQLID)},
+      author: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, input: IMountain) {
-      const { name, state, lists, latitude, longitude, elevation, prominence } = input;
-      const newMountain = new Mountain({ name, state, lists, latitude, longitude, elevation, prominence });
+      const {
+        name, state, lists, latitude, longitude, elevation,
+        prominence, author,
+      } = input;
+      const authorObj = await User.findById(author);
+      let status: CreatedItemStatusEnum | null;
+      if (!authorObj) {
+        status = null;
+      } else if ( (authorObj.mountainPermissions !== null &&
+            authorObj.mountainPermissions > 5 ) ||
+        authorObj.permissions === PermissionTypes.admin) {
+        status = CreatedItemStatusEnum.auto;
+      } else {
+        status = CreatedItemStatusEnum.pending;
+      }
+      const newMountain = new Mountain({
+        name, state, lists, latitude, longitude, elevation, prominence, author, status,
+      });
       try {
         if ( name !== '') {
           if (lists !== undefined) {
@@ -175,6 +200,48 @@ const mountainMutations: any = {
             {new: true});
           return newMountain;
         }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  updateMountainStatus: {
+    type: MountainType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      status: { type: CreatedItemStatus },
+    },
+    async resolve(_unused: any,
+                  { id, status }: { id: string , status: CreatedItemStatusEnum | null},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const mountain = await Mountain.findOneAndUpdate(
+        { _id: id },
+        { status },
+        {new: true});
+        dataloaders.mountainLoader.clear(id).prime(id, mountain);
+        return mountain;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  updateMountainFlag: {
+    type: MountainType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      flag: { type: MountainFlag },
+    },
+    async resolve(_unused: any,
+                  { id, flag }: { id: string , flag: MountainFlagEnum | null},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const mountain = await Mountain.findOneAndUpdate(
+        { _id: id },
+        { flag },
+        {new: true});
+        dataloaders.mountainLoader.clear(id).prime(id, mountain);
+        return mountain;
       } catch (err) {
         return err;
       }

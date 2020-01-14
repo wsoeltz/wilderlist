@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { withRouter } from 'react-router';
 import {
   ContentBody,
@@ -9,8 +9,9 @@ import {
   ContentRightSmall as MountainEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
-import { Mountain } from '../../types/graphQLTypes';
+import { Mountain, PermissionTypes } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
+import { UserContext } from '../App';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';
@@ -31,6 +32,9 @@ export const GET_MOUNTAINS = gql`
         name
         abbreviation
       }
+      author {
+        id
+      }
     }
   }
 `;
@@ -43,6 +47,7 @@ const ADD_MOUNTAIN = gql`
       $elevation: Float!,
       $prominence: Float,
       $state: ID!,
+      $author: ID!,
     ) {
     addMountain(
       name: $name,
@@ -51,6 +56,7 @@ const ADD_MOUNTAIN = gql`
       elevation: $elevation,
       prominence: $prominence,
       state: $state,
+      author: $author,
     ) {
       id
       name
@@ -61,6 +67,9 @@ const ADD_MOUNTAIN = gql`
       state {
         id
         name
+      }
+      author {
+        id
       }
     }
   }
@@ -95,11 +104,14 @@ const EDIT_MOUNTAIN = gql`
         id
         name
       }
+      author {
+        id
+      }
     }
   }
 `;
 
-export interface AddMountainVariables {
+interface BaseMountainVariables {
   name: string;
   latitude: number;
   longitude: number;
@@ -107,9 +119,14 @@ export interface AddMountainVariables {
   prominence: number | null;
   state: string;
 }
-export type EditMountainVariables = AddMountainVariables & {
+
+export interface AddMountainVariables extends BaseMountainVariables {
+  author: string;
+}
+
+export interface EditMountainVariables extends BaseMountainVariables {
   id: string;
-};
+}
 
 const DELETE_MOUNTAIN = gql`
   mutation($id: ID!) {
@@ -130,7 +147,11 @@ enum EditMountainPanelEnum {
 }
 
 const AdminMountains = () => {
+
+  const user = useContext(UserContext);
+
   const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS);
+
   const [editMountainPanel, setEditMountainPanel] = useState<EditMountainPanelEnum>(EditMountainPanelEnum.Empty);
   const [mountainToEdit, setMountainToEdit] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -213,7 +234,15 @@ const AdminMountains = () => {
   };
 
   const deleteMountain = (id: string) => {
-    deleteMountainMutation({ variables: { id } });
+    const mountainToDelete = data && data.mountains
+      ? data.mountains.find(mtn => mtn.id === id) : undefined;
+    const authorId = mountainToDelete && mountainToDelete.author
+      ? mountainToDelete.author.id : null;
+    if (user &&
+        (user._id === authorId || user.permissions === PermissionTypes.admin)
+       ) {
+      deleteMountainMutation({ variables: { id } });
+    }
     clearEditMountainPanel();
   };
 

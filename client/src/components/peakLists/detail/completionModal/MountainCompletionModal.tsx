@@ -1392,7 +1392,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       </DeleteButton>
     ) : null;
 
-  const saveButtonText = 
+  const saveButtonText =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
       ? getFluentString('global-text-value-save')
       : getFluentString('global-text-value-modal-mark-complete');
