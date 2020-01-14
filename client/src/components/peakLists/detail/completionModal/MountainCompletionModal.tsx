@@ -1392,6 +1392,11 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       </DeleteButton>
     ) : null;
 
+  const saveButtonText = 
+    tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
+      ? getFluentString('global-text-value-save')
+      : getFluentString('global-text-value-modal-mark-complete');
+
   const actions = (
     <ButtonWrapper>
       {deleteAscentButton}
@@ -1402,7 +1407,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         onClick={() => validateAndAddMountainCompletion(editMountainId)}
         disabled={isConfirmDisabled()}
       >
-        {getFluentString('global-text-value-modal-mark-complete')}
+        {saveButtonText}
       </ButtonPrimary>
     </ButtonWrapper>
   );
