@@ -39,6 +39,7 @@ import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserSettings from './users/settings';
+import CreateMountain from './mountains/create';
 
 const overlayPortalZIndex = 3000;
 
@@ -156,6 +157,9 @@ const App: React.FC = () => {
         />
         <Route exact path={Routes.ComparePeakListWithMountainDetail}
           render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
+        />
+        <Route exact path={Routes.CreateMountain}
+          render={(props) => <CreateMountain {...props} userId={user._id} />}
         />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}

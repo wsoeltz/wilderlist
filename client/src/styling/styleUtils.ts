@@ -2,6 +2,7 @@ import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
+import { darken } from 'polished';
 
 export const baseColor = '#333333'; // dark gray/black color for text
 export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and contextual information
@@ -227,6 +228,17 @@ export const GhostButton = styled(ButtonBase)`
   }
 `;
 
+export const FloatingButton = styled(ButtonPrimaryLink)`
+  position: sticky;
+  bottom: 0;
+  left: 100%;
+  font-size: 0.75rem;
+  border-radius: 15px;
+  border-bottom: 3px solid ${darken(0.12, primaryColor)};
+  border-right: 3px solid ${darken(0.12, primaryColor)};
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+`;
+
 export const InputBase = styled.input`
   padding: 8px;
   box-sizing: border-box;
@@ -249,6 +261,7 @@ export const Label = styled.span`
 
 export const PaginationContainer = styled.div`
   display: flex;
+  margin-bottom: 2rem;
 `;
 
 export const Next = styled(ButtonSecondary)`

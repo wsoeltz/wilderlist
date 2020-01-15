@@ -9,6 +9,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { searchMountainsDetailLink } from '../../../routing/Utils';
+import { Routes } from '../../../routing/routes';
 import {
   ContentBody,
   ContentLeftSmall,
@@ -20,6 +21,7 @@ import {
   PaginationContainer,
   PlaceholderText,
   Prev,
+  FloatingButton,
 } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
 import {
@@ -33,6 +35,16 @@ import MountainDetail from '../detail/MountainDetail';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, { MountainDatum } from './ListMountains';
 import LocationFilter from './LocationFilter';
+import styled from 'styled-components';
+
+const PlusIcon = styled.span`
+  font-size: 1.3rem;
+  height: 0;
+  display: inline-block;
+  line-height: 0;
+  position: relative;
+  top: 2px;
+`;
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
@@ -219,6 +231,9 @@ const MountainSearchPage = (props: Props) => {
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}
+          <FloatingButton to={Routes.CreateMountain}>
+            <PlusIcon>+</PlusIcon> Add Mountain
+          </FloatingButton>
         </ContentBody>
       </ContentLeftSmall>
       <ContentRightLarge>
