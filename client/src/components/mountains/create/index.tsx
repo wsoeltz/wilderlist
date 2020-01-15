@@ -6,6 +6,7 @@ import {
   ContentLeftLarge,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
+import MountainForm from './MountainForm';
 
 interface Props extends RouteComponentProps {
   userId: string | null;
@@ -23,6 +24,7 @@ const MountainCreatePage = (props: Props) => {
         </ContentHeader>
         <ContentBody>
           User ID: {userId}, Mountain ID: {id}
+          <MountainForm />
         </ContentBody>
       </ContentLeftLarge>
     </>

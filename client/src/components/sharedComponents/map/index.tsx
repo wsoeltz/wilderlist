@@ -186,7 +186,7 @@ interface Coordinate {
   elevation: number;
 }
 
-type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
+export type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
 
 interface Props {
   id: string;
@@ -195,6 +195,7 @@ interface Props {
   highlighted?: CoordinateWithDates[];
   peakListType: PeakListVariants;
   isOtherUser?: boolean;
+  hideLegend?: boolean;
 }
 
 const Map = (props: Props) => {
@@ -453,7 +454,9 @@ const Map = (props: Props) => {
   );
 
   let colorScaleLegend: React.ReactElement<any> | null;
-  if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
+  if (props.hideLegend === true) {
+    colorScaleLegend = null;
+  } else if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
     colorScaleLegend = (
       <ColorScaleLegend>
         <LegendItem>
