@@ -5,11 +5,12 @@ import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { searchMountainsDetailLink } from '../../../routing/Utils';
 import { Routes } from '../../../routing/routes';
+import { searchMountainsDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftSmall,
@@ -17,11 +18,11 @@ import {
   SearchContainer,
 } from '../../../styling/Grid';
 import {
+  FloatingButton,
   Next,
   PaginationContainer,
   PlaceholderText,
   Prev,
-  FloatingButton,
 } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
 import {
@@ -35,7 +36,6 @@ import MountainDetail from '../detail/MountainDetail';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, { MountainDatum } from './ListMountains';
 import LocationFilter from './LocationFilter';
-import styled from 'styled-components';
 
 const PlusIcon = styled.span`
   font-size: 1.3rem;
@@ -207,6 +207,12 @@ const MountainSearchPage = (props: Props) => {
       )
     : ( <MountainDetail userId={userId} id={id} />);
 
+  const addMountainButton = userId ? (
+    <FloatingButton to={Routes.CreateMountain}>
+      <PlusIcon>+</PlusIcon> {getFluentString('create-mountain-title-create')}
+    </FloatingButton>
+  ) : null;
+
   return (
     <>
       <ContentLeftSmall>
@@ -231,9 +237,7 @@ const MountainSearchPage = (props: Props) => {
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}
-          <FloatingButton to={Routes.CreateMountain}>
-            <PlusIcon>+</PlusIcon> Add Mountain
-          </FloatingButton>
+          {addMountainButton}
         </ContentBody>
       </ContentLeftSmall>
       <ContentRightLarge>

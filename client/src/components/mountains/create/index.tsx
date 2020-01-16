@@ -1,20 +1,23 @@
-import React, {useContext} from 'react';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
+import gql from 'graphql-tag';
+import React, {useContext, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
+import {mountainDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
 } from '../../../styling/Grid';
+import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
+import { Mountain, State, User } from '../../../types/graphQLTypes';
 import BackButton from '../../sharedComponents/BackButton';
-import MountainForm, {StateDatum} from './MountainForm';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import { PlaceholderText } from '../../../styling/styleUtils';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { GetString } from 'fluent-react';
+import Modal from '../../sharedComponents/Modal';
+import MountainForm, {StateDatum} from './MountainForm';
 
 const GET_STATES = gql`
   query getStates {
@@ -26,8 +29,92 @@ const GET_STATES = gql`
 }
 `;
 
-interface SuccessResponse {
-  states: null | Array<StateDatum>;
+interface StatesSuccessResponse {
+  states: null | StateDatum[];
+}
+
+const ADD_MOUNTAIN = gql`
+  mutation(
+    $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!, $author: ID!,
+  ) {
+    mountain: addMountain(
+      name: $name,
+      elevation: $elevation,
+      latitude: $latitude,
+      longitude: $longitude,
+      state: $state,
+      author: $author,
+    ) {
+      id
+      name
+      elevation
+      latitude
+      longitude
+      state {
+        id
+      }
+      author {
+        id
+      }
+    }
+  }
+`;
+const EDIT_MOUNTAIN = gql`
+  mutation(
+    $id: ID!, $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!,
+  ) {
+    mountain: updateMountain(
+      name: $name,
+      elevation: $elevation,
+      latitude: $latitude,
+      longitude: $longitude,
+      state: $state,
+      author: $author,
+    ) {
+      id
+      name
+      elevation
+      latitude
+      longitude
+      state {
+        id
+      }
+      author {
+        id
+      }
+    }
+  }
+`;
+
+interface MountainSuccessResponse {
+  mountain: {
+    id: Mountain['id'];
+    name: Mountain['name'];
+    elevation: Mountain['elevation'];
+    latitude: Mountain['latitude'];
+    longitude: Mountain['longitude'];
+    state: null | {
+      id: State['id'];
+    }
+    author: null | {
+      id: User['id'];
+    }
+  };
+}
+
+export interface BaseMountainVariables {
+  name: string;
+  elevation: number;
+  latitude: number;
+  longitude: number;
+  state: string;
+}
+
+interface AddMountainVariables extends BaseMountainVariables {
+  author: string;
+}
+interface EditMountainVariables extends BaseMountainVariables {
+  id: string;
 }
 
 interface Props extends RouteComponentProps {
@@ -35,13 +122,36 @@ interface Props extends RouteComponentProps {
 }
 
 const MountainCreatePage = (props: Props) => {
-  const { userId, match } = props;
+  const { userId, match, history } = props;
   const { id }: any = match.params;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {loading, error, data} = useQuery<SuccessResponse>(GET_STATES);
+  const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
+
+  const {loading, error, data} = useQuery<StatesSuccessResponse>(GET_STATES);
+
+  const [addMountain] = useMutation<MountainSuccessResponse, AddMountainVariables>(ADD_MOUNTAIN);
+  const [editMountain] = useMutation<MountainSuccessResponse, EditMountainVariables>(EDIT_MOUNTAIN);
+
+  const submitMountainForm = async (input: BaseMountainVariables) => {
+    if (id) {
+      const res = await editMountain({variables: {...input, id}});
+      if (res && res.data && res.data.mountain) {
+        history.push(mountainDetailLink(res.data.mountain.id));
+      } else {
+        setIsErrorModalVisible(true);
+      }
+    } else if (userId) {
+      const res = await addMountain({variables: {...input, author: userId}});
+      if (res && res.data && res.data.mountain) {
+        history.push(mountainDetailLink(res.data.mountain.id));
+      } else {
+        setIsErrorModalVisible(true);
+      }
+    }
+  };
 
   let mountainForm: React.ReactElement<any> | null;
   if (loading === true) {
@@ -62,16 +172,32 @@ const MountainCreatePage = (props: Props) => {
       longitude: '',
       elevation: '',
       state: null,
-    }
+    };
     mountainForm = (
       <MountainForm
         states={states}
         initialData={initialMountain}
+        onSubmit={submitMountainForm}
       />
     );
   } else {
     mountainForm = null;
   }
+  const closeErrorModal = () => setIsErrorModalVisible(false);
+  const errorModal = isErrorModalVisible === false ? null : (
+    <Modal
+      onClose={closeErrorModal}
+      width={'600px'}
+      height={'auto'}
+      actions={(
+        <ButtonSecondary onClick={closeErrorModal}>
+          {getFluentString('global-text-value-modal-close')}
+        </ButtonSecondary>
+        )}
+    >
+      <p>{getFluentString('global-error-saving-data')}</p>
+    </Modal>
+  );
 
   return (
     <>
@@ -83,6 +209,7 @@ const MountainCreatePage = (props: Props) => {
           User ID: {userId}, Mountain ID: {id}
           {mountainForm}
         </ContentBody>
+        {errorModal}
       </ContentLeftLarge>
     </>
   );

@@ -1,8 +1,8 @@
+import { darken } from 'polished';
 import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
-import { darken } from 'polished';
 
 export const baseColor = '#333333'; // dark gray/black color for text
 export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and contextual information
@@ -305,6 +305,29 @@ export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};
   text-align: center;
+`;
+
+export const CheckboxRoot = styled.div`
+  display: block;
+  position: relative;
+`;
+
+export const CheckboxInput = styled.input`
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+`;
+
+export const CheckboxLabel = styled.label`
+  padding: 8px 8px 8px 30px;
+  display: block;
+
+  &:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
 `;
 
 /* tslint:disable:max-line-length */

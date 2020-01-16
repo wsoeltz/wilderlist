@@ -1,21 +1,26 @@
-import React, {useState, useContext} from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
+import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
+import React, {useContext, useState} from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
+import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
-  ButtonSecondary,
+  CheckboxInput,
+  CheckboxLabel as CheckboxLabelBase,
+  CheckboxRoot,
+  GhostButton,
   InputBase,
   Label,
   SelectBox,
 } from '../../../styling/styleUtils';
-import styled from 'styled-components';
-import Map, {CoordinateWithDates} from '../../sharedComponents/map';
 import { Mountain, PeakListVariants, State } from '../../../types/graphQLTypes';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { GetString } from 'fluent-react';
-import sortBy from 'lodash/sortBy';
+import Map, {CoordinateWithDates} from '../../sharedComponents/map';
+import { BaseMountainVariables } from './';
 
 const Root = styled.div`
   display: grid;
@@ -25,6 +30,22 @@ const Root = styled.div`
 
 const FullColumn = styled.div`
   grid-column: span 2;
+`;
+
+const CheckboxLabel = styled(CheckboxLabelBase)`
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const SaveButton = styled(ButtonPrimary)`
+  min-width: 100px;
+  margin-left: 1rem;
 `;
 
 const GET_NEARBY_MOUNTAINS = gql`
@@ -52,7 +73,7 @@ interface SuccessResponse {
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
     elevation: Mountain['elevation'];
-  }>
+  }>;
 }
 
 interface Variables {
@@ -61,7 +82,6 @@ interface Variables {
   latDistance: number;
   longDistance: number;
 }
-
 
 const longLatMin = -90;
 const longLatMax = 90;
@@ -77,7 +97,7 @@ const validateFloatValue = (value: string, min: number, max: number) => {
   } else {
     return parsedValue;
   }
-}
+};
 
 export interface StateDatum {
   id: State['id'];
@@ -94,13 +114,14 @@ interface InitialMountainDatum {
   state: null | { id: State['id']};
 }
 
-interface Props {
+interface Props extends RouteComponentProps {
   states: StateDatum[];
   initialData: InitialMountainDatum;
+  onSubmit: (input: BaseMountainVariables) => void;
 }
 
 const MountainForm = (props: Props) => {
-  const { states, initialData } = props;
+  const { states, initialData, onSubmit, history } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -111,8 +132,11 @@ const MountainForm = (props: Props) => {
 
   const [stringElevation, setStringElevation] = useState<string>(initialData.elevation);
   const [selectedState, setSelectedState] = useState<State['id'] | null>(
-    initialData.state === null ? null : initialData.state.id
+    initialData.state === null ? null : initialData.state.id,
   );
+
+  const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
+  const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
   const latitude: number = validateFloatValue(stringLat, longLatMin, longLatMax);
   const longitude: number = validateFloatValue(stringLong, longLatMin, longLatMax);
@@ -135,7 +159,12 @@ const MountainForm = (props: Props) => {
     name: name ? name : `[${getFluentString('create-mountain-mountain-name-placeholder')}]`,
     elevation,
     completionDates: null,
-  }
+  };
+
+  const setLatLongFromMap = (lat: string | number, long: string | number) => {
+    setStringLat('' + lat);
+    setStringLong('' + long);
+  };
 
   const map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
     && latitude <= 90 && latitude >= - 90 && longitude <= 90 && longitude >= - 90
@@ -148,6 +177,8 @@ const MountainForm = (props: Props) => {
           userId={null}
           isOtherUser={true}
           createOrEditMountain={true}
+          showCenterCrosshairs={true}
+          returnLatLongOnClick={setLatLongFromMap}
           key={'create-mountain-key'}
         />
       ) : null;
@@ -161,27 +192,49 @@ const MountainForm = (props: Props) => {
     );
   });
 
+  const preventSubmit = () =>
+    (name && selectedState && latitude && longitude &&
+     elevation && verifyChangesIsChecked && !loadingSubmit) ? false : true;
+
+  const validateAndSave = () => {
+    if (name && selectedState && latitude && longitude &&
+        elevation && verifyChangesIsChecked && !loadingSubmit) {
+      setLoadingSubmit(true);
+      onSubmit({name, latitude, longitude, elevation, state: selectedState});
+    }
+  };
+
+  const saveButtonText = loadingSubmit === true
+    ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
+
   return (
     <Root>
       <FullColumn>
         <h1>{getFluentString('create-mountain-title-create')}</h1>
       </FullColumn>
       <FullColumn>
-        <Label>
-          {getFluentString('create-mountain-mountain-name-placeholder')}
-        </Label>
+        <label htmlFor={'create-mountain-name'}>
+          <Label>
+            {getFluentString('create-mountain-mountain-name-placeholder')}
+          </Label>
+        </label>
         <InputBase
+          id={'create-mountain-name'}
           type={'text'}
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder={getFluentString('create-mountain-mountain-name-placeholder')}
+          autoComplete={'off'}
         />
       </FullColumn>
       <div>
-        <Label>
-          {getFluentString('global-text-value-state')}
-        </Label>
+        <label htmlFor={'create-mountain-select-a-state'}>
+          <Label>
+            {getFluentString('global-text-value-state')}
+          </Label>
+        </label>
         <SelectBox
+          id={'create-mountain-select-a-state'}
           value={`${selectedState || ''}`}
           onChange={e => setSelectedState(e.target.value)}
           placeholder={getFluentString('create-mountain-select-a-state')}
@@ -191,60 +244,92 @@ const MountainForm = (props: Props) => {
         </SelectBox>
       </div>
       <div>
-        <Label>
-          {getFluentString('global-text-value-elevation')}
-        </Label>
+        <label htmlFor={'create-mountain-elevation'}>
+          <Label>
+            {getFluentString('global-text-value-elevation')}
+            {' '}
+            <small>({getFluentString('global-text-value-feet')})</small>
+          </Label>
+        </label>
         <InputBase
+          id={'create-mountain-elevation'}
           type={'number'}
           min={elevationMin}
           max={elevationMax}
           value={stringElevation}
           onChange={e => setStringElevation(e.target.value)}
           placeholder={getFluentString('create-mountain-elevation-placeholder')}
+          autoComplete={'off'}
         />
       </div>
       <div>
-        <Label>
-          {getFluentString('global-text-value-latitude')}
-        </Label>
+        <label htmlFor={'create-mountain-latitude'}>
+          <Label>
+            {getFluentString('global-text-value-latitude')}
+            {' '}
+            <small>({getFluentString('create-mountain-latlong-note')})</small>
+          </Label>
+        </label>
         <InputBase
+          id={'create-mountain-latitude'}
           type={'number'}
           max={longLatMax}
           min={longLatMin}
           value={stringLat}
           onChange={e => setStringLat(e.target.value)}
           placeholder={getFluentString('create-mountain-latitude-placeholder')}
+          autoComplete={'off'}
         />
       </div>
       <div>
-        <Label>
-          {getFluentString('global-text-value-longitude')}
-        </Label>
+        <label htmlFor={'create-mountain-longitude'}>
+          <Label>
+            {getFluentString('global-text-value-longitude')}
+            {' '}
+            <small>({getFluentString('create-mountain-latlong-note')})</small>
+          </Label>
+        </label>
         <InputBase
+          id={'create-mountain-longitude'}
           type={'number'}
           max={longLatMax}
           min={longLatMin}
           value={stringLong}
           onChange={e => setStringLong(e.target.value)}
           placeholder={getFluentString('create-mountain-longitude-placeholder')}
+          autoComplete={'off'}
         />
       </div>
       <FullColumn>
-        <ButtonSecondary>
-          Cancel
-        </ButtonSecondary>
-        <ButtonPrimary>
-          Submit
-        </ButtonPrimary>
+        <CheckboxRoot>
+          <CheckboxInput
+            type='checkbox'
+            value={'verify-changes-are-accurate'}
+            id={`verify-changes-are-accurate`}
+            checked={verifyChangesIsChecked}
+            onChange={() => setVerifyChangesIsChecked(!verifyChangesIsChecked)}
+          />
+          <CheckboxLabel htmlFor={`verify-changes-are-accurate`}>
+            {getFluentString('create-mountain-check-your-work')}
+           </CheckboxLabel>
+        </CheckboxRoot>
+        <ButtonWrapper>
+          <GhostButton onClick={history.goBack}>
+            {getFluentString('global-text-value-modal-cancel')}
+          </GhostButton>
+          <SaveButton
+            disabled={preventSubmit()}
+            onClick={validateAndSave}
+          >
+            {saveButtonText}
+          </SaveButton>
+        </ButtonWrapper>
       </FullColumn>
       <FullColumn>
-        <p>
-          {getFluentString('create-mountain-check-your-work')}
-        </p>
         {map}
       </FullColumn>
     </Root>
   );
-}
+};
 
-export default MountainForm;
+export default withRouter(MountainForm);

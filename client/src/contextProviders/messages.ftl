@@ -25,6 +25,7 @@ global-text-value-loading-long =  Our bearing seems to be off, sorry about the w
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
+global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at wilderlistapp@gmail.com
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
@@ -43,6 +44,7 @@ global-text-value-dates = Dates
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
+global-text-value-feet = feet
 global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
@@ -84,6 +86,7 @@ global-text-value-submit = Submit
 
 global-text-value-edit = Edit
 global-text-value-save = Save
+global-text-value-saving = Saving
 
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
@@ -250,6 +253,9 @@ map-all-seasons = All Seasons
 map-no-months = No Months
 map-all-months = All Months
 
+map-coordinates-at-center = Coordinates at Center
+map-set-lat-long-value = Set Lat/Long to these values
+
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.
 import-ascents-date-note = <strong>Note:</strong>&#32;Dates must be in&#32;<strong>Month/Day/Year</strong>&#32;format in order to be properly read.
@@ -369,8 +375,9 @@ create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
 create-mountain-select-a-state = Select a State
+create-mountain-latlong-note = as a decimal
 create-mountain-latitude-placeholder = Enter the latitude in decimal format
 create-mountain-longitude-placeholder = Enter the longitude in decimal format
 create-mountain-elevation-placeholder = Enter the elevation in feet
 
-create-mountain-check-your-work = Check the map to make sure your information is accurate. Double-check nearby mountains (highlighted in red) to make sure you are not adding a duplicate. Duplicates will be deleted.
+create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (highlighted in red) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
