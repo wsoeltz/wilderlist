@@ -5,6 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLFloat,
 } from 'graphql';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
@@ -206,6 +207,22 @@ const RootQuery = new GraphQLObjectType({
           })
           .limit(nPerPage)
           .sort({ date: -1 });
+      },
+    },
+    nearbyMountains: {
+      type: new GraphQLList(MountainType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        latDistance: { type: GraphQLNonNull(GraphQLFloat) },
+        longDistance: { type: GraphQLNonNull(GraphQLFloat) },
+      },
+      resolve(parentValue, { latitude, longitude, latDistance, longDistance }:
+        {latitude: number, longitude: number, latDistance: number, longDistance: number}) {
+        return Mountain.find({
+          latitude: { $gt: latitude - latDistance, $lt: latitude + latDistance },
+          longitude: { $gt: longitude - longDistance, $lt: longitude + longDistance },
+        });
       },
     },
   }),

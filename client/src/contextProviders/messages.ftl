@@ -361,3 +361,13 @@ trip-report-hiked-with = Hiked With
 trip-report-no-reports = There are no recent trips reports for { $mountain-name }
 trip-reports-load-more-button = Load More Reports
 trip-reports-view-edit-button = View/Edit Report
+
+create-mountain-map-your-mountain = Your Mountain
+create-mountain-map-nearby-mountains = Nearby Mountains
+create-mountain-mountain-name-placeholder = Mountain Name
+create-mountain-select-a-state = Select a State
+create-mountain-latitude-placeholder = Enter the latitude in decimal format
+create-mountain-longitude-placeholder = Enter the longitude in decimal format
+create-mountain-elevation-placeholder = Enter the elevation in feet
+
+create-mountain-check-your-work = Check the map to make sure your information is accurate. Double-check nearby mountains (highlighted in red) to make sure you are not adding a duplicate. Duplicates will be deleted.

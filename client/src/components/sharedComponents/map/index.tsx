@@ -195,11 +195,14 @@ interface Props {
   highlighted?: CoordinateWithDates[];
   peakListType: PeakListVariants;
   isOtherUser?: boolean;
-  hideLegend?: boolean;
+  createOrEditMountain?: boolean;
 }
 
 const Map = (props: Props) => {
-  const { id, coordinates, highlighted, peakListType, userId, isOtherUser } = props;
+  const {
+    id, coordinates, highlighted, peakListType,
+    userId, isOtherUser, createOrEditMountain
+  } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -253,9 +256,11 @@ const Map = (props: Props) => {
   }, [map]);
 
   useEffect(() => {
-    const coords = getMinMax(coordinates);
-    setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
-  }, [coordinates]);
+    if (!createOrEditMountain) {
+      const coords = getMinMax(coordinates);
+      setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+    }
+  }, [coordinates, createOrEditMountain]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
@@ -279,7 +284,12 @@ const Map = (props: Props) => {
     };
     let circleColor: string;
     if (completionDates === null) {
-      circleColor = twoColorScale[0];
+      if (createOrEditMountain === true && highlighted && highlighted.length &&
+        (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
+        circleColor = twoColorScale[1];
+      } else {
+        circleColor = twoColorScale[0];
+      }
     } else if (completionDates.type === PeakListVariants.standard) {
       circleColor = completionDates.standard !== undefined ? twoColorScale[1] : twoColorScale[0];
     } else if (completionDates.type === PeakListVariants.winter) {
@@ -454,8 +464,19 @@ const Map = (props: Props) => {
   );
 
   let colorScaleLegend: React.ReactElement<any> | null;
-  if (props.hideLegend === true) {
-    colorScaleLegend = null;
+  if (createOrEditMountain === true) {
+    colorScaleLegend = (
+      <ColorScaleLegend>
+        <LegendItem>
+          <Circle style={{backgroundColor: twoColorScale[0]}} />
+          {getFluentString('create-mountain-map-nearby-mountains')}
+        </LegendItem>
+        <LegendItem>
+          <Circle style={{backgroundColor: twoColorScale[1]}} />
+          {getFluentString('create-mountain-map-your-mountain')}
+        </LegendItem>
+      </ColorScaleLegend>
+    );
   } else if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
     colorScaleLegend = (
       <ColorScaleLegend>
