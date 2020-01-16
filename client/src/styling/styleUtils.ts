@@ -22,6 +22,7 @@ export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
 export const lowWarningColorLight = '#f2e4b3';
 export const lowWarningColor = '#d6aa0a';
+export const lowWarningColorDark = '#8a7e54';
 
 export const successColor = '#658238';
 export const successColorLight = '#d0e3b1';

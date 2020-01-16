@@ -7,8 +7,22 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
-import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, PeakListVariants, Region, State, User } from '../../../types/graphQLTypes';
+import {
+  lightBorderColor,
+  PlaceholderText,
+  ButtonSecondary,
+  GhostButton,
+  lowWarningColorDark,
+} from '../../../styling/styleUtils';
+import {
+  Mountain,
+  PeakList,
+  PeakListVariants,
+  Region,
+  State,
+  User,
+  CreatedItemStatus,
+} from '../../../types/graphQLTypes';
 import { convertDMS, mobileSize } from '../../../Utils';
 import {
   VariableDate,
@@ -28,6 +42,19 @@ import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
+
+const MountainNameHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Title = styled.h1`
+  margin-top: 0;
+`;
+
+const Subtitle = styled.em`
+  color: ${lowWarningColorDark};
+`;
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -105,6 +132,10 @@ const GET_MOUNTAIN_DETAIL = gql`
       lists {
         id
       }
+      author {
+        id
+      }
+      status
     }
     user(id: $userId) {
       id
@@ -140,6 +171,8 @@ interface QuerySuccessResponse {
     lists: Array<{
       id: PeakList['id'];
     }>;
+    author: null | { id: User['id'] };
+    status: Mountain['status'];
   };
   user: null | {
     id: User['name'];
@@ -234,7 +267,20 @@ const MountainDetail = (props: Props) => {
         </PlaceholderText>
       );
     } else {
-      const { name, elevation, state, lists, latitude, longitude } = mountain;
+      const {
+        name, elevation, state, lists, latitude, longitude,
+        author, status,
+      } = mountain;
+
+      const title = status === CreatedItemStatus.pending ? (
+        <div>
+          <Title style={{marginBottom: 0}}>{name}</Title>
+          <Subtitle>This mountain is pending confirmation</Subtitle>
+        </div>
+      ) : (
+        <Title>{name}</Title>
+      );
+
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
         (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
@@ -274,9 +320,24 @@ const MountainDetail = (props: Props) => {
         }
       };
 
+      const actionButton = author && author.id && author.id === userId ? (
+        <ButtonSecondary>
+          Edit Mountain
+        </ButtonSecondary>
+      ) : (
+        <GhostButton>
+          Flag Mountain
+        </GhostButton>
+      );
+
       return (
         <>
-          <h1>{name}</h1>
+          <MountainNameHeader>
+            {title}
+            <div>
+              {actionButton}
+            </div>
+          </MountainNameHeader>
           <Map
             id={id}
             coordinates={[{...mountain, completionDates}]}
