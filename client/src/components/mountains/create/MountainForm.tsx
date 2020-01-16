@@ -85,22 +85,34 @@ export interface StateDatum {
   abbreviation: State['abbreviation'];
 }
 
+interface InitialMountainDatum {
+  id: Mountain['id'];
+  name: Mountain['name'];
+  latitude: string;
+  longitude: string;
+  elevation: string;
+  state: null | { id: State['id']};
+}
+
 interface Props {
   states: StateDatum[];
+  initialData: InitialMountainDatum;
 }
 
 const MountainForm = (props: Props) => {
-  const { states } = props;
+  const { states, initialData } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const [name, setName] = useState<string>('');
+  const [name, setName] = useState<string>(initialData.name);
 
-  const [stringLat, setStringLat] = useState<string>('');
-  const [stringLong, setStringLong] = useState<string>('');
+  const [stringLat, setStringLat] = useState<string>(initialData.latitude);
+  const [stringLong, setStringLong] = useState<string>(initialData.longitude);
 
-  const [stringElevation, setStringElevation] = useState<string>('');
-  const [selectedState, setSelectedState] = useState<State['id'] | null>(null);
+  const [stringElevation, setStringElevation] = useState<string>(initialData.elevation);
+  const [selectedState, setSelectedState] = useState<State['id'] | null>(
+    initialData.state === null ? null : initialData.state.id
+  );
 
   const latitude: number = validateFloatValue(stringLat, longLatMin, longLatMax);
   const longitude: number = validateFloatValue(stringLong, longLatMin, longLatMax);
@@ -151,6 +163,9 @@ const MountainForm = (props: Props) => {
 
   return (
     <Root>
+      <FullColumn>
+        <h1>{getFluentString('create-mountain-title-create')}</h1>
+      </FullColumn>
       <FullColumn>
         <Label>
           {getFluentString('create-mountain-mountain-name-placeholder')}

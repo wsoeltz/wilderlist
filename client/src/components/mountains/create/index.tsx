@@ -55,9 +55,18 @@ const MountainCreatePage = (props: Props) => {
     );
   } else if (data !== undefined) {
     const states = data.states ? data.states : [];
+    const initialMountain = {
+      id: '',
+      name: '',
+      latitude: '',
+      longitude: '',
+      elevation: '',
+      state: null,
+    }
     mountainForm = (
       <MountainForm
         states={states}
+        initialData={initialMountain}
       />
     );
   } else {

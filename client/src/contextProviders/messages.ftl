@@ -362,6 +362,9 @@ trip-report-no-reports = There are no recent trips reports for { $mountain-name 
 trip-reports-load-more-button = Load More Reports
 trip-reports-view-edit-button = View/Edit Report
 
+create-mountain-title-create = Add Mountain
+create-mountain-title-edit = Edit Mountain: { $mountain-name }
+
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
