@@ -18,8 +18,8 @@ import AddMountain from './mountains/AddMountain';
 import EditMountain from './mountains/EditMountain';
 import ListMountains from './mountains/ListMountains';
 import {
-  SubNav,
   NavButtonLink,
+  SubNav,
 } from './sharedStyles';
 
 const getMountainsQuery = `
@@ -36,6 +36,8 @@ const getMountainsQuery = `
       }
       author {
         id
+        mountainPermissions
+        email
       }
       flag
       status
@@ -168,7 +170,7 @@ const AdminMountains = () => {
   } else if (mountainsToShow === MountainsToShow.pending) {
     query = GET_PENDING_MOUNTAINS;
   } else {
-    failIfValidOrNonExhaustive(mountainsToShow, 
+    failIfValidOrNonExhaustive(mountainsToShow,
       'Invalid type for mountainsToShow ' + mountainsToShow);
     query = GET_MOUNTAINS;
   }

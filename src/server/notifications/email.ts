@@ -5,6 +5,9 @@ import ascentEmailTemplate, {
 } from './emailTemplates/ascentEmail';
 import ascentInviteEmailTemplate from './emailTemplates/ascentInviteEmail';
 import friendRequestEmailTemplate from './emailTemplates/friendRequestEmail';
+import genericEmailTemplate, {
+  GenericEmailNotificationInput,
+} from './emailTemplates/genericEmail';
 import welcomeEmailTemplate from './emailTemplates/welcomeEmail';
 
 const transport = createTransport({
@@ -99,6 +102,24 @@ export const sendAcceptFriendRequestEmailNotification = (
     to: userEmail,
     subject: `${userName} is now your friend on Wilderlist`,
     html: acceptFriendRequestEmailTemplate({userName, userEmail, userId}),
+  };
+  transport.sendMail(mailOptions, (error) => {
+    if (error) {
+      console.error(error);
+    }
+    transport.close();
+  });
+};
+
+export const sendGenericEmailNotification = (input: GenericEmailNotificationInput) => {
+  const {
+    userEmail, subject,
+  } = input;
+  const mailOptions = {
+    from: `Kyle via Wilderlist <${process.env.GMAIL_USERNAME}>`,
+    to: userEmail,
+    subject,
+    html: genericEmailTemplate(input),
   };
   transport.sendMail(mailOptions, (error) => {
     if (error) {

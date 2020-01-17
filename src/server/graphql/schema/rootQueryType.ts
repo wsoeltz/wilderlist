@@ -7,14 +7,13 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+import { CreatedItemStatus } from '../graphQLTypes';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
 import TripReportType, { TripReport } from './queryTypes/tripReportType';
 import UserType, { User } from './queryTypes/userType';
-import { CreatedItemStatus } from '../graphQLTypes';
-
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
