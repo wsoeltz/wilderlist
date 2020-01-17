@@ -8,6 +8,14 @@ import {
   LinkButton,
 } from '../../styling/styleUtils';
 
+export const SubNav = styled.nav`
+  display: flex;
+`;
+
+export const NavButtonLink = styled(LinkButton)`
+  margin-right: 1rem;
+`;
+
 const ListItemRoot = styled.div`
   margin: 1rem;
   padding: 1rem;
@@ -45,15 +53,19 @@ interface ListItemProps {
   content: React.ReactNode | null;
   onEdit: () => void;
   onDelete: () => void;
+  titleColor?: string;
 }
 
 export const ListItem = (props: ListItemProps) => {
-  const { title, content, onDelete, onEdit } = props;
+  const { title, content, onDelete, onEdit, titleColor } = props;
 
   return (
     <ListItemRoot>
       <TitleContainer>
-        <Title onClick={onEdit}>
+        <Title
+          onClick={onEdit}
+          style={{color: titleColor}}
+        >
           {title}
         </Title>
       </TitleContainer>

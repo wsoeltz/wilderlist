@@ -17,10 +17,12 @@ import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';
 import EditMountain from './mountains/EditMountain';
 import ListMountains from './mountains/ListMountains';
+import {
+  SubNav,
+  NavButtonLink,
+} from './sharedStyles';
 
-export const GET_MOUNTAINS = gql`
-  query ListMountains {
-    mountains {
+const getMountainsQuery = `
       id
       name
       latitude
@@ -35,6 +37,30 @@ export const GET_MOUNTAINS = gql`
       author {
         id
       }
+      flag
+      status
+`;
+
+export const GET_MOUNTAINS = gql`
+  query ListMountains {
+    mountains {
+      ${getMountainsQuery}
+    }
+  }
+`;
+
+const GET_FLAGGED_MOUNTAINS = gql`
+  query ListFlaggedMountains {
+    mountains: flaggedMountains {
+      ${getMountainsQuery}
+    }
+  }
+`;
+
+const GET_PENDING_MOUNTAINS = gql`
+  query ListPendingMountains {
+    mountains: pendingMountains {
+      ${getMountainsQuery}
     }
   }
 `;
@@ -58,19 +84,7 @@ const ADD_MOUNTAIN = gql`
       state: $state,
       author: $author,
     ) {
-      id
-      name
-      latitude
-      longitude
-      elevation
-      prominence
-      state {
-        id
-        name
-      }
-      author {
-        id
-      }
+      ${getMountainsQuery}
     }
   }
 `;
@@ -94,19 +108,7 @@ const EDIT_MOUNTAIN = gql`
       prominence: $prominence,
       state: $state,
     ) {
-      id
-      name
-      latitude
-      longitude
-      elevation
-      prominence
-      state {
-        id
-        name
-      }
-      author {
-        id
-      }
+      ${getMountainsQuery}
     }
   }
 `;
@@ -146,11 +148,32 @@ enum EditMountainPanelEnum {
   Update,
 }
 
+enum MountainsToShow {
+  all,
+  pending,
+  flagged,
+}
+
 const AdminMountains = () => {
 
   const user = useContext(UserContext);
 
-  const {loading, error, data} = useQuery<SuccessResponse>(GET_MOUNTAINS);
+  const [mountainsToShow, setMountainsToShow] = useState<MountainsToShow>(MountainsToShow.all);
+
+  let query;
+  if (mountainsToShow === MountainsToShow.all) {
+    query = GET_MOUNTAINS;
+  } else if (mountainsToShow === MountainsToShow.flagged) {
+    query = GET_FLAGGED_MOUNTAINS;
+  } else if (mountainsToShow === MountainsToShow.pending) {
+    query = GET_PENDING_MOUNTAINS;
+  } else {
+    failIfValidOrNonExhaustive(mountainsToShow, 
+      'Invalid type for mountainsToShow ' + mountainsToShow);
+    query = GET_MOUNTAINS;
+  }
+
+  const {loading, error, data} = useQuery<SuccessResponse>(query);
 
   const [editMountainPanel, setEditMountainPanel] = useState<EditMountainPanelEnum>(EditMountainPanelEnum.Empty);
   const [mountainToEdit, setMountainToEdit] = useState<string | null>(null);
@@ -255,6 +278,23 @@ const AdminMountains = () => {
       <MountainListColumn>
         <ContentHeader>
           <h2>Mountains</h2>
+          <SubNav>
+            <NavButtonLink
+              onClick={() => setMountainsToShow(MountainsToShow.all)}
+            >
+              All mountains
+            </NavButtonLink>
+            <NavButtonLink
+              onClick={() => setMountainsToShow(MountainsToShow.pending)}
+            >
+              Pending mountains
+            </NavButtonLink>
+            <NavButtonLink
+              onClick={() => setMountainsToShow(MountainsToShow.flagged)}
+            >
+              Flagged mountains
+            </NavButtonLink>
+          </SubNav>
           <StandardSearch
             placeholder={'Filter mountains'}
             setSearchQuery={filterMountains}

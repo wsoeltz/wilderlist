@@ -13,6 +13,8 @@ import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
 import TripReportType, { TripReport } from './queryTypes/tripReportType';
 import UserType, { User } from './queryTypes/userType';
+import { CreatedItemStatus } from '../graphQLTypes';
+
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -227,6 +229,18 @@ const RootQuery = new GraphQLObjectType({
           latitude: { $gt: latitude - latDistance, $lt: latitude + latDistance },
           longitude: { $gt: longitude - longDistance, $lt: longitude + longDistance },
         });
+      },
+    },
+    flaggedMountains: {
+      type: new GraphQLList(MountainType),
+      resolve() {
+        return Mountain.find({ flag: { $ne: null } });
+      },
+    },
+    pendingMountains: {
+      type: new GraphQLList(MountainType),
+      resolve() {
+        return Mountain.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
   }),
