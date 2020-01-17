@@ -6,16 +6,16 @@ import {
 } from '../../styling/styleUtils';
 import Modal from './Modal';
 
-const ButtonWrapper = styled.div`
+export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
-const CancelButton = styled(ButtonSecondary)`
+export const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
 `;
 
-interface Props {
+export interface Props {
   onConfirm: () => void;
   onCancel: () => void;
   title: string;

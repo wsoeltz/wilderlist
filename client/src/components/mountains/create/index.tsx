@@ -33,6 +33,7 @@ const GET_MOUNTAIN_AND_STATES = gql`
       author {
         id
       }
+      flag
     }
     states {
       id
@@ -65,6 +66,7 @@ const ADD_MOUNTAIN = gql`
       author {
         id
       }
+      flag
     }
   }
 `;
@@ -91,6 +93,7 @@ const EDIT_MOUNTAIN = gql`
       author {
         id
       }
+      flag
     }
   }
 `;
@@ -108,6 +111,7 @@ interface MountainSuccessResponse {
     author: null | {
       id: User['id'];
     }
+    flag: Mountain['flag'];
   };
 }
 
@@ -165,7 +169,7 @@ const MountainCreatePage = (props: Props) => {
 
     let initialMountain: InitialMountainDatum;
     if (data.mountain && data.mountain.author && data.mountain.author.id === userId) {
-      const {mountain: {name, state}, mountain} = data;
+      const {mountain: {name, state, flag}, mountain} = data;
       const stringLat = mountain.latitude.toString();
       const stringLong = mountain.longitude.toString();
       const stringElevation = mountain.elevation.toString();
@@ -175,7 +179,7 @@ const MountainCreatePage = (props: Props) => {
         latitude: stringLat,
         longitude: stringLong,
         elevation: stringElevation,
-        state,
+        state, flag,
       };
     } else {
       initialMountain = {
@@ -185,6 +189,7 @@ const MountainCreatePage = (props: Props) => {
         longitude: '',
         elevation: '',
         state: null,
+        flag: null,
       };
     }
 

@@ -70,6 +70,12 @@ export const MountainFlag = new GraphQLEnumType({
     location: {
       value: 'location',
     },
+    elevation: {
+      value: 'elevation',
+    },
+    state: {
+      value: 'state',
+    },
     duplicate: {
       value: 'duplicate',
     },
@@ -81,6 +87,9 @@ export const MountainFlag = new GraphQLEnumType({
     },
     other: {
       value: 'other',
+    },
+    deleteRequest: {
+      value: 'deleteRequest',
     },
   },
 });

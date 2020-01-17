@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -10,6 +10,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
+  ButtonWarning,
   CheckboxInput,
   CheckboxLabel as CheckboxLabelBase,
   CheckboxRoot,
@@ -18,7 +19,15 @@ import {
   Label,
   SelectBox,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakListVariants, State } from '../../../types/graphQLTypes';
+import {
+  Mountain,
+  MountainFlag,
+  PeakListVariants,
+  State,
+} from '../../../types/graphQLTypes';
+import AreYouSureModal, {
+  Props as AreYouSureModalProps,
+} from '../../sharedComponents/AreYouSureModal';
 import Map, {CoordinateWithDates} from '../../sharedComponents/map';
 import { BaseMountainVariables } from './';
 
@@ -26,6 +35,10 @@ const Root = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 1rem;
+`;
+
+const Title = styled.h1`
+  margin-top: 0;
 `;
 
 const FullColumn = styled.div`
@@ -46,6 +59,10 @@ const ButtonWrapper = styled.div`
 const SaveButton = styled(ButtonPrimary)`
   min-width: 100px;
   margin-left: 1rem;
+`;
+
+const DeleteButton = styled(ButtonWarning)`
+  margin-right: auto;
 `;
 
 const GET_NEARBY_MOUNTAINS = gql`
@@ -83,6 +100,27 @@ interface Variables {
   longDistance: number;
 }
 
+export const FLAG_MOUNTAIN = gql`
+  mutation($id: ID!, $flag: MountainFlag) {
+    mountain: updateMountainFlag(id: $id, flag: $flag) {
+      id
+      flag
+    }
+  }
+`;
+
+export interface FlagSuccessResponse {
+  mountain: null | {
+    id: Mountain['id'];
+    flag: Mountain['flag'];
+  };
+}
+
+export interface FlagVariables {
+  id: string;
+  flag: MountainFlag | null;
+}
+
 const longLatMin = -90;
 const longLatMax = 90;
 const elevationMin = 0;
@@ -112,6 +150,7 @@ export interface InitialMountainDatum {
   longitude: string;
   elevation: string;
   state: null | { id: State['id']};
+  flag: MountainFlag | null;
 }
 
 interface Props extends RouteComponentProps {
@@ -145,6 +184,48 @@ const MountainForm = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
     variables: { latitude, longitude, latDistance: 0.1, longDistance: 0.2 },
   });
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const closeAreYouSureModal = () => {
+    setDeleteModalOpen(false);
+  };
+  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
+  const flagForDeletion = (id: string) => {
+    if (id) {
+      updateMountainFlag({variables: {id, flag: MountainFlag.deleteRequest}});
+    }
+    closeAreYouSureModal();
+  };
+  const clearFlag = (id: string) => {
+    if (id) {
+      updateMountainFlag({variables: {id, flag: null}});
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureProps: AreYouSureModalProps = initialData.flag === MountainFlag.deleteRequest ? {
+    onConfirm: () => clearFlag(initialData.id),
+    onCancel: closeAreYouSureModal,
+    title: getFluentString('global-text-value-cancel-delete-request'),
+    text: getFluentString('global-text-value-modal-cancel-request-text', {
+      name: initialData.name,
+    }),
+    confirmText: getFluentString('global-text-value-modal-confirm'),
+    cancelText: getFluentString('global-text-value-modal-cancel'),
+  } : {
+    onConfirm: () => flagForDeletion(initialData.id),
+    onCancel: closeAreYouSureModal,
+    title: getFluentString('global-text-value-modal-request-delete-title'),
+    text: getFluentString('global-text-value-modal-request-delete-text', {
+      name: initialData.name,
+    }),
+    confirmText: getFluentString('global-text-value-modal-confirm'),
+    cancelText: getFluentString('global-text-value-modal-cancel'),
+  };
+
+  const areYouSureModal = deleteModalOpen === false ? null : (
+    <AreYouSureModal {...areYouSureProps}/>
+  );
 
   let nearbyMountains: CoordinateWithDates[];
   if (!loading && !error && data !== undefined && data.mountains) {
@@ -212,10 +293,22 @@ const MountainForm = (props: Props) => {
     'mountain-name': initialData.name,
   }) : getFluentString('create-mountain-title-create');
 
+  const deleteButtonText = initialData.flag !== MountainFlag.deleteRequest
+    ? getFluentString('global-text-value-delete')
+    : getFluentString('global-text-value-cancel-delete-request');
+
+  const deleteButton = !initialData.id ? null : (
+    <DeleteButton
+      onClick={() => setDeleteModalOpen(true)}
+    >
+      {deleteButtonText}
+    </DeleteButton>
+  );
+
   return (
     <Root>
       <FullColumn>
-        <h1>{titleText}</h1>
+        <Title>{titleText}</Title>
       </FullColumn>
       <FullColumn>
         <label htmlFor={'create-mountain-name'}>
@@ -319,6 +412,7 @@ const MountainForm = (props: Props) => {
            </CheckboxLabel>
         </CheckboxRoot>
         <ButtonWrapper>
+          {deleteButton}
           <GhostButton onClick={history.goBack}>
             {getFluentString('global-text-value-modal-cancel')}
           </GhostButton>
@@ -333,6 +427,7 @@ const MountainForm = (props: Props) => {
       <FullColumn>
         {map}
       </FullColumn>
+      {areYouSureModal}
     </Root>
   );
 };

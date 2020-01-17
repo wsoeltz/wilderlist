@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -33,6 +33,7 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
+import FlagModal from './FlagModal';
 import IncludedLists from './IncludedLists';
 import LocalTrails from './LocalTrails';
 import {
@@ -250,6 +251,9 @@ const MountainDetail = (props: Props) => {
   const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
 
+  const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
+  const closeFlagModal = () => setIsFlagModalOpen(false);
+
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {
@@ -326,9 +330,17 @@ const MountainDetail = (props: Props) => {
           {getFluentString('global-text-value-edit')}
         </ButtonSecondaryLink>
       ) : (
-        <GhostButton>
+        <GhostButton onClick={() => setIsFlagModalOpen(true)}>
           {getFluentString('global-text-value-flag')}
         </GhostButton>
+      );
+
+      const flagModal = isFlagModalOpen === false ? null : (
+        <FlagModal
+          onClose={closeFlagModal}
+          mountainId={mountain.id}
+          mountainName={mountain.name}
+        />
       );
 
       return (
@@ -402,6 +414,7 @@ const MountainDetail = (props: Props) => {
             mountainName={name}
             getFluentString={getFluentString}
           />
+          {flagModal}
         </>
       );
     }

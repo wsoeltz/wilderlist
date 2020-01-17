@@ -21,10 +21,13 @@ export enum CreatedItemStatus {
 
 export enum MountainFlag {
   location = 'location',
+  elevation = 'elevation',
+  state = 'state',
   duplicate = 'duplicate',
   data = 'data',
   abuse = 'abuse',
   other = 'other',
+  deleteRequest = 'deleteRequest',
 }
 
 export interface Mountain {
