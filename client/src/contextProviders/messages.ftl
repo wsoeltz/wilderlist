@@ -88,6 +88,8 @@ global-text-value-edit = Edit
 global-text-value-save = Save
 global-text-value-saving = Saving
 
+global-text-value-flag = Flag
+
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard

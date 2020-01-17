@@ -105,7 +105,7 @@ export interface StateDatum {
   abbreviation: State['abbreviation'];
 }
 
-interface InitialMountainDatum {
+export interface InitialMountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
   latitude: string;
@@ -148,7 +148,8 @@ const MountainForm = (props: Props) => {
 
   let nearbyMountains: CoordinateWithDates[];
   if (!loading && !error && data !== undefined && data.mountains) {
-    nearbyMountains = data.mountains.map(mtn => ({...mtn, completionDates: null }));
+    const filteredMountains = data.mountains.filter(mtn => mtn.id !== initialData.id);
+    nearbyMountains = filteredMountains.map(mtn => ({...mtn, completionDates: null }));
   } else {
     nearbyMountains = [];
   }
@@ -207,10 +208,14 @@ const MountainForm = (props: Props) => {
   const saveButtonText = loadingSubmit === true
     ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
 
+  const titleText = initialData.name !== '' ? getFluentString('create-mountain-title-edit', {
+    'mountain-name': initialData.name,
+  }) : getFluentString('create-mountain-title-create');
+
   return (
     <Root>
       <FullColumn>
-        <h1>{getFluentString('create-mountain-title-create')}</h1>
+        <h1>{titleText}</h1>
       </FullColumn>
       <FullColumn>
         <label htmlFor={'create-mountain-name'}>

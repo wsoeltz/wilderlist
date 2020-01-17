@@ -115,9 +115,13 @@ const RootQuery = new GraphQLObjectType({
     },
     mountain: {
       type: MountainType,
-      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { id: { type: GraphQLID } },
       resolve(parentValue, { id }) {
-        return Mountain.findById(id);
+        if (id === null) {
+          return null;
+        } else {
+          return Mountain.findById(id);
+        }
       },
     },
     state: {

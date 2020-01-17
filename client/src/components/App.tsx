@@ -161,6 +161,9 @@ const App: React.FC = () => {
         <Route exact path={Routes.CreateMountain}
           render={(props) => <CreateMountain {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.EditMountain}
+          render={(props) => <CreateMountain {...props} userId={user._id} />}
+        />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}

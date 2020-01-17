@@ -17,21 +17,30 @@ import { Mountain, State, User } from '../../../types/graphQLTypes';
 import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
-import MountainForm, {StateDatum} from './MountainForm';
+import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
 
-const GET_STATES = gql`
-  query getStates {
-  states {
-    id
-    name
-    abbreviation
+const GET_MOUNTAIN_AND_STATES = gql`
+  query getMountain($id: ID) {
+    mountain(id: $id) {
+      id
+      name
+      elevation
+      latitude
+      longitude
+      state {
+        id
+      }
+      author {
+        id
+      }
+    }
+    states {
+      id
+      name
+      abbreviation
+    }
   }
-}
 `;
-
-interface StatesSuccessResponse {
-  states: null | StateDatum[];
-}
 
 const ADD_MOUNTAIN = gql`
   mutation(
@@ -64,12 +73,12 @@ const EDIT_MOUNTAIN = gql`
     $id: ID!, $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!,
   ) {
     mountain: updateMountain(
+      id: $id,
       name: $name,
       elevation: $elevation,
       latitude: $latitude,
       longitude: $longitude,
       state: $state,
-      author: $author,
     ) {
       id
       name
@@ -87,7 +96,7 @@ const EDIT_MOUNTAIN = gql`
 `;
 
 interface MountainSuccessResponse {
-  mountain: {
+  mountain: null | {
     id: Mountain['id'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
@@ -100,6 +109,10 @@ interface MountainSuccessResponse {
       id: User['id'];
     }
   };
+}
+
+interface QuerySuccessResponse extends MountainSuccessResponse {
+  states: null | StateDatum[];
 }
 
 export interface BaseMountainVariables {
@@ -130,28 +143,12 @@ const MountainCreatePage = (props: Props) => {
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
-  const {loading, error, data} = useQuery<StatesSuccessResponse>(GET_STATES);
+  const {loading, error, data} = useQuery<QuerySuccessResponse, {id: string | null}>(GET_MOUNTAIN_AND_STATES,
+    {variables: { id: id ? id : null },
+  });
 
   const [addMountain] = useMutation<MountainSuccessResponse, AddMountainVariables>(ADD_MOUNTAIN);
   const [editMountain] = useMutation<MountainSuccessResponse, EditMountainVariables>(EDIT_MOUNTAIN);
-
-  const submitMountainForm = async (input: BaseMountainVariables) => {
-    if (id) {
-      const res = await editMountain({variables: {...input, id}});
-      if (res && res.data && res.data.mountain) {
-        history.push(mountainDetailLink(res.data.mountain.id));
-      } else {
-        setIsErrorModalVisible(true);
-      }
-    } else if (userId) {
-      const res = await addMountain({variables: {...input, author: userId}});
-      if (res && res.data && res.data.mountain) {
-        history.push(mountainDetailLink(res.data.mountain.id));
-      } else {
-        setIsErrorModalVisible(true);
-      }
-    }
-  };
 
   let mountainForm: React.ReactElement<any> | null;
   if (loading === true) {
@@ -165,14 +162,54 @@ const MountainCreatePage = (props: Props) => {
     );
   } else if (data !== undefined) {
     const states = data.states ? data.states : [];
-    const initialMountain = {
-      id: '',
-      name: '',
-      latitude: '',
-      longitude: '',
-      elevation: '',
-      state: null,
+
+    let initialMountain: InitialMountainDatum;
+    if (data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+      const {mountain: {name, state}, mountain} = data;
+      const stringLat = mountain.latitude.toString();
+      const stringLong = mountain.longitude.toString();
+      const stringElevation = mountain.elevation.toString();
+      initialMountain = {
+        id: mountain.id,
+        name,
+        latitude: stringLat,
+        longitude: stringLong,
+        elevation: stringElevation,
+        state,
+      };
+    } else {
+      initialMountain = {
+        id: '',
+        name: '',
+        latitude: '',
+        longitude: '',
+        elevation: '',
+        state: null,
+      };
+    }
+
+    const submitMountainForm = async (input: BaseMountainVariables) => {
+      if (id) {
+        if (data && data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+          const res = await editMountain({variables: {...input, id}});
+          if (res && res.data && res.data.mountain) {
+            history.push(mountainDetailLink(res.data.mountain.id));
+          } else {
+            setIsErrorModalVisible(true);
+          }
+        } else {
+          setIsErrorModalVisible(true);
+        }
+      } else if (userId) {
+        const res = await addMountain({variables: {...input, author: userId}});
+        if (res && res.data && res.data.mountain) {
+          history.push(mountainDetailLink(res.data.mountain.id));
+        } else {
+          setIsErrorModalVisible(true);
+        }
+      }
     };
+
     mountainForm = (
       <MountainForm
         states={states}
@@ -206,7 +243,6 @@ const MountainCreatePage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          User ID: {userId}, Mountain ID: {id}
           {mountainForm}
         </ContentBody>
         {errorModal}

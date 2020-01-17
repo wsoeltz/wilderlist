@@ -7,21 +7,22 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
+import { editMountainLink } from '../../../routing/Utils';
 import {
-  lightBorderColor,
-  PlaceholderText,
-  ButtonSecondary,
+  ButtonSecondaryLink,
   GhostButton,
+  lightBorderColor,
   lowWarningColorDark,
+  PlaceholderText,
 } from '../../../styling/styleUtils';
 import {
+  CreatedItemStatus,
   Mountain,
   PeakList,
   PeakListVariants,
   Region,
   State,
   User,
-  CreatedItemStatus,
 } from '../../../types/graphQLTypes';
 import { convertDMS, mobileSize } from '../../../Utils';
 import {
@@ -321,12 +322,12 @@ const MountainDetail = (props: Props) => {
       };
 
       const actionButton = author && author.id && author.id === userId ? (
-        <ButtonSecondary>
-          Edit Mountain
-        </ButtonSecondary>
+        <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
+          {getFluentString('global-text-value-edit')}
+        </ButtonSecondaryLink>
       ) : (
         <GhostButton>
-          Flag Mountain
+          {getFluentString('global-text-value-flag')}
         </GhostButton>
       );
 
