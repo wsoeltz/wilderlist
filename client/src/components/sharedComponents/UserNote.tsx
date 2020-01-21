@@ -71,6 +71,8 @@ const LoginButton = styled(LoginButtonBase)`
   border: 1px solid ${lightBorderColor};
 `;
 
+const charLimit = 5000;
+
 interface Props {
   placeholder: string;
   defaultValue: string;
@@ -113,7 +115,7 @@ const UserNote = (props: Props) => {
     ) : (
     <ButtonContainer>
       <ButtonPrimary
-        onClick={() => onSave(value)}
+        onClick={() => onSave(value.substring(0, charLimit))}
         disabled={defaultValue === value}
       >
         {buttonText}
@@ -130,6 +132,7 @@ const UserNote = (props: Props) => {
         onChange={onChange}
         rows={2}
         async={true}
+        maxLength={charLimit}
       />
       {buttons}
     </>
