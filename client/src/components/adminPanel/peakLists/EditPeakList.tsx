@@ -21,9 +21,11 @@ import {
   NameInactive,
   NameInput,
   NameText,
+  NavButtonLink,
   SelectBox,
   SelectedItemsContainer,
   SelectionPanel,
+  SubNav,
   UpdateButton,
 } from '../sharedStyles';
 
@@ -39,6 +41,14 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
         name
       }
       mountains {
+        id
+        name
+        state {
+          id
+          name
+        }
+      }
+      optionalMountains {
         id
         name
         state {
@@ -80,6 +90,10 @@ const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
         id
         name
       }
+      optionalMountains {
+        id
+        name
+      }
     }
   }
 `;
@@ -92,6 +106,47 @@ const ADD_MOUNTAIN_TO_PEAK_LIST = gql`
       shortName
       type
       mountains {
+        id
+        name
+      }
+      optionalMountains {
+        id
+        name
+      }
+    }
+  }
+`;
+const REMOVE_OPTIONAL_MOUNTAIN_FROM_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    removeOptionalMountainFromPeakList(listId: $listId, itemId: $itemId) {
+      id
+      name
+      shortName
+      type
+      mountains {
+        id
+        name
+      }
+      optionalMountains {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const ADD_OPTIONAL_MOUNTAIN_TO_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    addOptionalMountainToPeakList(listId: $listId, itemId: $itemId) {
+      id
+      name
+      shortName
+      type
+      mountains {
+        id
+        name
+      }
+      optionalMountains {
         id
         name
       }
@@ -110,6 +165,10 @@ const CHANGE_PEAK_LIST_NAME = gql`
         id
         name
       }
+      optionalMountains {
+        id
+        name
+      }
     }
   }
 `;
@@ -122,6 +181,10 @@ const CHANGE_PEAK_LIST_SHORT_NAME = gql`
       shortName
       type
       mountains {
+        id
+        name
+      }
+      optionalMountains {
         id
         name
       }
@@ -140,6 +203,10 @@ const CHANGE_PEAK_LIST_VARIANT = gql`
         id
         name
       }
+      optionalMountains {
+        id
+        name
+      }
       parent {
         id
       }
@@ -155,6 +222,10 @@ const CHANGE_PEAK_LIST_PARENT = gql`
       shortName
       type
       mountains {
+        id
+        name
+      }
+      optionalMountains {
         id
         name
       }
@@ -207,6 +278,11 @@ interface SuccessResponse {
     shortName: PeakList['shortName'];
     type: PeakList['type'];
     mountains: Array<{
+      id: Mountain['id'];
+      name: Mountain['name'];
+      state: StateDatum;
+    }>
+    optionalMountains: Array<{
       id: Mountain['id'];
       name: Mountain['name'];
       state: StateDatum;
@@ -301,6 +377,11 @@ const Checkbox = (props: CheckboxProps) => {
 
 };
 
+enum MountainReqLevel {
+  required = 'required',
+  optional = 'optional',
+}
+
 interface Props {
   listDatum: PeakListDatum | undefined;
   peakListId: string;
@@ -314,6 +395,7 @@ const EditPeakList = (props: Props) => {
   const [inputNameValue, setInputNameValue] = useState<string>('');
   const [inputShortNameValue, setInputShortNameValue] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [mountainReqLevel, setMountainReqLevel] = useState<MountainReqLevel>(MountainReqLevel.required);
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
     variables: { id: peakListId },
@@ -323,6 +405,15 @@ const EditPeakList = (props: Props) => {
       refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
     });
   const [addItemToPeakList] = useMutation<SuccessResponse, AdjustMountainVariables>(ADD_MOUNTAIN_TO_PEAK_LIST, {
+    refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
+  });
+  const [removeOptionalMountainFromPeakList] =
+    useMutation<SuccessResponse, AdjustMountainVariables>(
+      REMOVE_OPTIONAL_MOUNTAIN_FROM_PEAK_LIST, {
+      refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
+    });
+  const [addOptionalMountainToPeakList] =
+    useMutation<SuccessResponse, AdjustMountainVariables>(ADD_OPTIONAL_MOUNTAIN_TO_PEAK_LIST, {
     refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
   });
   const [removeStateFromPeakList] = useMutation<SuccessResponse, AdjustStateVariables>
@@ -429,13 +520,18 @@ const EditPeakList = (props: Props) => {
     const sortedSelectedStates = peakList.states ? sortBy(peakList.states, ['name']) : [];
     selectedStatesLi = sortedSelectedStates.map(state => <li key={state.id}>{state.name}</li>);
 
+    const currentMountainList = mountainReqLevel === MountainReqLevel.required
+      ? data.peakList.mountains : data.peakList.optionalMountains;
+
     const sortedMountains = sortBy(data.mountains, ['name']);
     const mountainList = sortedMountains.map(mountain => {
       if (mountain.name.toLowerCase().includes(searchQuery.toLowerCase())) {
 
         const addItemAndState = (itemId: string) => {
           const { state } = mountain;
-          addItemToPeakList({ variables: {listId: peakListId, itemId}});
+          const addItem = mountainReqLevel === MountainReqLevel.optional
+            ? addOptionalMountainToPeakList : addItemToPeakList;
+          addItem({ variables: {listId: peakListId, itemId}});
           if (state && state.id) {
             if (peakList.states && peakList.states.find(st => st.id === state.id) === undefined) {
               addStateToPeakList({ variables: {listId: peakListId, stateId: state.id}});
@@ -444,7 +540,9 @@ const EditPeakList = (props: Props) => {
         };
         const removeItemAndState = (itemId: string) => {
           const { state } = mountain;
-          removeItemFromPeakList({ variables: {listId: peakListId, itemId}});
+          const removeItem = mountainReqLevel === MountainReqLevel.optional
+            ? removeOptionalMountainFromPeakList : removeItemFromPeakList;
+          removeItem({ variables: {listId: peakListId, itemId}});
           const newSelectedMountains = peakList.mountains.filter(mtn => mtn.id !== itemId);
           const stateExists = newSelectedMountains.find(mtn => {
             if (mtn && mtn.state && mtn.state.id && state && state.id) {
@@ -460,11 +558,11 @@ const EditPeakList = (props: Props) => {
 
         return (
           <Checkbox
-            key={mountain.id}
+            key={mountain.id + mountainReqLevel}
             id={mountain.id}
             name={mountain.name + ' ' + mountain.state.abbreviation + ' ' + mountain.elevation}
             defaultChecked={
-              (data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
+              (currentMountainList.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
             }
             removeItemFromPeakList={removeItemAndState}
             addItemToPeakList={addItemAndState}
@@ -475,7 +573,7 @@ const EditPeakList = (props: Props) => {
       }
     });
     mountains = <>{mountainList}</>;
-    const sortedSelectedMountains = sortBy(data.peakList.mountains, ['name']);
+    const sortedSelectedMountains = sortBy(currentMountainList, ['name']);
     selectedMountains = sortedSelectedMountains.map(
       mountain => <li key={'selected-' + mountain.id}>{mountain.name}</li>);
     const updateType = (value: string) => {
@@ -551,6 +649,24 @@ const EditPeakList = (props: Props) => {
         {shortName}
         {type}
         {parent}
+        <SubNav>
+          <NavButtonLink
+            onClick={() => setMountainReqLevel(MountainReqLevel.required)}
+            style={{
+              fontWeight: mountainReqLevel === MountainReqLevel.required ? 600 : 400,
+            }}
+          >
+            Required Peaks
+          </NavButtonLink>
+          <NavButtonLink
+            onClick={() => setMountainReqLevel(MountainReqLevel.optional)}
+            style={{
+              fontWeight: mountainReqLevel === MountainReqLevel.optional ? 600 : 400,
+            }}
+          >
+            Optional Peaks
+          </NavButtonLink>
+        </SubNav>
         <SelectionPanel>
           <CheckboxContainer>
             <StandardSearch

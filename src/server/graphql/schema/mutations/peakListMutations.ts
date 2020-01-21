@@ -127,7 +127,7 @@ const peakListMutations: any = {
               }
             },
           );
-          return list;
+          return await PeakList.findById(listId);
         }
       } catch (err) {
         return err;
@@ -165,7 +165,85 @@ const peakListMutations: any = {
               }
             },
           );
-          return list;
+          return await PeakList.findById(listId);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addOptionalMountainToPeakList: {
+    type: PeakListType,
+    args: {
+      listId: { type: GraphQLNonNull(GraphQLID) },
+      itemId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+      try {
+        const list = await PeakList.findById(listId);
+        const item = await Mountain.findById(itemId);
+        if (list !== null && item !== null) {
+          await Mountain.findOneAndUpdate({
+              _id: itemId,
+              optionalLists: { $ne: listId },
+            },
+            { $push: {optionalLists: listId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await PeakList.findOneAndUpdate({
+              _id: listId,
+              optionalMountains: { $ne: itemId },
+            },
+            { $push: {optionalMountains: itemId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return PeakList.findById(listId);
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeOptionalMountainFromPeakList: {
+    type: PeakListType,
+    args: {
+      listId: { type: GraphQLNonNull(GraphQLID) },
+      itemId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+      try {
+        const list = await PeakList.findById(listId);
+        const item = await Mountain.findById(itemId);
+        if (list !== null && item !== null) {
+          await Mountain.findOneAndUpdate({
+              _id: itemId,
+            },
+            { $pull: {optionalLists: listId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          await PeakList.findOneAndUpdate({
+              _id: listId,
+            },
+            { $pull: {optionalMountains: itemId} },
+            function(err, model) {
+              if (err) {
+                console.error(err);
+              }
+            },
+          );
+          return PeakList.findById(listId);
         }
       } catch (err) {
         return err;
