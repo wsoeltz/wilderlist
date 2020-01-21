@@ -46,6 +46,10 @@ const Title = styled(SemiBold)`
   margin-bottom: 1rem;
 `;
 
+const Text = styled.div`
+  white-space: pre-wrap;
+`;
+
 interface Props {
   onClose: () => void;
   tripReport: TripReport;
@@ -234,9 +238,9 @@ const AreYouSureModal = (props: Props) => {
         <SectionTitle>
           {getFluentString('trip-report-notes-title')}
         </SectionTitle>
-        <div>
+        <Text>
           {tripReport.notes}
-        </div>
+        </Text>
       </Section>
     );
   } else {
