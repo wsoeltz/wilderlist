@@ -278,7 +278,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
         );
 
         return (
-          <ReportContainer key={report.id}>
+          <ReportContainer key={report.id} id={`trip-report-${report.date}`}>
             <ReportHeader>
               <SemiBold>
                 {'On '}
@@ -329,7 +329,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
     output = null;
   }
   return (
-    <VerticalContentItem>
+    <VerticalContentItem id={'trip-reports'}>
       <ItemTitle>
         {getFluentString('trip-reports-title')}
       </ItemTitle>
