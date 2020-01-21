@@ -39,17 +39,18 @@ interface StatusVariables {
   status: CreatedItemStatus | null;
 }
 
-const UPDATE_MOUNTAIN_PERMISSIONS = gql`
+export const UPDATE_MOUNTAIN_PERMISSIONS = gql`
   mutation($id: ID!, $mountainPermissions: Int) {
     user: updateMountainPermissions
     (id: $id, mountainPermissions: $mountainPermissions) {
       id
+      email
       mountainPermissions
     }
   }
 `;
 
-interface PermissionsSuccessResponse {
+export interface PermissionsSuccessResponse {
   user: null | {
     id: User['id'];
     mountainPermissions: User['mountainPermissions'];
@@ -57,7 +58,7 @@ interface PermissionsSuccessResponse {
   };
 }
 
-interface PermissionsVariables {
+export interface PermissionsVariables {
   id: string;
   mountainPermissions: number | null;
 }

@@ -83,10 +83,11 @@ interface Variables {
 
 interface Props extends RouteComponentProps {
   userId: string | null;
+  mountainPermissions: number | null;
 }
 
 const MountainSearchPage = (props: Props) => {
-  const { userId, match, location, history } = props;
+  const { userId, mountainPermissions, match, location, history } = props;
   const { id }: any = match.params;
   const { query, page } = queryString.parse(location.search);
 
@@ -207,7 +208,7 @@ const MountainSearchPage = (props: Props) => {
       )
     : ( <MountainDetail userId={userId} id={id} />);
 
-  const addMountainButton = userId ? (
+  const addMountainButton = userId && mountainPermissions !== -1 ? (
     <FloatingButton to={Routes.CreateMountain}>
       <PlusIcon>+</PlusIcon> {getFluentString('create-mountain-title-create')}
     </FloatingButton>

@@ -151,6 +151,7 @@ const GET_MOUNTAIN_DETAIL = gql`
         id
         text
       }
+      mountainPermissions
     }
   }
 `;
@@ -180,6 +181,7 @@ interface QuerySuccessResponse {
     id: User['name'];
     mountains: User['mountains'];
     mountainNote: User['mountainNote'];
+    mountainPermissions: User['mountainPermissions'];
   };
 }
 
@@ -325,7 +327,8 @@ const MountainDetail = (props: Props) => {
         }
       };
 
-      const actionButton = author && author.id && author.id === userId ? (
+      const actionButton = author && author.id && author.id === userId
+        && user && user.mountainPermissions !== -1 ? (
         <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
           {getFluentString('global-text-value-edit')}
         </ButtonSecondaryLink>

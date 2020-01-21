@@ -129,7 +129,12 @@ const App: React.FC = () => {
           render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
         />
         <Route exact path={Routes.MountainSearchWithDetail}
-          render={(props) => <ListMountainsPage {...props} userId={user._id} />}
+          render={(props) => (
+            <ListMountainsPage {...props}
+              userId={user._id}
+              mountainPermissions={user.mountainPermissions}
+            />
+          )}
         />
         <Route exact path={Routes.MountainDetail}
           render={(props) => <MountainDetailPage {...props} userId={user._id} />}
@@ -159,10 +164,20 @@ const App: React.FC = () => {
           render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
         />
         <Route exact path={Routes.CreateMountain}
-          render={(props) => <CreateMountain {...props} userId={user._id} />}
+          render={(props) => (
+            <CreateMountain {...props}
+              userId={user._id}
+              mountainPermissions={user.mountainPermissions}
+            />
+          )}
         />
         <Route exact path={Routes.EditMountain}
-          render={(props) => <CreateMountain {...props} userId={user._id} />}
+          render={(props) => (
+            <CreateMountain {...props}
+              userId={user._id}
+              mountainPermissions={user.mountainPermissions}
+            />
+          )}
         />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
@@ -185,7 +200,12 @@ const App: React.FC = () => {
           render={(props) => <PeakListDetailPage {...props} userId={null} />}
         />
         <Route exact path={Routes.MountainSearchWithDetail}
-          render={(props) => <ListMountainsPage {...props} userId={null} />}
+          render={(props) => (
+            <ListMountainsPage {...props}
+              userId={null}
+              mountainPermissions={null}
+            />
+          )}
         />
         <Route exact path={Routes.MountainDetail}
           render={(props) => <MountainDetailPage {...props} userId={null} />}

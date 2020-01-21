@@ -48,6 +48,9 @@ const mountainMutations: any = {
             authorObj.mountainPermissions > 5 ) ||
         authorObj.permissions === PermissionTypes.admin) {
         status = CreatedItemStatusEnum.auto;
+      } else if (authorObj.mountainPermissions !== null &&
+            authorObj.mountainPermissions === -1) {
+        return null;
       } else {
         status = CreatedItemStatusEnum.pending;
       }

@@ -27,6 +27,7 @@ global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Cont
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at wilderlistapp@gmail.com
+global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at wilderlistapp@gmail.com
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email

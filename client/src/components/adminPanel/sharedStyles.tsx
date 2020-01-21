@@ -51,7 +51,7 @@ const EditButton = styled(ButtonPrimary)`
 interface ListItemProps {
   title: string;
   content: React.ReactNode | null;
-  onEdit: () => void;
+  onEdit: null | (() => void);
   onDelete: () => void;
   titleColor?: string;
 }
@@ -59,21 +59,29 @@ interface ListItemProps {
 export const ListItem = (props: ListItemProps) => {
   const { title, content, onDelete, onEdit, titleColor } = props;
 
+  const editButton = onEdit === null ? null : (
+    <EditButton onClick={onEdit}>
+      Edit
+    </EditButton>
+  );
+
+  const titleEl = onEdit === null ? <strong>{title}</strong> : (
+    <Title
+      onClick={onEdit}
+      style={{color: titleColor}}
+    >
+      {title}
+    </Title>
+  );
+
   return (
     <ListItemRoot>
       <TitleContainer>
-        <Title
-          onClick={onEdit}
-          style={{color: titleColor}}
-        >
-          {title}
-        </Title>
+        {titleEl}
       </TitleContainer>
       {content}
       <ButtonContainer>
-        <EditButton onClick={onEdit}>
-          Edit
-        </EditButton>
+        {editButton}
         <ButtonSecondary onClick={onDelete}>
           Delete
         </ButtonSecondary>

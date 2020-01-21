@@ -136,10 +136,11 @@ interface EditMountainVariables extends BaseMountainVariables {
 
 interface Props extends RouteComponentProps {
   userId: string | null;
+  mountainPermissions: null | number;
 }
 
 const MountainCreatePage = (props: Props) => {
-  const { userId, match, history } = props;
+  const { userId, mountainPermissions, match, history } = props;
   const { id }: any = match.params;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -155,7 +156,13 @@ const MountainCreatePage = (props: Props) => {
   const [editMountain] = useMutation<MountainSuccessResponse, EditMountainVariables>(EDIT_MOUNTAIN);
 
   let mountainForm: React.ReactElement<any> | null;
-  if (loading === true) {
+  if (mountainPermissions === -1) {
+    mountainForm = (
+      <PlaceholderText>
+        {getFluentString('global-text-value-no-permission')}
+      </PlaceholderText>
+    );
+  } else if (loading === true) {
     mountainForm = <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
@@ -166,32 +173,6 @@ const MountainCreatePage = (props: Props) => {
     );
   } else if (data !== undefined) {
     const states = data.states ? data.states : [];
-
-    let initialMountain: InitialMountainDatum;
-    if (data.mountain && data.mountain.author && data.mountain.author.id === userId) {
-      const {mountain: {name, state, flag}, mountain} = data;
-      const stringLat = mountain.latitude.toString();
-      const stringLong = mountain.longitude.toString();
-      const stringElevation = mountain.elevation.toString();
-      initialMountain = {
-        id: mountain.id,
-        name,
-        latitude: stringLat,
-        longitude: stringLong,
-        elevation: stringElevation,
-        state, flag,
-      };
-    } else {
-      initialMountain = {
-        id: '',
-        name: '',
-        latitude: '',
-        longitude: '',
-        elevation: '',
-        state: null,
-        flag: null,
-      };
-    }
 
     const submitMountainForm = async (input: BaseMountainVariables) => {
       if (id) {
@@ -215,13 +196,47 @@ const MountainCreatePage = (props: Props) => {
       }
     };
 
-    mountainForm = (
-      <MountainForm
-        states={states}
-        initialData={initialMountain}
-        onSubmit={submitMountainForm}
-      />
-    );
+    if (data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+      const {mountain: {name, state, flag}, mountain} = data;
+      const initialMountain: InitialMountainDatum = {
+        id: mountain.id,
+        name,
+        latitude: mountain.latitude.toString(),
+        longitude: mountain.longitude.toString(),
+        elevation: mountain.elevation.toString(),
+        state, flag,
+      };
+      mountainForm = (
+        <MountainForm
+          states={states}
+          initialData={initialMountain}
+          onSubmit={submitMountainForm}
+        />
+      );
+    } else if (data.mountain) {
+        mountainForm = (
+        <PlaceholderText>
+          {getFluentString('global-text-value-no-permission')}
+        </PlaceholderText>
+      );
+    } else {
+      const initialMountain: InitialMountainDatum = {
+        id: '',
+        name: '',
+        latitude: '',
+        longitude: '',
+        elevation: '',
+        state: null,
+        flag: null,
+      };
+      mountainForm = (
+        <MountainForm
+          states={states}
+          initialData={initialMountain}
+          onSubmit={submitMountainForm}
+        />
+      );
+    }
   } else {
     mountainForm = null;
   }
