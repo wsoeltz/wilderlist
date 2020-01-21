@@ -39,6 +39,7 @@ export interface Mountain {
   elevation: number;
   prominence: number | null;
   lists: Array<PeakList | null>;
+  optionalLists: null | Array<PeakList | null>;
   author: User | null;
   status: CreatedItemStatus | null;
   flag: MountainFlag | null;
@@ -59,6 +60,7 @@ export interface PeakList {
   type: PeakListVariants;
   parent: PeakList | null;
   mountains: Array<Mountain | null>;
+  optionalMountains: null | Array<Mountain | null>;
   users: Array<User | null>;
   numUsers: number;
   searchString: string;

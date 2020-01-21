@@ -33,6 +33,10 @@ const MountainSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'list',
   }],
+  optionalLists: [{
+    type: Schema.Types.ObjectId,
+    ref: 'list',
+  }],
   author: {
     type: Schema.Types.ObjectId,
     ref: 'user',
@@ -122,6 +126,16 @@ const MountainType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         try {
           return await peakListLoader.loadMany(parentValue.lists);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    optionalLists:  {
+      type: new GraphQLList(PeakListType),
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          return await peakListLoader.loadMany(parentValue.optionalLists);
         } catch (err) {
           return err;
         }
