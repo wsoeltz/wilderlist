@@ -37,6 +37,8 @@ export const GET_USERS = gql`
           id
         }
       }
+      mountainPermissions
+      permissions
     }
   }
 `;
@@ -56,6 +58,8 @@ export interface UserDatum {
   profilePictureUrl: User['profilePictureUrl'];
   friends: User['friends'];
   peakLists: User['peakLists'];
+  mountainPermissions: User['mountainPermissions'];
+  permissions: User['permissions'];
 }
 
 export interface SuccessResponse {

@@ -48,6 +48,10 @@ const ReadFullReportButton = styled(GhostButton)`
   visibility: hidden;
 `;
 
+const Text = styled.div`
+  white-space: pre-wrap;
+`;
+
 export const nPerPage = 7;
 
 export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
@@ -173,8 +177,12 @@ const TripReports = ({mountainId, mountainName}: Props) => {
   } else if (data !== undefined) {
     const { tripReports } = data;
     if (tripReports.length) {
-
-      const reportList = tripReports.map(report => {
+      // max character array setup to map to same order as trip report list
+      // the first and second reports, n[0] and n[1], should show more characters
+      // the rest should show only 250
+      const maxCharactersArray = [1000, 500];
+      const maxCharactersDefault = 250;
+      const reportList = tripReports.map((report, i) => {
         const allConditionsArray: string[] = [];
         Object.keys(report).forEach(function(key: keyof TripReport) {
           if (isCondition(key) && report[key]) {
@@ -202,14 +210,14 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           );
         } else {
           const conditionsText: Array<React.ReactElement<any>> = [];
-          allConditionsArray.forEach((condition, i) => {
-            if (i === allConditionsArray.length - 2) {
+          allConditionsArray.forEach((condition, j) => {
+            if (j === allConditionsArray.length - 2) {
               conditionsText.push(
                 <React.Fragment  key={condition + report.id}>
                   <Condition>{condition}</Condition>{' and '}
                 </React.Fragment>,
               );
-            } else if (i === allConditionsArray.length - 1) {
+            } else if (j === allConditionsArray.length - 1) {
               conditionsText.push(
                 <Condition key={condition + report.id}>{condition}</Condition>,
               );
@@ -228,9 +236,9 @@ const TripReports = ({mountainId, mountainName}: Props) => {
             </Section>
           );
         }
-        const maxCharacters = 250;
         let notes: React.ReactElement<any> | null;
         if (report.notes && report.notes.length) {
+          const maxCharacters = i <= 1 ? maxCharactersArray[i] : maxCharactersDefault;
           const text = report.notes.substring(0, maxCharacters);
           const readMoreText = report.notes.length > maxCharacters ? (
             <>
@@ -243,9 +251,9 @@ const TripReports = ({mountainId, mountainName}: Props) => {
               <SectionTitle>
                 {getFluentString('trip-report-notes-title')}
               </SectionTitle>
-              <div>
+              <Text>
                 {text}{readMoreText}
-              </div>
+              </Text>
             </Section>
           );
         } else {
@@ -270,7 +278,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
         );
 
         return (
-          <ReportContainer key={report.id}>
+          <ReportContainer key={report.id} id={`trip-report-${report.date}`}>
             <ReportHeader>
               <SemiBold>
                 {'On '}
@@ -321,7 +329,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
     output = null;
   }
   return (
-    <VerticalContentItem>
+    <VerticalContentItem id={'trip-reports'}>
       <ItemTitle>
         {getFluentString('trip-reports-title')}
       </ItemTitle>

@@ -1,7 +1,8 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { State } from '../../../types/graphQLTypes';
+import { UserContext } from '../../App';
 import { AddMountainVariables } from '../AdminMountains';
 import {
   CreateButton,
@@ -35,6 +36,8 @@ interface Props {
 const AddMountain = (props: Props) => {
   const { addMountain, cancel } = props;
 
+  const user = useContext(UserContext);
+
   const [name, setName] = useState<string>('');
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -45,7 +48,7 @@ const AddMountain = (props: Props) => {
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (name !== '' && latitude !== null && longitude !== null
-      && elevation !== null && selectedState !== null) {
+      && elevation !== null && selectedState !== null && user && user._id) {
       addMountain({
         name,
         latitude,
@@ -53,6 +56,7 @@ const AddMountain = (props: Props) => {
         elevation,
         prominence,
         state: selectedState,
+        author: user._id,
       });
     }
     cancel();

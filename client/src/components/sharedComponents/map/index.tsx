@@ -13,12 +13,13 @@ import ReactMapboxGl, {
   RotationControl,
   ZoomControl,
 } from 'react-mapbox-gl';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
+  ButtonPrimary,
   lightBorderColor,
   linkStyles,
   placeholderColor,
@@ -166,6 +167,62 @@ const AddAscentButton = styled.button`
   background-color: transparent;
 `;
 
+const CenterCoordinatesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  margin-left: 1rem;
+`;
+
+const CenterCoordinatesTitle = styled.div`
+  font-size: 0.9rem;
+  font-weight: 600;
+`;
+
+const CenterCoordinatesSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+`;
+
+const Crosshair = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    border-right: 1px solid gray;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    border-bottom: 1px solid gray;
+  }
+`;
+
+const ActionButton = styled(ButtonPrimary)`
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.3rem;
+`;
+
 const getMinMax = (coordinates: Coordinate[]) => {
   const sortedByLat = sortBy(coordinates, ['latitude']);
   const sortedByLong = sortBy(coordinates, ['longitude']);
@@ -186,7 +243,7 @@ interface Coordinate {
   elevation: number;
 }
 
-type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
+export type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
 
 interface Props {
   id: string;
@@ -195,10 +252,17 @@ interface Props {
   highlighted?: CoordinateWithDates[];
   peakListType: PeakListVariants;
   isOtherUser?: boolean;
+  createOrEditMountain?: boolean;
+  showCenterCrosshairs?: boolean;
+  returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
 }
 
 const Map = (props: Props) => {
-  const { id, coordinates, highlighted, peakListType, userId, isOtherUser } = props;
+  const {
+    id, coordinates, highlighted, peakListType,
+    userId, isOtherUser, createOrEditMountain,
+    showCenterCrosshairs, returnLatLongOnClick,
+  } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -224,6 +288,9 @@ const Map = (props: Props) => {
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
 
+  const latLngDecimalPoints = 8;
+  const [centerCoords, setCenterCoords] = useState<[string, string]>(
+    [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
   useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
       if (e.shiftKey && map) {
@@ -244,17 +311,32 @@ const Map = (props: Props) => {
     document.body.addEventListener('keyup', disableZoom);
     document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
 
+    const getCenterCoords = () => {
+      if (map) {
+        const {lat, lng}: {lat: number, lng: number} = map.getCenter();
+        setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+      }
+    };
+    if (map && showCenterCrosshairs) {
+      map.on('move', getCenterCoords);
+    }
+
     return () => {
       document.body.removeEventListener('keydown', enableZoom);
       document.body.removeEventListener('keyup', disableZoom);
       document.body.removeEventListener('touchstart', disableDragPanOnTouchDevics);
+      if (map && showCenterCrosshairs) {
+        map.off('move', getCenterCoords);
+      }
     };
-  }, [map]);
+  }, [map, showCenterCrosshairs]);
 
   useEffect(() => {
-    const coords = getMinMax(coordinates);
-    setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
-  }, [coordinates]);
+    if (!createOrEditMountain) {
+      const coords = getMinMax(coordinates);
+      setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+    }
+  }, [coordinates, createOrEditMountain]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
@@ -278,7 +360,12 @@ const Map = (props: Props) => {
     };
     let circleColor: string;
     if (completionDates === null) {
-      circleColor = twoColorScale[0];
+      if (createOrEditMountain === true && highlighted && highlighted.length &&
+        (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
+        circleColor = twoColorScale[1];
+      } else {
+        circleColor = twoColorScale[0];
+      }
     } else if (completionDates.type === PeakListVariants.standard) {
       circleColor = completionDates.standard !== undefined ? twoColorScale[1] : twoColorScale[0];
     } else if (completionDates.type === PeakListVariants.winter) {
@@ -453,7 +540,41 @@ const Map = (props: Props) => {
   );
 
   let colorScaleLegend: React.ReactElement<any> | null;
-  if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
+  if (createOrEditMountain === true) {
+    let latLongLegend: React.ReactElement<any> | null;
+    if (showCenterCrosshairs === true) {
+      const returnLatLongButton = returnLatLongOnClick === undefined ? null : (
+        <ActionButton onClick={() => returnLatLongOnClick(...centerCoords)}>
+          {getFluentString('map-set-lat-long-value')}
+        </ActionButton>
+      );
+      latLongLegend = (
+        <CenterCoordinatesContainer>
+          <CenterCoordinatesTitle>{getFluentString('map-coordinates-at-center')}</CenterCoordinatesTitle>
+          <CenterCoordinatesSection>
+            <span>{getFluentString('global-text-value-latitude')}: {centerCoords[0]}</span>
+            <span>{getFluentString('global-text-value-longitude')}: {centerCoords[1]}</span>
+            {returnLatLongButton}
+          </CenterCoordinatesSection>
+        </CenterCoordinatesContainer>
+      );
+    } else {
+      latLongLegend = null;
+    }
+    colorScaleLegend = (
+      <ColorScaleLegend>
+        {latLongLegend}
+        <LegendItem>
+          <Circle style={{backgroundColor: twoColorScale[0]}} />
+          {getFluentString('create-mountain-map-nearby-mountains')}
+        </LegendItem>
+        <LegendItem>
+          <Circle style={{backgroundColor: twoColorScale[1]}} />
+          {getFluentString('create-mountain-map-your-mountain')}
+        </LegendItem>
+      </ColorScaleLegend>
+    );
+  } else if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
     colorScaleLegend = (
       <ColorScaleLegend>
         <LegendItem>
@@ -520,6 +641,8 @@ const Map = (props: Props) => {
     return null;
   };
 
+  const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
+
   return (
     <Root
       style={{pointerEvents: !map ? 'none' : undefined}}
@@ -556,6 +679,7 @@ const Map = (props: Props) => {
           {features}
         </Layer>
         {popup}
+        {crosshairs}
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
       {colorScaleLegend}

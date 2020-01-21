@@ -1,3 +1,4 @@
+import { darken } from 'polished';
 import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
@@ -21,6 +22,7 @@ export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
 export const lowWarningColorLight = '#f2e4b3';
 export const lowWarningColor = '#d6aa0a';
+export const lowWarningColorDark = '#8a7e54';
 
 export const successColor = '#658238';
 export const successColorLight = '#d0e3b1';
@@ -217,6 +219,23 @@ export const ButtonPrimaryLink = styled(DynamicLink)`
     background-color: ${primaryHoverColor};
   }
 `;
+export const ButtonSecondaryLink = styled(DynamicLink)`
+  padding: 0.6rem;
+  text-transform: uppercase;
+  color: #fff;
+  text-align: center;
+  border-radius: ${borderRadius}px;
+  font-weight: ${semiBoldFontBoldWeight};
+  font-size: 0.8rem;
+  background-color: ${secondaryColor};
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    color: #fff;
+    background-color: ${secondaryHoverColor};
+  }
+`;
 
 export const GhostButton = styled(ButtonBase)`
   color: ${secondaryColor};
@@ -225,6 +244,17 @@ export const GhostButton = styled(ButtonBase)`
   &:hover {
     color: ${secondaryHoverColor};
   }
+`;
+
+export const FloatingButton = styled(ButtonPrimaryLink)`
+  position: sticky;
+  bottom: 0;
+  left: 100%;
+  font-size: 0.75rem;
+  border-radius: 15px;
+  border-bottom: 3px solid ${darken(0.12, primaryColor)};
+  border-right: 3px solid ${darken(0.12, primaryColor)};
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
 `;
 
 export const InputBase = styled.input`
@@ -249,6 +279,7 @@ export const Label = styled.span`
 
 export const PaginationContainer = styled.div`
   display: flex;
+  margin-bottom: 2rem;
 `;
 
 export const Next = styled(ButtonSecondary)`
@@ -292,4 +323,50 @@ export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};
   text-align: center;
+`;
+
+export const CheckboxRoot = styled.div`
+  display: block;
+  position: relative;
+`;
+
+export const CheckboxInput = styled.input`
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+`;
+
+export const CheckboxLabel = styled.label`
+  padding: 8px 8px 8px 30px;
+  display: block;
+
+  &:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
+`;
+
+/* tslint:disable:max-line-length */
+export const SelectBox = styled.select`
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  font-size: 1rem;
+  padding: 8px;
+  border: solid 1px ${lightBorderColor};
+  border-radius: 0;
+  background-color: white;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+    linear-gradient(to bottom, #ffffff 0%,#ffffff 100%);
+  background-repeat: no-repeat, repeat;
+  background-position: right .7em top 50%, 0 0;
+  background-size: .65em auto, 100%;
+  display: block;
+  width: 100%;
+
+  &:hover {
+    cursor: pointer;
+    background-color: white;
+  }
 `;

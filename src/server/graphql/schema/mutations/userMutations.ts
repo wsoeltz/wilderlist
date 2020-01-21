@@ -2,6 +2,7 @@
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLString,
@@ -651,6 +652,27 @@ const userMutations: any = {
           $pull: { mountainNotes: { mountain: mountainId } },
         });
         return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  updateMountainPermissions: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      mountainPermissions: { type: GraphQLInt },
+    },
+    async resolve(_unused: any,
+                  { id, mountainPermissions }: { id: string , mountainPermissions: number | null},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const user = await User.findOneAndUpdate(
+        { _id: id },
+        { mountainPermissions },
+        {new: true});
+        dataloaders.userLoader.clear(id).prime(id, user);
+        return user;
       } catch (err) {
         return err;
       }

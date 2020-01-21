@@ -29,6 +29,7 @@ import AdminStates from './adminPanel/AdminStates';
 import AdminUsers from './adminPanel/AdminUsers';
 import Dashboard from './dashboard';
 import LoginPage from './login';
+import CreateMountain from './mountains/create';
 import MountainDetailPage from './mountains/detail';
 import ListMountainsPage from './mountains/list';
 import ComparePeakListPage from './peakLists/compare';
@@ -128,7 +129,12 @@ const App: React.FC = () => {
           render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
         />
         <Route exact path={Routes.MountainSearchWithDetail}
-          render={(props) => <ListMountainsPage {...props} userId={user._id} />}
+          render={(props) => (
+            <ListMountainsPage {...props}
+              userId={user._id}
+              mountainPermissions={user.mountainPermissions}
+            />
+          )}
         />
         <Route exact path={Routes.MountainDetail}
           render={(props) => <MountainDetailPage {...props} userId={user._id} />}
@@ -157,6 +163,22 @@ const App: React.FC = () => {
         <Route exact path={Routes.ComparePeakListWithMountainDetail}
           render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
         />
+        <Route exact path={Routes.CreateMountain}
+          render={(props) => (
+            <CreateMountain {...props}
+              userId={user._id}
+              mountainPermissions={user.mountainPermissions}
+            />
+          )}
+        />
+        <Route exact path={Routes.EditMountain}
+          render={(props) => (
+            <CreateMountain {...props}
+              userId={user._id}
+              mountainPermissions={user.mountainPermissions}
+            />
+          )}
+        />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}
@@ -178,7 +200,12 @@ const App: React.FC = () => {
           render={(props) => <PeakListDetailPage {...props} userId={null} />}
         />
         <Route exact path={Routes.MountainSearchWithDetail}
-          render={(props) => <ListMountainsPage {...props} userId={null} />}
+          render={(props) => (
+            <ListMountainsPage {...props}
+              userId={null}
+              mountainPermissions={null}
+            />
+          )}
         />
         <Route exact path={Routes.MountainDetail}
           render={(props) => <MountainDetailPage {...props} userId={null} />}

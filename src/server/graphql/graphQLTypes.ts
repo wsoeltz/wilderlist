@@ -13,6 +13,23 @@ export interface State {
   peakLists: Array<PeakList | null> | null;
 }
 
+export enum CreatedItemStatus {
+  pending = 'pending',
+  auto = 'auto',
+  accepted = 'accepted',
+}
+
+export enum MountainFlag {
+  location = 'location',
+  elevation = 'elevation',
+  state = 'state',
+  duplicate = 'duplicate',
+  data = 'data',
+  abuse = 'abuse',
+  other = 'other',
+  deleteRequest = 'deleteRequest',
+}
+
 export interface Mountain {
   id: string;
   name: string;
@@ -22,6 +39,10 @@ export interface Mountain {
   elevation: number;
   prominence: number | null;
   lists: Array<PeakList | null>;
+  author: User | null;
+  status: CreatedItemStatus | null;
+  flag: MountainFlag | null;
+
 }
 
 export enum PeakListVariants {
@@ -106,6 +127,7 @@ export interface User {
   peakListNote: PeakListNote | null;
   mountainNotes: Array<MountainNote | null> | null;
   mountainNote: MountainNote | null;
+  mountainPermissions: number | null;
 }
 
 export interface Conditions {

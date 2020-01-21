@@ -1,14 +1,29 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
-import { lightBorderColor, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, PeakListVariants, Region, State, User } from '../../../types/graphQLTypes';
+import { editMountainLink } from '../../../routing/Utils';
+import {
+  ButtonSecondaryLink,
+  GhostButton,
+  lightBorderColor,
+  lowWarningColorDark,
+  PlaceholderText,
+} from '../../../styling/styleUtils';
+import {
+  CreatedItemStatus,
+  Mountain,
+  PeakList,
+  PeakListVariants,
+  Region,
+  State,
+  User,
+} from '../../../types/graphQLTypes';
 import { convertDMS, mobileSize } from '../../../Utils';
 import {
   VariableDate,
@@ -18,6 +33,7 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
+import FlagModal from './FlagModal';
 import IncludedLists from './IncludedLists';
 import LocalTrails from './LocalTrails';
 import {
@@ -28,6 +44,19 @@ import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
+
+const MountainNameHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Title = styled.h1`
+  margin-top: 0;
+`;
+
+const Subtitle = styled.em`
+  color: ${lowWarningColorDark};
+`;
 
 const titleWidth = 150; // in px
 const smallScreenSize = 560; // in px
@@ -105,6 +134,10 @@ const GET_MOUNTAIN_DETAIL = gql`
       lists {
         id
       }
+      author {
+        id
+      }
+      status
     }
     user(id: $userId) {
       id
@@ -118,6 +151,7 @@ const GET_MOUNTAIN_DETAIL = gql`
         id
         text
       }
+      mountainPermissions
     }
   }
 `;
@@ -140,11 +174,14 @@ interface QuerySuccessResponse {
     lists: Array<{
       id: PeakList['id'];
     }>;
+    author: null | { id: User['id'] };
+    status: Mountain['status'];
   };
   user: null | {
     id: User['name'];
     mountains: User['mountains'];
     mountainNote: User['mountainNote'];
+    mountainPermissions: User['mountainPermissions'];
   };
 }
 
@@ -216,6 +253,9 @@ const MountainDetail = (props: Props) => {
   const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
 
+  const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
+  const closeFlagModal = () => setIsFlagModalOpen(false);
+
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {
@@ -234,7 +274,20 @@ const MountainDetail = (props: Props) => {
         </PlaceholderText>
       );
     } else {
-      const { name, elevation, state, lists, latitude, longitude } = mountain;
+      const {
+        name, elevation, state, lists, latitude, longitude,
+        author, status,
+      } = mountain;
+
+      const title = status === CreatedItemStatus.pending ? (
+        <div>
+          <Title style={{marginBottom: 0}}>{name}</Title>
+          <Subtitle>This mountain is pending confirmation</Subtitle>
+        </div>
+      ) : (
+        <Title>{name}</Title>
+      );
+
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
         (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
@@ -274,9 +327,33 @@ const MountainDetail = (props: Props) => {
         }
       };
 
+      const actionButton = author && author.id && author.id === userId
+        && user && user.mountainPermissions !== -1 ? (
+        <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
+          {getFluentString('global-text-value-edit')}
+        </ButtonSecondaryLink>
+      ) : (
+        <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+          {getFluentString('global-text-value-flag')}
+        </GhostButton>
+      );
+
+      const flagModal = isFlagModalOpen === false ? null : (
+        <FlagModal
+          onClose={closeFlagModal}
+          mountainId={mountain.id}
+          mountainName={mountain.name}
+        />
+      );
+
       return (
         <>
-          <h1>{name}</h1>
+          <MountainNameHeader>
+            {title}
+            <div>
+              {actionButton}
+            </div>
+          </MountainNameHeader>
           <Map
             id={id}
             coordinates={[{...mountain, completionDates}]}
@@ -340,6 +417,7 @@ const MountainDetail = (props: Props) => {
             mountainName={name}
             getFluentString={getFluentString}
           />
+          {flagModal}
         </>
       );
     }

@@ -1,7 +1,8 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
-import { Mountain, State } from '../../../types/graphQLTypes';
+import React, { useContext, useEffect, useState } from 'react';
+import { Mountain, PermissionTypes, State } from '../../../types/graphQLTypes';
+import { UserContext } from '../../App';
 import { EditMountainVariables } from '../AdminMountains';
 import {
   CreateButton,
@@ -23,6 +24,9 @@ const GET_MOUNTAIN_AND_ALL_STATES = gql`
       state {
         id
         name
+      }
+      author {
+        id
       }
     }
 
@@ -54,6 +58,8 @@ interface Props {
 const EditMountain = (props: Props) => {
   const { mountainId, editMountain, cancel } = props;
 
+  const user = useContext(UserContext);
+
   const [name, setName] = useState<string>('');
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -61,10 +67,19 @@ const EditMountain = (props: Props) => {
   const [prominence, setProminence] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<State['id'] | null>(null);
 
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_MOUNTAIN_AND_ALL_STATES, {
+    variables: { id: mountainId },
+  });
+
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
+    const authorId =
+      data && data.mountain && data.mountain.author && data.mountain.author.id
+      ? data.mountain.author.id : null;
     if (name !== '' && latitude !== null && longitude !== null
-      && elevation !== null && selectedState !== null) {
+      && elevation !== null && selectedState !== null && (
+        user && (authorId === user._id || user.permissions === PermissionTypes.admin)
+      )) {
       editMountain({
         id: mountainId,
         name,
@@ -77,10 +92,6 @@ const EditMountain = (props: Props) => {
     }
     cancel();
   };
-
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_MOUNTAIN_AND_ALL_STATES, {
-    variables: { id: mountainId },
-  });
 
   useEffect(() => {
     if (data !== undefined) {

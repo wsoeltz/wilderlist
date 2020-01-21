@@ -1,6 +1,9 @@
 import { Express } from 'express';
 import { formatStringDate } from '../graphql/Utils';
-import { sendAscentInviteEmailNotification } from './email';
+import {
+  sendAscentInviteEmailNotification,
+  sendGenericEmailNotification,
+} from './email';
 
 const notificationRoutes = (app: Express) => {
   app.get('/api/ascent-invite', (req, res) => {
@@ -14,6 +17,22 @@ const notificationRoutes = (app: Express) => {
           user: req.user.name,
           userEmail: email,
           date: formatStringDate(date),
+        });
+      }
+    }
+    res.send();
+  });
+  app.get('/api/send-email', (req, res) => {
+    if (req && req.query && req.user) {
+      const {
+        userEmail, subject, title,
+        content, ctaText, ctaLink,
+      } = req.query;
+      if (userEmail && subject && title &&
+          content && ctaText && ctaLink) {
+        sendGenericEmailNotification({
+          userEmail, subject, title,
+          content, ctaText, ctaLink,
         });
       }
     }

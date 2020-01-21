@@ -1,11 +1,19 @@
+import { useMutation } from '@apollo/react-hooks';
 import { ApolloError } from 'apollo-boost';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import { LinkButton } from '../../../styling/styleUtils';
+import { PermissionTypes } from '../../../types/graphQLTypes';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { SuccessResponse, UserDatum } from '../AdminUsers';
+import {
+  PermissionsSuccessResponse,
+  PermissionsVariables,
+  UPDATE_MOUNTAIN_PERMISSIONS,
+} from '../mountains/ListMountains';
+import { ListItem } from '../sharedStyles';
 
-const UserListItem = styled.div`
+const UserContent = styled.div`
   display: grid;
   grid-template-columns: 50px 1fr;
   grid-column-gap: 8px;
@@ -56,6 +64,22 @@ const ListUsers = (props: Props) => {
     />
   );
 
+  const [updateMountainPermissions] =
+    useMutation<PermissionsSuccessResponse, PermissionsVariables>(
+      UPDATE_MOUNTAIN_PERMISSIONS);
+
+  const grantMountainPermission = (id: string) => {
+    updateMountainPermissions({variables: {id, mountainPermissions: 10}});
+  };
+
+  const revokeMountainPermission = (id: string) => {
+    updateMountainPermissions({variables: {id, mountainPermissions: -1}});
+  };
+
+  const resetMountainPermission = (id: string) => {
+    updateMountainPermissions({variables: {id, mountainPermissions: 0}});
+  };
+
   if (loading === true) {
     return (<p>Loading</p>);
   } else if (error !== undefined) {
@@ -64,20 +88,41 @@ const ListUsers = (props: Props) => {
   } else if (data !== undefined) {
     const { users } = data;
     const usersElms = users.map(user => {
-
-      return (
-        <UserListItem key={user.id}>
+      const mountainPermissions = user.mountainPermissions === null
+                                  ? 0 : user.mountainPermissions;
+      const permissions = user.permissions === PermissionTypes.admin
+        ? <div><small>{user.permissions}</small></div> : null;
+      const content = (
+        <UserContent>
           <UserInfo>
-            <strong><LinkButton>{user.name}</LinkButton></strong>
-            <button
-              onClick={() => setUserToDelete(user)}
-            >
-              Delete
-            </button>
+            {permissions}
             <div><small>{user.email}</small></div>
+            <div><small>Mountain Permissions: {mountainPermissions}</small></div>
+            <div><small>
+              <LinkButton
+                onClick={() => grantMountainPermission(user.id)}
+              >{'Grant Mountain Privileges'}</LinkButton>
+              {' | '}
+              <LinkButton
+                onClick={() => resetMountainPermission(user.id)}
+              >{'Reset Mountain Privileges'}</LinkButton>
+              {' | '}
+              <LinkButton
+                onClick={() => revokeMountainPermission(user.id)}
+              >{'Revoke Mountain Privileges'}</LinkButton>
+            </small></div>
           </UserInfo>
           <UserImage src={user.profilePictureUrl} />
-        </UserListItem>
+        </UserContent>
+      );
+      return (
+        <ListItem
+          key={user.id}
+          title={user.name}
+          content={content}
+          onEdit={null}
+          onDelete={() => setUserToDelete(user)}
+        />
       );
     });
     return(

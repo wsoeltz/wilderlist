@@ -14,6 +14,7 @@ global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $te
 global-text-value-are-you-sure-modal = Please Confirm
 global-text-value-modal-confirm = Confirm
 global-text-value-modal-cancel = Cancel
+global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
 global-text-value-more = more
@@ -25,6 +26,8 @@ global-text-value-loading-long =  Our bearing seems to be off, sorry about the w
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
+global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at wilderlistapp@gmail.com
+global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at wilderlistapp@gmail.com
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
@@ -36,6 +39,9 @@ global-text-value-modal-sign-up-today-import = Import your data for { $list-shor
 global-text-value-modal-sign-up-today-export = Export your data for { $list-short-name } with a free account
 global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
 
+global-text-value-modal-cancel-request-text = This will cancel your request to have { $name } deleted.
+global-text-value-modal-request-delete-title = Request delete
+global-text-value-modal-request-delete-text = This will submit a request to have { $name } deleted. Are you sure you want to continue?
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
@@ -43,6 +49,7 @@ global-text-value-dates = Dates
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
+global-text-value-feet = feet
 global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
@@ -84,6 +91,11 @@ global-text-value-submit = Submit
 
 global-text-value-edit = Edit
 global-text-value-save = Save
+global-text-value-saving = Saving
+
+global-text-value-delete = Delete
+
+global-text-value-flag = Flag
 
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
@@ -250,6 +262,9 @@ map-all-seasons = All Seasons
 map-no-months = No Months
 map-all-months = All Months
 
+map-coordinates-at-center = Coordinates at Center
+map-set-lat-long-value = Set Lat/Long to these values
+
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.
 import-ascents-date-note = <strong>Note:</strong>&#32;Dates must be in&#32;<strong>Month/Day/Year</strong>&#32;format in order to be properly read.
@@ -361,3 +376,34 @@ trip-report-hiked-with = Hiked With
 trip-report-no-reports = There are no recent trips reports for { $mountain-name }
 trip-reports-load-more-button = Load More Reports
 trip-reports-view-edit-button = View/Edit Report
+
+create-mountain-title-create = Add Mountain
+create-mountain-title-edit = Edit Mountain: { $mountain-name }
+
+create-mountain-map-your-mountain = Your Mountain
+create-mountain-map-nearby-mountains = Nearby Mountains
+create-mountain-mountain-name-placeholder = Mountain Name
+create-mountain-select-a-state = Select a State
+create-mountain-latlong-note = as a decimal
+create-mountain-latitude-placeholder = Enter the latitude in decimal format
+create-mountain-longitude-placeholder = Enter the longitude in decimal format
+create-mountain-elevation-placeholder = Enter the elevation in feet
+
+create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (highlighted in red) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
+
+flag-mountain-title = Submit a Flag for { $name }
+flag-mountain-text = If something seems wrong about this mountain, submit a flag and an administrator will take a look at it ASAP
+flag-mountain-thanks = Thank you for submitting your flag. An administrator will be looking into it shortly.
+
+flag-mountain-select-issue = Please select an issue from the box below
+flag-mountain-select-issue-description = {
+  $issue ->
+    [location] Location - The location (latitude/longitude) is incorrect
+    [elevation] Elevation - The elevation is wrong
+    [state] State - The listed State is wrong
+    [duplicate] Duplicate - This is a duplicate entry of the mountain
+    [data] Data - There is an issue with data (i.e. name, trails, reports)
+    [abuse] Abuse - This entry is inappropriate or otherwise abusive
+    *[other] Other - There is a problem not specified in this list
+}
+

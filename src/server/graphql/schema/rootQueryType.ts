@@ -1,4 +1,5 @@
 import {
+  GraphQLFloat,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -6,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+import { CreatedItemStatus } from '../graphQLTypes';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
@@ -114,9 +116,13 @@ const RootQuery = new GraphQLObjectType({
     },
     mountain: {
       type: MountainType,
-      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { id: { type: GraphQLID } },
       resolve(parentValue, { id }) {
-        return Mountain.findById(id);
+        if (id === null) {
+          return null;
+        } else {
+          return Mountain.findById(id);
+        }
       },
     },
     state: {
@@ -206,6 +212,34 @@ const RootQuery = new GraphQLObjectType({
           })
           .limit(nPerPage)
           .sort({ date: -1 });
+      },
+    },
+    nearbyMountains: {
+      type: new GraphQLList(MountainType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        latDistance: { type: GraphQLNonNull(GraphQLFloat) },
+        longDistance: { type: GraphQLNonNull(GraphQLFloat) },
+      },
+      resolve(parentValue, { latitude, longitude, latDistance, longDistance }:
+        {latitude: number, longitude: number, latDistance: number, longDistance: number}) {
+        return Mountain.find({
+          latitude: { $gt: latitude - latDistance, $lt: latitude + latDistance },
+          longitude: { $gt: longitude - longDistance, $lt: longitude + longDistance },
+        });
+      },
+    },
+    flaggedMountains: {
+      type: new GraphQLList(MountainType),
+      resolve() {
+        return Mountain.find({ flag: { $ne: null } });
+      },
+    },
+    pendingMountains: {
+      type: new GraphQLList(MountainType),
+      resolve() {
+        return Mountain.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
   }),
