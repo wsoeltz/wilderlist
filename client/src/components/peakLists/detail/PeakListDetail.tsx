@@ -75,6 +75,17 @@ const GET_PEAK_LIST = gql`
           abbreviation
         }
       }
+      optionalMountains {
+        id
+        name
+        latitude
+        longitude
+        elevation
+        state {
+          id
+          abbreviation
+        }
+      }
       states {
         id
         name
@@ -102,6 +113,17 @@ const GET_PEAK_LIST = gql`
           }
         }
         mountains {
+          id
+          name
+          latitude
+          longitude
+          elevation
+          state {
+            id
+            abbreviation
+          }
+        }
+        optionalMountains {
           id
           name
           latitude
@@ -165,10 +187,12 @@ export interface PeakListDatum {
   shortName: PeakList['shortName'];
   type: PeakList['type'];
   mountains: MountainDatum[] | null;
+  optionalMountains: MountainDatum[] | null;
   states: StateDatum[] | null;
   parent: {
     id: PeakList['id'];
     mountains: MountainDatum[] | null;
+    optionalMountains: MountainDatum[] | null;
     states: StateDatum[] | null;
   } | null;
 }
@@ -281,17 +305,22 @@ const PeakListDetail = (props: Props) => {
         );
       } else {
         const {parent, type} = peakList;
-        let mountains: MountainDatum[];
+        let requiredMountains: MountainDatum[];
         if (parent !== null && parent.mountains !== null) {
-          mountains = parent.mountains;
+          requiredMountains = parent.mountains;
         } else if (peakList.mountains !== null) {
-          mountains = peakList.mountains;
+          requiredMountains = peakList.mountains;
         } else {
-          mountains = [];
+          requiredMountains = [];
         }
-        const completedAscents =
-          user && user.mountains !== null ? user.mountains : [];
-
+        let optionalMountains: MountainDatum[];
+        if (parent !== null && parent.optionalMountains !== null) {
+          optionalMountains = parent.optionalMountains;
+        } else if (peakList.optionalMountains !== null) {
+          optionalMountains = peakList.optionalMountains;
+        } else {
+          optionalMountains = [];
+        }
         if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
           statesArray = [...peakList.parent.states];
         } else if (peakList.states && peakList.states.length) {
@@ -299,13 +328,13 @@ const PeakListDetail = (props: Props) => {
         }
 
         let paragraphText: string;
-        if (mountains && mountains.length) {
+        if (requiredMountains && requiredMountains.length) {
           const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
           const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-          const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+          const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
           paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
             'list-name': peakList.name,
-            'number-of-peaks': mountains.length,
+            'number-of-peaks': requiredMountains.length,
             'state-or-region': isStateOrRegion.toString(),
             'state-region-name': statesOrRegions,
             'highest-mountain-name': mountainsSortedByElevation[0].name,
@@ -323,12 +352,19 @@ const PeakListDetail = (props: Props) => {
 
         const userMountains = (user && user.mountains) ? user.mountains : [];
 
-        const mountainsWithDates = mountains.map(mountain => {
+        const requiredMountainsWithDates = requiredMountains.map(mountain => {
           const completionDates = getCompletionDates({type, mountain, userMountains});
           return {...mountain, completionDates};
         });
 
-        const activeMountain = mountainsWithDates.find(mtn => mtn.id === mountainId);
+        const optionalMountainsWithDates = optionalMountains.map(mountain => {
+          const completionDates = getCompletionDates({type, mountain, userMountains});
+          return {...mountain, completionDates};
+        });
+
+        const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
+
+        const activeMountain = allMountainsWithDates.find(mtn => mtn.id === mountainId);
         const highlightedMountain = activeMountain ? [activeMountain] : undefined;
 
         const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
@@ -360,20 +396,36 @@ const PeakListDetail = (props: Props) => {
           }
         };
 
+        const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
+          <>
+            <h2>{getFluentString('peak-list-detail-text-optional-mountains')}</h2>
+            <p>{getFluentString('peak-list-detail-text-optional-mountains-desc')}</p>
+            <MountainTable
+              user={user}
+              mountains={optionalMountainsWithDates}
+              type={type}
+              peakListId={peakList.id}
+              peakListShortName={peakList.shortName}
+              isOtherUser={isOtherUser}
+              showImportExport={false}
+            />
+          </>
+        ) : null;
+
         return (
           <>
             {friendHeader}
             <Header
               user={user}
-              mountains={mountains}
+              mountains={requiredMountains}
               peakList={peakList}
-              completedAscents={completedAscents}
+              completedAscents={userMountains}
               statesArray={statesArray}
               isOtherUser={isOtherUser}
             />
             <Map
               id={peakList.id}
-              coordinates={mountainsWithDates}
+              coordinates={allMountainsWithDates}
               highlighted={highlightedMountain}
               peakListType={type}
               userId={userId}
@@ -391,12 +443,14 @@ const PeakListDetail = (props: Props) => {
             />
             <MountainTable
               user={user}
-              mountains={mountainsWithDates}
+              mountains={requiredMountainsWithDates}
               type={type}
               peakListId={peakList.id}
               peakListShortName={peakList.shortName}
               isOtherUser={isOtherUser}
+              showImportExport={true}
             />
+            {optionalMountainsTable}
           </>
         );
       }

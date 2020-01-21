@@ -263,10 +263,14 @@ interface Props {
   peakListId: string;
   peakListShortName: string;
   isOtherUser?: boolean;
+  showImportExport: boolean;
 }
 
 const MountainTable = (props: Props) => {
-  const { mountains, user, type, peakListId, peakListShortName, isOtherUser } = props;
+  const {
+    mountains, user, type, peakListId, peakListShortName, isOtherUser,
+    showImportExport,
+  } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -892,17 +896,21 @@ const MountainTable = (props: Props) => {
     setSearchQuery(value);
   };
 
+  const importExportButtons = showImportExport === true ? (
+    <ImportExportAscentsButtonContainer>
+      {importButton}
+      <ExportButton
+        onClick={() => setIsExportModalOpen(true)}
+      >
+        {getFluentString('mountain-table-export-button')}
+      </ExportButton>
+    </ImportExportAscentsButtonContainer>
+  ) : null;
+
   return (
     <>
       {gridNote}
-      <ImportExportAscentsButtonContainer>
-        {importButton}
-        <ExportButton
-          onClick={() => setIsExportModalOpen(true)}
-        >
-          {getFluentString('mountain-table-export-button')}
-        </ExportButton>
-      </ImportExportAscentsButtonContainer>
+      {importExportButtons}
       <FilterBar>
         <StandardSearch
           placeholder={getFluentString('peak-list-detail-filter-mountains')}
