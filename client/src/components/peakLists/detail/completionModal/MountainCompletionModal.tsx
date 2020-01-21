@@ -607,6 +607,8 @@ interface DeleteTripReportVariables {
   id: TripReport['id'];
 }
 
+const charLimit = 5000;
+
 interface BaseProps {
   editMountainId: string;
   mountainName: string;
@@ -812,10 +814,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       setErrorMessage(undefined);
       const tripNotes =
         tripNotesEl && tripNotesEl.current && tripNotesEl.current.value.length
-        ? tripNotesEl.current.value : null;
+        ? tripNotesEl.current.value.substring(0, charLimit) : null;
       const tripLink =
         tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
-        ? tripLinkEl.current.value : null;
+        ? tripLinkEl.current.value.substring(0, 1000) : null;
 
       closeEditMountainModalModal();
 
@@ -1374,6 +1376,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         placeholder={getFluentString('trip-report-notes-placeholder')}
         defaultValue={initialTripNotes}
         ref={tripNotesEl}
+        maxLength={charLimit}
       />
       <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
       <Input
@@ -1381,6 +1384,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         placeholder={getFluentString('trip-report-link-placeholder')}
         defaultValue={initialLink}
         ref={tripLinkEl}
+        maxLength={1000}
       />
     </ReportContent>
   ) : null;
@@ -1447,6 +1451,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
                 value={emailInput}
                 onChange={e => setEmailInput(e.target.value)}
                 onKeyPress={onEnterPress}
+                maxLength={1000}
               />
               <AddEmailButton
                 disabled={emailInput === ''}
