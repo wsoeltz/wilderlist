@@ -395,6 +395,7 @@ const MountainDetail = (props: Props) => {
             mountainName={mountain.name}
             latitude={latitude}
             longitude={longitude}
+            state={state.name}
           />
           <IncludedLists
             getFluentString={getFluentString}
