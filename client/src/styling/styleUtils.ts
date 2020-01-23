@@ -270,6 +270,19 @@ export const InputBase = styled.input`
   }
 `;
 
+export const TextareaBase = styled.textarea`
+  padding: 8px;
+  box-sizing: border-box;
+  border: solid 1px ${lightBorderColor};
+  font-size: 1rem;
+  font-weight: ${lightFontWeight};
+  width: 100%;
+
+  &::placeholder {
+    color: ${placeholderColor};
+  }
+`;
+
 export const Label = styled.span`
   text-transform: uppercase;
   color: ${lightBaseColor};
