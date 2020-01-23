@@ -3,9 +3,17 @@ import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
 import {
+  ButtonPrimary,
   ButtonSecondary,
+  GhostButton,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakList, PeakListVariants, State } from '../../../types/graphQLTypes';
+import {
+  ExternalResource,
+  Mountain,
+  PeakList,
+  PeakListVariants,
+  State,
+} from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   SuccessResponse as PeakListDatum,
@@ -22,6 +30,7 @@ import {
   NameInput,
   NameText,
   NavButtonLink,
+  ResourceContainer,
   SelectBox,
   SelectedItemsContainer,
   SelectionPanel,
@@ -39,6 +48,10 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       shortName
       description
       optionalPeaksDescription
+      resources {
+        title
+        url
+      }
       type
       states {
         id
@@ -100,6 +113,11 @@ const mutationsBaseQuery = `
       }
       parent {
         id
+      }
+      resources {
+        id
+        title
+        url
       }
 `;
 
@@ -168,6 +186,16 @@ const CHANGE_PEAK_LIST_OPTIONAL_PEAKS_DESCRIPTION = gql`
   }
 `;
 
+const CHANGE_PEAK_LIST_RESOURCES = gql`
+  mutation($id: ID!, $resources: [ExternalResourcesInputType]) {
+    changePeakListResources(
+      id: $id, resources: $resources
+    ) {
+      ${mutationsBaseQuery}
+    }
+  }
+`;
+
 const CHANGE_PEAK_LIST_VARIANT = gql`
   mutation($id: ID!, $type: PeakListVariants!) {
     adjustPeakListVariant(id: $id, type: $type) {
@@ -228,6 +256,7 @@ interface SuccessResponse {
     shortName: PeakList['shortName'];
     description: PeakList['description'];
     optionalPeaksDescription: PeakList['optionalPeaksDescription'];
+    resources: PeakList['resources'];
     type: PeakList['type'];
     mountains: Array<{
       id: Mountain['id'];
@@ -298,6 +327,11 @@ interface ChangeParentVariables {
   parent: string | null;
 }
 
+interface ChangeResourcesVariables {
+  id: string;
+  resources: ExternalResource[];
+}
+
 interface CheckboxProps {
   name: string;
   id: string;
@@ -362,6 +396,8 @@ const EditPeakList = (props: Props) => {
   const [inputOptionalPeaksDescriptionValue, setInputOptionalPeaksDescriptionValue] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [mountainReqLevel, setMountainReqLevel] = useState<MountainReqLevel>(MountainReqLevel.required);
+  const [externalResources, setExternalResources] = useState<ExternalResource[]>([{title: '', url: ''}]);
+  const [editingExternalResources, setEditingExternalResources] = useState<boolean>(false);
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
     variables: { id: peakListId },
@@ -396,6 +432,8 @@ const EditPeakList = (props: Props) => {
   const [changePeakListOptionalPeaksDescription] =
     useMutation<SuccessResponse, ChangeOptionalPeaksDescriptionVariables>(
       CHANGE_PEAK_LIST_OPTIONAL_PEAKS_DESCRIPTION);
+  const [changePeakListResources] =
+    useMutation<SuccessResponse, ChangeResourcesVariables>(CHANGE_PEAK_LIST_RESOURCES);
   const [adjustPeakListVariant] = useMutation<SuccessResponse, ChangeVariantVariables>(CHANGE_PEAK_LIST_VARIANT);
   const [changePeakListParent] = useMutation<SuccessResponse, ChangeParentVariables>(CHANGE_PEAK_LIST_PARENT);
 
@@ -403,6 +441,7 @@ const EditPeakList = (props: Props) => {
   let shortName: React.ReactElement | null;
   let description: React.ReactElement | null;
   let optionalPeaksDescription: React.ReactElement | null;
+  let resources: React.ReactElement | null;
   let mountains: React.ReactElement | null;
   let type: React.ReactElement | null;
   let parent: React.ReactElement | null;
@@ -413,6 +452,7 @@ const EditPeakList = (props: Props) => {
     shortName = null;
     description = null;
     optionalPeaksDescription = null;
+    resources = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = (<p>Loading</p>);
@@ -423,6 +463,7 @@ const EditPeakList = (props: Props) => {
     shortName = null;
     description = null;
     optionalPeaksDescription = null;
+    resources = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = null;
@@ -565,6 +606,94 @@ const EditPeakList = (props: Props) => {
       optionalPeaksDescription = null;
     }
 
+    if (editingExternalResources === true) {
+      const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+        (field: keyof ExternalResource, index: number) =>
+          setExternalResources(
+            externalResources.map((resource, _index) => {
+              if (resource[field] === e.target.value || index !== _index) {
+                return resource;
+              } else {
+                return {...resource, [field]: e.target.value};
+              }
+            },
+          ),
+        );
+
+      const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
+        e.preventDefault();
+        setExternalResources(externalResources.filter((_v, i) => i !== index));
+      };
+
+      const updateResources = () => {
+        const cleanedResources = externalResources.map(({title, url}) => ({title, url}));
+        changePeakListResources({variables: {
+          id: peakList.id, resources: cleanedResources,
+        }});
+        setEditingExternalResources(false);
+      };
+
+      const resourceInputs = externalResources.map((resource, i) => (
+        <ResourceContainer key={i}>
+          <NameInput
+            value={resource.title}
+            onChange={e => handleExternalResourceChange(e)('title', i)}
+            placeholder={'title'}
+          />
+          <NameInput
+            value={resource.url}
+            onChange={e => handleExternalResourceChange(e)('url', i)}
+            placeholder={'url'}
+          />
+          <GhostButton onClick={e => deleteResource(e)(i)}>
+            Delete
+          </GhostButton>
+        </ResourceContainer>
+      ));
+      resources = (
+        <div>
+          {resourceInputs}
+          <ResourceContainer>
+            <ButtonSecondary onClick={() => setEditingExternalResources(false)}>
+              Cancel
+            </ButtonSecondary>
+            <UpdateButton onClick={updateResources}>Update</UpdateButton>
+            <ButtonPrimary onClick={e => {
+              e.preventDefault();
+              setExternalResources([...externalResources, {title: '', url: ''}]);
+            }}>
+              Add Another resource
+            </ButtonPrimary>
+          </ResourceContainer>
+        </div>
+      );
+    } else {
+      const setEditResourcesToTrue = () => {
+        const resourceList = peakList.resources && peakList.resources.length
+          ? peakList.resources : [{title: '', url: ''}];
+        setEditingExternalResources(true);
+        setExternalResources(resourceList);
+      };
+      const resourceElms = peakList.resources && peakList.resources.length ? peakList.resources.map(resource => (
+        <ResourceContainer key={'list' + resource.url + resource.title}>
+          <NameInactive>
+            <NameText value={resource.title} readOnly={true}/>
+          </NameInactive>
+          <NameInactive>
+            <NameText value={resource.url} readOnly={true}/>
+          </NameInactive>
+        </ResourceContainer>
+      )) : <div>No Resources</div>;
+      resources = (
+        <div>
+          {resourceElms}
+          <ButtonSecondary onClick={setEditResourcesToTrue}>
+            Edit Optional Peaks Description
+          </ButtonSecondary>
+        </div>
+      );
+    }
+
     selectedMountains = null;
     selectedStatesLi = null;
 
@@ -689,6 +818,7 @@ const EditPeakList = (props: Props) => {
     shortName = null;
     description = null;
     optionalPeaksDescription = null;
+    resources = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = null;
@@ -706,6 +836,7 @@ const EditPeakList = (props: Props) => {
         {shortName}
         {description}
         {optionalPeaksDescription}
+        {resources}
         {type}
         {parent}
         <SubNav>

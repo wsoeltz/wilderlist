@@ -1,12 +1,13 @@
 /* tslint:disable:await-promise */
 import {
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLString,
-  GraphQLInputObjectType,
 } from 'graphql';
 import {
+  ExternalResource,
   Mountain as IMountain,
   PeakList as IPeakList,
   State as IState,
@@ -464,6 +465,28 @@ const peakListMutations: any = {
           _id: id,
         },
         { optionalPeaksDescription: newOptionalPeaksDescription },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  changePeakListResources: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      resources: { type: new GraphQLList(ExternalResourcesInputType) },
+    },
+    async resolve(_unused: any,
+                  { id, resources }: { id: string , resources: ExternalResource[]},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { resources },
         {new: true});
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;
