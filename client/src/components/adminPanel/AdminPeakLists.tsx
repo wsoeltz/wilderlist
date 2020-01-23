@@ -9,7 +9,7 @@ import {
   ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
-import { PeakList, PeakListVariants, State, ExternalResource } from '../../types/graphQLTypes';
+import { ExternalResource, PeakList, PeakListVariants, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AddPeakList from './peakLists/AddPeakList';

@@ -2,11 +2,12 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
+import { ButtonPrimary, GhostButton } from '../../../styling/styleUtils';
 import {
+  ExternalResource,
   Mountain,
   PeakListVariants,
   State,
-  ExternalResource,
 } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
@@ -23,15 +24,14 @@ import {
   NameActive,
   NameInput,
   NavButtonLink,
+  ResourceContainer,
   SelectBox,
   SelectedItemsContainer,
   SelectionPanel,
   SubNav,
   TextareaActive,
-  ResourceContainer,
 } from '../sharedStyles';
 import { MountainReqLevel } from './EditPeakList';
-import { ButtonPrimary, GhostButton } from '../../../styling/styleUtils';
 
 const GET_MOUNTAINS_AND_STATES = gql`
   query ListMountainsAndStates{
@@ -120,7 +120,7 @@ const AddPeakList = (props: Props) => {
   const [mountainSearchQuery, setMountainSearchQuery] = useState<string>('');
   const [externalResources, setExternalResources] = useState<ExternalResource[]>([{title: '', url: ''}]);
 
-  const handExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     (field: keyof ExternalResource, index: number) =>
       setExternalResources(
         externalResources.map((resource, _index) => {
@@ -129,25 +129,25 @@ const AddPeakList = (props: Props) => {
           } else {
             return {...resource, [field]: e.target.value};
           }
-        }
-      )
+        },
+      ),
     );
 
   const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
     e.preventDefault();
     setExternalResources(externalResources.filter((_v, i) => i !== index));
-  }
+  };
 
   const resourceInputs = externalResources.map((resource, i) => (
     <ResourceContainer key={i}>
       <NameInput
         value={resource.title}
-        onChange={e => handExternalResourceChange(e)('title', i)}
+        onChange={e => handleExternalResourceChange(e)('title', i)}
         placeholder={'title'}
       />
       <NameInput
         value={resource.url}
-        onChange={e => handExternalResourceChange(e)('url', i)}
+        onChange={e => handleExternalResourceChange(e)('url', i)}
         placeholder={'url'}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
@@ -310,7 +310,7 @@ const AddPeakList = (props: Props) => {
           {resourceInputs}
           <ButtonPrimary onClick={e => {
             e.preventDefault();
-            setExternalResources([...externalResources, {title: '', url: ''}])
+            setExternalResources([...externalResources, {title: '', url: ''}]);
           }}>
             Add Another resource
           </ButtonPrimary>

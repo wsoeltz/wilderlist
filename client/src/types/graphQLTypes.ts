@@ -54,8 +54,8 @@ export enum PeakListVariants {
 }
 
 export interface ExternalResource {
-  title: string,
-  url: string,
+  title: string;
+  url: string;
 }
 
 export interface PeakList {
@@ -73,7 +73,7 @@ export interface PeakList {
   searchString: string;
   states: Array<State | null> | null;
   children: Array<PeakList | null> | null;
-  resources: Array<ExternalResource | null> | null;
+  resources: ExternalResource[] | null;
 }
 
 export enum PermissionTypes {
