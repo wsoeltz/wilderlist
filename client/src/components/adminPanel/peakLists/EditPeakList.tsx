@@ -26,9 +26,9 @@ import {
   SelectedItemsContainer,
   SelectionPanel,
   SubNav,
-  UpdateButton,
   TextareaActive,
   TextareaDisabled,
+  UpdateButton,
 } from '../sharedStyles';
 
 const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
@@ -101,7 +101,7 @@ const mutationsBaseQuery = `
       parent {
         id
       }
-`
+`;
 
 const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
   mutation($listId: ID!, $itemId: ID!) {
