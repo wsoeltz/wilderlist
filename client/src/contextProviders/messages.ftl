@@ -332,6 +332,9 @@ local-trails-hiking-project-via-the = via the
 local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
 local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.
 
+local-trails-nearby-trails-title = Nearby Trails
+local-trails-all-trails-link-text = View trails for { $mountain-name } on
+
 trip-report-conditions-title = Conditions
 
 trip-report-condition-name = {
