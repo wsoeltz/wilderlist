@@ -19,6 +19,7 @@ export type PeakListModelType = mongoose.Model<PeakListSchemaType> & PeakListSch
 const PeakListSchema = new Schema({
   name: { type: String, required: true },
   shortName: { type: String, required: true },
+  description: { type: String },
   type: { type: String, required: true},
   mountains: [{
     type: Schema.Types.ObjectId,
@@ -67,6 +68,7 @@ const PeakListType: any = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     shortName: { type: GraphQLString },
+    description: { type: GraphQLString },
     type: { type: PeakListVariants },
     mountains:  {
       type: new GraphQLList(MountainType),
