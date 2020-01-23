@@ -156,13 +156,13 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
     <>
       <VerticalContentItem>
         <ItemTitle>
-          Nearby Trails
+          {getFluentString('local-trails-nearby-trails-title')}
         </ItemTitle>
         <BasicListItem>
           <AllTrailsLink
             lat={latitude}
             long={longitude}
-            text={`View ${mountainName} on `}
+            text={getFluentString('local-trails-all-trails-link-text', {'mountain-name': mountainName})}
           />
         </BasicListItem>
       </VerticalContentItem>
