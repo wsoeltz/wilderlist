@@ -409,6 +409,28 @@ const peakListMutations: any = {
       }
     },
   },
+  changePeakListDescription: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newDescription: { type: GraphQLString },
+    },
+    async resolve(_unused: any,
+                  { id, newDescription }: { id: string , newDescription: string},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { description: newDescription },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
   adjustPeakListVariant: {
     type: PeakListType,
     args: {

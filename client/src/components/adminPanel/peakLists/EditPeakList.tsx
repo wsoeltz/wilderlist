@@ -4,6 +4,7 @@ import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
 import {
   ButtonSecondary,
+  TextareaBase,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakList, PeakListVariants, State } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
@@ -35,6 +36,7 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       id
       name
       shortName
+      description
       type
       states {
         id
@@ -85,6 +87,7 @@ const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -104,6 +107,7 @@ const ADD_MOUNTAIN_TO_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -122,6 +126,7 @@ const REMOVE_OPTIONAL_MOUNTAIN_FROM_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -141,6 +146,7 @@ const ADD_OPTIONAL_MOUNTAIN_TO_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -160,6 +166,7 @@ const CHANGE_PEAK_LIST_NAME = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -179,6 +186,27 @@ const CHANGE_PEAK_LIST_SHORT_NAME = gql`
       id
       name
       shortName
+      description
+      type
+      mountains {
+        id
+        name
+      }
+      optionalMountains {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const CHANGE_PEAK_LIST_DESCRIPTION = gql`
+  mutation($id: ID!, $newDescription: String!) {
+    changePeakListDescription(id: $id, newDescription: $newDescription) {
+      id
+      name
+      shortName
+      description
       type
       mountains {
         id
@@ -198,6 +226,7 @@ const CHANGE_PEAK_LIST_VARIANT = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -220,6 +249,7 @@ const CHANGE_PEAK_LIST_PARENT = gql`
       id
       name
       shortName
+      description
       type
       mountains {
         id
@@ -242,6 +272,7 @@ const REMOVE_STATE_FROM_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       states {
         id
@@ -257,6 +288,7 @@ const ADD_STATE_TO_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       states {
         id
@@ -276,6 +308,7 @@ interface SuccessResponse {
     id: PeakList['id'];
     name: PeakList['name'];
     shortName: PeakList['shortName'];
+    description: PeakList['description'];
     type: PeakList['type'];
     mountains: Array<{
       id: Mountain['id'];
@@ -324,6 +357,11 @@ interface ChangeNameVariables {
 interface ChangeShortNameVariables {
   id: string;
   newShortName: string;
+}
+
+interface ChangeDescriptionVariables {
+  id: string;
+  newDescription: string;
 }
 
 interface ChangeVariantVariables {
@@ -392,8 +430,10 @@ const EditPeakList = (props: Props) => {
   const { listDatum, peakListId, cancel } = props;
   const [editingName, setEditingName] = useState<boolean>(false);
   const [editingShortName, setEditingShortName] = useState<boolean>(false);
+  const [editingDescription, setEditingDescription] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
   const [inputShortNameValue, setInputShortNameValue] = useState<string>('');
+  const [inputDescriptionValue, setInputDescriptionValue] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [mountainReqLevel, setMountainReqLevel] = useState<MountainReqLevel>(MountainReqLevel.required);
 
@@ -425,11 +465,14 @@ const EditPeakList = (props: Props) => {
   });
   const [changePeakListName] = useMutation<SuccessResponse, ChangeNameVariables>(CHANGE_PEAK_LIST_NAME);
   const [changePeakListShortName] = useMutation<SuccessResponse, ChangeShortNameVariables>(CHANGE_PEAK_LIST_SHORT_NAME);
+  const [changePeakListDescription] =
+    useMutation<SuccessResponse, ChangeDescriptionVariables>(CHANGE_PEAK_LIST_DESCRIPTION);
   const [adjustPeakListVariant] = useMutation<SuccessResponse, ChangeVariantVariables>(CHANGE_PEAK_LIST_VARIANT);
   const [changePeakListParent] = useMutation<SuccessResponse, ChangeParentVariables>(CHANGE_PEAK_LIST_PARENT);
 
   let name: React.ReactElement | null;
   let shortName: React.ReactElement | null;
+  let description: React.ReactElement | null;
   let mountains: React.ReactElement | null;
   let type: React.ReactElement | null;
   let parent: React.ReactElement | null;
@@ -438,6 +481,7 @@ const EditPeakList = (props: Props) => {
   if (loading === true) {
     name = null;
     shortName = null;
+    description = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = (<p>Loading</p>);
@@ -446,6 +490,7 @@ const EditPeakList = (props: Props) => {
   } else if (error !== undefined) {
     name = null;
     shortName = null;
+    description = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = null;
@@ -485,8 +530,6 @@ const EditPeakList = (props: Props) => {
     } else {
       name = null;
     }
-    selectedMountains = null;
-    selectedStatesLi = null;
     if (editingShortName === false) {
       const setEditShortNameToTrue = () => {
         setEditingShortName(true);
@@ -516,6 +559,42 @@ const EditPeakList = (props: Props) => {
     } else {
       shortName = null;
     }
+    const descriptionString = data.peakList.description ? data.peakList.description : '';
+    if (editingDescription === false) {
+      const setEditDescriptionToTrue = () => {
+        setEditingDescription(true);
+        setInputDescriptionValue(descriptionString);
+      };
+      description = (
+        <NameInactive>
+          <NameText value={descriptionString} readOnly={true}/>
+          <ButtonSecondary onClick={setEditDescriptionToTrue}>Edit Description</ButtonSecondary>
+        </NameInactive>
+      );
+    } else if (editingDescription === true) {
+      const handleDescriptionSubmit = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        changePeakListDescription({variables: { id: peakListId, newDescription: inputDescriptionValue}});
+        setEditingDescription(false);
+      };
+      description = (
+        <NameActive>
+          <EditNameForm onSubmit={handleDescriptionSubmit}>
+            <TextareaBase
+              value={inputDescriptionValue}
+              onChange={(e) => setInputDescriptionValue(e.target.value)}
+            />
+            <UpdateButton type='submit'>Update</UpdateButton>
+          </EditNameForm>
+          <ButtonSecondary onClick={() => setEditingDescription(false)}>Cancel</ButtonSecondary>
+        </NameActive>
+      );
+    } else {
+      description = null;
+    }
+
+    selectedMountains = null;
+    selectedStatesLi = null;
 
     const sortedSelectedStates = peakList.states ? sortBy(peakList.states, ['name']) : [];
     selectedStatesLi = sortedSelectedStates.map(state => <li key={state.id}>{state.name}</li>);
@@ -636,6 +715,7 @@ const EditPeakList = (props: Props) => {
   } else {
     name = null;
     shortName = null;
+    description = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = null;
@@ -651,6 +731,7 @@ const EditPeakList = (props: Props) => {
     <EditPanel onCancel={cancel}>
         {name}
         {shortName}
+        {description}
         {type}
         {parent}
         <SubNav>
