@@ -228,3 +228,9 @@ export const SelectBox = styled.select`
     background-color: #ddd;
   }
 `;
+
+export const ResourceContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  width: 100%;
+`;

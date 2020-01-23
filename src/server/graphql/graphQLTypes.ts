@@ -53,6 +53,11 @@ export enum PeakListVariants {
   grid = 'grid',
 }
 
+export interface ExternalResource {
+  title: string,
+  url: string,
+}
+
 export interface PeakList {
   id: string;
   name: string;
@@ -68,6 +73,7 @@ export interface PeakList {
   searchString: string;
   states: Array<State | null> | null;
   children: Array<PeakList | null> | null;
+  resources: Array<ExternalResource | null> | null;
 }
 
 export enum PermissionTypes {

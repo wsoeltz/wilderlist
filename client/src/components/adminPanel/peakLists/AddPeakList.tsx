@@ -2,7 +2,12 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
-import { Mountain, PeakListVariants, State } from '../../../types/graphQLTypes';
+import {
+  Mountain,
+  PeakListVariants,
+  State,
+  ExternalResource,
+} from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   AddPeakListVariables,
@@ -23,8 +28,10 @@ import {
   SelectionPanel,
   SubNav,
   TextareaActive,
+  ResourceContainer,
 } from '../sharedStyles';
 import { MountainReqLevel } from './EditPeakList';
+import { ButtonPrimary, GhostButton } from '../../../styling/styleUtils';
 
 const GET_MOUNTAINS_AND_STATES = gql`
   query ListMountainsAndStates{
@@ -111,6 +118,43 @@ const AddPeakList = (props: Props) => {
   const [type, setType] = useState<PeakListVariants>(PeakListVariants.standard);
   const [parent, setParent] = useState<string | null>(null);
   const [mountainSearchQuery, setMountainSearchQuery] = useState<string>('');
+  const [externalResources, setExternalResources] = useState<ExternalResource[]>([{title: '', url: ''}]);
+
+  const handExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    (field: keyof ExternalResource, index: number) =>
+      setExternalResources(
+        externalResources.map((resource, _index) => {
+          if (resource[field] === e.target.value || index !== _index) {
+            return resource;
+          } else {
+            return {...resource, [field]: e.target.value};
+          }
+        }
+      )
+    );
+
+  const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
+    e.preventDefault();
+    setExternalResources(externalResources.filter((_v, i) => i !== index));
+  }
+
+  const resourceInputs = externalResources.map((resource, i) => (
+    <ResourceContainer key={i}>
+      <NameInput
+        value={resource.title}
+        onChange={e => handExternalResourceChange(e)('title', i)}
+        placeholder={'title'}
+      />
+      <NameInput
+        value={resource.url}
+        onChange={e => handExternalResourceChange(e)('url', i)}
+        placeholder={'url'}
+      />
+      <GhostButton onClick={e => deleteResource(e)(i)}>
+        Delete
+      </GhostButton>
+    </ResourceContainer>
+  ));
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -122,7 +166,7 @@ const AddPeakList = (props: Props) => {
         name, shortName, mountains: selectedMountainIds,
         type, parent, states: selectedStateIds,
         optionalMountains: selectedOptionalMountainIds,
-        description, optionalPeaksDescription,
+        description, optionalPeaksDescription, resources: externalResources,
       });
     }
     cancel();
@@ -263,6 +307,13 @@ const AddPeakList = (props: Props) => {
             onChange={e => setOptionalPeaksDescription(e.target.value)}
             placeholder='optionalPeaksDescription'
           />
+          {resourceInputs}
+          <ButtonPrimary onClick={e => {
+            e.preventDefault();
+            setExternalResources([...externalResources, {title: '', url: ''}])
+          }}>
+            Add Another resource
+          </ButtonPrimary>
         </NameActive>
         <div>
           <label>Set list type</label>
