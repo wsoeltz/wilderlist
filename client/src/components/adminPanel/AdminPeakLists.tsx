@@ -9,7 +9,7 @@ import {
   ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
-import { PeakList, PeakListVariants, State } from '../../types/graphQLTypes';
+import { PeakList, PeakListVariants, State, ExternalResource } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AddPeakList from './peakLists/AddPeakList';
@@ -48,6 +48,7 @@ const ADD_PEAK_LIST = gql`
     $optionalMountains: [ID],
     $states: [ID],
     $parent: ID,
+    $resources: [ExternalResourcesInputType],
   ) {
     addPeakList(
       name: $name,
@@ -59,6 +60,7 @@ const ADD_PEAK_LIST = gql`
       parent: $parent,
       description: $description,
       optionalPeaksDescription: $optionalPeaksDescription,
+      resources: $resources,
     ) {
       id
       name
@@ -97,6 +99,7 @@ export interface AddPeakListVariables {
   parent: string | null;
   description: string | null;
   optionalPeaksDescription: string | null;
+  resources: ExternalResource[];
 }
 
 const DELETE_PEAK_LIST = gql`

@@ -41,6 +41,10 @@ const PeakListSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'state',
   }],
+  resources: [{
+    title: { type: String },
+    url: { type: String },
+  }],
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -61,6 +65,19 @@ export const PeakListVariants = new GraphQLEnumType({
       value: 'grid',
     },
   },
+});
+
+const ExternalResourcesType: any = new GraphQLObjectType({
+  name: 'ExternalResourcesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    title: {
+      type: GraphQLString,
+    },
+    url: {
+      type: GraphQLString,
+    },
+  }),
 });
 
 const PeakListType: any = new GraphQLObjectType({
@@ -138,6 +155,7 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    resources: { type: new GraphQLList(ExternalResourcesType) },
   }),
 });
 

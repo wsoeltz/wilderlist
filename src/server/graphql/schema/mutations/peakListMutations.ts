@@ -4,6 +4,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLInputObjectType,
 } from 'graphql';
 import {
   Mountain as IMountain,
@@ -26,7 +27,20 @@ interface AddPeakListVariables {
   optionalMountains: IMountain[];
   parent: IPeakList;
   states: IState[];
+  resources: IPeakList['resources'];
 }
+
+const ExternalResourcesInputType: any = new GraphQLInputObjectType({
+  name: 'ExternalResourcesInputType',
+  fields: () => ({
+    title: {
+      type: GraphQLString,
+    },
+    url: {
+      type: GraphQLString,
+    },
+  }),
+});
 
 const peakListMutations: any = {
   addPeakList: {
@@ -41,11 +55,13 @@ const peakListMutations: any = {
       optionalMountains: { type: new GraphQLList(GraphQLID)},
       states: { type: new GraphQLList(GraphQLID)},
       parent: {type: GraphQLID },
+      resources: { type: new GraphQLList(ExternalResourcesInputType) },
     },
     resolve(_unused: any, input: AddPeakListVariables) {
       const {
         name, shortName, type, mountains, parent, states,
         description, optionalMountains, optionalPeaksDescription,
+        resources,
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
@@ -54,6 +70,7 @@ const peakListMutations: any = {
           name, shortName, mountains, optionalMountains,
           type, parent, numUsers: 0,
           searchString, states, description, optionalPeaksDescription,
+          resources,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
