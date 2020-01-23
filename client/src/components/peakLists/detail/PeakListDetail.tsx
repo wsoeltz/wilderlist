@@ -63,6 +63,8 @@ const GET_PEAK_LIST = gql`
       id
       name
       shortName
+      description
+      optionalPeaksDescription
       type
       mountains {
         id
@@ -186,6 +188,8 @@ export interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  description: PeakList['description'];
+  optionalPeaksDescription: PeakList['optionalPeaksDescription'];
   mountains: MountainDatum[] | null;
   optionalMountains: MountainDatum[] | null;
   states: StateDatum[] | null;
@@ -304,7 +308,7 @@ const PeakListDetail = (props: Props) => {
           </PlaceholderText>
         );
       } else {
-        const {parent, type} = peakList;
+        const {parent, type, description, optionalPeaksDescription} = peakList;
         let requiredMountains: MountainDatum[];
         if (parent !== null && parent.mountains !== null) {
           requiredMountains = parent.mountains;
@@ -328,7 +332,9 @@ const PeakListDetail = (props: Props) => {
         }
 
         let paragraphText: string;
-        if (requiredMountains && requiredMountains.length) {
+        if (description && description.length) {
+          paragraphText = description;
+        } else if (requiredMountains && requiredMountains.length) {
           const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
           const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
           const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
@@ -396,10 +402,13 @@ const PeakListDetail = (props: Props) => {
           }
         };
 
+        const optionalMountainsText = optionalPeaksDescription && optionalPeaksDescription.length
+          ? optionalPeaksDescription : getFluentString('peak-list-detail-text-optional-mountains-desc');
+
         const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
           <>
             <h2>{getFluentString('peak-list-detail-text-optional-mountains')}</h2>
-            <p>{getFluentString('peak-list-detail-text-optional-mountains-desc')}</p>
+            <p>{optionalMountainsText}</p>
             <MountainTable
               user={user}
               mountains={optionalMountainsWithDates}
