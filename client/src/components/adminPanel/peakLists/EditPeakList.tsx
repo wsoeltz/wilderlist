@@ -377,7 +377,7 @@ const Checkbox = (props: CheckboxProps) => {
 
 };
 
-enum MountainReqLevel {
+export enum MountainReqLevel {
   required = 'required',
   optional = 'optional',
 }
@@ -543,8 +543,12 @@ const EditPeakList = (props: Props) => {
           const removeItem = mountainReqLevel === MountainReqLevel.optional
             ? removeOptionalMountainFromPeakList : removeItemFromPeakList;
           removeItem({ variables: {listId: peakListId, itemId}});
-          const newSelectedMountains = peakList.mountains.filter(mtn => mtn.id !== itemId);
-          const stateExists = newSelectedMountains.find(mtn => {
+          const targetList = mountainReqLevel === MountainReqLevel.optional
+            ? peakList.optionalMountains : peakList.mountains;
+          const otherList = mountainReqLevel === MountainReqLevel.required
+            ? peakList.optionalMountains : peakList.mountains;
+          const newSelectedMountains = targetList.filter(mtn => mtn.id !== itemId);
+          const stateExists = [...newSelectedMountains, ...otherList].find(mtn => {
             if (mtn && mtn.state && mtn.state.id && state && state.id) {
               return mtn.state.id === state.id;
             } else {

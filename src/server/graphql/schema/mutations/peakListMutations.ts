@@ -19,8 +19,10 @@ import { User } from '../queryTypes/userType';
 interface AddPeakListVariables {
   name: string;
   shortName: string;
+  description: string | null;
   type: IPeakList['type'];
   mountains: IMountain[];
+  optionalMountains: IMountain[];
   parent: IPeakList;
   states: IState[];
 }
@@ -31,22 +33,25 @@ const peakListMutations: any = {
     args: {
       name: { type: GraphQLNonNull(GraphQLString) },
       shortName: { type: GraphQLNonNull(GraphQLString) },
+      description: { type: GraphQLString },
       type: {type: GraphQLNonNull(PeakListVariants) },
       mountains: { type: new GraphQLList(GraphQLID)},
+      optionalMountains: { type: new GraphQLList(GraphQLID)},
       states: { type: new GraphQLList(GraphQLID)},
       parent: {type: GraphQLID },
     },
     resolve(_unused: any, input: AddPeakListVariables) {
       const {
         name, shortName, type, mountains, parent, states,
+        description, optionalMountains,
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
         const searchString = name + getType(type) + ' ' + shortName + ' ' + type;
         const newPeakList = new PeakList({
-          name, shortName, mountains,
+          name, shortName, mountains, optionalMountains,
           type, parent, numUsers: 0,
-          searchString, states,
+          searchString, states, description,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -54,6 +59,19 @@ const peakListMutations: any = {
               { $push: {lists: newPeakList.id} },
               function(err, model) {
                 PeakList.update({ $push: { mountains: id } });
+                if (err) {
+                  console.error(err);
+                }
+              },
+            );
+          });
+        }
+        if (optionalMountains !== undefined) {
+          optionalMountains.forEach((id) => {
+            Mountain.findByIdAndUpdate(id,
+              { $push: {optionalLists: newPeakList.id} },
+              function(err, model) {
+                PeakList.update({ $push: { optionalMountains: id } });
                 if (err) {
                   console.error(err);
                 }
@@ -86,6 +104,7 @@ const peakListMutations: any = {
     async resolve(_unused: any, { id }: { id: string }) {
       try {
         await removeConnections(PeakList, id, 'mountains', Mountain, 'lists');
+        await removeConnections(PeakList, id, 'optionalMountains', Mountain, 'optionalLists');
         await removeConnections(PeakList, id, 'users', User, 'peakLists');
         await removeConnections(PeakList, id, 'states', State, 'peakLists');
         return PeakList.findByIdAndDelete(id);
