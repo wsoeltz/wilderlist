@@ -12,10 +12,10 @@ import {
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
-  lightBaseColor,
   lightBorderColor,
   lightFontWeight,
   placeholderColor,
+  SectionTitle,
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { UserContext } from '../App';
@@ -26,13 +26,6 @@ import {
   LoginText,
   redditRed,
 } from '../login';
-
-const Title = styled.div`
-  padding: 0.5rem 0;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: ${lightBaseColor};
-`;
 
 const Textarea = styled(TextareaAutosize)`
   padding: 0.5rem;
@@ -125,7 +118,7 @@ const UserNote = (props: Props) => {
 
   return (
     <>
-      <Title>Notes</Title>
+      <SectionTitle>Notes</SectionTitle>
       <Textarea
         placeholder={placeholder}
         value={value}

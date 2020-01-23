@@ -96,6 +96,13 @@ export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const SectionTitle = styled.div`
+  padding: 0.5rem 0;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: ${lightBaseColor};
+`;
+
 export const standardContainerPadding = '1rem';
 
 export const linkStyles = `

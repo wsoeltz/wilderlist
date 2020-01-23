@@ -97,6 +97,8 @@ global-text-value-delete = Delete
 
 global-text-value-flag = Flag
 
+global-text-value-external-resources = External Resources
+
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard
