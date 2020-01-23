@@ -12,8 +12,12 @@ import {
   ButtonPrimaryLink,
   lightBorderColor,
   PlaceholderText,
+  SectionTitle,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import {
+  isValidURL,
+} from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
@@ -57,6 +61,25 @@ const LinkButton = styled(ButtonPrimaryLink)`
   font-size: 0.7rem;
 `;
 
+const ResourceList = styled.ul`
+  margin-top: 0;
+  padding-left: 0;
+  list-style: none;
+`;
+
+const ResourceItem = styled.li`
+  padding-left: 1rem;
+  position: relative;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+
+  &:before {
+    content: '›';
+    position: absolute;
+    left: 0.5rem;
+  }
+`;
+
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID) {
     peakList(id: $id) {
@@ -65,6 +88,10 @@ const GET_PEAK_LIST = gql`
       shortName
       description
       optionalPeaksDescription
+      resources {
+        title
+        url
+      }
       type
       mountains {
         id
@@ -190,6 +217,7 @@ export interface PeakListDatum {
   type: PeakList['type'];
   description: PeakList['description'];
   optionalPeaksDescription: PeakList['optionalPeaksDescription'];
+  resources: PeakList['resources'];
   mountains: MountainDatum[] | null;
   optionalMountains: MountainDatum[] | null;
   states: StateDatum[] | null;
@@ -308,7 +336,7 @@ const PeakListDetail = (props: Props) => {
           </PlaceholderText>
         );
       } else {
-        const {parent, type, description, optionalPeaksDescription} = peakList;
+        const {parent, type, description, optionalPeaksDescription, resources} = peakList;
         let requiredMountains: MountainDatum[];
         if (parent !== null && parent.mountains !== null) {
           requiredMountains = parent.mountains;
@@ -354,6 +382,32 @@ const PeakListDetail = (props: Props) => {
           paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
             'list-name': peakList.name,
           });
+        }
+
+        let resourcesList: React.ReactElement<any> | null;
+        if (resources && resources.length) {
+          const resourcesArray: Array<React.ReactElement<any>> = [];
+          resources.forEach(resource => {
+            if (resource.title.length && resource.url.length && isValidURL(resource.url)) {
+              resourcesArray.push(
+                <ResourceItem>
+                  <a href={resource.url}>{resource.title}</a>
+                </ResourceItem>,
+              );
+            }
+          });
+          resourcesList = resourcesArray.length ? (
+            <>
+              <SectionTitle>
+                {getFluentString('global-text-value-external-resources')}
+              </SectionTitle>
+              <ResourceList>
+                {resourcesArray}
+              </ResourceList>
+            </>
+          ) : null;
+        } else {
+          resourcesList = null;
         }
 
         const userMountains = (user && user.mountains) ? user.mountains : [];
@@ -444,6 +498,7 @@ const PeakListDetail = (props: Props) => {
             <p>
               {paragraphText}
             </p>
+            {resourcesList}
             <UserNote
               placeholder={notesPlaceholderText}
               defaultValue={defaultNoteText}
