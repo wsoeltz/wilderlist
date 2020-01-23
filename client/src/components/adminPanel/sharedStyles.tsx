@@ -6,6 +6,7 @@ import {
   InputBase,
   lightBorderColor,
   LinkButton,
+  TextareaBase,
 } from '../../styling/styleUtils';
 
 export const SubNav = styled.nav`
@@ -140,6 +141,18 @@ export const NameText = styled(InputBase)`
   margin-bottom: 0.4rem;
 `;
 export const NameInput = styled(InputBase)`
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+
+export const TextareaDisabled = styled(TextareaBase)`
+  border: 1px solid transparent;
+  outline: none;
+  background-color: #eee;
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+export const TextareaActive = styled(TextareaBase)`
   flex-shrink: 0;
   margin-bottom: 0.4rem;
 `;

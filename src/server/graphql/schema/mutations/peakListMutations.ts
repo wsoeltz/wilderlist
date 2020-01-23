@@ -20,6 +20,7 @@ interface AddPeakListVariables {
   name: string;
   shortName: string;
   description: string | null;
+  optionalPeaksDescription: string | null;
   type: IPeakList['type'];
   mountains: IMountain[];
   optionalMountains: IMountain[];
@@ -34,6 +35,7 @@ const peakListMutations: any = {
       name: { type: GraphQLNonNull(GraphQLString) },
       shortName: { type: GraphQLNonNull(GraphQLString) },
       description: { type: GraphQLString },
+      optionalPeaksDescription: { type: GraphQLString },
       type: {type: GraphQLNonNull(PeakListVariants) },
       mountains: { type: new GraphQLList(GraphQLID)},
       optionalMountains: { type: new GraphQLList(GraphQLID)},
@@ -43,7 +45,7 @@ const peakListMutations: any = {
     resolve(_unused: any, input: AddPeakListVariables) {
       const {
         name, shortName, type, mountains, parent, states,
-        description, optionalMountains,
+        description, optionalMountains, optionalPeaksDescription,
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
@@ -51,7 +53,7 @@ const peakListMutations: any = {
         const newPeakList = new PeakList({
           name, shortName, mountains, optionalMountains,
           type, parent, numUsers: 0,
-          searchString, states, description,
+          searchString, states, description, optionalPeaksDescription,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -423,6 +425,28 @@ const peakListMutations: any = {
           _id: id,
         },
         { description: newDescription },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  changePeakListOptionalPeaksDescription: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      newOptionalPeaksDescription: { type: GraphQLString },
+    },
+    async resolve(_unused: any,
+                  { id, newOptionalPeaksDescription }: { id: string , newOptionalPeaksDescription: string},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const peakList = await PeakList.findOneAndUpdate({
+          _id: id,
+        },
+        { optionalPeaksDescription: newOptionalPeaksDescription },
         {new: true});
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;

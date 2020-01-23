@@ -58,6 +58,7 @@ export interface PeakList {
   name: string;
   shortName: string;
   description: string | null;
+  optionalPeaksDescription: string | null;
   type: PeakListVariants;
   parent: PeakList | null;
   mountains: Array<Mountain | null>;

@@ -20,6 +20,7 @@ const PeakListSchema = new Schema({
   name: { type: String, required: true },
   shortName: { type: String, required: true },
   description: { type: String },
+  optionalPeaksDescription: { type: String },
   type: { type: String, required: true},
   mountains: [{
     type: Schema.Types.ObjectId,
@@ -69,6 +70,7 @@ const PeakListType: any = new GraphQLObjectType({
     name: { type: GraphQLString },
     shortName: { type: GraphQLString },
     description: { type: GraphQLString },
+    optionalPeaksDescription: { type: GraphQLString },
     type: { type: PeakListVariants },
     mountains:  {
       type: new GraphQLList(MountainType),
