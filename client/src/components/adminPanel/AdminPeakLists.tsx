@@ -42,6 +42,7 @@ const ADD_PEAK_LIST = gql`
     $name: String!,
     $shortName: String!,
     $description: String,
+    $optionalPeaksDescription: String,
     $type: PeakListVariants!,
     $mountains: [ID],
     $optionalMountains: [ID],
@@ -57,11 +58,13 @@ const ADD_PEAK_LIST = gql`
       states: $states,
       parent: $parent,
       description: $description,
+      optionalPeaksDescription: $optionalPeaksDescription,
     ) {
       id
       name
       shortName
       description
+      optionalPeaksDescription
       type
       searchString
       mountains {
@@ -93,6 +96,7 @@ export interface AddPeakListVariables {
   states: string[];
   parent: string | null;
   description: string | null;
+  optionalPeaksDescription: string | null;
 }
 
 const DELETE_PEAK_LIST = gql`
@@ -108,6 +112,7 @@ export interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   description: PeakList['description'];
+  optionalPeaksDescription: PeakList['optionalPeaksDescription'];
   type: PeakList['type'];
   searchString: PeakList['searchString'];
   parent: {

@@ -2,7 +2,6 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
-import { TextareaBase } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants, State } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
@@ -23,6 +22,7 @@ import {
   SelectedItemsContainer,
   SelectionPanel,
   SubNav,
+  TextareaActive,
 } from '../sharedStyles';
 import { MountainReqLevel } from './EditPeakList';
 
@@ -103,6 +103,7 @@ const AddPeakList = (props: Props) => {
   const [name, setName] = useState<string>('');
   const [shortName, setShortName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [optionalPeaksDescription, setOptionalPeaksDescription] = useState<string>('');
   const [mountainReqLevel, setMountainReqLevel] = useState<MountainReqLevel>(MountainReqLevel.required);
   const [selectedMountains, setSelectedMountains] = useState<MountainDatum[]>([]);
   const [selectedOptionalMountains, setSelectedOptionalMountains] = useState<MountainDatum[]>([]);
@@ -121,7 +122,7 @@ const AddPeakList = (props: Props) => {
         name, shortName, mountains: selectedMountainIds,
         type, parent, states: selectedStateIds,
         optionalMountains: selectedOptionalMountainIds,
-        description,
+        description, optionalPeaksDescription,
       });
     }
     cancel();
@@ -252,10 +253,15 @@ const AddPeakList = (props: Props) => {
             onChange={e => setShortName(e.target.value)}
             placeholder='shortName'
           />
-          <TextareaBase
+          <TextareaActive
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder='description'
+          />
+          <TextareaActive
+            value={optionalPeaksDescription}
+            onChange={e => setOptionalPeaksDescription(e.target.value)}
+            placeholder='optionalPeaksDescription'
           />
         </NameActive>
         <div>
