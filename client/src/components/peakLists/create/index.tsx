@@ -15,6 +15,11 @@ import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import BackButton from '../../sharedComponents/BackButton';
 // import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
+import PeakListForm, {InitialPeakListDatum} from './PeakListForm';
+import noop from 'lodash/noop';
+import {
+  PeakListVariants,
+} from '../../../types/graphQLTypes';
 
 interface Props extends RouteComponentProps {
   userId: string | null;
@@ -38,9 +43,24 @@ const PeakListCreatePage = (props: Props) => {
       </PlaceholderText>
     );
   } else {
+    const initialData: InitialPeakListDatum = {
+      id: undefined,
+      name: '',
+      shortName: '',
+      description: '',
+      optionalPeaksDescription: '',
+      type: PeakListVariants.standard,
+      mountains: [],
+      optionalMountains: [],
+      flag: null,
+    }
     peakListForm = (
       <div>
         userId: {userId} | peakListId: {id}
+        <PeakListForm
+          initialData={initialData}
+          onSubmit={noop}
+        />
       </div>
     );
   }
