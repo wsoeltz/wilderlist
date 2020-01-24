@@ -73,13 +73,14 @@ mongoose.connection
 
 const graphiql = process.env.NODE_ENV === 'development' ? true : false;
 app.use(bodyParser.json());
-app.use('/graphql', requireLogin, expressGraphQL({
+app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
   schema,
   graphiql,
   context: {
     dataloaders: buildDataloaders(),
+    user: req.user,
   },
-}));
+})));
 ///// End MongoDb Connection Setup
 
 // Send invites to ascent added emails
