@@ -78,13 +78,13 @@ interface RegionDatum {
   name: Region['name'];
   states: Array<{
     id: State['id'],
-  }>;
+  } | null>;
 }
 
 export interface StateDatum {
   id: State['id'];
   name: State['name'];
-  regions: RegionDatum[];
+  regions: Array<RegionDatum | null>;
 }
 
 export interface SuccessResponse {
@@ -201,7 +201,7 @@ export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: Ge
     const regionsArray: RegionDatum[] = [];
     sortedStates.forEach(({regions}) => {
       regions.forEach(region => {
-        if (regionsArray.filter(({id}) => id === region.id).length === 0) {
+        if (region && regionsArray.filter(({id}) => id === region.id).length === 0) {
           regionsArray.push(region);
         }
       });

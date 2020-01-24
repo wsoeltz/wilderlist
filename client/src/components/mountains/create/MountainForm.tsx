@@ -4,15 +4,11 @@ import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  ButtonPrimary,
-  ButtonWarning,
   CheckboxInput,
-  CheckboxLabel as CheckboxLabelBase,
   CheckboxRoot,
   GhostButton,
   InputBase,
@@ -30,40 +26,15 @@ import AreYouSureModal, {
 } from '../../sharedComponents/AreYouSureModal';
 import Map, {CoordinateWithDates} from '../../sharedComponents/map';
 import { BaseMountainVariables } from './';
-
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
-`;
-
-const Title = styled.h1`
-  margin-top: 0;
-`;
-
-const FullColumn = styled.div`
-  grid-column: span 2;
-`;
-
-const CheckboxLabel = styled(CheckboxLabelBase)`
-  margin-bottom: 1rem;
-  font-size: 0.8rem;
-  line-height: 1.6;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const SaveButton = styled(ButtonPrimary)`
-  min-width: 100px;
-  margin-left: 1rem;
-`;
-
-const DeleteButton = styled(ButtonWarning)`
-  margin-right: auto;
-`;
+import {
+  Root,
+  Title,
+  FullColumn,
+  CheckboxLabel,
+  ButtonWrapper,
+  SaveButton,
+  DeleteButton,
+} from '../../sharedComponents/formUtils';
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
@@ -323,6 +294,7 @@ const MountainForm = (props: Props) => {
           onChange={e => setName(e.target.value)}
           placeholder={getFluentString('create-mountain-mountain-name-placeholder')}
           autoComplete={'off'}
+          maxLength={1000}
         />
       </FullColumn>
       <div>

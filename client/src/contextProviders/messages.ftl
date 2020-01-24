@@ -96,8 +96,18 @@ global-text-value-saving = Saving
 global-text-value-delete = Delete
 
 global-text-value-flag = Flag
+global-text-value-optional = Optional
 
 global-text-value-external-resources = External Resources
+
+global-text-value-type = Type
+global-text-value-list-type = {
+  $type ->
+    *[standard] Standard
+    [winter] Winter
+    [fourSeason] 4-Season
+    [grid] Grid
+}
 
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
@@ -416,3 +426,13 @@ flag-mountain-select-issue-description = {
 }
 
 create-peak-list-title-create = Create List
+
+create-peak-list-title-edit = Edit { $list-name }
+create-peak-list-peak-list-name-label = List Name
+create-peak-list-peak-list-name-placeholder = i.e. New Hampshire 4000 Footers
+create-peak-list-peak-list-short-name-label = List Short Name
+create-peak-list-peak-list-short-name-note = max 8 characters
+create-peak-list-peak-list-short-name-placeholder = i.e. NH48
+create-peak-list-peak-list-description-label = Description
+create-peak-list-check-your-work = I have checked my work to make sure the information is accurate and follows Wilderlist's content policies. I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to create new lists.
+create-peak-list-peak-list-optional-description-label = Optional Peaks Description
