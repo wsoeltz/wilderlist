@@ -7,14 +7,21 @@ import {
   GraphQLString,
 } from 'graphql';
 import {
+  CreatedItemStatus as CreatedItemStatusEnum,
   ExternalResource,
   Mountain as IMountain,
   PeakList as IPeakList,
+  PeakListFlag as PeakListFlagEnum,
+  PermissionTypes,
   State as IState,
 } from '../../graphQLTypes';
 import { getType, removeConnections } from '../../Utils';
-import { Mountain } from '../queryTypes/mountainType';
-import PeakListType, { PeakList, PeakListVariants } from '../queryTypes/peakListType';
+import { CreatedItemStatus, Mountain } from '../queryTypes/mountainType';
+import PeakListType, {
+  PeakList,
+  PeakListFlag,
+  PeakListVariants,
+} from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
 
@@ -29,6 +36,7 @@ interface AddPeakListVariables {
   parent: IPeakList;
   states: IState[];
   resources: IPeakList['resources'];
+  author: IPeakList['author'];
 }
 
 const ExternalResourcesInputType: any = new GraphQLInputObjectType({
@@ -57,21 +65,38 @@ const peakListMutations: any = {
       states: { type: new GraphQLList(GraphQLID)},
       parent: {type: GraphQLID },
       resources: { type: new GraphQLList(ExternalResourcesInputType) },
+      author: { type: GraphQLID },
     },
-    resolve(_unused: any, input: AddPeakListVariables) {
+    async resolve(_unused: any, input: AddPeakListVariables) {
       const {
         name, shortName, type, mountains, parent, states,
         description, optionalMountains, optionalPeaksDescription,
-        resources,
+        resources, author,
       } = input;
       if (name !== '' && shortName !== ''
         && type !== null) {
+
+        const authorObj = await User.findById(author);
+        let status: CreatedItemStatusEnum | null;
+        if (!authorObj) {
+          status = null;
+        } else if ( (authorObj.peakListPermissions !== null &&
+              authorObj.peakListPermissions > 5 ) ||
+          authorObj.permissions === PermissionTypes.admin) {
+          status = CreatedItemStatusEnum.auto;
+        } else if (authorObj.peakListPermissions !== null &&
+              authorObj.peakListPermissions === -1) {
+          return null;
+        } else {
+          status = CreatedItemStatusEnum.pending;
+        }
+
         const searchString = name + getType(type) + ' ' + shortName + ' ' + type;
         const newPeakList = new PeakList({
           name, shortName, mountains, optionalMountains,
           type, parent, numUsers: 0,
           searchString, states, description, optionalPeaksDescription,
-          resources,
+          resources, author, status,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
@@ -540,6 +565,48 @@ const peakListMutations: any = {
           _id: id,
         },
         { parent },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  updatePeakListStatus: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      status: { type: CreatedItemStatus },
+    },
+    async resolve(_unused: any,
+                  { id, status }: { id: string , status: CreatedItemStatusEnum | null},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const peakList = await PeakList.findOneAndUpdate(
+        { _id: id },
+        { status },
+        {new: true});
+        dataloaders.peakListLoader.clear(id).prime(id, peakList);
+        return peakList;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  updatePeakListFlag: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      flag: { type: PeakListFlag },
+    },
+    async resolve(_unused: any,
+                  { id, flag }: { id: string , flag: PeakListFlagEnum | null},
+                  {dataloaders}: {dataloaders: any}) {
+      try {
+        const peakList = await PeakList.findOneAndUpdate(
+        { _id: id },
+        { flag },
         {new: true});
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;

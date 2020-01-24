@@ -58,6 +58,14 @@ export interface ExternalResource {
   url: string;
 }
 
+export enum PeakListFlag {
+  duplicate = 'duplicate',
+  data = 'data',
+  abuse = 'abuse',
+  other = 'other',
+  deleteRequest = 'deleteRequest',
+}
+
 export interface PeakList {
   id: string;
   name: string;
@@ -74,6 +82,9 @@ export interface PeakList {
   states: Array<State | null> | null;
   children: Array<PeakList | null> | null;
   resources: ExternalResource[] | null;
+  author: User | null;
+  status: CreatedItemStatus | null;
+  flag: PeakListFlag | null;
 }
 
 export enum PermissionTypes {
@@ -138,6 +149,7 @@ export interface User {
   mountainNotes: Array<MountainNote | null> | null;
   mountainNote: MountainNote | null;
   mountainPermissions: number | null;
+  peakListPermissions: number | null;
 }
 
 export interface Conditions {

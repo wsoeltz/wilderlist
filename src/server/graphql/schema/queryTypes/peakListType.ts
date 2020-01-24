@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { PeakList as IPeakList } from '../../graphQLTypes';
-import MountainType from './mountainType';
+import MountainType, {CreatedItemStatus} from './mountainType';
 import StateType from './stateType';
 import UserType from './userType';
 
@@ -45,6 +45,12 @@ const PeakListSchema = new Schema({
     title: { type: String },
     url: { type: String },
   }],
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+  },
+  status: { type: String },
+  flag: { type: String },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -78,6 +84,27 @@ const ExternalResourcesType: any = new GraphQLObjectType({
       type: GraphQLString,
     },
   }),
+});
+
+export const PeakListFlag = new GraphQLEnumType({
+  name: 'PeakListFlag',
+  values: {
+    duplicate: {
+      value: 'duplicate',
+    },
+    data: {
+      value: 'data',
+    },
+    abuse: {
+      value: 'abuse',
+    },
+    other: {
+      value: 'other',
+    },
+    deleteRequest: {
+      value: 'deleteRequest',
+    },
+  },
 });
 
 const PeakListType: any = new GraphQLObjectType({
@@ -156,6 +183,26 @@ const PeakListType: any = new GraphQLObjectType({
       },
     },
     resources: { type: new GraphQLList(ExternalResourcesType) },
+    author: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          if (parentValue.author) {
+            const res = await userLoader.load(parentValue.author);
+            if (res._id.toString() !== parentValue.author.toString()) {
+              throw new Error('IDs do not match' + res);
+            }
+            return res;
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    status: { type: CreatedItemStatus },
+    flag: { type: PeakListFlag },
   }),
 });
 
