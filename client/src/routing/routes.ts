@@ -9,6 +9,8 @@ export enum Routes {
   MountainDetail = '/mountain/:id',
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',
+  CreateList = '/create-list',
+  EditList = '/edit-list/:id',
   FriendsWithProfile = '/users/:id',
   UserProfile = '/user/:id',
   UserSettings = '/user-settings',

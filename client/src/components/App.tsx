@@ -33,6 +33,7 @@ import CreateMountain from './mountains/create';
 import MountainDetailPage from './mountains/detail';
 import ListMountainsPage from './mountains/list';
 import ComparePeakListPage from './peakLists/compare';
+import CreatePeakList from './peakLists/create';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
 import PrivacyPolicy from './privacyPolicy';
@@ -120,7 +121,12 @@ const App: React.FC = () => {
           render={(props) => <Dashboard {...props} userId={user._id} />}
         />
         <Route exact path={Routes.ListsWithDetail}
-          render={(props) => <PeakListPage {...props} userId={user._id} />}
+          render={(props) => (
+            <PeakListPage {...props}
+              userId={user._id}
+              peakListPermissions={user.peakListPermissions}
+            />
+          )}
         />
         <Route exact path={Routes.ListDetail}
           render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
@@ -179,6 +185,22 @@ const App: React.FC = () => {
             />
           )}
         />
+        <Route exact path={Routes.CreateList}
+          render={(props) => (
+            <CreatePeakList {...props}
+              userId={user._id}
+              peakListPermissions={user.peakListPermissions}
+            />
+          )}
+        />
+        <Route exact path={Routes.EditList}
+          render={(props) => (
+            <CreatePeakList {...props}
+              userId={user._id}
+              peakListPermissions={user.peakListPermissions}
+            />
+          )}
+        />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}
@@ -191,7 +213,12 @@ const App: React.FC = () => {
     userRoutes = (
       <Switch>
         <Route exact path={Routes.ListsWithDetail}
-          render={(props) => <PeakListPage {...props} userId={null} />}
+          render={(props) => (
+            <PeakListPage {...props}
+              userId={null}
+              peakListPermissions={null}
+            />
+          )}
         />
         <Route exact path={Routes.ListDetail}
           render={(props) => <PeakListDetailPage {...props} userId={null} />}
