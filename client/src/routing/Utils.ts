@@ -31,6 +31,7 @@ export const listDetailWithMountainDetailLink = ((peakListId: string, mountainId
 
 export const searchMountainsDetailLink = ((id: string) => Routes.MountainSearchWithDetail.replace(':id', id));
 export const editMountainLink = ((id: string) => Routes.EditMountain.replace(':id', id));
+export const editPeakListLink = ((id: string) => Routes.EditList.replace(':id', id));
 
 export const preventNavigation = (e: React.SyntheticEvent) => {
   e.preventDefault();

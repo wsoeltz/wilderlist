@@ -253,15 +253,21 @@ export const GhostButton = styled(ButtonBase)`
   }
 `;
 
-export const FloatingButton = styled(ButtonPrimaryLink)`
+export const FloatingButtonContainer = styled.div`
   position: sticky;
+  z-index: 150;
   bottom: 0;
-  left: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+export const FloatingButton = styled(ButtonPrimaryLink)`
   font-size: 0.75rem;
   border-radius: 15px;
   border-bottom: 3px solid ${darken(0.12, primaryColor)};
   border-right: 3px solid ${darken(0.12, primaryColor)};
-  box-shadow: 0px 0px 3px -1px #b5b5b5;
+  box-shadow: 0px 2px 4px 0px #737373;
 `;
 
 export const InputBase = styled.input`
@@ -325,6 +331,15 @@ export const Prev = styled(ButtonSecondary)`
     top: 0.1rem;
     margin-right: 0.4rem;
   }
+`;
+
+export const PlusIcon = styled.span`
+  font-size: 1.3rem;
+  height: 0;
+  display: inline-block;
+  line-height: 0;
+  position: relative;
+  top: 2px;
 `;
 
 export const PlaceholderText = styled.div`

@@ -10,6 +10,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { Routes } from '../../../routing/routes';
 import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
@@ -21,11 +22,14 @@ import {
 } from '../../../styling/Grid';
 import {
   ButtonTertiary,
+  FloatingButton,
+  FloatingButtonContainer,
   GhostButton,
   lightBlue,
   Next,
   PaginationContainer,
   PlaceholderText,
+  PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
@@ -234,10 +238,11 @@ const compactViewNPerPage = 50;
 
 interface Props extends RouteComponentProps {
   userId: string | null;
+  peakListPermissions: number | null;
 }
 
 const PeakListPage = (props: Props) => {
-  const { userId, match, location, history } = props;
+  const { userId, peakListPermissions, match, location, history } = props;
   const { id }: any = match.params;
   const { query, page, origin } = queryString.parse(location.search);
 
@@ -430,6 +435,14 @@ const PeakListPage = (props: Props) => {
   const ListContainer = viewMode === ViewMode.Card ? ContentLeftLarge : ContentLeftSmall;
   const DetailContainer = viewMode === ViewMode.Card ? ContentRightSmall : ContentRightLarge;
 
+  const addMountainButton = userId && peakListPermissions !== -1 ? (
+    <FloatingButtonContainer>
+      <FloatingButton to={Routes.CreateList}>
+        <PlusIcon>+</PlusIcon> {getFluentString('create-peak-list-title-create')}
+      </FloatingButton>
+    </FloatingButtonContainer>
+  ) : null;
+
   return (
     <>
       <ListContainer>
@@ -474,6 +487,7 @@ const PeakListPage = (props: Props) => {
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}
+          {addMountainButton}
         </ContentBody>
       </ListContainer>
       <DetailContainer>
