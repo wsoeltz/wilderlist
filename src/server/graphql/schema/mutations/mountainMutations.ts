@@ -11,6 +11,7 @@ import {
   Mountain as IMountain,
   MountainFlag as MountainFlagEnum,
   PermissionTypes,
+  User as IUser,
 } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import MountainType, {
@@ -21,6 +22,7 @@ import MountainType, {
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
+import { isCorrectUser, isAdmin, isLoggedIn } from '../../authorization';
 
 const mountainMutations: any = {
   addMountain: {
@@ -35,12 +37,15 @@ const mountainMutations: any = {
       lists: { type: new GraphQLList(GraphQLID)},
       author: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, input: IMountain) {
+    async resolve(_unused: any, input: IMountain, {user}: {user: IUser | undefined | null}) {
       const {
         name, state, lists, latitude, longitude, elevation,
         prominence, author,
       } = input;
       const authorObj = await User.findById(author);
+      if (!isCorrectUser(user, authorObj)) {
+        throw new Error('Invalid user match')
+      }
       let status: CreatedItemStatusEnum | null;
       if (!authorObj) {
         status = null;
@@ -86,7 +91,10 @@ const mountainMutations: any = {
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, { id }: { id: string }) {
+    async resolve(_unused: any, { id }: { id: string }, {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         await State.findOneAndUpdate({ mountains: { $eq: id } },
           { $pull: {mountains: id} }, function(err: any, model: any) {
@@ -104,7 +112,11 @@ const mountainMutations: any = {
       mountainId: { type: GraphQLNonNull(GraphQLID) },
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {mountainId, stateId}: {mountainId: string, stateId: string}) {
+    async resolve(_unused: any, {mountainId, stateId}: {mountainId: string, stateId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const mountain = await Mountain.findById(mountainId);
         const state = await State.findById(stateId);
@@ -158,10 +170,14 @@ const mountainMutations: any = {
       prominence: { type: GraphQLFloat },
       state: { type: GraphQLID },
     },
-    async resolve(_unused: any, input: IMountain) {
+    async resolve(_unused: any, input: IMountain, {user}: {user: IUser | undefined | null}) {
       const { id, name, state: stateId, latitude, longitude, elevation, prominence } = input;
       try {
         const mountain = await Mountain.findById(id);
+        const authorObj = mountain && mountain.author ? mountain.author : null;
+        if (!(isCorrectUser(user, authorObj) || isAdmin(user))) {
+          throw new Error('Invalid user match')
+        }
         const state = await State.findById(stateId);
         if (mountain !== null && state !== null) {
           await State.findOneAndUpdate({
@@ -216,7 +232,10 @@ const mountainMutations: any = {
     },
     async resolve(_unused: any,
                   { id, status }: { id: string , status: CreatedItemStatusEnum | null},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const mountain = await Mountain.findOneAndUpdate(
         { _id: id },
@@ -237,7 +256,10 @@ const mountainMutations: any = {
     },
     async resolve(_unused: any,
                   { id, flag }: { id: string , flag: MountainFlagEnum | null},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isLoggedIn(user)) {
+        throw new Error('You must be logged in')
+      }
       try {
         const mountain = await Mountain.findOneAndUpdate(
         { _id: id },

@@ -5,10 +5,11 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { State as IState } from '../../graphQLTypes';
+import { State as IState, User as IUser } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import RegionType, { Region } from '../queryTypes/regionType';
 import { State } from '../queryTypes/stateType';
+import { isAdmin } from '../../authorization';
 
 const regionMutations: any = {
   addRegion: {
@@ -17,7 +18,11 @@ const regionMutations: any = {
       name: { type: GraphQLNonNull(GraphQLString) },
       states: { type: new GraphQLList(GraphQLID)},
     },
-    resolve(_unused: any, { name, states }: {name: string, states: IState[]}) {
+    resolve(_unused: any, { name, states }: {name: string, states: IState[]},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       const newRegion = new Region({ name, states });
       if (states !== undefined && name !== '') {
         states.forEach((id) => {
@@ -39,7 +44,11 @@ const regionMutations: any = {
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, { id }: { id: string }) {
+    async resolve(_unused: any, { id }: { id: string },
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         await removeConnections(Region, id, 'states', State, 'regions');
         return Region.findByIdAndDelete(id);
@@ -54,7 +63,11 @@ const regionMutations: any = {
       regionId: { type: GraphQLNonNull(GraphQLID) },
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
+    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const region = await Region.findById(regionId);
         const state = await State.findById(stateId);
@@ -94,7 +107,11 @@ const regionMutations: any = {
       regionId: { type: GraphQLNonNull(GraphQLID) },
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string}) {
+    async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const region = await Region.findById(regionId);
         const state = await State.findById(stateId);
@@ -134,7 +151,10 @@ const regionMutations: any = {
     },
     async resolve(_unused: any,
                   { id, newName }: { id: string , newName: string},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const region = await Region.findOneAndUpdate({
           _id: id,

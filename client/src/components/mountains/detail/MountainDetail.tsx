@@ -327,16 +327,22 @@ const MountainDetail = (props: Props) => {
         }
       };
 
-      const actionButton = author && author.id && author.id === userId
-        && user && user.mountainPermissions !== -1 ? (
-        <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
-          {getFluentString('global-text-value-edit')}
-        </ButtonSecondaryLink>
-      ) : (
-        <GhostButton onClick={() => setIsFlagModalOpen(true)}>
-          {getFluentString('global-text-value-flag')}
-        </GhostButton>
-      );
+      let actionButton: React.ReactElement<any> | null;
+      if (!user) {
+        actionButton = null;
+      } else {
+        actionButton = author && author.id && author.id === userId
+          && user.mountainPermissions !== -1 ? (
+          <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
+            {getFluentString('global-text-value-edit')}
+          </ButtonSecondaryLink>
+        ) : (
+          <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+            {getFluentString('global-text-value-flag')}
+          </GhostButton>
+        );
+      }
+
 
       const flagModal = isFlagModalOpen === false ? null : (
         <FlagModal

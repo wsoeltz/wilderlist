@@ -92,8 +92,10 @@ export interface FlagVariables {
   flag: MountainFlag | null;
 }
 
-const longLatMin = -90;
-const longLatMax = 90;
+const latitudeMin = -90;
+const latitudeMax = 90;
+const longitudeMin = -180;
+const longitudeMax = 180;
 const elevationMin = 0;
 const elevationMax = 29029; // Height of Everest
 
@@ -148,8 +150,8 @@ const MountainForm = (props: Props) => {
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const latitude: number = validateFloatValue(stringLat, longLatMin, longLatMax);
-  const longitude: number = validateFloatValue(stringLong, longLatMin, longLatMax);
+  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax);
+  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax);
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
@@ -220,7 +222,7 @@ const MountainForm = (props: Props) => {
   };
 
   const map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
-    && latitude <= 90 && latitude >= - 90 && longitude <= 90 && longitude >= - 90
+    && latitude <= latitudeMax && latitude >= latitudeMin && longitude <= longitudeMax && longitude >= longitudeMin
     ? (
         <Map
           id={''}
@@ -343,8 +345,8 @@ const MountainForm = (props: Props) => {
         <InputBase
           id={'create-mountain-latitude'}
           type={'number'}
-          max={longLatMax}
-          min={longLatMin}
+          min={latitudeMin}
+          max={latitudeMax}
           value={stringLat}
           onChange={e => setStringLat(e.target.value)}
           placeholder={getFluentString('create-mountain-latitude-placeholder')}
@@ -362,8 +364,8 @@ const MountainForm = (props: Props) => {
         <InputBase
           id={'create-mountain-longitude'}
           type={'number'}
-          max={longLatMax}
-          min={longLatMin}
+          min={longitudeMin}
+          max={longitudeMax}
           value={stringLong}
           onChange={e => setStringLong(e.target.value)}
           placeholder={getFluentString('create-mountain-longitude-placeholder')}
