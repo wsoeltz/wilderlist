@@ -14,6 +14,7 @@ import {
   PeakListFlag as PeakListFlagEnum,
   PermissionTypes,
   State as IState,
+  User as IUser,
 } from '../../graphQLTypes';
 import { getType, removeConnections } from '../../Utils';
 import { CreatedItemStatus, Mountain } from '../queryTypes/mountainType';
@@ -24,6 +25,7 @@ import PeakListType, {
 } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
+import { isCorrectUser, isAdmin, isLoggedIn } from '../../authorization';
 
 interface AddPeakListVariables {
   name: string;
@@ -67,16 +69,17 @@ const peakListMutations: any = {
       resources: { type: new GraphQLList(ExternalResourcesInputType) },
       author: { type: GraphQLID },
     },
-    async resolve(_unused: any, input: AddPeakListVariables) {
+    async resolve(_unused: any, input: AddPeakListVariables, {user}: {user: IUser | undefined | null}) {
       const {
         name, shortName, type, mountains, parent, states,
         description, optionalMountains, optionalPeaksDescription,
         resources, author,
       } = input;
-      if (name !== '' && shortName !== ''
-        && type !== null) {
-
+      if (name !== '' && shortName !== '' && type !== null) {
         const authorObj = await User.findById(author);
+        if (!(isCorrectUser(user, authorObj) || isAdmin(user))) {
+          throw new Error('Invalid user match')
+        }
         let status: CreatedItemStatusEnum | null;
         if (!authorObj) {
           status = null;
@@ -146,7 +149,10 @@ const peakListMutations: any = {
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, { id }: { id: string }) {
+    async resolve(_unused: any, { id }: { id: string }, {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         await removeConnections(PeakList, id, 'mountains', Mountain, 'lists');
         await removeConnections(PeakList, id, 'optionalMountains', Mountain, 'optionalLists');
@@ -164,7 +170,11 @@ const peakListMutations: any = {
       listId: { type: GraphQLNonNull(GraphQLID) },
       itemId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const list = await PeakList.findById(listId);
         const item = await Mountain.findById(itemId);
@@ -204,7 +214,11 @@ const peakListMutations: any = {
       listId: { type: GraphQLNonNull(GraphQLID) },
       itemId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const list = await PeakList.findById(listId);
         const item = await Mountain.findById(itemId);
@@ -242,7 +256,11 @@ const peakListMutations: any = {
       listId: { type: GraphQLNonNull(GraphQLID) },
       itemId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const list = await PeakList.findById(listId);
         const item = await Mountain.findById(itemId);
@@ -282,7 +300,11 @@ const peakListMutations: any = {
       listId: { type: GraphQLNonNull(GraphQLID) },
       itemId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string}) {
+    async resolve(_unused: any, {listId, itemId}: {listId: string, itemId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const list = await PeakList.findById(listId);
         const item = await Mountain.findById(itemId);
@@ -320,7 +342,11 @@ const peakListMutations: any = {
       listId: { type: GraphQLNonNull(GraphQLID) },
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string}) {
+    async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const list = await PeakList.findById(listId);
         const state = await State.findById(stateId);
@@ -360,7 +386,11 @@ const peakListMutations: any = {
       listId: { type: GraphQLNonNull(GraphQLID) },
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string}) {
+    async resolve(_unused: any, {listId, stateId}: {listId: string, stateId: string},
+      {user}: {user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const list = await PeakList.findById(listId);
         const state = await State.findById(stateId);
@@ -400,7 +430,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, newName }: { id: string , newName: string},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -431,7 +464,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, newShortName }: { id: string , newShortName: string},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -462,7 +498,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, newDescription }: { id: string , newDescription: string},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -484,7 +523,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, newOptionalPeaksDescription }: { id: string , newOptionalPeaksDescription: string},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -506,7 +548,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, resources }: { id: string , resources: ExternalResource[]},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -528,7 +573,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, type }: { id: string , type: IPeakList['type'] },
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -559,7 +607,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, parent }: { id: string , parent: string | null },
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate({
           _id: id,
@@ -581,7 +632,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, status }: { id: string , status: CreatedItemStatusEnum | null},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(user)) {
+        throw new Error('Invalid permission')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate(
         { _id: id },
@@ -602,7 +656,10 @@ const peakListMutations: any = {
     },
     async resolve(_unused: any,
                   { id, flag }: { id: string , flag: PeakListFlagEnum | null},
-                  {dataloaders}: {dataloaders: any}) {
+                  {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isLoggedIn(user)) {
+        throw new Error('You must be logged in')
+      }
       try {
         const peakList = await PeakList.findOneAndUpdate(
         { _id: id },
