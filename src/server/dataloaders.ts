@@ -13,36 +13,36 @@ export default () => ({
     async keys => Promise.all(
       keys.map(key => State.findOne({_id: key})),
     ),
-    {cacheKeyFn: key => key.toString()},
+    {cacheKeyFn: (key: any) => key.toString()},
   ),
   regionLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => Region.findOne({_id: key})),
     ),
-    {cacheKeyFn: key => key.toString()},
+    {cacheKeyFn: (key: any) => key.toString()},
   ),
   mountainLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => Mountain.findOne({_id: key})),
     ),
-    {cacheKeyFn: key => key.toString()},
+    {cacheKeyFn: (key: any) => key.toString()},
   ),
   peakListLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => PeakList.findOne({_id: key})),
     ),
-    {cacheKeyFn: key => key.toString()},
+    {cacheKeyFn: (key: any) => key.toString()},
   ),
   userLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => User.findOne({_id: key})),
     ),
-    {cacheKeyFn: key => key.toString()},
+    {cacheKeyFn: (key: any) => key.toString()},
   ),
   tripReportLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => TripReport.findOne({_id: key})),
     ),
-    {cacheKeyFn: key => key.toString()},
+    {cacheKeyFn: (key: any) => key.toString()},
   ),
 });
