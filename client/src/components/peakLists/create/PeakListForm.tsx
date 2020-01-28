@@ -24,12 +24,12 @@ import {
 import { GetString } from 'fluent-react';
 import {
   PeakListFlag,
-  Mountain,
   PeakListVariants,
 } from '../../../types/graphQLTypes';
 import sortBy from 'lodash/sortBy';
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
 import { isState } from '../Utils';
+import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
 
 export interface InitialPeakListDatum {
   id: string | undefined;
@@ -38,8 +38,8 @@ export interface InitialPeakListDatum {
   description: string,
   optionalPeaksDescription: string,
   type: PeakListVariants,
-  mountains: Mountain[];
-  optionalMountains: Mountain[];
+  mountains: MountainDatum[];
+  optionalMountains: MountainDatum[];
   flag: PeakListFlag | null;
 }
 
@@ -60,8 +60,8 @@ const PeakListForm = (props: Props) => {
   const [description, setDescription] = useState<string>(initialData.description);
   const [optionalPeaksDescription, setOptionalPeaksDescription] =
     useState<string>(initialData.optionalPeaksDescription);
-  const [mountains] = useState<Mountain[]>(initialData.mountains);
-  const [optionalMountains] = useState<Mountain[]>(initialData.optionalMountains);
+  const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
+  const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
 
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -69,22 +69,6 @@ const PeakListForm = (props: Props) => {
   const titleText = initialData.name !== '' ? getFluentString('create-peak-list-title-edit', {
     'list-name': initialData.name,
   }) : getFluentString('create-peak-list-title-create');
-
-  const verify = () => (
-    name && shortName && type &&
-    verifyChangesIsChecked && !loadingSubmit
-  ) ? true : false;
-
-  const validateAndSave = () => {
-    if (verify()) {
-      console.log({
-        name, shortName, type, description, optionalPeaksDescription,
-        mountains, optionalMountains,
-      })
-      setLoadingSubmit(true);
-      onSubmit();
-    }
-  };
 
   let statesArray: StateDatum[] = [];
   [...mountains, ...optionalMountains].forEach(mtn => {
@@ -95,6 +79,22 @@ const PeakListForm = (props: Props) => {
       }
     }
   });
+
+  const verify = () => (
+    name && shortName && type &&
+    verifyChangesIsChecked && !loadingSubmit
+  ) ? true : false;
+
+  const validateAndSave = () => {
+    if (verify()) {
+      console.log({
+        name, shortName, type, description, optionalPeaksDescription,
+        mountains, optionalMountains, statesArray,
+      })
+      setLoadingSubmit(true);
+      onSubmit();
+    }
+  };
 
   const setStringToPeakListVariant = (value: string) => {
     if (value === 'standard') {
@@ -244,6 +244,11 @@ const PeakListForm = (props: Props) => {
           autoComplete={'off'}
           maxLength={5000}
         />
+        <AddMountains
+          targetMountainId={null}
+          selectedMountains={mountains}
+          setSelectedMountains={setMountains}
+        />
       </FullColumn>
       <FullColumn>
         <label htmlFor={'create-peak-list-optional-description'}>
@@ -261,6 +266,11 @@ const PeakListForm = (props: Props) => {
           placeholder={optionalPeaksDescriptionPlaceholderText}
           autoComplete={'off'}
           maxLength={5000}
+        />
+        <AddMountains
+          targetMountainId={null}
+          selectedMountains={optionalMountains}
+          setSelectedMountains={setOptionalMountains}
         />
       </FullColumn>
       <FullColumn>

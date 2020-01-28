@@ -213,12 +213,12 @@ export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: Ge
       return regionsArray[0].name;
     } else {
       const inclusiveRegions = regionsArray.filter(
-        (region) => sortedStates.every(({regions}) => regions.includes(region)));
+        (region) => sortedStates.every(({regions}) => regions.find(_region => _region && region.id === _region.id)));
       if (inclusiveRegions.length === 1) {
         return inclusiveRegions[0].name;
       } else if (inclusiveRegions.length > 1) {
         // If they all belong to more than one region, show the more exclusive one
-        const exclusiveRegions = sortBy(regionsArray, ({states}) => states.length );
+        const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
         return exclusiveRegions[0].name;
       } else if (inclusiveRegions.length === 0) {
         // if there are no inclusive regions

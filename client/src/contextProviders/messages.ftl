@@ -193,7 +193,11 @@ peak-list-detail-select-mountain = Select a mountain to see its details and your
 peak-list-detail-filter-mountains = Filter mountains
 
 peak-list-detail-list-overview-empty = { $list-name } does not yet have any mountains associated with it.
-peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located ⁨{
+peak-list-detail-list-overview-para-1 = { $list-name } is a list with {
+  $number-of-peaks ->
+    [1] 1 mountain that is
+    *[other] { $number-of-peaks } mountains that are
+} located ⁨{
   $state-or-region ->
     [state] within
     *[region] throughout
