@@ -62,7 +62,7 @@ const SearchContainer = styled.div`
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
-    $targetMountainId: ID!,
+    $targetMountainId: ID,
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!
@@ -76,7 +76,15 @@ const SEARCH_MOUNTAINS = gql`
       name
       state {
         id
+        name
         abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       elevation
       latitude
@@ -102,7 +110,7 @@ export interface MountainDatum {
 
 interface SuccessResponse {
   mountains: MountainDatum[];
-  targetMountain: {
+  targetMountain: null | {
     id: Mountain['id'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
@@ -113,11 +121,11 @@ interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
-  targetMountainId: Mountain['id'];
+  targetMountainId: Mountain['id'] | null;
 }
 
 interface Props {
-  targetMountainId: Mountain['id'];
+  targetMountainId: Mountain['id'] | null;
   selectedMountains: MountainDatum[];
   setSelectedMountains: (mountains: MountainDatum[]) => void;
 }
@@ -157,12 +165,12 @@ const AdditionalMountains = (props: Props) => {
   } else if (data !== undefined ) {
     const { targetMountain, mountains } = data;
     selectedMountainList = selectedMountains.map(mtn => {
-      const distance = parseFloat(getDistanceFromLatLonInMiles({
+      const distance = targetMountain ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
         lat1: targetMountain.latitude,
         lon1: targetMountain.longitude,
         lat2: mtn.latitude,
         lon2: mtn.longitude,
-      }).toFixed(2));
+      }).toFixed(2)) + ' mi away' : '';
       return (
         <MountainItemRemove
           onClick={() => removeMountainFromList(mtn)}
@@ -171,8 +179,8 @@ const AdditionalMountains = (props: Props) => {
           {mtn.name}
           <Subtitle>
             {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
-            {mtn.elevation + 'ft | ' }
-            {distance + ' mi away'}
+            {mtn.elevation + 'ft' }
+            {distance}
           </Subtitle>
         </MountainItemRemove>
       );
@@ -182,12 +190,12 @@ const AdditionalMountains = (props: Props) => {
       mountains.forEach(mtn => {
         if (!selectedMountains.find(m => m.id === mtn.id)
             && mtn.id !== targetMountainId) {
-          const distance = parseFloat(getDistanceFromLatLonInMiles({
+          const distance = targetMountain ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
             lat1: targetMountain.latitude,
             lon1: targetMountain.longitude,
             lat2: mtn.latitude,
             lon2: mtn.longitude,
-          }).toFixed(2));
+          }).toFixed(2)) + ' mi away' : '';
           mountainList.push(
             <MountainItemAdd
               onClick={() => addMountainToList(mtn)}
@@ -196,8 +204,8 @@ const AdditionalMountains = (props: Props) => {
               {mtn.name}
               <Subtitle>
                 {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
-                {mtn.elevation + 'ft | ' }
-                {distance + ' mi away'}
+                {mtn.elevation + 'ft' }
+                {distance}
               </Subtitle>
             </MountainItemAdd>,
           );
