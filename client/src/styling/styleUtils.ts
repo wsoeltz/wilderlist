@@ -303,6 +303,11 @@ export const Label = styled.span`
   letter-spacing: 0.01rem;
 `;
 
+export const LabelContainer = styled.label`
+  margin-bottom: 0.4rem;
+  display: inline-block;
+`;
+
 export const PaginationContainer = styled.div`
   display: flex;
   margin-bottom: 2rem;

@@ -16,6 +16,7 @@ import {
   Label,
   TextareaBase,
   SelectBox,
+  LabelContainer,
 } from '../../../styling/styleUtils';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
@@ -30,6 +31,7 @@ import sortBy from 'lodash/sortBy';
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
+import Map from '../../sharedComponents/map';
 
 export interface InitialPeakListDatum {
   id: string | undefined;
@@ -154,17 +156,19 @@ const PeakListForm = (props: Props) => {
     </DeleteButton>
   );
 
+  const mountainCoordinates = [...mountains, ...optionalMountains].map(mtn => ({...mtn, completionDates: null }));
+
   return (
     <Root>
       <FullColumn>
         <Title>{titleText}</Title>
       </FullColumn>
       <FullColumn>
-        <label htmlFor={'create-peak-list-name'}>
+        <LabelContainer htmlFor={'create-peak-list-name'}>
           <Label>
             {getFluentString('create-peak-list-peak-list-name-label')}
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-peak-list-name'}
           type={'text'}
@@ -176,13 +180,13 @@ const PeakListForm = (props: Props) => {
         />
       </FullColumn>
       <div>
-        <label htmlFor={'create-peak-list-short-name'}>
+        <LabelContainer htmlFor={'create-peak-list-short-name'}>
           <Label>
             {getFluentString('create-peak-list-peak-list-short-name-label')}
             {' '}
             <small>({getFluentString('create-peak-list-peak-list-short-name-note')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-peak-list-short-name'}
           type={'text'}
@@ -194,11 +198,11 @@ const PeakListForm = (props: Props) => {
         />
       </div>
       <div>
-        <label htmlFor={'create-peak-list-select-type'}>
+        <LabelContainer htmlFor={'create-peak-list-select-type'}>
           <Label>
             {getFluentString('global-text-value-type')}
           </Label>
-        </label>
+        </LabelContainer>
         <SelectBox
           id={'create-peak-list-select-type'}
           value={type}
@@ -228,13 +232,13 @@ const PeakListForm = (props: Props) => {
         </SelectBox>
       </div>
       <FullColumn>
-        <label htmlFor={'create-peak-list-description'}>
+        <LabelContainer htmlFor={'create-peak-list-description'}>
           <Label>
             {getFluentString('create-peak-list-peak-list-description-label')}
             {' '}
             <small>({getFluentString('global-text-value-optional')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <TextareaBase
           id={'create-peak-list-description'}
           rows={6}
@@ -244,20 +248,38 @@ const PeakListForm = (props: Props) => {
           autoComplete={'off'}
           maxLength={5000}
         />
+      </FullColumn>
+      <FullColumn>
+        <LabelContainer>
+          <Label>
+            {getFluentString('global-text-value-mountains')}
+          </Label>
+        </LabelContainer>
         <AddMountains
           targetMountainId={null}
           selectedMountains={mountains}
           setSelectedMountains={setMountains}
+          expandedLayout={true}
         />
       </FullColumn>
       <FullColumn>
-        <label htmlFor={'create-peak-list-optional-description'}>
+        <Map
+          id={''}
+          coordinates={mountainCoordinates}
+          peakListType={PeakListVariants.standard}
+          userId={null}
+          isOtherUser={true}
+          key={'create-peak-list-key'}
+        />
+      </FullColumn>
+      <FullColumn>
+        <LabelContainer htmlFor={'create-peak-list-optional-description'}>
           <Label>
             {getFluentString('create-peak-list-peak-list-optional-description-label')}
             {' '}
             <small>({getFluentString('global-text-value-optional')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <TextareaBase
           id={'create-peak-list-optional-description'}
           rows={6}
@@ -267,10 +289,20 @@ const PeakListForm = (props: Props) => {
           autoComplete={'off'}
           maxLength={5000}
         />
+      </FullColumn>
+      <FullColumn>
+        <LabelContainer>
+          <Label>
+            {getFluentString('peak-list-detail-text-optional-mountains')}
+            {' '}
+            <small>({getFluentString('global-text-value-optional')})</small>
+          </Label>
+        </LabelContainer>
         <AddMountains
           targetMountainId={null}
           selectedMountains={optionalMountains}
           setSelectedMountains={setOptionalMountains}
+          expandedLayout={true}
         />
       </FullColumn>
       <FullColumn>
