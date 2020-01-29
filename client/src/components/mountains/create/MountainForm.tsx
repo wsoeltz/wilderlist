@@ -14,6 +14,7 @@ import {
   InputBase,
   Label,
   SelectBox,
+  LabelContainer,
 } from '../../../styling/styleUtils';
 import {
   Mountain,
@@ -284,11 +285,11 @@ const MountainForm = (props: Props) => {
         <Title>{titleText}</Title>
       </FullColumn>
       <FullColumn>
-        <label htmlFor={'create-mountain-name'}>
+        <LabelContainer htmlFor={'create-mountain-name'}>
           <Label>
             {getFluentString('create-mountain-mountain-name-placeholder')}
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-name'}
           type={'text'}
@@ -300,11 +301,11 @@ const MountainForm = (props: Props) => {
         />
       </FullColumn>
       <div>
-        <label htmlFor={'create-mountain-select-a-state'}>
+        <LabelContainer htmlFor={'create-mountain-select-a-state'}>
           <Label>
             {getFluentString('global-text-value-state')}
           </Label>
-        </label>
+        </LabelContainer>
         <SelectBox
           id={'create-mountain-select-a-state'}
           value={`${selectedState || ''}`}
@@ -316,13 +317,13 @@ const MountainForm = (props: Props) => {
         </SelectBox>
       </div>
       <div>
-        <label htmlFor={'create-mountain-elevation'}>
+        <LabelContainer htmlFor={'create-mountain-elevation'}>
           <Label>
             {getFluentString('global-text-value-elevation')}
             {' '}
             <small>({getFluentString('global-text-value-feet')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-elevation'}
           type={'number'}
@@ -335,13 +336,13 @@ const MountainForm = (props: Props) => {
         />
       </div>
       <div>
-        <label htmlFor={'create-mountain-latitude'}>
+        <LabelContainer htmlFor={'create-mountain-latitude'}>
           <Label>
             {getFluentString('global-text-value-latitude')}
             {' '}
             <small>({getFluentString('create-mountain-latlong-note')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-latitude'}
           type={'number'}
@@ -354,13 +355,13 @@ const MountainForm = (props: Props) => {
         />
       </div>
       <div>
-        <label htmlFor={'create-mountain-longitude'}>
+        <LabelContainer htmlFor={'create-mountain-longitude'}>
           <Label>
             {getFluentString('global-text-value-longitude')}
             {' '}
             <small>({getFluentString('create-mountain-latlong-note')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-longitude'}
           type={'number'}

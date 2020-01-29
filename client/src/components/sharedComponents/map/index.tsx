@@ -224,6 +224,9 @@ const ActionButton = styled(ButtonPrimary)`
 `;
 
 const getMinMax = (coordinates: Coordinate[]) => {
+  if (coordinates.length === 0) {
+    return { minLat: 22, maxLat: 54, minLong: -129, maxLong: -64 };
+  }
   const sortedByLat = sortBy(coordinates, ['latitude']);
   const sortedByLong = sortBy(coordinates, ['longitude']);
 
