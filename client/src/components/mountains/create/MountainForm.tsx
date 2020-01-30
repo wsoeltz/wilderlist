@@ -36,6 +36,7 @@ import {
   DeleteButton,
 } from '../../sharedComponents/formUtils';
 import { legendColorScheme } from '../../sharedComponents/map/colorScaleColors';
+import { createPortal } from 'react-dom';
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
@@ -131,10 +132,11 @@ interface Props extends RouteComponentProps {
   states: StateDatum[];
   initialData: InitialMountainDatum;
   onSubmit: (input: BaseMountainVariables) => void;
+  mapContainer: HTMLDivElement | null;
 }
 
 const MountainForm = (props: Props) => {
-  const { states, initialData, onSubmit, history } = props;
+  const { states, initialData, onSubmit, history, mapContainer } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -220,26 +222,56 @@ const MountainForm = (props: Props) => {
     setStringLong('' + long);
   };
 
-  const map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
-    && latitude <= latitudeMax && latitude >= latitudeMin && longitude <= longitudeMax && longitude >= longitudeMin
-    ? (
-        <Map
-          id={''}
-          coordinates={[coordinate, ...nearbyMountains]}
-          highlighted={[coordinate]}
-          userId={null}
-          isOtherUser={true}
-          createOrEditMountain={true}
-          showCenterCrosshairs={true}
-          returnLatLongOnClick={setLatLongFromMap}
-          colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
-          colorScaleLabels={[
-            getFluentString('create-mountain-map-nearby-mountains'),
-            getFluentString('create-mountain-map-your-mountain'), 
-          ]}
-          key={'create-mountain-key'}
-        />
+
+  let map: React.ReactElement<any> | null;
+  if (mapContainer !== null) {
+    map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
+      && latitude <= latitudeMax && latitude >= latitudeMin && longitude <= longitudeMax && longitude >= longitudeMin
+      ? createPortal((
+          <FullColumn style={{height: '100%'}}>
+            <Map
+              id={''}
+              coordinates={[coordinate, ...nearbyMountains]}
+              highlighted={[coordinate]}
+              userId={null}
+              isOtherUser={true}
+              createOrEditMountain={true}
+              showCenterCrosshairs={true}
+              returnLatLongOnClick={setLatLongFromMap}
+              colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+              colorScaleLabels={[
+                getFluentString('create-mountain-map-nearby-mountains'),
+                getFluentString('create-mountain-map-your-mountain'), 
+              ]}
+              fillSpace={true}
+              key={'create-mountain-key'}
+            />
+          </FullColumn>
+      ), mapContainer) : null;
+  } else {
+    map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
+      && latitude <= latitudeMax && latitude >= latitudeMin && longitude <= longitudeMax && longitude >= longitudeMin
+      ? (
+        <FullColumn>
+          <Map
+            id={''}
+            coordinates={[coordinate, ...nearbyMountains]}
+            highlighted={[coordinate]}
+            userId={null}
+            isOtherUser={true}
+            createOrEditMountain={true}
+            showCenterCrosshairs={true}
+            returnLatLongOnClick={setLatLongFromMap}
+            colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+            colorScaleLabels={[
+              getFluentString('create-mountain-map-nearby-mountains'),
+              getFluentString('create-mountain-map-your-mountain'), 
+            ]}
+            key={'create-mountain-key'}
+          />
+        </FullColumn>
       ) : null;
+  }
 
   const sortedStates = sortBy(states, ['name']);
   const stateOptions = sortedStates.map(state => {
@@ -401,9 +433,7 @@ const MountainForm = (props: Props) => {
           </SaveButton>
         </ButtonWrapper>
       </FullColumn>
-      <FullColumn>
-        {map}
-      </FullColumn>
+      {map}
       {areYouSureModal}
     </Root>
   );

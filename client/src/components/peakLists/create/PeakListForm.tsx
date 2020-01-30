@@ -1,4 +1,5 @@
 import React, {useState, useContext} from 'react';
+import { createPortal } from 'react-dom';
 import {
   Root,
   Title,
@@ -48,10 +49,11 @@ export interface InitialPeakListDatum {
 interface Props extends RouteComponentProps {
   initialData: InitialPeakListDatum;
   onSubmit: () => void;
+  mapContainer: HTMLDivElement | null;
 }
 
 const PeakListForm = (props: Props) => {
-  const { initialData, onSubmit, history } = props;
+  const { initialData, onSubmit, history, mapContainer } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -158,6 +160,38 @@ const PeakListForm = (props: Props) => {
 
   const mountainCoordinates = [...mountains, ...optionalMountains].map(mtn => ({...mtn, completionDates: null }));
 
+  let map: React.ReactElement<any> | null;
+  if (mapContainer !== null) {
+    map = createPortal((
+      <FullColumn style={{height: '100%'}}>
+        <Map
+          id={''}
+          coordinates={mountainCoordinates}
+          userId={null}
+          isOtherUser={true}
+          colorScaleColors={[]}
+          colorScaleLabels={[]}
+          fillSpace={true}
+          key={'create-peak-list-key'}
+        />
+      </FullColumn>
+    ), mapContainer);
+  } else {
+    map = (
+      <FullColumn>
+        <Map
+          id={''}
+          coordinates={mountainCoordinates}
+          userId={null}
+          isOtherUser={true}
+          colorScaleColors={[]}
+          colorScaleLabels={[]}
+          key={'create-peak-list-key'}
+        />
+      </FullColumn>
+    );
+  }
+
   return (
     <Root>
       <FullColumn>
@@ -262,17 +296,7 @@ const PeakListForm = (props: Props) => {
           expandedLayout={true}
         />
       </FullColumn>
-      <FullColumn>
-        <Map
-          id={''}
-          coordinates={mountainCoordinates}
-          userId={null}
-          isOtherUser={true}
-          colorScaleColors={[]}
-          colorScaleLabels={[]}
-          key={'create-peak-list-key'}
-        />
-      </FullColumn>
+      {map}
       <FullColumn>
         <LabelContainer htmlFor={'create-peak-list-optional-description'}>
           <Label>
