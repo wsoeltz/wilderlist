@@ -19,10 +19,36 @@ import Modal from '../../sharedComponents/Modal';
 import PeakListForm, {InitialPeakListDatum} from './PeakListForm';
 import noop from 'lodash/noop';
 import {
+  // PeakList,
   PeakListVariants,
+  // PeakListTier,
 } from '../../../types/graphQLTypes';
 import { AppContext } from '../../App';
 import { mobileSize } from '../../../Utils';
+
+// const ADD_PEAK_LIST = gql`
+//   mutation(
+//   ) {
+//     peakList: addPeakList(
+//     ) {
+//     }
+//   }
+// `;
+
+// interface BaseVariables {
+//   name: string;
+//   shortName: string;
+//   description: string | null;
+//   optionalPeaksDescription: string | null;
+//   type: PeakListVariants;
+//   mountains: string[];
+//   optionalMountains: string[];
+//   parent: string;
+//   states: string[];
+//   resources: PeakList['resources'];
+//   author: string;
+//   tier: PeakListTier;
+// }
 
 interface Props extends RouteComponentProps {
   userId: string | null;

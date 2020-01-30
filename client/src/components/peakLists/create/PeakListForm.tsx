@@ -19,6 +19,7 @@ import {
   SelectBox,
   LabelContainer,
   SmallTextNote,
+  ButtonPrimary,
 } from '../../../styling/styleUtils';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
@@ -29,12 +30,22 @@ import {
   PeakListFlag,
   PeakListVariants,
   PeakListTier,
+  ExternalResource,
 } from '../../../types/graphQLTypes';
 import sortBy from 'lodash/sortBy';
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
 import Map from '../../sharedComponents/map';
+import styled from 'styled-components';
+
+const ResourceContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  grid-column-gap: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+`;
 
 export interface InitialPeakListDatum {
   id: string | undefined;
@@ -70,6 +81,7 @@ const PeakListForm = (props: Props) => {
     useState<string>(initialData.optionalPeaksDescription);
   const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
   const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
+  const [externalResources, setExternalResources] = useState<ExternalResource[]>([{title: '', url: ''}]);
 
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -97,7 +109,7 @@ const PeakListForm = (props: Props) => {
     if (verify()) {
       console.log({
         name, shortName, type, description, optionalPeaksDescription,
-        mountains, optionalMountains, statesArray,
+        mountains, optionalMountains, statesArray, tier, externalResources,
       })
       setLoadingSubmit(true);
       onSubmit();
@@ -206,6 +218,42 @@ const PeakListForm = (props: Props) => {
       </FullColumn>
     );
   }
+
+  const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    (field: keyof ExternalResource, index: number) =>
+      setExternalResources(
+        externalResources.map((resource, _index) => {
+          if (resource[field] === e.target.value || index !== _index) {
+            return resource;
+          } else {
+            return {...resource, [field]: e.target.value};
+          }
+        },
+      ),
+    );
+
+  const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
+    e.preventDefault();
+    setExternalResources(externalResources.filter((_v, i) => i !== index));
+  };
+
+  const resourceInputs = externalResources.map((resource, i) => (
+    <ResourceContainer key={i}>
+      <InputBase
+        value={resource.title}
+        onChange={e => handleExternalResourceChange(e)('title', i)}
+        placeholder={getFluentString('global-text-value-resource-title')}
+      />
+      <InputBase
+        value={resource.url}
+        onChange={e => handleExternalResourceChange(e)('url', i)}
+        placeholder={getFluentString('global-text-value-resource-url')}
+      />
+      <GhostButton onClick={e => deleteResource(e)(i)}>
+        {getFluentString('global-text-value-delete')}
+      </GhostButton>
+    </ResourceContainer>
+  ));
 
   return (
     <Root>
@@ -380,6 +428,22 @@ const PeakListForm = (props: Props) => {
           </option>
         </SelectBox>
         <SmallTextNote dangerouslySetInnerHTML={{__html:getFluentString('global-text-value-list-tier-desc') }} />
+      </FullColumn>
+      <FullColumn>
+        <LabelContainer>
+          <Label>
+            {getFluentString('global-text-value-external-resources')}
+            {' '}
+            <small>({getFluentString('global-text-value-optional')})</small>
+          </Label>
+        </LabelContainer>
+        {resourceInputs}
+        <ButtonPrimary onClick={e => {
+          e.preventDefault();
+          setExternalResources([...externalResources, {title: '', url: ''}]);
+        }}>
+          {getFluentString('global-text-value-add-external-resources')}
+        </ButtonPrimary>
       </FullColumn>
       <FullColumn>
         <CheckboxRoot>
