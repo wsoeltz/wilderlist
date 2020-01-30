@@ -14,9 +14,17 @@ import {
   PlaceholderText,
   SectionTitle,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import {
+  Mountain,
+  PeakList,
+  Region,
+  State,
+  User,
+  PeakListVariants,
+} from '../../../types/graphQLTypes';
 import {
   isValidURL,
+  failIfValidOrNonExhaustive,
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -27,6 +35,11 @@ import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
+import {
+  twoColorScale,
+  fiveColorScale,
+  thirteenColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 
 const peakListDetailMapKey = 'peakListDetailMapKey';
 
@@ -410,6 +423,18 @@ const PeakListDetail = (props: Props) => {
           resourcesList = null;
         }
 
+        let colorScaleColors: string[];
+        if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+          colorScaleColors = twoColorScale;
+        } else if (type === PeakListVariants.fourSeason) {
+          colorScaleColors = fiveColorScale;
+        } else if (type === PeakListVariants.grid) {
+          colorScaleColors = thirteenColorScale;
+        } else {
+          colorScaleColors = [];
+          failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
+        }
+
         const userMountains = (user && user.mountains) ? user.mountains : [];
 
         const requiredMountainsWithDates = requiredMountains.map(mountain => {
@@ -493,6 +518,7 @@ const PeakListDetail = (props: Props) => {
               peakListType={type}
               userId={userId}
               isOtherUser={isOtherUser}
+              colorScaleColors={colorScaleColors}
               key={peakListDetailMapKey}
             />
             <p>

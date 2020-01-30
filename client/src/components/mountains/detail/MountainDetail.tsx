@@ -42,6 +42,9 @@ import {
 } from './sharedStyling';
 import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
+import {
+  twoColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
 
@@ -365,6 +368,7 @@ const MountainDetail = (props: Props) => {
             coordinates={[{...mountain, completionDates}]}
             peakListType={PeakListVariants.standard}
             userId={userId}
+            colorScaleColors={twoColorScale}
             key={mountainDetailMapKey}
           />
           <HorizontalContentItem>

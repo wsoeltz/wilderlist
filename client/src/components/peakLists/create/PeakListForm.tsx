@@ -269,6 +269,7 @@ const PeakListForm = (props: Props) => {
           peakListType={PeakListVariants.standard}
           userId={null}
           isOtherUser={true}
+          colorScaleColors={[]}
           key={'create-peak-list-key'}
         />
       </FullColumn>
