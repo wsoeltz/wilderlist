@@ -266,10 +266,10 @@ const PeakListForm = (props: Props) => {
         <Map
           id={''}
           coordinates={mountainCoordinates}
-          peakListType={PeakListVariants.standard}
           userId={null}
           isOtherUser={true}
           colorScaleColors={[]}
+          colorScaleLabels={[]}
           key={'create-peak-list-key'}
         />
       </FullColumn>

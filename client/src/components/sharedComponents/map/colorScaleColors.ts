@@ -28,3 +28,8 @@ export const thirteenColorScale:
   '#4a8900',
   endColor,
 ];
+
+export const legendColorScheme = {
+  primary: '#ca4a19',
+  secondary: '#216ba5',
+}

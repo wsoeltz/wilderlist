@@ -36,6 +36,7 @@ import {
 import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
 import ColorScale from './ColorScale';
+import {legendColorScheme} from './colorScaleColors';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -144,27 +145,27 @@ interface Coordinate {
   elevation: number;
 }
 
-export type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
+export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
 
 interface Props {
   id: string;
   userId: string | null;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
-  peakListType: PeakListVariants;
   isOtherUser?: boolean;
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
   colorScaleColors: string[];
+  colorScaleLabels: string[];
 }
 
 const Map = (props: Props) => {
   const {
-    id, coordinates, highlighted, peakListType,
+    id, coordinates, highlighted,
     userId, isOtherUser, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
-    colorScaleColors,
+    colorScaleColors, colorScaleLabels,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -178,7 +179,7 @@ const Map = (props: Props) => {
   } else if (coordinates.length) {
     initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
   } else {
-    initialCenter = [-73.5346381, 43.216461];
+    initialCenter = [-71.52769471, 43.20415146];
   }
 
   const [popupInfo, setPopupInfo] = useState<CoordinateWithDates | null>(null);
@@ -263,8 +264,8 @@ const Map = (props: Props) => {
     };
     let circleColor: string;
     if (colorScaleColors.length === 0) {
-      circleColor = '#666';
-    } else if (completionDates === null) {
+      circleColor = legendColorScheme.primary;
+    } else if (completionDates === null || completionDates === undefined) {
       if (createOrEditMountain === true && highlighted && highlighted.length &&
         (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
         circleColor = colorScaleColors[1];
@@ -308,7 +309,7 @@ const Map = (props: Props) => {
     );
   });
 
-  const renderCompletionDates = (dates: VariableDate | null) => {
+  const renderCompletionDates = (dates: VariableDate | null | undefined) => {
     if (dates) {
       if (dates.type === PeakListVariants.standard) {
         if (dates.standard !== undefined) {
@@ -432,6 +433,7 @@ const Map = (props: Props) => {
   const popup = !popupInfo ? <></> : (
     <Popup
       coordinates={[popupInfo.longitude, popupInfo.latitude]}
+      style={{opacity: 0.85}}
     >
       <StyledPopup>
         {getMountainPopupName(popupInfo.id, popupInfo.name)}
@@ -491,12 +493,11 @@ const Map = (props: Props) => {
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
       <ColorScale
-        peakListType={peakListType}
         centerCoords={centerCoords}
-        createOrEditMountain={createOrEditMountain}
         showCenterCrosshairs={showCenterCrosshairs}
         returnLatLongOnClick={returnLatLongOnClick}
         colorScaleColors={colorScaleColors}
+        colorScaleLabels={colorScaleLabels}
       />
       {editMountainModal}
     </Root>

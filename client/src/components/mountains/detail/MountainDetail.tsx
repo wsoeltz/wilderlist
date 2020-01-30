@@ -366,9 +366,12 @@ const MountainDetail = (props: Props) => {
           <Map
             id={id}
             coordinates={[{...mountain, completionDates}]}
-            peakListType={PeakListVariants.standard}
             userId={userId}
             colorScaleColors={twoColorScale}
+            colorScaleLabels={[
+              getFluentString('global-text-value-not-done'),
+              getFluentString('global-text-value-done'), 
+            ]}
             key={mountainDetailMapKey}
           />
           <HorizontalContentItem>
