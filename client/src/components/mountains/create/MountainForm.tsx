@@ -15,6 +15,8 @@ import {
   Label,
   SelectBox,
   LabelContainer,
+  coolBlueColor,
+  warmRedColor,
 } from '../../../styling/styleUtils';
 import {
   Mountain,
@@ -100,12 +102,12 @@ const longitudeMax = 180;
 const elevationMin = 0;
 const elevationMax = 29029; // Height of Everest
 
-const validateFloatValue = (value: string, min: number, max: number) => {
+const validateFloatValue = (value: string, min: number, max: number, defaultValue: number = 0) => {
   const parsedValue = parseFloat(value);
   if (isNaN(parsedValue)) {
-    return 0;
+    return defaultValue;
   } else if (parsedValue > max || parsedValue < min) {
-    return 0;
+    return defaultValue;
   } else {
     return parsedValue;
   }
@@ -151,8 +153,8 @@ const MountainForm = (props: Props) => {
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax);
-  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax);
+  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, 44);
+  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, -74);
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
@@ -235,6 +237,7 @@ const MountainForm = (props: Props) => {
           createOrEditMountain={true}
           showCenterCrosshairs={true}
           returnLatLongOnClick={setLatLongFromMap}
+          colorScaleColors={[coolBlueColor, warmRedColor]}
           key={'create-mountain-key'}
         />
       ) : null;
