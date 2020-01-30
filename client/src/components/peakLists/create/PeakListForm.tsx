@@ -58,11 +58,27 @@ export interface InitialPeakListDatum {
   optionalMountains: MountainDatum[];
   flag: PeakListFlag | null;
   tier: PeakListTier | undefined;
+  resources: ExternalResource[];
 }
+
+export interface FormInput {
+  name: string;
+  shortName: string;
+  description: string | null;
+  optionalPeaksDescription: string | null;
+  type: PeakListVariants;
+  mountains: string[];
+  optionalMountains: string[];
+  parent: string | null;
+  states: string[];
+  resources: ExternalResource[] | null;
+  tier: PeakListTier;
+}
+
 
 interface Props extends RouteComponentProps {
   initialData: InitialPeakListDatum;
-  onSubmit: () => void;
+  onSubmit: (input: FormInput) => void;
   mapContainer: HTMLDivElement | null;
 }
 
@@ -81,7 +97,8 @@ const PeakListForm = (props: Props) => {
     useState<string>(initialData.optionalPeaksDescription);
   const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
   const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
-  const [externalResources, setExternalResources] = useState<ExternalResource[]>([{title: '', url: ''}]);
+  const [externalResources, setExternalResources] =
+    useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
 
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -106,13 +123,24 @@ const PeakListForm = (props: Props) => {
   ) ? true : false;
 
   const validateAndSave = () => {
-    if (verify()) {
-      console.log({
-        name, shortName, type, description, optionalPeaksDescription,
-        mountains, optionalMountains, statesArray, tier, externalResources,
-      })
+    if (verify() && tier) {
+      const mountainIds = mountains.map(mtn => mtn.id);
+      const optionalMountainIds = optionalMountains.map(mtn => mtn.id);
+      const stateIds = statesArray.map(state => state.id);
       setLoadingSubmit(true);
-      onSubmit();
+      onSubmit({
+        name,
+        shortName,
+        type,
+        description,
+        optionalPeaksDescription,
+        mountains: mountainIds,
+        optionalMountains: optionalMountainIds,
+        states: stateIds,
+        tier,
+        resources: externalResources,
+        parent: null,
+      });
     }
   };
 
@@ -393,7 +421,7 @@ const PeakListForm = (props: Props) => {
           expandedLayout={true}
         />
       </FullColumn>
-      <FullColumn>
+      <div>
         <LabelContainer htmlFor={'create-peak-list-select-tier'}>
           <Label>
             {getFluentString('global-text-value-tier')}
@@ -428,7 +456,7 @@ const PeakListForm = (props: Props) => {
           </option>
         </SelectBox>
         <SmallTextNote dangerouslySetInnerHTML={{__html:getFluentString('global-text-value-list-tier-desc') }} />
-      </FullColumn>
+      </div>
       <FullColumn>
         <LabelContainer>
           <Label>

@@ -403,7 +403,7 @@ const PeakListDetail = (props: Props) => {
           resources.forEach(resource => {
             if (resource.title.length && resource.url.length && isValidURL(resource.url)) {
               resourcesArray.push(
-                <ResourceItem>
+                <ResourceItem key={resource.url + resource.title}>
                   <a href={resource.url}>{resource.title}</a>
                 </ResourceItem>,
               );
