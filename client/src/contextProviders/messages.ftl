@@ -99,6 +99,9 @@ global-text-value-flag = Flag
 global-text-value-optional = Optional
 
 global-text-value-external-resources = External Resources
+global-text-value-add-external-resources = Add Another Resource
+global-text-value-resource-title = Resource Title
+global-text-value-resource-url = http://example.com
 
 global-text-value-type = Type
 global-text-value-list-type = {
