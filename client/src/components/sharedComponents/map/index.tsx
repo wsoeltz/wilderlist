@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useState,
+  useRef,
 } from 'react';
 import ReactMapboxGl, {
   Feature,
@@ -122,6 +123,10 @@ const Crosshair = styled.div`
   }
 `;
 
+// const ColorScaleContainer = styled.div`
+//   width: 100%;
+// `;
+
 const getMinMax = (coordinates: Coordinate[]) => {
   if (coordinates.length === 0) {
     return { minLat: 22, maxLat: 54, minLong: -129, maxLong: -64 };
@@ -158,6 +163,7 @@ interface Props {
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
   colorScaleColors: string[];
   colorScaleLabels: string[];
+  fillSpace?: boolean;
 }
 
 const Map = (props: Props) => {
@@ -165,7 +171,7 @@ const Map = (props: Props) => {
     id, coordinates, highlighted,
     userId, isOtherUser, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
-    colorScaleColors, colorScaleLabels,
+    colorScaleColors, colorScaleLabels, fillSpace,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -192,6 +198,15 @@ const Map = (props: Props) => {
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
 
+  const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
+
+  const colorScaleRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (colorScaleRef && colorScaleRef.current) {
+      setColorScaleHeight(colorScaleRef.current.offsetHeight);
+    }
+  }, [colorScaleRef, setColorScaleHeight])
+
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
     [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
@@ -211,9 +226,15 @@ const Map = (props: Props) => {
         map.dragPan.disable();
       }
     };
-    document.body.addEventListener('keydown', enableZoom);
-    document.body.addEventListener('keyup', disableZoom);
-    document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
+
+    if (map && fillSpace === true) {
+      map.scrollZoom.enable();
+    } else {
+      document.body.addEventListener('keydown', enableZoom);
+      document.body.addEventListener('keyup', disableZoom);
+      document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
+    }
+
 
     const getCenterCoords = () => {
       if (map) {
@@ -233,7 +254,7 @@ const Map = (props: Props) => {
         map.off('move', getCenterCoords);
       }
     };
-  }, [map, showCenterCrosshairs]);
+  }, [map, showCenterCrosshairs, fillSpace]);
 
   useEffect(() => {
     if (!createOrEditMountain) {
@@ -455,13 +476,17 @@ const Map = (props: Props) => {
 
   return (
     <Root
-      style={{pointerEvents: !map ? 'none' : undefined}}
+      style={{
+        height: fillSpace === true ? '100%' : undefined,
+        margin: fillSpace === true ? '0' : undefined,
+        pointerEvents: !map ? 'none' : undefined,
+      }}
     >
       <Mapbox
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
         containerStyle={{
-          height: '500px',
+          height: fillSpace === true ? `calc(100% - ${colorScaleHeight}px)` : '500px',
           width: '100%',
         }}
         center={center}
@@ -498,6 +523,7 @@ const Map = (props: Props) => {
         returnLatLongOnClick={returnLatLongOnClick}
         colorScaleColors={colorScaleColors}
         colorScaleLabels={colorScaleLabels}
+        ref={colorScaleRef}
       />
       {editMountainModal}
     </Root>

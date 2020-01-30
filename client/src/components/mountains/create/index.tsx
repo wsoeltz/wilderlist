@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useRef, useEffect} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -11,6 +11,7 @@ import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
+  ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, State, User } from '../../../types/graphQLTypes';
@@ -18,6 +19,8 @@ import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
+import { AppContext } from '../../App';
+import { mobileSize } from '../../../Utils';
 
 const GET_MOUNTAIN_AND_STATES = gql`
   query getMountain($id: ID) {
@@ -146,6 +149,18 @@ const MountainCreatePage = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
+  const { windowWidth } = useContext(AppContext);
+  const mapContainerNodeRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (windowWidth >= mobileSize && mapContainerNodeRef.current !== null) {
+      setMapContainer(mapContainerNodeRef.current);
+    } else {
+      setMapContainer(null);
+    }
+  }, [windowWidth]);
+
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, {id: string | null}>(GET_MOUNTAIN_AND_STATES,
@@ -211,6 +226,7 @@ const MountainCreatePage = (props: Props) => {
           states={states}
           initialData={initialMountain}
           onSubmit={submitMountainForm}
+          mapContainer={mapContainer}
         />
       );
     } else if (data.mountain) {
@@ -234,6 +250,7 @@ const MountainCreatePage = (props: Props) => {
           states={states}
           initialData={initialMountain}
           onSubmit={submitMountainForm}
+          mapContainer={mapContainer}
         />
       );
     }
@@ -267,6 +284,10 @@ const MountainCreatePage = (props: Props) => {
         </ContentBody>
         {errorModal}
       </ContentLeftLarge>
+      <ContentRightSmall>
+        <ContentBody ref={mapContainerNodeRef}>
+        </ContentBody>
+      </ContentRightSmall>
     </>
   );
 };

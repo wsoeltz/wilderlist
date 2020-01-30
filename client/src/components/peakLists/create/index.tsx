@@ -1,7 +1,7 @@
 // import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 // import gql from 'graphql-tag';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useRef, useEffect} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -10,6 +10,7 @@ import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
+  ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import BackButton from '../../sharedComponents/BackButton';
@@ -20,6 +21,8 @@ import noop from 'lodash/noop';
 import {
   PeakListVariants,
 } from '../../../types/graphQLTypes';
+import { AppContext } from '../../App';
+import { mobileSize } from '../../../Utils';
 
 interface Props extends RouteComponentProps {
   userId: string | null;
@@ -32,6 +35,18 @@ const PeakListCreatePage = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
+  const { windowWidth } = useContext(AppContext);
+  const mapContainerNodeRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (windowWidth >= mobileSize && mapContainerNodeRef.current !== null) {
+      setMapContainer(mapContainerNodeRef.current);
+    } else {
+      setMapContainer(null);
+    }
+  }, [windowWidth])
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
@@ -60,6 +75,7 @@ const PeakListCreatePage = (props: Props) => {
         <PeakListForm
           initialData={initialData}
           onSubmit={noop}
+          mapContainer={mapContainer}
         />
       </div>
     );
@@ -91,6 +107,10 @@ const PeakListCreatePage = (props: Props) => {
         </ContentBody>
         {errorModal}
       </ContentLeftLarge>
+      <ContentRightSmall>
+        <ContentBody ref={mapContainerNodeRef}>
+        </ContentBody>
+      </ContentRightSmall>
     </>
   );
 };

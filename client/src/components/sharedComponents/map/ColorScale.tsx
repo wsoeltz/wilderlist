@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, RefObject} from 'react';
 import styled from 'styled-components';
 import {
   ButtonPrimary,
@@ -83,7 +83,7 @@ interface Props {
   colorScaleLabels: string[];
 }
 
-const ColorScale = (props: Props) => {
+const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
   const {
     centerCoords, colorScaleColors, colorScaleLabels,
     showCenterCrosshairs, returnLatLongOnClick,
@@ -129,7 +129,7 @@ const ColorScale = (props: Props) => {
       );
     });
     return (
-      <ColorScaleLegend>
+      <ColorScaleLegend ref={rootElRef}>
         {latLongLegend}
         {legendNodes}
       </ColorScaleLegend>
@@ -143,7 +143,7 @@ const ColorScale = (props: Props) => {
       );
     });
     return (
-      <ColorScaleLegend>
+      <ColorScaleLegend ref={rootElRef}>
         <SeasonLabelStart style={{color: startColor}}>
           {colorScaleLabels[0]}
         </SeasonLabelStart>
@@ -166,7 +166,7 @@ const ColorScale = (props: Props) => {
       }
     });
     return (
-      <ColorScaleLegend>
+      <ColorScaleLegend ref={rootElRef}>
         <GridLabelStart style={{color: startColor}}>
           <Circle style={{backgroundColor: startColor}} />
           {colorScaleLabels[0]}
@@ -179,6 +179,6 @@ const ColorScale = (props: Props) => {
       </ColorScaleLegend>
     );
   }
-}
+});
 
 export default ColorScale;
