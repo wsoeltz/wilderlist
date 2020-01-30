@@ -109,6 +109,32 @@ global-text-value-list-type = {
     [grid] Grid
 }
 
+global-text-value-tier = tier
+global-text-value-list-tier = {
+  $tier ->
+    *[casual] Casual
+    [advanced] Advanced
+    [expert] Expert
+    [mountaineer] Mountaineer
+}
+global-text-value-list-tier-desc = 
+  <p>
+  Please select a <strong>tier</strong> that corresponds with this lists difficulty.
+  </p>
+  <p>
+  <strong>Casual</strong> lists tend to have less than 20 peaks and can be completed by most people with an average to low-average fitness level.
+  </p>
+  <p>
+  <strong>Advanced</strong> lists tend to have less than 100 peaks and can be completed by most people with an average fitness level.
+  </p>
+  <p>
+  <strong>Expert</strong> lists may have up to 200 peaks <strong>and/or</strong> require a higher fitness level or more advanced technical skills, such as winter hiking or compass navigation.
+  </p>
+  <p>
+  <strong>Mountaineer</strong> lists may have any number of peaks <strong>and/or</strong> require a high fitness level and may require advanced mountaineering skills.
+  </p>
+
+
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
 header-text-menu-item-dashboard = Dashboard

@@ -66,6 +66,13 @@ export enum PeakListFlag {
   deleteRequest = 'deleteRequest',
 }
 
+export enum PeakListTier {
+  casual = 'casual',
+  advanced = 'advanced',
+  expert = 'expert',
+  mountaineer = 'mountaineer',
+}
+
 export interface PeakList {
   id: string;
   name: string;
@@ -85,6 +92,7 @@ export interface PeakList {
   author: User | null;
   status: CreatedItemStatus | null;
   flag: PeakListFlag | null;
+  tier: PeakListTier | null;
 }
 
 export enum PermissionTypes {

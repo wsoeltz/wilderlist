@@ -18,6 +18,7 @@ import {
   TextareaBase,
   SelectBox,
   LabelContainer,
+  SmallTextNote,
 } from '../../../styling/styleUtils';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
@@ -27,6 +28,7 @@ import { GetString } from 'fluent-react';
 import {
   PeakListFlag,
   PeakListVariants,
+  PeakListTier,
 } from '../../../types/graphQLTypes';
 import sortBy from 'lodash/sortBy';
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
@@ -44,6 +46,7 @@ export interface InitialPeakListDatum {
   mountains: MountainDatum[];
   optionalMountains: MountainDatum[];
   flag: PeakListFlag | null;
+  tier: PeakListTier | undefined;
 }
 
 interface Props extends RouteComponentProps {
@@ -61,6 +64,7 @@ const PeakListForm = (props: Props) => {
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
   const [type, setType] = useState<PeakListVariants>(initialData.type);
+  const [tier, setTier] = useState<PeakListTier | undefined>(initialData.tier);
   const [description, setDescription] = useState<string>(initialData.description);
   const [optionalPeaksDescription, setOptionalPeaksDescription] =
     useState<string>(initialData.optionalPeaksDescription);
@@ -85,7 +89,7 @@ const PeakListForm = (props: Props) => {
   });
 
   const verify = () => (
-    name && shortName && type &&
+    name && shortName && type && tier && mountains.length &&
     verifyChangesIsChecked && !loadingSubmit
   ) ? true : false;
 
@@ -109,6 +113,17 @@ const PeakListForm = (props: Props) => {
       setType(PeakListVariants.fourSeason);
     } else if (value === 'grid') {
       setType(PeakListVariants.grid);
+    }
+  };
+  const setStringToPeakListTier = (value: string) => {
+    if (value === 'casual') {
+      setTier(PeakListTier.casual);
+    } else if (value === 'advanced') {
+      setTier(PeakListTier.advanced);
+    } else if (value === 'expert') {
+      setTier(PeakListTier.expert);
+    } else if (value === 'mountaineer') {
+      setTier(PeakListTier.mountaineer);
     }
   };
 
@@ -329,6 +344,42 @@ const PeakListForm = (props: Props) => {
           setSelectedMountains={setOptionalMountains}
           expandedLayout={true}
         />
+      </FullColumn>
+      <FullColumn>
+        <LabelContainer htmlFor={'create-peak-list-select-tier'}>
+          <Label>
+            {getFluentString('global-text-value-tier')}
+          </Label>
+        </LabelContainer>
+        <SelectBox
+          id={'create-peak-list-select-tier'}
+          value={tier || ''}
+          onChange={e => setStringToPeakListTier(e.target.value)}
+          placeholder={getFluentString('global-text-value-tier')}
+        >
+          <option value=''></option>
+          <option value={PeakListTier.casual}>
+            {getFluentString('global-text-value-list-tier', {
+              'tier': PeakListTier.casual,
+            })}
+          </option>
+          <option value={PeakListTier.advanced}>
+            {getFluentString('global-text-value-list-tier', {
+              'tier': PeakListTier.advanced,
+            })}
+          </option>
+          <option value={PeakListTier.expert}>
+            {getFluentString('global-text-value-list-tier', {
+              'tier': PeakListTier.expert,
+            })}
+          </option>
+          <option value={PeakListTier.mountaineer}>
+            {getFluentString('global-text-value-list-tier', {
+              'tier': PeakListTier.mountaineer,
+            })}
+          </option>
+        </SelectBox>
+        <SmallTextNote dangerouslySetInnerHTML={{__html:getFluentString('global-text-value-list-tier-desc') }} />
       </FullColumn>
       <FullColumn>
         <CheckboxRoot>

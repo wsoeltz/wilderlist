@@ -22,6 +22,7 @@ import PeakListType, {
   PeakList,
   PeakListFlag,
   PeakListVariants,
+  PeakListTier,
 } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
@@ -39,6 +40,7 @@ interface AddPeakListVariables {
   states: IState[];
   resources: IPeakList['resources'];
   author: IPeakList['author'];
+  tier: IPeakList['tier'];
 }
 
 const ExternalResourcesInputType: any = new GraphQLInputObjectType({
@@ -68,12 +70,13 @@ const peakListMutations: any = {
       parent: {type: GraphQLID },
       resources: { type: new GraphQLList(ExternalResourcesInputType) },
       author: { type: GraphQLID },
+      tier: { type: PeakListTier },
     },
     async resolve(_unused: any, input: AddPeakListVariables, {user}: {user: IUser | undefined | null}) {
       const {
         name, shortName, type, mountains, parent, states,
         description, optionalMountains, optionalPeaksDescription,
-        resources, author,
+        resources, author, tier,
       } = input;
       if (name !== '' && shortName !== '' && type !== null) {
         const authorObj = await User.findById(author);
@@ -99,7 +102,7 @@ const peakListMutations: any = {
           name, shortName, mountains, optionalMountains,
           type, parent, numUsers: 0,
           searchString, states, description, optionalPeaksDescription,
-          resources, author, status,
+          resources, author, status, tier,
         });
         if (mountains !== undefined) {
           mountains.forEach((id) => {
