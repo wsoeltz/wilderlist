@@ -494,6 +494,7 @@ const Map = (props: Props) => {
         fitBounds={fitBounds}
         fitBoundsOptions={{padding: 50, linear: true}}
         movingMethod={'flyTo'}
+        key={`mapkey-${colorScaleHeight}`}
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
