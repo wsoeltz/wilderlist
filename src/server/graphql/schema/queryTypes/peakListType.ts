@@ -107,6 +107,24 @@ export const PeakListFlag = new GraphQLEnumType({
   },
 });
 
+export const PeakListTier = new GraphQLEnumType({
+  name: 'PeakListTier',
+  values: {
+    casual: {
+      value: 'casual',
+    },
+    advanced: {
+      value: 'advanced',
+    },
+    expert: {
+      value: 'expert',
+    },
+    mountaineer: {
+      value: 'mountaineer',
+    },
+  },
+});
+
 const PeakListType: any = new GraphQLObjectType({
   name:  'PeakListType',
   fields: () => ({
@@ -203,6 +221,7 @@ const PeakListType: any = new GraphQLObjectType({
     },
     status: { type: CreatedItemStatus },
     flag: { type: PeakListFlag },
+    tier: { type: PeakListTier },
   }),
 });
 

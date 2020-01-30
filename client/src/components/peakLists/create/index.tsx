@@ -68,6 +68,7 @@ const PeakListCreatePage = (props: Props) => {
       mountains: [],
       optionalMountains: [],
       flag: null,
+      tier: undefined,
     }
     peakListForm = (
       <div>

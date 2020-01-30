@@ -159,6 +159,11 @@ export const CardSubtitle = styled.div`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const SmallTextNote = styled.div`
+  font-size: 0.8rem;
+  color: ${lightBaseColor};
+`;
+
 export const borderRadius = 6; // in px
 
 const ButtonBase = styled.button`
