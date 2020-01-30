@@ -190,24 +190,28 @@ const MountainCreatePage = (props: Props) => {
     const states = data.states ? data.states : [];
 
     const submitMountainForm = async (input: BaseMountainVariables) => {
-      if (id) {
-        if (data && data.mountain && data.mountain.author && data.mountain.author.id === userId) {
-          const res = await editMountain({variables: {...input, id}});
+      try {
+        if (id) {
+          if (data && data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+            const res = await editMountain({variables: {...input, id}});
+            if (res && res.data && res.data.mountain) {
+              history.push(mountainDetailLink(res.data.mountain.id));
+            } else {
+              setIsErrorModalVisible(true);
+            }
+          } else {
+            setIsErrorModalVisible(true);
+          }
+        } else if (userId) {
+          const res = await addMountain({variables: {...input, author: userId}});
           if (res && res.data && res.data.mountain) {
             history.push(mountainDetailLink(res.data.mountain.id));
           } else {
             setIsErrorModalVisible(true);
           }
-        } else {
-          setIsErrorModalVisible(true);
         }
-      } else if (userId) {
-        const res = await addMountain({variables: {...input, author: userId}});
-        if (res && res.data && res.data.mountain) {
-          history.push(mountainDetailLink(res.data.mountain.id));
-        } else {
-          setIsErrorModalVisible(true);
-        }
+      } catch (e) {
+        console.error(e);
       }
     };
 
