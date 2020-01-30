@@ -1,6 +1,5 @@
 import React, {useContext} from 'react';
 import styled from 'styled-components';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
   ButtonPrimary,
   lightBorderColor,
@@ -10,7 +9,6 @@ import { GetString } from 'fluent-react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { PeakListVariants } from '../../../types/graphQLTypes';
 
 const ColorScaleLegend = styled.div`
   padding: 0.6rem 0;
@@ -78,91 +76,85 @@ const ActionButton = styled(ButtonPrimary)`
 `;
 
 interface Props {
-  peakListType: PeakListVariants;
   centerCoords: [string, string];
-  createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
   colorScaleColors: string[];
+  colorScaleLabels: string[];
 }
 
 const ColorScale = (props: Props) => {
   const {
-    centerCoords, peakListType, colorScaleColors,
-    createOrEditMountain, showCenterCrosshairs, returnLatLongOnClick,
+    centerCoords, colorScaleColors, colorScaleLabels,
+    showCenterCrosshairs, returnLatLongOnClick,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  let colorScaleLegend: React.ReactElement<any> | null;
-  if (createOrEditMountain === true) {
-    let latLongLegend: React.ReactElement<any> | null;
-    if (showCenterCrosshairs === true) {
-      const returnLatLongButton = returnLatLongOnClick === undefined ? null : (
-        <ActionButton onClick={() => returnLatLongOnClick(...centerCoords)}>
-          {getFluentString('map-set-lat-long-value')}
-        </ActionButton>
+  if (colorScaleColors.length === 0) {
+    return null;
+  }
+
+  let latLongLegend: React.ReactElement<any> | null;
+  if (showCenterCrosshairs === true) {
+    const returnLatLongButton = returnLatLongOnClick === undefined ? null : (
+      <ActionButton onClick={() => returnLatLongOnClick(...centerCoords)}>
+        {getFluentString('map-set-lat-long-value')}
+      </ActionButton>
+    );
+    latLongLegend = (
+      <CenterCoordinatesContainer>
+        <CenterCoordinatesTitle>{getFluentString('map-coordinates-at-center')}</CenterCoordinatesTitle>
+        <CenterCoordinatesSection>
+          <span>{getFluentString('global-text-value-latitude')}: {centerCoords[0]}</span>
+          <span>{getFluentString('global-text-value-longitude')}: {centerCoords[1]}</span>
+          {returnLatLongButton}
+        </CenterCoordinatesSection>
+      </CenterCoordinatesContainer>
+    );
+  } else {
+    latLongLegend = null;
+  }
+
+  const startColor = colorScaleColors[0];
+  const endColor = colorScaleColors[colorScaleColors.length - 1];
+
+  if (colorScaleColors.length <= 2) {
+    const legendNodes = colorScaleColors.map((c, i) => {
+      return (
+        <LegendItem key={c}>
+          <Circle style={{backgroundColor: c}} />
+          {colorScaleLabels[i]}
+        </LegendItem>
       );
-      latLongLegend = (
-        <CenterCoordinatesContainer>
-          <CenterCoordinatesTitle>{getFluentString('map-coordinates-at-center')}</CenterCoordinatesTitle>
-          <CenterCoordinatesSection>
-            <span>{getFluentString('global-text-value-latitude')}: {centerCoords[0]}</span>
-            <span>{getFluentString('global-text-value-longitude')}: {centerCoords[1]}</span>
-            {returnLatLongButton}
-          </CenterCoordinatesSection>
-        </CenterCoordinatesContainer>
-      );
-    } else {
-      latLongLegend = null;
-    }
-    colorScaleLegend = (
+    });
+    return (
       <ColorScaleLegend>
         {latLongLegend}
-        <LegendItem>
-          <Circle style={{backgroundColor: colorScaleColors[0]}} />
-          {getFluentString('create-mountain-map-nearby-mountains')}
-        </LegendItem>
-        <LegendItem>
-          <Circle style={{backgroundColor: colorScaleColors[1]}} />
-          {getFluentString('create-mountain-map-your-mountain')}
-        </LegendItem>
+        {legendNodes}
       </ColorScaleLegend>
     );
-  } else if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
-    colorScaleLegend = (
-      <ColorScaleLegend>
-        <LegendItem>
-          <Circle style={{backgroundColor: colorScaleColors[0]}} />
-          {getFluentString('global-text-value-not-done')}
-        </LegendItem>
-        <LegendItem>
-          <Circle style={{backgroundColor: colorScaleColors[1]}} />
-          {getFluentString('global-text-value-done')}
-        </LegendItem>
-      </ColorScaleLegend>
-    );
-  } else if (peakListType === PeakListVariants.fourSeason) {
-    const seasonCircles = colorScaleColors.map((c) => {
+  } else if (colorScaleColors.length < 8) {
+    const legendNodes = colorScaleColors.map((c) => {
       return (
         <LegendItem key={c}>
           <Circle style={{backgroundColor: c}} />
         </LegendItem>
       );
     });
-    colorScaleLegend = (
+    return (
       <ColorScaleLegend>
-        <SeasonLabelStart style={{color: colorScaleColors[0]}}>
-          {getFluentString('map-no-seasons')}
+        <SeasonLabelStart style={{color: startColor}}>
+          {colorScaleLabels[0]}
         </SeasonLabelStart>
-        {seasonCircles}
-        <SeasonLabelEnd style={{color: colorScaleColors[4]}}>
-          {getFluentString('map-all-seasons')}
+        {legendNodes}
+        <SeasonLabelEnd style={{color: endColor}}>
+          {colorScaleLabels[colorScaleLabels.length - 1]}
         </SeasonLabelEnd>
       </ColorScaleLegend>
     );
-  } else if (peakListType === PeakListVariants.grid) {
-    const monthCircles = colorScaleColors.map((c, i) => {
+  } else {
+    const legendNodes = colorScaleColors.map((c, i) => {
       if (i === 0 || i === 12) {
         return null;
       } else {
@@ -173,26 +165,20 @@ const ColorScale = (props: Props) => {
         );
       }
     });
-    colorScaleLegend = (
+    return (
       <ColorScaleLegend>
-        <GridLabelStart style={{color: colorScaleColors[0]}}>
-          <Circle style={{backgroundColor: colorScaleColors[0]}} />
-          {getFluentString('map-no-months')}
+        <GridLabelStart style={{color: startColor}}>
+          <Circle style={{backgroundColor: startColor}} />
+          {colorScaleLabels[0]}
         </GridLabelStart>
-        {monthCircles}
-        <GridLabelEnd style={{color: colorScaleColors[12]}}>
-          <Circle style={{backgroundColor: colorScaleColors[12]}} />
-          {getFluentString('map-all-months')}
+        {legendNodes}
+        <GridLabelEnd style={{color: endColor}}>
+          <Circle style={{backgroundColor: endColor}} />
+          {colorScaleLabels[colorScaleLabels.length - 1]}
         </GridLabelEnd>
       </ColorScaleLegend>
     );
-  } else {
-    failIfValidOrNonExhaustive(peakListType, 'invalid value for ' + peakListType);
-    colorScaleLegend = null;
   }
-
-
-  return colorScaleLegend;
 }
 
 export default ColorScale;

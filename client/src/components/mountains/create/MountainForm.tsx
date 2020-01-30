@@ -15,13 +15,10 @@ import {
   Label,
   SelectBox,
   LabelContainer,
-  coolBlueColor,
-  warmRedColor,
 } from '../../../styling/styleUtils';
 import {
   Mountain,
   MountainFlag,
-  PeakListVariants,
   State,
 } from '../../../types/graphQLTypes';
 import AreYouSureModal, {
@@ -38,6 +35,7 @@ import {
   SaveButton,
   DeleteButton,
 } from '../../sharedComponents/formUtils';
+import { legendColorScheme } from '../../sharedComponents/map/colorScaleColors';
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
@@ -153,8 +151,8 @@ const MountainForm = (props: Props) => {
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, 44);
-  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, -74);
+  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, 43.20415146);
+  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, -71.52769471);
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
@@ -205,8 +203,7 @@ const MountainForm = (props: Props) => {
 
   let nearbyMountains: CoordinateWithDates[];
   if (!loading && !error && data !== undefined && data.mountains) {
-    const filteredMountains = data.mountains.filter(mtn => mtn.id !== initialData.id);
-    nearbyMountains = filteredMountains.map(mtn => ({...mtn, completionDates: null }));
+    nearbyMountains = data.mountains.filter(mtn => mtn.id !== initialData.id);
   } else {
     nearbyMountains = [];
   }
@@ -216,7 +213,6 @@ const MountainForm = (props: Props) => {
     latitude, longitude,
     name: name ? name : `[${getFluentString('create-mountain-mountain-name-placeholder')}]`,
     elevation,
-    completionDates: null,
   };
 
   const setLatLongFromMap = (lat: string | number, long: string | number) => {
@@ -231,13 +227,16 @@ const MountainForm = (props: Props) => {
           id={''}
           coordinates={[coordinate, ...nearbyMountains]}
           highlighted={[coordinate]}
-          peakListType={PeakListVariants.standard}
           userId={null}
           isOtherUser={true}
           createOrEditMountain={true}
           showCenterCrosshairs={true}
           returnLatLongOnClick={setLatLongFromMap}
-          colorScaleColors={[coolBlueColor, warmRedColor]}
+          colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+          colorScaleLabels={[
+            getFluentString('create-mountain-map-nearby-mountains'),
+            getFluentString('create-mountain-map-your-mountain'), 
+          ]}
           key={'create-mountain-key'}
         />
       ) : null;

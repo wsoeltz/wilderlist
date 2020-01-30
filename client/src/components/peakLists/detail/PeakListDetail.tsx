@@ -424,14 +424,28 @@ const PeakListDetail = (props: Props) => {
         }
 
         let colorScaleColors: string[];
+        let colorScaleLabels: string[];
         if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
           colorScaleColors = twoColorScale;
+          colorScaleLabels = [
+            getFluentString('global-text-value-not-done'),
+            getFluentString('global-text-value-done'), 
+          ];
         } else if (type === PeakListVariants.fourSeason) {
           colorScaleColors = fiveColorScale;
+          colorScaleLabels = [
+            getFluentString('map-no-seasons'),
+            getFluentString('map-all-seasons'), 
+          ];
         } else if (type === PeakListVariants.grid) {
           colorScaleColors = thirteenColorScale;
+          colorScaleLabels = [
+            getFluentString('map-no-months'),
+            getFluentString('map-all-months'), 
+          ];
         } else {
           colorScaleColors = [];
+          colorScaleLabels = [];
           failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
         }
 
@@ -515,11 +529,11 @@ const PeakListDetail = (props: Props) => {
               id={peakList.id}
               coordinates={allMountainsWithDates}
               highlighted={highlightedMountain}
-              peakListType={type}
               userId={userId}
               isOtherUser={isOtherUser}
               colorScaleColors={colorScaleColors}
               key={peakListDetailMapKey}
+              colorScaleLabels={colorScaleLabels}
             />
             <p>
               {paragraphText}
