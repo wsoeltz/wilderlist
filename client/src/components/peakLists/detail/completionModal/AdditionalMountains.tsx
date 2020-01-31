@@ -22,7 +22,7 @@ const TwoColumnRoot = styled.div`
   grid-column-gap: 1rem;
 `;
 
-const EmptyContent = styled.div`
+export const EmptyContent = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -34,11 +34,11 @@ const EmptyContent = styled.div`
   color: ${placeholderColor};
 `;
 
-const CheckboxContainer = styled.div`
+export const CheckboxContainer = styled.div`
   background-color: ${tertiaryColor};
 `;
 
-const MountainItem = styled.div`
+export const MountainItem = styled.div`
   display: block;
   position: relative;
   padding: 0.5rem;
@@ -79,7 +79,7 @@ const MountainItemRemove = styled(MountainItem)`
   }
 `;
 
-const Subtitle = styled.small`
+export const Subtitle = styled.small`
   color: ${lightBaseColor};
 `;
 
