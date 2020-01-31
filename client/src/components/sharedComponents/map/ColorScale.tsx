@@ -1,14 +1,14 @@
-import React, {useContext, RefObject} from 'react';
+import { GetString } from 'fluent-react';
+import React, {RefObject, useContext} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
   lightBorderColor,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import { GetString } from 'fluent-react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
 
 const ColorScaleLegend = styled.div`
   padding: 0.6rem 0;

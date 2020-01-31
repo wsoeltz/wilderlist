@@ -1,11 +1,12 @@
 import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext, useState, useRef, useEffect} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import {listDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
   ContentHeader,
@@ -13,17 +14,16 @@ import {
   ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import BackButton from '../../sharedComponents/BackButton';
-// import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Modal from '../../sharedComponents/Modal';
-import PeakListForm, {InitialPeakListDatum, FormInput} from './PeakListForm';
 import {
   PeakList,
   PeakListVariants,
 } from '../../../types/graphQLTypes';
-import { AppContext } from '../../App';
 import { mobileSize } from '../../../Utils';
-import {listDetailLink} from '../../../routing/Utils';
+import { AppContext } from '../../App';
+import BackButton from '../../sharedComponents/BackButton';
+// import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import Modal from '../../sharedComponents/Modal';
+import PeakListForm, {FormInput, InitialPeakListDatum} from './PeakListForm';
 
 const ADD_PEAK_LIST = gql`
   mutation(
@@ -107,7 +107,7 @@ interface SuccessResponse {
     tier: PeakList['tier'];
     flag: PeakList['flag'];
     status: PeakList['status'];
-  }
+  };
 }
 
 interface Props extends RouteComponentProps {
@@ -134,7 +134,7 @@ const PeakListCreatePage = (props: Props) => {
     } else {
       setMapContainer(null);
     }
-  }, [windowWidth])
+  }, [windowWidth]);
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
@@ -158,7 +158,7 @@ const PeakListCreatePage = (props: Props) => {
       flag: null,
       tier: undefined,
       resources: [],
-    }
+    };
     const onSubmit = async (input: FormInput) => {
       try {
         if (userId) {
@@ -173,7 +173,7 @@ const PeakListCreatePage = (props: Props) => {
       } catch (e) {
         console.error(e);
       }
-    }
+    };
     peakListForm = (
       <div>
         userId: {userId} | peakListId: {id}

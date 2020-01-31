@@ -6,6 +6,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { isAdmin, isCorrectUser, isLoggedIn } from '../../authorization';
 import {
   CreatedItemStatus as CreatedItemStatusEnum,
   Mountain as IMountain,
@@ -22,7 +23,6 @@ import MountainType, {
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
-import { isCorrectUser, isAdmin, isLoggedIn } from '../../authorization';
 
 const mountainMutations: any = {
   addMountain: {
@@ -44,7 +44,7 @@ const mountainMutations: any = {
       } = input;
       const authorObj = await User.findById(author);
       if (!isCorrectUser(user, authorObj)) {
-        throw new Error('Invalid user match')
+        throw new Error('Invalid user match');
       }
       let status: CreatedItemStatusEnum | null;
       if (!authorObj) {
@@ -93,7 +93,7 @@ const mountainMutations: any = {
     },
     async resolve(_unused: any, { id }: { id: string }, {user}: {user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         await State.findOneAndUpdate({ mountains: { $eq: id } },
@@ -113,9 +113,9 @@ const mountainMutations: any = {
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {mountainId, stateId}: {mountainId: string, stateId: string},
-      {user}: {user: IUser | undefined | null}) {
+                  {user}: {user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const mountain = await Mountain.findById(mountainId);
@@ -176,7 +176,7 @@ const mountainMutations: any = {
         const mountain = await Mountain.findById(id);
         const authorObj = mountain && mountain.author ? mountain.author : null;
         if (!(isCorrectUser(user, authorObj) || isAdmin(user))) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const state = await State.findById(stateId);
         if (mountain !== null && state !== null) {
@@ -234,7 +234,7 @@ const mountainMutations: any = {
                   { id, status }: { id: string , status: CreatedItemStatusEnum | null},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const mountain = await Mountain.findOneAndUpdate(
@@ -258,7 +258,7 @@ const mountainMutations: any = {
                   { id, flag }: { id: string , flag: MountainFlagEnum | null},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isLoggedIn(user)) {
-        throw new Error('You must be logged in')
+        throw new Error('You must be logged in');
       }
       try {
         const mountain = await Mountain.findOneAndUpdate(

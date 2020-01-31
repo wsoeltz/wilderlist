@@ -1,44 +1,44 @@
-import React, {useState, useContext} from 'react';
+import { GetString } from 'fluent-react';
+import sortBy from 'lodash/sortBy';
+import React, {useContext, useState} from 'react';
 import { createPortal } from 'react-dom';
+import { RouteComponentProps, withRouter } from 'react-router';
+import styled from 'styled-components';
 import {
-  Root,
-  Title,
-  FullColumn,
-  CheckboxLabel,
-  ButtonWrapper,
-  SaveButton,
-  DeleteButton,
-} from '../../sharedComponents/formUtils';
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  ButtonPrimary,
   CheckboxInput,
   CheckboxRoot,
   GhostButton,
   InputBase,
   Label,
-  TextareaBase,
-  SelectBox,
   LabelContainer,
-  SmallTextNote,
-  ButtonPrimary,
   PlaceholderText,
+  SelectBox,
+  SmallTextNote,
+  TextareaBase,
 } from '../../../styling/styleUtils';
-import { RouteComponentProps, withRouter } from 'react-router';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { GetString } from 'fluent-react';
-import {
-  PeakListFlag,
-  PeakListVariants,
-  PeakListTier,
   ExternalResource,
+  PeakListFlag,
+  PeakListTier,
+  PeakListVariants,
 } from '../../../types/graphQLTypes';
-import sortBy from 'lodash/sortBy';
+import {
+  ButtonWrapper,
+  CheckboxLabel,
+  DeleteButton,
+  FullColumn,
+  Root,
+  SaveButton,
+  Title,
+} from '../../sharedComponents/formUtils';
+import Map from '../../sharedComponents/map';
+import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
 import { isState } from '../Utils';
-import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
-import Map from '../../sharedComponents/map';
-import styled from 'styled-components';
 import ParentModal, {PeakListDatum} from './ParentModal';
 
 const ResourceContainer = styled.div`
@@ -60,11 +60,11 @@ const CenteredFullColumn = styled(FullColumn)`
 
 export interface InitialPeakListDatum {
   id: string | undefined;
-  name: string,
-  shortName: string,
-  description: string,
-  optionalPeaksDescription: string,
-  type: PeakListVariants,
+  name: string;
+  shortName: string;
+  description: string;
+  optionalPeaksDescription: string;
+  type: PeakListVariants;
   mountains: MountainDatum[];
   optionalMountains: MountainDatum[];
   flag: PeakListFlag | null;
@@ -85,7 +85,6 @@ export interface FormInput {
   resources: ExternalResource[] | null;
   tier: PeakListTier;
 }
-
 
 interface Props extends RouteComponentProps {
   initialData: InitialPeakListDatum;
@@ -120,7 +119,7 @@ const PeakListForm = (props: Props) => {
     'list-name': initialData.name,
   }) : getFluentString('create-peak-list-title-create');
 
-  let statesArray: StateDatum[] = [];
+  const statesArray: StateDatum[] = [];
   [...mountains, ...optionalMountains].forEach(mtn => {
     if (mtn.state !== null) {
       const mtnStateId = mtn.state.id;
@@ -301,7 +300,7 @@ const PeakListForm = (props: Props) => {
   const copyMountains = (mountainArray: MountainDatum[], optionalMountainArray: MountainDatum[]) => {
     setMountains([...mountainArray]);
     setOptionalMountains([...optionalMountainArray]);
-  }
+  };
 
   const parentModal = parentModalOpen === false ? null : (
     <ParentModal
@@ -315,7 +314,7 @@ const PeakListForm = (props: Props) => {
     setParentId(null);
     setMountains([]);
     setOptionalMountains([]);
-  }
+  };
 
   const mountainSelection = parent !== null ? (
     <NoMountainSelection>
@@ -430,22 +429,22 @@ const PeakListForm = (props: Props) => {
         >
           <option value={PeakListVariants.standard}>
             {getFluentString('global-text-value-list-type', {
-              'type': PeakListVariants.standard,
+              type: PeakListVariants.standard,
             })}
           </option>
           <option value={PeakListVariants.winter}>
             {getFluentString('global-text-value-list-type', {
-              'type': PeakListVariants.winter,
+              type: PeakListVariants.winter,
             })}
           </option>
           <option value={PeakListVariants.fourSeason}>
             {getFluentString('global-text-value-list-type', {
-              'type': PeakListVariants.fourSeason,
+              type: PeakListVariants.fourSeason,
             })}
           </option>
           <option value={PeakListVariants.grid}>
             {getFluentString('global-text-value-list-type', {
-              'type': PeakListVariants.grid,
+              type: PeakListVariants.grid,
             })}
           </option>
         </SelectBox>
@@ -513,26 +512,26 @@ const PeakListForm = (props: Props) => {
           <option value=''></option>
           <option value={PeakListTier.casual}>
             {getFluentString('global-text-value-list-tier', {
-              'tier': PeakListTier.casual,
+              tier: PeakListTier.casual,
             })}
           </option>
           <option value={PeakListTier.advanced}>
             {getFluentString('global-text-value-list-tier', {
-              'tier': PeakListTier.advanced,
+              tier: PeakListTier.advanced,
             })}
           </option>
           <option value={PeakListTier.expert}>
             {getFluentString('global-text-value-list-tier', {
-              'tier': PeakListTier.expert,
+              tier: PeakListTier.expert,
             })}
           </option>
           <option value={PeakListTier.mountaineer}>
             {getFluentString('global-text-value-list-tier', {
-              'tier': PeakListTier.mountaineer,
+              tier: PeakListTier.mountaineer,
             })}
           </option>
         </SelectBox>
-        <SmallTextNote dangerouslySetInnerHTML={{__html:getFluentString('global-text-value-list-tier-desc') }} />
+        <SmallTextNote dangerouslySetInnerHTML={{__html: getFluentString('global-text-value-list-tier-desc') }} />
       </FullColumn>
       <FullColumn>
         <LabelContainer>
@@ -579,6 +578,6 @@ const PeakListForm = (props: Props) => {
       {parentModal}
     </Root>
   );
-}
+};
 
 export default withRouter(PeakListForm);

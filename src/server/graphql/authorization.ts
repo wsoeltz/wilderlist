@@ -1,4 +1,4 @@
-import { User, PermissionTypes } from './graphQLTypes';
+import { PermissionTypes, User } from './graphQLTypes';
 
 export const isLoggedIn = (user: User | undefined | null) => user !== undefined && user !== null;
 

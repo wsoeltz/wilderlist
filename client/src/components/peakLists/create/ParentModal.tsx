@@ -1,28 +1,28 @@
-import React, {useState, useContext} from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
+import gql from 'graphql-tag';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  ButtonSecondary,
-  ButtonPrimary,
-  PlaceholderText,
-  lightBlue,
-  lightBorderColor,
-} from '../../../styling/styleUtils';
-import Modal from '../../sharedComponents/Modal';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { GetString } from 'fluent-react';
 import {
-  MountainDatum,
+  ButtonPrimary,
+  ButtonSecondary,
+  lightBlue,
+  lightBorderColor,
+  PlaceholderText,
+} from '../../../styling/styleUtils';
+import { PeakList } from '../../../types/graphQLTypes';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import Modal from '../../sharedComponents/Modal';
+import StandardSearch from '../../sharedComponents/StandardSearch';
+import {
   CheckboxContainer,
+  MountainDatum,
   MountainItem as PeakListItem,
   Subtitle,
 } from '../detail/completionModal/AdditionalMountains';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-import { PeakList } from '../../../types/graphQLTypes';
-import StandardSearch from '../../sharedComponents/StandardSearch';
-import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
@@ -94,13 +94,13 @@ export interface PeakListDatum {
 }
 
 interface SuccessResponse {
-  peakLists: null | Array<PeakListDatum>;
+  peakLists: null | PeakListDatum[];
 }
 
 interface Variables {
-  searchQuery: string,
-  pageNumber: number,
-  nPerPage: number,
+  searchQuery: string;
+  pageNumber: number;
+  nPerPage: number;
 }
 
 const Container = styled(CheckboxContainer)`
@@ -176,7 +176,7 @@ const AreYouSureModal = (props: Props) => {
       } else {
          return null;
       }
-    }); 
+    });
     peakListList = (
       <>{peakListElms}</>
     );
@@ -200,18 +200,18 @@ const AreYouSureModal = (props: Props) => {
       copyMountains([...selectedList.mountains], [...optionalMountains]);
     }
     onCancel();
-  }
+  };
 
   const handleCopyMountains = () => {
     setParent(null);
     copyAndClose();
-  }
+  };
   const handleSetParent = () => {
     if (selectedList) {
       setParent(selectedList);
     }
     copyAndClose();
-  }
+  };
 
   const actions = (
     <ButtonWrapper>
