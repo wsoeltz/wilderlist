@@ -20,6 +20,7 @@ import {
   LabelContainer,
   SmallTextNote,
   ButtonPrimary,
+  PlaceholderText,
 } from '../../../styling/styleUtils';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
@@ -38,6 +39,7 @@ import { isState } from '../Utils';
 import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
 import Map from '../../sharedComponents/map';
 import styled from 'styled-components';
+import ParentModal, {PeakListDatum} from './ParentModal';
 
 const ResourceContainer = styled.div`
   display: grid;
@@ -45,6 +47,15 @@ const ResourceContainer = styled.div`
   grid-column-gap: 1rem;
   width: 100%;
   margin-bottom: 1rem;
+`;
+
+const NoMountainSelection = styled(PlaceholderText)`
+  min-height: 200px;
+`;
+
+const CenteredFullColumn = styled(FullColumn)`
+  display: flex;
+  justify-content: center;
 `;
 
 export interface InitialPeakListDatum {
@@ -90,6 +101,8 @@ const PeakListForm = (props: Props) => {
 
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
+  const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
+  const [parent, setParent] = useState<{id: string, name: string} | null>(null);
   const [type, setType] = useState<PeakListVariants>(initialData.type);
   const [tier, setTier] = useState<PeakListTier | undefined>(initialData.tier);
   const [description, setDescription] = useState<string>(initialData.description);
@@ -124,9 +137,10 @@ const PeakListForm = (props: Props) => {
 
   const validateAndSave = () => {
     if (verify() && tier) {
-      const mountainIds = mountains.map(mtn => mtn.id);
-      const optionalMountainIds = optionalMountains.map(mtn => mtn.id);
-      const stateIds = statesArray.map(state => state.id);
+      const mountainIds = parent === null ? mountains.map(mtn => mtn.id) : [];
+      const optionalMountainIds = parent === null ? optionalMountains.map(mtn => mtn.id) : [];
+      const stateIds = parent === null ? statesArray.map(state => state.id) : [];
+      const parentId = parent === null ? null : parent.id;
       setLoadingSubmit(true);
       onSubmit({
         name,
@@ -139,7 +153,7 @@ const PeakListForm = (props: Props) => {
         states: stateIds,
         tier,
         resources: externalResources,
-        parent: null,
+        parent: parentId,
       });
     }
   };
@@ -283,6 +297,86 @@ const PeakListForm = (props: Props) => {
     </ResourceContainer>
   ));
 
+  const setParentId = (parentObj: PeakListDatum | null) => setParent(parentObj);
+  const copyMountains = (mountainArray: MountainDatum[], optionalMountainArray: MountainDatum[]) => {
+    setMountains([...mountainArray]);
+    setOptionalMountains([...optionalMountainArray]);
+  }
+
+  const parentModal = parentModalOpen === false ? null : (
+    <ParentModal
+      setParent={setParentId}
+      copyMountains={copyMountains}
+      onCancel={() => setParentModalOpen(false)}
+    />
+  );
+
+  const clearParent = () => {
+    setParentId(null);
+    setMountains([]);
+    setOptionalMountains([]);
+  }
+
+  const mountainSelection = parent !== null ? (
+    <NoMountainSelection>
+      <p>
+        {getFluentString('global-text-value-parent')}: <strong>{parent.name}</strong>
+        <br />
+        <small>
+          <em>{getFluentString('create-peak-list-has-parent-mountains')}</em></small>
+        <br />
+        <GhostButton onClick={clearParent}>
+          {getFluentString('create-peak-list-remove-parent')}
+        </GhostButton>
+      </p>
+    </NoMountainSelection>
+  ) : (
+    <>
+      <LabelContainer>
+        <Label>
+          {getFluentString('global-text-value-mountains')}
+        </Label>
+      </LabelContainer>
+      <AddMountains
+        targetMountainId={null}
+        selectedMountains={mountains}
+        setSelectedMountains={setMountains}
+        expandedLayout={true}
+      />
+    </>
+  );
+
+  const optionalMountainSelection = parent !== null ? (
+    <NoMountainSelection>
+      <p>
+        {getFluentString('global-text-value-parent')}: <strong>{parent.name}</strong>
+        <br />
+        <small>
+          <em>{getFluentString('create-peak-list-has-parent-optional-mountains')}</em></small>
+        <br />
+        <GhostButton onClick={clearParent}>
+          {getFluentString('create-peak-list-remove-parent')}
+        </GhostButton>
+      </p>
+    </NoMountainSelection>
+  ) : (
+    <>
+      <LabelContainer>
+        <Label>
+          {getFluentString('peak-list-detail-text-optional-mountains')}
+          {' '}
+          <small>({getFluentString('global-text-value-optional')})</small>
+        </Label>
+      </LabelContainer>
+      <AddMountains
+        targetMountainId={null}
+        selectedMountains={optionalMountains}
+        setSelectedMountains={setOptionalMountains}
+        expandedLayout={true}
+      />
+    </>
+  );
+
   return (
     <Root>
       <FullColumn>
@@ -374,18 +468,13 @@ const PeakListForm = (props: Props) => {
           maxLength={5000}
         />
       </FullColumn>
+      <CenteredFullColumn>
+        <ButtonPrimary onClick={() => setParentModalOpen(true)}>
+          {getFluentString('create-peak-list-select-parent-modal-button')}
+        </ButtonPrimary>
+      </CenteredFullColumn>
       <FullColumn>
-        <LabelContainer>
-          <Label>
-            {getFluentString('global-text-value-mountains')}
-          </Label>
-        </LabelContainer>
-        <AddMountains
-          targetMountainId={null}
-          selectedMountains={mountains}
-          setSelectedMountains={setMountains}
-          expandedLayout={true}
-        />
+        {mountainSelection}
       </FullColumn>
       {map}
       <FullColumn>
@@ -407,21 +496,9 @@ const PeakListForm = (props: Props) => {
         />
       </FullColumn>
       <FullColumn>
-        <LabelContainer>
-          <Label>
-            {getFluentString('peak-list-detail-text-optional-mountains')}
-            {' '}
-            <small>({getFluentString('global-text-value-optional')})</small>
-          </Label>
-        </LabelContainer>
-        <AddMountains
-          targetMountainId={null}
-          selectedMountains={optionalMountains}
-          setSelectedMountains={setOptionalMountains}
-          expandedLayout={true}
-        />
+        {optionalMountainSelection}
       </FullColumn>
-      <div>
+      <FullColumn>
         <LabelContainer htmlFor={'create-peak-list-select-tier'}>
           <Label>
             {getFluentString('global-text-value-tier')}
@@ -456,7 +533,7 @@ const PeakListForm = (props: Props) => {
           </option>
         </SelectBox>
         <SmallTextNote dangerouslySetInnerHTML={{__html:getFluentString('global-text-value-list-tier-desc') }} />
-      </div>
+      </FullColumn>
       <FullColumn>
         <LabelContainer>
           <Label>
@@ -499,6 +576,7 @@ const PeakListForm = (props: Props) => {
           </SaveButton>
         </ButtonWrapper>
       </FullColumn>
+      {parentModal}
     </Root>
   );
 }

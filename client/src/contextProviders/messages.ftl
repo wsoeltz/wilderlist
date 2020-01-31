@@ -93,10 +93,13 @@ global-text-value-edit = Edit
 global-text-value-save = Save
 global-text-value-saving = Saving
 
+global-text-value-selected = Selected
+
 global-text-value-delete = Delete
 
 global-text-value-flag = Flag
 global-text-value-optional = Optional
+global-text-value-parent = Parent
 
 global-text-value-external-resources = External Resources
 global-text-value-add-external-resources = Add Another Resource
@@ -469,3 +472,18 @@ create-peak-list-peak-list-short-name-placeholder = i.e. NH48
 create-peak-list-peak-list-description-label = Description
 create-peak-list-check-your-work = I have checked my work to make sure the information is accurate and follows Wilderlist's content policies. I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to create new lists.
 create-peak-list-peak-list-optional-description-label = Optional Peaks Description
+create-peak-list-select-parent-modal-button = Start with an existing list of mountains
+create-peak-list-copy-mountains-button = Copy Mountains
+create-peak-list-parent-mountains-button = Set As Parent
+create-peak-list-parent-or-copy-text =
+  <p>
+    <strong>Copy Mountains</strong> will create an identical set of mountains as the selected list. You will then be free to add or remove mountains as you see fit for your new list. This is ideal if you are looking to create a modified version of an existing list, for example going from a 100-Highest to a 200-Highest selection.
+  </p>
+  <p>
+    <strong>Set as Parent</strong> will keep the mountains identical to the selected parent. You will not be able to make any changes to the selection. This is ideal if you are looking to make a variation, such as creating a Winter or 4-Season version of an existing list. If a parent list is updated, so too will any connected lists.
+  </p>
+
+create-peak-list-has-parent-mountains = This list will reflect the same mountains as the selected parent
+create-peak-list-has-parent-optional-mountains = This list will reflect the same optional mountains as the selected parent
+create-peak-list-remove-parent = Remove Parent
+
