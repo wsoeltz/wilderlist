@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext, useState, useRef, useEffect} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -15,12 +15,12 @@ import {
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, State, User } from '../../../types/graphQLTypes';
+import { mobileSize } from '../../../Utils';
+import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
-import { AppContext } from '../../App';
-import { mobileSize } from '../../../Utils';
 
 const GET_MOUNTAIN_AND_STATES = gql`
   query getMountain($id: ID) {

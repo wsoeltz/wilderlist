@@ -32,4 +32,4 @@ export const thirteenColorScale:
 export const legendColorScheme = {
   primary: '#ca4a19',
   secondary: '#216ba5',
-}
+};

@@ -1,19 +1,19 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
   lightBaseColor,
   lightBlue,
   lightBorderColor,
-  tertiaryColor,
   placeholderColor,
+  tertiaryColor,
 } from '../../../../styling/styleUtils';
 import { Mountain } from '../../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../../Utils';
 import StandardSearch from '../../../sharedComponents/StandardSearch';
 import { CheckboxList } from './MountainCompletionModal';
-import sortBy from 'lodash/sortBy';
 
 const TwoColumnRoot = styled.div`
   display: grid;
@@ -273,7 +273,7 @@ const AdditionalMountains = (props: Props) => {
     </CheckboxList>
   ) : null;
 
-  let output: React.ReactElement<any>
+  let output: React.ReactElement<any>;
   if (expandedLayout === true) {
     const total = selectedMountainList && selectedMountainList.length ? selectedMountainList.length : 0;
     const searchResultsContent = searchResults !== null ? searchResults : (

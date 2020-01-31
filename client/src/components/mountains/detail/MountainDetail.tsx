@@ -31,6 +31,9 @@ import {
 import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
+import {
+  twoColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
 import FlagModal from './FlagModal';
@@ -42,9 +45,6 @@ import {
 } from './sharedStyling';
 import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
-import {
-  twoColorScale,
-} from '../../sharedComponents/map/colorScaleColors';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
 
@@ -346,7 +346,6 @@ const MountainDetail = (props: Props) => {
         );
       }
 
-
       const flagModal = isFlagModalOpen === false ? null : (
         <FlagModal
           onClose={closeFlagModal}
@@ -370,7 +369,7 @@ const MountainDetail = (props: Props) => {
             colorScaleColors={twoColorScale}
             colorScaleLabels={[
               getFluentString('global-text-value-not-done'),
-              getFluentString('global-text-value-done'), 
+              getFluentString('global-text-value-done'),
             ]}
             key={mountainDetailMapKey}
           />

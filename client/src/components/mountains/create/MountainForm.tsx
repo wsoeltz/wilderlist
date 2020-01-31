@@ -3,6 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
+import { createPortal } from 'react-dom';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -13,8 +14,8 @@ import {
   GhostButton,
   InputBase,
   Label,
-  SelectBox,
   LabelContainer,
+  SelectBox,
 } from '../../../styling/styleUtils';
 import {
   Mountain,
@@ -24,19 +25,18 @@ import {
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
-import Map, {CoordinateWithDates} from '../../sharedComponents/map';
-import { BaseMountainVariables } from './';
 import {
-  Root,
-  Title,
-  FullColumn,
-  CheckboxLabel,
   ButtonWrapper,
-  SaveButton,
+  CheckboxLabel,
   DeleteButton,
+  FullColumn,
+  Root,
+  SaveButton,
+  Title,
 } from '../../sharedComponents/formUtils';
+import Map, {CoordinateWithDates} from '../../sharedComponents/map';
 import { legendColorScheme } from '../../sharedComponents/map/colorScaleColors';
-import { createPortal } from 'react-dom';
+import { BaseMountainVariables } from './';
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
@@ -222,7 +222,6 @@ const MountainForm = (props: Props) => {
     setStringLong('' + long);
   };
 
-
   let map: React.ReactElement<any> | null;
   if (mapContainer !== null) {
     map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
@@ -241,7 +240,7 @@ const MountainForm = (props: Props) => {
               colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
               colorScaleLabels={[
                 getFluentString('create-mountain-map-nearby-mountains'),
-                getFluentString('create-mountain-map-your-mountain'), 
+                getFluentString('create-mountain-map-your-mountain'),
               ]}
               fillSpace={true}
               key={'create-mountain-key'}
@@ -265,7 +264,7 @@ const MountainForm = (props: Props) => {
             colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
             colorScaleLabels={[
               getFluentString('create-mountain-map-nearby-mountains'),
-              getFluentString('create-mountain-map-your-mountain'), 
+              getFluentString('create-mountain-map-your-mountain'),
             ]}
             key={'create-mountain-key'}
           />

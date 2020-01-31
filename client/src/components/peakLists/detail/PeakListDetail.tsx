@@ -17,29 +17,29 @@ import {
 import {
   Mountain,
   PeakList,
+  PeakListVariants,
   Region,
   State,
   User,
-  PeakListVariants,
 } from '../../../types/graphQLTypes';
 import {
-  isValidURL,
   failIfValidOrNonExhaustive,
+  isValidURL,
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
+import {
+  fiveColorScale,
+  thirteenColorScale,
+  twoColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
-import {
-  twoColorScale,
-  fiveColorScale,
-  thirteenColorScale,
-} from '../../sharedComponents/map/colorScaleColors';
 
 const peakListDetailMapKey = 'peakListDetailMapKey';
 
@@ -429,19 +429,19 @@ const PeakListDetail = (props: Props) => {
           colorScaleColors = twoColorScale;
           colorScaleLabels = [
             getFluentString('global-text-value-not-done'),
-            getFluentString('global-text-value-done'), 
+            getFluentString('global-text-value-done'),
           ];
         } else if (type === PeakListVariants.fourSeason) {
           colorScaleColors = fiveColorScale;
           colorScaleLabels = [
             getFluentString('map-no-seasons'),
-            getFluentString('map-all-seasons'), 
+            getFluentString('map-all-seasons'),
           ];
         } else if (type === PeakListVariants.grid) {
           colorScaleColors = thirteenColorScale;
           colorScaleLabels = [
             getFluentString('map-no-months'),
-            getFluentString('map-all-months'), 
+            getFluentString('map-all-months'),
           ];
         } else {
           colorScaleColors = [];

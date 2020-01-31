@@ -12,12 +12,12 @@ import {
   sendAscentEmailNotification,
   sendFriendRequestEmailNotification,
 } from '../../../notifications/email';
+import { isAdmin, isCorrectUser, isLoggedIn } from '../../authorization';
 import { FriendStatus, User as IUser } from '../../graphQLTypes';
 import { asyncForEach, formatStringDate } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import UserType, { User } from '../queryTypes/userType';
-import { isCorrectUser, isAdmin, isLoggedIn } from '../../authorization';
 
 interface CompletedMountainMutationArgs {
   userId: string;
@@ -49,11 +49,11 @@ const userMutations: any = {
       peakListId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, peakListId}: {userId: string, peakListId: string},
-      context: {user: IUser | undefined | null}) {
+                  context: {user: IUser | undefined | null}) {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const peakList = await PeakList.findById(peakListId);
         if (user !== null && peakList !== null) {
@@ -96,11 +96,11 @@ const userMutations: any = {
       peakListId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, peakListId}: {userId: string, peakListId: string},
-      context: {user: IUser | undefined | null}) {
+                  context: {user: IUser | undefined | null}) {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const peakList = await PeakList.findById(peakListId);
         if (user !== null && peakList !== null) {
@@ -142,12 +142,12 @@ const userMutations: any = {
       date: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any, args: CompletedMountainMutationArgs,
-      context: {user: IUser | undefined | null}) {
+                  context: {user: IUser | undefined | null}) {
       const { userId, mountainId, date } = args;
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -175,12 +175,12 @@ const userMutations: any = {
       date: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any, args: CompletedMountainMutationArgs,
-      context: {user: IUser | undefined | null}) {
+                  context: {user: IUser | undefined | null}) {
       const { userId, mountainId, date } = args;
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -209,12 +209,12 @@ const userMutations: any = {
       friendId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string},
-      context: {user: IUser | undefined | null} ) {
+                  context: {user: IUser | undefined | null} ) {
       try {
         const user = await User.findById(userId);
         const friend = await User.findById(friendId);
         if (!(isCorrectUser(user, context.user) || isCorrectUser(friend, context.user))) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         if (user !== null && friend !== null) {
           await User.findOneAndUpdate({
@@ -256,12 +256,12 @@ const userMutations: any = {
       friendId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string},
-      context: {user: IUser | undefined | null} ) {
+                  context: {user: IUser | undefined | null} ) {
       try {
         const user = await User.findById(userId);
         const friend = await User.findById(friendId);
         if (!(isCorrectUser(user, context.user) || isCorrectUser(friend, context.user))) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         if (user !== null && friend !== null) {
           await User.findOneAndUpdate({
@@ -300,12 +300,12 @@ const userMutations: any = {
       friendId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, friendId}: {userId: string, friendId: string},
-      context: {user: IUser | undefined | null} ) {
+                  context: {user: IUser | undefined | null} ) {
       try {
         const user = await User.findById(userId);
         const friend = await User.findById(friendId);
         if (!(isCorrectUser(user, context.user) || isCorrectUser(friend, context.user))) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -332,9 +332,9 @@ const userMutations: any = {
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, { id }: { id: string }, {user}: {user: IUser | undefined | null}) {
-      if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+    async resolve(_unused: any, { id }: { id: string }, context: {user: IUser | undefined | null}) {
+      if (!isAdmin(context.user)) {
+        throw new Error('Invalid permission');
       }
       try {
         const user = await User.findById(id);
@@ -368,7 +368,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(id);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const updatedUser = await User.findOneAndUpdate({
           _id: id,
@@ -394,7 +394,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(id);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const updatedUser = await User.findOneAndUpdate({
           _id: id,
@@ -420,7 +420,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(id);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const updatedUser = await User.findOneAndUpdate({
           _id: id,
@@ -446,7 +446,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(id);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const updatedUser = await User.findOneAndUpdate({
           _id: id,
@@ -472,7 +472,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(id);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const updatedUser = await User.findOneAndUpdate({
           _id: id,
@@ -495,11 +495,11 @@ const userMutations: any = {
       date: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any, args: AscentNotificationMutationArgs,
-      context: {user: IUser | undefined | null}) {
+                  context: {user: IUser | undefined | null}) {
       const { userId, friendId, mountainIds, date } = args;
       try {
         if (!isLoggedIn(context.user)) {
-          throw new Error('You must be logged in')
+          throw new Error('You must be logged in');
         }
         const friend = await User.findOne({ _id: friendId });
         const mountainList: string[] = [];
@@ -575,7 +575,7 @@ const userMutations: any = {
                   {userId, mountainId, date}: {userId: string, mountainId: string, date: string},
                   context: {user: IUser | undefined | null}) {
       if (!isLoggedIn(context.user)) {
-        throw new Error('You must be logged in')
+        throw new Error('You must be logged in');
       }
       try {
         if (mountainId) {
@@ -606,7 +606,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -633,7 +633,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -658,7 +658,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -685,7 +685,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -712,7 +712,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -737,7 +737,7 @@ const userMutations: any = {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         await User.findOneAndUpdate({
           '_id': userId,
@@ -761,7 +761,7 @@ const userMutations: any = {
                   { id, mountainPermissions }: { id: string , mountainPermissions: number | null},
                   context: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isAdmin(context.user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const user = await User.findOneAndUpdate(

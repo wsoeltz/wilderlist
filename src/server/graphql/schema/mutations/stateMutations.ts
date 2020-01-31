@@ -5,13 +5,13 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { isAdmin } from '../../authorization';
 import { State as IState, User as IUser } from '../../graphQLTypes';
 import { removeConnections } from '../../Utils';
 import { Mountain } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import { Region } from '../queryTypes/regionType';
 import StateType, { State } from '../queryTypes/stateType';
-import { isAdmin } from '../../authorization';
 
 const stateMutations: any = {
   addState: {
@@ -22,9 +22,9 @@ const stateMutations: any = {
       regions: { type: new GraphQLList(GraphQLID)},
     },
     resolve(_unused: any, { name, regions, abbreviation }: IState,
-      {user}: {user: IUser | undefined | null}) {
+            {user}: {user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       const newState = new State({ name, regions, abbreviation });
       if (regions !== undefined && name !== '') {
@@ -48,9 +48,9 @@ const stateMutations: any = {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, { id }: { id: string },
-      {user}: {user: IUser | undefined | null}) {
+                  {user}: {user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         await Mountain.findOneAndUpdate({ state: { $eq: id } },
@@ -74,7 +74,7 @@ const stateMutations: any = {
                   { id, newName }: { id: string , newName: string},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const state = await State.findOneAndUpdate({
@@ -99,7 +99,7 @@ const stateMutations: any = {
                   { id, newAbbreviation }: { id: string , newAbbreviation: string},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const state = await State.findOneAndUpdate({
@@ -121,9 +121,9 @@ const stateMutations: any = {
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string},
-      {user}: {user: IUser | undefined | null}) {
+                  {user}: {user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const region = await Region.findById(regionId);
@@ -165,9 +165,9 @@ const stateMutations: any = {
       stateId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {regionId, stateId}: {regionId: string, stateId: string},
-      {user}: {user: IUser | undefined | null}) {
+                  {user}: {user: IUser | undefined | null}) {
       if (!isAdmin(user)) {
-        throw new Error('Invalid permission')
+        throw new Error('Invalid permission');
       }
       try {
         const region = await Region.findById(regionId);

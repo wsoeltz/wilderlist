@@ -6,13 +6,13 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { isCorrectUser } from '../../authorization';
 import {
   TripReport as ITripReport,
   User as IUser,
 } from '../../graphQLTypes';
 import TripReportType, { TripReport } from '../queryTypes/tripReportType';
 import { User } from '../queryTypes/userType';
-import { isCorrectUser } from '../../authorization';
 
 interface AddTripReportVariables extends ITripReport {
   id: never;
@@ -74,7 +74,7 @@ const tripReportMutations: any = {
       try {
         const authorObj = await User.findById(author);
         if (!isCorrectUser(user, authorObj)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         const existingReport = await TripReport
             .findOne({
@@ -129,7 +129,7 @@ const tripReportMutations: any = {
         try {
           const authorObj = await User.findById(input.author);
           if (!isCorrectUser(user, authorObj)) {
-            throw new Error('Invalid user match')
+            throw new Error('Invalid user match');
           }
           if (conditionsExist(fields as AddTripReportVariables)) {
             // modify and return trip report
@@ -160,7 +160,7 @@ const tripReportMutations: any = {
         const authorId = tripReportObj && tripReportObj.author ? tripReportObj.author : null;
         const authorObj = await User.findById(authorId);
         if (!isCorrectUser(user, authorObj)) {
-          throw new Error('Invalid user match')
+          throw new Error('Invalid user match');
         }
         return TripReport.findByIdAndDelete(id);
       } catch (err) {

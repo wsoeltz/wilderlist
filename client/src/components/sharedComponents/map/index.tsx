@@ -3,8 +3,8 @@ import sortBy from 'lodash/sortBy';
 import React, {
   useContext,
   useEffect,
-  useState,
   useRef,
+  useState,
 } from 'react';
 import ReactMapboxGl, {
   Feature,
@@ -205,7 +205,7 @@ const Map = (props: Props) => {
     if (colorScaleRef && colorScaleRef.current) {
       setColorScaleHeight(colorScaleRef.current.offsetHeight);
     }
-  }, [colorScaleRef, setColorScaleHeight])
+  }, [colorScaleRef, setColorScaleHeight]);
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
@@ -234,7 +234,6 @@ const Map = (props: Props) => {
       document.body.addEventListener('keyup', disableZoom);
       document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
     }
-
 
     const getCenterCoords = () => {
       if (map) {
