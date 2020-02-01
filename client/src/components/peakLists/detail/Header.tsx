@@ -9,6 +9,7 @@ import {
 import {
   ButtonPrimary,
   GhostButton,
+  ButtonPrimaryLink,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
@@ -33,17 +34,20 @@ import {
   StateDatum,
   UserDatum,
 } from './PeakListDetail';
+import { editPeakListLink } from '../../../routing/Utils';
+import FlagModal from './FlagModal';
 
 const Root = styled.div`
   display: grid;
   grid-template-columns: 12.5rem 1fr auto;
   grid-template-rows: auto auto auto auto auto;
   grid-column-gap: 1rem;
+  grid-row-gap: 0.5rem;
 `;
 
 const TitleContent = styled.div`
   grid-column: 2 / 4;
-  grid-row: 2;
+  grid-row: 2 / 4;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -52,6 +56,12 @@ const TitleContent = styled.div`
 const BeginRemoveListButtonContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
+  text-align: right;
+`;
+
+const EditFlagButtonContainer = styled.div`
+  grid-column: 3;
+  grid-row: 3;
   text-align: right;
 `;
 
@@ -66,7 +76,7 @@ const ListInfo = styled.h3`
 `;
 
 const LogoContainer = styled.div`
-  grid-row: 2;
+  grid-row: 2 / 4;
   grid-column: 1;
 `;
 
@@ -120,6 +130,7 @@ const Header = (props: Props) => {
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
+  const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
 
   const openSignUpModal = () => {
     setIsSignUpModal(true);
@@ -181,11 +192,36 @@ const Header = (props: Props) => {
     </GhostButton>
    ) ;
 
+  const editFlagButton = user && peakList.author && user.id === peakList.author.id ? (
+    <ButtonPrimaryLink to={editPeakListLink(peakList.id)}>
+      {getFluentString('global-text-value-edit')}
+    </ButtonPrimaryLink>
+   ) : (
+    <GhostButton
+      onClick={() => setIsFlagModalOpen(true)}
+    >
+      {getFluentString('global-text-value-flag')}
+    </GhostButton>
+   ) ;
+
   const topLevelHeading = isOtherUser === true && user !== null ? null : (
-      <BeginRemoveListButtonContainer>
-        {beginRemoveButton}
-      </BeginRemoveListButtonContainer>
+      <>
+        <BeginRemoveListButtonContainer>
+          {beginRemoveButton}
+        </BeginRemoveListButtonContainer>
+        <EditFlagButtonContainer>
+          {editFlagButton}
+        </EditFlagButtonContainer>
+      </>
     );
+
+  const flagModal = isFlagModalOpen === false ? null : (
+    <FlagModal
+      onClose={() => setIsFlagModalOpen(false)}
+      peakListId={peakList.id}
+      peakListName={peakList.name}
+    />
+  );
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
   let totalRequiredAscents: number;
@@ -290,6 +326,7 @@ const Header = (props: Props) => {
       {listInfoContent}
       {areYouSureModal}
       {signUpModal}
+      {flagModal}
     </Root>
   );
 };

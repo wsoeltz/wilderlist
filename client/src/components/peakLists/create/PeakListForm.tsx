@@ -25,6 +25,7 @@ import {
   PeakListFlag,
   PeakListTier,
   PeakListVariants,
+  PeakList,
 } from '../../../types/graphQLTypes';
 import {
   ButtonWrapper,
@@ -40,6 +41,8 @@ import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalM
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import ParentModal, {PeakListDatum} from './ParentModal';
+// import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 
 const ResourceContainer = styled.div`
   display: grid;
@@ -57,6 +60,27 @@ const CenteredFullColumn = styled(FullColumn)`
   display: flex;
   justify-content: center;
 `;
+
+export const FLAG_PEAK_LIST = gql`
+  mutation($id: ID!, $flag: PeakListFlag) {
+    peakList: updatePeakListFlag(id: $id, flag: $flag) {
+      id
+      flag
+    }
+  }
+`;
+
+export interface FlagSuccessResponse {
+  peakList: null | {
+    id: PeakList['id'];
+    flag: PeakList['flag'];
+  };
+}
+
+export interface FlagVariables {
+  id: string;
+  flag: PeakListFlag | null;
+}
 
 export interface InitialPeakListDatum {
   id: string | undefined;

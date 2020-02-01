@@ -5,38 +5,38 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { ButtonPrimary, Label, SelectBox } from '../../../styling/styleUtils';
-import { MountainFlag } from '../../../types/graphQLTypes';
+import { PeakListFlag } from '../../../types/graphQLTypes';
 import {
   ButtonWrapper,
   CancelButton,
 } from '../../sharedComponents/AreYouSureModal';
 import Modal from '../../sharedComponents/Modal';
 import {
-  FLAG_MOUNTAIN,
+  FLAG_PEAK_LIST,
   FlagSuccessResponse,
   FlagVariables,
-} from '../create/MountainForm';
+} from '../create/PeakListForm';
 
 interface Props {
   onClose: () => void;
-  mountainName: string;
-  mountainId: string;
+  peakListName: string;
+  peakListId: string;
 }
 
 const FlagModal = (props: Props) => {
-  const { onClose, mountainId, mountainName } = props;
+  const { onClose, peakListId, peakListName } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
+  const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
 
-  const [flag, setFlag] = useState<MountainFlag | ''>('');
+  const [flag, setFlag] = useState<PeakListFlag | ''>('');
   const [flagSubmitted, setFlagSubmitted] = useState<boolean>(false);
 
   const onSubmit = () => {
-    if (mountainId && flag) {
-      updateMountainFlag({variables: {id: mountainId, flag}});
+    if (peakListId && flag) {
+      updatePeakListFlag({variables: {id: peakListId, flag}});
     }
     setFlagSubmitted(true);
   };
@@ -59,49 +59,34 @@ const FlagModal = (props: Props) => {
   );
 
   const text = flagSubmitted === false
-    ? getFluentString('flag-mountain-text') : getFluentString('flag-mountain-thanks');
+    ? getFluentString('flag-peak-list-text') : getFluentString('flag-mountain-thanks');
 
   const flagOptions = flagSubmitted === false ? (
     <>
       <Label>{getFluentString('flag-mountain-select-issue')}</Label>
       <SelectBox
         value={flag}
-        onChange={(e) => setFlag(e.target.value as MountainFlag | '')}
+        onChange={(e) => setFlag(e.target.value as PeakListFlag | '')}
       >
         <option value={''} key='empty-option-to-select'></option>
-        <option value={MountainFlag.location} key='location'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.location,
+        <option value={PeakListFlag.duplicate} key='duplicate'>
+          {getFluentString('flag-peak-list-select-issue-description', {
+            issue: PeakListFlag.duplicate,
           })}
         </option>
-        <option value={MountainFlag.elevation} key='elevation'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.elevation,
+        <option value={PeakListFlag.data} key='data'>
+          {getFluentString('flag-peak-list-select-issue-description', {
+            issue: PeakListFlag.data,
           })}
         </option>
-        <option value={MountainFlag.state} key='state'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.state,
+        <option value={PeakListFlag.abuse} key='abuse'>
+          {getFluentString('flag-peak-list-select-issue-description', {
+            issue: PeakListFlag.abuse,
           })}
         </option>
-        <option value={MountainFlag.duplicate} key='duplicate'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.duplicate,
-          })}
-        </option>
-        <option value={MountainFlag.data} key='data'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.data,
-          })}
-        </option>
-        <option value={MountainFlag.abuse} key='abuse'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.abuse,
-          })}
-        </option>
-        <option value={MountainFlag.other} key='other'>
-          {getFluentString('flag-mountain-select-issue-description', {
-            issue: MountainFlag.other,
+        <option value={PeakListFlag.other} key='other'>
+          {getFluentString('flag-peak-list-select-issue-description', {
+            issue: PeakListFlag.other,
           })}
         </option>
       </SelectBox>
@@ -115,7 +100,7 @@ const FlagModal = (props: Props) => {
       width={'600px'}
       height={'auto'}
     >
-      <h3>{getFluentString('flag-mountain-title', {name: mountainName})}</h3>
+      <h3>{getFluentString('flag-mountain-title', {name: peakListName})}</h3>
       <p>{text}</p>
       {flagOptions}
 
