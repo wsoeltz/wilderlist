@@ -123,7 +123,7 @@ global-text-value-list-tier = {
     [expert] Expert
     [mountaineer] Mountaineer
 }
-global-text-value-list-tier-desc = 
+global-text-value-list-tier-desc =
   <p>
   Please select a <strong>tier</strong> that corresponds with this lists difficulty.
   </p>
@@ -457,6 +457,17 @@ flag-mountain-select-issue-description = {
     [state] State - The listed State is wrong
     [duplicate] Duplicate - This is a duplicate entry of the mountain
     [data] Data - There is an issue with data (i.e. name, trails, reports)
+    [abuse] Abuse - This entry is inappropriate or otherwise abusive
+    *[other] Other - There is a problem not specified in this list
+}
+
+flag-peak-list-text = If something seems wrong about this list, submit a flag and an administrator will take a look at it ASAP
+
+flag-peak-list-select-issue = Please select an issue from the box below
+flag-peak-list-select-issue-description = {
+  $issue ->
+    [duplicate] Duplicate - This is a duplicate entry of another list
+    [data] Data - There is an issue with data (i.e. name, states)
     [abuse] Abuse - This entry is inappropriate or otherwise abusive
     *[other] Other - There is a problem not specified in this list
 }

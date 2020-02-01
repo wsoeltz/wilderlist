@@ -101,6 +101,9 @@ const GET_PEAK_LIST = gql`
       shortName
       description
       optionalPeaksDescription
+      author {
+        id
+      }
       resources {
         title
         url
@@ -240,6 +243,7 @@ export interface PeakListDatum {
     optionalMountains: MountainDatum[] | null;
     states: StateDatum[] | null;
   } | null;
+  author: null | { id: User['id'] };
 }
 
 export interface UserDatum {
