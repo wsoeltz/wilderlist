@@ -1,4 +1,6 @@
 import { GetString } from 'fluent-react';
+// import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
 import { createPortal } from 'react-dom';
@@ -22,10 +24,10 @@ import {
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
+  PeakList,
   PeakListFlag,
   PeakListTier,
   PeakListVariants,
-  PeakList,
 } from '../../../types/graphQLTypes';
 import {
   ButtonWrapper,
@@ -41,8 +43,6 @@ import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalM
 import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import ParentModal, {PeakListDatum} from './ParentModal';
-// import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 
 const ResourceContainer = styled.div`
   display: grid;

@@ -222,6 +222,27 @@ const PeakListType: any = new GraphQLObjectType({
     status: { type: CreatedItemStatus },
     flag: { type: PeakListFlag },
     tier: { type: PeakListTier },
+    numMountains: {
+      type: GraphQLID,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.mountains && parentValue.mountains.length) {
+            return parentValue.mountains.length;
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.mountains && res.mountains.length) {
+                return res.mountains.length;
+              } else {
+                return 0;
+              }
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 
