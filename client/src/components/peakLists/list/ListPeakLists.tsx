@@ -43,7 +43,7 @@ export interface CardPeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
-  parent: null | {id: PeakList['id']}
+  parent: null | {id: PeakList['id']};
   mountains: MountainDatum[] | null;
 }
 
