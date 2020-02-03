@@ -137,8 +137,14 @@ const PeakListType: any = new GraphQLObjectType({
     type: { type: PeakListVariants },
     mountains:  {
       type: new GraphQLList(MountainType),
-      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+      async resolve(parentValue, args, {dataloaders: {mountainLoader, peakListLoader}}) {
         try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.mountains && res.mountains.length) {
+              return await mountainLoader.loadMany(res.mountains);
+            }
+          }
           return await mountainLoader.loadMany(parentValue.mountains);
         } catch (err) {
           return err;
@@ -147,8 +153,14 @@ const PeakListType: any = new GraphQLObjectType({
     },
     optionalMountains:  {
       type: new GraphQLList(MountainType),
-      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+      async resolve(parentValue, args, {dataloaders: {mountainLoader, peakListLoader}}) {
         try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.optionalMountains && res.optionalMountains.length) {
+              return await mountainLoader.loadMany(res.optionalMountains);
+            }
+          }
           return await mountainLoader.loadMany(parentValue.optionalMountains);
         } catch (err) {
           return err;
@@ -183,8 +195,14 @@ const PeakListType: any = new GraphQLObjectType({
     searchString: { type: GraphQLString },
     states:  {
       type: new GraphQLList(StateType),
-      async resolve(parentValue, args, {dataloaders: {stateLoader}}) {
+      async resolve(parentValue, args, {dataloaders: {stateLoader, peakListLoader}}) {
         try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.states && res.states.length) {
+              return await stateLoader.loadMany(res.states);
+            }
+          }
           return await stateLoader.loadMany(parentValue.states);
         } catch (err) {
           return err;
