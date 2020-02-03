@@ -14,7 +14,7 @@ import {
   ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, State, User } from '../../../types/graphQLTypes';
+import { Mountain, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
@@ -46,7 +46,7 @@ const GET_MOUNTAIN_AND_STATES = gql`
   }
 `;
 
-const ADD_MOUNTAIN = gql`
+export const ADD_MOUNTAIN = gql`
   mutation(
     $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!, $author: ID!,
   ) {
@@ -65,6 +65,15 @@ const ADD_MOUNTAIN = gql`
       longitude
       state {
         id
+        name
+        abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       author {
         id
@@ -92,6 +101,15 @@ const EDIT_MOUNTAIN = gql`
       longitude
       state {
         id
+        name
+        abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       author {
         id
@@ -101,16 +119,14 @@ const EDIT_MOUNTAIN = gql`
   }
 `;
 
-interface MountainSuccessResponse {
+export interface MountainSuccessResponse {
   mountain: null | {
     id: Mountain['id'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
-    state: null | {
-      id: State['id'];
-    }
+    state: Mountain['state'];
     author: null | {
       id: User['id'];
     }
@@ -130,7 +146,7 @@ export interface BaseMountainVariables {
   state: string;
 }
 
-interface AddMountainVariables extends BaseMountainVariables {
+export interface AddMountainVariables extends BaseMountainVariables {
   author: string;
 }
 interface EditMountainVariables extends BaseMountainVariables {

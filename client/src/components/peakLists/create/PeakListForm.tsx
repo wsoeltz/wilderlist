@@ -29,6 +29,7 @@ import {
   PeakListTier,
   PeakListVariants,
 } from '../../../types/graphQLTypes';
+import CreateMountainModal from '../../mountains/create/CreateMountainModal';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
@@ -139,6 +140,7 @@ const PeakListForm = (props: Props) => {
   const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
   const [externalResources, setExternalResources] =
     useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
+  const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
 
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -391,6 +393,15 @@ const PeakListForm = (props: Props) => {
     setOptionalMountains([]);
   };
 
+  const onNewMountainCreate = (mountain: MountainDatum) => setMountains([...mountains, mountain]);
+
+  const createMountainModal = createMountainModalOpen === false ? null : (
+    <CreateMountainModal
+      onCancel={() => setCreateMountainModalOpen(false)}
+      onSuccess={onNewMountainCreate}
+    />
+  );
+
   const mountainSelection = parent !== null ? (
     <NoMountainSelection>
       <p>
@@ -550,6 +561,14 @@ const PeakListForm = (props: Props) => {
       <FullColumn>
         {mountainSelection}
       </FullColumn>
+      <CenteredFullColumn>
+        <small>{getFluentString('create-mountain-title-create-question')}</small>
+      </CenteredFullColumn>
+      <CenteredFullColumn>
+        <ButtonPrimary onClick={() => setCreateMountainModalOpen(true)}>
+          {getFluentString('create-mountain-title-create-new')}
+        </ButtonPrimary>
+      </CenteredFullColumn>
       {map}
       <FullColumn>
         <LabelContainer htmlFor={'create-peak-list-optional-description'}>
@@ -628,12 +647,12 @@ const PeakListForm = (props: Props) => {
         <CheckboxRoot>
           <CheckboxInput
             type='checkbox'
-            value={'verify-changes-are-accurate'}
-            id={`verify-changes-are-accurate`}
+            value={'create-peak-list-verify-changes-are-accurate'}
+            id={'create-peak-list-verify-changes-are-accurate'}
             checked={verifyChangesIsChecked}
             onChange={() => setVerifyChangesIsChecked(!verifyChangesIsChecked)}
           />
-          <CheckboxLabel htmlFor={`verify-changes-are-accurate`}>
+          <CheckboxLabel htmlFor={'create-peak-list-verify-changes-are-accurate'}>
             {getFluentString('create-peak-list-check-your-work')}
            </CheckboxLabel>
         </CheckboxRoot>
@@ -652,6 +671,7 @@ const PeakListForm = (props: Props) => {
       </FullColumn>
       {parentModal}
       {areYouSureModal}
+      {createMountainModal}
     </Root>
   );
 };

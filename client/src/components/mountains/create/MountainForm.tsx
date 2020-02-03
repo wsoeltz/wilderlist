@@ -410,12 +410,12 @@ const MountainForm = (props: Props) => {
         <CheckboxRoot>
           <CheckboxInput
             type='checkbox'
-            value={'verify-changes-are-accurate'}
-            id={`verify-changes-are-accurate`}
+            value={'create-mountain-verify-changes-are-accurate'}
+            id={`create-mountain-verify-changes-are-accurate`}
             checked={verifyChangesIsChecked}
             onChange={() => setVerifyChangesIsChecked(!verifyChangesIsChecked)}
           />
-          <CheckboxLabel htmlFor={`verify-changes-are-accurate`}>
+          <CheckboxLabel htmlFor={`create-mountain-verify-changes-are-accurate`}>
             {getFluentString('create-mountain-check-your-work')}
            </CheckboxLabel>
         </CheckboxRoot>
