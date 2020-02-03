@@ -6,10 +6,11 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { editPeakListLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  GhostButton,
   ButtonPrimaryLink,
+  GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
@@ -28,14 +29,13 @@ import {
 import PeakProgressBar from '../list/PeakProgressBar';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
+import FlagModal from './FlagModal';
 import {
   MountainDatum,
   PeakListDatum,
   StateDatum,
   UserDatum,
 } from './PeakListDetail';
-import { editPeakListLink } from '../../../routing/Utils';
-import FlagModal from './FlagModal';
 
 const Root = styled.div`
   display: grid;

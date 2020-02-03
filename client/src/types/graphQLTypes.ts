@@ -74,6 +74,7 @@ export enum PeakListTier {
 }
 
 export interface PeakList {
+  _id: string;
   id: string;
   name: string;
   shortName: string;
