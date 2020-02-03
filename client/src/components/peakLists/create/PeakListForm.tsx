@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -28,6 +29,9 @@ import {
   PeakListTier,
   PeakListVariants,
 } from '../../../types/graphQLTypes';
+import AreYouSureModal, {
+  Props as AreYouSureModalProps,
+} from '../../sharedComponents/AreYouSureModal';
 import {
   ButtonWrapper,
   CheckboxLabel,
@@ -139,6 +143,50 @@ const PeakListForm = (props: Props) => {
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const closeAreYouSureModal = () => {
+    setDeleteModalOpen(false);
+  };
+
+  const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
+  const flagForDeletion = (id: string | undefined) => {
+    if (id) {
+      updatePeakListFlag({variables: {id, flag: PeakListFlag.deleteRequest}});
+    }
+    closeAreYouSureModal();
+  };
+  const clearFlag = (id: string | undefined) => {
+    if (id) {
+      updatePeakListFlag({variables: {id, flag: null}});
+    }
+    closeAreYouSureModal();
+  };
+
+  const areYouSureProps: AreYouSureModalProps =
+    initialData.flag === PeakListFlag.deleteRequest ? {
+    onConfirm: () => clearFlag(initialData.id),
+    onCancel: closeAreYouSureModal,
+    title: getFluentString('global-text-value-cancel-delete-request'),
+    text: getFluentString('global-text-value-modal-cancel-request-text', {
+      name: initialData.name,
+    }),
+    confirmText: getFluentString('global-text-value-modal-confirm'),
+    cancelText: getFluentString('global-text-value-modal-cancel'),
+  } : {
+    onConfirm: () => flagForDeletion(initialData.id),
+    onCancel: closeAreYouSureModal,
+    title: getFluentString('global-text-value-modal-request-delete-title'),
+    text: getFluentString('global-text-value-modal-request-delete-text', {
+      name: initialData.name,
+    }),
+    confirmText: getFluentString('global-text-value-modal-confirm'),
+    cancelText: getFluentString('global-text-value-modal-cancel'),
+  };
+
+  const areYouSureModal = deleteModalOpen === false ? null : (
+    <AreYouSureModal {...areYouSureProps}/>
+  );
+
   const titleText = initialData.name !== '' ? getFluentString('create-peak-list-title-edit', {
     'list-name': initialData.name,
   }) : getFluentString('create-peak-list-title-create');
@@ -246,7 +294,9 @@ const PeakListForm = (props: Props) => {
     : getFluentString('global-text-value-cancel-delete-request');
 
   const deleteButton = !initialData.id ? null : (
-    <DeleteButton>
+    <DeleteButton
+      onClick={() => setDeleteModalOpen(true)}
+    >
       {deleteButtonText}
     </DeleteButton>
   );
@@ -601,6 +651,7 @@ const PeakListForm = (props: Props) => {
         </ButtonWrapper>
       </FullColumn>
       {parentModal}
+      {areYouSureModal}
     </Root>
   );
 };
