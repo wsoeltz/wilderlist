@@ -58,7 +58,7 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, parent},
+    peakList: {id, name, shortName, type},
     active, listAction, actionText, completedAscents,
   } = props;
 
@@ -73,7 +73,7 @@ const PeakListCard = (props: Props) => {
   };
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
-    variables: {id: parent ? parent.id : id} });
+    variables: {id} });
 
   if (error) {
     console.error(error);
@@ -83,21 +83,10 @@ const PeakListCard = (props: Props) => {
   let cornerContent: React.ReactElement<any> | null;
   if (loading === false && data !== undefined && data.peakList) {
     const { peakList } = data;
-    if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
-      statesArray = [...peakList.parent.states];
-    } else if (peakList.states && peakList.states.length) {
-      statesArray = [...peakList.states];
-    }
+    statesArray = peakList.states ? peakList.states : [];
 
     if (active === true) {
-      let mountains: Array<{id: Mountain['id']}>;
-      if (peakList.parent !== null && peakList.parent.mountains !== null) {
-        mountains = peakList.parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
+      const mountains: Array<{id: Mountain['id']}> = peakList.mountains ? peakList.mountains : [];
 
       const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
       let totalRequiredAscents: number;

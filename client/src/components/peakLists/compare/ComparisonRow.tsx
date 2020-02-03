@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { comparePeakListWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
+import { mountainDetailLink } from '../../../routing/Utils';
 import {
   baseColor,
   lightBorderColor,
@@ -36,12 +36,10 @@ interface Props {
   myMountains: AscentGoals[];
   mountain: MountainDatumLite;
   index: number;
-  profileId: string;
-  peakListId: string;
 }
 
 const ComparisonTable = (props: Props) => {
-  const { mountain, index, myMountains, userMountains, profileId, peakListId } = props;
+  const { mountain, index, myMountains, userMountains } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -99,8 +97,7 @@ const ComparisonTable = (props: Props) => {
     <>
       <NameCell style={{backgroundColor}}>
         <MountainName
-          mobileURL={mountainDetailLink(mountain.id)}
-          desktopURL={comparePeakListWithMountainDetailLink(profileId, peakListId, mountain.id)}
+          to={mountainDetailLink(mountain.id)}
          >
           {mountain.name}
         </MountainName>
