@@ -775,6 +775,30 @@ const userMutations: any = {
       }
     },
   },
+  updatePeakListPermissions: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      peakListPermissions: { type: GraphQLInt },
+    },
+    async resolve(_unused: any,
+                  { id, peakListPermissions }: { id: string , peakListPermissions: number | null},
+                  context: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(context.user)) {
+        throw new Error('Invalid permission');
+      }
+      try {
+        const user = await User.findOneAndUpdate(
+        { _id: id },
+        { peakListPermissions },
+        {new: true});
+        context.dataloaders.userLoader.clear(id).prime(id, user);
+        return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
 };
 
 export default userMutations;

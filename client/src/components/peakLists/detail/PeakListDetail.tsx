@@ -184,6 +184,7 @@ const GET_PEAK_LIST = gql`
     user(id: $userId) {
       id
       name
+      peakListPermissions
       peakLists {
         id
       }
@@ -253,6 +254,7 @@ export interface UserDatum {
     id: PeakList['id'];
   }>;
   mountains: User['mountains'];
+  peakListPermissions?: User['peakListPermissions'];
 }
 
 interface UserDatumWithNote extends UserDatum {

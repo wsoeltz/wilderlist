@@ -9,7 +9,7 @@ import {
 import { editPeakListLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  ButtonPrimaryLink,
+  ButtonSecondaryLink,
   GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
@@ -192,17 +192,21 @@ const Header = (props: Props) => {
     </GhostButton>
    ) ;
 
-  const editFlagButton = user && peakList.author && user.id === peakList.author.id ? (
-    <ButtonPrimaryLink to={editPeakListLink(peakList.id)}>
-      {getFluentString('global-text-value-edit')}
-    </ButtonPrimaryLink>
-   ) : (
-    <GhostButton
-      onClick={() => setIsFlagModalOpen(true)}
-    >
-      {getFluentString('global-text-value-flag')}
-    </GhostButton>
-   ) ;
+  let editFlagButton: React.ReactElement<any> | null;
+  if (!user) {
+    editFlagButton = null;
+  } else {
+    editFlagButton = user && peakList.author && user.id === peakList.author.id
+      && user.peakListPermissions !== -1 ? (
+      <ButtonSecondaryLink to={editPeakListLink(peakList.id)}>
+        {getFluentString('global-text-value-edit')}
+      </ButtonSecondaryLink>
+    ) : (
+      <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+        {getFluentString('global-text-value-flag')}
+      </GhostButton>
+    );
+  }
 
   const topLevelHeading = isOtherUser === true && user !== null ? null : (
       <>

@@ -69,6 +69,7 @@ const UserSchema = new Schema({
     text: { type: String },
   }],
   mountainPermissions: { type: Number },
+  peakListPermissions: { type: Number },
 });
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
@@ -274,6 +275,7 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountainPermissions: { type: GraphQLInt },
+    peakListPermissions: { type: GraphQLInt },
   }),
 });
 
