@@ -43,11 +43,8 @@ export interface CardPeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  parent: null | {id: PeakList['id']}
   mountains: MountainDatum[] | null;
-  parent: {
-    id: PeakList['id'];
-    mountains: MountainDatum[] | null;
-  } | null;
 }
 
 export interface CompactPeakListDatum {
@@ -55,9 +52,6 @@ export interface CompactPeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
-  parent: {
-    id: PeakList['id'];
-  } | null;
 }
 
 interface BaseProps {
@@ -97,15 +91,8 @@ const ListPeakLists = (props: Props) => {
   const trophies: Array<React.ReactElement<any> | null> = [];
   if (props.viewMode === ViewMode.Card) {
     const peakLists = props.peakListData.map(peakList => {
-      const { parent, type } = peakList;
-      let mountains: Array<{id: Mountain['id']}>;
-      if (parent !== null && parent.mountains !== null) {
-        mountains = parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
+      const { type } = peakList;
+      const mountains: Array<{id: Mountain['id']}> = peakList.mountains ? peakList.mountains : [];
 
       const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
       let totalRequiredAscents: number;

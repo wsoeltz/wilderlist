@@ -101,6 +101,9 @@ const GET_PEAK_LIST = gql`
       shortName
       description
       optionalPeaksDescription
+      parent {
+        id
+      }
       author {
         id
       }
@@ -140,43 +143,6 @@ const GET_PEAK_LIST = gql`
           name
           states {
             id
-          }
-        }
-      }
-      parent {
-        id
-        states {
-          id
-          name
-          abbreviation
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
-        mountains {
-          id
-          name
-          latitude
-          longitude
-          elevation
-          state {
-            id
-            abbreviation
-          }
-        }
-        optionalMountains {
-          id
-          name
-          latitude
-          longitude
-          elevation
-          state {
-            id
-            abbreviation
           }
         }
       }
@@ -238,12 +204,7 @@ export interface PeakListDatum {
   mountains: MountainDatum[] | null;
   optionalMountains: MountainDatum[] | null;
   states: StateDatum[] | null;
-  parent: {
-    id: PeakList['id'];
-    mountains: MountainDatum[] | null;
-    optionalMountains: MountainDatum[] | null;
-    states: StateDatum[] | null;
-  } | null;
+  parent: null | { id: PeakList['id'] };
   author: null | { id: User['id'] };
 }
 
@@ -355,26 +316,11 @@ const PeakListDetail = (props: Props) => {
           </PlaceholderText>
         );
       } else {
-        const {parent, type, description, optionalPeaksDescription, resources} = peakList;
-        let requiredMountains: MountainDatum[];
-        if (parent !== null && parent.mountains !== null) {
-          requiredMountains = parent.mountains;
-        } else if (peakList.mountains !== null) {
-          requiredMountains = peakList.mountains;
-        } else {
-          requiredMountains = [];
-        }
-        let optionalMountains: MountainDatum[];
-        if (parent !== null && parent.optionalMountains !== null) {
-          optionalMountains = parent.optionalMountains;
-        } else if (peakList.optionalMountains !== null) {
-          optionalMountains = peakList.optionalMountains;
-        } else {
-          optionalMountains = [];
-        }
-        if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
-          statesArray = [...peakList.parent.states];
-        } else if (peakList.states && peakList.states.length) {
+        const {type, description, optionalPeaksDescription, resources} = peakList;
+        const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
+        const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
+
+        if (peakList.states && peakList.states.length) {
           statesArray = [...peakList.states];
         }
 

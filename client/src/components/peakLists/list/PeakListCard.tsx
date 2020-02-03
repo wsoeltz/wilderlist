@@ -54,20 +54,6 @@ export const GET_STATES_AND_REGIONS = gql`
       }
       parent {
         id
-        states {
-          id
-          name
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
-        mountains {
-          id
-        }
       }
     }
   }
@@ -94,13 +80,7 @@ export interface SuccessResponse {
     mountains: null | Array<{
       id: PeakList['id'];
     }>
-    parent: null | {
-      id: PeakList['id'];
-      states: null | StateDatum[];
-      mountains: null | Array<{
-        id: PeakList['id'];
-      }>
-    }
+    parent: null | {id: PeakList['id']}
   };
 }
 
@@ -254,7 +234,7 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, parent, type},
+    peakList: {id, name, shortName, type, parent},
     active, listAction, actionText, completedAscents,
     mountains, numCompletedAscents,
     totalRequiredAscents, profileId, dashboardView,
@@ -263,8 +243,7 @@ const PeakListCard = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
-    variables: {id: parent ? parent.id : id} });
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, { variables: {id} });
 
   if (error) {
     console.error(error);
@@ -316,14 +295,13 @@ const PeakListCard = (props: Props) => {
     );
   } else {
 
-    let statesArray: StateDatum[] = [];
+    let statesArray: StateDatum[];
     if (loading === false && data !== undefined && data.peakList) {
-      if (data.peakList.parent && data.peakList.parent.states && data.peakList.parent.states.length) {
-        statesArray = [...data.peakList.parent.states];
-      } else if (data.peakList.states && data.peakList.states.length) {
-        statesArray = [...data.peakList.states];
-      }
+      statesArray = data.peakList.states && data.peakList.states.length ? [...data.peakList.states] : [];
+    } else {
+      statesArray = [];
     }
+
     listInfoContent = (
       <>
         <span>

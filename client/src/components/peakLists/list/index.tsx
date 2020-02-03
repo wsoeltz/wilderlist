@@ -116,9 +116,6 @@ const SEARCH_PEAK_LISTS = gql`
       }
       parent {
         id
-        mountains {
-          id
-        }
       }
     }
     user(id: $userId) {
@@ -153,9 +150,6 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
       name
       shortName
       type
-      parent {
-        id
-      }
     }
     user(id: $userId) {
       id
