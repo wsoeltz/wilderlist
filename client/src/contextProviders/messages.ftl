@@ -437,6 +437,8 @@ create-mountain-title-edit = Edit Mountain: { $mountain-name }
 create-mountain-title-create-question = Can't find the mountain you're looking for?
 create-mountain-title-create-new = Add New Mountain
 
+create-mountain-title-create-question-optional = Can't find the optional mountain you're looking for?
+
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name

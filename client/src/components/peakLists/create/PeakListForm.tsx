@@ -141,6 +141,7 @@ const PeakListForm = (props: Props) => {
   const [externalResources, setExternalResources] =
     useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
   const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
+  const [createOptionalMountainModalOpen, setCreateMountainOptionalModalOpen] = useState<boolean>(false);
 
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -393,8 +394,7 @@ const PeakListForm = (props: Props) => {
     setOptionalMountains([]);
   };
 
-  const onNewMountainCreate = (mountain: MountainDatum) => setMountains([...mountains, mountain]);
-
+  const onNewMountainCreate = (mtn: MountainDatum) => setMountains([...mountains, mtn]);
   const createMountainModal = createMountainModalOpen === false ? null : (
     <CreateMountainModal
       onCancel={() => setCreateMountainModalOpen(false)}
@@ -402,63 +402,95 @@ const PeakListForm = (props: Props) => {
     />
   );
 
+  const onNewOptionalMountainCreate = (mtn: MountainDatum) => setOptionalMountains([...optionalMountains, mtn]);
+  const createOptionalMountainModal = createOptionalMountainModalOpen === false ? null : (
+    <CreateMountainModal
+      onCancel={() => setCreateMountainOptionalModalOpen(false)}
+      onSuccess={onNewOptionalMountainCreate}
+    />
+  );
+
   const mountainSelection = parent !== null ? (
-    <NoMountainSelection>
-      <p>
-        {getFluentString('global-text-value-parent')}: <strong>{parent.name}</strong>
-        <br />
-        <small>
-          <em>{getFluentString('create-peak-list-has-parent-mountains')}</em></small>
-        <br />
-        <GhostButton onClick={clearParent}>
-          {getFluentString('create-peak-list-remove-parent')}
-        </GhostButton>
-      </p>
-    </NoMountainSelection>
+    <FullColumn>
+      <NoMountainSelection>
+        <p>
+          {getFluentString('global-text-value-parent')}: <strong>{parent.name}</strong>
+          <br />
+          <small>
+            <em>{getFluentString('create-peak-list-has-parent-mountains')}</em></small>
+          <br />
+          <GhostButton onClick={clearParent}>
+            {getFluentString('create-peak-list-remove-parent')}
+          </GhostButton>
+        </p>
+      </NoMountainSelection>
+    </FullColumn>
   ) : (
     <>
-      <LabelContainer>
-        <Label>
-          {getFluentString('global-text-value-mountains')}
-        </Label>
-      </LabelContainer>
-      <AddMountains
-        targetMountainId={null}
-        selectedMountains={mountains}
-        setSelectedMountains={setMountains}
-        expandedLayout={true}
-      />
+      <FullColumn>
+        <LabelContainer>
+          <Label>
+            {getFluentString('global-text-value-mountains')}
+          </Label>
+        </LabelContainer>
+        <AddMountains
+          targetMountainId={null}
+          selectedMountains={mountains}
+          setSelectedMountains={setMountains}
+          expandedLayout={true}
+        />
+      </FullColumn>
+      <CenteredFullColumn>
+        <small>{getFluentString('create-mountain-title-create-question')}</small>
+      </CenteredFullColumn>
+      <CenteredFullColumn>
+        <ButtonPrimary onClick={() => setCreateMountainModalOpen(true)}>
+          {getFluentString('create-mountain-title-create-new')}
+        </ButtonPrimary>
+      </CenteredFullColumn>
     </>
   );
 
   const optionalMountainSelection = parent !== null ? (
-    <NoMountainSelection>
-      <p>
-        {getFluentString('global-text-value-parent')}: <strong>{parent.name}</strong>
-        <br />
-        <small>
-          <em>{getFluentString('create-peak-list-has-parent-optional-mountains')}</em></small>
-        <br />
-        <GhostButton onClick={clearParent}>
-          {getFluentString('create-peak-list-remove-parent')}
-        </GhostButton>
-      </p>
-    </NoMountainSelection>
+    <FullColumn>
+      <NoMountainSelection>
+        <p>
+          {getFluentString('global-text-value-parent')}: <strong>{parent.name}</strong>
+          <br />
+          <small>
+            <em>{getFluentString('create-peak-list-has-parent-optional-mountains')}</em></small>
+          <br />
+          <GhostButton onClick={clearParent}>
+            {getFluentString('create-peak-list-remove-parent')}
+          </GhostButton>
+        </p>
+      </NoMountainSelection>
+    </FullColumn>
   ) : (
     <>
-      <LabelContainer>
-        <Label>
-          {getFluentString('peak-list-detail-text-optional-mountains')}
-          {' '}
-          <small>({getFluentString('global-text-value-optional')})</small>
-        </Label>
-      </LabelContainer>
-      <AddMountains
-        targetMountainId={null}
-        selectedMountains={optionalMountains}
-        setSelectedMountains={setOptionalMountains}
-        expandedLayout={true}
-      />
+      <FullColumn>
+        <LabelContainer>
+          <Label>
+            {getFluentString('peak-list-detail-text-optional-mountains')}
+            {' '}
+            <small>({getFluentString('global-text-value-optional')})</small>
+          </Label>
+        </LabelContainer>
+        <AddMountains
+          targetMountainId={null}
+          selectedMountains={optionalMountains}
+          setSelectedMountains={setOptionalMountains}
+          expandedLayout={true}
+        />
+      </FullColumn>
+      <CenteredFullColumn>
+        <small>{getFluentString('create-mountain-title-create-question-optional')}</small>
+      </CenteredFullColumn>
+      <CenteredFullColumn>
+        <ButtonPrimary onClick={() => setCreateMountainOptionalModalOpen(true)}>
+          {getFluentString('create-mountain-title-create-new')}
+        </ButtonPrimary>
+      </CenteredFullColumn>
     </>
   );
 
@@ -558,17 +590,7 @@ const PeakListForm = (props: Props) => {
           {getFluentString('create-peak-list-select-parent-modal-button')}
         </ButtonPrimary>
       </CenteredFullColumn>
-      <FullColumn>
-        {mountainSelection}
-      </FullColumn>
-      <CenteredFullColumn>
-        <small>{getFluentString('create-mountain-title-create-question')}</small>
-      </CenteredFullColumn>
-      <CenteredFullColumn>
-        <ButtonPrimary onClick={() => setCreateMountainModalOpen(true)}>
-          {getFluentString('create-mountain-title-create-new')}
-        </ButtonPrimary>
-      </CenteredFullColumn>
+      {mountainSelection}
       {map}
       <FullColumn>
         <LabelContainer htmlFor={'create-peak-list-optional-description'}>
@@ -588,9 +610,7 @@ const PeakListForm = (props: Props) => {
           maxLength={5000}
         />
       </FullColumn>
-      <FullColumn>
-        {optionalMountainSelection}
-      </FullColumn>
+      {optionalMountainSelection}
       <FullColumn>
         <LabelContainer htmlFor={'create-peak-list-select-tier'}>
           <Label>
@@ -672,6 +692,7 @@ const PeakListForm = (props: Props) => {
       {parentModal}
       {areYouSureModal}
       {createMountainModal}
+      {createOptionalMountainModal}
     </Root>
   );
 };
