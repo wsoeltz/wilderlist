@@ -141,7 +141,7 @@ const RootQuery = new GraphQLObjectType({
     },
     peakList: {
       type: PeakListType,
-      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { id: { type: GraphQLID } },
       resolve(parnetValue, { id }) {
         return PeakList.findById(id);
       },

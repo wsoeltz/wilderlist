@@ -1,5 +1,4 @@
 import { GetString } from 'fluent-react';
-// import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
@@ -94,6 +93,7 @@ export interface InitialPeakListDatum {
   flag: PeakListFlag | null;
   tier: PeakListTier | undefined;
   resources: ExternalResource[];
+  parent: {id: string, name: string} | null;
 }
 
 export interface FormInput {
@@ -125,7 +125,7 @@ const PeakListForm = (props: Props) => {
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
   const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
-  const [parent, setParent] = useState<{id: string, name: string} | null>(null);
+  const [parent, setParent] = useState<{id: string, name: string} | null>(initialData.parent);
   const [type, setType] = useState<PeakListVariants>(initialData.type);
   const [tier, setTier] = useState<PeakListTier | undefined>(initialData.tier);
   const [description, setDescription] = useState<string>(initialData.description);
@@ -194,14 +194,15 @@ const PeakListForm = (props: Props) => {
   };
   const setStringToPeakListTier = (value: string) => {
     if (value === 'casual') {
-      setTier(PeakListTier.casual);
+      return setTier(PeakListTier.casual);
     } else if (value === 'advanced') {
-      setTier(PeakListTier.advanced);
+      return setTier(PeakListTier.advanced);
     } else if (value === 'expert') {
-      setTier(PeakListTier.expert);
+      return setTier(PeakListTier.expert);
     } else if (value === 'mountaineer') {
-      setTier(PeakListTier.mountaineer);
+      return setTier(PeakListTier.mountaineer);
     }
+    return setTier(undefined);
   };
 
   let descriptionPlaceholderText: string;

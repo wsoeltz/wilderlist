@@ -51,6 +51,7 @@ const PeakListSchema = new Schema({
   },
   status: { type: String },
   flag: { type: String },
+  tier: { type: String },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);

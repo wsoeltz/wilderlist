@@ -28,7 +28,7 @@ import PeakListType, {
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
 
-interface AddPeakListVariables {
+interface BaseVariables {
   name: string;
   shortName: string;
   description: string | null;
@@ -39,8 +39,15 @@ interface AddPeakListVariables {
   parent: IPeakList;
   states: IState[];
   resources: IPeakList['resources'];
-  author: IPeakList['author'];
   tier: IPeakList['tier'];
+}
+
+interface AddPeakListVariables extends BaseVariables {
+  author: IPeakList['author'];
+}
+
+interface EditPeakListVariables extends BaseVariables {
+  id: IPeakList['id'];
 }
 
 const ExternalResourcesInputType: any = new GraphQLInputObjectType({
@@ -144,6 +151,95 @@ const peakListMutations: any = {
           });
         }
         return newPeakList.save();
+      }
+    },
+  },
+  editPeakList: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      name: { type: GraphQLNonNull(GraphQLString) },
+      shortName: { type: GraphQLNonNull(GraphQLString) },
+      description: { type: GraphQLString },
+      optionalPeaksDescription: { type: GraphQLString },
+      type: {type: GraphQLNonNull(PeakListVariants) },
+      mountains: { type: new GraphQLList(GraphQLID)},
+      optionalMountains: { type: new GraphQLList(GraphQLID)},
+      states: { type: new GraphQLList(GraphQLID)},
+      parent: {type: GraphQLID },
+      resources: { type: new GraphQLList(ExternalResourcesInputType) },
+      tier: { type: PeakListTier },
+    },
+    async resolve(_unused: any, input: EditPeakListVariables, {user}: {user: IUser | undefined | null}) {
+      const {
+        name, shortName, type, mountains, parent, states,
+        description, optionalMountains, optionalPeaksDescription,
+        resources, id, tier,
+      } = input;
+      if (name !== '' && shortName !== '' && type !== null) {
+        const peakList = await PeakList.findById(id);
+        const authorObj = peakList && peakList.author ? peakList.author : null;
+        if (!(isCorrectUser(user, authorObj) || isAdmin(user))) {
+          throw new Error('Invalid user match');
+        }
+
+        await removeConnections(PeakList, id, 'mountains', Mountain, 'lists');
+        await removeConnections(PeakList, id, 'optionalMountains', Mountain, 'optionalLists');
+        await removeConnections(PeakList, id, 'users', User, 'peakLists');
+        await removeConnections(PeakList, id, 'states', State, 'peakLists');
+
+        const searchString = name + getType(type) + ' ' + shortName + ' ' + type;
+        const newPeakList = await PeakList.findOneAndUpdate({
+              _id: id,
+            },
+            { name, shortName, mountains, optionalMountains,
+              type, parent, searchString, states, description,
+              optionalPeaksDescription, resources, tier },
+            {new: true});
+        if (newPeakList) {
+          if (mountains !== undefined) {
+            mountains.forEach((mtnId) => {
+              Mountain.findByIdAndUpdate(mtnId,
+                { $push: {lists: newPeakList.id} },
+                function(err, model) {
+                  PeakList.update({ $push: { mountains: mtnId } });
+                  if (err) {
+                    console.error(err);
+                  }
+                },
+              );
+            });
+          }
+          if (optionalMountains !== undefined) {
+            optionalMountains.forEach((mtnId) => {
+              Mountain.findByIdAndUpdate(mtnId,
+                { $push: {optionalLists: newPeakList.id} },
+                function(err, model) {
+                  PeakList.update({ $push: { optionalMountains: mtnId } });
+                  if (err) {
+                    console.error(err);
+                  }
+                },
+              );
+            });
+          }
+          if (states !== undefined) {
+            states.forEach((stateId) => {
+              State.findByIdAndUpdate(stateId,
+                { $push: {peakLists: newPeakList.id} },
+                function(err, model) {
+                  PeakList.update({ $push: { states: stateId } });
+                  if (err) {
+                    console.error(err);
+                  }
+                },
+              );
+            });
+          }
+          return newPeakList.save();
+        } else {
+          return null;
+        }
       }
     },
   },
