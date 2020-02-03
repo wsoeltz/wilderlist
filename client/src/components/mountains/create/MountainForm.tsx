@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
 import { createPortal } from 'react-dom';
-import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -128,15 +127,16 @@ export interface InitialMountainDatum {
   flag: MountainFlag | null;
 }
 
-interface Props extends RouteComponentProps {
+interface Props {
   states: StateDatum[];
   initialData: InitialMountainDatum;
   onSubmit: (input: BaseMountainVariables) => void;
   mapContainer: HTMLDivElement | null;
+  onCancel: () => void;
 }
 
 const MountainForm = (props: Props) => {
-  const { states, initialData, onSubmit, history, mapContainer } = props;
+  const { states, initialData, onSubmit, mapContainer, onCancel } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -421,7 +421,7 @@ const MountainForm = (props: Props) => {
         </CheckboxRoot>
         <ButtonWrapper>
           {deleteButton}
-          <GhostButton onClick={history.goBack}>
+          <GhostButton onClick={onCancel}>
             {getFluentString('global-text-value-modal-cancel')}
           </GhostButton>
           <SaveButton
@@ -438,4 +438,4 @@ const MountainForm = (props: Props) => {
   );
 };
 
-export default withRouter(MountainForm);
+export default MountainForm;

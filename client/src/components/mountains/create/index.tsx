@@ -247,6 +247,7 @@ const MountainCreatePage = (props: Props) => {
           initialData={initialMountain}
           onSubmit={submitMountainForm}
           mapContainer={mapContainer}
+          onCancel={history.goBack}
         />
       );
     } else if (data.mountain) {
@@ -271,6 +272,7 @@ const MountainCreatePage = (props: Props) => {
           initialData={initialMountain}
           onSubmit={submitMountainForm}
           mapContainer={mapContainer}
+          onCancel={history.goBack}
         />
       );
     }
