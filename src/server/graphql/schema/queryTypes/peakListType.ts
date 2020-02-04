@@ -7,6 +7,12 @@ import {
   GraphQLString,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
+import {
+  completedPeaks,
+  formatDate,
+  getLatestAscent,
+  RawCompletedMountain,
+} from '../../../utilities/peakListUtils';
 import { PeakList as IPeakList } from '../../graphQLTypes';
 import MountainType, {CreatedItemStatus} from './mountainType';
 import StateType from './stateType';
@@ -242,7 +248,7 @@ const PeakListType: any = new GraphQLObjectType({
     flag: { type: PeakListFlag },
     tier: { type: PeakListTier },
     numMountains: {
-      type: GraphQLID,
+      type: GraphQLInt,
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         try {
           if (parentValue.mountains && parentValue.mountains.length) {
@@ -256,6 +262,111 @@ const PeakListType: any = new GraphQLObjectType({
               }
           } else {
             return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    numCompletedAscents: {
+      type: GraphQLInt,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return 0;
+        }
+        try {
+          let completedMountains: RawCompletedMountain[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedMountains = user.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+              mountain: mountain.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.mountains && res.mountains.length) {
+              completedMountains = res.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+                mountain: mountain.toString(), dates,
+              }));
+            } else {
+              completedMountains = [];
+            }
+          }
+
+          let mountains: string[];
+          if (parentValue.mountains && parentValue.mountains.length) {
+            mountains = parentValue.mountains.map((mtn: string) => mtn.toString());
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.mountains && res.mountains.length) {
+                mountains = res.mountains.map((mtn: string) => mtn.toString());
+              } else {
+                mountains = [];
+              }
+          } else {
+            mountains = [];
+          }
+
+          if (completedMountains && completedMountains.length && mountains && mountains.length && parentValue.type) {
+            return completedPeaks(mountains, completedMountains, parentValue.type);
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    latestAscent: {
+      type: GraphQLString,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return 0;
+        }
+        try {
+          let completedMountains: RawCompletedMountain[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedMountains = user.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+              mountain: mountain.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.mountains && res.mountains.length) {
+              completedMountains = res.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+                mountain: mountain.toString(), dates,
+              }));
+            } else {
+              completedMountains = [];
+            }
+          }
+
+          let mountains: string[];
+          if (parentValue.mountains && parentValue.mountains.length) {
+            mountains = parentValue.mountains.map((mtn: string) => mtn.toString());
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.mountains && res.mountains.length) {
+                mountains = res.mountains.map((mtn: string) => mtn.toString());
+              } else {
+                mountains = [];
+              }
+          } else {
+            mountains = [];
+          }
+
+          if (completedMountains && completedMountains.length && mountains && mountains.length && parentValue.type) {
+            const latestDate = getLatestAscent(mountains, completedMountains, parentValue.type);
+            if (latestDate !== undefined) {
+              return formatDate(latestDate);
+            } else {
+              return null;
+            }
+          } else {
+            return null;
           }
         } catch (err) {
           return err;

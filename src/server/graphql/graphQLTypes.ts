@@ -94,6 +94,9 @@ export interface PeakList {
   status: CreatedItemStatus | null;
   flag: PeakListFlag | null;
   tier: PeakListTier | null;
+  numMountains: number;
+  numCompletedAscents: number;
+  latestAscent: string | null;
 }
 
 export enum PermissionTypes {
