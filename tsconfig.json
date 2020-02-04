@@ -5,6 +5,7 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
     "jsx": "preserve",
     "noEmitHelpers": false,
     "noUnusedLocals": true,
