@@ -14,12 +14,14 @@ import {
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
+import { GET_USERS_PEAK_LISTS } from '../../dashboard';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
   AddRemovePeakListVariables,
+  getRefetchSearchQueries,
 } from '../list';
 import {
   BigText,
@@ -98,6 +100,16 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
       id
       peakLists {
         id
+        name
+        shortName
+        type
+        parent {
+          id
+        }
+        numMountains
+        numCompletedAscents(userId: $userId)
+        latestAscent(userId: $userId)
+        isActive(userId: $userId)
       }
     }
   }
@@ -112,21 +124,33 @@ interface Props {
   isOtherUser?: boolean;
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
+  queryRefetchArray?: Array<{query: any, variables: any}>;
 }
 
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
     completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
+    queryRefetchArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const mutationOptions = queryRefetchArray && queryRefetchArray.length && user ? {
+    refetchQueries: () => [
+      ...queryRefetchArray,
+      ...getRefetchSearchQueries(user.id),
+      {query: GET_USERS_PEAK_LISTS, variables: {userId: user.id}},
+      ],
+  } : {};
+
   const [addPeakListToUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(
+      ADD_PEAK_LIST_TO_USER, {...mutationOptions});
   const [removePeakListFromUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(
+      REMOVE_PEAK_LIST_FROM_USER, {...mutationOptions});
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);

@@ -21,8 +21,6 @@ import {
   Card,
 } from '../../../styling/styleUtils';
 import {
-  CompletedMountain,
-  Mountain,
   PeakList,
   Region,
   State,
@@ -30,7 +28,7 @@ import {
 } from '../../../types/graphQLTypes';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { formatDate, getLatestAscent, getType } from '../Utils';
+import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
@@ -224,10 +222,9 @@ interface Props {
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
-  completedAscents: CompletedMountain[];
-  mountains: Array<{id: Mountain['id']}>;
   numCompletedAscents: number;
   totalRequiredAscents: number;
+  latestDate: string | null;
   dashboardView: boolean;
   profileId?: string;
 }
@@ -235,9 +232,9 @@ interface Props {
 const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, shortName, type, parent},
-    active, listAction, actionText, completedAscents,
-    mountains, numCompletedAscents,
+    active, listAction, actionText, numCompletedAscents,
     totalRequiredAscents, profileId, dashboardView,
+    latestDate,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -268,17 +265,16 @@ const PeakListCard = (props: Props) => {
 
   let listInfoContent: React.ReactElement<any>;
   if (active === true) {
-    const latestDate = getLatestAscent(mountains, completedAscents, type);
 
     let latestDateText: React.ReactElement<any>;
-    if (latestDate !== undefined) {
+    if (latestDate !== null) {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': (!(isNaN(latestDate.day) || isNaN(latestDate.month))).toString(),
+        'has-full-date': 'true',
       });
       latestDateText = (
         <>
-          {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>
+          {latestAscentText} <BigText>{latestDate}</BigText>
         </>
       );
     } else {

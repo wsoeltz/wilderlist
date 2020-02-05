@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLID,
   GraphQLInt,
@@ -373,6 +374,34 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    isActive: {
+      type: GraphQLBoolean,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return null;
+        }
+        try {
+          let userListData: string[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            userListData = user.peakLists ? user.peakLists : [];
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.peakLists && res.peakLists.length) {
+              userListData = res.peakLists;
+            } else {
+              userListData = [];
+            }
+          }
+          return userListData.includes(parentValue._id.toString());
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+
   }),
 });
 

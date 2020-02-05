@@ -12,6 +12,7 @@ import {
   notEmpty,
 } from '../../../../Utils';
 import Modal from '../../../sharedComponents/Modal';
+import {getRefetchSearchQueries} from '../../list';
 import {
   DateObject,
   getDateType,
@@ -94,14 +95,19 @@ const EditAscentReport = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const baseRefetchSearchQueries = getRefetchSearchQueries(props.userId);
+
   const day = !isNaN(date.day) ? date.day.toString() : '';
   const month = !isNaN(date.month) ? date.month.toString() : '';
   const year = !isNaN(date.year) ? date.year.toString() : '';
   const parsedDate = convertFieldsToDate(day, month, year);
   const stringDate = parsedDate.date ? parsedDate.date : 'XXXX-XX-XX-XX-XX';
 
-  const refetchQuery = {query: GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, variables: {
-        author: userId, mountain: editMountainId, date: stringDate }};
+  const refetchQuery = [
+        {query: GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, variables: {
+          author: userId, mountain: editMountainId, date: stringDate }},
+        ...baseRefetchSearchQueries,
+        ];
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, {
     variables: {
@@ -143,7 +149,7 @@ const EditAscentReport = (props: Props) => {
         <MountainCompletionModal
           {...props}
           tripReportId={undefined}
-          refetchQuery={refetchQuery}
+          refetchQuery={[...refetchQuery]}
           initialCompletionDay={day}
           initialCompletionMonth={month}
           initialCompletionYear={year}
@@ -193,7 +199,7 @@ const EditAscentReport = (props: Props) => {
         <MountainCompletionModal
           {...props}
           tripReportId={id}
-          refetchQuery={refetchQuery}
+          refetchQuery={[...refetchQuery]}
           initialCompletionDay={day}
           initialCompletionMonth={month}
           initialCompletionYear={year}
