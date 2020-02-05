@@ -15,16 +15,14 @@ import {
 } from '../../../styling/styleUtils';
 import {
   FriendStatus,
-  Mountain,
-  PeakList,
   PeakListVariants,
   User,
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+import { CardPeakListDatum } from '../../peakLists/list/ListPeakLists';
 import {
-  completedPeaks,
   formatDate,
-  getLatestOverallAscent,
+  getDates,
   getType,
 } from '../../peakLists/Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
@@ -36,19 +34,18 @@ const GET_PEAK_LIST_DATA_FOR_USER = gql`
       id
       peakLists {
         id
+        name
         shortName
         type
-        mountains {
-          id
-        }
         parent {
           id
-          mountains {
-            id
-          }
         }
+        numMountains
+        numCompletedAscents(userId: $id)
+        latestAscent(userId: $id)
+        isActive(userId: $id)
       }
-      mountains {
+      latestAscent {
         mountain {
           id
           name
@@ -59,22 +56,6 @@ const GET_PEAK_LIST_DATA_FOR_USER = gql`
   }
 `;
 
-interface BasicMountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-}
-
-interface PeakListDatum {
-  id: PeakList['id'];
-  shortName: PeakList['shortName'];
-  type: PeakList['type'];
-  mountains: BasicMountainDatum[];
-  parent: {
-    id: PeakList['id'];
-    mountains: BasicMountainDatum[];
-  } | null;
-}
-
 interface PeakListsForUserVariables {
   id: string;
 }
@@ -82,8 +63,8 @@ interface PeakListsForUserVariables {
 interface PeakListsForUserResponse {
   user: {
     id: User['id'];
-    peakLists: PeakListDatum[];
-    mountains: User['mountains'];
+    peakLists: CardPeakListDatum[];
+    latestAscent: User['latestAscent'];
   };
 }
 
@@ -243,38 +224,26 @@ const DeclineButton = styled(GhostButton)`
 `;
 
 const getListsInProgress =
-  (peakLists: PeakListDatum[], completedAscents: User['mountains']) => {
-    if (completedAscents === null) {
-      return { completedLists: [], listsInProgress: peakLists };
-    }
+  (peakLists: CardPeakListDatum[]) => {
     const completedLists: string[] = [];
     const listsInProgress: string[] = [];
-    peakLists.forEach(list => {
-      const { type, parent } = list;
-      let mountains: Array<{id: string}>;
-      if (parent !== null && parent.mountains !== null) {
-        mountains = parent.mountains;
-      } else if (list.mountains !== null) {
-        mountains = list.mountains;
-      } else {
-        mountains = [];
-      }
-      const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
+    peakLists.forEach(({numMountains, numCompletedAscents, type, shortName}) => {
       let totalRequiredAscents: number;
       if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        totalRequiredAscents = mountains.length;
+        totalRequiredAscents = numMountains;
       } else if (type === PeakListVariants.fourSeason) {
-        totalRequiredAscents = mountains.length * 4;
+        totalRequiredAscents = numMountains * 4;
       } else if (type === PeakListVariants.grid) {
-        totalRequiredAscents = mountains.length * 12;
+        totalRequiredAscents = numMountains * 12;
       } else {
         failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
       }
+
       if (totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {// list complete
-        completedLists.push(list.shortName + getType(list.type));
+        completedLists.push(shortName + getType(type));
       } else { // list is incomplete
-        listsInProgress.push(list.shortName + getType(list.type));
+        listsInProgress.push(shortName + getType(type));
       }
     });
     return { completedLists, listsInProgress };
@@ -338,8 +307,8 @@ const UserCard = (props: Props) => {
     listsInProgressElement = null;
     ascentText = '';
   } else if (data !== undefined) {
-    const { user: {peakLists, mountains}} = data;
-    const { completedLists, listsInProgress } = getListsInProgress(peakLists, mountains);
+    const { user: {peakLists, latestAscent}} = data;
+    const { completedLists, listsInProgress } = getListsInProgress(peakLists);
     if (completedLists.length === 0) {
       completedListsElement = null;
     } else {
@@ -413,28 +382,25 @@ const UserCard = (props: Props) => {
       );
     }
 
-    if (mountains !== null) {
-      const latestAscent = getLatestOverallAscent(mountains);
-      if (latestAscent !== null) {
-        let preposition: Preposition;
-        if (isNaN(latestAscent.date.year)) {
-          preposition = Preposition.on;
-        } else if (isNaN(latestAscent.date.month)) {
-          preposition = Preposition.in;
-        } else if (isNaN(latestAscent.date.day)) {
-          preposition = Preposition.in;
-        } else {
-          preposition = Preposition.on;
-        }
-
-        ascentText = getFluentString('user-profile-latest-ascents', {
-          'mountain-name': latestAscent.name,
-          'preposition': preposition,
-          'date': formatDate(latestAscent.date),
-        });
+    if (latestAscent !== null && latestAscent.dates.length && latestAscent.mountain && latestAscent.mountain.id) {
+      const {mountain} = latestAscent;
+      const date = getDates(latestAscent.dates)[0];
+      let preposition: Preposition;
+      if (isNaN(date.year)) {
+        preposition = Preposition.on;
+      } else if (isNaN(date.month)) {
+        preposition = Preposition.in;
+      } else if (isNaN(date.day)) {
+        preposition = Preposition.in;
       } else {
-        ascentText = getFluentString('user-profile-no-recent-ascents');
+        preposition = Preposition.on;
       }
+
+      ascentText = getFluentString('user-profile-latest-ascents', {
+        'mountain-name': mountain.name,
+        'preposition': preposition,
+        'date': formatDate(date),
+      });
     } else {
       ascentText = getFluentString('user-profile-no-recent-ascents');
     }
