@@ -39,6 +39,117 @@ export interface RawCompletedMountain {
   dates: string[];
 }
 
+const numberAs2DigitString = (num: number) => {
+  if (num < 10) {
+    return '0' + num;
+  }
+  return num.toString();
+};
+
+const getMonth = (month: string) => {
+  if (month === '') {
+    return 'XX';
+  }
+  const monthInt = parseInt(month, 10);
+  if (isNaN(monthInt)) {
+    return null;
+  }
+  if (monthInt > 0 && monthInt < 13) {
+    return numberAs2DigitString(monthInt);
+  }
+  return null;
+};
+
+const getYear = (year: string) => {
+  if (year === '') {
+    return 'XXXX';
+  }
+  if (year.length !== 4) {
+    return null;
+  }
+  const yearInt = parseInt(year, 10);
+  if (isNaN(yearInt)) {
+    return null;
+  }
+  const currentYear = new Date().getFullYear();
+  if (yearInt <= currentYear) {
+    return yearInt.toString();
+  }
+  return null;
+};
+
+const isLeapYear = (year: number) => {
+  // is leapyear, return true
+  if (year % 4 === 0) {
+    if (year % 100 === 0) {
+      if (year % 400 === 0) {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+  // is not leapyear return false
+  return false;
+};
+
+const monthsWith30Days = [9, 4, 6, 11];
+
+const getDay = (day: string, month: number, year: number) => {
+  if (day === '') {
+    return {error: undefined, day: 'XX'};
+  }
+  let error: string;
+  const dayInt = parseInt(day, 10);
+  if (isNaN(dayInt)) {
+    return {error: 'Day must be a number', day: undefined};
+  }
+  if (monthsWith30Days.includes(month)) {
+    if (dayInt > 0 && dayInt < 31) {
+      return {error: undefined, day: numberAs2DigitString(dayInt)};
+    }
+    error = 'Day must be a number between 1 and 30';
+  } else if (month === 2) {
+    if (isLeapYear(year)) {
+      if (dayInt > 0 && dayInt < 30) {
+        return {error: undefined, day: numberAs2DigitString(dayInt)};
+      }
+      error = 'Day must be a number between 1 and 29';
+    } else if (dayInt > 0 && dayInt < 29) {
+      return {error: undefined, day: numberAs2DigitString(dayInt)};
+    } else {
+      error = 'Day must be a number between 1 and 28';
+    }
+  } else {
+    if (dayInt > 0 && dayInt < 32) {
+      return {error: undefined, day: numberAs2DigitString(dayInt)};
+    }
+    error = 'Day must be a number between 1 and 31';
+  }
+  return {error, day: undefined};
+};
+
+const convertFieldsToDate = (day: string, month: string, year: string) => {
+  // Check if valid year
+  const validYear = getYear(year);
+  if (validYear === null) {
+    return {error: 'Please enter a valid year', date: undefined};
+  }
+  // Check if valid month
+  const validMonth = getMonth(month);
+  if (validMonth === null) {
+    return {error: 'Please enter a valid month', date: undefined};
+  }
+  // Check if valid day for the month and year
+  const {error, day: validDay} = getDay(day, parseInt(validMonth, 10), parseInt(validYear, 10));
+  if (error !== undefined) {
+    return {error, date: undefined};
+  }
+  // Ignore time for now, keeping it in in case of need for it later
+  // If all valid, return YYYY-MM-DD-HH-MM string. Use X for any part of the date that is empty
+  return {error: undefined, date: `${validYear}-${validMonth}-${validDay}-XX-XX`};
+};
+
 const getSeason = (year: number, month: number, day: number): Seasons | undefined => {
   const season = getSeasonUtility(year, month, day);
   if (season === 'summer') {
@@ -400,4 +511,48 @@ export const formatDate = ({ day, month, year }: { day: number, month: number, y
     return month + '/' + year;
   }
   return month + '/' + day + '/' + year;
+};
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
+}
+type DateWithMountainId = DateObject & { mountain: string };
+
+export const getLatestOverallAscent = (mountains: RawCompletedMountain[]) => {
+  if (mountains.length === 0) {
+    return null;
+  }
+  const mountainList = mountains.map(({mountain}) => {
+    if (mountain) {
+      return mountain;
+    } else {
+      return null;
+    }
+  });
+  const filteredMountainList = mountainList.filter(notEmpty);
+  const ascents: DateWithMountainId[] = [];
+  filteredMountainList.forEach(id => {
+    const dates = mountains.find(
+      ({mountain}) => mountain && mountain === id);
+    if (dates !== undefined) {
+      const datesCompleted = getDates(dates.dates);
+      const dateCompleted = datesCompleted[datesCompleted.length - 1];
+      if (dateCompleted !== null && dateCompleted !== undefined && dates.mountain) {
+        ascents.push({mountain: dates.mountain, ...dateCompleted});
+      }
+    }
+  });
+  if (ascents.length) {
+    const sortedAscents = sortBy(ascents, ['dateAsNumber']).reverse();
+    const {mountain, ...dateObj} = sortedAscents[0];
+    const day = isNaN(dateObj.day) ? '' : dateObj.day.toString();
+    const month = isNaN(dateObj.month) ? '' : dateObj.month.toString();
+    const year = isNaN(dateObj.year) ? '' : dateObj.year.toString();
+    const { date } = convertFieldsToDate(day, month, year);
+    if (date !== undefined) {
+      const latestMountain: RawCompletedMountain = {mountain, dates: [date]};
+      return latestMountain;
+    }
+  }
+  return null;
 };

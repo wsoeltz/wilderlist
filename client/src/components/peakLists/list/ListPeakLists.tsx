@@ -10,8 +10,8 @@ import { lightBaseColor } from '../../../styling/styleUtils';
 import {
   PeakList,
   PeakListVariants,
-  State,
   Region,
+  State,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { ViewMode } from './index';

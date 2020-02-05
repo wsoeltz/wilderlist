@@ -22,11 +22,11 @@ import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
-import PeakProgressBar from './PeakProgressBar';
 import {
-  StateDatum,
   RegionDatum,
+  StateDatum,
 } from './ListPeakLists';
+import PeakProgressBar from './PeakProgressBar';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
