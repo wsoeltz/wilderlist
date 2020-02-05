@@ -81,6 +81,7 @@ const ListMountains = (props: Props) => {
   const [updateMountainPermissions] =
     useMutation<PermissionsSuccessResponse, PermissionsVariables>(
       UPDATE_MOUNTAIN_PERMISSIONS);
+  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
 
   const approveMountain =
     (mountainId: string, mountainName: string,
@@ -116,8 +117,6 @@ const ListMountains = (props: Props) => {
       }
     }
   };
-
-  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
 
   const clearFlag = (mountainId: string) => {
     if (mountainId) {

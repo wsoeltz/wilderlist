@@ -4,7 +4,6 @@ import {
   failIfValidOrNonExhaustive,
   getSeason,
   Months,
-  notEmpty,
   Seasons,
   states,
 } from '../../Utils';
@@ -411,40 +410,6 @@ export const getLatestAscent =  (
 
   const sortedAscents = sortBy(ascents, ['dateAsNumber']);
   return sortedAscents[sortedAscents.length - 1];
-};
-
-type DateWithName = DateObject & { name: string };
-
-export const getLatestOverallAscent = (mountains: CompletedMountain[]) => {
-  if (mountains.length === 0) {
-    return null;
-  }
-  const mountainList = mountains.map(({mountain}) => {
-    if (mountain) {
-      return mountain.id;
-    } else {
-      return null;
-    }
-  });
-  const filteredMountainList = mountainList.filter(notEmpty);
-  const ascents: DateWithName[] = [];
-  filteredMountainList.forEach(id => {
-    const dates = mountains.find(
-      ({mountain}) => mountain && mountain.id === id);
-    if (dates !== undefined) {
-      const datesCompleted = getDates(dates.dates);
-      const dateCompleted = datesCompleted[datesCompleted.length - 1];
-      if (dateCompleted !== null && dateCompleted !== undefined && dates.mountain) {
-        ascents.push({name: dates.mountain.name, ...dateCompleted});
-      }
-    }
-  });
-  if (ascents.length) {
-    const sortedAscents = sortBy(ascents, ['dateAsNumber']).reverse();
-    const {name, ...date} = sortedAscents[0];
-    return {name, date};
-  }
-  return null;
 };
 
 export const isState = (value: any) => {
