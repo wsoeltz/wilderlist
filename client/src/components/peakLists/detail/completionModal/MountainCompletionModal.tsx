@@ -656,7 +656,7 @@ export type Props = BaseProps & Restrictions;
 
 type PropsWithConditions = Props & {
   tripReportId: string | undefined;
-  refetchQuery: {query: any, variables: any} | undefined;
+  refetchQuery: Array<{query: any, variables: any}> | undefined;
   initialCompletionDay: string | null;
   initialCompletionMonth: string | null;
   initialCompletionYear: string | null ;
@@ -691,13 +691,17 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   ];
 
   if (refetchQuery !== undefined) {
-    refetchQueries.push(refetchQuery);
+    refetchQuery.forEach(query => refetchQueries.push(query));
   }
 
   const [addMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION, {
+      refetchQueries: () => [...refetchQueries],
+  });
   const [removeMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION);
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION, {
+      refetchQueries: () => [...refetchQueries],
+  });
   const [addTripReport] =
     useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
       refetchQueries: () => [...refetchQueries],

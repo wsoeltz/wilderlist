@@ -49,7 +49,7 @@ const userMutations: any = {
       peakListId: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, {userId, peakListId}: {userId: string, peakListId: string},
-                  context: {user: IUser | undefined | null}) {
+                  context: {user: IUser | undefined | null, dataloaders: any}) {
       try {
         const user = await User.findById(userId);
         if (!isCorrectUser(user, context.user)) {
@@ -82,7 +82,12 @@ const userMutations: any = {
               }
             },
           );
-          return User.findById(userId);
+          const updatedUser = User.findById(userId);
+          const updatedPeakList = PeakList.findById(peakListId);
+          context.dataloaders.peakListLoader.clear(peakListId).prime(peakListId, updatedPeakList);
+          context.dataloaders.userLoader.clear(userId).prime(userId, updatedUser);
+          return updatedUser;
+
         }
       } catch (err) {
         return err;

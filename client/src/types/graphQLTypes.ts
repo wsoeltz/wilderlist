@@ -97,6 +97,7 @@ export interface PeakList {
   numMountains: number;
   numCompletedAscents: number;
   latestAscent: string | null;
+  isActive: boolean | null;
 }
 
 export enum PermissionTypes {

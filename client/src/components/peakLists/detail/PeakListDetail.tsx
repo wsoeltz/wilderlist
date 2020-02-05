@@ -281,10 +281,11 @@ interface Props {
   userId: string | null;
   id: string;
   mountainId: string | undefined;
+  queryRefetchArray?: Array<{query: any, variables: any}>;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id, mountainId } = props;
+  const { userId, id, mountainId, queryRefetchArray } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -476,6 +477,7 @@ const PeakListDetail = (props: Props) => {
               completedAscents={userMountains}
               statesArray={statesArray}
               isOtherUser={isOtherUser}
+              queryRefetchArray={queryRefetchArray}
             />
             <Map
               id={peakList.id}
@@ -505,6 +507,7 @@ const PeakListDetail = (props: Props) => {
               peakListShortName={peakList.shortName}
               isOtherUser={isOtherUser}
               showImportExport={true}
+              queryRefetchArray={queryRefetchArray}
             />
             {optionalMountainsTable}
           </>

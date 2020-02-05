@@ -16,7 +16,7 @@ import {
   SearchContainer,
 } from '../../styling/Grid';
 import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
-import { FriendStatus, PeakList, User } from '../../types/graphQLTypes';
+import { FriendStatus, User } from '../../types/graphQLTypes';
 import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
@@ -30,7 +30,7 @@ const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
 `;
 
-const GET_USERS_PEAK_LISTS = gql`
+export const GET_USERS_PEAK_LISTS = gql`
   query GetUsersFriends($userId: ID!) {
     user(id: $userId) {
       id
@@ -39,21 +39,13 @@ const GET_USERS_PEAK_LISTS = gql`
         name
         shortName
         type
-        mountains {
-          id
-        }
         parent {
           id
-          mountains {
-            id
-          }
         }
-      }
-      mountains {
-        mountain {
-          id
-        }
-        dates
+        numMountains
+        numCompletedAscents(userId: $userId)
+        latestAscent(userId: $userId)
+        isActive(userId: $userId)
       }
     }
   }
@@ -95,29 +87,6 @@ interface FirendsSuccessResponse {
 
 interface Variables {
   userId: string;
-}
-
-export const ADD_PEAK_LIST_TO_USER = gql`
-  mutation addPeakListToUser($userId: ID!, $peakListId: ID!) {
-    addPeakListToUser(userId: $userId, peakListId: $peakListId) {
-      id
-      peakLists {
-        id
-      }
-    }
-  }
-`;
-
-export interface AddRemovePeakListSuccessResponse {
-  id: User['id'];
-  peakLists: {
-    id: PeakList['id'];
-  };
-}
-
-export interface AddRemovePeakListVariables {
-  userId: string;
-  peakListId: string;
 }
 
 interface Props extends RouteComponentProps {

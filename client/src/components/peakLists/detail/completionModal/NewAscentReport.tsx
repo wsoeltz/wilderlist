@@ -1,15 +1,26 @@
 import React from 'react';
+import {getRefetchSearchQueries} from '../../list';
 import { DateType } from '../../Utils';
 import MountainCompletionModal, {
-  Props,
+  Props as BaseProps,
 } from './MountainCompletionModal';
 
+type Props = BaseProps & {
+  queryRefetchArray?: Array<{query: any, variables: any}>,
+};
+
 const NewAscentReport = (props: Props) => {
+  const {queryRefetchArray, ...rest} = props;
+
+  const baseRefetchSearchQueries = getRefetchSearchQueries(props.userId);
+
+  const refetchQuery = queryRefetchArray
+    ? [...queryRefetchArray, ...baseRefetchSearchQueries] : [...baseRefetchSearchQueries];
   return (
     <MountainCompletionModal
-      {...props}
+      {...rest}
       tripReportId={undefined}
-      refetchQuery={undefined}
+      refetchQuery={refetchQuery}
       initialCompletionDay={null}
       initialCompletionMonth={null}
       initialCompletionYear={null}
