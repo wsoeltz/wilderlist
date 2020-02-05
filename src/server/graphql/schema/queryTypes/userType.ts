@@ -8,6 +8,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
+import { getLatestOverallAscent } from '../../../utilities/peakListUtils';
 import { User as IUser } from '../../graphQLTypes';
 import MountainType, {Mountain} from './mountainType';
 import PeakListType from './peakListType';
@@ -69,6 +70,7 @@ const UserSchema = new Schema({
     text: { type: String },
   }],
   mountainPermissions: { type: Number },
+  peakListPermissions: { type: Number },
 });
 
 export type UserModelType = mongoose.Model<UserSchemaType> & UserSchemaType;
@@ -274,6 +276,25 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountainPermissions: { type: GraphQLInt },
+    peakListPermissions: { type: GraphQLInt },
+    latestAscent: {
+      type: CompletedMountainsType,
+      resolve(parentValue) {
+        try {
+          const { mountains } = parentValue;
+          if (mountains) {
+            const mountainsWithStringIds =
+              mountains.map(
+                ({mountain, dates}: {mountain: any, dates: any}) => ({mountain: mountain.toString(), dates}));
+            return getLatestOverallAscent(mountainsWithStringIds);
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 

@@ -6,18 +6,22 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { editPeakListLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
+  ButtonSecondaryLink,
   GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
+import { GET_USERS_PEAK_LISTS } from '../../dashboard';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
   AddRemovePeakListVariables,
+  getRefetchSearchQueries,
 } from '../list';
 import {
   BigText,
@@ -27,6 +31,7 @@ import {
 import PeakProgressBar from '../list/PeakProgressBar';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
+import FlagModal from './FlagModal';
 import {
   MountainDatum,
   PeakListDatum,
@@ -39,11 +44,12 @@ const Root = styled.div`
   grid-template-columns: 12.5rem 1fr auto;
   grid-template-rows: auto auto auto auto auto;
   grid-column-gap: 1rem;
+  grid-row-gap: 0.5rem;
 `;
 
 const TitleContent = styled.div`
   grid-column: 2 / 4;
-  grid-row: 2;
+  grid-row: 2 / 4;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -52,6 +58,12 @@ const TitleContent = styled.div`
 const BeginRemoveListButtonContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
+  text-align: right;
+`;
+
+const EditFlagButtonContainer = styled.div`
+  grid-column: 3;
+  grid-row: 3;
   text-align: right;
 `;
 
@@ -66,7 +78,7 @@ const ListInfo = styled.h3`
 `;
 
 const LogoContainer = styled.div`
-  grid-row: 2;
+  grid-row: 2 / 4;
   grid-column: 1;
 `;
 
@@ -88,6 +100,16 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
       id
       peakLists {
         id
+        name
+        shortName
+        type
+        parent {
+          id
+        }
+        numMountains
+        numCompletedAscents(userId: $userId)
+        latestAscent(userId: $userId)
+        isActive(userId: $userId)
       }
     }
   }
@@ -102,24 +124,37 @@ interface Props {
   isOtherUser?: boolean;
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
+  queryRefetchArray?: Array<{query: any, variables: any}>;
 }
 
 const Header = (props: Props) => {
   const {
     mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
     completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
+    queryRefetchArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const mutationOptions = queryRefetchArray && queryRefetchArray.length && user ? {
+    refetchQueries: () => [
+      ...queryRefetchArray,
+      ...getRefetchSearchQueries(user.id),
+      {query: GET_USERS_PEAK_LISTS, variables: {userId: user.id}},
+      ],
+  } : {};
+
   const [addPeakListToUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(
+      ADD_PEAK_LIST_TO_USER, {...mutationOptions});
   const [removePeakListFromUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(
+      REMOVE_PEAK_LIST_FROM_USER, {...mutationOptions});
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
+  const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
 
   const openSignUpModal = () => {
     setIsSignUpModal(true);
@@ -181,11 +216,40 @@ const Header = (props: Props) => {
     </GhostButton>
    ) ;
 
-  const topLevelHeading = isOtherUser === true && user !== null ? null : (
-      <BeginRemoveListButtonContainer>
-        {beginRemoveButton}
-      </BeginRemoveListButtonContainer>
+  let editFlagButton: React.ReactElement<any> | null;
+  if (!user) {
+    editFlagButton = null;
+  } else {
+    editFlagButton = user && peakList.author && user.id === peakList.author.id
+      && user.peakListPermissions !== -1 ? (
+      <ButtonSecondaryLink to={editPeakListLink(peakList.id)}>
+        {getFluentString('global-text-value-edit')}
+      </ButtonSecondaryLink>
+    ) : (
+      <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+        {getFluentString('global-text-value-flag')}
+      </GhostButton>
     );
+  }
+
+  const topLevelHeading = isOtherUser === true && user !== null ? null : (
+      <>
+        <BeginRemoveListButtonContainer>
+          {beginRemoveButton}
+        </BeginRemoveListButtonContainer>
+        <EditFlagButtonContainer>
+          {editFlagButton}
+        </EditFlagButtonContainer>
+      </>
+    );
+
+  const flagModal = isFlagModalOpen === false ? null : (
+    <FlagModal
+      onClose={() => setIsFlagModalOpen(false)}
+      peakListId={peakList.id}
+      peakListName={peakList.name}
+    />
+  );
 
   const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
   let totalRequiredAscents: number;
@@ -290,6 +354,7 @@ const Header = (props: Props) => {
       {listInfoContent}
       {areYouSureModal}
       {signUpModal}
+      {flagModal}
     </Root>
   );
 };

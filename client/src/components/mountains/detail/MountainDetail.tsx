@@ -31,6 +31,9 @@ import {
 import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
+import {
+  twoColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
 import FlagModal from './FlagModal';
@@ -327,16 +330,21 @@ const MountainDetail = (props: Props) => {
         }
       };
 
-      const actionButton = author && author.id && author.id === userId
-        && user && user.mountainPermissions !== -1 ? (
-        <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
-          {getFluentString('global-text-value-edit')}
-        </ButtonSecondaryLink>
-      ) : (
-        <GhostButton onClick={() => setIsFlagModalOpen(true)}>
-          {getFluentString('global-text-value-flag')}
-        </GhostButton>
-      );
+      let actionButton: React.ReactElement<any> | null;
+      if (!user) {
+        actionButton = null;
+      } else {
+        actionButton = author && author.id && author.id === userId
+          && user.mountainPermissions !== -1 ? (
+          <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
+            {getFluentString('global-text-value-edit')}
+          </ButtonSecondaryLink>
+        ) : (
+          <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+            {getFluentString('global-text-value-flag')}
+          </GhostButton>
+        );
+      }
 
       const flagModal = isFlagModalOpen === false ? null : (
         <FlagModal
@@ -357,8 +365,12 @@ const MountainDetail = (props: Props) => {
           <Map
             id={id}
             coordinates={[{...mountain, completionDates}]}
-            peakListType={PeakListVariants.standard}
             userId={userId}
+            colorScaleColors={twoColorScale}
+            colorScaleLabels={[
+              getFluentString('global-text-value-not-done'),
+              getFluentString('global-text-value-done'),
+            ]}
             key={mountainDetailMapKey}
           />
           <HorizontalContentItem>
@@ -395,6 +407,7 @@ const MountainDetail = (props: Props) => {
             mountainName={mountain.name}
             latitude={latitude}
             longitude={longitude}
+            state={state.name}
           />
           <IncludedLists
             getFluentString={getFluentString}

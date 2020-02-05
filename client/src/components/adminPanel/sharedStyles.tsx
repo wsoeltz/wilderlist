@@ -6,6 +6,7 @@ import {
   InputBase,
   lightBorderColor,
   LinkButton,
+  TextareaBase,
 } from '../../styling/styleUtils';
 
 export const SubNav = styled.nav`
@@ -144,6 +145,18 @@ export const NameInput = styled(InputBase)`
   margin-bottom: 0.4rem;
 `;
 
+export const TextareaDisabled = styled(TextareaBase)`
+  border: 1px solid transparent;
+  outline: none;
+  background-color: #eee;
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+export const TextareaActive = styled(TextareaBase)`
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+`;
+
 export const UpdateButton = styled(ButtonPrimary)`
   margin-right: 0.4rem;
 `;
@@ -214,4 +227,10 @@ export const SelectBox = styled.select`
     cursor: pointer;
     background-color: #ddd;
   }
+`;
+
+export const ResourceContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  width: 100%;
 `;

@@ -6,10 +6,13 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { isCorrectUser } from '../../authorization';
 import {
   TripReport as ITripReport,
+  User as IUser,
 } from '../../graphQLTypes';
 import TripReportType, { TripReport } from '../queryTypes/tripReportType';
+import { User } from '../queryTypes/userType';
 
 interface AddTripReportVariables extends ITripReport {
   id: never;
@@ -65,10 +68,14 @@ const tripReportMutations: any = {
       obstaclesBlowdown: { type: GraphQLBoolean },
       obstaclesOther: { type: GraphQLBoolean },
     },
-    async resolve(_unused: any, input: AddTripReportVariables) {
+    async resolve(_unused: any, input: AddTripReportVariables, {user}: {user: IUser | undefined | null}) {
       // check if report for date, mountain, and author already exists
       const { author, date, mountains } = input;
       try {
+        const authorObj = await User.findById(author);
+        if (!isCorrectUser(user, authorObj)) {
+          throw new Error('Invalid user match');
+        }
         const existingReport = await TripReport
             .findOne({
               author, date,
@@ -116,10 +123,14 @@ const tripReportMutations: any = {
       obstaclesBlowdown: { type: GraphQLBoolean },
       obstaclesOther: { type: GraphQLBoolean },
     },
-    async resolve(_unused: any, input: ITripReport) {
+    async resolve(_unused: any, input: ITripReport, {user}: {user: IUser | undefined | null}) {
       const { id, ...fields} = input;
       if (id) {
         try {
+          const authorObj = await User.findById(input.author);
+          if (!isCorrectUser(user, authorObj)) {
+            throw new Error('Invalid user match');
+          }
           if (conditionsExist(fields as AddTripReportVariables)) {
             // modify and return trip report
             const newTripReport = await TripReport.findOneAndUpdate({
@@ -143,8 +154,14 @@ const tripReportMutations: any = {
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
     },
-    async resolve(_unused: any, { id }: { id: string }) {
+    async resolve(_unused: any, { id }: { id: string }, {user}: {user: IUser | undefined | null}) {
       try {
+        const tripReportObj = await TripReport.findById(id);
+        const authorId = tripReportObj && tripReportObj.author ? tripReportObj.author : null;
+        const authorObj = await User.findById(authorId);
+        if (!isCorrectUser(user, authorObj)) {
+          throw new Error('Invalid user match');
+        }
         return TripReport.findByIdAndDelete(id);
       } catch (err) {
         return err;

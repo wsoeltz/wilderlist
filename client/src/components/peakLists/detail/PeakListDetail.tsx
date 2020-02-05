@@ -12,11 +12,28 @@ import {
   ButtonPrimaryLink,
   lightBorderColor,
   PlaceholderText,
+  SectionTitle,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakList, Region, State, User } from '../../../types/graphQLTypes';
+import {
+  Mountain,
+  PeakList,
+  PeakListVariants,
+  Region,
+  State,
+  User,
+} from '../../../types/graphQLTypes';
+import {
+  failIfValidOrNonExhaustive,
+  isValidURL,
+} from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
+import {
+  fiveColorScale,
+  thirteenColorScale,
+  twoColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { getType, isState } from '../Utils';
@@ -57,14 +74,56 @@ const LinkButton = styled(ButtonPrimaryLink)`
   font-size: 0.7rem;
 `;
 
+const ResourceList = styled.ul`
+  margin-top: 0;
+  padding-left: 0;
+  list-style: none;
+`;
+
+const ResourceItem = styled.li`
+  padding-left: 1rem;
+  position: relative;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+
+  &:before {
+    content: '›';
+    position: absolute;
+    left: 0.5rem;
+  }
+`;
+
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID) {
     peakList(id: $id) {
       id
       name
       shortName
+      description
+      optionalPeaksDescription
+      parent {
+        id
+      }
+      author {
+        id
+      }
+      resources {
+        title
+        url
+      }
       type
       mountains {
+        id
+        name
+        latitude
+        longitude
+        elevation
+        state {
+          id
+          abbreviation
+        }
+      }
+      optionalMountains {
         id
         name
         latitude
@@ -87,36 +146,11 @@ const GET_PEAK_LIST = gql`
           }
         }
       }
-      parent {
-        id
-        states {
-          id
-          name
-          abbreviation
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
-        mountains {
-          id
-          name
-          latitude
-          longitude
-          elevation
-          state {
-            id
-            abbreviation
-          }
-        }
-      }
     }
     user(id: $userId) {
       id
       name
+      peakListPermissions
       peakLists {
         id
       }
@@ -164,13 +198,14 @@ export interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  description: PeakList['description'];
+  optionalPeaksDescription: PeakList['optionalPeaksDescription'];
+  resources: PeakList['resources'];
   mountains: MountainDatum[] | null;
+  optionalMountains: MountainDatum[] | null;
   states: StateDatum[] | null;
-  parent: {
-    id: PeakList['id'];
-    mountains: MountainDatum[] | null;
-    states: StateDatum[] | null;
-  } | null;
+  parent: null | { id: PeakList['id'] };
+  author: null | { id: User['id'] };
 }
 
 export interface UserDatum {
@@ -180,6 +215,7 @@ export interface UserDatum {
     id: PeakList['id'];
   }>;
   mountains: User['mountains'];
+  peakListPermissions?: User['peakListPermissions'];
 }
 
 interface UserDatumWithNote extends UserDatum {
@@ -245,10 +281,11 @@ interface Props {
   userId: string | null;
   id: string;
   mountainId: string | undefined;
+  queryRefetchArray?: Array<{query: any, variables: any}>;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id, mountainId } = props;
+  const { userId, id, mountainId, queryRefetchArray } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -280,32 +317,24 @@ const PeakListDetail = (props: Props) => {
           </PlaceholderText>
         );
       } else {
-        const {parent, type} = peakList;
-        let mountains: MountainDatum[];
-        if (parent !== null && parent.mountains !== null) {
-          mountains = parent.mountains;
-        } else if (peakList.mountains !== null) {
-          mountains = peakList.mountains;
-        } else {
-          mountains = [];
-        }
-        const completedAscents =
-          user && user.mountains !== null ? user.mountains : [];
+        const {type, description, optionalPeaksDescription, resources} = peakList;
+        const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
+        const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
 
-        if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
-          statesArray = [...peakList.parent.states];
-        } else if (peakList.states && peakList.states.length) {
+        if (peakList.states && peakList.states.length) {
           statesArray = [...peakList.states];
         }
 
         let paragraphText: string;
-        if (mountains && mountains.length) {
+        if (description && description.length) {
+          paragraphText = description;
+        } else if (requiredMountains && requiredMountains.length) {
           const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
           const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-          const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+          const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
           paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
             'list-name': peakList.name,
-            'number-of-peaks': mountains.length,
+            'number-of-peaks': requiredMountains.length,
             'state-or-region': isStateOrRegion.toString(),
             'state-region-name': statesOrRegions,
             'highest-mountain-name': mountainsSortedByElevation[0].name,
@@ -321,14 +350,73 @@ const PeakListDetail = (props: Props) => {
           });
         }
 
+        let resourcesList: React.ReactElement<any> | null;
+        if (resources && resources.length) {
+          const resourcesArray: Array<React.ReactElement<any>> = [];
+          resources.forEach(resource => {
+            if (resource.title.length && resource.url.length && isValidURL(resource.url)) {
+              resourcesArray.push(
+                <ResourceItem key={resource.url + resource.title}>
+                  <a href={resource.url}>{resource.title}</a>
+                </ResourceItem>,
+              );
+            }
+          });
+          resourcesList = resourcesArray.length ? (
+            <>
+              <SectionTitle>
+                {getFluentString('global-text-value-external-resources')}
+              </SectionTitle>
+              <ResourceList>
+                {resourcesArray}
+              </ResourceList>
+            </>
+          ) : null;
+        } else {
+          resourcesList = null;
+        }
+
+        let colorScaleColors: string[];
+        let colorScaleLabels: string[];
+        if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+          colorScaleColors = twoColorScale;
+          colorScaleLabels = [
+            getFluentString('global-text-value-not-done'),
+            getFluentString('global-text-value-done'),
+          ];
+        } else if (type === PeakListVariants.fourSeason) {
+          colorScaleColors = fiveColorScale;
+          colorScaleLabels = [
+            getFluentString('map-no-seasons'),
+            getFluentString('map-all-seasons'),
+          ];
+        } else if (type === PeakListVariants.grid) {
+          colorScaleColors = thirteenColorScale;
+          colorScaleLabels = [
+            getFluentString('map-no-months'),
+            getFluentString('map-all-months'),
+          ];
+        } else {
+          colorScaleColors = [];
+          colorScaleLabels = [];
+          failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
+        }
+
         const userMountains = (user && user.mountains) ? user.mountains : [];
 
-        const mountainsWithDates = mountains.map(mountain => {
+        const requiredMountainsWithDates = requiredMountains.map(mountain => {
           const completionDates = getCompletionDates({type, mountain, userMountains});
           return {...mountain, completionDates};
         });
 
-        const activeMountain = mountainsWithDates.find(mtn => mtn.id === mountainId);
+        const optionalMountainsWithDates = optionalMountains.map(mountain => {
+          const completionDates = getCompletionDates({type, mountain, userMountains});
+          return {...mountain, completionDates};
+        });
+
+        const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
+
+        const activeMountain = allMountainsWithDates.find(mtn => mtn.id === mountainId);
         const highlightedMountain = activeMountain ? [activeMountain] : undefined;
 
         const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
@@ -360,29 +448,51 @@ const PeakListDetail = (props: Props) => {
           }
         };
 
+        const optionalMountainsText = optionalPeaksDescription && optionalPeaksDescription.length
+          ? optionalPeaksDescription : getFluentString('peak-list-detail-text-optional-mountains-desc');
+
+        const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
+          <>
+            <h2>{getFluentString('peak-list-detail-text-optional-mountains')}</h2>
+            <p>{optionalMountainsText}</p>
+            <MountainTable
+              user={user}
+              mountains={optionalMountainsWithDates}
+              type={type}
+              peakListId={peakList.id}
+              peakListShortName={peakList.shortName}
+              isOtherUser={isOtherUser}
+              showImportExport={false}
+            />
+          </>
+        ) : null;
+
         return (
           <>
             {friendHeader}
             <Header
               user={user}
-              mountains={mountains}
+              mountains={requiredMountains}
               peakList={peakList}
-              completedAscents={completedAscents}
+              completedAscents={userMountains}
               statesArray={statesArray}
               isOtherUser={isOtherUser}
+              queryRefetchArray={queryRefetchArray}
             />
             <Map
               id={peakList.id}
-              coordinates={mountainsWithDates}
+              coordinates={allMountainsWithDates}
               highlighted={highlightedMountain}
-              peakListType={type}
               userId={userId}
               isOtherUser={isOtherUser}
+              colorScaleColors={colorScaleColors}
               key={peakListDetailMapKey}
+              colorScaleLabels={colorScaleLabels}
             />
             <p>
               {paragraphText}
             </p>
+            {resourcesList}
             <UserNote
               placeholder={notesPlaceholderText}
               defaultValue={defaultNoteText}
@@ -391,12 +501,15 @@ const PeakListDetail = (props: Props) => {
             />
             <MountainTable
               user={user}
-              mountains={mountainsWithDates}
+              mountains={requiredMountainsWithDates}
               type={type}
               peakListId={peakList.id}
               peakListShortName={peakList.shortName}
               isOtherUser={isOtherUser}
+              showImportExport={true}
+              queryRefetchArray={queryRefetchArray}
             />
+            {optionalMountainsTable}
           </>
         );
       }

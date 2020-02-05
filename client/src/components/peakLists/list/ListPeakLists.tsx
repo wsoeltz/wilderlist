@@ -8,13 +8,12 @@ import {
 import { NoResults } from '../../../styling/styleUtils';
 import { lightBaseColor } from '../../../styling/styleUtils';
 import {
-  CompletedMountain,
-  Mountain,
   PeakList,
   PeakListVariants,
+  Region,
+  State,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
-import { completedPeaks } from '../Utils';
 import { ViewMode } from './index';
 import PeakListCard from './PeakListCard';
 import PeakListCompactCard from './PeakListCompactCard';
@@ -34,8 +33,18 @@ const TrophyContainer = styled.div`
 
 `;
 
-interface MountainDatum {
-  id: Mountain['id'];
+export interface RegionDatum {
+  id: Region['id'];
+  name: Region['name'];
+  states: Array<{
+    id: State['id'],
+  } | null>;
+}
+
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  regions: Array<RegionDatum | null>;
 }
 
 export interface CardPeakListDatum {
@@ -43,11 +52,12 @@ export interface CardPeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
-  mountains: MountainDatum[] | null;
-  parent: {
-    id: PeakList['id'];
-    mountains: MountainDatum[] | null;
-  } | null;
+  numMountains: PeakList['numMountains'];
+  numCompletedAscents: PeakList['numCompletedAscents'];
+  latestAscent: PeakList['latestAscent'];
+  isActive: PeakList['isActive'];
+  parent: null | {id: PeakList['id']};
+  states: null | StateDatum[];
 }
 
 export interface CompactPeakListDatum {
@@ -55,16 +65,17 @@ export interface CompactPeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
-  parent: {
-    id: PeakList['id'];
-  } | null;
+  numMountains: PeakList['numMountains'];
+  numCompletedAscents: PeakList['numCompletedAscents'];
+  latestAscent: PeakList['latestAscent'];
+  isActive: PeakList['isActive'];
+  states: null | StateDatum[];
 }
 
 interface BaseProps {
   userListData: Array<PeakList['id']> | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
-  completedAscents: CompletedMountain[];
   noResultsText: string;
   showTrophies: boolean;
   viewMode: ViewMode;
@@ -83,8 +94,8 @@ type Props = BaseProps & (
 
 const ListPeakLists = (props: Props) => {
   const {
-    userListData, listAction, actionText,
-    completedAscents, noResultsText, showTrophies,
+    listAction, actionText,
+    noResultsText, showTrophies,
     profileId, dashboardView,
   } = props;
 
@@ -97,24 +108,18 @@ const ListPeakLists = (props: Props) => {
   const trophies: Array<React.ReactElement<any> | null> = [];
   if (props.viewMode === ViewMode.Card) {
     const peakLists = props.peakListData.map(peakList => {
-      const { parent, type } = peakList;
-      let mountains: Array<{id: Mountain['id']}>;
-      if (parent !== null && parent.mountains !== null) {
-        mountains = parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
+      const {
+        type, numCompletedAscents, numMountains, latestAscent,
+        isActive,
+      } = peakList;
 
-      const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
       let totalRequiredAscents: number;
       if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        totalRequiredAscents = mountains.length;
+        totalRequiredAscents = numMountains;
       } else if (type === PeakListVariants.fourSeason) {
-        totalRequiredAscents = mountains.length * 4;
+        totalRequiredAscents = numMountains * 4;
       } else if (type === PeakListVariants.grid) {
-        totalRequiredAscents = mountains.length * 12;
+        totalRequiredAscents = numMountains * 12;
       } else {
         failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
@@ -131,17 +136,15 @@ const ListPeakLists = (props: Props) => {
         );
         return null;
       }
-      const active = userListData ? userListData.includes(peakList.id) : null;
       return (
         <PeakListCard
           peakList={peakList}
-          active={active}
+          active={isActive}
           listAction={listAction}
           actionText={actionText}
-          completedAscents={completedAscents}
           profileId={profileId}
           key={peakList.id}
-          mountains={mountains}
+          latestDate={latestAscent}
           numCompletedAscents={numCompletedAscents}
           totalRequiredAscents={totalRequiredAscents}
           dashboardView={dashboardView === true ? true : false}
@@ -185,17 +188,32 @@ const ListPeakLists = (props: Props) => {
     );
   } else if (props.viewMode === ViewMode.Compact) {
     const peakListCards = props.peakListData.map(list => {
-    const active = userListData ? userListData.includes(list.id) : null;
-    return (
-        <PeakListCompactCard
-          key={list.id}
-          peakList={list}
-          active={active}
-          listAction={listAction}
-          actionText={actionText}
-          completedAscents={completedAscents}
-        />
-      );
+      const {
+        type, numCompletedAscents, numMountains, isActive,
+      } = list;
+
+      let totalRequiredAscents: number;
+      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+        totalRequiredAscents = numMountains;
+      } else if (type === PeakListVariants.fourSeason) {
+        totalRequiredAscents = numMountains * 4;
+      } else if (type === PeakListVariants.grid) {
+        totalRequiredAscents = numMountains * 12;
+      } else {
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+        totalRequiredAscents = 0;
+      }
+      return (
+          <PeakListCompactCard
+            key={list.id}
+            peakList={list}
+            active={isActive}
+            listAction={listAction}
+            actionText={actionText}
+            totalRequiredAscents={totalRequiredAscents}
+            numCompletedAscents={numCompletedAscents}
+          />
+        );
     });
     return (
       <>

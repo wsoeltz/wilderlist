@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -11,9 +11,12 @@ import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
+  ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, State, User } from '../../../types/graphQLTypes';
+import { Mountain, User } from '../../../types/graphQLTypes';
+import { mobileSize } from '../../../Utils';
+import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
@@ -43,7 +46,7 @@ const GET_MOUNTAIN_AND_STATES = gql`
   }
 `;
 
-const ADD_MOUNTAIN = gql`
+export const ADD_MOUNTAIN = gql`
   mutation(
     $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!, $author: ID!,
   ) {
@@ -62,6 +65,15 @@ const ADD_MOUNTAIN = gql`
       longitude
       state {
         id
+        name
+        abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       author {
         id
@@ -89,6 +101,15 @@ const EDIT_MOUNTAIN = gql`
       longitude
       state {
         id
+        name
+        abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       author {
         id
@@ -98,16 +119,14 @@ const EDIT_MOUNTAIN = gql`
   }
 `;
 
-interface MountainSuccessResponse {
+export interface MountainSuccessResponse {
   mountain: null | {
     id: Mountain['id'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
-    state: null | {
-      id: State['id'];
-    }
+    state: Mountain['state'];
     author: null | {
       id: User['id'];
     }
@@ -127,7 +146,7 @@ export interface BaseMountainVariables {
   state: string;
 }
 
-interface AddMountainVariables extends BaseMountainVariables {
+export interface AddMountainVariables extends BaseMountainVariables {
   author: string;
 }
 interface EditMountainVariables extends BaseMountainVariables {
@@ -145,6 +164,18 @@ const MountainCreatePage = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
+  const { windowWidth } = useContext(AppContext);
+  const mapContainerNodeRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (windowWidth >= mobileSize && mapContainerNodeRef.current !== null) {
+      setMapContainer(mapContainerNodeRef.current);
+    } else {
+      setMapContainer(null);
+    }
+  }, [windowWidth]);
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
@@ -175,24 +206,28 @@ const MountainCreatePage = (props: Props) => {
     const states = data.states ? data.states : [];
 
     const submitMountainForm = async (input: BaseMountainVariables) => {
-      if (id) {
-        if (data && data.mountain && data.mountain.author && data.mountain.author.id === userId) {
-          const res = await editMountain({variables: {...input, id}});
+      try {
+        if (id) {
+          if (data && data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+            const res = await editMountain({variables: {...input, id}});
+            if (res && res.data && res.data.mountain) {
+              history.push(mountainDetailLink(res.data.mountain.id));
+            } else {
+              setIsErrorModalVisible(true);
+            }
+          } else {
+            setIsErrorModalVisible(true);
+          }
+        } else if (userId) {
+          const res = await addMountain({variables: {...input, author: userId}});
           if (res && res.data && res.data.mountain) {
             history.push(mountainDetailLink(res.data.mountain.id));
           } else {
             setIsErrorModalVisible(true);
           }
-        } else {
-          setIsErrorModalVisible(true);
         }
-      } else if (userId) {
-        const res = await addMountain({variables: {...input, author: userId}});
-        if (res && res.data && res.data.mountain) {
-          history.push(mountainDetailLink(res.data.mountain.id));
-        } else {
-          setIsErrorModalVisible(true);
-        }
+      } catch (e) {
+        console.error(e);
       }
     };
 
@@ -211,6 +246,8 @@ const MountainCreatePage = (props: Props) => {
           states={states}
           initialData={initialMountain}
           onSubmit={submitMountainForm}
+          mapContainer={mapContainer}
+          onCancel={history.goBack}
         />
       );
     } else if (data.mountain) {
@@ -234,6 +271,8 @@ const MountainCreatePage = (props: Props) => {
           states={states}
           initialData={initialMountain}
           onSubmit={submitMountainForm}
+          mapContainer={mapContainer}
+          onCancel={history.goBack}
         />
       );
     }
@@ -267,6 +306,10 @@ const MountainCreatePage = (props: Props) => {
         </ContentBody>
         {errorModal}
       </ContentLeftLarge>
+      <ContentRightSmall>
+        <ContentBody ref={mapContainerNodeRef}>
+        </ContentBody>
+      </ContentRightSmall>
     </>
   );
 };

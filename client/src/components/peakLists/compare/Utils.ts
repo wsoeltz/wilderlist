@@ -62,15 +62,8 @@ export const getAscentGoals = (
 
   const ascentGoals: AscentGoals[] = [];
   peakLists.forEach(peakList => {
-    const { parent, type } = peakList;
-    let listMountains: Array<{id: string}>;
-    if (parent !== null && parent.mountains !== null) {
-      listMountains = parent.mountains;
-    } else if (peakList.mountains !== null) {
-      listMountains = peakList.mountains;
-    } else {
-      listMountains = [];
-    }
+    const { type } = peakList;
+    const listMountains: Array<{id: string}> = peakList.mountains !== null ? peakList.mountains : [];
     listMountains.forEach(mountain => {
       const goalIndex = ascentGoals.findIndex((goal) => goal.mountainId === mountain.id);
       const completedDates = mountainList.find(

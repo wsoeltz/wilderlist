@@ -10,6 +10,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { Routes } from '../../../routing/routes';
 import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
@@ -21,11 +22,14 @@ import {
 } from '../../../styling/Grid';
 import {
   ButtonTertiary,
+  FloatingButton,
+  FloatingButtonContainer,
   GhostButton,
   lightBlue,
   Next,
   PaginationContainer,
   PlaceholderText,
+  PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
 import { PeakList, User } from '../../../types/graphQLTypes';
@@ -107,26 +111,23 @@ const SEARCH_PEAK_LISTS = gql`
       name
       shortName
       type
-      mountains {
-        id
-      }
       parent {
         id
-        mountains {
-          id
-        }
       }
-    }
-    user(id: $userId) {
-      id
-      peakLists {
+      numMountains
+      numCompletedAscents(userId: $userId)
+      latestAscent(userId: $userId)
+      isActive(userId: $userId)
+      states {
         id
-      }
-      mountains {
-        mountain {
+        name
+        regions {
           id
+          name
+          states {
+            id
+          }
         }
-        dates
       }
     }
   }
@@ -149,24 +150,41 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
       name
       shortName
       type
-      parent {
+      numMountains
+      numCompletedAscents(userId: $userId)
+      latestAscent(userId: $userId)
+      isActive(userId: $userId)
+      states {
         id
-      }
-    }
-    user(id: $userId) {
-      id
-      peakLists {
-        id
-      }
-      mountains {
-        mountain {
+        name
+        regions {
           id
+          name
+          states {
+            id
+          }
         }
-        dates
       }
     }
   }
 `;
+
+export const getRefetchSearchQueries = (userId: string) => [
+  {query: SEARCH_PEAK_LISTS, variables: {
+    searchQuery: '',
+    pageNumber: 1,
+    nPerPage: cardViewNPerPage,
+    userId,
+    selectionArray: null,
+  }},
+  {query: SEARCH_PEAK_LISTS_COMPACT, variables: {
+    searchQuery: '',
+    pageNumber: 1,
+    nPerPage: compactViewNPerPage,
+    userId,
+    selectionArray: null,
+  }},
+];
 
 interface CardSuccessResponse {
   peakLists: CardPeakListDatum[];
@@ -175,7 +193,6 @@ interface CardSuccessResponse {
     peakLists: Array<{
       id: PeakList['id'];
     }>
-    mountains: User['mountains'];
   };
 }
 
@@ -186,13 +203,12 @@ interface CompactSuccessResponse {
     peakLists: Array<{
       id: PeakList['id'];
     }>
-    mountains: User['mountains'];
   };
 }
 
 type SuccessResponse = CardSuccessResponse | CompactSuccessResponse;
 
-interface Variables {
+export interface Variables {
   userId: string | null;
   searchQuery: string;
   pageNumber: number;
@@ -206,6 +222,16 @@ export const ADD_PEAK_LIST_TO_USER = gql`
       id
       peakLists {
         id
+        name
+        shortName
+        type
+        parent {
+          id
+        }
+        numMountains
+        numCompletedAscents(userId: $userId)
+        latestAscent(userId: $userId)
+        isActive(userId: $userId)
       }
     }
   }
@@ -234,10 +260,11 @@ const compactViewNPerPage = 50;
 
 interface Props extends RouteComponentProps {
   userId: string | null;
+  peakListPermissions: number | null;
 }
 
 const PeakListPage = (props: Props) => {
-  const { userId, match, location, history } = props;
+  const { userId, peakListPermissions, match, location, history } = props;
   const { id }: any = match.params;
   const { query, page, origin } = queryString.parse(location.search);
 
@@ -308,14 +335,16 @@ const PeakListPage = (props: Props) => {
 
   const graphQLQuery = viewMode === ViewMode.Card ? SEARCH_PEAK_LISTS : SEARCH_PEAK_LISTS_COMPACT;
 
+  const graphQLVariables = {
+    searchQuery,
+    pageNumber,
+    nPerPage,
+    userId,
+    selectionArray,
+  };
+
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(graphQLQuery, {
-    variables: {
-      searchQuery,
-      pageNumber,
-      nPerPage,
-      userId,
-      selectionArray,
-    },
+    variables: {...graphQLVariables},
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
@@ -328,7 +357,9 @@ const PeakListPage = (props: Props) => {
   }, [listContainerElm, pageNumber]);
 
   const [addPeakListToUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER);
+    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER, {
+      refetchQueries: () => [{query: graphQLQuery, variables: {...graphQLVariables}}],
+    });
   const beginList = userId ? (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}}) : null;
 
   let list: React.ReactElement<any> | null;
@@ -356,8 +387,6 @@ const PeakListPage = (props: Props) => {
       );
     } else {
       const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
-      const completedAscents =
-        user && user.mountains !== null ? user.mountains : [];
       const nextBtn = peakLists.length === nPerPage ? (
         <Next onClick={incrementPageNumber}>
           {getFluentString('global-text-value-navigation-next')}
@@ -379,7 +408,6 @@ const PeakListPage = (props: Props) => {
             userListData={usersLists}
             listAction={beginList}
             actionText={'Begin List'}
-            completedAscents={completedAscents}
             profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}
@@ -394,7 +422,6 @@ const PeakListPage = (props: Props) => {
             userListData={usersLists}
             listAction={beginList}
             actionText={'Begin List'}
-            completedAscents={completedAscents}
             profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}
@@ -425,10 +452,25 @@ const PeakListPage = (props: Props) => {
     ? (
         <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>
       )
-    : ( <PeakListDetail userId={userId} id={id} mountainId={undefined} />);
+    : (
+        <PeakListDetail
+          userId={userId}
+          id={id}
+          mountainId={undefined}
+          queryRefetchArray={[{query: graphQLQuery, variables: {...graphQLVariables}}]}
+        />
+      );
 
   const ListContainer = viewMode === ViewMode.Card ? ContentLeftLarge : ContentLeftSmall;
   const DetailContainer = viewMode === ViewMode.Card ? ContentRightSmall : ContentRightLarge;
+
+  const addMountainButton = userId && peakListPermissions !== -1 ? (
+    <FloatingButtonContainer>
+      <FloatingButton to={Routes.CreateList}>
+        <PlusIcon>+</PlusIcon> {getFluentString('create-peak-list-title-create')}
+      </FloatingButton>
+    </FloatingButtonContainer>
+  ) : null;
 
   return (
     <>
@@ -474,6 +516,7 @@ const PeakListPage = (props: Props) => {
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}
+          {addMountainButton}
         </ContentBody>
       </ListContainer>
       <DetailContainer>

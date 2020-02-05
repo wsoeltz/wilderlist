@@ -12,10 +12,10 @@ import {
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
-  lightBaseColor,
   lightBorderColor,
   lightFontWeight,
   placeholderColor,
+  SectionTitle,
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { UserContext } from '../App';
@@ -26,13 +26,6 @@ import {
   LoginText,
   redditRed,
 } from '../login';
-
-const Title = styled.div`
-  padding: 0.5rem 0;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: ${lightBaseColor};
-`;
 
 const Textarea = styled(TextareaAutosize)`
   padding: 0.5rem;
@@ -70,6 +63,8 @@ const LoginButton = styled(LoginButtonBase)`
   max-height: 50px;
   border: 1px solid ${lightBorderColor};
 `;
+
+const charLimit = 5000;
 
 interface Props {
   placeholder: string;
@@ -113,7 +108,7 @@ const UserNote = (props: Props) => {
     ) : (
     <ButtonContainer>
       <ButtonPrimary
-        onClick={() => onSave(value)}
+        onClick={() => onSave(value.substring(0, charLimit))}
         disabled={defaultValue === value}
       >
         {buttonText}
@@ -123,13 +118,14 @@ const UserNote = (props: Props) => {
 
   return (
     <>
-      <Title>Notes</Title>
+      <SectionTitle>Notes</SectionTitle>
       <Textarea
         placeholder={placeholder}
         value={value}
         onChange={onChange}
         rows={2}
         async={true}
+        maxLength={charLimit}
       />
       {buttons}
     </>

@@ -1,24 +1,51 @@
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
   lightBaseColor,
   lightBlue,
   lightBorderColor,
+  placeholderColor,
+  tertiaryColor,
 } from '../../../../styling/styleUtils';
 import { Mountain } from '../../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../../Utils';
 import StandardSearch from '../../../sharedComponents/StandardSearch';
 import { CheckboxList } from './MountainCompletionModal';
 
-const MountainItem = styled.div`
+const TwoColumnRoot = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 200px;
+  grid-column-gap: 1rem;
+`;
+
+export const EmptyContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  font-style: italic;
+  color: ${placeholderColor};
+`;
+
+export const CheckboxContainer = styled.div`
+  background-color: ${tertiaryColor};
+`;
+
+export const MountainItem = styled.div`
   display: block;
   position: relative;
   padding: 0.5rem;
   padding-right: 2rem;
   display: flex;
   flex-direction: column;
+  background-color: #fff;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${lightBorderColor};
@@ -52,7 +79,7 @@ const MountainItemRemove = styled(MountainItem)`
   }
 `;
 
-const Subtitle = styled.small`
+export const Subtitle = styled.small`
   color: ${lightBaseColor};
 `;
 
@@ -62,7 +89,7 @@ const SearchContainer = styled.div`
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
-    $targetMountainId: ID!,
+    $targetMountainId: ID,
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!
@@ -76,7 +103,15 @@ const SEARCH_MOUNTAINS = gql`
       name
       state {
         id
+        name
         abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       elevation
       latitude
@@ -102,7 +137,7 @@ export interface MountainDatum {
 
 interface SuccessResponse {
   mountains: MountainDatum[];
-  targetMountain: {
+  targetMountain: null | {
     id: Mountain['id'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
@@ -113,19 +148,23 @@ interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
-  targetMountainId: Mountain['id'];
+  targetMountainId: Mountain['id'] | null;
 }
 
 interface Props {
-  targetMountainId: Mountain['id'];
+  targetMountainId: Mountain['id'] | null;
   selectedMountains: MountainDatum[];
   setSelectedMountains: (mountains: MountainDatum[]) => void;
+  expandedLayout?: boolean;
 }
 
 const AdditionalMountains = (props: Props) => {
-  const {targetMountainId, selectedMountains, setSelectedMountains} = props;
+  const {
+    targetMountainId, selectedMountains, setSelectedMountains, expandedLayout,
+  } = props;
 
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchSelectedQuery, setSearchSelectedQuery] = useState<string>('');
 
   const pageNumber = 1;
   const nPerPage = 30;
@@ -145,49 +184,57 @@ const AdditionalMountains = (props: Props) => {
     setSelectedMountains([...updatedMtnList]);
   };
 
+  const emptySearchResults = expandedLayout === true ? null : null;
+  const listStyle: React.CSSProperties = expandedLayout === true ? {margin: 0} : {};
+
   let searchResults: React.ReactElement<any> | null;
   let selectedMountainList: Array<React.ReactElement<any> | null> | null;
   if (loading === true) {
-    searchResults = null;
+    searchResults = emptySearchResults;
     selectedMountainList = null;
   } else if (error !== undefined) {
     console.error(error);
-    searchResults = null;
+    searchResults = emptySearchResults;
     selectedMountainList = null;
   } else if (data !== undefined ) {
     const { targetMountain, mountains } = data;
-    selectedMountainList = selectedMountains.map(mtn => {
-      const distance = parseFloat(getDistanceFromLatLonInMiles({
-        lat1: targetMountain.latitude,
-        lon1: targetMountain.longitude,
-        lat2: mtn.latitude,
-        lon2: mtn.longitude,
-      }).toFixed(2));
-      return (
-        <MountainItemRemove
-          onClick={() => removeMountainFromList(mtn)}
-          key={mtn.id}
-        >
-          {mtn.name}
-          <Subtitle>
-            {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
-            {mtn.elevation + 'ft | ' }
-            {distance + ' mi away'}
-          </Subtitle>
-        </MountainItemRemove>
-      );
+    const sortedSelectedMountains = sortBy(selectedMountains, ['name']);
+    selectedMountainList = sortedSelectedMountains.map(mtn => {
+      if (searchSelectedQuery === '' || mtn.name.toLowerCase().includes(searchSelectedQuery.toLowerCase())) {
+        const distance = targetMountain ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
+          lat1: targetMountain.latitude,
+          lon1: targetMountain.longitude,
+          lat2: mtn.latitude,
+          lon2: mtn.longitude,
+        }).toFixed(2)) + ' mi away' : '';
+        return (
+          <MountainItemRemove
+            onClick={() => removeMountainFromList(mtn)}
+            key={mtn.id}
+          >
+            {mtn.name}
+            <Subtitle>
+              {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
+              {mtn.elevation + 'ft' }
+              {distance}
+            </Subtitle>
+          </MountainItemRemove>
+        );
+      } else {
+        return null;
+      }
     });
     if (searchQuery) {
       const mountainList: Array<React.ReactElement<any>> = [];
       mountains.forEach(mtn => {
         if (!selectedMountains.find(m => m.id === mtn.id)
             && mtn.id !== targetMountainId) {
-          const distance = parseFloat(getDistanceFromLatLonInMiles({
+          const distance = targetMountain ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
             lat1: targetMountain.latitude,
             lon1: targetMountain.longitude,
             lat2: mtn.latitude,
             lon2: mtn.longitude,
-          }).toFixed(2));
+          }).toFixed(2)) + ' mi away' : '';
           mountainList.push(
             <MountainItemAdd
               onClick={() => addMountainToList(mtn)}
@@ -196,8 +243,8 @@ const AdditionalMountains = (props: Props) => {
               {mtn.name}
               <Subtitle>
                 {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
-                {mtn.elevation + 'ft | ' }
-                {distance + ' mi away'}
+                {mtn.elevation + 'ft' }
+                {distance}
               </Subtitle>
             </MountainItemAdd>,
           );
@@ -207,38 +254,77 @@ const AdditionalMountains = (props: Props) => {
       });
       if (mountainList.length !== 0) {
         searchResults = (
-          <CheckboxList>{mountainList}</CheckboxList>
+          <CheckboxList style={listStyle}>{mountainList}</CheckboxList>
         );
       } else {
-        searchResults = null;
+        searchResults = emptySearchResults;
       }
     } else {
-      searchResults = null;
+      searchResults = emptySearchResults;
     }
   } else {
-    searchResults = null;
+    searchResults = emptySearchResults;
     selectedMountainList = null;
   }
 
   const selectedMountainsContainer = selectedMountainList && selectedMountainList.length ? (
-    <CheckboxList>
+    <CheckboxList style={listStyle}>
       {selectedMountainList}
     </CheckboxList>
   ) : null;
-  return (
-    <>
-      {selectedMountainsContainer}
-      <SearchContainer>
-        <StandardSearch
-          placeholder='Search mountains'
-          setSearchQuery={setSearchQuery}
-          focusOnMount={false}
-          initialQuery={searchQuery}
-        />
-      </SearchContainer>
-      {searchResults}
-    </>
-  );
+
+  let output: React.ReactElement<any>;
+  if (expandedLayout === true) {
+    const total = selectedMountainList && selectedMountainList.length ? selectedMountainList.length : 0;
+    const searchResultsContent = searchResults !== null ? searchResults : (
+      <EmptyContent>Use the search bar above to find and add mountains to this list</EmptyContent>
+    );
+    const selectedMountainsContent = selectedMountainsContainer !== null ? selectedMountainsContainer : (
+      <EmptyContent>Selected mountains will show up here. You haven't selected any yet.</EmptyContent>
+    );
+    output = (
+      <TwoColumnRoot>
+        <div style={{gridRow: 1, gridColumn: 1}}>
+          <StandardSearch
+            placeholder='Search mountains to add'
+            setSearchQuery={setSearchQuery}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
+        </div>
+        <CheckboxContainer style={{gridRow: 2, gridColumn: 1}}>
+          {searchResultsContent}
+        </CheckboxContainer>
+        <div style={{gridRow: 1, gridColumn: 2}}>
+          <StandardSearch
+            placeholder={`Selected mountains (${total} total)`}
+            setSearchQuery={setSearchSelectedQuery}
+            focusOnMount={false}
+            initialQuery={searchSelectedQuery}
+          />
+        </div>
+        <CheckboxContainer style={{gridRow: 2, gridColumn: 2}}>
+          {selectedMountainsContent}
+        </CheckboxContainer>
+      </TwoColumnRoot>
+    );
+  } else {
+    output = (
+      <>
+        {selectedMountainsContainer}
+        <SearchContainer>
+          <StandardSearch
+            placeholder='Search mountains'
+            setSearchQuery={setSearchQuery}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
+        </SearchContainer>
+        {searchResults}
+      </>
+    );
+  }
+  return output;
 };
 
 export default AdditionalMountains;

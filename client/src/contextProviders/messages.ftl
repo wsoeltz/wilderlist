@@ -93,9 +93,53 @@ global-text-value-edit = Edit
 global-text-value-save = Save
 global-text-value-saving = Saving
 
+global-text-value-selected = Selected
+
 global-text-value-delete = Delete
 
 global-text-value-flag = Flag
+global-text-value-optional = Optional
+global-text-value-parent = Parent
+
+global-text-value-external-resources = External Resources
+global-text-value-add-external-resources = Add Another Resource
+global-text-value-resource-title = Resource Title
+global-text-value-resource-url = http://example.com
+
+global-text-value-type = Type
+global-text-value-list-type = {
+  $type ->
+    *[standard] Standard
+    [winter] Winter
+    [fourSeason] 4-Season
+    [grid] Grid
+}
+
+global-text-value-tier = tier
+global-text-value-list-tier = {
+  $tier ->
+    *[casual] Casual
+    [advanced] Advanced
+    [expert] Expert
+    [mountaineer] Mountaineer
+}
+global-text-value-list-tier-desc =
+  <p>
+  Please select a <strong>tier</strong> that corresponds with this lists difficulty.
+  </p>
+  <p>
+  <strong>Casual</strong> lists tend to have less than 20 peaks and can be completed by most people with an average to low-average fitness level.
+  </p>
+  <p>
+  <strong>Advanced</strong> lists tend to have less than 100 peaks and can be completed by most people with an average fitness level.
+  </p>
+  <p>
+  <strong>Expert</strong> lists may have up to 200 peaks <strong>and/or</strong> require a higher fitness level or more advanced technical skills, such as winter hiking or compass navigation.
+  </p>
+  <p>
+  <strong>Mountaineer</strong> lists may have any number of peaks <strong>and/or</strong> require a high fitness level and may require advanced mountaineering skills.
+  </p>
+
 
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
@@ -181,7 +225,11 @@ peak-list-detail-select-mountain = Select a mountain to see its details and your
 peak-list-detail-filter-mountains = Filter mountains
 
 peak-list-detail-list-overview-empty = { $list-name } does not yet have any mountains associated with it.
-peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-of-peaks } mountains that are located ⁨{
+peak-list-detail-list-overview-para-1 = { $list-name } is a list with {
+  $number-of-peaks ->
+    [1] 1 mountain that is
+    *[other] { $number-of-peaks } mountains that are
+} located ⁨{
   $state-or-region ->
     [state] within
     *[region] throughout
@@ -189,6 +237,9 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with { $number-
 
 peak-list-detail-friend-viewing-list = Viewing list for { $username }
 peak-list-detail-friend-view-your-progress-button = View your progress
+
+peak-list-detail-text-optional-mountains = Optional Mountains
+peak-list-detail-text-optional-mountains-desc = The following mountains are considered optional for this list. They fit the criteria needed to be on here, but for one reason or another they are not required for completion. Common reasons include the peak being on private property or requiring special permissions to be able to climb. Optional peaks do not count towards a 100% completion for this list.
 
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 
@@ -329,6 +380,9 @@ local-trails-hiking-project-via-the = via the
 local-trails-hiking-project-no-trails = Could not find any routes near { $mountain-name } on the Hiking Project.
 local-trails-hiking-project-network-error = There was a network error retrieving trails data. Please try again later.
 
+local-trails-nearby-trails-title = Nearby Trails
+local-trails-all-trails-link-text = View trails for { $mountain-name } on
+
 trip-report-conditions-title = Conditions
 
 trip-report-condition-name = {
@@ -380,6 +434,11 @@ trip-reports-view-edit-button = View/Edit Report
 create-mountain-title-create = Add Mountain
 create-mountain-title-edit = Edit Mountain: { $mountain-name }
 
+create-mountain-title-create-question = Can't find the mountain you're looking for?
+create-mountain-title-create-new = Add New Mountain
+
+create-mountain-title-create-question-optional = Can't find the optional mountain you're looking for?
+
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
@@ -406,4 +465,41 @@ flag-mountain-select-issue-description = {
     [abuse] Abuse - This entry is inappropriate or otherwise abusive
     *[other] Other - There is a problem not specified in this list
 }
+
+flag-peak-list-text = If something seems wrong about this list, submit a flag and an administrator will take a look at it ASAP
+
+flag-peak-list-select-issue = Please select an issue from the box below
+flag-peak-list-select-issue-description = {
+  $issue ->
+    [duplicate] Duplicate - This is a duplicate entry of another list
+    [data] Data - There is an issue with data (i.e. name, states)
+    [abuse] Abuse - This entry is inappropriate or otherwise abusive
+    *[other] Other - There is a problem not specified in this list
+}
+
+create-peak-list-title-create = Create List
+
+create-peak-list-title-edit = Edit { $list-name }
+create-peak-list-peak-list-name-label = List Name
+create-peak-list-peak-list-name-placeholder = i.e. New Hampshire 4000 Footers
+create-peak-list-peak-list-short-name-label = List Short Name
+create-peak-list-peak-list-short-name-note = max 8 characters
+create-peak-list-peak-list-short-name-placeholder = i.e. NH48
+create-peak-list-peak-list-description-label = Description
+create-peak-list-check-your-work = I have checked my work to make sure the information is accurate and follows Wilderlist's content policies. I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to create new lists.
+create-peak-list-peak-list-optional-description-label = Optional Peaks Description
+create-peak-list-select-parent-modal-button = Start with an existing list of mountains
+create-peak-list-copy-mountains-button = Copy Mountains
+create-peak-list-parent-mountains-button = Set As Parent
+create-peak-list-parent-or-copy-text =
+  <p>
+    <strong>Copy Mountains</strong> will create an identical set of mountains as the selected list. You will then be free to add or remove mountains as you see fit for your new list. This is ideal if you are looking to create a modified version of an existing list, for example going from a 100-Highest to a 200-Highest selection.
+  </p>
+  <p>
+    <strong>Set as Parent</strong> will keep the mountains identical to the selected parent. You will not be able to make any changes to the selection. This is ideal if you are looking to make a variation, such as creating a Winter or 4-Season version of an existing list. If a parent list is updated, so too will any connected lists.
+  </p>
+
+create-peak-list-has-parent-mountains = This list will reflect the same mountains as the selected parent
+create-peak-list-has-parent-optional-mountains = This list will reflect the same optional mountains as the selected parent
+create-peak-list-remove-parent = Remove Parent
 

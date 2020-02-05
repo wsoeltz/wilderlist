@@ -96,6 +96,13 @@ export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const SectionTitle = styled.div`
+  padding: 0.5rem 0;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: ${lightBaseColor};
+`;
+
 export const standardContainerPadding = '1rem';
 
 export const linkStyles = `
@@ -150,6 +157,11 @@ export const CardSubtitle = styled.div`
   display: flex;
   justify-content: space-between;
   font-weight: ${semiBoldFontBoldWeight};
+`;
+
+export const SmallTextNote = styled.div`
+  font-size: 0.8rem;
+  color: ${lightBaseColor};
 `;
 
 export const borderRadius = 6; // in px
@@ -246,18 +258,37 @@ export const GhostButton = styled(ButtonBase)`
   }
 `;
 
-export const FloatingButton = styled(ButtonPrimaryLink)`
+export const FloatingButtonContainer = styled.div`
   position: sticky;
+  z-index: 150;
   bottom: 0;
-  left: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+export const FloatingButton = styled(ButtonPrimaryLink)`
   font-size: 0.75rem;
   border-radius: 15px;
   border-bottom: 3px solid ${darken(0.12, primaryColor)};
   border-right: 3px solid ${darken(0.12, primaryColor)};
-  box-shadow: 0px 0px 3px -1px #b5b5b5;
+  box-shadow: 0px 2px 4px 0px #737373;
 `;
 
 export const InputBase = styled.input`
+  padding: 8px;
+  box-sizing: border-box;
+  border: solid 1px ${lightBorderColor};
+  font-size: 1rem;
+  font-weight: ${lightFontWeight};
+  width: 100%;
+
+  &::placeholder {
+    color: ${placeholderColor};
+  }
+`;
+
+export const TextareaBase = styled.textarea`
   padding: 8px;
   box-sizing: border-box;
   border: solid 1px ${lightBorderColor};
@@ -275,6 +306,11 @@ export const Label = styled.span`
   color: ${lightBaseColor};
   font-size: 1rem;
   letter-spacing: 0.01rem;
+`;
+
+export const LabelContainer = styled.label`
+  margin-bottom: 0.4rem;
+  display: inline-block;
 `;
 
 export const PaginationContainer = styled.div`
@@ -305,6 +341,15 @@ export const Prev = styled(ButtonSecondary)`
     top: 0.1rem;
     margin-right: 0.4rem;
   }
+`;
+
+export const PlusIcon = styled.span`
+  font-size: 1.3rem;
+  height: 0;
+  display: inline-block;
+  line-height: 0;
+  position: relative;
+  top: 2px;
 `;
 
 export const PlaceholderText = styled.div`

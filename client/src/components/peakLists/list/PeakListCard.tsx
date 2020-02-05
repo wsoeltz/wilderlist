@@ -1,6 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
-import gql from 'graphql-tag';
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
@@ -20,93 +18,15 @@ import {
   ButtonPrimary,
   Card,
 } from '../../../styling/styleUtils';
-import {
-  CompletedMountain,
-  Mountain,
-  PeakList,
-  Region,
-  State,
-  // User,
-} from '../../../types/graphQLTypes';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
-import { formatDate, getLatestAscent, getType } from '../Utils';
+import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
+import {
+  RegionDatum,
+  StateDatum,
+} from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
-
-export const GET_STATES_AND_REGIONS = gql`
-  query getStatesAndRegions($id: ID!) {
-    peakList(id: $id) {
-      id
-      states {
-        id
-        name
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-      mountains {
-        id
-      }
-      parent {
-        id
-        states {
-          id
-          name
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
-        mountains {
-          id
-        }
-      }
-    }
-  }
-`;
-
-interface RegionDatum {
-  id: Region['id'];
-  name: Region['name'];
-  states: Array<{
-    id: State['id'],
-  }>;
-}
-
-export interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  regions: RegionDatum[];
-}
-
-export interface SuccessResponse {
-  peakList: null | {
-    id: PeakList['id'];
-    states: null | StateDatum[];
-    mountains: null | Array<{
-      id: PeakList['id'];
-    }>
-    parent: null | {
-      id: PeakList['id'];
-      states: null | StateDatum[];
-      mountains: null | Array<{
-        id: PeakList['id'];
-      }>
-    }
-  };
-}
-
-export interface Variables {
-  id: string;
-}
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -201,7 +121,7 @@ export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: Ge
     const regionsArray: RegionDatum[] = [];
     sortedStates.forEach(({regions}) => {
       regions.forEach(region => {
-        if (regionsArray.filter(({id}) => id === region.id).length === 0) {
+        if (region && regionsArray.filter(({id}) => id === region.id).length === 0) {
           regionsArray.push(region);
         }
       });
@@ -213,12 +133,12 @@ export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: Ge
       return regionsArray[0].name;
     } else {
       const inclusiveRegions = regionsArray.filter(
-        (region) => sortedStates.every(({regions}) => regions.includes(region)));
+        (region) => sortedStates.every(({regions}) => regions.find(_region => _region && region.id === _region.id)));
       if (inclusiveRegions.length === 1) {
         return inclusiveRegions[0].name;
       } else if (inclusiveRegions.length > 1) {
         // If they all belong to more than one region, show the more exclusive one
-        const exclusiveRegions = sortBy(regionsArray, ({states}) => states.length );
+        const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
         return exclusiveRegions[0].name;
       } else if (inclusiveRegions.length === 0) {
         // if there are no inclusive regions
@@ -244,31 +164,23 @@ interface Props {
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
-  completedAscents: CompletedMountain[];
-  mountains: Array<{id: Mountain['id']}>;
   numCompletedAscents: number;
   totalRequiredAscents: number;
+  latestDate: string | null;
   dashboardView: boolean;
   profileId?: string;
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, parent, type},
-    active, listAction, actionText, completedAscents,
-    mountains, numCompletedAscents,
+    peakList: {id, name, shortName, type, parent, states},
+    active, listAction, actionText, numCompletedAscents,
     totalRequiredAscents, profileId, dashboardView,
+    latestDate,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
-
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
-    variables: {id: parent ? parent.id : id} });
-
-  if (error) {
-    console.error(error);
-  }
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -289,17 +201,16 @@ const PeakListCard = (props: Props) => {
 
   let listInfoContent: React.ReactElement<any>;
   if (active === true) {
-    const latestDate = getLatestAscent(mountains, completedAscents, type);
 
     let latestDateText: React.ReactElement<any>;
-    if (latestDate !== undefined) {
+    if (latestDate !== null) {
       const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': (!(isNaN(latestDate.day) || isNaN(latestDate.month))).toString(),
+        'has-full-date': 'true',
       });
       latestDateText = (
         <>
-          {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>
+          {latestAscentText} <BigText>{latestDate}</BigText>
         </>
       );
     } else {
@@ -315,15 +226,8 @@ const PeakListCard = (props: Props) => {
       </>
     );
   } else {
+    const statesArray = states && states.length ? [...states] : [];
 
-    let statesArray: StateDatum[] = [];
-    if (loading === false && data !== undefined && data.peakList) {
-      if (data.peakList.parent && data.peakList.parent.states && data.peakList.parent.states.length) {
-        statesArray = [...data.peakList.parent.states];
-      } else if (data.peakList.states && data.peakList.states.length) {
-        statesArray = [...data.peakList.states];
-      }
-    }
     listInfoContent = (
       <>
         <span>

@@ -7,10 +7,15 @@ import { PermissionTypes } from '../../../types/graphQLTypes';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { SuccessResponse, UserDatum } from '../AdminUsers';
 import {
-  PermissionsSuccessResponse,
-  PermissionsVariables,
+  PermissionsSuccessResponse as MountainPermissionsSuccessResponse,
+  PermissionsVariables as MountainPermissionsVariables,
   UPDATE_MOUNTAIN_PERMISSIONS,
 } from '../mountains/ListMountains';
+import {
+  PermissionsSuccessResponse as PeakListPermissionsSuccessResponse,
+  PermissionsVariables as PeakListPermissionsVariables,
+  UPDATE_PEAK_LIST_PERMISSIONS,
+} from '../peakLists/ListPeakLists';
 import { ListItem } from '../sharedStyles';
 
 const UserContent = styled.div`
@@ -65,8 +70,11 @@ const ListUsers = (props: Props) => {
   );
 
   const [updateMountainPermissions] =
-    useMutation<PermissionsSuccessResponse, PermissionsVariables>(
+    useMutation<MountainPermissionsSuccessResponse, MountainPermissionsVariables>(
       UPDATE_MOUNTAIN_PERMISSIONS);
+  const [updatePeakListPermissions] =
+    useMutation<PeakListPermissionsSuccessResponse, PeakListPermissionsVariables>(
+      UPDATE_PEAK_LIST_PERMISSIONS);
 
   const grantMountainPermission = (id: string) => {
     updateMountainPermissions({variables: {id, mountainPermissions: 10}});
@@ -80,6 +88,18 @@ const ListUsers = (props: Props) => {
     updateMountainPermissions({variables: {id, mountainPermissions: 0}});
   };
 
+  const grantPeakListPermission = (id: string) => {
+    updatePeakListPermissions({variables: {id, peakListPermissions: 10}});
+  };
+
+  const revokePeakListPermission = (id: string) => {
+    updatePeakListPermissions({variables: {id, peakListPermissions: -1}});
+  };
+
+  const resetPeakListPermission = (id: string) => {
+    updatePeakListPermissions({variables: {id, peakListPermissions: 0}});
+  };
+
   if (loading === true) {
     return (<p>Loading</p>);
   } else if (error !== undefined) {
@@ -90,6 +110,8 @@ const ListUsers = (props: Props) => {
     const usersElms = users.map(user => {
       const mountainPermissions = user.mountainPermissions === null
                                   ? 0 : user.mountainPermissions;
+      const peakListPermissions = user.peakListPermissions === null
+                                  ? 0 : user.peakListPermissions;
       const permissions = user.permissions === PermissionTypes.admin
         ? <div><small>{user.permissions}</small></div> : null;
       const content = (
@@ -110,6 +132,20 @@ const ListUsers = (props: Props) => {
               <LinkButton
                 onClick={() => revokeMountainPermission(user.id)}
               >{'Revoke Mountain Privileges'}</LinkButton>
+            </small></div>
+            <div><small>PeakList Permissions: {peakListPermissions}</small></div>
+            <div><small>
+              <LinkButton
+                onClick={() => grantPeakListPermission(user.id)}
+              >{'Grant PeakList Privileges'}</LinkButton>
+              {' | '}
+              <LinkButton
+                onClick={() => resetPeakListPermission(user.id)}
+              >{'Reset PeakList Privileges'}</LinkButton>
+              {' | '}
+              <LinkButton
+                onClick={() => revokePeakListPermission(user.id)}
+              >{'Revoke PeakList Privileges'}</LinkButton>
             </small></div>
           </UserInfo>
           <UserImage src={user.profilePictureUrl} />

@@ -3,9 +3,17 @@ import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
 import {
+  ButtonPrimary,
   ButtonSecondary,
+  GhostButton,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakList, PeakListVariants, State } from '../../../types/graphQLTypes';
+import {
+  ExternalResource,
+  Mountain,
+  PeakList,
+  PeakListVariants,
+  State,
+} from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   SuccessResponse as PeakListDatum,
@@ -21,9 +29,14 @@ import {
   NameInactive,
   NameInput,
   NameText,
+  NavButtonLink,
+  ResourceContainer,
   SelectBox,
   SelectedItemsContainer,
   SelectionPanel,
+  SubNav,
+  TextareaActive,
+  TextareaDisabled,
   UpdateButton,
 } from '../sharedStyles';
 
@@ -33,12 +46,26 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
       id
       name
       shortName
+      description
+      optionalPeaksDescription
+      resources {
+        title
+        url
+      }
       type
       states {
         id
         name
       }
       mountains {
+        id
+        name
+        state {
+          id
+          name
+        }
+      }
+      optionalMountains {
         id
         name
         state {
@@ -69,17 +96,35 @@ const GET_PEAK_LIST_AND_ALL_MOUNTAINS = gql`
   }
 `;
 
-const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
-  mutation($listId: ID!, $itemId: ID!) {
-    removeItemFromPeakList(listId: $listId, itemId: $itemId) {
+const mutationsBaseQuery = `
       id
       name
       shortName
+      description
+      optionalPeaksDescription
       type
       mountains {
         id
         name
       }
+      optionalMountains {
+        id
+        name
+      }
+      parent {
+        id
+      }
+      resources {
+        id
+        title
+        url
+      }
+`;
+
+const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    removeItemFromPeakList(listId: $listId, itemId: $itemId) {
+      ${mutationsBaseQuery}
     }
   }
 `;
@@ -87,14 +132,22 @@ const REMOVE_MOUNTAIN_FROM_PEAK_LIST = gql`
 const ADD_MOUNTAIN_TO_PEAK_LIST = gql`
   mutation($listId: ID!, $itemId: ID!) {
     addItemToPeakList(listId: $listId, itemId: $itemId) {
-      id
-      name
-      shortName
-      type
-      mountains {
-        id
-        name
-      }
+      ${mutationsBaseQuery}
+    }
+  }
+`;
+const REMOVE_OPTIONAL_MOUNTAIN_FROM_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    removeOptionalMountainFromPeakList(listId: $listId, itemId: $itemId) {
+      ${mutationsBaseQuery}
+    }
+  }
+`;
+
+const ADD_OPTIONAL_MOUNTAIN_TO_PEAK_LIST = gql`
+  mutation($listId: ID!, $itemId: ID!) {
+    addOptionalMountainToPeakList(listId: $listId, itemId: $itemId) {
+      ${mutationsBaseQuery}
     }
   }
 `;
@@ -102,14 +155,7 @@ const ADD_MOUNTAIN_TO_PEAK_LIST = gql`
 const CHANGE_PEAK_LIST_NAME = gql`
   mutation($id: ID!, $newName: String!) {
     changePeakListName(id: $id, newName: $newName) {
-      id
-      name
-      shortName
-      type
-      mountains {
-        id
-        name
-      }
+      ${mutationsBaseQuery}
     }
   }
 `;
@@ -117,14 +163,35 @@ const CHANGE_PEAK_LIST_NAME = gql`
 const CHANGE_PEAK_LIST_SHORT_NAME = gql`
   mutation($id: ID!, $newShortName: String!) {
     changePeakListShortName(id: $id, newShortName: $newShortName) {
-      id
-      name
-      shortName
-      type
-      mountains {
-        id
-        name
-      }
+      ${mutationsBaseQuery}
+    }
+  }
+`;
+
+const CHANGE_PEAK_LIST_DESCRIPTION = gql`
+  mutation($id: ID!, $newDescription: String!) {
+    changePeakListDescription(id: $id, newDescription: $newDescription) {
+      ${mutationsBaseQuery}
+    }
+  }
+`;
+
+const CHANGE_PEAK_LIST_OPTIONAL_PEAKS_DESCRIPTION = gql`
+  mutation($id: ID!, $newOptionalPeaksDescription: String!) {
+    changePeakListOptionalPeaksDescription(
+      id: $id, newOptionalPeaksDescription: $newOptionalPeaksDescription
+    ) {
+      ${mutationsBaseQuery}
+    }
+  }
+`;
+
+const CHANGE_PEAK_LIST_RESOURCES = gql`
+  mutation($id: ID!, $resources: [ExternalResourcesInputType]) {
+    changePeakListResources(
+      id: $id, resources: $resources
+    ) {
+      ${mutationsBaseQuery}
     }
   }
 `;
@@ -132,17 +199,7 @@ const CHANGE_PEAK_LIST_SHORT_NAME = gql`
 const CHANGE_PEAK_LIST_VARIANT = gql`
   mutation($id: ID!, $type: PeakListVariants!) {
     adjustPeakListVariant(id: $id, type: $type) {
-      id
-      name
-      shortName
-      type
-      mountains {
-        id
-        name
-      }
-      parent {
-        id
-      }
+      ${mutationsBaseQuery}
     }
   }
 `;
@@ -150,17 +207,7 @@ const CHANGE_PEAK_LIST_VARIANT = gql`
 const CHANGE_PEAK_LIST_PARENT = gql`
   mutation($id: ID!, $parent: ID) {
     changePeakListParent(id: $id, parent: $parent) {
-      id
-      name
-      shortName
-      type
-      mountains {
-        id
-        name
-      }
-      parent {
-        id
-      }
+      ${mutationsBaseQuery}
     }
   }
 `;
@@ -171,6 +218,7 @@ const REMOVE_STATE_FROM_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       states {
         id
@@ -186,6 +234,7 @@ const ADD_STATE_TO_PEAK_LIST = gql`
       id
       name
       shortName
+      description
       type
       states {
         id
@@ -205,8 +254,16 @@ interface SuccessResponse {
     id: PeakList['id'];
     name: PeakList['name'];
     shortName: PeakList['shortName'];
+    description: PeakList['description'];
+    optionalPeaksDescription: PeakList['optionalPeaksDescription'];
+    resources: PeakList['resources'];
     type: PeakList['type'];
     mountains: Array<{
+      id: Mountain['id'];
+      name: Mountain['name'];
+      state: StateDatum;
+    }>
+    optionalMountains: Array<{
       id: Mountain['id'];
       name: Mountain['name'];
       state: StateDatum;
@@ -250,6 +307,16 @@ interface ChangeShortNameVariables {
   newShortName: string;
 }
 
+interface ChangeDescriptionVariables {
+  id: string;
+  newDescription: string;
+}
+
+interface ChangeOptionalPeaksDescriptionVariables {
+  id: string;
+  newOptionalPeaksDescription: string;
+}
+
 interface ChangeVariantVariables {
   id: string;
   type: PeakListVariants;
@@ -258,6 +325,11 @@ interface ChangeVariantVariables {
 interface ChangeParentVariables {
   id: string;
   parent: string | null;
+}
+
+interface ChangeResourcesVariables {
+  id: string;
+  resources: ExternalResource[];
 }
 
 interface CheckboxProps {
@@ -301,6 +373,11 @@ const Checkbox = (props: CheckboxProps) => {
 
 };
 
+export enum MountainReqLevel {
+  required = 'required',
+  optional = 'optional',
+}
+
 interface Props {
   listDatum: PeakListDatum | undefined;
   peakListId: string;
@@ -311,9 +388,16 @@ const EditPeakList = (props: Props) => {
   const { listDatum, peakListId, cancel } = props;
   const [editingName, setEditingName] = useState<boolean>(false);
   const [editingShortName, setEditingShortName] = useState<boolean>(false);
+  const [editingDescription, setEditingDescription] = useState<boolean>(false);
+  const [editingOptionalPeaksDescription, setEditingOptionalPeaksDescription] = useState<boolean>(false);
   const [inputNameValue, setInputNameValue] = useState<string>('');
   const [inputShortNameValue, setInputShortNameValue] = useState<string>('');
+  const [inputDescriptionValue, setInputDescriptionValue] = useState<string>('');
+  const [inputOptionalPeaksDescriptionValue, setInputOptionalPeaksDescriptionValue] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [mountainReqLevel, setMountainReqLevel] = useState<MountainReqLevel>(MountainReqLevel.required);
+  const [externalResources, setExternalResources] = useState<ExternalResource[]>([{title: '', url: ''}]);
+  const [editingExternalResources, setEditingExternalResources] = useState<boolean>(false);
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_PEAK_LIST_AND_ALL_MOUNTAINS, {
     variables: { id: peakListId },
@@ -325,6 +409,15 @@ const EditPeakList = (props: Props) => {
   const [addItemToPeakList] = useMutation<SuccessResponse, AdjustMountainVariables>(ADD_MOUNTAIN_TO_PEAK_LIST, {
     refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
   });
+  const [removeOptionalMountainFromPeakList] =
+    useMutation<SuccessResponse, AdjustMountainVariables>(
+      REMOVE_OPTIONAL_MOUNTAIN_FROM_PEAK_LIST, {
+      refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
+    });
+  const [addOptionalMountainToPeakList] =
+    useMutation<SuccessResponse, AdjustMountainVariables>(ADD_OPTIONAL_MOUNTAIN_TO_PEAK_LIST, {
+    refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
+  });
   const [removeStateFromPeakList] = useMutation<SuccessResponse, AdjustStateVariables>
     (REMOVE_STATE_FROM_PEAK_LIST, {
       refetchQueries: () => [{query: GET_PEAK_LIST_AND_ALL_MOUNTAINS, variables: { id: peakListId }}],
@@ -334,11 +427,21 @@ const EditPeakList = (props: Props) => {
   });
   const [changePeakListName] = useMutation<SuccessResponse, ChangeNameVariables>(CHANGE_PEAK_LIST_NAME);
   const [changePeakListShortName] = useMutation<SuccessResponse, ChangeShortNameVariables>(CHANGE_PEAK_LIST_SHORT_NAME);
+  const [changePeakListDescription] =
+    useMutation<SuccessResponse, ChangeDescriptionVariables>(CHANGE_PEAK_LIST_DESCRIPTION);
+  const [changePeakListOptionalPeaksDescription] =
+    useMutation<SuccessResponse, ChangeOptionalPeaksDescriptionVariables>(
+      CHANGE_PEAK_LIST_OPTIONAL_PEAKS_DESCRIPTION);
+  const [changePeakListResources] =
+    useMutation<SuccessResponse, ChangeResourcesVariables>(CHANGE_PEAK_LIST_RESOURCES);
   const [adjustPeakListVariant] = useMutation<SuccessResponse, ChangeVariantVariables>(CHANGE_PEAK_LIST_VARIANT);
   const [changePeakListParent] = useMutation<SuccessResponse, ChangeParentVariables>(CHANGE_PEAK_LIST_PARENT);
 
   let name: React.ReactElement | null;
   let shortName: React.ReactElement | null;
+  let description: React.ReactElement | null;
+  let optionalPeaksDescription: React.ReactElement | null;
+  let resources: React.ReactElement | null;
   let mountains: React.ReactElement | null;
   let type: React.ReactElement | null;
   let parent: React.ReactElement | null;
@@ -347,6 +450,9 @@ const EditPeakList = (props: Props) => {
   if (loading === true) {
     name = null;
     shortName = null;
+    description = null;
+    optionalPeaksDescription = null;
+    resources = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = (<p>Loading</p>);
@@ -355,6 +461,9 @@ const EditPeakList = (props: Props) => {
   } else if (error !== undefined) {
     name = null;
     shortName = null;
+    description = null;
+    optionalPeaksDescription = null;
+    resources = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = null;
@@ -394,8 +503,6 @@ const EditPeakList = (props: Props) => {
     } else {
       name = null;
     }
-    selectedMountains = null;
-    selectedStatesLi = null;
     if (editingShortName === false) {
       const setEditShortNameToTrue = () => {
         setEditingShortName(true);
@@ -425,9 +532,176 @@ const EditPeakList = (props: Props) => {
     } else {
       shortName = null;
     }
+    const descriptionString = data.peakList.description ? data.peakList.description : '';
+    if (editingDescription === false) {
+      const setEditDescriptionToTrue = () => {
+        setEditingDescription(true);
+        setInputDescriptionValue(descriptionString);
+      };
+      description = (
+        <NameInactive>
+          <TextareaDisabled value={descriptionString} readOnly={true}/>
+          <ButtonSecondary onClick={setEditDescriptionToTrue}>Edit Description</ButtonSecondary>
+        </NameInactive>
+      );
+    } else if (editingDescription === true) {
+      const handleDescriptionSubmit = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        changePeakListDescription({variables: { id: peakListId, newDescription: inputDescriptionValue}});
+        setEditingDescription(false);
+      };
+      description = (
+        <NameActive>
+          <EditNameForm onSubmit={handleDescriptionSubmit}>
+            <TextareaActive
+              value={inputDescriptionValue}
+              onChange={(e) => setInputDescriptionValue(e.target.value)}
+            />
+            <UpdateButton type='submit'>Update</UpdateButton>
+          </EditNameForm>
+          <ButtonSecondary onClick={() => setEditingDescription(false)}>Cancel</ButtonSecondary>
+        </NameActive>
+      );
+    } else {
+      description = null;
+    }
+
+    const optionalPeaksDescriptionString =
+      data.peakList.optionalPeaksDescription ? data.peakList.optionalPeaksDescription : '';
+    if (editingOptionalPeaksDescription === false) {
+      const setEditOptionalPeaksDescriptionToTrue = () => {
+        setEditingOptionalPeaksDescription(true);
+        setInputOptionalPeaksDescriptionValue(optionalPeaksDescriptionString);
+      };
+      optionalPeaksDescription = (
+        <NameInactive>
+          <TextareaDisabled value={optionalPeaksDescriptionString} readOnly={true}/>
+          <ButtonSecondary onClick={setEditOptionalPeaksDescriptionToTrue}>
+            Edit Optional Peaks Description
+          </ButtonSecondary>
+        </NameInactive>
+      );
+    } else if (editingOptionalPeaksDescription === true) {
+      const handleOptionalPeaksDescriptionSubmit = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        changePeakListOptionalPeaksDescription({variables: {
+          id: peakListId, newOptionalPeaksDescription: inputOptionalPeaksDescriptionValue}});
+        setEditingOptionalPeaksDescription(false);
+      };
+      optionalPeaksDescription = (
+        <NameActive>
+          <EditNameForm onSubmit={handleOptionalPeaksDescriptionSubmit}>
+            <TextareaActive
+              value={inputOptionalPeaksDescriptionValue}
+              onChange={(e) => setInputOptionalPeaksDescriptionValue(e.target.value)}
+            />
+            <UpdateButton type='submit'>Update</UpdateButton>
+          </EditNameForm>
+          <ButtonSecondary onClick={() => setEditingOptionalPeaksDescription(false)}>
+            Cancel
+          </ButtonSecondary>
+        </NameActive>
+      );
+    } else {
+      optionalPeaksDescription = null;
+    }
+
+    if (editingExternalResources === true) {
+      const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+        (field: keyof ExternalResource, index: number) =>
+          setExternalResources(
+            externalResources.map((resource, _index) => {
+              if (resource[field] === e.target.value || index !== _index) {
+                return resource;
+              } else {
+                return {...resource, [field]: e.target.value};
+              }
+            },
+          ),
+        );
+
+      const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
+        e.preventDefault();
+        setExternalResources(externalResources.filter((_v, i) => i !== index));
+      };
+
+      const updateResources = () => {
+        const cleanedResources = externalResources.map(({title, url}) => ({title, url}));
+        changePeakListResources({variables: {
+          id: peakList.id, resources: cleanedResources,
+        }});
+        setEditingExternalResources(false);
+      };
+
+      const resourceInputs = externalResources.map((resource, i) => (
+        <ResourceContainer key={i}>
+          <NameInput
+            value={resource.title}
+            onChange={e => handleExternalResourceChange(e)('title', i)}
+            placeholder={'title'}
+          />
+          <NameInput
+            value={resource.url}
+            onChange={e => handleExternalResourceChange(e)('url', i)}
+            placeholder={'url'}
+          />
+          <GhostButton onClick={e => deleteResource(e)(i)}>
+            Delete
+          </GhostButton>
+        </ResourceContainer>
+      ));
+      resources = (
+        <div>
+          {resourceInputs}
+          <ResourceContainer>
+            <ButtonSecondary onClick={() => setEditingExternalResources(false)}>
+              Cancel
+            </ButtonSecondary>
+            <UpdateButton onClick={updateResources}>Update</UpdateButton>
+            <ButtonPrimary onClick={e => {
+              e.preventDefault();
+              setExternalResources([...externalResources, {title: '', url: ''}]);
+            }}>
+              Add Another resource
+            </ButtonPrimary>
+          </ResourceContainer>
+        </div>
+      );
+    } else {
+      const setEditResourcesToTrue = () => {
+        const resourceList = peakList.resources && peakList.resources.length
+          ? peakList.resources : [{title: '', url: ''}];
+        setEditingExternalResources(true);
+        setExternalResources(resourceList);
+      };
+      const resourceElms = peakList.resources && peakList.resources.length ? peakList.resources.map(resource => (
+        <ResourceContainer key={'list' + resource.url + resource.title}>
+          <NameInactive>
+            <NameText value={resource.title} readOnly={true}/>
+          </NameInactive>
+          <NameInactive>
+            <NameText value={resource.url} readOnly={true}/>
+          </NameInactive>
+        </ResourceContainer>
+      )) : <div>No Resources</div>;
+      resources = (
+        <div>
+          {resourceElms}
+          <ButtonSecondary onClick={setEditResourcesToTrue}>
+            Edit Optional Peaks Description
+          </ButtonSecondary>
+        </div>
+      );
+    }
+
+    selectedMountains = null;
+    selectedStatesLi = null;
 
     const sortedSelectedStates = peakList.states ? sortBy(peakList.states, ['name']) : [];
     selectedStatesLi = sortedSelectedStates.map(state => <li key={state.id}>{state.name}</li>);
+
+    const currentMountainList = mountainReqLevel === MountainReqLevel.required
+      ? data.peakList.mountains : data.peakList.optionalMountains;
 
     const sortedMountains = sortBy(data.mountains, ['name']);
     const mountainList = sortedMountains.map(mountain => {
@@ -435,7 +709,9 @@ const EditPeakList = (props: Props) => {
 
         const addItemAndState = (itemId: string) => {
           const { state } = mountain;
-          addItemToPeakList({ variables: {listId: peakListId, itemId}});
+          const addItem = mountainReqLevel === MountainReqLevel.optional
+            ? addOptionalMountainToPeakList : addItemToPeakList;
+          addItem({ variables: {listId: peakListId, itemId}});
           if (state && state.id) {
             if (peakList.states && peakList.states.find(st => st.id === state.id) === undefined) {
               addStateToPeakList({ variables: {listId: peakListId, stateId: state.id}});
@@ -444,9 +720,15 @@ const EditPeakList = (props: Props) => {
         };
         const removeItemAndState = (itemId: string) => {
           const { state } = mountain;
-          removeItemFromPeakList({ variables: {listId: peakListId, itemId}});
-          const newSelectedMountains = peakList.mountains.filter(mtn => mtn.id !== itemId);
-          const stateExists = newSelectedMountains.find(mtn => {
+          const removeItem = mountainReqLevel === MountainReqLevel.optional
+            ? removeOptionalMountainFromPeakList : removeItemFromPeakList;
+          removeItem({ variables: {listId: peakListId, itemId}});
+          const targetList = mountainReqLevel === MountainReqLevel.optional
+            ? peakList.optionalMountains : peakList.mountains;
+          const otherList = mountainReqLevel === MountainReqLevel.required
+            ? peakList.optionalMountains : peakList.mountains;
+          const newSelectedMountains = targetList.filter(mtn => mtn.id !== itemId);
+          const stateExists = [...newSelectedMountains, ...otherList].find(mtn => {
             if (mtn && mtn.state && mtn.state.id && state && state.id) {
               return mtn.state.id === state.id;
             } else {
@@ -460,11 +742,11 @@ const EditPeakList = (props: Props) => {
 
         return (
           <Checkbox
-            key={mountain.id}
+            key={mountain.id + mountainReqLevel}
             id={mountain.id}
             name={mountain.name + ' ' + mountain.state.abbreviation + ' ' + mountain.elevation}
             defaultChecked={
-              (data.peakList.mountains.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
+              (currentMountainList.filter(peakListMountain => peakListMountain.id === mountain.id).length > 0)
             }
             removeItemFromPeakList={removeItemAndState}
             addItemToPeakList={addItemAndState}
@@ -475,7 +757,7 @@ const EditPeakList = (props: Props) => {
       }
     });
     mountains = <>{mountainList}</>;
-    const sortedSelectedMountains = sortBy(data.peakList.mountains, ['name']);
+    const sortedSelectedMountains = sortBy(currentMountainList, ['name']);
     selectedMountains = sortedSelectedMountains.map(
       mountain => <li key={'selected-' + mountain.id}>{mountain.name}</li>);
     const updateType = (value: string) => {
@@ -534,6 +816,9 @@ const EditPeakList = (props: Props) => {
   } else {
     name = null;
     shortName = null;
+    description = null;
+    optionalPeaksDescription = null;
+    resources = null;
     selectedMountains = null;
     selectedStatesLi = null;
     mountains = null;
@@ -549,8 +834,29 @@ const EditPeakList = (props: Props) => {
     <EditPanel onCancel={cancel}>
         {name}
         {shortName}
+        {description}
+        {optionalPeaksDescription}
+        {resources}
         {type}
         {parent}
+        <SubNav>
+          <NavButtonLink
+            onClick={() => setMountainReqLevel(MountainReqLevel.required)}
+            style={{
+              fontWeight: mountainReqLevel === MountainReqLevel.required ? 600 : 400,
+            }}
+          >
+            Required Peaks
+          </NavButtonLink>
+          <NavButtonLink
+            onClick={() => setMountainReqLevel(MountainReqLevel.optional)}
+            style={{
+              fontWeight: mountainReqLevel === MountainReqLevel.optional ? 600 : 400,
+            }}
+          >
+            Optional Peaks
+          </NavButtonLink>
+        </SubNav>
         <SelectionPanel>
           <CheckboxContainer>
             <StandardSearch

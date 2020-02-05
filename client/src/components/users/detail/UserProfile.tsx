@@ -31,51 +31,19 @@ const GET_USER = gql`
       profilePictureUrl
       hideEmail
       hideProfilePicture
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-
       peakLists {
         id
         name
         shortName
         type
-        mountains {
-          id
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
-        }
         parent {
           id
-          mountains {
-            id
-            state {
-              id
-              name
-              regions {
-                id
-                name
-                states {
-                  id
-                }
-              }
-            }
-          }
         }
+        numMountains
+        numCompletedAscents(userId: $profileId)
+        latestAscent(userId: $profileId)
+        isActive(userId: $profileId)
       }
-
     }
     me: user(id: $userId) {
       id
@@ -97,7 +65,6 @@ export interface UserDatum {
   hideEmail: User['hideEmail'];
   hideProfilePicture: User['hideProfilePicture'];
   profilePictureUrl: User['profilePictureUrl'];
-  mountains: User['mountains'];
   peakLists: CardPeakListDatum[];
 }
 
@@ -154,7 +121,6 @@ const UserProfile = (props: Props) => {
       } else {
         const { peakLists } = user;
         const userListData = peakLists.map(peak => peak.id);
-        const completedAscents = user.mountains !== null ? user.mountains : [];
         const friendsList = me.friends;
         let friendStatus: FriendStatus | null;
         if (friendsList !== null && friendsList.length !== 0) {
@@ -194,7 +160,6 @@ const UserProfile = (props: Props) => {
                 userListData={userListData}
                 listAction={compareAscents}
                 actionText={getFluentString('user-profile-compare-ascents')}
-                completedAscents={completedAscents}
                 profileId={user.id}
                 noResultsText={noResultsText}
                 showTrophies={true}

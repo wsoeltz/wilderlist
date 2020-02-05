@@ -141,7 +141,7 @@ const RootQuery = new GraphQLObjectType({
     },
     peakList: {
       type: PeakListType,
-      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { id: { type: GraphQLID } },
       resolve(parnetValue, { id }) {
         return PeakList.findById(id);
       },
@@ -240,6 +240,18 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(MountainType),
       resolve() {
         return Mountain.find({ status: { $eq: CreatedItemStatus.pending } });
+      },
+    },
+    flaggedPeakLists: {
+      type: new GraphQLList(PeakListType),
+      resolve() {
+        return PeakList.find({ flag: { $ne: null } });
+      },
+    },
+    pendingPeakLists: {
+      type: new GraphQLList(PeakListType),
+      resolve() {
+        return PeakList.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
   }),

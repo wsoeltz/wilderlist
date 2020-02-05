@@ -23,6 +23,9 @@ const GET_PEAK_LIST = gql`
       name
       shortName
       type
+      parent {
+        id
+      }
       states {
         id
         name
@@ -41,27 +44,6 @@ const GET_PEAK_LIST = gql`
         longitude
         elevation
       }
-      parent {
-        id
-        states {
-          id
-          name
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
-        }
-        mountains {
-          id
-          name
-          latitude
-          longitude
-          elevation
-        }
-      }
     }
     user(id: $friendId) {
       id
@@ -71,12 +53,6 @@ const GET_PEAK_LIST = gql`
         type
         mountains {
           id
-        }
-        parent {
-          id
-          mountains {
-            id
-          }
         }
       }
       mountains {
@@ -94,12 +70,6 @@ const GET_PEAK_LIST = gql`
         type
         mountains {
           id
-        }
-        parent {
-          id
-          mountains {
-            id
-          }
         }
       }
       mountains {
@@ -121,12 +91,6 @@ export interface UserDatum {
     mountains: Array<{
       id: Mountain['id'];
     }>;
-    parent: {
-      id: PeakList['id'];
-      mountains: Array<{
-        id: Mountain['id'];
-      }>;
-    }
   }>;
   mountains: User['mountains'];
 }
@@ -176,23 +140,10 @@ const ComparePeakListPage = (props: Props) => {
         </PlaceholderText>
       );
     } else {
-      const {parent} = peakList;
-      let mountains: MountainDatum[];
-      if (parent !== null && parent.mountains !== null) {
-        mountains = parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
+      const mountains: MountainDatum[] = peakList.mountains !== null ? peakList.mountains : [];
       const userCompletedAscents = user.mountains !== null ? user.mountains : [];
       const myCompletedAscents = me.mountains !== null ? me.mountains : [];
-      let statesArray: StateDatum[] = [];
-      if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
-        statesArray = [...peakList.parent.states];
-      } else if (peakList.states && peakList.states.length) {
-        statesArray = [...peakList.states];
-      }
+      const statesArray: StateDatum[] = peakList.states && peakList.states.length ? [...peakList.states] : [];
 
       return (
         <>
@@ -209,7 +160,6 @@ const ComparePeakListPage = (props: Props) => {
             user={user}
             me={me}
             mountains={mountains}
-            peakListId={peakList.id}
           />
         </>
       );

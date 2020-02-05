@@ -82,7 +82,7 @@ interface Props {
 
 const Modal = (props: Props) => {
   const {
-    children, onClose, width, height, actions,
+    children, onClose, width, height,
   } = props;
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
   const [isModalRendered, setIsModalRendered] = useState<boolean>(false);
@@ -94,6 +94,12 @@ const Modal = (props: Props) => {
     }
   }, []);
 
+  const actions = props.actions === null ? null : (
+    <Actions>
+      {props.actions}
+    </Actions>
+  );
+
   let modal: React.ReactElement<any> | null;
   if (isModalRendered === true && overlayPortalContainerNodeRef.current !== null) {
     modal = createPortal((
@@ -103,9 +109,7 @@ const Modal = (props: Props) => {
           <Content>
             {children}
           </Content>
-          <Actions>
-            {actions}
-          </Actions>
+          {actions}
         </Container>
       </Root>
     ), overlayPortalContainerNodeRef.current);

@@ -3,6 +3,7 @@ import sortBy from 'lodash/sortBy';
 import React, {
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import ReactMapboxGl, {
@@ -19,15 +20,12 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
-  ButtonPrimary,
   lightBorderColor,
   linkStyles,
   placeholderColor,
   semiBoldFontBoldWeight,
-  tertiaryColor,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   VariableDate,
@@ -38,6 +36,8 @@ import {
 } from '../../peakLists/Utils';
 import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
+import ColorScale from './ColorScale';
+import {legendColorScheme} from './colorScaleColors';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -84,106 +84,12 @@ const GridNumbers = styled.div`
   letter-spacing: -1px;
 `;
 
-const ColorScaleLegend = styled.div`
-  padding: 0.6rem 0;
-  border-top: 1px solid ${lightBorderColor};
-  background-color: ${tertiaryColor};
-  display: flex;
-  justify-content: center;
-`;
-const LegendItem = styled.div`
-  margin: 0 0.3rem;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const Circle = styled.div`
-  width: 15px;
-  height: 15px;
-  border-radius: 4000px;
-  margin-bottom: 0.2rem;
-`;
-
-const startColor = '#dc4900';
-const endColor = '#145500';
-
-const twoColorScale: [string, string] = [
-  startColor,
-  endColor,
-];
-const fiveColorScale: [string, string, string, string, string] = [
-  startColor,
-  '#cb9e00',
-  '#99b900',
-  '#4a8900',
-  endColor,
-];
-const thirteenColorScale:
-  [string, string, string, string, string, string, string, string, string, string, string, string, string] = [
-  startColor,
-  '#d37700',
-  '#ce9200',
-  '#cb9e00',
-  '#c8aa00',
-  '#c5b500',
-  '#b5bf00',
-  '#99b900',
-  '#8ab100',
-  '#7ca900',
-  '#629900',
-  '#4a8900',
-  endColor,
-];
-
-const GridLegendLabel = styled(LegendItem)`
-  white-space: nowrap;
-  width: 15px;
-`;
-
-const GridLabelStart = styled(GridLegendLabel)`
-  align-items: flex-start;
-  color: ${startColor};
-`;
-const GridLabelEnd = styled(GridLegendLabel)`
-  align-items: flex-end;
-  color: ${endColor};
-`;
-
-const SeasonLabelStart = styled(LegendItem)`
-  color: ${startColor};
-  justify-content: center;
-`;
-const SeasonLabelEnd = styled(LegendItem)`
-  color: ${endColor};
-  justify-content: center;
-`;
 const AddAscentButton = styled.button`
   ${linkStyles}
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.6rem;
   background-color: transparent;
-`;
-
-const CenterCoordinatesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-right: auto;
-  margin-left: 1rem;
-`;
-
-const CenterCoordinatesTitle = styled.div`
-  font-size: 0.9rem;
-  font-weight: 600;
-`;
-
-const CenterCoordinatesSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  text-transform: uppercase;
-  font-size: 0.8rem;
 `;
 
 const Crosshair = styled.div`
@@ -217,13 +123,14 @@ const Crosshair = styled.div`
   }
 `;
 
-const ActionButton = styled(ButtonPrimary)`
-  margin-top: 0.5rem;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.3rem;
-`;
+// const ColorScaleContainer = styled.div`
+//   width: 100%;
+// `;
 
 const getMinMax = (coordinates: Coordinate[]) => {
+  if (coordinates.length === 0) {
+    return { minLat: 22, maxLat: 54, minLong: -129, maxLong: -64 };
+  }
   const sortedByLat = sortBy(coordinates, ['latitude']);
   const sortedByLong = sortBy(coordinates, ['longitude']);
 
@@ -243,25 +150,28 @@ interface Coordinate {
   elevation: number;
 }
 
-export type CoordinateWithDates = Coordinate & {completionDates: VariableDate | null};
+export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
 
 interface Props {
   id: string;
   userId: string | null;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
-  peakListType: PeakListVariants;
   isOtherUser?: boolean;
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
+  colorScaleColors: string[];
+  colorScaleLabels: string[];
+  fillSpace?: boolean;
 }
 
 const Map = (props: Props) => {
   const {
-    id, coordinates, highlighted, peakListType,
+    id, coordinates, highlighted,
     userId, isOtherUser, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
+    colorScaleColors, colorScaleLabels, fillSpace,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -275,7 +185,7 @@ const Map = (props: Props) => {
   } else if (coordinates.length) {
     initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
   } else {
-    initialCenter = [-73.5346381, 43.216461];
+    initialCenter = [-71.52769471, 43.20415146];
   }
 
   const [popupInfo, setPopupInfo] = useState<CoordinateWithDates | null>(null);
@@ -287,6 +197,15 @@ const Map = (props: Props) => {
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
+
+  const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
+
+  const colorScaleRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (colorScaleRef && colorScaleRef.current) {
+      setColorScaleHeight(colorScaleRef.current.offsetHeight);
+    }
+  }, [colorScaleRef, setColorScaleHeight]);
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
@@ -307,9 +226,14 @@ const Map = (props: Props) => {
         map.dragPan.disable();
       }
     };
-    document.body.addEventListener('keydown', enableZoom);
-    document.body.addEventListener('keyup', disableZoom);
-    document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
+
+    if (map && fillSpace === true) {
+      map.scrollZoom.enable();
+    } else {
+      document.body.addEventListener('keydown', enableZoom);
+      document.body.addEventListener('keyup', disableZoom);
+      document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
+    }
 
     const getCenterCoords = () => {
       if (map) {
@@ -329,7 +253,7 @@ const Map = (props: Props) => {
         map.off('move', getCenterCoords);
       }
     };
-  }, [map, showCenterCrosshairs]);
+  }, [map, showCenterCrosshairs, fillSpace]);
 
   useEffect(() => {
     if (!createOrEditMountain) {
@@ -359,17 +283,19 @@ const Map = (props: Props) => {
       setCenter([point.longitude, point.latitude]);
     };
     let circleColor: string;
-    if (completionDates === null) {
+    if (colorScaleColors.length === 0) {
+      circleColor = legendColorScheme.primary;
+    } else if (completionDates === null || completionDates === undefined) {
       if (createOrEditMountain === true && highlighted && highlighted.length &&
         (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
-        circleColor = twoColorScale[1];
+        circleColor = colorScaleColors[1];
       } else {
-        circleColor = twoColorScale[0];
+        circleColor = colorScaleColors[0];
       }
     } else if (completionDates.type === PeakListVariants.standard) {
-      circleColor = completionDates.standard !== undefined ? twoColorScale[1] : twoColorScale[0];
+      circleColor = completionDates.standard !== undefined ? colorScaleColors[1] : colorScaleColors[0];
     } else if (completionDates.type === PeakListVariants.winter) {
-      circleColor = completionDates.winter !== undefined ? twoColorScale[1] : twoColorScale[0];
+      circleColor = completionDates.winter !== undefined ? colorScaleColors[1] : colorScaleColors[0];
     } else if (completionDates.type === PeakListVariants.fourSeason) {
       let completionCount: number = 0;
       Object.keys(completionDates).forEach(function(season: keyof VariableDate) {
@@ -377,7 +303,7 @@ const Map = (props: Props) => {
           completionCount += 1;
         }
       });
-      circleColor = fiveColorScale[completionCount];
+      circleColor = colorScaleColors[completionCount];
     } else if (completionDates.type === PeakListVariants.grid) {
       let completionCount: number = 0;
       Object.keys(completionDates).forEach(function(month: keyof VariableDate) {
@@ -385,9 +311,9 @@ const Map = (props: Props) => {
           completionCount += 1;
         }
       });
-      circleColor = thirteenColorScale[completionCount];
+      circleColor = colorScaleColors[completionCount];
     } else {
-      circleColor = twoColorScale[1];
+      circleColor = colorScaleColors[1];
     }
     return (
       <Feature
@@ -403,7 +329,7 @@ const Map = (props: Props) => {
     );
   });
 
-  const renderCompletionDates = (dates: VariableDate | null) => {
+  const renderCompletionDates = (dates: VariableDate | null | undefined) => {
     if (dates) {
       if (dates.type === PeakListVariants.standard) {
         if (dates.standard !== undefined) {
@@ -527,6 +453,7 @@ const Map = (props: Props) => {
   const popup = !popupInfo ? <></> : (
     <Popup
       coordinates={[popupInfo.longitude, popupInfo.latitude]}
+      style={{opacity: 0.85}}
     >
       <StyledPopup>
         {getMountainPopupName(popupInfo.id, popupInfo.name)}
@@ -539,103 +466,6 @@ const Map = (props: Props) => {
     </Popup>
   );
 
-  let colorScaleLegend: React.ReactElement<any> | null;
-  if (createOrEditMountain === true) {
-    let latLongLegend: React.ReactElement<any> | null;
-    if (showCenterCrosshairs === true) {
-      const returnLatLongButton = returnLatLongOnClick === undefined ? null : (
-        <ActionButton onClick={() => returnLatLongOnClick(...centerCoords)}>
-          {getFluentString('map-set-lat-long-value')}
-        </ActionButton>
-      );
-      latLongLegend = (
-        <CenterCoordinatesContainer>
-          <CenterCoordinatesTitle>{getFluentString('map-coordinates-at-center')}</CenterCoordinatesTitle>
-          <CenterCoordinatesSection>
-            <span>{getFluentString('global-text-value-latitude')}: {centerCoords[0]}</span>
-            <span>{getFluentString('global-text-value-longitude')}: {centerCoords[1]}</span>
-            {returnLatLongButton}
-          </CenterCoordinatesSection>
-        </CenterCoordinatesContainer>
-      );
-    } else {
-      latLongLegend = null;
-    }
-    colorScaleLegend = (
-      <ColorScaleLegend>
-        {latLongLegend}
-        <LegendItem>
-          <Circle style={{backgroundColor: twoColorScale[0]}} />
-          {getFluentString('create-mountain-map-nearby-mountains')}
-        </LegendItem>
-        <LegendItem>
-          <Circle style={{backgroundColor: twoColorScale[1]}} />
-          {getFluentString('create-mountain-map-your-mountain')}
-        </LegendItem>
-      </ColorScaleLegend>
-    );
-  } else if (peakListType === PeakListVariants.standard || peakListType === PeakListVariants.winter) {
-    colorScaleLegend = (
-      <ColorScaleLegend>
-        <LegendItem>
-          <Circle style={{backgroundColor: twoColorScale[0]}} />
-          {getFluentString('global-text-value-not-done')}
-        </LegendItem>
-        <LegendItem>
-          <Circle style={{backgroundColor: twoColorScale[1]}} />
-          {getFluentString('global-text-value-done')}
-        </LegendItem>
-      </ColorScaleLegend>
-    );
-  } else if (peakListType === PeakListVariants.fourSeason) {
-    const seasonCircles = fiveColorScale.map((c) => {
-      return (
-        <LegendItem key={c}>
-          <Circle style={{backgroundColor: c}} />
-        </LegendItem>
-      );
-    });
-    colorScaleLegend = (
-      <ColorScaleLegend>
-        <SeasonLabelStart>
-          {getFluentString('map-no-seasons')}
-        </SeasonLabelStart>
-        {seasonCircles}
-        <SeasonLabelEnd>
-          {getFluentString('map-all-seasons')}
-        </SeasonLabelEnd>
-      </ColorScaleLegend>
-    );
-  } else if (peakListType === PeakListVariants.grid) {
-    const monthCircles = thirteenColorScale.map((c, i) => {
-      if (i === 0 || i === 12) {
-        return null;
-      } else {
-        return (
-          <LegendItem key={c}>
-            <Circle style={{backgroundColor: c}} />
-          </LegendItem>
-        );
-      }
-    });
-    colorScaleLegend = (
-      <ColorScaleLegend>
-        <GridLabelStart>
-          <Circle style={{backgroundColor: thirteenColorScale[0]}} />
-          {getFluentString('map-no-months')}
-        </GridLabelStart>
-        {monthCircles}
-        <GridLabelEnd>
-          <Circle style={{backgroundColor: thirteenColorScale[12]}} />
-          {getFluentString('map-all-months')}
-        </GridLabelEnd>
-      </ColorScaleLegend>
-    );
-  } else {
-    failIfValidOrNonExhaustive(peakListType, 'invalid value for ' + peakListType);
-    colorScaleLegend = null;
-  }
-
   const mapRenderProps = (mapEl: any) => {
     setMap(mapEl);
     return null;
@@ -645,13 +475,17 @@ const Map = (props: Props) => {
 
   return (
     <Root
-      style={{pointerEvents: !map ? 'none' : undefined}}
+      style={{
+        height: fillSpace === true ? '100%' : undefined,
+        margin: fillSpace === true ? '0' : undefined,
+        pointerEvents: !map ? 'none' : undefined,
+      }}
     >
       <Mapbox
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
         containerStyle={{
-          height: '500px',
+          height: fillSpace === true ? `calc(100% - ${colorScaleHeight}px)` : '500px',
           width: '100%',
         }}
         center={center}
@@ -659,6 +493,7 @@ const Map = (props: Props) => {
         fitBounds={fitBounds}
         fitBoundsOptions={{padding: 50, linear: true}}
         movingMethod={'flyTo'}
+        key={`mapkey-${colorScaleHeight}`}
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
@@ -682,7 +517,14 @@ const Map = (props: Props) => {
         {crosshairs}
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
-      {colorScaleLegend}
+      <ColorScale
+        centerCoords={centerCoords}
+        showCenterCrosshairs={showCenterCrosshairs}
+        returnLatLongOnClick={returnLatLongOnClick}
+        colorScaleColors={colorScaleColors}
+        colorScaleLabels={colorScaleLabels}
+        ref={colorScaleRef}
+      />
       {editMountainModal}
     </Root>
   );

@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
@@ -19,23 +18,12 @@ import {
 } from '../../../styling/styleUtils';
 import { getColorSetFromVariant } from '../../../styling/styleUtils';
 import {
-  CompletedMountain,
-  Mountain,
-  PeakListVariants,
- } from '../../../types/graphQLTypes';
-import {
-  failIfValidOrNonExhaustive,
   roundPercentToSingleDecimal,
 } from '../../../Utils';
 import { getType } from '../Utils';
-import { completedPeaks } from '../Utils';
 import { CompactPeakListDatum } from './ListPeakLists';
 import {
-  GET_STATES_AND_REGIONS,
   getStatesOrRegion,
-  StateDatum,
-  SuccessResponse,
-  Variables,
 } from './PeakListCard';
 
 const Card = styled(CardBase)`
@@ -53,13 +41,15 @@ interface Props {
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
-  completedAscents: CompletedMountain[];
+  totalRequiredAscents: number;
+  numCompletedAscents: number;
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, parent},
-    active, listAction, actionText, completedAscents,
+    peakList: {id, name, shortName, type, states},
+    active, listAction, actionText, totalRequiredAscents,
+    numCompletedAscents,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -72,63 +62,23 @@ const PeakListCard = (props: Props) => {
     }
   };
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, {
-    variables: {id: parent ? parent.id : id} });
+  const statesArray = states ? states : [];
 
-  if (error) {
-    console.error(error);
-  }
-
-  let statesArray: StateDatum[] = [];
   let cornerContent: React.ReactElement<any> | null;
-  if (loading === false && data !== undefined && data.peakList) {
-    const { peakList } = data;
-    if (peakList.parent && peakList.parent.states && peakList.parent.states.length) {
-      statesArray = [...peakList.parent.states];
-    } else if (peakList.states && peakList.states.length) {
-      statesArray = [...peakList.states];
-    }
-
-    if (active === true) {
-      let mountains: Array<{id: Mountain['id']}>;
-      if (peakList.parent !== null && peakList.parent.mountains !== null) {
-        mountains = peakList.parent.mountains;
-      } else if (peakList.mountains !== null) {
-        mountains = peakList.mountains;
-      } else {
-        mountains = [];
-      }
-
-      const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
-      let totalRequiredAscents: number;
-      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        totalRequiredAscents = mountains.length;
-      } else if (type === PeakListVariants.fourSeason) {
-        totalRequiredAscents = mountains.length * 4;
-      } else if (type === PeakListVariants.grid) {
-        totalRequiredAscents = mountains.length * 12;
-      } else {
-        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
-        totalRequiredAscents = 0;
-      }
-
-      const percent = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
-      const percentComplete = isNaN(percent) ? 0 : percent;
-
-      cornerContent = (
-        <SubtleText>
-          {percentComplete}% {getFluentString('global-text-value-complete')}
-        </SubtleText>
-      );
-    } else if (listAction !== null) {
-      cornerContent = (
-        <ButtonPrimary onClick={actionButtonOnClick}>
-          {actionText}
-        </ButtonPrimary>
-      );
-    } else {
-      cornerContent = null;
-    }
+  if (active === true) {
+    const percent = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
+    const percentComplete = isNaN(percent) ? 0 : percent;
+    cornerContent = (
+      <SubtleText>
+        {percentComplete}% {getFluentString('global-text-value-complete')}
+      </SubtleText>
+    );
+  } else if (listAction !== null) {
+    cornerContent = (
+      <ButtonPrimary onClick={actionButtonOnClick}>
+        {actionText}
+      </ButtonPrimary>
+    );
   } else {
     cornerContent = null;
   }

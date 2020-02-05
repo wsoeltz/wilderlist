@@ -263,10 +263,15 @@ interface Props {
   peakListId: string;
   peakListShortName: string;
   isOtherUser?: boolean;
+  showImportExport: boolean;
+  queryRefetchArray?: Array<{query: any, variables: any}>;
 }
 
 const MountainTable = (props: Props) => {
-  const { mountains, user, type, peakListId, peakListShortName, isOtherUser } = props;
+  const {
+    mountains, user, type, peakListId, peakListShortName, isOtherUser,
+    showImportExport, queryRefetchArray,
+  } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -347,6 +352,7 @@ const MountainTable = (props: Props) => {
             textNote={textNote}
             mountainName={mountainToEdit.name}
             variant={type}
+            queryRefetchArray={queryRefetchArray}
           />
         );
       } else if (type === PeakListVariants.winter) {
@@ -361,6 +367,7 @@ const MountainTable = (props: Props) => {
             textNote={textNote}
             mountainName={mountainToEdit.name}
             variant={type}
+            queryRefetchArray={queryRefetchArray}
           />
         );
       } else if (type === PeakListVariants.fourSeason) {
@@ -377,6 +384,7 @@ const MountainTable = (props: Props) => {
             mountainName={mountainToEdit.name}
             variant={type}
             season={season}
+            queryRefetchArray={queryRefetchArray}
           />
         );
       } else if (type === PeakListVariants.grid) {
@@ -393,6 +401,7 @@ const MountainTable = (props: Props) => {
             mountainName={mountainToEdit.name}
             variant={type}
             month={month}
+            queryRefetchArray={queryRefetchArray}
           />
         );
       } else {
@@ -892,17 +901,21 @@ const MountainTable = (props: Props) => {
     setSearchQuery(value);
   };
 
+  const importExportButtons = showImportExport === true ? (
+    <ImportExportAscentsButtonContainer>
+      {importButton}
+      <ExportButton
+        onClick={() => setIsExportModalOpen(true)}
+      >
+        {getFluentString('mountain-table-export-button')}
+      </ExportButton>
+    </ImportExportAscentsButtonContainer>
+  ) : null;
+
   return (
     <>
       {gridNote}
-      <ImportExportAscentsButtonContainer>
-        {importButton}
-        <ExportButton
-          onClick={() => setIsExportModalOpen(true)}
-        >
-          {getFluentString('mountain-table-export-button')}
-        </ExportButton>
-      </ImportExportAscentsButtonContainer>
+      {importExportButtons}
       <FilterBar>
         <StandardSearch
           placeholder={getFluentString('peak-list-detail-filter-mountains')}

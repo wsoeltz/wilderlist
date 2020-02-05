@@ -39,6 +39,7 @@ export interface Mountain {
   elevation: number;
   prominence: number | null;
   lists: Array<PeakList | null>;
+  optionalLists: null | Array<PeakList | null>;
   author: User | null;
   status: CreatedItemStatus | null;
   flag: MountainFlag | null;
@@ -52,18 +53,51 @@ export enum PeakListVariants {
   grid = 'grid',
 }
 
+export interface ExternalResource {
+  title: string;
+  url: string;
+}
+
+export enum PeakListFlag {
+  duplicate = 'duplicate',
+  data = 'data',
+  abuse = 'abuse',
+  other = 'other',
+  deleteRequest = 'deleteRequest',
+}
+
+export enum PeakListTier {
+  casual = 'casual',
+  advanced = 'advanced',
+  expert = 'expert',
+  mountaineer = 'mountaineer',
+}
+
 export interface PeakList {
+  _id: string;
   id: string;
   name: string;
   shortName: string;
+  description: string | null;
+  optionalPeaksDescription: string | null;
   type: PeakListVariants;
   parent: PeakList | null;
   mountains: Array<Mountain | null>;
+  optionalMountains: null | Array<Mountain | null>;
   users: Array<User | null>;
   numUsers: number;
   searchString: string;
   states: Array<State | null> | null;
   children: Array<PeakList | null> | null;
+  resources: ExternalResource[] | null;
+  author: User | null;
+  status: CreatedItemStatus | null;
+  flag: PeakListFlag | null;
+  tier: PeakListTier | null;
+  numMountains: number;
+  numCompletedAscents: number;
+  latestAscent: string | null;
+  isActive: boolean | null;
 }
 
 export enum PermissionTypes {
@@ -128,6 +162,8 @@ export interface User {
   mountainNotes: Array<MountainNote | null> | null;
   mountainNote: MountainNote | null;
   mountainPermissions: number | null;
+  peakListPermissions: number | null;
+  latestAscent: CompletedMountain | null;
 }
 
 export interface Conditions {

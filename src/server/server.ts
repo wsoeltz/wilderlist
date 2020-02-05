@@ -72,14 +72,16 @@ mongoose.connection
     .on('error', error => console.log('Error connecting to MongoLab:', error));
 
 const graphiql = process.env.NODE_ENV === 'development' ? true : false;
+const dataloaders = buildDataloaders();
 app.use(bodyParser.json());
-app.use('/graphql', requireLogin, expressGraphQL({
+app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
   schema,
   graphiql,
   context: {
-    dataloaders: buildDataloaders(),
+    dataloaders,
+    user: req.user,
   },
-}));
+})));
 ///// End MongoDb Connection Setup
 
 // Send invites to ascent added emails

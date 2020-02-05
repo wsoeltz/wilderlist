@@ -5,7 +5,6 @@ import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -19,9 +18,11 @@ import {
 } from '../../../styling/Grid';
 import {
   FloatingButton,
+  FloatingButtonContainer,
   Next,
   PaginationContainer,
   PlaceholderText,
+  PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
@@ -36,15 +37,6 @@ import MountainDetail from '../detail/MountainDetail';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, { MountainDatum } from './ListMountains';
 import LocationFilter from './LocationFilter';
-
-const PlusIcon = styled.span`
-  font-size: 1.3rem;
-  height: 0;
-  display: inline-block;
-  line-height: 0;
-  position: relative;
-  top: 2px;
-`;
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
@@ -209,9 +201,11 @@ const MountainSearchPage = (props: Props) => {
     : ( <MountainDetail userId={userId} id={id} />);
 
   const addMountainButton = userId && mountainPermissions !== -1 ? (
-    <FloatingButton to={Routes.CreateMountain}>
-      <PlusIcon>+</PlusIcon> {getFluentString('create-mountain-title-create')}
-    </FloatingButton>
+    <FloatingButtonContainer>
+      <FloatingButton to={Routes.CreateMountain}>
+        <PlusIcon>+</PlusIcon> {getFluentString('create-mountain-title-create')}
+      </FloatingButton>
+    </FloatingButtonContainer>
   ) : null;
 
   return (

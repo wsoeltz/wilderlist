@@ -3,67 +3,39 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
+import { createPortal } from 'react-dom';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
-  ButtonPrimary,
-  ButtonWarning,
   CheckboxInput,
-  CheckboxLabel as CheckboxLabelBase,
   CheckboxRoot,
   GhostButton,
   InputBase,
   Label,
+  LabelContainer,
   SelectBox,
 } from '../../../styling/styleUtils';
 import {
   Mountain,
   MountainFlag,
-  PeakListVariants,
   State,
 } from '../../../types/graphQLTypes';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
+import {
+  ButtonWrapper,
+  CheckboxLabel,
+  DeleteButton,
+  FullColumn,
+  Root,
+  SaveButton,
+  Title,
+} from '../../sharedComponents/formUtils';
 import Map, {CoordinateWithDates} from '../../sharedComponents/map';
+import { legendColorScheme } from '../../sharedComponents/map/colorScaleColors';
 import { BaseMountainVariables } from './';
-
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
-`;
-
-const Title = styled.h1`
-  margin-top: 0;
-`;
-
-const FullColumn = styled.div`
-  grid-column: span 2;
-`;
-
-const CheckboxLabel = styled(CheckboxLabelBase)`
-  margin-bottom: 1rem;
-  font-size: 0.8rem;
-  line-height: 1.6;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const SaveButton = styled(ButtonPrimary)`
-  min-width: 100px;
-  margin-left: 1rem;
-`;
-
-const DeleteButton = styled(ButtonWarning)`
-  margin-right: auto;
-`;
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
@@ -121,17 +93,19 @@ export interface FlagVariables {
   flag: MountainFlag | null;
 }
 
-const longLatMin = -90;
-const longLatMax = 90;
+const latitudeMin = -90;
+const latitudeMax = 90;
+const longitudeMin = -180;
+const longitudeMax = 180;
 const elevationMin = 0;
 const elevationMax = 29029; // Height of Everest
 
-const validateFloatValue = (value: string, min: number, max: number) => {
+const validateFloatValue = (value: string, min: number, max: number, defaultValue: number = 0) => {
   const parsedValue = parseFloat(value);
   if (isNaN(parsedValue)) {
-    return 0;
+    return defaultValue;
   } else if (parsedValue > max || parsedValue < min) {
-    return 0;
+    return defaultValue;
   } else {
     return parsedValue;
   }
@@ -153,14 +127,16 @@ export interface InitialMountainDatum {
   flag: MountainFlag | null;
 }
 
-interface Props extends RouteComponentProps {
+interface Props {
   states: StateDatum[];
   initialData: InitialMountainDatum;
   onSubmit: (input: BaseMountainVariables) => void;
+  mapContainer: HTMLDivElement | null;
+  onCancel: () => void;
 }
 
 const MountainForm = (props: Props) => {
-  const { states, initialData, onSubmit, history } = props;
+  const { states, initialData, onSubmit, mapContainer, onCancel } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -177,8 +153,8 @@ const MountainForm = (props: Props) => {
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const latitude: number = validateFloatValue(stringLat, longLatMin, longLatMax);
-  const longitude: number = validateFloatValue(stringLong, longLatMin, longLatMax);
+  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, 43.20415146);
+  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, -71.52769471);
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
@@ -229,8 +205,7 @@ const MountainForm = (props: Props) => {
 
   let nearbyMountains: CoordinateWithDates[];
   if (!loading && !error && data !== undefined && data.mountains) {
-    const filteredMountains = data.mountains.filter(mtn => mtn.id !== initialData.id);
-    nearbyMountains = filteredMountains.map(mtn => ({...mtn, completionDates: null }));
+    nearbyMountains = data.mountains.filter(mtn => mtn.id !== initialData.id);
   } else {
     nearbyMountains = [];
   }
@@ -240,7 +215,6 @@ const MountainForm = (props: Props) => {
     latitude, longitude,
     name: name ? name : `[${getFluentString('create-mountain-mountain-name-placeholder')}]`,
     elevation,
-    completionDates: null,
   };
 
   const setLatLongFromMap = (lat: string | number, long: string | number) => {
@@ -248,22 +222,55 @@ const MountainForm = (props: Props) => {
     setStringLong('' + long);
   };
 
-  const map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
-    && latitude <= 90 && latitude >= - 90 && longitude <= 90 && longitude >= - 90
-    ? (
-        <Map
-          id={''}
-          coordinates={[coordinate, ...nearbyMountains]}
-          highlighted={[coordinate]}
-          peakListType={PeakListVariants.standard}
-          userId={null}
-          isOtherUser={true}
-          createOrEditMountain={true}
-          showCenterCrosshairs={true}
-          returnLatLongOnClick={setLatLongFromMap}
-          key={'create-mountain-key'}
-        />
+  let map: React.ReactElement<any> | null;
+  if (mapContainer !== null) {
+    map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
+      && latitude <= latitudeMax && latitude >= latitudeMin && longitude <= longitudeMax && longitude >= longitudeMin
+      ? createPortal((
+          <FullColumn style={{height: '100%'}}>
+            <Map
+              id={''}
+              coordinates={[coordinate, ...nearbyMountains]}
+              highlighted={[coordinate]}
+              userId={null}
+              isOtherUser={true}
+              createOrEditMountain={true}
+              showCenterCrosshairs={true}
+              returnLatLongOnClick={setLatLongFromMap}
+              colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+              colorScaleLabels={[
+                getFluentString('create-mountain-map-nearby-mountains'),
+                getFluentString('create-mountain-map-your-mountain'),
+              ]}
+              fillSpace={true}
+              key={'create-mountain-key'}
+            />
+          </FullColumn>
+      ), mapContainer) : null;
+  } else {
+    map = !isNaN(latitude) && !isNaN(longitude) && !isNaN(elevation)
+      && latitude <= latitudeMax && latitude >= latitudeMin && longitude <= longitudeMax && longitude >= longitudeMin
+      ? (
+        <FullColumn>
+          <Map
+            id={''}
+            coordinates={[coordinate, ...nearbyMountains]}
+            highlighted={[coordinate]}
+            userId={null}
+            isOtherUser={true}
+            createOrEditMountain={true}
+            showCenterCrosshairs={true}
+            returnLatLongOnClick={setLatLongFromMap}
+            colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+            colorScaleLabels={[
+              getFluentString('create-mountain-map-nearby-mountains'),
+              getFluentString('create-mountain-map-your-mountain'),
+            ]}
+            key={'create-mountain-key'}
+          />
+        </FullColumn>
       ) : null;
+  }
 
   const sortedStates = sortBy(states, ['name']);
   const stateOptions = sortedStates.map(state => {
@@ -311,11 +318,11 @@ const MountainForm = (props: Props) => {
         <Title>{titleText}</Title>
       </FullColumn>
       <FullColumn>
-        <label htmlFor={'create-mountain-name'}>
+        <LabelContainer htmlFor={'create-mountain-name'}>
           <Label>
             {getFluentString('create-mountain-mountain-name-placeholder')}
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-name'}
           type={'text'}
@@ -323,14 +330,15 @@ const MountainForm = (props: Props) => {
           onChange={e => setName(e.target.value)}
           placeholder={getFluentString('create-mountain-mountain-name-placeholder')}
           autoComplete={'off'}
+          maxLength={1000}
         />
       </FullColumn>
       <div>
-        <label htmlFor={'create-mountain-select-a-state'}>
+        <LabelContainer htmlFor={'create-mountain-select-a-state'}>
           <Label>
             {getFluentString('global-text-value-state')}
           </Label>
-        </label>
+        </LabelContainer>
         <SelectBox
           id={'create-mountain-select-a-state'}
           value={`${selectedState || ''}`}
@@ -342,13 +350,13 @@ const MountainForm = (props: Props) => {
         </SelectBox>
       </div>
       <div>
-        <label htmlFor={'create-mountain-elevation'}>
+        <LabelContainer htmlFor={'create-mountain-elevation'}>
           <Label>
             {getFluentString('global-text-value-elevation')}
             {' '}
             <small>({getFluentString('global-text-value-feet')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-elevation'}
           type={'number'}
@@ -361,18 +369,18 @@ const MountainForm = (props: Props) => {
         />
       </div>
       <div>
-        <label htmlFor={'create-mountain-latitude'}>
+        <LabelContainer htmlFor={'create-mountain-latitude'}>
           <Label>
             {getFluentString('global-text-value-latitude')}
             {' '}
             <small>({getFluentString('create-mountain-latlong-note')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-latitude'}
           type={'number'}
-          max={longLatMax}
-          min={longLatMin}
+          min={latitudeMin}
+          max={latitudeMax}
           value={stringLat}
           onChange={e => setStringLat(e.target.value)}
           placeholder={getFluentString('create-mountain-latitude-placeholder')}
@@ -380,18 +388,18 @@ const MountainForm = (props: Props) => {
         />
       </div>
       <div>
-        <label htmlFor={'create-mountain-longitude'}>
+        <LabelContainer htmlFor={'create-mountain-longitude'}>
           <Label>
             {getFluentString('global-text-value-longitude')}
             {' '}
             <small>({getFluentString('create-mountain-latlong-note')})</small>
           </Label>
-        </label>
+        </LabelContainer>
         <InputBase
           id={'create-mountain-longitude'}
           type={'number'}
-          max={longLatMax}
-          min={longLatMin}
+          min={longitudeMin}
+          max={longitudeMax}
           value={stringLong}
           onChange={e => setStringLong(e.target.value)}
           placeholder={getFluentString('create-mountain-longitude-placeholder')}
@@ -402,18 +410,18 @@ const MountainForm = (props: Props) => {
         <CheckboxRoot>
           <CheckboxInput
             type='checkbox'
-            value={'verify-changes-are-accurate'}
-            id={`verify-changes-are-accurate`}
+            value={'create-mountain-verify-changes-are-accurate'}
+            id={`create-mountain-verify-changes-are-accurate`}
             checked={verifyChangesIsChecked}
             onChange={() => setVerifyChangesIsChecked(!verifyChangesIsChecked)}
           />
-          <CheckboxLabel htmlFor={`verify-changes-are-accurate`}>
+          <CheckboxLabel htmlFor={`create-mountain-verify-changes-are-accurate`}>
             {getFluentString('create-mountain-check-your-work')}
            </CheckboxLabel>
         </CheckboxRoot>
         <ButtonWrapper>
           {deleteButton}
-          <GhostButton onClick={history.goBack}>
+          <GhostButton onClick={onCancel}>
             {getFluentString('global-text-value-modal-cancel')}
           </GhostButton>
           <SaveButton
@@ -424,12 +432,10 @@ const MountainForm = (props: Props) => {
           </SaveButton>
         </ButtonWrapper>
       </FullColumn>
-      <FullColumn>
-        {map}
-      </FullColumn>
+      {map}
       {areYouSureModal}
     </Root>
   );
 };
 
-export default withRouter(MountainForm);
+export default MountainForm;
