@@ -44,7 +44,8 @@ import {
 } from '../../sharedComponents/formUtils';
 import Map from '../../sharedComponents/map';
 import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
-import { getStatesOrRegion, StateDatum } from '../list/PeakListCard';
+import { getStatesOrRegion } from '../list/PeakListCard';
+import { StateDatum } from '../list/ListPeakLists';
 import { isState } from '../Utils';
 import ParentModal, {PeakListDatum} from './ParentModal';
 

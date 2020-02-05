@@ -37,7 +37,7 @@ const GET_USER = gql`
         shortName
         type
         parent {
-        id
+          id
         }
         numMountains
         numCompletedAscents(userId: $profileId)
@@ -65,7 +65,6 @@ export interface UserDatum {
   hideEmail: User['hideEmail'];
   hideProfilePicture: User['hideProfilePicture'];
   profilePictureUrl: User['profilePictureUrl'];
-  mountains: User['mountains'];
   peakLists: CardPeakListDatum[];
 }
 
@@ -122,7 +121,6 @@ const UserProfile = (props: Props) => {
       } else {
         const { peakLists } = user;
         const userListData = peakLists.map(peak => peak.id);
-        const completedAscents = user.mountains !== null ? user.mountains : [];
         const friendsList = me.friends;
         let friendStatus: FriendStatus | null;
         if (friendsList !== null && friendsList.length !== 0) {
@@ -162,7 +160,6 @@ const UserProfile = (props: Props) => {
                 userListData={userListData}
                 listAction={compareAscents}
                 actionText={getFluentString('user-profile-compare-ascents')}
-                completedAscents={completedAscents}
                 profileId={user.id}
                 noResultsText={noResultsText}
                 showTrophies={true}

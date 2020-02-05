@@ -71,7 +71,6 @@ interface PeakListsSuccessResponse {
   user: {
     id: User['id'];
     peakLists: CardPeakListDatum[];
-    mountains: User['mountains'];
   };
 }
 
@@ -139,7 +138,7 @@ const Dashboard = (props: Props) => {
       </PlaceholderText>);
   } else if (listsData !== undefined) {
     const { user } = listsData;
-    const { peakLists, mountains } = user;
+    const { peakLists } = user;
     if (peakLists.length === 0) {
       peakListsList = (
         <PlaceholderText>
@@ -159,7 +158,6 @@ const Dashboard = (props: Props) => {
       );
     } else {
       const usersLists = peakLists.map(peakList => peakList.id);
-      const completedAscents = mountains !== null ? mountains : [];
       peakListsList = (
         <ListPeakLists
           viewMode={ViewMode.Card}
@@ -167,7 +165,6 @@ const Dashboard = (props: Props) => {
           userListData={usersLists}
           listAction={null}
           actionText={''}
-          completedAscents={completedAscents}
           profileId={undefined}
           noResultsText={''}
           showTrophies={true}

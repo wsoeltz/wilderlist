@@ -1,6 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
-import gql from 'graphql-tag';
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
@@ -20,71 +18,15 @@ import {
   ButtonPrimary,
   Card,
 } from '../../../styling/styleUtils';
-import {
-  PeakList,
-  Region,
-  State,
-  // User,
-} from '../../../types/graphQLTypes';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
-
-export const GET_STATES_AND_REGIONS = gql`
-  query getStatesAndRegions($id: ID!) {
-    peakList(id: $id) {
-      id
-      states {
-        id
-        name
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-      mountains {
-        id
-      }
-      parent {
-        id
-      }
-    }
-  }
-`;
-
-interface RegionDatum {
-  id: Region['id'];
-  name: Region['name'];
-  states: Array<{
-    id: State['id'],
-  } | null>;
-}
-
-export interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  regions: Array<RegionDatum | null>;
-}
-
-export interface SuccessResponse {
-  peakList: null | {
-    id: PeakList['id'];
-    states: null | StateDatum[];
-    mountains: null | Array<{
-      id: PeakList['id'];
-    }>
-    parent: null | {id: PeakList['id']}
-  };
-}
-
-export interface Variables {
-  id: string;
-}
+import {
+  StateDatum,
+  RegionDatum,
+} from './ListPeakLists';
 
 const LinkWrapper = styled(DynamicLink)`
   display: block;
@@ -231,7 +173,7 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, parent},
+    peakList: {id, name, shortName, type, parent, states},
     active, listAction, actionText, numCompletedAscents,
     totalRequiredAscents, profileId, dashboardView,
     latestDate,
@@ -239,12 +181,6 @@ const PeakListCard = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
-
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_STATES_AND_REGIONS, { variables: {id} });
-
-  if (error) {
-    console.error(error);
-  }
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -290,13 +226,7 @@ const PeakListCard = (props: Props) => {
       </>
     );
   } else {
-
-    let statesArray: StateDatum[];
-    if (loading === false && data !== undefined && data.peakList) {
-      statesArray = data.peakList.states && data.peakList.states.length ? [...data.peakList.states] : [];
-    } else {
-      statesArray = [];
-    }
+    const statesArray = states && states.length ? [...states] : [];
 
     listInfoContent = (
       <>
