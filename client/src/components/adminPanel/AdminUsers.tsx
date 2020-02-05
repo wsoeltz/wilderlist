@@ -38,6 +38,7 @@ export const GET_USERS = gql`
         }
       }
       mountainPermissions
+      peakListPermissions
       permissions
     }
   }
@@ -59,6 +60,7 @@ export interface UserDatum {
   friends: User['friends'];
   peakLists: User['peakLists'];
   mountainPermissions: User['mountainPermissions'];
+  peakListPermissions: User['peakListPermissions'];
   permissions: User['permissions'];
 }
 

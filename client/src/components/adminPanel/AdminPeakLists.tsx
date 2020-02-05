@@ -14,11 +14,13 @@ import { failIfValidOrNonExhaustive } from '../../Utils';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AddPeakList from './peakLists/AddPeakList';
 import EditPeakList from './peakLists/EditPeakList';
-import ListPeakLists from './peakLists/ListPeakLists';
+import ListPeakLists, {PermissionsSuccessResponse} from './peakLists/ListPeakLists';
+import {
+  NavButtonLink,
+  SubNav,
+} from './sharedStyles';
 
-export const GET_PEAK_LISTS = gql`
-  query ListPeakLists {
-    peakLists {
+const getPeakListsQuery = `
       id
       name
       shortName
@@ -33,6 +35,35 @@ export const GET_PEAK_LISTS = gql`
         id
         name
       }
+      status
+      flag
+      author {
+        id
+        email
+        peakListPermissions
+      }
+`;
+
+export const GET_PEAK_LISTS = gql`
+  query ListPeakLists {
+    peakLists {
+      ${getPeakListsQuery}
+    }
+  }
+`;
+
+const GET_FLAGGED_PEAK_LISTS = gql`
+  query ListFlaggedPeakLists {
+    peakLists: flaggedPeakLists {
+      ${getPeakListsQuery}
+    }
+  }
+`;
+
+const GET_PENDING_PEAK_LISTS = gql`
+  query ListPendingPeakLists {
+    peakLists: pendingPeakLists {
+      ${getPeakListsQuery}
     }
   }
 `;
@@ -127,6 +158,9 @@ export interface PeakListDatum {
     id: State['id'];
     name: State['name'];
   }>;
+  status: PeakList['status'];
+  flag: PeakList['flag'];
+  author: PermissionsSuccessResponse['user'];
 }
 
 export interface SuccessResponse {
@@ -139,8 +173,30 @@ enum EditPeakListPanelEnum {
   Update,
 }
 
+enum PeakListsToShow {
+  all,
+  pending,
+  flagged,
+}
+
 const AdminPeakLists = () => {
-  const {loading, error, data} = useQuery<SuccessResponse>(GET_PEAK_LISTS);
+
+  const [peakListsToShow, setPeakListsToShow] = useState<PeakListsToShow>(PeakListsToShow.all);
+
+  let query;
+  if (peakListsToShow === PeakListsToShow.all) {
+    query = GET_PEAK_LISTS;
+  } else if (peakListsToShow === PeakListsToShow.flagged) {
+    query = GET_FLAGGED_PEAK_LISTS;
+  } else if (peakListsToShow === PeakListsToShow.pending) {
+    query = GET_PENDING_PEAK_LISTS;
+  } else {
+    query = GET_PEAK_LISTS;
+    failIfValidOrNonExhaustive(peakListsToShow,
+      'Invalid type for peakListsToShow ' + peakListsToShow);
+  }
+
+  const {loading, error, data} = useQuery<SuccessResponse>(query);
   const [editPeakListPanel, setEditPeakListPanel] = useState<EditPeakListPanelEnum>(EditPeakListPanelEnum.Empty);
   const [peakListToEdit, setPeakListToEdit] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -236,6 +292,23 @@ const AdminPeakLists = () => {
       <PeakListListColumn>
         <ContentHeader>
           <h2>Peak Lists</h2>
+          <SubNav>
+            <NavButtonLink
+              onClick={() => setPeakListsToShow(PeakListsToShow.all)}
+            >
+              All peakLists
+            </NavButtonLink>
+            <NavButtonLink
+              onClick={() => setPeakListsToShow(PeakListsToShow.pending)}
+            >
+              Pending peakLists
+            </NavButtonLink>
+            <NavButtonLink
+              onClick={() => setPeakListsToShow(PeakListsToShow.flagged)}
+            >
+              Flagged peakLists
+            </NavButtonLink>
+          </SubNav>
           <StandardSearch
             placeholder={'Filter peak lists'}
             setSearchQuery={filterPeakLists}

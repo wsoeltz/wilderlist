@@ -242,6 +242,18 @@ const RootQuery = new GraphQLObjectType({
         return Mountain.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
+    flaggedPeakLists: {
+      type: new GraphQLList(PeakListType),
+      resolve() {
+        return PeakList.find({ flag: { $ne: null } });
+      },
+    },
+    pendingPeakLists: {
+      type: new GraphQLList(PeakListType),
+      resolve() {
+        return PeakList.find({ status: { $eq: CreatedItemStatus.pending } });
+      },
+    },
   }),
 });
 
