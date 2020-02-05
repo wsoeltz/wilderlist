@@ -31,51 +31,19 @@ const GET_USER = gql`
       profilePictureUrl
       hideEmail
       hideProfilePicture
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-
       peakLists {
         id
         name
         shortName
         type
-        mountains {
-          id
-          state {
-            id
-            name
-            regions {
-              id
-              name
-              states {
-                id
-              }
-            }
-          }
-        }
         parent {
-          id
-          mountains {
-            id
-            state {
-              id
-              name
-              regions {
-                id
-                name
-                states {
-                  id
-                }
-              }
-            }
-          }
+        id
         }
+        numMountains
+        numCompletedAscents(userId: $profileId)
+        latestAscent(userId: $profileId)
+        isActive(userId: $profileId)
       }
-
     }
     me: user(id: $userId) {
       id
