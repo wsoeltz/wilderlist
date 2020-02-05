@@ -118,6 +118,17 @@ const SEARCH_PEAK_LISTS = gql`
       numCompletedAscents(userId: $userId)
       latestAscent(userId: $userId)
       isActive(userId: $userId)
+      states {
+        id
+        name
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
     }
   }
 `;
@@ -143,6 +154,17 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
       numCompletedAscents(userId: $userId)
       latestAscent(userId: $userId)
       isActive(userId: $userId)
+      states {
+        id
+        name
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
+      }
     }
   }
 `;
@@ -171,7 +193,6 @@ interface CardSuccessResponse {
     peakLists: Array<{
       id: PeakList['id'];
     }>
-    mountains: User['mountains'];
   };
 }
 
@@ -182,7 +203,6 @@ interface CompactSuccessResponse {
     peakLists: Array<{
       id: PeakList['id'];
     }>
-    mountains: User['mountains'];
   };
 }
 
@@ -367,8 +387,6 @@ const PeakListPage = (props: Props) => {
       );
     } else {
       const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
-      const completedAscents =
-        user && user.mountains !== null ? user.mountains : [];
       const nextBtn = peakLists.length === nPerPage ? (
         <Next onClick={incrementPageNumber}>
           {getFluentString('global-text-value-navigation-next')}
@@ -390,7 +408,6 @@ const PeakListPage = (props: Props) => {
             userListData={usersLists}
             listAction={beginList}
             actionText={'Begin List'}
-            completedAscents={completedAscents}
             profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}
@@ -405,7 +422,6 @@ const PeakListPage = (props: Props) => {
             userListData={usersLists}
             listAction={beginList}
             actionText={'Begin List'}
-            completedAscents={completedAscents}
             profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}

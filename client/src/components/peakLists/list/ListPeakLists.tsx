@@ -8,9 +8,10 @@ import {
 import { NoResults } from '../../../styling/styleUtils';
 import { lightBaseColor } from '../../../styling/styleUtils';
 import {
-  CompletedMountain,
   PeakList,
   PeakListVariants,
+  State,
+  Region,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { ViewMode } from './index';
@@ -32,6 +33,20 @@ const TrophyContainer = styled.div`
 
 `;
 
+export interface RegionDatum {
+  id: Region['id'];
+  name: Region['name'];
+  states: Array<{
+    id: State['id'],
+  } | null>;
+}
+
+export interface StateDatum {
+  id: State['id'];
+  name: State['name'];
+  regions: Array<RegionDatum | null>;
+}
+
 export interface CardPeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
@@ -42,6 +57,7 @@ export interface CardPeakListDatum {
   latestAscent: PeakList['latestAscent'];
   isActive: PeakList['isActive'];
   parent: null | {id: PeakList['id']};
+  states: null | StateDatum[];
 }
 
 export interface CompactPeakListDatum {
@@ -53,13 +69,13 @@ export interface CompactPeakListDatum {
   numCompletedAscents: PeakList['numCompletedAscents'];
   latestAscent: PeakList['latestAscent'];
   isActive: PeakList['isActive'];
+  states: null | StateDatum[];
 }
 
 interface BaseProps {
   userListData: Array<PeakList['id']> | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
-  completedAscents: CompletedMountain[];
   noResultsText: string;
   showTrophies: boolean;
   viewMode: ViewMode;
@@ -78,8 +94,8 @@ type Props = BaseProps & (
 
 const ListPeakLists = (props: Props) => {
   const {
-    userListData, listAction, actionText,
-    completedAscents, noResultsText, showTrophies,
+    listAction, actionText,
+    noResultsText, showTrophies,
     profileId, dashboardView,
   } = props;
 
@@ -172,17 +188,32 @@ const ListPeakLists = (props: Props) => {
     );
   } else if (props.viewMode === ViewMode.Compact) {
     const peakListCards = props.peakListData.map(list => {
-    const active = userListData ? userListData.includes(list.id) : null;
-    return (
-        <PeakListCompactCard
-          key={list.id}
-          peakList={list}
-          active={active}
-          listAction={listAction}
-          actionText={actionText}
-          completedAscents={completedAscents}
-        />
-      );
+      const {
+        type, numCompletedAscents, numMountains, isActive,
+      } = list;
+
+      let totalRequiredAscents: number;
+      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+        totalRequiredAscents = numMountains;
+      } else if (type === PeakListVariants.fourSeason) {
+        totalRequiredAscents = numMountains * 4;
+      } else if (type === PeakListVariants.grid) {
+        totalRequiredAscents = numMountains * 12;
+      } else {
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+        totalRequiredAscents = 0;
+      }
+      return (
+          <PeakListCompactCard
+            key={list.id}
+            peakList={list}
+            active={isActive}
+            listAction={listAction}
+            actionText={actionText}
+            totalRequiredAscents={totalRequiredAscents}
+            numCompletedAscents={numCompletedAscents}
+          />
+        );
     });
     return (
       <>
