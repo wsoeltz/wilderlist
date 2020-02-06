@@ -105,11 +105,12 @@ const UserNote = (props: Props) => {
   } else if (defaultValue === value) {
     buttonText = (
       <small>
-        <em>{'All Changes Saved'}</em>
+        <em>{getFluentString('global-text-value-all-changes-saved')}</em>
       </small>
     );
   } else {
-    const innerText = isLoading ? 'Saving...' : 'Save Changes';
+    const innerText = isLoading
+      ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save-changes');
     const onClick = () => {
       onSave(value.substring(0, charLimit));
       setIsLoading(true);
