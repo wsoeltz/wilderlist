@@ -50,7 +50,7 @@ interface EditPeakListVariables extends BaseVariables {
   id: IPeakList['id'];
 }
 
-const ExternalResourcesInputType: any = new GraphQLInputObjectType({
+export const ExternalResourcesInputType: any = new GraphQLInputObjectType({
   name: 'ExternalResourcesInputType',
   fields: () => ({
     title: {

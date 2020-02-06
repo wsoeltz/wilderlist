@@ -451,6 +451,7 @@ create-mountain-latlong-note = as a decimal
 create-mountain-latitude-placeholder = Enter the latitude in decimal format
 create-mountain-longitude-placeholder = Enter the longitude in decimal format
 create-mountain-elevation-placeholder = Enter the elevation in feet
+create-mountain-optional-description = Enter an optional description for the mountain here.
 
 create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (highlighted in red) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
 

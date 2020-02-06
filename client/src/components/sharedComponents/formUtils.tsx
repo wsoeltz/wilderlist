@@ -38,3 +38,11 @@ export const SaveButton = styled(ButtonPrimary)`
 export const DeleteButton = styled(ButtonWarning)`
   margin-right: auto;
 `;
+
+export const ResourceContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  grid-column-gap: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+`;

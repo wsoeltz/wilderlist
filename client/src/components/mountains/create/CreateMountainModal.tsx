@@ -86,6 +86,8 @@ const CreateMountainModal = (props: Props) => {
       elevation: '',
       state: null,
       flag: null,
+      description: '',
+      resources: [],
     };
 
     const onSubmit = async (input: BaseMountainVariables) => {

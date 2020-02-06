@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { Mountain as IMountain } from '../../graphQLTypes';
-import PeakListType from './peakListType';
+import PeakListType, {ExternalResourcesType} from './peakListType';
 import StateType from './stateType';
 import UserType from './userType';
 
@@ -43,6 +43,11 @@ const MountainSchema = new Schema({
   },
   status: { type: String },
   flag: { type: String },
+  description: { type: String },
+  resources: [{
+    title: { type: String },
+    url: { type: String },
+  }],
 });
 
 MountainSchema.statics.findState = function(id: string) {
@@ -161,6 +166,8 @@ const MountainType: any = new GraphQLObjectType({
     },
     status: { type: CreatedItemStatus },
     flag: { type: MountainFlag },
+    description: { type: GraphQLString },
+    resources: { type: new GraphQLList(ExternalResourcesType) },
   }),
 });
 

@@ -23,6 +23,7 @@ import MountainType, {
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
+import { ExternalResourcesInputType } from './peakListMutations';
 
 const mountainMutations: any = {
   addMountain: {
@@ -35,12 +36,14 @@ const mountainMutations: any = {
       prominence: { type: GraphQLFloat },
       state: { type: GraphQLID },
       lists: { type: new GraphQLList(GraphQLID)},
+      description: { type: GraphQLString },
+      resources: { type: new GraphQLList(ExternalResourcesInputType) },
       author: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, input: IMountain, {user}: {user: IUser | undefined | null}) {
       const {
         name, state, lists, latitude, longitude, elevation,
-        prominence, author,
+        prominence, author, description, resources,
       } = input;
       const authorObj = await User.findById(author);
       if (!isCorrectUser(user, authorObj)) {
@@ -61,6 +64,7 @@ const mountainMutations: any = {
       }
       const newMountain = new Mountain({
         name, state, lists, latitude, longitude, elevation, prominence, author, status,
+        description, resources,
       });
       try {
         if ( name !== '') {
@@ -169,9 +173,14 @@ const mountainMutations: any = {
       elevation: { type: GraphQLNonNull(GraphQLFloat) },
       prominence: { type: GraphQLFloat },
       state: { type: GraphQLID },
+      description: { type: GraphQLString },
+      resources: { type: new GraphQLList(ExternalResourcesInputType) },
     },
     async resolve(_unused: any, input: IMountain, {user}: {user: IUser | undefined | null}) {
-      const { id, name, state: stateId, latitude, longitude, elevation, prominence } = input;
+      const {
+        id, name, state: stateId, latitude, longitude, elevation, prominence,
+        description, resources,
+      } = input;
       try {
         const mountain = await Mountain.findById(id);
         const authorObj = mountain && mountain.author ? mountain.author : null;
@@ -201,8 +210,9 @@ const mountainMutations: any = {
               }
             },
           );
-          const fields = prominence !== undefined ? { name, state: stateId, latitude, longitude, elevation, prominence }
-            : { name, state: stateId, latitude, longitude, elevation };
+          const fields = prominence !== undefined
+            ? { name, state: stateId, latitude, longitude, elevation, prominence, description, resources }
+            : { name, state: stateId, latitude, longitude, elevation, description, resources };
           const newMountain = await Mountain.findOneAndUpdate({
               _id: id,
             },
@@ -210,8 +220,9 @@ const mountainMutations: any = {
             {new: true});
           return newMountain;
         } else if (mountain !== null) {
-          const fields = prominence !== undefined ? { name, latitude, longitude, elevation, prominence }
-            : { name, latitude, longitude, elevation };
+          const fields = prominence !== undefined
+            ? { name, latitude, longitude, elevation, prominence, description, resources }
+            : { name, latitude, longitude, elevation, description, resources };
           const newMountain = await Mountain.findOneAndUpdate({
               _id: id,
             },

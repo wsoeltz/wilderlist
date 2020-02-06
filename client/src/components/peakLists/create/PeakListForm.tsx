@@ -38,6 +38,7 @@ import {
   CheckboxLabel,
   DeleteButton,
   FullColumn,
+  ResourceContainer,
   Root,
   SaveButton,
   Title,
@@ -48,14 +49,6 @@ import { StateDatum } from '../list/ListPeakLists';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import ParentModal, {PeakListDatum} from './ParentModal';
-
-const ResourceContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  grid-column-gap: 1rem;
-  width: 100%;
-  margin-bottom: 1rem;
-`;
 
 const NoMountainSelection = styled(PlaceholderText)`
   min-height: 200px;
@@ -217,6 +210,7 @@ const PeakListForm = (props: Props) => {
       const stateIds = parent === null ? statesArray.map(state => state.id) : [];
       const parentId = parent === null ? null : parent.id;
       setLoadingSubmit(true);
+      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
       onSubmit({
         name,
         shortName,
@@ -227,7 +221,7 @@ const PeakListForm = (props: Props) => {
         optionalMountains: optionalMountainIds,
         states: stateIds,
         tier,
-        resources: externalResources,
+        resources,
         parent: parentId,
       });
     }
