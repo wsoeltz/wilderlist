@@ -20,6 +20,7 @@ import {
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { convertFieldsToDate } from '../../../Utils';
+import { asyncForEach, roundPercentToSingleDecimal } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
 import {
   ADD_MOUNTAIN_COMPLETION,
@@ -149,6 +150,8 @@ const ImportAscentsModal = (props: Props) => {
   const [urlInput, setUrlInput] = useState<string>('');
   const [gridData, setGridData] = useState<GridData[]>([]);
   const [importError, setImportError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [percent, setPercent] = useState<number>(0);
 
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
@@ -223,9 +226,13 @@ const ImportAscentsModal = (props: Props) => {
 
   const datesToImport: DateToImport[] = [];
 
-  const onConfirm = () => {
-    datesToImport.forEach(({id, date}) => {
-      addMountainCompletion({ variables: {userId, mountainId: id, date}});
+  const onConfirm = async () => {
+    setIsLoading(true);
+    let counter = 1;
+    await asyncForEach(datesToImport, async ({id, date}: DateToImport) => {
+      await addMountainCompletion({ variables: {userId, mountainId: id, date}});
+      setPercent(roundPercentToSingleDecimal(counter, datesToImport.length));
+      counter++;
     });
     onCancel();
   };
@@ -332,9 +339,12 @@ const ImportAscentsModal = (props: Props) => {
         </GridContainer>
       </>
     );
+    const confirmBtnText: string = isLoading === false
+      ? getFluentString('global-text-value-modal-confirm')
+      : getFluentString('global-text-value-saving') + ` - (${percent}%)`;
     confirmButton = (
       <SubmitButton onClick={onConfirm}>
-        {getFluentString('global-text-value-modal-confirm')}
+        {confirmBtnText}
       </SubmitButton>
     );
   } else {
@@ -342,8 +352,13 @@ const ImportAscentsModal = (props: Props) => {
     confirmButton = null;
   }
 
+  const actionStyles: React.CSSProperties = isLoading === false ? {} : {
+    pointerEvents: 'none',
+    opacity: 0.5,
+  };
+
   const actions = (
-    <ButtonWrapper>
+    <ButtonWrapper style={actionStyles}>
       <CancelButton onClick={onCancel}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
