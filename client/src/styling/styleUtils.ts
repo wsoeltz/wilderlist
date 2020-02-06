@@ -22,7 +22,9 @@ export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
 export const lowWarningColorLight = '#f2e4b3';
 export const lowWarningColor = '#d6aa0a';
+export const lowWarningColorHover = '#ebc12a';
 export const lowWarningColorDark = '#8a7e54';
+export const lowWarningColorTextOverlay = '#312c1a';
 
 export const successColor = '#658238';
 export const successColorLight = '#d0e3b1';
@@ -211,6 +213,15 @@ export const ButtonWarning = styled(ButtonBase)`
 
   &:hover {
     background-color: ${warningHoverColor};
+  }
+`;
+
+export const ButtonWarningLow = styled(ButtonBase)`
+  background-color: ${lowWarningColor};
+  color: ${lowWarningColorTextOverlay};
+
+  &:hover {
+    background-color: ${lowWarningColorHover};
   }
 `;
 
