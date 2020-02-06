@@ -2,6 +2,7 @@ import React from 'react';
 import {getRefetchSearchQueries} from '../../list';
 import { DateType } from '../../Utils';
 import MountainCompletionModal, {
+  preferredDateFormatLocalStorageVariable,
   Props as BaseProps,
 } from './MountainCompletionModal';
 
@@ -14,6 +15,20 @@ const NewAscentReport = (props: Props) => {
 
   const baseRefetchSearchQueries = getRefetchSearchQueries(props.userId);
 
+  const localStorageDateType = localStorage.getItem(preferredDateFormatLocalStorageVariable);
+  let initialDateType: DateType;
+  if (localStorageDateType === DateType.full) {
+    initialDateType = DateType.full;
+  } else if (localStorageDateType === DateType.monthYear) {
+    initialDateType = DateType.monthYear;
+  } else if (localStorageDateType === DateType.yearOnly) {
+    initialDateType = DateType.yearOnly;
+  } else if (localStorageDateType === DateType.none) {
+    initialDateType = DateType.none;
+  } else {
+    initialDateType = DateType.full;
+  }
+
   const refetchQuery = queryRefetchArray
     ? [...queryRefetchArray, ...baseRefetchSearchQueries] : [...baseRefetchSearchQueries];
   return (
@@ -25,7 +40,7 @@ const NewAscentReport = (props: Props) => {
       initialCompletionMonth={null}
       initialCompletionYear={null}
       initialStartDate={null}
-      initialDateType={DateType.full}
+      initialDateType={initialDateType}
       initialUserList={[]}
       initialMountainList={[]}
       initialConditions={{
