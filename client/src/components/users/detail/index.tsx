@@ -69,6 +69,9 @@ const UserProfilePage = (props: Props) => {
     }
   }
 
+  const setActionDisabled = (_peakListId: string) =>
+    match.path === Routes.OtherUserPeakListCompare && _peakListId === peakListId;
+
   return (
     <>
       <ContentLeftLarge>
@@ -80,6 +83,7 @@ const UserProfilePage = (props: Props) => {
             userId={userId}
             id={profileId}
             history={history}
+            setActionDisabled={setActionDisabled}
           />
         </ContentBody>
       </ContentLeftLarge>

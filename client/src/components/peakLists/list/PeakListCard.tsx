@@ -169,6 +169,7 @@ interface Props {
   latestDate: string | null;
   dashboardView: boolean;
   profileId?: string;
+  setActionDisabled?: (peakListId: string) => boolean;
 }
 
 const PeakListCard = (props: Props) => {
@@ -176,7 +177,7 @@ const PeakListCard = (props: Props) => {
     peakList: {id, name, shortName, type, parent, states},
     active, listAction, actionText, numCompletedAscents,
     totalRequiredAscents, profileId, dashboardView,
-    latestDate,
+    latestDate, setActionDisabled,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -188,10 +189,18 @@ const PeakListCard = (props: Props) => {
       listAction(id);
     }
   };
+
+  const isDisabled = () => {
+    if (setActionDisabled) {
+      return setActionDisabled(id);
+    }
+    return false;
+  }
+
   const actionButton = (active === false || profileId !== undefined) && listAction !== null
     ? (
       <ActionButtonContainer>
-        <ButtonPrimary onClick={actionButtonOnClick}>
+        <ButtonPrimary onClick={actionButtonOnClick} disabled={isDisabled()}>
           {actionText}
         </ButtonPrimary>
       </ActionButtonContainer> ) : null;

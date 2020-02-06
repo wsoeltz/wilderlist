@@ -89,10 +89,11 @@ interface Props {
   userId: string;
   id: string;
   history: History;
+  setActionDisabled?: (peakListId: string) => boolean;
 }
 
 const UserProfile = (props: Props) => {
-  const { id, history, userId } = props;
+  const { id, history, userId, setActionDisabled } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -163,6 +164,7 @@ const UserProfile = (props: Props) => {
                 profileId={user.id}
                 noResultsText={noResultsText}
                 showTrophies={true}
+                setActionDisabled={setActionDisabled}
               />
             </ListContainer>
           </>

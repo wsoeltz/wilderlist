@@ -80,6 +80,7 @@ interface BaseProps {
   showTrophies: boolean;
   viewMode: ViewMode;
   dashboardView?: boolean;
+  setActionDisabled?: (peakListId: string) => boolean;
 }
 
 type Props = BaseProps & (
@@ -97,6 +98,7 @@ const ListPeakLists = (props: Props) => {
     listAction, actionText,
     noResultsText, showTrophies,
     profileId, dashboardView,
+    setActionDisabled,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -148,6 +150,7 @@ const ListPeakLists = (props: Props) => {
           numCompletedAscents={numCompletedAscents}
           totalRequiredAscents={totalRequiredAscents}
           dashboardView={dashboardView === true ? true : false}
+          setActionDisabled={setActionDisabled}
         />
       );
     });
