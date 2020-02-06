@@ -195,7 +195,7 @@ const PeakListCard = (props: Props) => {
       return setActionDisabled(id);
     }
     return false;
-  }
+  };
 
   const actionButton = (active === false || profileId !== undefined) && listAction !== null
     ? (
