@@ -10,12 +10,12 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
-  ButtonPrimary,
+  ButtonWarningLow,
   lightBorderColor,
   lightFontWeight,
+  lowWarningColor,
   placeholderColor,
   SectionTitle,
-  tertiaryColor,
 } from '../../styling/styleUtils';
 import { UserContext } from '../App';
 import {
@@ -48,14 +48,16 @@ const Textarea = styled.textarea`
 `;
 
 const ButtonContainer = styled.div`
-  padding: 0.5rem;
-  border: 1px solid ${lightBorderColor};
-  border-top: none;
-  background-color: ${tertiaryColor};
   display: flex;
   justify-content: flex-end;
-  flex-wrap: wrap;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  padding: 0.125rem;
 `;
+
+const openContainerStyles: React.CSSProperties = {
+  padding: '0.5rem',
+};
 
 const LoginButton = styled(LoginButtonBase)`
   margin: 0.5rem 0.5rem;
@@ -76,12 +78,14 @@ const UserNote = (props: Props) => {
   const {placeholder, defaultValue, onSave} = props;
   const [value, setValue] = useState<string>(defaultValue);
   const [height, setHeight] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (textAreaRef && textAreaRef.current) {
       setHeight(textAreaRef.current.scrollHeight);
     }
+    setIsLoading(false);
   }, [textAreaRef, defaultValue]);
 
   const user = useContext(UserContext);
@@ -95,7 +99,31 @@ const UserNote = (props: Props) => {
       setHeight(e.target.scrollHeight);
     }
   };
-  const buttonText = defaultValue !== value ? 'Save Changes' : 'All Changes Saved';
+  let buttonText: React.ReactElement<any> | null;
+  if (!defaultValue && !value) {
+    buttonText = null;
+  } else if (defaultValue === value) {
+    buttonText = (
+      <small>
+        <em>{'All Changes Saved'}</em>
+      </small>
+    );
+  } else {
+    const innerText = isLoading ? 'Saving...' : 'Save Changes';
+    const onClick = () => {
+      onSave(value.substring(0, charLimit));
+      setIsLoading(true);
+    };
+    buttonText = (
+      <ButtonWarningLow
+        onClick={onClick}
+        disabled={isLoading}
+        style={{cursor: isLoading ? 'progress' : undefined}}
+      >
+        {innerText}
+      </ButtonWarningLow>
+    );
+  }
 
   const buttons = !user ? (
     <ButtonContainer>
@@ -119,13 +147,10 @@ const UserNote = (props: Props) => {
       </LoginButton>
     </ButtonContainer>
     ) : (
-    <ButtonContainer>
-      <ButtonPrimary
-        onClick={() => onSave(value.substring(0, charLimit))}
-        disabled={defaultValue === value}
-      >
-        {buttonText}
-      </ButtonPrimary>
+    <ButtonContainer
+      style={defaultValue === value ? {} : openContainerStyles}
+    >
+      {buttonText}
     </ButtonContainer>
   );
 
@@ -136,9 +161,9 @@ const UserNote = (props: Props) => {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        style={{height}}
         maxLength={charLimit}
         ref={textAreaRef}
+        style={{height, borderColor: defaultValue !== value ? lowWarningColor : undefined}}
       />
       {buttons}
     </>
