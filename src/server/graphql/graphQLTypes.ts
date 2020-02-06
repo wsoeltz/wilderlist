@@ -45,7 +45,8 @@ export interface Mountain {
   author: User | null;
   status: CreatedItemStatus | null;
   flag: MountainFlag | null;
-
+  description: string | null;
+  resources: ExternalResource[] | null;
 }
 
 export enum PeakListVariants {

@@ -13,6 +13,9 @@ import {
   ButtonPrimaryLink,
   lightBorderColor,
   PlaceholderText,
+  PreFormattedParagraph,
+  ResourceItem,
+  ResourceList,
   SectionTitle,
 } from '../../../styling/styleUtils';
 import {
@@ -73,25 +76,6 @@ const LinkButton = styled(ButtonPrimaryLink)`
   flex-shrink: 0;
   padding: 0.4rem;
   font-size: 0.7rem;
-`;
-
-const ResourceList = styled.ul`
-  margin-top: 0;
-  padding-left: 0;
-  list-style: none;
-`;
-
-const ResourceItem = styled.li`
-  padding-left: 1rem;
-  position: relative;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-
-  &:before {
-    content: '›';
-    position: absolute;
-    left: 0.5rem;
-  }
 `;
 
 const GET_PEAK_LIST = gql`
@@ -546,7 +530,7 @@ const PeakListDetail = (props: Props) => {
         const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
           <>
             <h2>{getFluentString('peak-list-detail-text-optional-mountains')}</h2>
-            <p>{optionalMountainsText}</p>
+            <PreFormattedParagraph>{optionalMountainsText}</PreFormattedParagraph>
             <MountainTable
               user={user}
               mountains={optionalMountainsWithDates}
@@ -581,9 +565,9 @@ const PeakListDetail = (props: Props) => {
               key={peakListDetailMapKey}
               colorScaleLabels={colorScaleLabels}
             />
-            <p>
+            <PreFormattedParagraph>
               {paragraphText}
-            </p>
+            </PreFormattedParagraph>
             {resourcesList}
             {otherVariants}
             <UserNote

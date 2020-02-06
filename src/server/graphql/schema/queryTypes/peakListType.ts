@@ -81,7 +81,7 @@ export const PeakListVariants = new GraphQLEnumType({
   },
 });
 
-const ExternalResourcesType: any = new GraphQLObjectType({
+export const ExternalResourcesType: any = new GraphQLObjectType({
   name: 'ExternalResourcesType',
   fields: () => ({
     id: { type: GraphQLID },

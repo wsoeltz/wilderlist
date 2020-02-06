@@ -7,7 +7,6 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { AllTrailsLink, generateHikingProjectLink } from '../../../routing/externalLinks';
-import { SemiBold } from '../../../styling/styleUtils';
 import getTrails from '../../../utilities/getTrails';
 import { getDistanceFromLatLonInMiles } from '../../../Utils';
 import { genericWords } from '../../peakLists/import';
@@ -127,7 +126,7 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
     const trailElements: Array<React.ReactElement<any>> = sortedTrails.map(trail => {
       return (
         <BasicListItem key={trail.id}>
-          <a href={trail.url} target='_blank' rel='noopener noreferrer'><SemiBold>{trail.name}</SemiBold></a>
+          <a href={trail.url} target='_blank' rel='noopener noreferrer'>{trail.name}</a>
           {' - '}
           {getFluentString('local-trails-hiking-project-feet-elevation', {
             miles: trail.length,

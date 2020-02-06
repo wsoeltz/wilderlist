@@ -14,6 +14,9 @@ import {
   lightBorderColor,
   lowWarningColorDark,
   PlaceholderText,
+  PreFormattedParagraph,
+  ResourceItem,
+  ResourceList,
 } from '../../../styling/styleUtils';
 import {
   CreatedItemStatus,
@@ -25,6 +28,9 @@ import {
   User,
 } from '../../../types/graphQLTypes';
 import { convertDMS, mobileSize } from '../../../Utils';
+import {
+  isValidURL,
+} from '../../../Utils';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
@@ -42,6 +48,7 @@ import LocalTrails from './LocalTrails';
 import {
   ContentItem,
   ItemTitle,
+  VerticalContentItem,
 } from './sharedStyling';
 import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
@@ -126,6 +133,11 @@ const GET_MOUNTAIN_DETAIL = gql`
       elevation
       latitude
       longitude
+      description
+      resources {
+        title
+        url
+      }
       state {
         id
         name
@@ -166,6 +178,8 @@ interface QuerySuccessResponse {
     elevation: Mountain['elevation'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
+    description: Mountain['description'];
+    resources: Mountain['resources'];
     state: {
       id: State['id'];
       name: State['name'];
@@ -279,7 +293,7 @@ const MountainDetail = (props: Props) => {
     } else {
       const {
         name, elevation, state, lists, latitude, longitude,
-        author, status,
+        author, status, resources,
       } = mountain;
 
       const title = status === CreatedItemStatus.pending ? (
@@ -354,6 +368,42 @@ const MountainDetail = (props: Props) => {
         />
       );
 
+      const description = mountain.description && mountain.description.length ? (
+        <VerticalContentItem>
+          <PreFormattedParagraph>
+            {mountain.description}
+          </PreFormattedParagraph>
+        </VerticalContentItem>
+      ) : null;
+
+      let resourcesList: React.ReactElement<any> | null;
+      if (resources && resources.length) {
+        const resourcesArray: Array<React.ReactElement<any>> = [];
+        resources.forEach(resource => {
+          if (resource.title.length && resource.url.length && isValidURL(resource.url)) {
+            resourcesArray.push(
+              <ResourceItem key={resource.url + resource.title}>
+                <a href={resource.url}>{resource.title}</a>
+              </ResourceItem>,
+            );
+          }
+        });
+        resourcesList = resourcesArray.length ? (
+          <>
+            <ItemTitle>
+              {getFluentString('global-text-value-external-resources')}
+            </ItemTitle>
+            <VerticalContentItem>
+              <ResourceList>
+                {resourcesArray}
+              </ResourceList>
+            </VerticalContentItem>
+          </>
+        ) : null;
+      } else {
+        resourcesList = null;
+      }
+
       return (
         <>
           <MountainNameHeader>
@@ -373,6 +423,7 @@ const MountainDetail = (props: Props) => {
             ]}
             key={mountainDetailMapKey}
           />
+          {description}
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
             <strong>{elevation}ft</strong>
@@ -403,6 +454,7 @@ const MountainDetail = (props: Props) => {
             mountainId={id}
             mountainName={mountain.name}
           />
+          {resourcesList}
           <LocalTrails
             mountainName={mountain.name}
             latitude={latitude}

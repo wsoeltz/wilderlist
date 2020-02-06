@@ -426,3 +426,27 @@ export const SelectBox = styled.select`
     background-color: white;
   }
 `;
+
+export const PreFormattedParagraph = styled.p`
+  margin-top: 0;
+  white-space: pre-wrap;
+`;
+
+export const ResourceList = styled.ul`
+  margin-top: 0;
+  padding-left: 0;
+  list-style: none;
+`;
+
+export const ResourceItem = styled.li`
+  padding-left: 1rem;
+  position: relative;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+
+  &:before {
+    content: '›';
+    position: absolute;
+    left: 0.5rem;
+  }
+`;
