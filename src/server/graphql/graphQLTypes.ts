@@ -11,6 +11,8 @@ export interface State {
   regions: Array<Region | null>;
   mountains: Array<Mountain | null>;
   peakLists: Array<PeakList | null> | null;
+  numPeakLists: number;
+  numMountains: number;
 }
 
 export enum CreatedItemStatus {
