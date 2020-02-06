@@ -113,6 +113,7 @@ const LocationFilter = (props: Props) => {
           return (
             <ListItem
               onClick={onClick}
+              tabIndex={0}
               key={state.id}
             >
               {state.name} ({state.numMountains})
@@ -129,7 +130,7 @@ const LocationFilter = (props: Props) => {
       };
       dropdown = (
         <DropdownWrapper ref={menuNode}>
-          <ListItem onClick={everyWhereOnClick}>
+          <ListItem onClick={everyWhereOnClick} tabIndex={0}>
             {getFluentString('global-text-value-everywhere')}
           </ListItem>
           <HorizontalRule />
@@ -145,7 +146,7 @@ const LocationFilter = (props: Props) => {
 
   return (
     <Root ref={locationButtonEl}>
-      <Button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+      <Button onClick={() => setIsMenuOpen(!isMenuOpen)} tabIndex={0}>
         {children}
       </Button>
       {dropdown}

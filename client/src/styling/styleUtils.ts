@@ -432,6 +432,10 @@ export const PreFormattedParagraph = styled.p`
   white-space: pre-wrap;
 `;
 
+export const CollapsedParagraph = styled.p`
+  margin: 0;
+`;
+
 export const ResourceList = styled.ul`
   margin-top: 0;
   padding-left: 0;

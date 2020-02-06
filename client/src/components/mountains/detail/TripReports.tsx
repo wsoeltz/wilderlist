@@ -8,9 +8,11 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { userProfileLink } from '../../../routing/Utils';
 import {
+  CollapsedParagraph,
   GhostButton,
   LinkButton as LinkButtonBase,
   PlaceholderText,
+  PreFormattedParagraph,
   SemiBold,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
@@ -48,8 +50,8 @@ const ReadFullReportButton = styled(GhostButton)`
   visibility: hidden;
 `;
 
-const Text = styled.div`
-  white-space: pre-wrap;
+const Text = styled(PreFormattedParagraph)`
+  margin: 0;
 `;
 
 export const nPerPage = 7;
@@ -232,7 +234,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           conditionsList = (
             <Section>
               <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
-              {conditionsText}
+              <CollapsedParagraph>{conditionsText}</CollapsedParagraph>
             </Section>
           );
         }

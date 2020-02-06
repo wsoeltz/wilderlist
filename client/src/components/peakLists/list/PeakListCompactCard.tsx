@@ -15,6 +15,7 @@ import {
   CardLinkWrapper,
   CardSubtitle,
   CardTitle,
+  CollapsedParagraph,
 } from '../../../styling/styleUtils';
 import { getColorSetFromVariant } from '../../../styling/styleUtils';
 import {
@@ -93,12 +94,12 @@ const PeakListCard = (props: Props) => {
             {shortName} - {name}{getType(type)}
           </CardTitle>
           <CardSubtitle>
-            <div>
+            <CollapsedParagraph>
               {getStatesOrRegion(statesArray, getFluentString)}
-            </div>
-            <div>
+            </CollapsedParagraph>
+            <CollapsedParagraph>
               {cornerContent}
-            </div>
+            </CollapsedParagraph>
           </CardSubtitle>
         </Card>
       </CardLinkWrapper>

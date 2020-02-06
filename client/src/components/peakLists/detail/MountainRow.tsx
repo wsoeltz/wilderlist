@@ -58,9 +58,10 @@ export const monthColumns = {
 };
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
-export const TableCellBase = styled.div`
+export const TableCellBase = styled.p`
   font-weight: ${semiBoldFontBoldWeight};
   padding: 0.8rem ${horizontalPadding}rem;
+  margin: 0;
   display: flex;
   align-items: center;
 

@@ -8,6 +8,7 @@ import {
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
+  PreFormattedParagraph,
   SemiBold,
 } from '../../../styling/styleUtils';
 import {
@@ -46,8 +47,8 @@ const Title = styled(SemiBold)`
   margin-bottom: 1rem;
 `;
 
-const Text = styled.div`
-  white-space: pre-wrap;
+const Text = styled(PreFormattedParagraph)`
+  margin: 0;
 `;
 
 interface Props {
