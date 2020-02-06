@@ -52,7 +52,7 @@ export const Root = styled.div`
   display: grid;
 `;
 
-export const TitleBase = styled.div`
+export const TitleBase = styled.h4`
   text-transform: uppercase;
   font-weight: ${semiBoldFontBoldWeight};
   display: flex;
@@ -63,6 +63,7 @@ export const TitleBase = styled.div`
   position: sticky;
   background-color: #fff;
   z-index: 50;
+  margin: 0;
 
   &:hover {
     cursor: pointer;

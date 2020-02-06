@@ -11,7 +11,8 @@ import {
 } from '../../../styling/styleUtils';
 import { Mountain, PeakList } from '../../../types/graphQLTypes';
 import {
-  BasicListItem,
+  BasicUnorderedListContainer,
+  BasicUnorderedListItem,
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
@@ -119,7 +120,7 @@ const IncludedLists = (props: Props) => {
       }
       const elevationRank = getRank(mountains, 'elevation');
       return (
-        <BasicListItem key={list.id}>
+        <BasicUnorderedListItem key={list.id}>
           <Link
             to={listDetailWithMountainDetailLink(list.id, mountainId)}
           >
@@ -129,7 +130,7 @@ const IncludedLists = (props: Props) => {
           {getFluentString('mountain-detail-lists-mountain-appears-on-ranks', {
             'elevation-rank': elevationRank,
           })}
-        </BasicListItem>
+        </BasicUnorderedListItem>
       );
     });
 
@@ -140,7 +141,9 @@ const IncludedLists = (props: Props) => {
               'mountain-name': mountainName,
             })}
           </ItemTitle>
-          {listsText}
+          <BasicUnorderedListContainer>
+            {listsText}
+          </BasicUnorderedListContainer>
         </VerticalContentItem>
       );
 

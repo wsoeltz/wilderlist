@@ -5,6 +5,7 @@ import {
   CardLinkWrapper,
   CardSubtitle,
   CardTitle,
+  CollapsedParagraph,
 } from '../../../styling/styleUtils';
 import { MountainDatum } from './ListMountains';
 
@@ -24,12 +25,12 @@ const MountainCard = ({ mountain }: Props) => {
       <Card>
         <CardTitle>{name}</CardTitle>
         <CardSubtitle>
-          <div>
+          <CollapsedParagraph>
             {stateName}
-          </div>
-          <div>
+          </CollapsedParagraph>
+          <CollapsedParagraph>
             {elevation}ft
-          </div>
+          </CollapsedParagraph>
         </CardSubtitle>
       </Card>
     </CardLinkWrapper>
