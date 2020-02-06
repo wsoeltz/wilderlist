@@ -89,6 +89,7 @@ export interface PeakList {
   searchString: string;
   states: Array<State | null> | null;
   children: Array<PeakList | null> | null;
+  siblings: Array<PeakList | null> | null;
   resources: ExternalResource[] | null;
   author: User | null;
   status: CreatedItemStatus | null;

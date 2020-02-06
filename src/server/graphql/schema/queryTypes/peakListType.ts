@@ -226,6 +226,20 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    siblings:  {
+      type: new GraphQLList(PeakListType),
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            return PeakList.find({ parent: parentValue.parent, _id: { $ne: parentValue._id } });
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
     resources: { type: new GraphQLList(ExternalResourcesType) },
     author: {
       type: UserType,

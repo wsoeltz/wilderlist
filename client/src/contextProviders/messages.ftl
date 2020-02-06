@@ -91,7 +91,9 @@ global-text-value-submit = Submit
 
 global-text-value-edit = Edit
 global-text-value-save = Save
+global-text-value-save-changes = Save Changes
 global-text-value-saving = Saving
+global-text-value-all-changes-saved = All Changes Saved
 
 global-text-value-selected = Selected
 
@@ -100,6 +102,8 @@ global-text-value-delete = Delete
 global-text-value-flag = Flag
 global-text-value-optional = Optional
 global-text-value-parent = Parent
+
+global-text-value-other-list-versions = Other Version of this list
 
 global-text-value-external-resources = External Resources
 global-text-value-add-external-resources = Add Another Resource
