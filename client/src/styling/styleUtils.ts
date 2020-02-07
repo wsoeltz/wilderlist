@@ -271,7 +271,7 @@ export const GhostButton = styled(ButtonBase)`
 
 export const FloatingButtonContainer = styled.div`
   position: sticky;
-  z-index: 150;
+  z-index: 90;
   bottom: 0;
   width: 100%;
   display: flex;
