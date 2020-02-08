@@ -23,7 +23,7 @@ import {
   successColorLight,
 } from '../../../styling/styleUtils';
 import { Mountain, State } from '../../../types/graphQLTypes';
-import { convertFieldsToDate } from '../../../Utils';
+import { asyncForEach, convertFieldsToDate, roundPercentToSingleDecimal } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
 import {
   ADD_MOUNTAIN_COMPLETION,
@@ -220,6 +220,9 @@ const ImportAscentsModal = (props: Props) => {
   const [selectMountainsGif, setSelectMountainsGif] = useState<string>(SelectMountainsStaticUrl);
   const [selectDatesGif, setSelectDatesGif] = useState<string>(SelectDatesStaticUrl);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [percent, setPercent] = useState<number>(0);
+
   const toggleMountainGif = () => {
     const src = selectMountainsGif === SelectMountainsGifUrl
       ? SelectMountainsStaticUrl : SelectMountainsGifUrl;
@@ -234,16 +237,17 @@ const ImportAscentsModal = (props: Props) => {
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
 
-  const validateAndAddMountainCompletion = (mountainId: Mountain['id'], day: string, month: string, year: string) => {
+  const validateAndAddMountainCompletion =
+    async (mountainId: Mountain['id'], day: string, month: string, year: string) => {
     const completedDate = convertFieldsToDate(day, month, year);
     if (completedDate.error !== undefined) {
       console.error(completedDate.error);
     } else {
-      addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
+      await addMountainCompletion({ variables: {userId, mountainId, date: completedDate.date}});
     }
   };
 
-  const onConfirm = () => {
+  const onConfirm = async () => {
     if (
       cleanedMountains !== null && cleanedDates !== null
       && cleanedMountains.length > 0 && cleanedDates.length > 0
@@ -257,6 +261,20 @@ const ImportAscentsModal = (props: Props) => {
         } else {
           console.warn('dates are undefined, skipping');
         }
+      });
+      setIsLoading(true);
+      let counter = 0;
+      await asyncForEach(cleanedMountains, async (mtn: MountainDatum) => {
+        const dates = cleanedDates[counter];
+        const mountainId = mtn.id;
+        if (dates !== null && dates !== undefined && mountainId) {
+          const {day, month, year} = dates;
+          await validateAndAddMountainCompletion(mountainId, day.toString(), month.toString(), year.toString());
+        } else {
+          console.warn('dates are undefined, skipping');
+        }
+        counter++;
+        setPercent(roundPercentToSingleDecimal(counter, cleanedMountains.length));
       });
     } else {
       // The following should not run
@@ -560,12 +578,21 @@ const ImportAscentsModal = (props: Props) => {
       ? <SuccessBox dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-success-message')}} />
       : null;
 
+  const submitBtnText: string = isLoading === false
+    ? getFluentString('global-text-value-submit')
+    : getFluentString('global-text-value-saving') + ` - (${percent}%)`;
+
   const submitBtn = allDataAvailable
-      ? <SubmitButton onClick={onConfirm}>{getFluentString('global-text-value-submit')}</SubmitButton>
+      ? <SubmitButton onClick={onConfirm}>{submitBtnText}</SubmitButton>
       : null;
 
+  const style: React.CSSProperties = isLoading === false ? {} : {
+    pointerEvents: 'none',
+    opacity: 0.5,
+  };
+
   const actions = (
-    <ButtonWrapper>
+    <ButtonWrapper style={style}>
       <CancelButton onClick={onCancel}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>

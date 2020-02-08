@@ -22,7 +22,9 @@ export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
 export const lowWarningColorLight = '#f2e4b3';
 export const lowWarningColor = '#d6aa0a';
+export const lowWarningColorHover = '#ebc12a';
 export const lowWarningColorDark = '#8a7e54';
+export const lowWarningColorTextOverlay = '#312c1a';
 
 export const successColor = '#658238';
 export const successColorLight = '#d0e3b1';
@@ -214,6 +216,15 @@ export const ButtonWarning = styled(ButtonBase)`
   }
 `;
 
+export const ButtonWarningLow = styled(ButtonBase)`
+  background-color: ${lowWarningColor};
+  color: ${lowWarningColorTextOverlay};
+
+  &:hover {
+    background-color: ${lowWarningColorHover};
+  }
+`;
+
 export const ButtonPrimaryLink = styled(DynamicLink)`
   padding: 0.6rem;
   text-transform: uppercase;
@@ -260,7 +271,7 @@ export const GhostButton = styled(ButtonBase)`
 
 export const FloatingButtonContainer = styled.div`
   position: sticky;
-  z-index: 150;
+  z-index: 90;
   bottom: 0;
   width: 100%;
   display: flex;
@@ -413,5 +424,33 @@ export const SelectBox = styled.select`
   &:hover {
     cursor: pointer;
     background-color: white;
+  }
+`;
+
+export const PreFormattedParagraph = styled.p`
+  margin-top: 0;
+  white-space: pre-wrap;
+`;
+
+export const CollapsedParagraph = styled.p`
+  margin: 0;
+`;
+
+export const ResourceList = styled.ul`
+  margin-top: 0;
+  padding-left: 0;
+  list-style: none;
+`;
+
+export const ResourceItem = styled.li`
+  padding-left: 1rem;
+  position: relative;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+
+  &:before {
+    content: '›';
+    position: absolute;
+    left: 0.5rem;
   }
 `;

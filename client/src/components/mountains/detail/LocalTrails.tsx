@@ -7,13 +7,15 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { AllTrailsLink, generateHikingProjectLink } from '../../../routing/externalLinks';
-import { SemiBold } from '../../../styling/styleUtils';
+import { CollapsedParagraph } from '../../../styling/styleUtils';
 import getTrails from '../../../utilities/getTrails';
 import { getDistanceFromLatLonInMiles } from '../../../Utils';
 import { genericWords } from '../../peakLists/import';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import {
   BasicListItem,
+  BasicUnorderedListContainer,
+  BasicUnorderedListItem,
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
@@ -98,14 +100,16 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
 
   let output: React.ReactElement<any> | null;
   if (error !== null) {
-    output = <BasicListItem>{getFluentString('local-trails-hiking-project-network-error')}</BasicListItem>;
+    output = (
+      <BasicUnorderedListItem>{getFluentString('local-trails-hiking-project-network-error')}</BasicUnorderedListItem>
+    );
   } else if (trails === null) {
     output = <LoadingSpinner />;
   } else if (trails.length === 0) {
     output = (
-      <BasicListItem>
+      <BasicUnorderedListItem>
         {getFluentString('local-trails-hiking-project-no-trails', {'mountain-name': mountainName})}
-      </BasicListItem>);
+      </BasicUnorderedListItem>);
   } else if (trails) {
     const mtnNameSafe = mountainName.toLowerCase().trim().split(/\W+/).filter(w => !genericWords.includes(w));
     const filteredTrails: TrailsDatum[] = [];
@@ -126,26 +130,26 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
     const sortedTrails = sortBy(filteredTrails, ['length', 'ascent']).reverse();
     const trailElements: Array<React.ReactElement<any>> = sortedTrails.map(trail => {
       return (
-        <BasicListItem key={trail.id}>
-          <a href={trail.url} target='_blank' rel='noopener noreferrer'><SemiBold>{trail.name}</SemiBold></a>
+        <BasicUnorderedListItem key={trail.id}>
+          <a href={trail.url} target='_blank' rel='noopener noreferrer'>{trail.name}</a>
           {' - '}
           {getFluentString('local-trails-hiking-project-feet-elevation', {
             miles: trail.length,
             elevation: trail.ascent.toString(),
           })}
-        </BasicListItem>
+        </BasicUnorderedListItem>
       );
     });
     if (trailElements.length === 0) {
       output = (
-        <BasicListItem>
+        <BasicUnorderedListItem>
           {getFluentString('local-trails-hiking-project-no-trails', {'mountain-name': mountainName})}
-        </BasicListItem>);
+        </BasicUnorderedListItem>);
     } else {
       output = (
-        <>
+        <BasicUnorderedListContainer>
           {trailElements}
-        </>
+        </BasicUnorderedListContainer>
       );
     }
   } else {
@@ -159,11 +163,13 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
           {getFluentString('local-trails-nearby-trails-title')}
         </ItemTitle>
         <BasicListItem>
-          <AllTrailsLink
-            lat={latitude}
-            long={longitude}
-            text={getFluentString('local-trails-all-trails-link-text', {'mountain-name': mountainName})}
-          />
+          <CollapsedParagraph>
+            <AllTrailsLink
+              lat={latitude}
+              long={longitude}
+              text={getFluentString('local-trails-all-trails-link-text', {'mountain-name': mountainName})}
+            />
+          </CollapsedParagraph>
         </BasicListItem>
       </VerticalContentItem>
       <VerticalContentItem>

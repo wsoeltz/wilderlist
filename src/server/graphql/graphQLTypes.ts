@@ -11,6 +11,8 @@ export interface State {
   regions: Array<Region | null>;
   mountains: Array<Mountain | null>;
   peakLists: Array<PeakList | null> | null;
+  numPeakLists: number;
+  numMountains: number;
 }
 
 export enum CreatedItemStatus {
@@ -43,7 +45,8 @@ export interface Mountain {
   author: User | null;
   status: CreatedItemStatus | null;
   flag: MountainFlag | null;
-
+  description: string | null;
+  resources: ExternalResource[] | null;
 }
 
 export enum PeakListVariants {
@@ -89,6 +92,7 @@ export interface PeakList {
   searchString: string;
   states: Array<State | null> | null;
   children: Array<PeakList | null> | null;
+  siblings: Array<PeakList | null> | null;
   resources: ExternalResource[] | null;
   author: User | null;
   status: CreatedItemStatus | null;
@@ -145,6 +149,7 @@ export interface User {
   id: string;
   googleId: string | null;
   redditId: string | null;
+  facebookId: string | null;
   name: string;
   email: string | null;
   profilePictureUrl: string;

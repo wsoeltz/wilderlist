@@ -8,7 +8,6 @@ const TextContainer = styled.span`
   display: inline-block;
   margin-right: 0.6rem;
   text-decoration: underline;
-  font-weight: 600;
 `;
 
 const ExternalLink = styled.a`

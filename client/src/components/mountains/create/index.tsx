@@ -14,7 +14,7 @@ import {
   ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, User } from '../../../types/graphQLTypes';
+import { ExternalResource, Mountain, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
@@ -22,21 +22,39 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
 
-const GET_MOUNTAIN_AND_STATES = gql`
-  query getMountain($id: ID) {
-    mountain(id: $id) {
+const mountainQuery = `
       id
       name
       elevation
       latitude
       longitude
+      description
+      resources {
+        title
+        url
+      }
       state {
         id
+        name
+        abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       author {
         id
       }
       flag
+`;
+
+const GET_MOUNTAIN_AND_STATES = gql`
+  query getMountain($id: ID) {
+    mountain(id: $id) {
+      ${mountainQuery}
     }
     states {
       id
@@ -46,75 +64,49 @@ const GET_MOUNTAIN_AND_STATES = gql`
   }
 `;
 
+const mountainVariableTypes = `
+  $name: String!,
+  $elevation: Float!,
+  $latitude: Float!,
+  $longitude: Float!,
+  $state: ID!,
+  $description: String,
+  $resources: [ExternalResourcesInputType],
+`;
+
+const mountainBaseVariables = `
+  name: $name,
+  elevation: $elevation,
+  latitude: $latitude,
+  longitude: $longitude,
+  state: $state,
+  description: $description,
+  resources: $resources,
+`;
+
 export const ADD_MOUNTAIN = gql`
   mutation(
-    $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!, $author: ID!,
+    $author: ID!,
+    ${mountainVariableTypes}
   ) {
     mountain: addMountain(
-      name: $name,
-      elevation: $elevation,
-      latitude: $latitude,
-      longitude: $longitude,
-      state: $state,
+      ${mountainBaseVariables}
       author: $author,
     ) {
-      id
-      name
-      elevation
-      latitude
-      longitude
-      state {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-      author {
-        id
-      }
-      flag
+      ${mountainQuery}
     }
   }
 `;
 const EDIT_MOUNTAIN = gql`
   mutation(
-    $id: ID!, $name: String!, $elevation: Float!, $latitude: Float!, $longitude: Float!, $state: ID!,
+    $id: ID!,
+    ${mountainVariableTypes}
   ) {
     mountain: updateMountain(
       id: $id,
-      name: $name,
-      elevation: $elevation,
-      latitude: $latitude,
-      longitude: $longitude,
-      state: $state,
+      ${mountainBaseVariables}
     ) {
-      id
-      name
-      elevation
-      latitude
-      longitude
-      state {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-      author {
-        id
-      }
-      flag
+      ${mountainQuery}
     }
   }
 `;
@@ -127,6 +119,8 @@ export interface MountainSuccessResponse {
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
     state: Mountain['state'];
+    description: Mountain['description'];
+    resources: Mountain['resources'];
     author: null | {
       id: User['id'];
     }
@@ -144,6 +138,8 @@ export interface BaseMountainVariables {
   latitude: number;
   longitude: number;
   state: string;
+  description: string | null;
+  resources: ExternalResource[] | null;
 }
 
 export interface AddMountainVariables extends BaseMountainVariables {
@@ -232,13 +228,23 @@ const MountainCreatePage = (props: Props) => {
     };
 
     if (data.mountain && data.mountain.author && data.mountain.author.id === userId) {
-      const {mountain: {name, state, flag}, mountain} = data;
+      const {mountain: {name, state, flag, description, resources}, mountain} = data;
+      const nonNullResources: ExternalResource[] = [];
+      if (resources) {
+        resources.forEach(rsrc => {
+          if (rsrc !== null && rsrc.title.length && rsrc.url.length) {
+            nonNullResources.push({title: rsrc.title, url: rsrc.url});
+          }
+        });
+      }
       const initialMountain: InitialMountainDatum = {
         id: mountain.id,
         name,
         latitude: mountain.latitude.toString(),
         longitude: mountain.longitude.toString(),
         elevation: mountain.elevation.toString(),
+        description: description ? description : '',
+        resources: nonNullResources,
         state, flag,
       };
       mountainForm = (
@@ -265,6 +271,8 @@ const MountainCreatePage = (props: Props) => {
         elevation: '',
         state: null,
         flag: null,
+        description: '',
+        resources: [],
       };
       mountainForm = (
         <MountainForm

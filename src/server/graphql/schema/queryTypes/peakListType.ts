@@ -81,7 +81,7 @@ export const PeakListVariants = new GraphQLEnumType({
   },
 });
 
-const ExternalResourcesType: any = new GraphQLObjectType({
+export const ExternalResourcesType: any = new GraphQLObjectType({
   name: 'ExternalResourcesType',
   fields: () => ({
     id: { type: GraphQLID },
@@ -221,6 +221,20 @@ const PeakListType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         try {
           return PeakList.find({ parent: parentValue.id });
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    siblings:  {
+      type: new GraphQLList(PeakListType),
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            return PeakList.find({ parent: parentValue.parent, _id: { $ne: parentValue._id } });
+          } else {
+            return null;
+          }
         } catch (err) {
           return err;
         }

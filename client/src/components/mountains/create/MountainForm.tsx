@@ -8,6 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  ButtonPrimary,
   CheckboxInput,
   CheckboxRoot,
   GhostButton,
@@ -15,8 +16,10 @@ import {
   Label,
   LabelContainer,
   SelectBox,
+  TextareaBase,
 } from '../../../styling/styleUtils';
 import {
+  ExternalResource,
   Mountain,
   MountainFlag,
   State,
@@ -29,6 +32,7 @@ import {
   CheckboxLabel,
   DeleteButton,
   FullColumn,
+  ResourceContainer,
   Root,
   SaveButton,
   Title,
@@ -125,6 +129,8 @@ export interface InitialMountainDatum {
   elevation: string;
   state: null | { id: State['id']};
   flag: MountainFlag | null;
+  description: string;
+  resources: ExternalResource[];
 }
 
 interface Props {
@@ -149,6 +155,10 @@ const MountainForm = (props: Props) => {
   const [selectedState, setSelectedState] = useState<State['id'] | null>(
     initialData.state === null ? null : initialData.state.id,
   );
+
+  const [description, setDescription] = useState<string>(initialData.description);
+  const [externalResources, setExternalResources] =
+  useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
 
   const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -281,6 +291,42 @@ const MountainForm = (props: Props) => {
     );
   });
 
+  const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    (field: keyof ExternalResource, index: number) =>
+      setExternalResources(
+        externalResources.map((resource, _index) => {
+          if (resource[field] === e.target.value || index !== _index) {
+            return resource;
+          } else {
+            return {...resource, [field]: e.target.value};
+          }
+        },
+      ),
+    );
+
+  const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
+    e.preventDefault();
+    setExternalResources(externalResources.filter((_v, i) => i !== index));
+  };
+
+  const resourceInputs = externalResources.map((resource, i) => (
+    <ResourceContainer key={i}>
+      <InputBase
+        value={resource.title}
+        onChange={e => handleExternalResourceChange(e)('title', i)}
+        placeholder={getFluentString('global-text-value-resource-title')}
+      />
+      <InputBase
+        value={resource.url}
+        onChange={e => handleExternalResourceChange(e)('url', i)}
+        placeholder={getFluentString('global-text-value-resource-url')}
+      />
+      <GhostButton onClick={e => deleteResource(e)(i)}>
+        {getFluentString('global-text-value-delete')}
+      </GhostButton>
+    </ResourceContainer>
+  ));
+
   const preventSubmit = () =>
     (name && selectedState && latitude && longitude &&
      elevation && verifyChangesIsChecked && !loadingSubmit) ? false : true;
@@ -289,7 +335,9 @@ const MountainForm = (props: Props) => {
     if (name && selectedState && latitude && longitude &&
         elevation && verifyChangesIsChecked && !loadingSubmit) {
       setLoadingSubmit(true);
-      onSubmit({name, latitude, longitude, elevation, state: selectedState});
+      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
+      onSubmit({
+        name, latitude, longitude, elevation, state: selectedState, description, resources});
     }
   };
 
@@ -406,6 +454,41 @@ const MountainForm = (props: Props) => {
           autoComplete={'off'}
         />
       </div>
+      {map}
+      <FullColumn>
+        <LabelContainer htmlFor={'create-peak-list-description'}>
+          <Label>
+            {getFluentString('create-peak-list-peak-list-description-label')}
+            {' '}
+            <small>({getFluentString('global-text-value-optional')})</small>
+          </Label>
+        </LabelContainer>
+        <TextareaBase
+          id={'create-peak-list-description'}
+          rows={6}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder={getFluentString('create-mountain-optional-description')}
+          autoComplete={'off'}
+          maxLength={5000}
+        />
+      </FullColumn>
+      <FullColumn>
+        <LabelContainer>
+          <Label>
+            {getFluentString('global-text-value-external-resources')}
+            {' '}
+            <small>({getFluentString('global-text-value-optional')})</small>
+          </Label>
+        </LabelContainer>
+        {resourceInputs}
+        <ButtonPrimary onClick={e => {
+          e.preventDefault();
+          setExternalResources([...externalResources, {title: '', url: ''}]);
+        }}>
+          {getFluentString('global-text-value-add-external-resources')}
+        </ButtonPrimary>
+      </FullColumn>
       <FullColumn>
         <CheckboxRoot>
           <CheckboxInput
@@ -432,7 +515,6 @@ const MountainForm = (props: Props) => {
           </SaveButton>
         </ButtonWrapper>
       </FullColumn>
-      {map}
       {areYouSureModal}
     </Root>
   );

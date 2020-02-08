@@ -2,6 +2,7 @@ import { rgba } from 'polished';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
+  baseColor,
   boldFontWeight,
   lightBaseColor,
   lightBlue,
@@ -10,15 +11,18 @@ import {
   tertiaryColor,
 } from '../../../styling/styleUtils';
 
-export const ItemTitle = styled.div`
+export const ItemTitle = styled.h2`
   text-transform: uppercase;
   color: ${lightBaseColor};
   font-weight: ${semiBoldFontBoldWeight};
+  font-size: 1rem;
+  margin: 0;
 `;
 
 export const ContentItem = styled.div`
   border-bottom: solid 1px ${lightBorderColor};
   padding: 0.5rem 0;
+  margin: 0;
 `;
 
 export const VerticalContentItem = styled(ContentItem)`
@@ -28,6 +32,17 @@ export const VerticalContentItem = styled(ContentItem)`
 export const BasicListItem = styled.div`
   font-size: 0.9rem;
   margin: 0.4rem 0;
+`;
+
+export const BasicUnorderedListContainer = styled.ul`
+  padding: 0;
+  margin: 0;
+`;
+
+export const BasicUnorderedListItem = styled.li`
+  font-size: 0.9rem;
+  margin: 0.4rem 0;
+  list-style: none;
 `;
 
 export const AscentListItem = styled(BasicListItem)`
@@ -45,11 +60,12 @@ export const BoldLink = styled(Link)`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
-export const SectionTitle = styled.div`
+export const SectionTitle = styled.h4`
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: ${boldFontWeight};
-  margin-bottom: 0.2rem
+  margin-bottom: 0.2rem;
+  margin-top: 0;
 `;
 
 export const Section = styled.section`
@@ -76,9 +92,13 @@ export const ReportContainer = styled(BasicListItem)`
   }
 `;
 
-export const ReportHeader = styled.div`
+export const ReportHeader = styled.h3`
   display: flex;
   justify-content: space-between;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: ${baseColor};
 `;
 
 export const ReportBody = styled.div`

@@ -1,5 +1,7 @@
+/* tslint:disable:await-promise */
 import {
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
@@ -7,7 +9,7 @@ import {
 import mongoose, { Schema } from 'mongoose';
 import { State as IState } from '../../graphQLTypes';
 import MountainType from './mountainType';
-import PeakListType from './peakListType';
+import PeakListType, {PeakList} from './peakListType';
 import RegionType from './regionType';
 
 type StateSchemaType = mongoose.Document & IState;
@@ -63,6 +65,38 @@ const StateType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         try {
           return await peakListLoader.loadMany(parentValue.peakLists);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    numPeakLists: {
+      type: GraphQLInt,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          let count = 0;
+          if (parentValue.peakLists && parentValue.peakLists.length) {
+            count += parentValue.peakLists.length;
+            const childLists = await PeakList.find({ parent: { $in: parentValue.peakLists } });
+            if (childLists && childLists.length) {
+              count += childLists.length;
+            }
+          }
+          return count;
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    numMountains: {
+      type: GraphQLInt,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          let count = 0;
+          if (parentValue.mountains && parentValue.mountains.length) {
+            count += parentValue.mountains.length;
+          }
+          return count;
         } catch (err) {
           return err;
         }

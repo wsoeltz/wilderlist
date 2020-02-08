@@ -3,6 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
@@ -12,6 +13,9 @@ import {
   ButtonPrimaryLink,
   lightBorderColor,
   PlaceholderText,
+  PreFormattedParagraph,
+  ResourceItem,
+  ResourceList,
   SectionTitle,
 } from '../../../styling/styleUtils';
 import {
@@ -74,25 +78,6 @@ const LinkButton = styled(ButtonPrimaryLink)`
   font-size: 0.7rem;
 `;
 
-const ResourceList = styled.ul`
-  margin-top: 0;
-  padding-left: 0;
-  list-style: none;
-`;
-
-const ResourceItem = styled.li`
-  padding-left: 1rem;
-  position: relative;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-
-  &:before {
-    content: '›';
-    position: absolute;
-    left: 0.5rem;
-  }
-`;
-
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID!, $userId: ID) {
     peakList(id: $id) {
@@ -103,6 +88,18 @@ const GET_PEAK_LIST = gql`
       optionalPeaksDescription
       parent {
         id
+        name
+        type
+      }
+      children {
+        id
+        name
+        type
+      }
+      siblings {
+        id
+        name
+        type
       }
       author {
         id
@@ -193,6 +190,12 @@ export interface MountainDatum {
   };
 }
 
+interface ListVariantDatum {
+  id: PeakList['id'];
+  name: PeakList['name'];
+  type: PeakList['type'];
+}
+
 export interface PeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
@@ -204,7 +207,9 @@ export interface PeakListDatum {
   mountains: MountainDatum[] | null;
   optionalMountains: MountainDatum[] | null;
   states: StateDatum[] | null;
-  parent: null | { id: PeakList['id'] };
+  parent: null | ListVariantDatum;
+  children: null | ListVariantDatum[];
+  siblings: null | ListVariantDatum[];
   author: null | { id: User['id'] };
 }
 
@@ -317,7 +322,9 @@ const PeakListDetail = (props: Props) => {
           </PlaceholderText>
         );
       } else {
-        const {type, description, optionalPeaksDescription, resources} = peakList;
+        const {
+          type, description, optionalPeaksDescription, resources, children, parent, siblings,
+        } = peakList;
         const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
         const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
 
@@ -374,6 +381,75 @@ const PeakListDetail = (props: Props) => {
           ) : null;
         } else {
           resourcesList = null;
+        }
+        const parentVariant = parent && parent.name.length ? (
+          <ResourceItem key={parent.id}>
+            <Link to={listDetailLink(parent.id)}>
+              {parent.name} - {getFluentString('global-text-value-list-type', {type: parent.type})}
+            </Link>
+          </ResourceItem>
+        ) : null;
+
+        let otherVariants: React.ReactElement<any> | null;
+        if (children && children.length) {
+          const otherVariantsArray: Array<React.ReactElement<any>> = [];
+          children.forEach(child => {
+            if (child.name.length) {
+              otherVariantsArray.push(
+                <ResourceItem key={child.id}>
+                  <Link to={listDetailLink(child.id)}>
+                    {child.name} - {getFluentString('global-text-value-list-type', {type: child.type})}
+                  </Link>
+                </ResourceItem>,
+              );
+            }
+          });
+          otherVariants = otherVariantsArray.length ? (
+            <>
+              <SectionTitle>
+                {getFluentString('global-text-value-other-list-versions')}
+              </SectionTitle>
+              <ResourceList>
+                {parentVariant}
+                {otherVariantsArray}
+              </ResourceList>
+            </>
+          ) : null;
+        } else if (siblings && siblings.length) {
+          const otherVariantsArray: Array<React.ReactElement<any>> = [];
+          siblings.forEach(sibling => {
+            if (sibling.name.length) {
+              otherVariantsArray.push(
+                <ResourceItem key={sibling.id}>
+                  <Link to={listDetailLink(sibling.id)}>
+                    {sibling.name} - {getFluentString('global-text-value-list-type', {type: sibling.type})}
+                  </Link>
+                </ResourceItem>,
+              );
+            }
+          });
+          otherVariants = otherVariantsArray.length ? (
+            <>
+              <SectionTitle>
+                {getFluentString('global-text-value-other-list-versions')}
+              </SectionTitle>
+              <ResourceList>
+                {parentVariant}
+                {otherVariantsArray}
+              </ResourceList>
+            </>
+          ) : null;
+        } else {
+          otherVariants = parent && parent.name.length ? (
+          <>
+            <SectionTitle>
+              {getFluentString('global-text-value-other-list-versions')}
+            </SectionTitle>
+            <ResourceList>
+              {parentVariant}
+            </ResourceList>
+          </>
+        ) : null;
         }
 
         let colorScaleColors: string[];
@@ -454,7 +530,7 @@ const PeakListDetail = (props: Props) => {
         const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
           <>
             <h2>{getFluentString('peak-list-detail-text-optional-mountains')}</h2>
-            <p>{optionalMountainsText}</p>
+            <PreFormattedParagraph>{optionalMountainsText}</PreFormattedParagraph>
             <MountainTable
               user={user}
               mountains={optionalMountainsWithDates}
@@ -489,10 +565,11 @@ const PeakListDetail = (props: Props) => {
               key={peakListDetailMapKey}
               colorScaleLabels={colorScaleLabels}
             />
-            <p>
+            <PreFormattedParagraph>
               {paragraphText}
-            </p>
+            </PreFormattedParagraph>
             {resourcesList}
+            {otherVariants}
             <UserNote
               placeholder={notesPlaceholderText}
               defaultValue={defaultNoteText}

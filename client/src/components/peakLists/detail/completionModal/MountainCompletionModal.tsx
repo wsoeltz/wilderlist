@@ -54,6 +54,8 @@ import { DateType, formatStringDate } from '../../Utils';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import './react-datepicker.custom.css';
 
+export const preferredDateFormatLocalStorageVariable = 'preferredDateFormatLocalStorageVariable';
+
 const mobileWidth = 400; // in px
 
 const ColumnRoot = styled.div`
@@ -725,7 +727,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [completionMonth, setCompletionMonth] = useState<string>
     (initialCompletionMonth !== null ? initialCompletionMonth : '');
   const [completionYear, setCompletionYear] = useState<string>
-    (initialCompletionYear !== null ? initialCompletionYear : '');
+    (initialCompletionYear !== null ? initialCompletionYear : new Date().getFullYear().toString());
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [dateType, setDateType] = useState<DateType>(initialDateType);
@@ -961,6 +963,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       }
       sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
     }
+    localStorage.setItem(preferredDateFormatLocalStorageVariable, dateType);
   };
 
   const getDateToDelete = () => {

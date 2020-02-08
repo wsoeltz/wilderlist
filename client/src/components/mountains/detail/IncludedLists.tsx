@@ -3,6 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import {
@@ -10,8 +11,8 @@ import {
 } from '../../../styling/styleUtils';
 import { Mountain, PeakList } from '../../../types/graphQLTypes';
 import {
-  BasicListItem,
-  BoldLink,
+  BasicUnorderedListContainer,
+  BasicUnorderedListItem,
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
@@ -119,17 +120,17 @@ const IncludedLists = (props: Props) => {
       }
       const elevationRank = getRank(mountains, 'elevation');
       return (
-        <BasicListItem key={list.id}>
-          <BoldLink
+        <BasicUnorderedListItem key={list.id}>
+          <Link
             to={listDetailWithMountainDetailLink(list.id, mountainId)}
           >
             {list.name}
-          </BoldLink>
+          </Link>
           {' '}
           {getFluentString('mountain-detail-lists-mountain-appears-on-ranks', {
             'elevation-rank': elevationRank,
           })}
-        </BasicListItem>
+        </BasicUnorderedListItem>
       );
     });
 
@@ -140,7 +141,9 @@ const IncludedLists = (props: Props) => {
               'mountain-name': mountainName,
             })}
           </ItemTitle>
-          {listsText}
+          <BasicUnorderedListContainer>
+            {listsText}
+          </BasicUnorderedListContainer>
         </VerticalContentItem>
       );
 

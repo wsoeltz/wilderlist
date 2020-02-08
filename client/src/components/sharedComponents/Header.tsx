@@ -29,6 +29,15 @@ const HeaderContainer = styled(HeaderContainerBase)`
   z-index: 450;
 `;
 
+const SemanticLogoContainer = styled.h1`
+  margin: 0;
+  text-indent: -10000px;
+  overflow: hidden;
+  font-size: 0;
+  color: rgba(0, 0, 0, 0);
+  margin-right: auto;
+`;
+
 const LogoContainer = styled(Link)`
   text-indent: -10000px;
   overflow: hidden;
@@ -140,10 +149,12 @@ const Header = (props: RouteComponentProps) => {
       return (
         <>
           <HeaderContainer>
-            <LogoContainer to={Routes.Dashboard}>
-              {getFluentString('global-text-value-wilderlist-name')}
-              <Logo />
-            </LogoContainer>
+            <SemanticLogoContainer>
+              <LogoContainer to={Routes.Dashboard}>
+                {getFluentString('global-text-value-wilderlist-name')}
+                <Logo />
+              </LogoContainer>
+            </SemanticLogoContainer>
             <MainNav>
               {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
               {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}

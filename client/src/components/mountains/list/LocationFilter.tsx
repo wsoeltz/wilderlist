@@ -9,7 +9,7 @@ import {
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import { Mountain, State } from '../../../types/graphQLTypes';
+import { State } from '../../../types/graphQLTypes';
 import {
   Button,
   DropdownWrapper,
@@ -26,10 +26,7 @@ const GET_STATES_WITH_MOUNTAINS = gql`
       id
       name
       abbreviation
-      mountains {
-        id
-        name
-      }
+      numMountains
     }
   }
 `;
@@ -38,9 +35,7 @@ interface SuccessResponse {
   states: null | Array<{
     id: State['id'];
     name: State['name'];
-    mountains: Array<{
-      id: Mountain['id'];
-    }>
+    numMountains: State['numMountains'];
   }>;
 }
 
@@ -109,7 +104,7 @@ const LocationFilter = (props: Props) => {
       const { states } = data;
       const sortedStates = states ? sortBy(states, ['name']) : null;
       const stateList = sortedStates ? sortedStates.map(state => {
-        if (state.mountains && state.mountains.length) {
+        if (state.numMountains) {
           const onClick = () => {
             setIsMenuOpen(false);
             changeLocation(state.name);
@@ -118,9 +113,10 @@ const LocationFilter = (props: Props) => {
           return (
             <ListItem
               onClick={onClick}
+              tabIndex={0}
               key={state.id}
             >
-              {state.name} ({state.mountains.length})
+              {state.name} ({state.numMountains})
             </ListItem>
           );
         } else {
@@ -134,7 +130,7 @@ const LocationFilter = (props: Props) => {
       };
       dropdown = (
         <DropdownWrapper ref={menuNode}>
-          <ListItem onClick={everyWhereOnClick}>
+          <ListItem onClick={everyWhereOnClick} tabIndex={0}>
             {getFluentString('global-text-value-everywhere')}
           </ListItem>
           <HorizontalRule />
@@ -150,7 +146,7 @@ const LocationFilter = (props: Props) => {
 
   return (
     <Root ref={locationButtonEl}>
-      <Button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+      <Button onClick={() => setIsMenuOpen(!isMenuOpen)} tabIndex={0}>
         {children}
       </Button>
       {dropdown}

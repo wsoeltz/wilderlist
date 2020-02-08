@@ -5,9 +5,10 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { userProfileLink } from '../../../routing/Utils';
+import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
+  PreFormattedParagraph,
   SemiBold,
 } from '../../../styling/styleUtils';
 import {
@@ -46,8 +47,8 @@ const Title = styled(SemiBold)`
   margin-bottom: 1rem;
 `;
 
-const Text = styled.div`
-  white-space: pre-wrap;
+const Text = styled(PreFormattedParagraph)`
+  margin: 0;
 `;
 
 interface Props {
@@ -126,14 +127,16 @@ const AreYouSureModal = (props: Props) => {
     mountainList = (
       <Section>
         <SectionTitle>{getFluentString('global-text-value-mountain')}: </SectionTitle>
-        {filteredMountains[0].name}
+        <Link to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</Link>
       </Section>
     );
   } else if (filteredMountains.length === 2) {
     mountainList = (
       <Section>
         <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
-        {filteredMountains[0].name + ' and ' + filteredMountains[1].name}
+        <Link to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</Link>
+        {' and '}
+        <Link to={mountainDetailLink(filteredMountains[1].id)}>{filteredMountains[1].name}</Link>
       </Section>
     );
   } else {
@@ -142,18 +145,21 @@ const AreYouSureModal = (props: Props) => {
       if (i === filteredMountains.length - 2) {
         mountainsText.push(
           <React.Fragment  key={mountain.id + tripReport.id}>
-            {mountain.name + ' and '}
+            <Link to={mountainDetailLink(mountain.id)}>{mountain.name}</Link>
+            {' and '}
           </React.Fragment>,
         );
       } else if (i === filteredMountains.length - 1) {
         mountainsText.push(
-          <React.Fragment key={mountain.id + tripReport.id}>{mountain.name}</React.Fragment>,
+          <Link to={mountainDetailLink(mountain.id)} key={mountain.id + tripReport.id}>
+            {mountain.name}
+          </Link>,
         );
       } else {
         mountainsText.push(
-          <React.Fragment  key={mountain.id + tripReport.id}>
+          <Link to={mountainDetailLink(mountain.id)} key={mountain.id + tripReport.id}>
             {mountain.name + ', '}
-          </React.Fragment>,
+          </Link>,
         );
       }
     });
