@@ -24,7 +24,7 @@ import {
   facebookBlue,
   googleBlue,
   LoginButtonBase,
-  LoginText,
+  LoginText as LoginTextBase,
   redditRed,
 } from '../login';
 
@@ -63,9 +63,16 @@ const openContainerStyles: React.CSSProperties = {
 
 const LoginButton = styled(LoginButtonBase)`
   margin: 0.5rem 0.5rem;
+  min-width: 0;
   max-width: 200px;
   max-height: 50px;
   border: 1px solid ${lightBorderColor};
+`;
+
+const LoginText = styled(LoginTextBase)`
+  @media (max-width: 500px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const charLimit = 5000;
