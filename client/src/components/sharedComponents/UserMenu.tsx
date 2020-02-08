@@ -5,8 +5,7 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
-// import raw from 'raw.macro';
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { Routes } from '../../routing/routes';
@@ -19,6 +18,7 @@ import {
   tertiaryColor,
 } from '../../styling/styleUtils';
 import { PermissionTypes, User } from '../../types/graphQLTypes';
+import { AppContext } from '../App';
 import {
   BrandIcon as BrandIconBase,
   facebookBlue,
@@ -127,20 +127,29 @@ const loginButtonMediumSmallScreen = 850; // in px
 const loginButtonSmallScreen = 630; // in px
 
 const LoginButton = styled(LoginButtonBase)`
+  min-width: 85px;
+  margin: auto 5px;
+
   &:not(:last-child) {
     margin-right: 0;
   }
 
-  @media(max-width: ${loginButtonMediumSmallScreen}px) {
-    margin: auto 10px;
-    min-width: 122px;
+  @media(min-width: ${loginButtonMediumSmallScreen}px) {
+    margin: auto 8px;
+    min-width: 120px;
   }
 
   @media(max-width: ${loginButtonSmallScreen}px) {
-    margin: auto 5px;
-    min-width: 65px;
+    min-width: 68px;
   }
 `;
+
+const LoginButtonListItem = styled(LoginButtonBase)`
+  margin: 0;
+  border-radius: 0;
+  width: 160px;
+`;
+
 const BrandIcon = styled(BrandIconBase)`
   @media(max-width: ${loginButtonMediumSmallScreen}px) {
     font-size: 16px;
@@ -157,17 +166,6 @@ const LoginText = styled(LoginTextBase)`
     font-size: 10px;
     padding: 6px;
   }
-
-  @media(max-width: ${loginButtonSmallScreen}px) {
-    font-size: 0;
-    padding: 0;
-
-    &:after {
-      content: 'Sign in';
-      font-size: 10px;
-      padding: 6px;
-    }
-  }
 `;
 
 const Caret = styled(FontAwesomeIcon)`
@@ -175,7 +173,7 @@ const Caret = styled(FontAwesomeIcon)`
 `;
 
 interface UserMenuListProps {
-  user: User;
+  user: User | null;
   adminPanel: React.ReactElement<any> | null;
   closeUserMenu: () => void;
   getFluentString: GetString;
@@ -196,38 +194,69 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
       document.removeEventListener('mousedown', handleClick);
     };
   });
-  return (
-    <UserMenuListContainer ref={node} onClick={closeUserMenu}>
-      <UserMenuLink to={comparePeakListLink(userId, 'none')}>
-        {getFluentString('header-text-menu-my-profile')}
-      </UserMenuLink>
-      <UserMenuLink to={Routes.UserSettings}>
-        {getFluentString('header-text-menu-settings')}
-      </UserMenuLink>
-      <UserMenuLink to={Routes.PrivacyPolicy}>
-        {getFluentString('header-text-menu-privacy-policy')}
-      </UserMenuLink>
-      {adminPanel}
-      <UserMenuAnchor href='/api/logout'>
-        {getFluentString('header-text-menu-item-logout')}
-      </UserMenuAnchor>
-    </UserMenuListContainer>
-  );
+  if (user) {
+    return (
+      <UserMenuListContainer ref={node} onClick={closeUserMenu}>
+        <UserMenuLink to={comparePeakListLink(userId, 'none')}>
+          {getFluentString('header-text-menu-my-profile')}
+        </UserMenuLink>
+        <UserMenuLink to={Routes.UserSettings}>
+          {getFluentString('header-text-menu-settings')}
+        </UserMenuLink>
+        <UserMenuLink to={Routes.PrivacyPolicy}>
+          {getFluentString('header-text-menu-privacy-policy')}
+        </UserMenuLink>
+        {adminPanel}
+        <UserMenuAnchor href='/api/logout'>
+          {getFluentString('header-text-menu-item-logout')}
+        </UserMenuAnchor>
+      </UserMenuListContainer>
+    );
+  } else {
+    return (
+      <UserMenuListContainer ref={node} onClick={closeUserMenu}>
+        <LoginButtonListItem href='/auth/google'>
+          <BrandIcon
+            icon={faGoogle}
+            style={{color: googleBlue}}
+          />
+          <LoginText>
+            {getFluentString('header-text-login-with-google')}
+          </LoginText>
+        </LoginButtonListItem>
+        <LoginButtonListItem href='/auth/facebook'>
+          <BrandIcon
+            icon={faFacebook}
+            style={{color: facebookBlue}}
+          />
+          <LoginText>
+            {getFluentString('header-text-login-with-facebook')}
+          </LoginText>
+        </LoginButtonListItem>
+        <LoginButtonListItem href='/auth/reddit'>
+          <BrandIcon
+            icon={faReddit}
+            style={{color: redditRed}}
+          />
+          <LoginText>
+            {getFluentString('header-text-login-with-reddit')}
+          </LoginText>
+        </LoginButtonListItem>
+      </UserMenuListContainer>
+    );
+  }
 };
 
-interface UserMenuComponentProps {
+interface Props {
   userMenuOpen: boolean;
   setUserMenuOpen: (value: boolean) => void;
-  user: User;
+  user: User | null;
   getFluentString: GetString;
 }
 
-type Props = UserMenuComponentProps |
-  { user: null,  getFluentString: GetString };
-
 const UserMenuComponent = (props: Props) => {
   const userMenuButtonEl = useRef<HTMLDivElement | null>(null);
-
+  const { windowWidth } = useContext(AppContext);
   useEffect(() => {
     if (userMenuButtonEl.current !== null) {
       const el = userMenuButtonEl.current;
@@ -278,38 +307,69 @@ const UserMenuComponent = (props: Props) => {
       </UserMenu>
     );
   } else {
+    if (windowWidth > loginButtonSmallScreen) {
+      output = (
+        <UserMenu>
+          <LoginButton href='/auth/google'>
+            <BrandIcon
+              icon={faGoogle}
+              style={{color: googleBlue}}
+            />
+            <LoginText>
+              {props.getFluentString('header-text-login-with-google')}
+            </LoginText>
+          </LoginButton>
+          <LoginButton href='/auth/facebook'>
+            <BrandIcon
+              icon={faFacebook}
+              style={{color: facebookBlue}}
+            />
+            <LoginText>
+              {props.getFluentString('header-text-login-with-facebook')}
+            </LoginText>
+          </LoginButton>
+          <LoginButton href='/auth/reddit'>
+            <BrandIcon
+              icon={faReddit}
+              style={{color: redditRed}}
+            />
+            <LoginText>
+              {props.getFluentString('header-text-login-with-reddit')}
+            </LoginText>
+          </LoginButton>
+        </UserMenu>
+      );
+    } else {
+      const {
+        userMenuOpen, setUserMenuOpen, getFluentString,
+      } = props;
 
-    output = (
-      <UserMenu>
-        <LoginButton href='/auth/google'>
-          <BrandIcon
-            icon={faGoogle}
-            style={{color: googleBlue}}
-          />
-          <LoginText>
-            {props.getFluentString('header-text-login-with-google')}
-          </LoginText>
-        </LoginButton>
-        <LoginButton href='/auth/facebook'>
-          <BrandIcon
-            icon={faFacebook}
-            style={{color: facebookBlue}}
-          />
-          <LoginText>
-            {props.getFluentString('header-text-login-with-facebook')}
-          </LoginText>
-        </LoginButton>
-        <LoginButton href='/auth/reddit'>
-          <BrandIcon
-            icon={faReddit}
-            style={{color: redditRed}}
-          />
-          <LoginText>
-            {props.getFluentString('header-text-login-with-reddit')}
-          </LoginText>
-        </LoginButton>
-      </UserMenu>
-    );
+      const userMenuList = userMenuOpen === true
+        ? (
+            <UserMenuList
+              user={null}
+              adminPanel={null}
+              closeUserMenu={() => setUserMenuOpen(false)}
+              getFluentString={getFluentString} />
+            )
+        : null;
+
+      output = (
+        <UserMenu>
+          <UserButton
+
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+          >
+            <div>
+              Login
+            </div>
+            <Caret icon={userMenuOpen === true ? 'caret-up' : 'caret-down'} />
+          </UserButton>
+          {userMenuList}
+        </UserMenu>
+      );
+    }
+
   }
   return (
     <div ref={userMenuButtonEl}>

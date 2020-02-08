@@ -185,6 +185,8 @@ const Header = (props: RouteComponentProps) => {
             </MainNav>
             <UserMenu
               user={user}
+              userMenuOpen={userMenuOpen}
+              setUserMenuOpen={setUserMenuOpen}
               getFluentString={getFluentString}
             />
           </HeaderContainer>
