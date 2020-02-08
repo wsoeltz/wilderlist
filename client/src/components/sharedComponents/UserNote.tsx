@@ -1,4 +1,5 @@
 import {
+  faFacebook,
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
@@ -20,6 +21,7 @@ import {
 import { UserContext } from '../App';
 import {
   BrandIcon,
+  facebookBlue,
   googleBlue,
   LoginButtonBase,
   LoginText,
@@ -135,6 +137,15 @@ const UserNote = (props: Props) => {
         />
         <LoginText>
           {getFluentString('header-text-login-with-google')}
+        </LoginText>
+      </LoginButton>
+      <LoginButton href='/auth/facebook'>
+        <BrandIcon
+          icon={faFacebook}
+          style={{color: facebookBlue}}
+        />
+        <LoginText>
+          {getFluentString('header-text-login-with-facebook')}
         </LoginText>
       </LoginButton>
       <LoginButton href='/auth/reddit'>
