@@ -1,4 +1,5 @@
 import {
+  faFacebook,
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
@@ -20,9 +21,10 @@ import {
 import { UserContext } from '../App';
 import {
   BrandIcon,
+  facebookBlue,
   googleBlue,
   LoginButtonBase,
-  LoginText,
+  LoginText as LoginTextBase,
   redditRed,
 } from '../login';
 
@@ -61,9 +63,16 @@ const openContainerStyles: React.CSSProperties = {
 
 const LoginButton = styled(LoginButtonBase)`
   margin: 0.5rem 0.5rem;
+  min-width: 0;
   max-width: 200px;
   max-height: 50px;
   border: 1px solid ${lightBorderColor};
+`;
+
+const LoginText = styled(LoginTextBase)`
+  @media (max-width: 500px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const charLimit = 5000;
@@ -135,6 +144,15 @@ const UserNote = (props: Props) => {
         />
         <LoginText>
           {getFluentString('header-text-login-with-google')}
+        </LoginText>
+      </LoginButton>
+      <LoginButton href='/auth/facebook'>
+        <BrandIcon
+          icon={faFacebook}
+          style={{color: facebookBlue}}
+        />
+        <LoginText>
+          {getFluentString('header-text-login-with-facebook')}
         </LoginText>
       </LoginButton>
       <LoginButton href='/auth/reddit'>

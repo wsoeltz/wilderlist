@@ -1,5 +1,6 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+  faFacebook,
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
@@ -33,7 +34,7 @@ library.add(
   faCaretDown, faCaretUp, faSearch, faCalendarAlt,
   faCheck, faEnvelope, faChevronLeft, faChevronRight,
   faList, faThList, faMapMarkerAlt, faSort, faSortDown,
-  faSortUp, faFileCsv, faGoogle, faReddit,
+  faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
 );
 
 const GlobalStyles = createGlobalStyle`
