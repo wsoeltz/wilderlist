@@ -30,6 +30,9 @@ if (process.env.FACEBOOK_APP_ID === undefined) {
 if (process.env.FACEBOOK_APP_SECRET === undefined) {
   throw new Error('Missing FACEBOOK_APP_SECRET');
 }
+if (process.env.FACEBOOK_REDIRECT_URI === undefined) {
+  throw new Error('Missing FACEBOOK_REDIRECT_URI');
+}
 
 passport.serializeUser((user: IUser, done) => {
   done(null, user.id);
@@ -167,7 +170,7 @@ const updateUserFacebook = async (profile: any) => {
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_APP_ID,
   clientSecret: process.env.FACEBOOK_APP_SECRET,
-  callbackURL: '/auth/facebook/callback',
+  callbackURL: process.env.FACEBOOK_REDIRECT_URI,
   profileFields: ['email', 'name', 'picture.type(large)'],
   }, async (accessToken, refreshToken, profile, done) => {
     try {
