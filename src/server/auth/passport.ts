@@ -1,6 +1,7 @@
 /* tslint:disable:await-promise */
 require('dotenv').config();
 import passport, { Profile } from 'passport';
+import { Strategy as FacebookStrategy} from 'passport-facebook';
 import { Strategy as GoogleStrategy} from 'passport-google-oauth20';
 import { Strategy as RedditStrategy} from 'passport-reddit';
 import { PermissionTypes, User as IUser } from '../graphql/graphQLTypes';
@@ -22,6 +23,12 @@ if (process.env.REDDIT_CLIENT_SECRET === undefined) {
 }
 if (process.env.REDDIT_STATE === undefined) {
   throw new Error('Missing REDDIT_STATE');
+}
+if (process.env.FACEBOOK_APP_ID === undefined) {
+  throw new Error('Missing FACEBOOK_APP_ID');
+}
+if (process.env.FACEBOOK_APP_SECRET === undefined) {
+  throw new Error('Missing FACEBOOK_APP_SECRET');
 }
 
 passport.serializeUser((user: IUser, done) => {
@@ -124,6 +131,79 @@ passport.use(new RedditStrategy({
       }
     } catch (err) {
       throw new Error('Unable to use Reddit Strategy');
+    }
+  }),
+);
+
+const updateUserFacebook = async (profile: any) => {
+  const {
+    id, emails, photos,
+    name, _json,
+  } = profile;
+  let username: string;
+  if (name !== undefined && name.familyName && name.givenName) {
+    const { familyName, givenName } = name;
+    username = givenName + ' ' + familyName;
+  } else if (_json && _json.last_name && _json.first_name) {
+    const { first_name, last_name } = _json;
+    username = first_name + ' ' + last_name;
+  } else {
+    throw new Error('Unable to get the user\'s name _json:' + _json + '\nname: ' + name);
+  }
+  const email = emails !== undefined ? emails[0].value : '';
+  const profilePictureUrl = photos !== undefined ? photos[0].value : '';
+  try {
+    const updatedUser = await User.findOneAndUpdate({ facebookId: id }, {
+      name: username,
+      email,
+      profilePictureUrl,
+    });
+    return updatedUser;
+  } catch (err) {
+    throw new Error('Unable to update user');
+  }
+};
+
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+  callbackURL: '/auth/facebook/callback',
+  profileFields: ['email', 'name', 'picture.type(large)'],
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      const existingUser = await User.findOne({ facebookId: profile.id });
+      if (existingUser) {
+        const updatedUser = await updateUserFacebook(profile);
+        done(undefined, updatedUser);
+      } else {
+        const {
+          id, emails, photos,
+          name, _json,
+        } = profile;
+        let username: string;
+        if (name !== undefined && name.familyName && name.givenName) {
+          const { familyName, givenName } = name;
+          username = givenName + ' ' + familyName;
+        } else if (_json && _json.last_name && _json.first_name) {
+          const { first_name, last_name } = _json;
+          username = first_name + ' ' + last_name;
+        } else {
+          throw new Error('Unable to get the user\'s name _json:' + _json + '\nname: ' + name);
+        }
+        const email = emails !== undefined ? emails[0].value : '';
+        const profilePictureUrl = photos !== undefined ? photos[0].value : '';
+        const user = await new User({
+          facebookId: id,
+          name: username,
+          email,
+          profilePictureUrl,
+          permissions: PermissionTypes.standard,
+        }).save();
+        done(undefined, user);
+        sendWelcomeEmail(email);
+      }
+    } catch (err) {
+      throw new Error('Unable to use Facebook Strategy');
     }
   }),
 );

@@ -149,6 +149,7 @@ export interface User {
   id: string;
   googleId: string | null;
   redditId: string | null;
+  facebookId: string | null;
   name: string;
   email: string | null;
   profilePictureUrl: string;
