@@ -1,4 +1,5 @@
 import {
+  faFacebook,
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
@@ -20,6 +21,7 @@ import {
 import { PermissionTypes, User } from '../../types/graphQLTypes';
 import {
   BrandIcon as BrandIconBase,
+  facebookBlue,
   googleBlue,
   LoginButtonBase,
   LoginText as LoginTextBase,
@@ -125,7 +127,7 @@ const loginButtonMediumSmallScreen = 850; // in px
 const loginButtonSmallScreen = 630; // in px
 
 const LoginButton = styled(LoginButtonBase)`
-  &:first-child:not(:last-child) {
+  &:not(:last-child) {
     margin-right: 0;
   }
 
@@ -286,6 +288,15 @@ const UserMenuComponent = (props: Props) => {
           />
           <LoginText>
             {props.getFluentString('header-text-login-with-google')}
+          </LoginText>
+        </LoginButton>
+        <LoginButton href='/auth/facebook'>
+          <BrandIcon
+            icon={faFacebook}
+            style={{color: facebookBlue}}
+          />
+          <LoginText>
+            {props.getFluentString('header-text-login-with-facebook')}
           </LoginText>
         </LoginButton>
         <LoginButton href='/auth/reddit'>

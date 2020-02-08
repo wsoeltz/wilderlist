@@ -147,6 +147,7 @@ global-text-value-list-tier-desc =
 
 header-text-login-with-google = Sign in With Google
 header-text-login-with-reddit = Sign in With Reddit
+header-text-login-with-facebook = Sign in With Facebook
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Lists
 header-text-menu-item-mountains = Mountains

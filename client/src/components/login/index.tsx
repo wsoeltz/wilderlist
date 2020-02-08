@@ -1,4 +1,5 @@
 import {
+  faFacebook,
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
@@ -15,7 +16,6 @@ import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/U
 import {
   lightBaseColor,
   linkColor,
-  semiBoldFontBoldWeight,
 } from '../../styling/styleUtils';
 import { getBrowser } from '../../Utils';
 
@@ -78,6 +78,7 @@ const LogoContainer = styled.div`
 `;
 
 export const googleBlue = '#4285f4';
+export const facebookBlue = '#1877F2';
 export const redditRed = '#ff4500';
 
 export const LoginButtonBase = styled.a`
@@ -92,7 +93,6 @@ export const LoginButtonBase = styled.a`
   text-decoration: none;
   border: 1px solid #efefef;
   color: ${lightBaseColor};
-  font-weight: ${semiBoldFontBoldWeight};
 
   &:hover {
     color: ${lightBaseColor};
@@ -196,6 +196,15 @@ const LoginPage = () => {
             />
             <LoginText>
               {getFluentString('header-text-login-with-google')}
+            </LoginText>
+          </SplashScreenLoginButton>
+          <SplashScreenLoginButton href='/auth/facebook'>
+            <BrandIcon
+              icon={faFacebook}
+              style={{color: facebookBlue}}
+            />
+            <LoginText>
+              {getFluentString('header-text-login-with-facebook')}
             </LoginText>
           </SplashScreenLoginButton>
           <SplashScreenLoginButton href='/auth/reddit'>
