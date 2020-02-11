@@ -1,4 +1,29 @@
 global-text-value-wilderlist-name = Wilderlist
+global-text-value-default-meta-description = Track, plan and share your hiking and mountaineering adventures.
+
+meta-data-list-search-default-title = Search hiking lists - Wilderlist
+meta-data-mtn-search-default-title = Search mountains - Wilderlist
+meta-data-friend-search-default-title = Friends - Wilderlist
+meta-data-settings-default-title = Settings - Wilderlist
+meta-data-dashboard-default-title = Dashboard - Wilderlist
+meta-data-privacy-default-title = Privacy Policy - Wilderlist
+meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
+meta-data-detail-default-title = { $title }{
+  $type ->
+    *[standard] {""}
+    [winter] , Winter
+    [fourSeason] , 4-Season
+    [grid] , Grid
+  } - Wilderlist
+meta-data-compare-peak-list-title = Comparing { $title }{
+  $type ->
+    *[standard] {""}
+    [winter] , Winter
+    [fourSeason] , 4-Season
+    [grid] , Grid
+  } with { $user } - Wilderlist
+meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
+
 
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous

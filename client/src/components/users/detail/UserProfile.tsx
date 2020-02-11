@@ -3,6 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import { History } from 'history';
 import React, {useContext} from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -149,6 +150,11 @@ const UserProfile = (props: Props) => {
 
         return (
           <>
+            <Helmet>
+              <title>{getFluentString('meta-data-detail-default-title', {
+                title: `${user.name}`,
+              })}</title>
+            </Helmet>
             <Header
               user={user}
               currentUserId={userId}

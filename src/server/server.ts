@@ -104,7 +104,7 @@ if (process.env.NODE_ENV === 'production') {
 
   const baseUrl = 'https://www.wilderlist.app';
   const defaultTitle = 'Wilderlist';
-  const defaultDescription = 'Track, plan and share your hiking and mountaineering.';
+  const defaultDescription = 'Track, plan and share your hiking and mountaineering adventures.';
 
   const path = require('path');
 

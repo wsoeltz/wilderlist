@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext, useEffect, useRef, useState} from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -347,12 +348,17 @@ const Settings = ({userId}: Props) => {
     output = null;
   }
   return (
-    <ContentLeftLarge>
-      <ContentBody>
-        <h1>{getFluentString('header-text-menu-settings')}</h1>
-        {output}
-      </ContentBody>
-    </ContentLeftLarge>
+    <>
+      <Helmet>
+        <title>{getFluentString('meta-data-settings-default-title')}</title>
+      </Helmet>
+      <ContentLeftLarge>
+        <ContentBody>
+          <h1>{getFluentString('header-text-menu-settings')}</h1>
+          {output}
+        </ContentBody>
+      </ContentLeftLarge>
+    </>
   );
 };
 
