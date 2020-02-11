@@ -239,6 +239,29 @@ const App: React.FC = () => {
           render={(props) => <MountainDetailPage {...props} userId={null} />}
         />
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        {/* Routes that may be shared while a user that is logged in
+            should redirect to the closest possible public page -> */}
+
+        <Route exact path={Routes.DashboardWithPeakListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+
+        <Route exact path={Routes.OtherUserPeakList}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.OtherUserPeakListDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.OtherUserPeakListCompare}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.ComparePeakListIsolated}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+        <Route exact path={Routes.ComparePeakListWithMountainDetail}
+          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        />
+
         <Route path={Routes.Login} component={LoginPage} />
       </Switch>
     );
