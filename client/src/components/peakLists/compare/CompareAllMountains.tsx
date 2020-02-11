@@ -2,6 +2,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
+import Helmet from 'react-helmet';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -161,6 +162,11 @@ const CompareAllMountains = (props: Props) => {
     });
     return (
       <>
+        <Helmet>
+          <title>{getFluentString('meta-data-compare-all-title', {
+            user: user.name,
+          })}</title>
+        </Helmet>
         <h1>Compare all ascents</h1>
         <ComparisonTable
           user={user}

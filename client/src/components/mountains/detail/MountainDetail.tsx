@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, { useContext, useState } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -406,6 +407,11 @@ const MountainDetail = (props: Props) => {
 
       return (
         <>
+          <Helmet>
+            <title>{getFluentString('meta-data-detail-default-title', {
+              title: `${name}, ${state.name}`,
+            })}</title>
+          </Helmet>
           <MountainNameHeader>
             {title}
             <div>

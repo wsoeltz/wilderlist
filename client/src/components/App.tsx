@@ -5,6 +5,7 @@ import 'cross-fetch/polyfill';
 import debounce from 'lodash/debounce';
 import 'normalize.css';
 import React, { useEffect, useState } from 'react';
+import Helmet from 'react-helmet';
 import {
   BrowserRouter as Router,
   Route,
@@ -248,6 +249,9 @@ const App: React.FC = () => {
       <AppContext.Provider value={appContext}>
         <ApolloProvider client={client}>
           <FluentText.Provider value={fluentValue}>
+            <Helmet>
+              <title>{'Wilderlist'}</title>
+            </Helmet>
             <GlobalStyles />
             <Router>
               <Root>

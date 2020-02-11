@@ -2,6 +2,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
+import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
 import {
@@ -257,6 +258,9 @@ const Dashboard = (props: Props) => {
 
   return (
     <>
+      <Helmet>
+        <title>{getFluentString('meta-data-dashboard-default-title')}</title>
+      </Helmet>
       <ContentLeftLarge>
         <SearchContainer>
           <StandardSearch

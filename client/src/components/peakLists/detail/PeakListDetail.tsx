@@ -3,6 +3,7 @@ import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
+import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -543,8 +544,16 @@ const PeakListDetail = (props: Props) => {
           </>
         ) : null;
 
+        const title = isOtherUser === true && user !== null
+          ? user.name + ' | ' + peakList.name : peakList.name;
+
         return (
           <>
+            <Helmet>
+              <title>{getFluentString('meta-data-detail-default-title', {
+                title, type: peakList.type,
+              })}</title>
+            </Helmet>
             {friendHeader}
             <Header
               user={user}
