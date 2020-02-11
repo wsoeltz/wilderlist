@@ -1,3 +1,6 @@
+// This should always reflect the routes found on the server at
+// src/routing/index.ts
+
 export enum Routes {
   Login = '/',
   Dashboard = '/',
