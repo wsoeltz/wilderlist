@@ -83,6 +83,7 @@ const GET_USER_PROFILE_DATA = gql`
       name
       email
       redditId
+      facebookId
       profilePictureUrl
       hideEmail
       hideProfilePicture
@@ -98,6 +99,7 @@ interface QuerySuccess {
     name: User['name'];
     email: User['email'];
     redditId: User['redditId'];
+    facebookId: User['facebookId'];
     profilePictureUrl: User['profilePictureUrl'];
     hideEmail: User['hideEmail'];
     hideProfilePicture: User['hideProfilePicture'];
@@ -214,7 +216,7 @@ const Settings = ({userId}: Props) => {
     console.error(error);
   } else if (data !== undefined) {
     const { user: {
-      name, profilePictureUrl, redditId,
+      name, profilePictureUrl, redditId, facebookId,
       hideEmail, hideProfilePicture, hideProfileInSearch, disableEmailNotifications,
     } } = data;
     let email: React.ReactElement<any> | null;
@@ -251,9 +253,15 @@ const Settings = ({userId}: Props) => {
         ? ( <DisabledInput value={data.user.email} readOnly={true} /> )
         : ( <DisabledInput value={'-------'} readOnly={true} /> );
     }
-    const helpTextFluentString = redditId
-      ? 'settings-page-sync-your-account-reddit'
-      : 'settings-page-sync-your-account-help';
+    let helpTextFluentString: string;
+    if (redditId) {
+      helpTextFluentString = 'settings-page-sync-your-account-reddit';
+    } else if (facebookId) {
+      helpTextFluentString = 'settings-page-sync-your-account-facebook';
+    } else {
+      helpTextFluentString = 'settings-page-sync-your-account-help';
+
+    }
 
     output = (
       <>
