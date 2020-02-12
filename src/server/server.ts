@@ -25,6 +25,7 @@ import {
   getType,
   Routes,
 } from './routing';
+import getSitemap from './routing/getSitemap';
 
 require('./auth/passport');
 
@@ -107,6 +108,12 @@ if (process.env.NODE_ENV === 'production') {
   const defaultDescription = 'Track, plan and share your hiking and mountaineering adventures.';
 
   const path = require('path');
+
+  app.get('/sitemap.xml', async (req, res) => {
+    const result = await getSitemap();
+    res.type('application/xml');
+    res.send(result);
+  });
 
   app.get(Routes.Login, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
