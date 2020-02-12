@@ -1,0 +1,4 @@
+# https://www.robotstxt.org/robotstxt.html
+Sitemap: https://www.wilderlist.app/sitemap.xml
+User-agent: *
+Disallow:
