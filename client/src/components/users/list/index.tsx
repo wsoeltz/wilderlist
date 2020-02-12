@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
@@ -208,6 +209,9 @@ const UserList = (props: Props) => {
     );
   return (
     <>
+      <Helmet>
+        <title>{getFluentString('meta-data-friend-search-default-title')}</title>
+      </Helmet>
       <ContentLeftSmall>
         <SearchContainer>
           <StandardSearch

@@ -1,4 +1,29 @@
 global-text-value-wilderlist-name = Wilderlist
+global-text-value-default-meta-description = Track, plan and share your hiking and mountaineering adventures.
+
+meta-data-list-search-default-title = Search hiking lists - Wilderlist
+meta-data-mtn-search-default-title = Search mountains - Wilderlist
+meta-data-friend-search-default-title = Friends - Wilderlist
+meta-data-settings-default-title = Settings - Wilderlist
+meta-data-dashboard-default-title = Dashboard - Wilderlist
+meta-data-privacy-default-title = Privacy Policy - Wilderlist
+meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
+meta-data-detail-default-title = { $title }{
+  $type ->
+    *[standard] {""}
+    [winter] , Winter
+    [fourSeason] , 4-Season
+    [grid] , Grid
+  } - Wilderlist
+meta-data-compare-peak-list-title = Comparing { $title }{
+  $type ->
+    *[standard] {""}
+    [winter] , Winter
+    [fourSeason] , 4-Season
+    [grid] , Grid
+  } with { $user } - Wilderlist
+meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
+
 
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous
@@ -163,9 +188,11 @@ notification-bar-ascent-marked = marked you as hiking
 
 login-page-tagline-text = Track, plan, and share progress towards your hiking goals
 
-settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
+settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
 
-settings-page-sync-your-account-reddit = To update your profile picture, you must change it from your Reddit account and then log back in here. If you made changes and they are not showing up, trying <a href="/api/logout">logging out</a> out and then logging back in.
+settings-page-sync-your-account-reddit = To update your profile picture, you must change it from your Reddit account and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
+
+settings-page-sync-your-account-facebook = To update your name, email, or profile picture, you must change it from your Facebook account and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
 
 settings-page-privacy-settings = Privacy Settings
 settings-page-display-email = Display your email address on your profile

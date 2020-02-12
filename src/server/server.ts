@@ -6,6 +6,7 @@ import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
 import { redirectToHTTPS } from 'express-http-to-https';
+import fs from 'fs';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import facebookAuth from './auth/facebook';
@@ -15,6 +16,15 @@ import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
 import requireLogin from './middleware/requireLogin';
 import notificationRoutes from './notifications';
+import {
+  getListData,
+  getListDescription,
+  getMountainData,
+  getMtnDescription,
+  getStateData,
+  getType,
+  Routes,
+} from './routing';
 
 require('./auth/passport');
 
@@ -91,15 +101,228 @@ app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
 notificationRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
+
+  const baseUrl = 'https://www.wilderlist.app';
+  const defaultTitle = 'Wilderlist';
+  const defaultDescription = 'Track, plan and share your hiking and mountaineering adventures.';
+
+  const path = require('path');
+
+  app.get(Routes.Login, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+    const canonicalUrl = baseUrl + req.path;
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, defaultTitle);
+      data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+      const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+      res.send(result);
+    });
+
+  });
+
   // Express will serve up production assets
   // like our main.js or main.css file
   app.use(express.static('client/build'));
 
+  // Serve up different meta data depending on the route, only necessary
+  // for pages that can be seen without logging in
+  app.get(Routes.PrivacyPolicy, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, 'Privacy Policy - Wilderlist');
+      data = data.replace(/\$CANONICAL_URL/g,
+        `https://www.wilderlist.app/list/${Routes.PrivacyPolicy}`,
+      );
+      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Privacy and Usage Policy.");
+      res.send(result);
+    });
+
+  });
+
+  app.get([
+    Routes.ListDetail, Routes.ListsWithDetail,
+    ], (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (req.params.id === 'search') {
+        data = data.replace(/\$OG_TITLE/g, 'Search Hiking Lists - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/list/search`);
+        const result  =
+          data.replace(/\$OG_DESCRIPTION/g,
+            /* tslint:disable */
+            'Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.');
+          /* tslint:enable */
+        res.send(result);
+      } else {
+        try {
+          const listData = await getListData(req.params.id);
+          if (listData !== null) {
+            // replace the special strings with server generated strings
+            data = data.replace(/\$OG_TITLE/g,
+              `${listData.name + getType(listData.type)} - Wilderlist`,
+            );
+            data = data.replace(/\$CANONICAL_URL/g,
+              `https://www.wilderlist.app/list/${req.params.id}`,
+            );
+            const result  = data.replace(/\$OG_DESCRIPTION/g, getListDescription(listData));
+            res.send(result);
+          } else {
+            throw new Error('Incorrect List ID ' + req.params.id);
+          }
+
+        } catch (err) {
+
+          console.error(err);
+          // replace the special strings with the default generated strings
+          const canonicalUrl = baseUrl + req.path;
+          data = data.replace(/\$OG_TITLE/g, defaultTitle);
+          data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+          res.send(result);
+
+        }
+      }
+
+    });
+
+  });
+
+  app.get(Routes.ListDetailWithMountainDetail, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const listData = await getListData(req.params.id);
+        if (listData !== null) {
+          const mtnData = await getMountainData(req.params.mountainId);
+          const mtnName = mtnData && mtnData.name ? '/' + mtnData.name : '';
+          // replace the special strings with server generated strings
+          data = data.replace(/\$OG_TITLE/g,
+            `${listData.name + getType(listData.type) + mtnName} - Wilderlist`,
+          );
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app/list/${req.params.id}`,
+          );
+          const result  = data.replace(/\$OG_DESCRIPTION/g, getListDescription(listData));
+          res.send(result);
+        } else {
+          throw new Error('Incorrect List ID ' + req.params.id);
+        }
+
+      } catch (err) {
+
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
+      }
+
+    });
+
+  });
+
+  app.get([
+    Routes.MountainSearchWithDetail, Routes.MountainDetail,
+    ], (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (req.params.id === 'search') {
+        data = data.replace(/\$OG_TITLE/g, 'Search Mountains - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/mountains/search`);
+        const result  =
+          data.replace(/\$OG_DESCRIPTION/g, 'Search for mountains and find maps, trails, weather and trip reports.');
+        res.send(result);
+      } else {
+        try {
+          const mtnData = await getMountainData(req.params.id);
+          if (mtnData !== null) {
+            const stateData = mtnData.state !== null ?
+              await getStateData(mtnData.state as unknown as string) : null;
+            const state = stateData && stateData.abbreviation
+              ? ` (${stateData.abbreviation})` : '';
+            // replace the special strings with server generated strings
+            data = data.replace(/\$OG_TITLE/g,
+              `${mtnData.name + state} - Wilderlist`,
+            );
+            data = data.replace(/\$CANONICAL_URL/g,
+              `https://www.wilderlist.app/mountain/${req.params.id}`,
+            );
+            const result  = data.replace(/\$OG_DESCRIPTION/g, getMtnDescription(mtnData, stateData));
+            res.send(result);
+          } else {
+            throw new Error('Incorrect List ID ' + req.params.id);
+          }
+
+        } catch (err) {
+
+          console.error(err);
+          // replace the special strings with the default generated strings
+          const canonicalUrl = baseUrl + req.path;
+          data = data.replace(/\$OG_TITLE/g, defaultTitle);
+          data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+          res.send(result);
+
+        }
+      }
+
+    });
+
+  });
+
   // Express will serve up index.html if it
   // does not recognize the route
-  const path = require('path');
+  // routingWithMetaData(app);
+
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../../client', 'build', 'index.html'));
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+    const canonicalUrl = baseUrl + req.path;
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, defaultTitle);
+      data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+      const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+      res.send(result);
+    });
+
   });
 }
 

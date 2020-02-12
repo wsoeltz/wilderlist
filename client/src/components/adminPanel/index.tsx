@@ -1,4 +1,5 @@
 import React from 'react';
+import Helmet from 'react-helmet';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -21,6 +22,9 @@ const NavItem = styled(Link)`
 const AdminPanel = () => {
   return (
     <Root>
+      <Helmet>
+        <title>{'Admin Panel - Wilderlist'}</title>
+      </Helmet>
       <h2>Admin Panel</h2>
       <AdminNav>
         <NavItem to={Routes.AdminRegions}>Regions</NavItem>
