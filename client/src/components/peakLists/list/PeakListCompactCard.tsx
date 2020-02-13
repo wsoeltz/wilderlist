@@ -31,7 +31,7 @@ const Card = styled(CardBase)`
   border-left-width: 8px;
 `;
 
-const SubtleText = styled.div`
+const SubtleText = styled.small`
   text-transform: uppercase;
   font-size: 0.85rem;
   opacity: 0.7;

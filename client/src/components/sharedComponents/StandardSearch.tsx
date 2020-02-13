@@ -64,7 +64,9 @@ const StandardSearch = (props: Props) => {
       if (focusOnMount === true) {
         node.focus();
       }
-      node.value = initialQuery;
+      if (!node.value) {
+        node.value = initialQuery;
+      }
     }
   }, [searchEl, focusOnMount, initialQuery]);
 
