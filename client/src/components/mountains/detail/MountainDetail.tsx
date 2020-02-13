@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import {
@@ -13,6 +13,7 @@ import {
   ButtonSecondaryLink,
   GhostButton,
   lightBorderColor,
+  LinkButton,
   lowWarningColorDark,
   PlaceholderText,
   PreFormattedParagraph,
@@ -28,6 +29,7 @@ import {
   State,
   User,
 } from '../../../types/graphQLTypes';
+import getDrivingDistances from '../../../utilities/getDrivingDistances';
 import { convertDMS, mobileSize } from '../../../Utils';
 import {
   isValidURL,
@@ -253,6 +255,8 @@ interface MountainNoteVariables {
   text: string;
 }
 
+const localStorageShowDrivingTimesVariable = 'localStorageShowDrivingTimesVariable';
+
 interface Props {
   userId: string | null;
   id: string;
@@ -273,6 +277,52 @@ const MountainDetail = (props: Props) => {
 
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
   const closeFlagModal = () => setIsFlagModalOpen(false);
+
+  const [usersLocation, setUsersLocation] = useState<{
+    error: string | undefined, latitude: number | undefined, longitude: number | undefined,
+  } | undefined>(undefined);
+  const [mountainLocation, setMountainLocation] = useState<{latitude: number, longitude: number} | undefined>();
+
+  const localShowDrivingDirectionsVariable = localStorage.getItem(localStorageShowDrivingTimesVariable);
+  const initialShowDrivingDrivingDirectionsVariable = localShowDrivingDirectionsVariable === 'true' ? true : false;
+  const [showDrivingDirections, setShowDrivingDirections] =
+    useState<boolean>(initialShowDrivingDrivingDirectionsVariable);
+  const [drivingDistance, setDrivingDistance] =
+    useState<{hours: number, minutes: number, miles: number} | null | 'loading'>(null);
+
+  useEffect(() => {
+    if (showDrivingDirections === true) {
+      const onSuccess = ({coords: {latitude, longitude}}: Position) => {
+        setUsersLocation({latitude, longitude, error: undefined});
+        localStorage.setItem(localStorageShowDrivingTimesVariable, 'true');
+      };
+      const onError = () => {
+        setUsersLocation({latitude: undefined, longitude: undefined, error: 'Unable to retrieve your location'});
+      };
+      if (!navigator.geolocation) {
+        setUsersLocation({
+          latitude: undefined, longitude: undefined, error: 'Geolocation is not supported by your browser',
+        });
+      } else {
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+      }
+    } else {
+      localStorage.setItem(localStorageShowDrivingTimesVariable, 'false');
+    }
+  }, [showDrivingDirections]);
+
+  useEffect(() => {
+    if (usersLocation !== undefined &&
+        usersLocation.latitude !== undefined &&
+        usersLocation.longitude !== undefined &&
+        mountainLocation !== undefined) {
+      getDrivingDistances(
+        usersLocation.latitude, usersLocation.longitude,
+        mountainLocation.latitude, mountainLocation.longitude)
+      .then(res => setDrivingDistance(res))
+      .catch(err => console.error(err));
+    }
+  }, [usersLocation, mountainLocation]);
 
   if (loading === true) {
     return <LoadingSpinner />;
@@ -296,6 +346,13 @@ const MountainDetail = (props: Props) => {
         name, elevation, state, lists, latitude, longitude,
         author, status, resources,
       } = mountain;
+
+      if (mountainLocation === undefined ||
+          mountainLocation.latitude !== latitude ||
+          mountainLocation.longitude !== longitude
+        ) {
+        setMountainLocation({latitude, longitude});
+      }
 
       const title = status === CreatedItemStatus.pending ? (
         <div>
@@ -405,6 +462,55 @@ const MountainDetail = (props: Props) => {
         resourcesList = null;
       }
 
+      let drivingDistanceContent: React.ReactElement<any>;
+      if (showDrivingDirections === false) {
+        drivingDistanceContent = (
+          <LinkButton
+            onClick={() => {
+              setShowDrivingDirections(true);
+              setDrivingDistance('loading');
+            }}
+          >
+            {getFluentString('mountain-detail-enable-driving-distances')}
+          </LinkButton>
+        );
+      } else {
+        let drivingDistanceText: React.ReactElement<any>;
+        if (usersLocation && usersLocation.error !== undefined) {
+          drivingDistanceText = <em>{usersLocation.error}</em>;
+        } else if (drivingDistance === 'loading') {
+          drivingDistanceText = (
+            <em>
+              {getFluentString('global-text-value-loading')}...
+            </em>
+          );
+        } else if (usersLocation === undefined || mountainLocation === undefined) {
+          drivingDistanceText = <em>{getFluentString('mountain-detail-driving-error-location')}</em>;
+        } else if (drivingDistance === null) {
+          drivingDistanceText = <em>{getFluentString('mountain-detail-driving-error-direction')}</em>;
+        } else {
+          drivingDistanceText = (
+            <a href={
+                'https://www.google.com/maps' +
+                  `?saddr=${usersLocation.latitude},${usersLocation.longitude}` +
+                  `&daddr=${mountainLocation.latitude},${mountainLocation.longitude}`
+              }
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {getFluentString('mountain-detail-driving-distance', {
+                hours: drivingDistance.hours,
+                minutes: drivingDistance.minutes,
+                miles: drivingDistance.miles,
+              })}
+            </a>
+          );
+        }
+        drivingDistanceContent = (
+          <>{drivingDistanceText}</>
+        );
+      }
+
       return (
         <>
           <Helmet>
@@ -450,6 +556,10 @@ const MountainDetail = (props: Props) => {
           <HorizontalContentItem>
             <ItemTitleShort>{getFluentString('global-text-value-state')}:</ItemTitleShort>
             <strong>{state.name}</strong>
+          </HorizontalContentItem>
+          <HorizontalContentItem>
+            <ItemTitleShort>{getFluentString('mountain-detail-driving-distance-title')}:</ItemTitleShort>
+            {drivingDistanceContent}
           </HorizontalContentItem>
           {regionsContent}
           <WeatherReport

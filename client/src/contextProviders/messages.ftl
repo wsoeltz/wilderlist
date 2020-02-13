@@ -312,6 +312,28 @@ mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
 mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak
 
+mountain-detail-enable-driving-distances = Enable Driving Distances
+mountain-detail-driving-distance = {
+  $hours ->
+    [0] {""}
+    [1] 1 hour
+    *[else] { $hours } hours
+} {
+  $minutes ->
+    [0] {""}
+    [1] 1 minute
+    *[else] { $minutes } minutes
+} ({
+  $miles ->
+    [0] You're already there!
+    [1] 1 mile
+    *[else] { $miles } miles
+})
+mountain-detail-driving-error-location = There was a problem getting your location.
+mountain-detail-driving-error-direction = There was probelm getting directions.
+mountain-detail-driving-distance-title = Driving Distance
+
+
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
 user-profile-requests-remove-friend = Remove Friend
