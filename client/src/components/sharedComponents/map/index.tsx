@@ -161,6 +161,7 @@ interface Props {
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
+  colorScaleTitle?: string;
   colorScaleColors: string[];
   colorScaleLabels: string[];
   fillSpace?: boolean;
@@ -172,6 +173,7 @@ const Map = (props: Props) => {
     userId, isOtherUser, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
+    colorScaleTitle,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -521,6 +523,7 @@ const Map = (props: Props) => {
         centerCoords={centerCoords}
         showCenterCrosshairs={showCenterCrosshairs}
         returnLatLongOnClick={returnLatLongOnClick}
+        colorScaleTitle={colorScaleTitle}
         colorScaleColors={colorScaleColors}
         colorScaleLabels={colorScaleLabels}
         ref={colorScaleRef}

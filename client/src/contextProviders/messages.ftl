@@ -363,10 +363,12 @@ user-card-not-currently-working-on = Not currently working on any lists
 map-completed = Completed
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
-map-no-seasons = No Seasons
-map-all-seasons = All Seasons
-map-no-months = No Months
-map-all-months = All Months
+map-number-of-seasons = Number of Seasons Hiked
+map-no-seasons = 0
+map-all-seasons = 4
+map-number-of-months = Number of Months Hiked
+map-no-months = 0
+map-all-months = 12
 
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Lat/Long to these values
