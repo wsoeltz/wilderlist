@@ -506,6 +506,8 @@ const UserCard = (props: Props) => {
         <ProfilePicture
           src={user.profilePictureUrl}
           style={{opacity}}
+          alt={user.name}
+          title={user.name}
         />
       );
 
