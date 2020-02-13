@@ -15,7 +15,17 @@ const ColorScaleLegend = styled.div`
   border-top: 1px solid ${lightBorderColor};
   background-color: ${tertiaryColor};
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+`;
+const LegendTitle = styled.h4`
+  margin: 0.3rem 0 0.6rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 600;
+  width: 100%;
+  flex-shrink: 0;
 `;
 const LegendItem = styled.div`
   margin: 0 0.3rem;
@@ -25,16 +35,28 @@ const LegendItem = styled.div`
   flex-direction: column;
   align-items: center;
 `;
+
+const circleSmallScreenSize = 400; // in px
+
 const Circle = styled.div`
   width: 15px;
   height: 15px;
   border-radius: 4000px;
   margin-bottom: 0.2rem;
+
+  @media (max-width: ${circleSmallScreenSize}px) {
+    width: 14px;
+    height: 14px;
+  }
 `;
 
 const GridLegendLabel = styled(LegendItem)`
   white-space: nowrap;
   width: 15px;
+
+  @media (max-width: ${circleSmallScreenSize}px) {
+    width: 14px;
+  }
 `;
 const GridLabelStart = styled(GridLegendLabel)`
   align-items: flex-start;
@@ -79,6 +101,7 @@ interface Props {
   centerCoords: [string, string];
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
+  colorScaleTitle?: string;
   colorScaleColors: string[];
   colorScaleLabels: string[];
 }
@@ -87,6 +110,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   const {
     centerCoords, colorScaleColors, colorScaleLabels,
     showCenterCrosshairs, returnLatLongOnClick,
+    colorScaleTitle,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -115,7 +139,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   } else {
     latLongLegend = null;
   }
-
+  const title = colorScaleTitle ? <LegendTitle>{colorScaleTitle}</LegendTitle> : null;
   const startColor = colorScaleColors[0];
   const endColor = colorScaleColors[colorScaleColors.length - 1];
 
@@ -130,6 +154,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     });
     return (
       <ColorScaleLegend ref={rootElRef}>
+        {title}
         {latLongLegend}
         {legendNodes}
       </ColorScaleLegend>
@@ -144,6 +169,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     });
     return (
       <ColorScaleLegend ref={rootElRef}>
+        {title}
         <SeasonLabelStart style={{color: startColor}}>
           {colorScaleLabels[0]}
         </SeasonLabelStart>
@@ -167,6 +193,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     });
     return (
       <ColorScaleLegend ref={rootElRef}>
+        {title}
         <GridLabelStart style={{color: startColor}}>
           <Circle style={{backgroundColor: startColor}} />
           {colorScaleLabels[0]}
