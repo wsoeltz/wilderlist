@@ -38,6 +38,7 @@ import CreatePeakList from './peakLists/create';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
 import PrivacyPolicy from './privacyPolicy';
+import PageNotFound from './sharedComponents/404';
 import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
@@ -205,9 +206,7 @@ const App: React.FC = () => {
         <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}
-        <Route
-          render={(props) => <Dashboard {...props} userId={user._id} />}
-        />
+        <Route component={PageNotFound} />
       </Switch>
     );
   } else {
@@ -262,7 +261,10 @@ const App: React.FC = () => {
           render={(props) => <PeakListDetailPage {...props} userId={null} />}
         />
 
-        <Route path={Routes.Login} component={LoginPage} />
+        <Route exact path={Routes.Login} component={LoginPage} />
+
+        {/* 404 Route -> */}
+        <Route component={PageNotFound} />
       </Switch>
     );
   }
