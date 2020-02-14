@@ -23,12 +23,29 @@ const ButtonWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-const DownloadLink = styled(CSVLink)`
+const DownloadButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const downloadLinkStyles = `
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   text-decoration: none;
   font-size: 0.9rem;
+  margin: 0.5rem 1rem;
+  max-width: 120px;
+`;
+
+const DownloadLink = styled.a`
+  ${downloadLinkStyles}
+`;
+
+const DownloadCSVLink = styled(CSVLink)`
+  ${downloadLinkStyles}
 `;
 
 const DownloadIcon = styled(FontAwesomeIcon)`
@@ -37,15 +54,20 @@ const DownloadIcon = styled(FontAwesomeIcon)`
   margin-bottom: 0.8rem;
 `;
 
+export enum SpecialExport {
+  nh48grid = 'nh48grid',
+}
+
 interface Props {
   mountains: MountainDatumWithDate[];
   type: PeakListVariants;
   listShortName: string;
   onCancel: () => void;
+  specialExport: SpecialExport | null;
 }
 
 const ExportAscentsModal = (props: Props) => {
-  const { onCancel, mountains, listShortName, type } = props;
+  const { onCancel, mountains, listShortName, type, specialExport } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -76,8 +98,8 @@ const ExportAscentsModal = (props: Props) => {
       'Sep', 'Oct', 'Nov', 'Dec',
     ];
   } else {
-    failIfValidOrNonExhaustive(type, 'Invalid value for ' + type);
     csvHeaders = [];
+    failIfValidOrNonExhaustive(type, 'Invalid value for ' + type);
   }
 
   const csvData: string[][] = [];
@@ -148,6 +170,13 @@ const ExportAscentsModal = (props: Props) => {
 
   const fileName = `wilderlist-${listShortName.toLowerCase()}-${type.toLowerCase()}.csv`;
 
+  const specialExportButton = specialExport === SpecialExport.nh48grid ? (
+    <DownloadLink href='/download/grid-application.xlsx'>
+      <DownloadIcon icon={'file-excel'} />
+      {getFluentString('download-official-grid-xlsx-button')}
+    </DownloadLink>
+  ) : null;
+
   return (
     <Modal
       onClose={onCancel}
@@ -155,15 +184,18 @@ const ExportAscentsModal = (props: Props) => {
       height={'auto'}
       actions={actions}
     >
-      <h2>{getFluentString('mountain-table-export-button')}</h2>
-      <DownloadLink
-        headers={csvHeaders}
-        data={csvData}
-        filename={fileName}
-      >
-        <DownloadIcon icon={'file-csv'} />
-        {getFluentString('download-csv-button')}
-      </DownloadLink>
+      <h2 style={{textAlign: 'center'}}>{getFluentString('mountain-table-export-button')}</h2>
+      <DownloadButtonsWrapper>
+        <DownloadCSVLink
+          headers={csvHeaders}
+          data={csvData}
+          filename={fileName}
+        >
+          <DownloadIcon icon={'file-csv'} />
+          {getFluentString('download-csv-button')}
+        </DownloadCSVLink>
+        {specialExportButton}
+      </DownloadButtonsWrapper>
     </Modal>
   );
 };

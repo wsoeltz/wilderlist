@@ -26,6 +26,7 @@ import {
   Routes,
 } from './routing';
 import getSitemap from './routing/getSitemap';
+import getGridApplication from './utilities/getGridApplication/index';
 
 require('./auth/passport');
 
@@ -110,9 +111,35 @@ if (process.env.NODE_ENV === 'production') {
   const path = require('path');
 
   app.get('/sitemap.xml', async (req, res) => {
-    const result = await getSitemap();
-    res.type('application/xml');
-    res.send(result);
+    try {
+      const result = await getSitemap();
+      res.type('application/xml');
+      res.send(result);
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
+  });
+
+  app.get('/download/grid-application.xlsx', async (req, res) => {
+    if (!req.user) {
+      throw new Error('You must be logged in');
+    }
+    try {
+      const fileName = 'grid-application.xlsx';
+      const workbook = await getGridApplication(req.user);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+      if (workbook !== undefined) {
+        await workbook.xlsx.write(res);
+        res.end();
+      } else {
+        throw new Error('Unable to write to xlsx');
+      }
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
   });
 
   app.get(Routes.Login, (req, res) => {
