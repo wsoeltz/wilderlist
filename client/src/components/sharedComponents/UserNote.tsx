@@ -26,7 +26,7 @@ import {
   LoginButtonBase,
   LoginText as LoginTextBase,
   redditRed,
-} from '../login';
+} from './SignUpModal';
 
 const Textarea = styled.textarea`
   padding: 0.5rem;

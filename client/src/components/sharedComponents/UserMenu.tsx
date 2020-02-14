@@ -26,7 +26,7 @@ import {
   LoginButtonBase,
   LoginText as LoginTextBase,
   redditRed,
-} from '../login';
+} from './SignUpModal';
 
 const UserMenu = styled.div`
   min-width: 200px;
