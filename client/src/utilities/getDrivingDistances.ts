@@ -5,10 +5,11 @@ const cache: any = setupCache({
   maxAge: 5 * 24 * 60 * 60 * 1000, // days * hours * minutes * seconds * milliseconds
 });
 
+const fetchDrivingData = axios.create({
+  adapter: cache.adapter,
+});
+
 const getDrivingDistance = async (lat1: number, long1: number, lat2: number, long2: number) => {
-  const fetchDrivingData = axios.create({
-    adapter: cache.adapter,
-  });
   try {
     const res = await fetchDrivingData(
       /* tslint:disable:max-line-length */

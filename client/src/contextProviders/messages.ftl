@@ -303,6 +303,7 @@ mountain-table-grid-date-note-text =
 mountain-table-import-button = Import Ascents from Spreadsheet
 mountain-table-export-button = Export Ascents
 download-csv-button = Download CSV
+download-official-grid-xlsx-button = Download Official Grid Application
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent

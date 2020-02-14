@@ -22,7 +22,7 @@ import {
 } from '../../../Utils';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import ExportAscentsModal from '../export';
+import ExportAscentsModal, {SpecialExport} from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import NewAscentReport from './completionModal/NewAscentReport';
@@ -855,8 +855,8 @@ const MountainTable = (props: Props) => {
       </>
     );
   } else {
-    failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
     titleColumns = null;
+    failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
   }
 
   let exportAscentsModal: React.ReactElement<any> | null;
@@ -867,6 +867,7 @@ const MountainTable = (props: Props) => {
         type={type}
         mountains={sortedMountains}
         onCancel={() => setIsExportModalOpen(false)}
+        specialExport={peakListId === NH48_GRID_OBJECT_ID ? SpecialExport.nh48grid : null}
       />
      );
   } else if (isExportModalOpen === true) {
