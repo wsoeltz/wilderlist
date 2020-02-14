@@ -227,7 +227,7 @@ const MountainSearchPage = (props: Props) => {
               </SelectButton>
             </LocationFilter>
             <StandardSearch
-              placeholder='Search mountains'
+              placeholder={getFluentString('global-text-value-search-mountains')}
               setSearchQuery={searchMountains}
               focusOnMount={true}
               initialQuery={initialSearchQuery}

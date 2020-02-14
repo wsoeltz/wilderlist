@@ -3,6 +3,7 @@ import {
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
@@ -11,17 +12,43 @@ import {
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
   GhostButton,
+  lightBaseColor,
   lightBorderColor,
 } from '../../styling/styleUtils';
-import {
-  BrandIcon,
-  facebookBlue,
-  googleBlue,
-  LoginButtonBase,
-  LoginText,
-  redditRed,
-} from '../login';
 import Modal from './Modal';
+
+export const googleBlue = '#4285f4';
+export const facebookBlue = '#1877F2';
+export const redditRed = '#ff4500';
+
+export const LoginButtonBase = styled.a`
+  background-color: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  margin: auto 20px;
+  max-height: 40px;
+  min-width: 168px;
+  max-width: 200px;
+  text-decoration: none;
+  border: 1px solid #efefef;
+  color: ${lightBaseColor};
+
+  &:hover {
+    color: ${lightBaseColor};
+    background-color: #efefef;
+  }
+`;
+
+export const BrandIcon = styled(FontAwesomeIcon)`
+  font-size: 20px;
+  margin-left: 8px;
+`;
+
+export const LoginText = styled.span`
+  font-size: 14px;
+  padding: 8px;
+`;
 
 const Root = styled.div`
   text-align: center;

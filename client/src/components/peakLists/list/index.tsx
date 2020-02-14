@@ -491,7 +491,7 @@ const PeakListPage = (props: Props) => {
               </SelectButton>
             </LocationFilter>
             <StandardSearch
-              placeholder='Search lists'
+              placeholder={getFluentString('global-text-value-search-hiking-lists')}
               setSearchQuery={searchPeakLists}
               focusOnMount={true}
               initialQuery={initialSearchQuery}

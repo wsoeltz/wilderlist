@@ -264,7 +264,7 @@ const Dashboard = (props: Props) => {
       <ContentLeftLarge>
         <SearchContainer>
           <StandardSearch
-            placeholder='Search lists'
+            placeholder={getFluentString('global-text-value-search-hiking-lists')}
             setSearchQuery={searchPeakLists}
             focusOnMount={false}
             initialQuery={''}

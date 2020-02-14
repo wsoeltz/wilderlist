@@ -168,7 +168,7 @@ export const SmallTextNote = styled.div`
 
 export const borderRadius = 6; // in px
 
-const ButtonBase = styled.button`
+export const ButtonBase = styled.button`
   padding: 0.4rem;
   text-transform: uppercase;
   color: #fff;

@@ -76,11 +76,15 @@ const NavLink = styled(Link)`
   justify-content: center;
   text-decoration: none;
   text-transform: uppercase;
-  min-width: 90px;
+  min-width: 100px;
   padding: 0 0.75rem;
 
   @media(max-width: ${smallHeaderBreakpoint}px) {
-    min-width: 20px;
+    min-width: 100px;
+  }
+
+  @media(max-width: 700px) {
+    padding: 0 0.2rem;
   }
 
   @media(max-width: 470px) {
