@@ -13,8 +13,10 @@ import {
   faChevronRight,
   faEnvelope,
   faFileCsv,
+  faFileExcel,
   faList,
   faMapMarkerAlt,
+  faMapSigns,
   faSearch,
   faSort,
   faSortDown,
@@ -35,6 +37,7 @@ library.add(
   faCheck, faEnvelope, faChevronLeft, faChevronRight,
   faList, faThList, faMapMarkerAlt, faSort, faSortDown,
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
+  faFileExcel, faMapSigns,
 );
 
 const GlobalStyles = createGlobalStyle`

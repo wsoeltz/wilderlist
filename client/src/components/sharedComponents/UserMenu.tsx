@@ -26,7 +26,7 @@ import {
   LoginButtonBase,
   LoginText as LoginTextBase,
   redditRed,
-} from '../login';
+} from './SignUpModal';
 
 const UserMenu = styled.div`
   min-width: 200px;
@@ -124,7 +124,7 @@ const UserImage = styled.img`
 `;
 
 const loginButtonMediumSmallScreen = 850; // in px
-const loginButtonSmallScreen = 630; // in px
+const loginButtonSmallScreen = 650; // in px
 
 const LoginButton = styled(LoginButtonBase)`
   min-width: 85px;

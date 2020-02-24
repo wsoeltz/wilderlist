@@ -31,6 +31,10 @@ global-text-value-navigation-prev = Previous
 global-text-value-list-view = List
 global-text-value-detail-view = Detail
 
+global-text-value-search-hiking-lists = Search hiking lists
+global-text-value-search-mountains = Search mountains
+global-text-value-search-users = Search users
+
 global-text-value-generic-user = Wilderlist User
 
 
@@ -175,7 +179,7 @@ header-text-login-with-reddit = Login With Reddit
 header-text-login-with-facebook = Login With Facebook
 
 header-text-menu-item-dashboard = Dashboard
-header-text-menu-item-lists = Lists
+header-text-menu-item-lists = Hiking Lists
 header-text-menu-item-mountains = Mountains
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
@@ -186,7 +190,17 @@ header-text-menu-privacy-policy = Privacy & Usage Policy
 
 notification-bar-ascent-marked = marked you as hiking
 
-login-page-tagline-text = Track, plan, and share progress towards your hiking goals
+login-page-plan-your-trip-title = Plan your trip
+login-page-plan-your-trip-desc = ● Maps ● Trails ● Weather ● Trip Reports ● Driving Distances
+login-page-track-your-adventure-title = Track your adventure
+login-page-track-your-adventure-li-1 = ● Track your hikes in one place, across all your hiking lists
+login-page-track-your-adventure-li-2 = ● Import existing hikes from any spreadsheet
+login-page-track-your-adventure-li-3 = ● Visualize your data and lifetime stats
+login-page-track-your-adventure-li-4 = ● Share and compare with friends and fellow hikers
+login-page-track-your-adventure-li-5 = ● Export and download your hiking data
+login-page-track-your-adventure-li-6 = ● Create and share your own lists
+login-page-sign-up-for-free = Sign Up For Free
+
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
 
@@ -303,6 +317,7 @@ mountain-table-grid-date-note-text =
 mountain-table-import-button = Import Ascents from Spreadsheet
 mountain-table-export-button = Export Ascents
 download-csv-button = Download CSV
+download-official-grid-xlsx-button = Download Official Grid Application
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent
@@ -311,6 +326,28 @@ mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
 mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak
+
+mountain-detail-enable-driving-distances = Enable Driving Distances
+mountain-detail-driving-distance = {
+  $hours ->
+    [0] {""}
+    [1] 1 hour
+    *[else] { $hours } hours
+} {
+  $minutes ->
+    [0] {""}
+    [1] 1 minute
+    *[else] { $minutes } minutes
+} ({
+  $miles ->
+    [0] You're already there!
+    [1] 1 mile
+    *[else] { $miles } miles
+})
+mountain-detail-driving-error-location = There was a problem getting your location.
+mountain-detail-driving-error-direction = There was probelm getting directions.
+mountain-detail-driving-distance-title = Driving Distance
+
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
@@ -341,10 +378,12 @@ user-card-not-currently-working-on = Not currently working on any lists
 map-completed = Completed
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
-map-no-seasons = No Seasons
-map-all-seasons = All Seasons
-map-no-months = No Months
-map-all-months = All Months
+map-number-of-seasons = Number of Seasons Hiked
+map-no-seasons = 0
+map-all-seasons = 4
+map-number-of-months = Number of Months Hiked
+map-no-months = 0
+map-all-months = 12
 
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Lat/Long to these values
@@ -536,4 +575,9 @@ create-peak-list-parent-or-copy-text =
 create-peak-list-has-parent-mountains = This list will reflect the same mountains as the selected parent
 create-peak-list-has-parent-optional-mountains = This list will reflect the same optional mountains as the selected parent
 create-peak-list-remove-parent = Remove Parent
+create-peak-list-search-mountain-to-add = Search mountains to add
+create-peak-list-selected-mountain-count = Selected mountains ({ $total } total)
 
+page-not-found-404-title = The page you are looking for seems to be off the trail.
+page-not-found-404-desc = Try searching what you are looking for at one of the following pages -
+page-not-found-404-contact = If you think this page should be here, contact us at <a href='mailto: wilderlistapp@gmail.com'>wilderlistapp@gmail.com</a>.

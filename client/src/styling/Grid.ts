@@ -183,6 +183,11 @@ export const ContentRightLarge = styled(BaseContentElement)`
   }
 `;
 
+export const ContentFull = styled(BaseContentElement)`
+  grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
+  grid-column: ${gridLines.pageLeft} / ${gridLines.pageRight};
+`;
+
 export const Root = styled(Grid)`
   /* Set overflow to hidden to ensure scroll bars never show up: */
   overflow: hidden;

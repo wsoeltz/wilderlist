@@ -240,7 +240,7 @@ const AreYouSureModal = (props: Props) => {
       />
       {selected}
       <StandardSearch
-        placeholder='Search lists'
+        placeholder={getFluentString('global-text-value-search-hiking-lists')}
         setSearchQuery={setSearchQuery}
         focusOnMount={true}
         initialQuery={searchQuery}

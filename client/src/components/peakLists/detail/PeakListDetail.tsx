@@ -453,27 +453,32 @@ const PeakListDetail = (props: Props) => {
         ) : null;
         }
 
+        let colorScaleTitle: string | undefined;
         let colorScaleColors: string[];
         let colorScaleLabels: string[];
         if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+          colorScaleTitle = undefined;
           colorScaleColors = twoColorScale;
           colorScaleLabels = [
             getFluentString('global-text-value-not-done'),
             getFluentString('global-text-value-done'),
           ];
         } else if (type === PeakListVariants.fourSeason) {
+          colorScaleTitle = getFluentString('map-number-of-seasons');
           colorScaleColors = fiveColorScale;
           colorScaleLabels = [
             getFluentString('map-no-seasons'),
             getFluentString('map-all-seasons'),
           ];
         } else if (type === PeakListVariants.grid) {
+          colorScaleTitle = getFluentString('map-number-of-months');
           colorScaleColors = thirteenColorScale;
           colorScaleLabels = [
             getFluentString('map-no-months'),
             getFluentString('map-all-months'),
           ];
         } else {
+          colorScaleTitle = undefined;
           colorScaleColors = [];
           colorScaleLabels = [];
           failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
@@ -570,9 +575,10 @@ const PeakListDetail = (props: Props) => {
               highlighted={highlightedMountain}
               userId={userId}
               isOtherUser={isOtherUser}
+              colorScaleTitle={colorScaleTitle}
               colorScaleColors={colorScaleColors}
-              key={peakListDetailMapKey}
               colorScaleLabels={colorScaleLabels}
+              key={peakListDetailMapKey}
             />
             <PreFormattedParagraph>
               {paragraphText}

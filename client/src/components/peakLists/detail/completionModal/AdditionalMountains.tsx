@@ -1,8 +1,12 @@
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../../contextProviders/getFluentLocalizationContext';
 import {
   lightBaseColor,
   lightBlue,
@@ -163,6 +167,9 @@ const AdditionalMountains = (props: Props) => {
     targetMountainId, selectedMountains, setSelectedMountains, expandedLayout,
   } = props;
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchSelectedQuery, setSearchSelectedQuery] = useState<string>('');
 
@@ -286,7 +293,7 @@ const AdditionalMountains = (props: Props) => {
       <TwoColumnRoot>
         <div style={{gridRow: 1, gridColumn: 1}}>
           <StandardSearch
-            placeholder='Search mountains to add'
+            placeholder={getFluentString('create-peak-list-search-mountain-to-add')}
             setSearchQuery={setSearchQuery}
             focusOnMount={false}
             initialQuery={searchQuery}
@@ -297,7 +304,7 @@ const AdditionalMountains = (props: Props) => {
         </CheckboxContainer>
         <div style={{gridRow: 1, gridColumn: 2}}>
           <StandardSearch
-            placeholder={`Selected mountains (${total} total)`}
+            placeholder={getFluentString('create-peak-list-selected-mountain-count', {total})}
             setSearchQuery={setSearchSelectedQuery}
             focusOnMount={false}
             initialQuery={searchSelectedQuery}
@@ -314,7 +321,7 @@ const AdditionalMountains = (props: Props) => {
         {selectedMountainsContainer}
         <SearchContainer>
           <StandardSearch
-            placeholder='Search mountains'
+            placeholder={getFluentString('global-text-value-search-mountains')}
             setSearchQuery={setSearchQuery}
             focusOnMount={false}
             initialQuery={searchQuery}
