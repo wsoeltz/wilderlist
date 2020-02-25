@@ -5,6 +5,7 @@ import 'cross-fetch/polyfill';
 import debounce from 'lodash/debounce';
 import 'normalize.css';
 import React, { useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
 import Helmet from 'react-helmet';
 import {
   BrowserRouter as Router,
@@ -43,6 +44,21 @@ import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserSettings from './users/settings';
+
+if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
+  ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});
+}
+const TrackedRoute = (props: any) => {
+  useEffect(() => {
+    const page = props.location.pathname;
+    ReactGA.set({page});
+    ReactGA.pageview(page);
+  }, [props.location.pathname]);
+
+  return (
+    <Route {...props}/>
+  );
+};
 
 const overlayPortalZIndex = 3000;
 
@@ -89,23 +105,23 @@ const App: React.FC = () => {
 
   const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (
       <>
-        <Route path={Routes.Admin}
-          render={props => <AdminPanel {...props} />}
+        <TrackedRoute path={Routes.Admin}
+          render={(props: any) => <AdminPanel {...props} />}
         />
-        <Route exact path={Routes.AdminStates}
-          render={props => <AdminStates {...props} />}
+        <TrackedRoute exact path={Routes.AdminStates}
+          render={(props: any) => <AdminStates {...props} />}
         />
-        <Route exact path={Routes.AdminPeakLists}
-          render={props => <AdminPeakLists {...props} />}
+        <TrackedRoute exact path={Routes.AdminPeakLists}
+          render={(props: any) => <AdminPeakLists {...props} />}
         />
-        <Route exact path={Routes.AdminMountains}
-          render={props => <AdminMountains {...props} />}
+        <TrackedRoute exact path={Routes.AdminMountains}
+          render={(props: any) => <AdminMountains {...props} />}
         />
-        <Route exact path={Routes.AdminRegions}
-          render={props => <AdminRegions {...props} />}
+        <TrackedRoute exact path={Routes.AdminRegions}
+          render={(props: any) => <AdminRegions {...props} />}
         />
-        <Route exact path={Routes.AdminUsers}
-          render={props => <AdminUsers {...props} />}
+        <TrackedRoute exact path={Routes.AdminUsers}
+          render={(props: any) => <AdminUsers {...props} />}
         />
       </>
     ) : null;
@@ -116,155 +132,155 @@ const App: React.FC = () => {
   } else if (user) {
     userRoutes = (
       <Switch>
-        <Route exact path={Routes.Dashboard}
-          render={(props) => <Dashboard {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.Dashboard}
+          render={(props: any) => <Dashboard {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.DashboardWithPeakListDetail}
-          render={(props) => <Dashboard {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.DashboardWithPeakListDetail}
+          render={(props: any) => <Dashboard {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.ListsWithDetail}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.ListsWithDetail}
+          render={(props: any) => (
             <PeakListPage {...props}
               userId={user._id}
               peakListPermissions={user.peakListPermissions}
             />
           )}
         />
-        <Route exact path={Routes.ListDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.ListDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.ListDetailWithMountainDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.ListDetailWithMountainDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.MountainSearchWithDetail}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.MountainSearchWithDetail}
+          render={(props: any) => (
             <ListMountainsPage {...props}
               userId={user._id}
               mountainPermissions={user.mountainPermissions}
             />
           )}
         />
-        <Route exact path={Routes.MountainDetail}
-          render={(props) => <MountainDetailPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.MountainDetail}
+          render={(props: any) => <MountainDetailPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.FriendsWithProfile}
-          render={(props) => <ListUsersPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.FriendsWithProfile}
+          render={(props: any) => <ListUsersPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.UserProfile}
-          render={(props) => <UserProfile {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.UserProfile}
+          render={(props: any) => <UserProfile {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.UserSettings}
-          render={(props) => <UserSettings {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.UserSettings}
+          render={(props: any) => <UserSettings {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.OtherUserPeakList}
-          render={(props) => <UserProfile {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.OtherUserPeakList}
+          render={(props: any) => <UserProfile {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.OtherUserPeakListDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.OtherUserPeakListDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.OtherUserPeakListCompare}
-          render={(props) => <UserProfile {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.OtherUserPeakListCompare}
+          render={(props: any) => <UserProfile {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.ComparePeakListIsolated}
-          render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.ComparePeakListIsolated}
+          render={(props: any) => <ComparePeakListPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.ComparePeakListWithMountainDetail}
-          render={(props) => <ComparePeakListPage {...props} userId={user._id} />}
+        <TrackedRoute exact path={Routes.ComparePeakListWithMountainDetail}
+          render={(props: any) => <ComparePeakListPage {...props} userId={user._id} />}
         />
-        <Route exact path={Routes.CreateMountain}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.CreateMountain}
+          render={(props: any) => (
             <CreateMountain {...props}
               userId={user._id}
               mountainPermissions={user.mountainPermissions}
             />
           )}
         />
-        <Route exact path={Routes.EditMountain}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.EditMountain}
+          render={(props: any) => (
             <CreateMountain {...props}
               userId={user._id}
               mountainPermissions={user.mountainPermissions}
             />
           )}
         />
-        <Route exact path={Routes.CreateList}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.CreateList}
+          render={(props: any) => (
             <CreatePeakList {...props}
               userId={user._id}
               peakListPermissions={user.peakListPermissions}
             />
           )}
         />
-        <Route exact path={Routes.EditList}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.EditList}
+          render={(props: any) => (
             <CreatePeakList {...props}
               userId={user._id}
               peakListPermissions={user.peakListPermissions}
             />
           )}
         />
-        <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}
-        <Route component={PageNotFound} />
+        <TrackedRoute component={PageNotFound} />
       </Switch>
     );
   } else {
     userRoutes = (
       <Switch>
-        <Route exact path={Routes.ListsWithDetail}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.ListsWithDetail}
+          render={(props: any) => (
             <PeakListPage {...props}
               userId={null}
               peakListPermissions={null}
             />
           )}
         />
-        <Route exact path={Routes.ListDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.ListDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.ListDetailWithMountainDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.ListDetailWithMountainDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.MountainSearchWithDetail}
-          render={(props) => (
+        <TrackedRoute exact path={Routes.MountainSearchWithDetail}
+          render={(props: any) => (
             <ListMountainsPage {...props}
               userId={null}
               mountainPermissions={null}
             />
           )}
         />
-        <Route exact path={Routes.MountainDetail}
-          render={(props) => <MountainDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.MountainDetail}
+          render={(props: any) => <MountainDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {/* Routes that may be shared while a user that is logged in
             should redirect to the closest possible public page -> */}
 
-        <Route exact path={Routes.DashboardWithPeakListDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.DashboardWithPeakListDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
 
-        <Route exact path={Routes.OtherUserPeakList}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.OtherUserPeakList}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.OtherUserPeakListDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.OtherUserPeakListDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.OtherUserPeakListCompare}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.OtherUserPeakListCompare}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.ComparePeakListIsolated}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.ComparePeakListIsolated}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
-        <Route exact path={Routes.ComparePeakListWithMountainDetail}
-          render={(props) => <PeakListDetailPage {...props} userId={null} />}
+        <TrackedRoute exact path={Routes.ComparePeakListWithMountainDetail}
+          render={(props: any) => <PeakListDetailPage {...props} userId={null} />}
         />
 
-        <Route exact path={Routes.Login} component={LoginPage} />
+        <TrackedRoute exact path={Routes.Login} component={LoginPage} />
 
         {/* 404 Route -> */}
-        <Route component={PageNotFound} />
+        <TrackedRoute component={PageNotFound} />
       </Switch>
     );
   }
