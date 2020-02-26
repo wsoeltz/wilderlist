@@ -105,22 +105,22 @@ const App: React.FC = () => {
 
   const adminRoutes = (user && user.permissions === PermissionTypes.admin) ? (
       <>
-        <TrackedRoute path={Routes.Admin}
+        <Route path={Routes.Admin}
           render={(props: any) => <AdminPanel {...props} />}
         />
-        <TrackedRoute exact path={Routes.AdminStates}
+        <Route exact path={Routes.AdminStates}
           render={(props: any) => <AdminStates {...props} />}
         />
-        <TrackedRoute exact path={Routes.AdminPeakLists}
+        <Route exact path={Routes.AdminPeakLists}
           render={(props: any) => <AdminPeakLists {...props} />}
         />
-        <TrackedRoute exact path={Routes.AdminMountains}
+        <Route exact path={Routes.AdminMountains}
           render={(props: any) => <AdminMountains {...props} />}
         />
-        <TrackedRoute exact path={Routes.AdminRegions}
+        <Route exact path={Routes.AdminRegions}
           render={(props: any) => <AdminRegions {...props} />}
         />
-        <TrackedRoute exact path={Routes.AdminUsers}
+        <Route exact path={Routes.AdminUsers}
           render={(props: any) => <AdminUsers {...props} />}
         />
       </>
@@ -222,7 +222,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
         {/* 404 Route -> */}
-        <TrackedRoute component={PageNotFound} />
+        <Route component={PageNotFound} />
       </Switch>
     );
   } else {
@@ -280,7 +280,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.Login} component={LoginPage} />
 
         {/* 404 Route -> */}
-        <TrackedRoute component={PageNotFound} />
+        <Route component={PageNotFound} />
       </Switch>
     );
   }
