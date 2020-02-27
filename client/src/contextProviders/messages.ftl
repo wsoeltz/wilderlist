@@ -247,6 +247,22 @@ dashboard-empty-state-no-active-lists-button = Find Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 
+stats-mountain-panel = All In Progress & Completed Mountains
+stats-total-mountains = ({ $total } total)
+stats-showing-ascents-for = Showing ascents for:
+global-text-value-list-type = {
+  $type ->
+    *[standard] Any Time
+    [winter] Winter Only
+    [fourSeason] Each Season
+    [grid] Each Month
+}
+stats-mountain-panel-no-mountains-para-1 =
+  Once you start adding lists and marking mountains complete you will see them here. This space will list everything you've completed to date as well as everything you're pursuing. 
+
+stats-mountain-panel-no-mountains-para-2 =
+  Already have spreadsheets full of your ascents? No problem! You can import any spreadsheet data directly from a Hiking List page and get your Wilderlist up to speed in no time. Just go to a Hiking List and look for the green 'Import Ascents' button.
+
 list-search-list-detail-placeholder = Select a list on the left to see more details
 mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details
 list-detail-mountain-detail-placeholder = Select a mountain to see more details

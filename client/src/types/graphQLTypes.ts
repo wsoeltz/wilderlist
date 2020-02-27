@@ -169,6 +169,7 @@ export interface User {
   mountainPermissions: number | null;
   peakListPermissions: number | null;
   latestAscent: CompletedMountain | null;
+  allInProgressMountains: Mountain[] | null;
 }
 
 export interface Conditions {

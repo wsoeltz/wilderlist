@@ -8,7 +8,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
-import { friendsWithUserProfileLink, searchListDetailLink } from '../../routing/Utils';
+import { searchListDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
   ContentHeader,
@@ -17,15 +17,14 @@ import {
   SearchContainer,
 } from '../../styling/Grid';
 import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
-import { FriendStatus, User } from '../../types/graphQLTypes';
+import { User } from '../../types/graphQLTypes';
 import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
 import BackButton from '../sharedComponents/BackButton';
 import StandardSearch from '../sharedComponents/StandardSearch';
-import GhostUserCard from '../users/list/GhostUserCard';
-import ListUsers, { UserDatum } from '../users/list/ListUsers';
+import AllMountains from '../stats/AllMountains';
 
 const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
@@ -52,36 +51,10 @@ export const GET_USERS_PEAK_LISTS = gql`
   }
 `;
 
-const GET_USERS_FRIENDS = gql`
-  query GetFriendsForUser($userId: ID!) {
-    user(id: $userId) {
-      id
-      friends {
-        user {
-          id
-          name
-          profilePictureUrl
-        }
-        status
-      }
-    }
-  }
-`;
-
 interface PeakListsSuccessResponse {
   user: {
     id: User['id'];
     peakLists: CardPeakListDatum[];
-  };
-}
-
-interface FirendsSuccessResponse {
-  user: {
-    id: User['id'];
-    friends: Array<{
-      user: UserDatum
-      status: FriendStatus;
-    }>;
   };
 }
 
@@ -101,10 +74,6 @@ const Dashboard = (props: Props) => {
     const url = searchListDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
     history.push(url);
   };
-  const searchFriends = (value: string) => {
-    const url = friendsWithUserProfileLink('search') + '?query=' + value + '&page=' + 1;
-    history.push(url);
-  };
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -114,13 +83,6 @@ const Dashboard = (props: Props) => {
     error: listsError,
     data: listsData,
   } = useQuery<PeakListsSuccessResponse, Variables>(GET_USERS_PEAK_LISTS, {
-    variables: { userId },
-  });
-  const {
-    loading: friendsLoading,
-    error: friendsError,
-    data: friendsData,
-  } = useQuery<FirendsSuccessResponse, Variables>(GET_USERS_FRIENDS, {
     variables: { userId },
   });
 
@@ -186,58 +148,11 @@ const Dashboard = (props: Props) => {
     rightSideContent = (
       <PeakListDetail userId={userId} id={peakListId} mountainId={undefined}/>
     );
-  } else if (friendsLoading === true) {
-    const loadingUserCards: Array<React.ReactElement<any>> = [];
-    for (let i = 0; i < 5; i++) {
-      loadingUserCards.push(<GhostUserCard key={i} />);
-    }
-    rightSideContent = <>{loadingUserCards}</>;
-  } else if (friendsError !== undefined) {
-    console.error(friendsError);
+  }  else {
     rightSideContent = (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>);
-  } else if (friendsData !== undefined) {
-    const { user } = friendsData;
-    const { friends } = user;
-    if (friends.length === 0) {
-      rightSideContent = (
-        <PlaceholderText>
-          <div>
-            <p>
-              {getFluentString('dashboard-empty-state-no-friends-text')}
-            </p>
-            <p>
-              <PlaceholderButton
-                to={friendsWithUserProfileLink('search')}
-              >
-                {getFluentString('dashboard-empty-state-no-friends-button')}
-              </PlaceholderButton>
-            </p>
-          </div>
-        </PlaceholderText>
-      );
-    } else {
-      const friendsAsUsersArray = friends.map(friend => friend.user);
-      rightSideContent = (
-        <ListUsers
-          userData={friendsAsUsersArray}
-          showCurrentUser={false}
-          currentUserId={userId}
-          friendsList={friends}
-          noResultsText={''}
-          noFriendsText={''}
-          openInSidebar={false}
-          sortByStatus={true}
-        />
-      );
-    }
-  } else {
-    rightSideContent = (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>
+      <AllMountains
+        userId={userId}
+      />
     );
   }
 
@@ -245,16 +160,7 @@ const Dashboard = (props: Props) => {
       <ContentHeader>
         <BackButton />
       </ContentHeader>
-    ) : (
-      <SearchContainer>
-        <StandardSearch
-          placeholder='Search users'
-          setSearchQuery={searchFriends}
-          focusOnMount={false}
-          initialQuery={''}
-        />
-      </SearchContainer>
-    );
+    ) : null;
 
   return (
     <>

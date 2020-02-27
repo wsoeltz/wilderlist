@@ -104,61 +104,97 @@ const ExportAscentsModal = (props: Props) => {
 
   const csvData: string[][] = [];
   mountains.forEach(mtn => {
-    if (mtn && mtn.completionDates && mtn.completionDates.type === PeakListVariants.standard) {
+    if (mtn && type === PeakListVariants.standard) {
       const {
-        name, state: {abbreviation}, elevation,
-        completionDates: {standard},
+        name, state, elevation,
+        completionDates,
       } = mtn;
-      const date = standard ? formatDate(standard) : '';
+      const date =
+        completionDates && completionDates.type === PeakListVariants.standard && completionDates.standard
+        ? formatDate(completionDates.standard) : '';
+      const abbreviation = state ? state.abbreviation : '';
       csvData.push([
         name, elevation.toString(), abbreviation, date,
       ]);
     }
-    if (mtn && mtn.completionDates && mtn.completionDates.type === PeakListVariants.winter) {
+    if (mtn && type === PeakListVariants.winter) {
       const {
-        name, state: {abbreviation}, elevation,
-        completionDates: {winter},
+        name, state, elevation,
+        completionDates,
       } = mtn;
-      const date = winter ? formatDate(winter) : '';
+      const date =
+        completionDates && completionDates.type === PeakListVariants.winter && completionDates.winter
+        ? formatDate(completionDates.winter) : '';
+      const abbreviation = state ? state.abbreviation : '';
       csvData.push([
         name, elevation.toString(), abbreviation, date,
       ]);
     }
-    if (mtn && mtn.completionDates && mtn.completionDates.type === PeakListVariants.fourSeason) {
+    if (mtn && type === PeakListVariants.fourSeason) {
       const {
-        name, state: {abbreviation}, elevation,
-        completionDates: {summer, fall, winter, spring},
+        name, state, elevation,
+        completionDates,
       } = mtn;
-      const summerDate = summer ? formatDate(summer) : '';
-      const fallDate = fall ? formatDate(fall) : '';
-      const winterDate = winter ? formatDate(winter) : '';
-      const springDate = spring ? formatDate(spring) : '';
+      const summerDate =
+      completionDates && completionDates.type === PeakListVariants.fourSeason && completionDates.summer
+      ? formatDate(completionDates.summer) : '';
+      const fallDate =
+      completionDates && completionDates.type === PeakListVariants.fourSeason && completionDates.fall
+      ? formatDate(completionDates.fall) : '';
+      const winterDate =
+      completionDates && completionDates.type === PeakListVariants.fourSeason && completionDates.winter
+      ? formatDate(completionDates.winter) : '';
+      const springDate =
+      completionDates && completionDates.type === PeakListVariants.fourSeason && completionDates.spring
+      ? formatDate(completionDates.spring) : '';
+      const abbreviation = state ? state.abbreviation : '';
       csvData.push([
         name, elevation.toString(), abbreviation,
         summerDate, fallDate, winterDate, springDate,
       ]);
     }
-    if (mtn && mtn.completionDates && mtn.completionDates.type === PeakListVariants.grid) {
+    if (mtn && type === PeakListVariants.grid) {
       const {
-        name, state: {abbreviation}, elevation,
-        completionDates: {
-          january, february, march, april,
-          may, june, july, august, september,
-          october, november, december,
-        },
+        name, state, elevation,
+        completionDates,
       } = mtn;
-      const januaryDate = january ? formatGridDate(january) : '';
-      const februaryDate = february ? formatGridDate(february) : '';
-      const marchDate = march ? formatGridDate(march) : '';
-      const aprilDate = april ? formatGridDate(april) : '';
-      const mayDate = may ? formatGridDate(may) : '';
-      const juneDate = june ? formatGridDate(june) : '';
-      const julyDate = july ? formatGridDate(july) : '';
-      const augustDate = august ? formatGridDate(august) : '';
-      const septemberDate = september ? formatGridDate(september) : '';
-      const octoberDate = october ? formatGridDate(october) : '';
-      const novemberDate = november ? formatGridDate(november) : '';
-      const decemberDate = december ? formatGridDate(december) : '';
+      const abbreviation = state ? state.abbreviation : '';
+      const januaryDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.january
+        ? formatGridDate(completionDates.january) : '';
+      const februaryDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.february
+        ? formatGridDate(completionDates.february) : '';
+      const marchDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.march
+        ? formatGridDate(completionDates.march) : '';
+      const aprilDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.april
+        ? formatGridDate(completionDates.april) : '';
+      const mayDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.may
+        ? formatGridDate(completionDates.may) : '';
+      const juneDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.june
+        ? formatGridDate(completionDates.june) : '';
+      const julyDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.july
+        ? formatGridDate(completionDates.july) : '';
+      const augustDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.august
+        ? formatGridDate(completionDates.august) : '';
+      const septemberDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.september
+        ? formatGridDate(completionDates.september) : '';
+      const octoberDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.october
+        ? formatGridDate(completionDates.october) : '';
+      const novemberDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.november
+        ? formatGridDate(completionDates.november) : '';
+      const decemberDate =
+        completionDates && completionDates.type === PeakListVariants.grid && completionDates.december
+        ? formatGridDate(completionDates.december) : '';
       csvData.push([
         name, elevation.toString(), abbreviation,
         januaryDate, februaryDate, marchDate, aprilDate,
