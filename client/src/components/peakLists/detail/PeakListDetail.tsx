@@ -188,7 +188,7 @@ export interface MountainDatum {
   state: {
     id: State['id'];
     abbreviation: State['abbreviation'];
-  };
+  } | null;
 }
 
 interface ListVariantDatum {

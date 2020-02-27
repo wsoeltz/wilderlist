@@ -153,7 +153,7 @@ interface Coordinate {
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
 
 interface Props {
-  id: string;
+  id: string | null;
   userId: string | null;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
@@ -424,7 +424,7 @@ const Map = (props: Props) => {
   }
 
   const getDesktopUrl = (mountainId: Mountain['id']) => {
-    if (id === mountainId) {
+    if (id === mountainId || id === null) {
       return mountainDetailLink(mountainId);
     } else {
       return listDetailWithMountainDetailLink(id, mountainId);
