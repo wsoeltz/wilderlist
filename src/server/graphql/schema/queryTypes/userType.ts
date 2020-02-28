@@ -17,7 +17,8 @@ import {
 } from '../../graphQLTypes';
 import { asyncForEach } from '../../Utils';
 import MountainType, {Mountain} from './mountainType';
-import PeakListType from './peakListType';
+import PeakListType, {PeakList} from './peakListType';
+import TripReportType, {TripReport} from './tripReportType';
 
 type UserSchemaType = mongoose.Document & IUser;
 
@@ -282,6 +283,28 @@ const UserType: any = new GraphQLObjectType({
         try {
           const { _id } = parentValue;
           return Mountain.find({author: _id});
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    authoredPeakLists: {
+      type: new GraphQLList(PeakListType),
+      resolve(parentValue) {
+        try {
+          const { _id } = parentValue;
+          return PeakList.find({author: _id});
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    authoredTripReports: {
+      type: new GraphQLList(TripReportType),
+      resolve(parentValue) {
+        try {
+          const { _id } = parentValue;
+          return TripReport.find({author: _id});
         } catch (err) {
           return err;
         }

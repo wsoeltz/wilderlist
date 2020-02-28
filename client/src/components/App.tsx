@@ -44,6 +44,7 @@ import Header from './sharedComponents/Header';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserSettings from './users/settings';
+import YourStats from './stats/';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});
@@ -218,6 +219,9 @@ const App: React.FC = () => {
               peakListPermissions={user.peakListPermissions}
             />
           )}
+        />
+        <TrackedRoute exact path={Routes.YourStats}
+          render={(props: any) => <YourStats {...props} userId={user._id} />}
         />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}
