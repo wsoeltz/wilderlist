@@ -22,6 +22,11 @@ import {
   Seasons,
   roundPercentToSingleDecimal,
 } from '../../Utils';
+import {
+  Root,
+  TwoColumns,
+  LargeStyledNumber,
+} from './styling';
 
 const GET_DATA_FOR_STATS = gql`
   query GetDataForStats($userId: ID!) {
@@ -195,7 +200,7 @@ const Stats = (props: Props) => {
         } else {
         // else
           // sort them by latest dates
-          const sortedByLatestDates = 
+          const sortedByLatestDates =
             sortBy(tiedMountains, mtn => sortBy(mtn.dates, ['dateAsNumber']).reverse()[0].dateAsNumber)
             .reverse();
           // slice the array to push the ones with the most recent dates
@@ -234,7 +239,7 @@ const Stats = (props: Props) => {
         const date1 = new Date(year, month - 1, day);
         const date2 = new Date(sortedDates[i + 1].year, sortedDates[i + 1].month - 1, sortedDates[i].day);
         const diffTime = Math.abs(date2.getTime() - date1.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         totalTimesBetween += diffDays;
       }
     });
@@ -302,7 +307,18 @@ const Stats = (props: Props) => {
 
     output = (
       <>
-        <div>{`${totalAscents} Total overall ascents && ${uniqueMountains} unique mountains hiked = STYLED NUMBERS`}</div>
+        <TwoColumns>
+          <LargeStyledNumber
+            value={totalAscents}
+            labelTop={'total overall'}
+            labelBottom={'ascents'}
+          />
+          <LargeStyledNumber
+            value={uniqueMountains}
+            labelTop={'total unique'}
+            labelBottom={'mountains ascended'}
+          />
+        </TwoColumns>
         <div>{`Top 12 hiked peaks = BAR GRAPH`}</div>
         <ol>{topHikedPeaksElm}</ol>
         <div>{`Top hiked months = BAR GRAPH`}</div>
@@ -339,9 +355,9 @@ const Stats = (props: Props) => {
   }
 
   return (
-    <>
+    <Root>
       {output}
-    </>
+    </Root>
   );
 };
 
