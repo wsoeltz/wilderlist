@@ -6,6 +6,7 @@ meta-data-mtn-search-default-title = Search mountains - Wilderlist
 meta-data-friend-search-default-title = Friends - Wilderlist
 meta-data-settings-default-title = Settings - Wilderlist
 meta-data-dashboard-default-title = Dashboard - Wilderlist
+meta-data-your-stats-default-title = Your Stats - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
 meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
 meta-data-detail-default-title = { $title }{
@@ -265,6 +266,8 @@ dashboard-empty-state-no-active-lists-text = You haven't added any active lists 
 dashboard-empty-state-no-active-lists-button = Find Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
+
+your-stats-title = Your Stats
 
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)
