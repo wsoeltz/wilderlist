@@ -199,7 +199,7 @@ const MountainSearchPage = (props: Props) => {
     ? (
         <PlaceholderText>{getFluentString('mountain-search-mountains-detail-placeholder')}</PlaceholderText>
       )
-    : ( <MountainDetail userId={userId} id={id} />);
+    : ( <MountainDetail userId={userId} id={id} setOwnMetaData={true} />);
 
   const addMountainButton = userId && mountainPermissions !== -1 ? (
     <FloatingButtonContainer>
@@ -209,10 +209,22 @@ const MountainSearchPage = (props: Props) => {
     </FloatingButtonContainer>
   ) : null;
 
+  const metaDescription = getFluentString('meta-data-mountain-search-description');
+
   return (
     <>
       <Helmet>
         <title>{getFluentString('meta-data-mtn-search-default-title')}</title>
+        <meta
+          name='description'
+          content={metaDescription}
+        />
+        <meta property='og:title' content={getFluentString('meta-data-mtn-search-default-title')} />
+        <meta
+          property='og:description'
+          content={metaDescription}
+        />
+        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchMountainsDetailLink('search')} />
       </Helmet>
       <ContentLeftSmall>
         <SearchContainer>

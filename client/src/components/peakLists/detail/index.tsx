@@ -48,7 +48,7 @@ const PeakListDetailPage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          <PeakListDetail userId={peakListUser} id={listId} mountainId={mountainId} />
+          <PeakListDetail userId={peakListUser} id={listId} mountainId={mountainId} setOwnMetaData={true} />
         </ContentBody>
       </ContentLeftLarge>
       <ContentRightSmall>
