@@ -23,11 +23,23 @@ import {
   MountainCompletionVariables,
 } from '../peakLists/detail/completionModal/MountainCompletionModal';
 import { formatStringDate } from '../peakLists/Utils';
+import {
+  ACCEPT_FRIEND_REQUEST,
+  FriendRequestSuccessResponse,
+  FriendRequestVariables,
+  REMOVE_FRIEND,
+} from '../users/list/UserCard';
 
 const GET_NOTIFICATIONS = gql`
   query notifications($userId: ID) {
     user(id: $userId) {
       id
+      friendRequests {
+        user {
+          id
+          name
+        }
+      }
       ascentNotifications {
         id
         user {
@@ -55,6 +67,7 @@ export interface SuccessResponse {
   user: null | {
     id: User['id'];
     ascentNotifications: User['ascentNotifications'];
+    friendRequests: User['friendRequests'];
   };
 }
 
@@ -151,14 +164,23 @@ const NotificationBar = (props: Props) => {
 
   const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
 
+  const {loading, error, data} = useQuery<SuccessResponse, {userId: string}>(GET_NOTIFICATIONS, {
+    variables: { userId },
+  });
+
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
   const [clearAscentNotification] =
     useMutation<SuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
 
-  const {loading, error, data} = useQuery<SuccessResponse, {userId: string}>(GET_NOTIFICATIONS, {
-    variables: { userId },
-  });
+  const [acceptFriendRequestMutation] =
+    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(ACCEPT_FRIEND_REQUEST, {
+      refetchQueries: () => [{query: GET_NOTIFICATIONS, variables: { userId }}],
+    });
+  const [removeFriendMutation] =
+    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND, {
+      refetchQueries: () => [{query: GET_NOTIFICATIONS, variables: { userId }}],
+    });
 
   if (loading === true) {
     return null;
@@ -167,7 +189,39 @@ const NotificationBar = (props: Props) => {
     return null;
   } else if (data !== undefined) {
     const { user } = data;
-    if (user && user.ascentNotifications && user.ascentNotifications.length) {
+    if (user && user.friendRequests && user.friendRequests.length && user.friendRequests[0].user) {
+      const { id, name } = user.friendRequests[0].user;
+      const friendId = id ? id : null;
+      const dismissNotification = () => {
+        if (friendId) {
+          removeFriendMutation({variables: { friendId, userId }});
+        }
+      };
+      if (friendId) {
+        const onConfirm = () => {
+          acceptFriendRequestMutation({variables: { friendId, userId }});
+        };
+
+        return (
+          <Root key={id}>
+            <div>
+              <Link to={userProfileLink(friendId)}><SemiBold>{name}</SemiBold></Link>
+              {' '}
+              {getFluentString('user-profile-sent-you-a-friend-request', {name: ''})}
+            </div>
+            <ConfirmButton onClick={onConfirm}>
+              {getFluentString('user-profile-requests-accept-request')}
+            </ConfirmButton>
+            <DismissButton onClick={dismissNotification}>
+              {getFluentString('user-profile-requests-decline-request')}
+            </DismissButton>
+          </Root>
+        );
+      } else {
+        dismissNotification();
+        return null;
+      }
+    } else if (user && user.ascentNotifications && user.ascentNotifications.length) {
       const { id, user: friend, mountain, date } = user.ascentNotifications[0];
       const mountainId = mountain ? mountain.id : null;
       const dismissNotification = () => {
@@ -210,13 +264,13 @@ const NotificationBar = (props: Props) => {
               <SemiBold>{formatStringDate(date)}</SemiBold>
             </div>
             <ConfirmButton onClick={onConfirm}>
-              Confirm
+              {getFluentString('global-text-value-modal-confirm')}
             </ConfirmButton>
             <TripReportButton onClick={() => setIsAscentReportModalOpen(true)}>
-              Create Trip Report
+              {getFluentString('global-text-value-modal-create-trip-report')}
             </TripReportButton>
             <DismissButton onClick={dismissNotification}>
-              Dismiss
+              {getFluentString('global-text-value-modal-dismiss')}
             </DismissButton>
             {ascentReportModal}
           </Root>
