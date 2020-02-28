@@ -10,7 +10,11 @@ import {
 import uniqBy from 'lodash/uniqBy';
 import mongoose, { Schema } from 'mongoose';
 import { getLatestOverallAscent } from '../../../utilities/peakListUtils';
-import { User as IUser } from '../../graphQLTypes';
+import {
+  Friend as IFriend,
+  FriendStatus,
+  User as IUser,
+} from '../../graphQLTypes';
 import { asyncForEach } from '../../Utils';
 import MountainType, {Mountain} from './mountainType';
 import PeakListType from './peakListType';
@@ -204,6 +208,10 @@ const UserType: any = new GraphQLObjectType({
     hideProfileInSearch: { type: GraphQLBoolean },
     disableEmailNotifications: { type: GraphQLBoolean },
     friends: { type: new GraphQLList(FriendsType) },
+    friendRequests: {
+      type: new GraphQLList(FriendsType),
+      resolve: parentValue => parentValue.friends.filter((f: IFriend) => f.status === FriendStatus.recieved),
+    },
     peakLists: {
       type: new GraphQLList(PeakListType),
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {

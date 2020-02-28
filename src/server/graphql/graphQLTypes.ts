@@ -154,6 +154,7 @@ export interface User {
   email: string | null;
   profilePictureUrl: string;
   friends: Friend[] | null;
+  friendRequests: Friend[] | null;
   peakLists: Array<PeakList | null> | null;
   mountains: CompletedMountain[] | null;
   permissions: PermissionTypes;
