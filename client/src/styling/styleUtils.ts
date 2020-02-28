@@ -105,6 +105,13 @@ export const SectionTitle = styled.div`
   color: ${lightBaseColor};
 `;
 
+export const SectionTitleH3 = styled.h3`
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  color: ${lightBaseColor};
+  margin: 0 0 1.2rem;
+`;
+
 export const standardContainerPadding = '1rem';
 
 export const linkStyles = `

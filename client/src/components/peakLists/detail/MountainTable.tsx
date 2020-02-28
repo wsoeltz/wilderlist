@@ -41,7 +41,6 @@ import {
 } from './MountainRow';
 import {
   friendHeaderHeight,
-  UserDatum,
 } from './PeakListDetail';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
@@ -259,19 +258,21 @@ const getInitialDirection = (value: any) => {
 
 interface Props {
   mountains: MountainDatumWithDate[];
-  user: UserDatum | null;
+  user: {id: string} | null;
   type: PeakListVariants;
-  peakListId: string;
+  peakListId: string | null;
   peakListShortName: string;
   isOtherUser?: boolean;
   showImportExport: boolean;
   queryRefetchArray?: Array<{query: any, variables: any}>;
+  disallowImports?: boolean;
+  disallowExports?: boolean;
 }
 
 const MountainTable = (props: Props) => {
   const {
     mountains, user, type, peakListId, peakListShortName, isOtherUser,
-    showImportExport, queryRefetchArray,
+    showImportExport, queryRefetchArray, disallowImports, disallowExports,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -449,7 +450,8 @@ const MountainTable = (props: Props) => {
   if (sortingBy === SortingCategories.name) {
     sortedMountains = sortBy(mountains, mountain => mountain.name).reverse();
   } else if (sortingBy === SortingCategories.state) {
-    sortedMountains = sortBy(mountains, mountain => mountain.state.abbreviation).reverse();
+    sortedMountains = sortBy(mountains, mountain =>
+      mountain.state ? mountain.state.abbreviation : '').reverse();
   } else if (sortingBy === SortingCategories.elevation) {
     sortedMountains = sortBy(mountains, mountain => mountain.elevation);
   } else if (sortingBy === SortingCategories.date) {
@@ -889,8 +891,10 @@ const MountainTable = (props: Props) => {
         }} />)
     : null;
 
-  const importButton =
-    (type === PeakListVariants.standard || type === PeakListVariants.winter || peakListId === NH48_GRID_OBJECT_ID)
+  const importButton = disallowImports !== true && (
+    type === PeakListVariants.standard ||
+    type === PeakListVariants.winter   ||
+    peakListId === NH48_GRID_OBJECT_ID )
     ? (
         <ButtonPrimary
           onClick={() => setIsImportModalOpen(true)}
@@ -903,14 +907,18 @@ const MountainTable = (props: Props) => {
     setSearchQuery(value);
   };
 
+  const exportButton = disallowExports !== true ? (
+    <ExportButton
+      onClick={() => setIsExportModalOpen(true)}
+    >
+      {getFluentString('mountain-table-export-button')}
+    </ExportButton>
+  ) : null;
+
   const importExportButtons = showImportExport === true ? (
     <ImportExportAscentsButtonContainer>
       {importButton}
-      <ExportButton
-        onClick={() => setIsExportModalOpen(true)}
-      >
-        {getFluentString('mountain-table-export-button')}
-      </ExportButton>
+      {exportButton}
     </ImportExportAscentsButtonContainer>
   ) : null;
 

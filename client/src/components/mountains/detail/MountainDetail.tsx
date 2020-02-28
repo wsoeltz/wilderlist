@@ -8,7 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
-import { editMountainLink } from '../../../routing/Utils';
+import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   ButtonSecondaryLink,
   GhostButton,
@@ -260,10 +260,11 @@ const localStorageShowDrivingTimesVariable = 'localStorageShowDrivingTimesVariab
 interface Props {
   userId: string | null;
   id: string;
+  setOwnMetaData?: boolean;
 }
 
 const MountainDetail = (props: Props) => {
-  const { userId, id } = props;
+  const { userId, id, setOwnMetaData } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -511,13 +512,31 @@ const MountainDetail = (props: Props) => {
         );
       }
 
+      const metaDescription = getFluentString('meta-data-mountain-detail-description', {
+        name, lat, long, elevation, state: state && state.name ? state && state.name : 'none',
+      });
+
+      const metaData = setOwnMetaData === true ? (
+        <Helmet>
+          <title>{getFluentString('meta-data-detail-default-title', {
+            title: `${name}, ${state.name}`,
+          })}</title>
+          <meta
+            name='description'
+            content={metaDescription}
+          />
+          <meta property='og:title' content='Wilderlist' />
+          <meta
+            property='og:description'
+            content={metaDescription}
+          />
+          <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink(id)} />
+        </Helmet>
+      ) : null;
+
       return (
         <>
-          <Helmet>
-            <title>{getFluentString('meta-data-detail-default-title', {
-              title: `${name}, ${state.name}`,
-            })}</title>
-          </Helmet>
+          {metaData}
           <MountainNameHeader>
             {title}
             <div>

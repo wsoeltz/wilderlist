@@ -104,8 +104,9 @@ const MountainItem = (props: Props) => {
   } = props;
   const sortedMountains = sortBy(mountains, ['name', 'elevation']);
   const options = sortedMountains.map(mtn => {
+    const abbreviation = mtn.state ? `(${mtn.state.abbreviation})` : '';
     return <option value={mtn.id} key={mtn.id}>
-      {mtn.name} ({mtn.state.abbreviation}) - {mtn.elevation}ft
+      {mtn.name} {abbreviation} - {mtn.elevation}ft
     </option>;
   });
   const onMountainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

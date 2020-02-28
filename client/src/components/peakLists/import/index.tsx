@@ -172,7 +172,7 @@ export interface MountainDatum {
   state: {
     id: State['id'];
     abbreviation: State['abbreviation'];
-  };
+  } | null;
 }
 export interface DateDatum {
   day: number;

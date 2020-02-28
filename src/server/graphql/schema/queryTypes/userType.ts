@@ -7,9 +7,15 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+import uniqBy from 'lodash/uniqBy';
 import mongoose, { Schema } from 'mongoose';
 import { getLatestOverallAscent } from '../../../utilities/peakListUtils';
-import { User as IUser } from '../../graphQLTypes';
+import {
+  Friend as IFriend,
+  FriendStatus,
+  User as IUser,
+} from '../../graphQLTypes';
+import { asyncForEach } from '../../Utils';
 import MountainType, {Mountain} from './mountainType';
 import PeakListType from './peakListType';
 
@@ -202,6 +208,10 @@ const UserType: any = new GraphQLObjectType({
     hideProfileInSearch: { type: GraphQLBoolean },
     disableEmailNotifications: { type: GraphQLBoolean },
     friends: { type: new GraphQLList(FriendsType) },
+    friendRequests: {
+      type: new GraphQLList(FriendsType),
+      resolve: parentValue => parentValue.friends.filter((f: IFriend) => f.status === FriendStatus.recieved),
+    },
     peakLists: {
       type: new GraphQLList(PeakListType),
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
@@ -295,6 +305,47 @@ const UserType: any = new GraphQLObjectType({
         } catch (err) {
           return err;
         }
+      },
+    },
+    allInProgressMountains: {
+      type: new GraphQLList(MountainType),
+      async resolve(parentValue, _args, {dataloaders: {peakListLoader, mountainLoader}}) {
+        const mountainIds: string[] = [];
+        try {
+          const { peakLists, mountains } = parentValue;
+          if (mountains) {
+            mountains.forEach(({mountain}: {mountain: any}) => mountainIds.push(mountain));
+          }
+          if (peakLists) {
+            const listData = await peakListLoader.loadMany(peakLists);
+            if (listData) {
+              await asyncForEach(listData,
+                async (list: {mountains: any[], optionalMountains: any[], parent: any}) => {
+                  if (list.parent) {
+                    const hasParent = peakLists.find(
+                      (parentList: any) => parentList.toString() === list.parent.toString(),
+                    );
+                    if (!hasParent) {
+                      const parentListData = await peakListLoader.load(list.parent);
+                      if (parentListData) {
+                        mountainIds.push(...parentListData.mountains);
+                        mountainIds.push(...parentListData.optionalMountains);
+                      }
+                    }
+                  } else {
+                    mountainIds.push(...list.mountains);
+                    mountainIds.push(...list.optionalMountains);
+                  }
+                },
+              );
+            }
+            const uniqueMountainIds = uniqBy(mountainIds, (id) => id.toString());
+            return await mountainLoader.loadMany(uniqueMountainIds);
+          }
+        } catch (err) {
+          return err;
+        }
+        return null;
       },
     },
   }),

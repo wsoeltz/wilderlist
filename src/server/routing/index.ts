@@ -117,7 +117,7 @@ export const getMtnDescription = (mtn: IMountain, state: IState | null) => {
   const {lat, long} = convertDMS(mtn.latitude, mtn.longitude);
   const stateText = state && state.name
     ? ` in the state of ${state.name}` : '';
-  return `${mtn.name} stands at an elevation of ${mtn.elevation} and is located at ${lat}, ${long}${stateText}. Look up trail maps, current weather, and trip reports for ${mtn.name}.`;
+  return `${mtn.name} stands at an elevation of ${mtn.elevation}ft and is located at ${lat}, ${long}${stateText}. Look up trail maps, current weather, and trip reports for ${mtn.name}.`;
 };
 
 export const getListDescription = (list: IPeakList) => {

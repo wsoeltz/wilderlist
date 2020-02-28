@@ -6,7 +6,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { NoResults } from '../../../styling/styleUtils';
-import { lightBaseColor } from '../../../styling/styleUtils';
+import { SectionTitleH3 } from '../../../styling/styleUtils';
 import {
   PeakList,
   PeakListVariants,
@@ -18,13 +18,6 @@ import { ViewMode } from './index';
 import PeakListCard from './PeakListCard';
 import PeakListCompactCard from './PeakListCompactCard';
 import PeakListTrophy from './PeakListTrophy';
-
-const SectionTitle = styled.h3`
-  font-size: 1.2rem;
-  text-transform: uppercase;
-  color: ${lightBaseColor};
-  margin-bottom: 1.2rem;
-`;
 
 const TrophyContainer = styled.div`
   display: flex;
@@ -166,9 +159,9 @@ const ListPeakLists = (props: Props) => {
 
     const trophyContent = showTrophies === true && trophies.length > 0 ? (
       <>
-        <SectionTitle>
+        <SectionTitleH3>
           {getFluentString('user-profile-lists-completed')}
-        </SectionTitle>
+        </SectionTitleH3>
         <TrophyContainer>
           {trophies}
         </TrophyContainer>
@@ -177,9 +170,9 @@ const ListPeakLists = (props: Props) => {
 
     const inProgressTitle = showTrophies === true ? (
       <>
-        <SectionTitle>
+        <SectionTitleH3>
           {getFluentString('user-profile-lists-in-progress')}
-        </SectionTitle>
+        </SectionTitleH3>
       </>
     ) : null;
     return (

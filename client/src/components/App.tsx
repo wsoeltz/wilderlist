@@ -291,7 +291,18 @@ const App: React.FC = () => {
         <ApolloProvider client={client}>
           <FluentText.Provider value={fluentValue}>
             <Helmet>
+              {/* Set default meta data values */}
               <title>{'Wilderlist'}</title>
+              <meta
+                name='description'
+                content='Track, plan and share your hiking and mountaineering adventures.'
+              />
+              <meta property='og:title' content='Wilderlist' />
+              <meta
+                property='og:description'
+                content='Track, plan and share your hiking and mountaineering adventures.'
+              />
+              <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + window.location.pathname} />
             </Helmet>
             <GlobalStyles />
             <Router>

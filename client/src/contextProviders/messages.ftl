@@ -24,6 +24,23 @@ meta-data-compare-peak-list-title = Comparing { $title }{
   } with { $user } - Wilderlist
 meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
 
+meta-data-mountain-detail-description = { $name } stands at an elevation of { $elevation }ft and is located at { $lat }, { $long }{
+  $state ->
+  [none] {""}
+  *[other] {" "} in the state of { $state }
+}. Look up trail maps, current weather, and trip reports for { $name }.
+meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
+meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
+
+meta-data-peak-list-detail-description = {
+  $type ->
+  *[standard] Look up maps, current weather, and trip reports for all { $num-mountains } mountains in the { $list-name } ({ $list-short-name }).
+  [winter] Look up maps, current weather, and trip reports for the { $list-name } ({ $list-short-name }) in the Winter.
+  [fourSeason] Plan and track your 4-Season ascents on the mountains of the { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
+  [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and robust tracking tools.
+}
+
+meta-data-privacy-policy-description = Read Wilderlist's Privacy and Usage Policy.
 
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous
@@ -42,6 +59,8 @@ global-text-value-no-results-found-for-term = No results found for&#32;<strong>{
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
 global-text-value-modal-confirm = Confirm
+global-text-value-modal-dismiss = Dismiss
+global-text-value-modal-create-trip-report = Create Trip Report
 global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
@@ -246,6 +265,22 @@ dashboard-empty-state-no-active-lists-text = You haven't added any active lists 
 dashboard-empty-state-no-active-lists-button = Find Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
+
+stats-mountain-panel = All In Progress & Completed Mountains
+stats-total-mountains = ({ $total } total)
+stats-showing-ascents-for = Showing ascents for:
+global-text-value-list-type = {
+  $type ->
+    *[standard] Any Time
+    [winter] Winter Only
+    [fourSeason] Each Season
+    [grid] Each Month
+}
+stats-mountain-panel-no-mountains-para-1 =
+  Once you start adding lists and marking mountains complete you will see them here. This space will list everything you've completed to date as well as everything you're pursuing.
+
+stats-mountain-panel-no-mountains-para-2 =
+  Already have spreadsheets full of your ascents? No problem! You can import any spreadsheet data directly from a Hiking List page and get your Wilderlist up to speed in no time. Just go to a Hiking List and look for the green 'Import Ascents' button.
 
 list-search-list-detail-placeholder = Select a list on the left to see more details
 mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details

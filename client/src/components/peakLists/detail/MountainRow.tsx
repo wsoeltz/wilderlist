@@ -167,7 +167,7 @@ interface Props {
   mountain: MountainDatumWithDate;
   type: PeakListVariants;
   setEditMountainId: (mountainToEdit: MountainToEdit) => void;
-  peakListId: string;
+  peakListId: string | null;
   isOtherUser: boolean;
 }
 
@@ -483,11 +483,12 @@ const MountainRow = (props: Props) => {
 
   let columnDetailContent: React.ReactElement<any> | null;
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+    const mountainState = mountain.state ? mountain.state.abbreviation : 'N/A';
     columnDetailContent = (
       <>
         <TableCell style={{backgroundColor, gridColumn: elevationColumn}}>{elevation}</TableCell>
         <TableCell style={{backgroundColor, gridColumn: stateColumn}}>
-          {mountain.state.abbreviation}
+          {mountainState}
         </TableCell>
         <MountainButton style={{backgroundColor}}>
           {peakCompletedContent}
@@ -504,10 +505,13 @@ const MountainRow = (props: Props) => {
   const NameContainer = type === PeakListVariants.grid || type === PeakListVariants.fourSeason
     ? GridNameCell : NameCell;
 
+  const desktopURL = peakListId !== null
+    ? listDetailWithMountainDetailLink(peakListId, mountain.id)
+    : mountainDetailLink(mountain.id);
   const mountainName = isOtherUser === true ? (<>{mountain.name}</>) : (
     <MountainName
       mobileURL={mountainDetailLink(mountain.id)}
-      desktopURL={listDetailWithMountainDetailLink(peakListId, mountain.id)}
+      desktopURL={desktopURL}
     >
       {mountain.name}
     </MountainName>

@@ -188,7 +188,7 @@ export interface MountainDatum {
   state: {
     id: State['id'];
     abbreviation: State['abbreviation'];
-  };
+  } | null;
 }
 
 interface ListVariantDatum {
@@ -288,10 +288,11 @@ interface Props {
   id: string;
   mountainId: string | undefined;
   queryRefetchArray?: Array<{query: any, variables: any}>;
+  setOwnMetaData?: boolean;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id, mountainId, queryRefetchArray } = props;
+  const { userId, id, mountainId, queryRefetchArray, setOwnMetaData } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -549,16 +550,43 @@ const PeakListDetail = (props: Props) => {
           </>
         ) : null;
 
-        const title = isOtherUser === true && user !== null
-          ? user.name + ' | ' + peakList.name : peakList.name;
+        let title: string;
+        if (isOtherUser === true && user !== null) {
+          title = user.name + ' | ' + peakList.name;
+        } else if (activeMountain !== undefined) {
+          title = peakList.name + ' | ' + activeMountain.name;
+        } else {
+          title = peakList.name;
+        }
+
+        const metaDescription = getFluentString('meta-data-peak-list-detail-description', {
+          'list-name': peakList && peakList.name ? peakList.name : '',
+          'type': peakList.type,
+          'num-mountains': peakList && peakList.mountains ? peakList.mountains.length : 0,
+          'list-short-name': peakList && peakList.shortName ? peakList.shortName : '',
+        });
+
+        const metaData = setOwnMetaData === true ? (
+          <Helmet>
+            <title>{getFluentString('meta-data-detail-default-title', {
+              title, type: peakList.type,
+            })}</title>
+            <meta
+              name='description'
+              content={metaDescription}
+            />
+            <meta property='og:title' content='Wilderlist' />
+            <meta
+              property='og:description'
+              content={metaDescription}
+            />
+            <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink(id)} />
+          </Helmet>
+        ) : null;
 
         return (
           <>
-            <Helmet>
-              <title>{getFluentString('meta-data-detail-default-title', {
-                title, type: peakList.type,
-              })}</title>
-            </Helmet>
+            {metaData}
             {friendHeader}
             <Header
               user={user}

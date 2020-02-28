@@ -459,6 +459,7 @@ const PeakListPage = (props: Props) => {
           id={id}
           mountainId={undefined}
           queryRefetchArray={[{query: graphQLQuery, variables: {...graphQLVariables}}]}
+          setOwnMetaData={true}
         />
       );
 
@@ -473,10 +474,22 @@ const PeakListPage = (props: Props) => {
     </FloatingButtonContainer>
   ) : null;
 
+  const metaDescription = getFluentString('meta-data-peak-list-search-description');
+
   return (
     <>
       <Helmet>
         <title>{getFluentString('meta-data-list-search-default-title')}</title>
+        <meta
+          name='description'
+          content={metaDescription}
+        />
+        <meta property='og:title' content={getFluentString('meta-data-list-search-default-title')} />
+        <meta
+          property='og:description'
+          content={metaDescription}
+        />
+        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchListDetailLink('search')} />
       </Helmet>
       <ListContainer>
         <SearchContainer>

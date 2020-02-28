@@ -23,7 +23,7 @@ const MountainDetailPage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          <MountainDetail userId={userId} id={id} />
+          <MountainDetail userId={userId} id={id} setOwnMetaData={true} />
         </ContentBody>
       </ContentLeftLarge>
     </>
