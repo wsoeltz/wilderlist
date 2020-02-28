@@ -314,7 +314,11 @@ const UserType: any = new GraphQLObjectType({
         try {
           const { peakLists, mountains } = parentValue;
           if (mountains) {
-            mountains.forEach(({mountain}: {mountain: any}) => mountainIds.push(mountain));
+            mountains.forEach(({mountain, dates}: {mountain: any, dates: any[]}) => {
+              if (dates.length) {
+                mountainIds.push(mountain);
+              }
+            });
           }
           if (peakLists) {
             const listData = await peakListLoader.loadMany(peakLists);
