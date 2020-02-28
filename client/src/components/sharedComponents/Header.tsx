@@ -1,3 +1,10 @@
+import {
+  faHiking,
+  faHome,
+  faMountain,
+  faUserFriends,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react';
 import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -12,6 +19,7 @@ import { friendsWithUserProfileLink, searchListDetailLink, searchMountainsDetail
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
+  lightBaseColor,
   lightFontWeight,
   regularFontWeight,
   tertiaryColor,
@@ -72,6 +80,7 @@ const MainNav = styled.nav`
 
 const NavLink = styled(Link)`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-decoration: none;
@@ -118,6 +127,19 @@ const ActiveNavLink = styled(NavLink)`
   }
 `;
 
+const IconContainerBase = styled.div`
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+`;
+
+const ActiveIconContainer = styled(IconContainerBase)`
+  color: #fff;
+`;
+
+const InactiveIconContainer = styled(IconContainerBase)`
+  color: ${lightBaseColor};
+`;
+
 const Header = (props: RouteComponentProps) => {
   const {location: { pathname }} = props;
 
@@ -130,7 +152,7 @@ const Header = (props: RouteComponentProps) => {
   const usersPath = friendsWithUserProfileLink('search');
   const mountainPath = searchMountainsDetailLink('search');
 
-  const createLink = (route: string, label: string) => {
+  const createLink = (route: string, label: string, icon: FaProps['icon']) => {
     let normalizedPathname: string;
     if (pathname.includes('dashboard')) {
       normalizedPathname = '/';
@@ -145,7 +167,15 @@ const Header = (props: RouteComponentProps) => {
     }
     const className = route === Routes.Dashboard ? 'header-dashboard-link' : undefined;
     const Container = route === normalizedPathname ? ActiveNavLink : InactiveNavLink;
-    return <Container className={className} to={route}>{label}</Container>;
+    const IconContainer = route === normalizedPathname ? ActiveIconContainer : InactiveIconContainer;
+    return (
+      <Container className={className} to={route}>
+        <IconContainer>
+          <FontAwesomeIcon icon={icon} />
+        </IconContainer>
+        {label}
+      </Container>
+    );
   };
 
   const renderProp = (user: User | null) => {
@@ -160,10 +190,10 @@ const Header = (props: RouteComponentProps) => {
               </LogoContainer>
             </SemanticLogoContainer>
             <MainNav>
-              {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'))}
-              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
-              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
-              {createLink(usersPath, getFluentString('header-text-menu-item-friends'))}
+              {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'), faHome)}
+              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'), faHiking)}
+              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
+              {createLink(usersPath, getFluentString('header-text-menu-item-friends'), faUserFriends)}
             </MainNav>
             <UserMenu
               userMenuOpen={userMenuOpen}
@@ -184,8 +214,8 @@ const Header = (props: RouteComponentProps) => {
               <Logo />
             </LogoContainer>
             <MainNav>
-              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'))}
-              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'))}
+              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'), faHiking)}
+              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
             </MainNav>
             <UserMenu
               user={user}
