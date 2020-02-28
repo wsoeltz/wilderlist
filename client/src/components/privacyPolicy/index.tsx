@@ -13,10 +13,21 @@ const PrivacyPolicy = () => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const metaDescription = getFluentString('meta-data-privacy-policy-description');
+
   return (
     <>
       <Helmet>
         <title>{getFluentString('meta-data-privacy-default-title')}</title>
+        <meta
+          name='description'
+          content={metaDescription}
+        />
+        <meta property='og:title' content={getFluentString('meta-data-privacy-default-title')} />
+        <meta
+          property='og:description'
+          content={metaDescription}
+        />
       </Helmet>
       <ContentLeftLarge>
         <ContentBody>
