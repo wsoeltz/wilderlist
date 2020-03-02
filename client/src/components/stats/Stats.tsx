@@ -5,7 +5,10 @@ import React, {useContext} from 'react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
-import { PlaceholderText } from '../../styling/styleUtils';
+import {
+  PlaceholderText,
+  SectionTitle,
+} from '../../styling/styleUtils';
 import {
   User,
   Mountain,
@@ -26,7 +29,11 @@ import {
   Root,
   TwoColumns,
   LargeStyledNumber,
+  ThreeColumns,
 } from './styling';
+import DataViz, {
+  VizType
+} from './d3Viz';
 
 const GET_DATA_FOR_STATS = gql`
   query GetDataForStats($userId: ID!) {
@@ -217,16 +224,17 @@ const Stats = (props: Props) => {
         i++;
       }
     }
-    const topHikedPeaksElm = topPeaks.map(({mountain, dates}) => {
+
+    let topHikedPeaksData: Array<{label: string, value: number}> =[];
+    topPeaks.forEach(({mountain, dates}) => {
       if (mountain && dates.length) {
-        return <li key={'top-peaks-list' + mountain.id}>{mountain.name} ({dates.length})</li>
-      } else {
-        return null;
+        topHikedPeaksData.push({label: mountain.name, value: dates.length});
       }
     });
-    const sortedMonthsElm = sortBy(topHikedMonths, ['count'])
-      .reverse()
-      .map(({month, count}) => <li key={'top-peaks-list' + month}>{month} ({count})</li>)
+    topHikedPeaksData.reverse();
+
+    const sortedMonthsData = sortBy(topHikedMonths, ['count'])
+      .map(({month, count}) => ({label: month, value: count}))
 
     const totalAuthoredMountains = authoredMountains ? authoredMountains.length : 0;
     const totalAuthoredPeakLists = authoredPeakLists ? authoredPeakLists.length : 0;
@@ -319,20 +327,46 @@ const Stats = (props: Props) => {
             labelBottom={'mountains ascended'}
           />
         </TwoColumns>
-        <div>{`Top 12 hiked peaks = BAR GRAPH`}</div>
-        <ol>{topHikedPeaksElm}</ol>
-        <div>{`Top hiked months = BAR GRAPH`}</div>
-        <ol>{sortedMonthsElm}</ol>
-        <div>{`Wilderlist Contributions - TOTAL: ${
-          totalAuthoredMountains + totalAuthoredPeakLists + totalAuthoredTripReports
-        }`}</div>
-        <div>{`
-          TRIP REPORTS: ${totalAuthoredTripReports}
-          |||
-          MOUNTAINS ADDED: ${totalAuthoredMountains}
-          |||
-          LISTS CREATED: ${totalAuthoredPeakLists}
-        `}</div>
+        <TwoColumns>
+          <div>
+            <SectionTitle>{'Most Hiked Mountains'}</SectionTitle>
+            <DataViz
+              id='top-12-peaks-hiked'
+              vizType={VizType.HorizontalBarChart}
+              data={topHikedPeaksData}
+            />
+          </div>
+          <div>
+            <SectionTitle>{'Most Hiked Months'}</SectionTitle>
+            <DataViz
+              id='top-months-hiked'
+              vizType={VizType.HorizontalBarChart}
+              data={sortedMonthsData}
+            />
+          </div>
+        </TwoColumns>
+        <LargeStyledNumber
+          value={totalAuthoredMountains + totalAuthoredPeakLists + totalAuthoredTripReports}
+          labelTop={'total Wilderlist'}
+          labelBottom={' Contributions'}
+        />
+        <ThreeColumns>
+          <LargeStyledNumber
+            value={totalAuthoredTripReports}
+            labelTop={'Trip Reports'}
+            labelBottom={'Written'}
+          />
+          <LargeStyledNumber
+            value={totalAuthoredMountains}
+            labelTop={'Mountains'}
+            labelBottom={'Added'}
+          />
+          <LargeStyledNumber
+            value={totalAuthoredPeakLists}
+            labelTop={'Hiking Lists'}
+            labelBottom={'Created'}
+          />
+        </ThreeColumns>
         <div>{`Average time between hikes (express as days, months, or years) ${avgTimeBetweenHikes} days = STYLED TIME NUMBERS since ${startDate}`}</div>
         <div>{`Hiking break down by state = BUBBLE CHART`}</div>
         <ol>{sortedStates}</ol>
