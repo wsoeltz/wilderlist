@@ -21,6 +21,18 @@ export const TwoColumns = styled.div`
     grid-row-gap: 1rem;
   }
 `;
+export const ThreeColumns = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column-gap: 1rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 650px) {
+    grid-template-columns: auto;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-row-gap: 1rem;
+  }
+`;
 
 const circleSize = '6rem';
 
