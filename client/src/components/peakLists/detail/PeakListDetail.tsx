@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-// import sortBy from 'lodash/sortBy';
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
@@ -40,9 +40,9 @@ import {
   twoColorScale,
 } from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
-// import { getStatesOrRegion } from '../list/PeakListCard';
-import { getType } from '../Utils';
-// import getCompletionDates from './getCompletionDates';
+import { getStatesOrRegion } from '../list/PeakListCard';
+import { getType, isState } from '../Utils';
+import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
 
@@ -325,39 +325,39 @@ const PeakListDetail = (props: Props) => {
         );
       } else {
         const {
-          type, optionalPeaksDescription, resources, children, parent, siblings,
+          type, description, optionalPeaksDescription, resources, children, parent, siblings,
         } = peakList;
-        // const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
-        // const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
+        const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
+        const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
 
-        // if (peakList.states && peakList.states.length) {
-        //   statesArray = [...peakList.states];
-        // }
+        if (peakList.states && peakList.states.length) {
+          statesArray = [...peakList.states];
+        }
 
-        // let paragraphText: string;
-        // if (description && description.length) {
-        //   paragraphText = description;
-        // } else if (requiredMountains && requiredMountains.length) {
-        //   const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
-        //   const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-        //   const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
-        //   paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
-        //     'list-name': peakList.name,
-        //     'number-of-peaks': requiredMountains.length,
-        //     'state-or-region': isStateOrRegion.toString(),
-        //     'state-region-name': statesOrRegions,
-        //     'highest-mountain-name': mountainsSortedByElevation[0].name,
-        //     'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
-        //     'smallest-mountain-name':
-        //       mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-        //     'smallest-mountain-elevation':
-        //       mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
-        //   });
-        // } else {
-        //   paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
-        //     'list-name': peakList.name,
-        //   });
-        // }
+        let paragraphText: string;
+        if (description && description.length) {
+          paragraphText = description;
+        } else if (requiredMountains && requiredMountains.length) {
+          const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
+          const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+          const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
+          paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
+            'list-name': peakList.name,
+            'number-of-peaks': requiredMountains.length,
+            'state-or-region': isStateOrRegion.toString(),
+            'state-region-name': statesOrRegions,
+            'highest-mountain-name': mountainsSortedByElevation[0].name,
+            'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+            'smallest-mountain-name':
+              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
+            'smallest-mountain-elevation':
+              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+          });
+        } else {
+          paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
+            'list-name': peakList.name,
+          });
+        }
 
         let resourcesList: React.ReactElement<any> | null;
         if (resources && resources.length) {
@@ -487,9 +487,15 @@ const PeakListDetail = (props: Props) => {
 
         const userMountains = (user && user.mountains) ? user.mountains : [];
 
-        const requiredMountainsWithDates: any = [];
+        const requiredMountainsWithDates = requiredMountains.map(mountain => {
+          const completionDates = getCompletionDates({type, mountain, userMountains});
+          return {...mountain, completionDates};
+        });
 
-        const optionalMountainsWithDates: any = [];
+        const optionalMountainsWithDates = optionalMountains.map(mountain => {
+          const completionDates = getCompletionDates({type, mountain, userMountains});
+          return {...mountain, completionDates};
+        });
 
         const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
 
@@ -584,7 +590,7 @@ const PeakListDetail = (props: Props) => {
             {friendHeader}
             <Header
               user={user}
-              mountains={[]}
+              mountains={requiredMountains}
               peakList={peakList}
               completedAscents={userMountains}
               statesArray={statesArray}
@@ -603,7 +609,7 @@ const PeakListDetail = (props: Props) => {
               key={peakListDetailMapKey}
             />
             <PreFormattedParagraph>
-              {'paragraphText'}
+              {paragraphText}
             </PreFormattedParagraph>
             {resourcesList}
             {otherVariants}
