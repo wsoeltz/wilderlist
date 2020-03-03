@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useContext} from 'react';
 import { select } from 'd3-selection';
 import styled from 'styled-components';
-import createBarGraph, {Datum} from './createBarGraph';
+import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
+import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
 import { AppContext } from '../../App';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { lightBorderColor } from '../../../styling/styleUtils';
@@ -19,6 +20,7 @@ const Root = styled.div`
 
 export enum VizType {
   HorizontalBarChart = 'HorizontalBarChart',
+  BubbleChart = 'BubbleChart',
 }
 
 interface BaseProps {
@@ -29,7 +31,11 @@ interface BaseProps {
 type Props = BaseProps & (
   {
     vizType: VizType.HorizontalBarChart;
-    data: Datum[];
+    data: BarGraphDatum[];
+  } |
+  {
+    vizType: VizType.BubbleChart;
+    data: BubbleChartDatum[];
   }
 );
 
@@ -45,6 +51,12 @@ const D3Viz = (props: Props) => {
       const svg = select(svgNodeRef.current);
       if (vizType === VizType.HorizontalBarChart) {
         createBarGraph({
+          svg, data, size: {
+            width: sizingNode.clientWidth, height: sizingNode.clientHeight,
+          }
+        });
+      } else if (vizType === VizType.BubbleChart) {
+        createBubbleChart({
           svg, data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
           }
