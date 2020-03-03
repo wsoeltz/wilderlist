@@ -16,7 +16,7 @@ import {
 } from '../../../styling/styleUtils';
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import BackButton from '../../sharedComponents/BackButton';
-import PeakListDetail from './PeakListDetail';
+// import PeakListDetail from './PeakListDetail';
 
 interface Props extends RouteComponentProps {
   userId: string | null;
@@ -24,7 +24,8 @@ interface Props extends RouteComponentProps {
 
 const PeakListDetailPage = (props: Props) => {
   const { userId, match } = props;
-  const { id, mountainId, friendId, peakListId }: any = match.params;
+  const { mountainId }: any = match.params;
+  // const { id, mountainId, friendId, peakListId }: any = match.params;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -38,8 +39,8 @@ const PeakListDetailPage = (props: Props) => {
     : (
         <MountainDetail userId={userId} id={mountainId} />
       );
-  const peakListUser = Types.ObjectId.isValid(friendId) ? friendId : userId;
-  const listId = Types.ObjectId.isValid(peakListId) ? peakListId : id;
+  // const peakListUser = Types.ObjectId.isValid(friendId) ? friendId : userId;
+  // const listId = Types.ObjectId.isValid(peakListId) ? peakListId : id;
 
   return (
     <>
@@ -48,7 +49,7 @@ const PeakListDetailPage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          <PeakListDetail userId={peakListUser} id={listId} mountainId={mountainId} setOwnMetaData={true} />
+          PeakLIst test safair ios
         </ContentBody>
       </ContentLeftLarge>
       <ContentRightSmall>
@@ -58,6 +59,23 @@ const PeakListDetailPage = (props: Props) => {
       </ContentRightSmall>
     </>
   );
+  // return (
+  //   <>
+  //     <ContentLeftLarge>
+  //       <ContentHeader>
+  //         <BackButton />
+  //       </ContentHeader>
+  //       <ContentBody>
+  //         <PeakListDetail userId={peakListUser} id={listId} mountainId={mountainId} setOwnMetaData={true} />
+  //       </ContentBody>
+  //     </ContentLeftLarge>
+  //     <ContentRightSmall>
+  //       <ContentBody>
+  //         {mountainDetail}
+  //       </ContentBody>
+  //     </ContentRightSmall>
+  //   </>
+  // );
 };
 
 export default withRouter(PeakListDetailPage);
