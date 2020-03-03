@@ -5,7 +5,7 @@ import {
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';

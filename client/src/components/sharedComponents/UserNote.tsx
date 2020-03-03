@@ -3,7 +3,7 @@ import {
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import {rgba} from 'polished';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';

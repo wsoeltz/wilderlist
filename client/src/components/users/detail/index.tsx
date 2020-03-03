@@ -1,4 +1,4 @@
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import { Types } from 'mongoose';
 import React, {useContext} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';

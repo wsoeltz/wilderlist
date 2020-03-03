@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import {intersection, sortBy} from 'lodash';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';
