@@ -42,7 +42,7 @@ import {
 import UserNote from '../../sharedComponents/UserNote';
 // import { getStatesOrRegion } from '../list/PeakListCard';
 import { getType } from '../Utils';
-import getCompletionDates from './getCompletionDates';
+// import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
 
