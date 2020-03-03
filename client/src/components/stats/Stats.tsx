@@ -262,7 +262,9 @@ const Stats = (props: Props) => {
     });
     const sortedStates = sortBy(allStatesCountObj, ['count'])
       .reverse()
-      .map(({stateAbbr, count}) => <li key={'top-peaks-list' + stateAbbr}>{stateAbbr} ({count})</li>);
+      .map(({stateAbbr, count}) => {
+        return {label: stateAbbr, value: count};
+      });
 
     const groupedYears = countBy(allYears);
     const allYearsCountObj: Array<{year: string, count: number}> = [];
@@ -369,7 +371,11 @@ const Stats = (props: Props) => {
         </ThreeColumns>
         <div>{`Average time between hikes (express as days, months, or years) ${avgTimeBetweenHikes} days = STYLED TIME NUMBERS since ${startDate}`}</div>
         <div>{`Hiking break down by state = BUBBLE CHART`}</div>
-        <ol>{sortedStates}</ol>
+        <DataViz
+          id='top-months-hiked'
+          vizType={VizType.BubbleChart}
+          data={sortedStates}
+        />
         <div>{`Top 4 Most hiked YEARS`}</div>
         <ol>{sortedYears}</ol>
         <div>{`Most hiked SEASONS = STYLED NUMBERS/Text`}</div>

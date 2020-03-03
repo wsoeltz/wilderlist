@@ -5,10 +5,8 @@ import {
 import { Selection } from 'd3-selection';
 import {
   axisBottom,
-  // axisLeft,
 } from 'd3-axis';
 import { max } from 'd3-array';
-// import sortBy from 'lodash/sortBy';
 import { baseColor } from '../../../styling/styleUtils';
 
 export interface Datum {
@@ -103,6 +101,4 @@ export default (input: Input) => {
   // add the y Axis
   svg.append("g")
       .attr("transform", "translate(" + margin.left + ", 0)")
-      // .call(axisLeft(y));
-
 }
