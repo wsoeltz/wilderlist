@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react';
 import gql from 'graphql-tag';
-import sortBy from 'lodash/sortBy';
+// import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
@@ -22,26 +22,26 @@ import {
 import {
   Mountain,
   PeakList,
-  // PeakListVariants,
+  PeakListVariants,
   Region,
   State,
   User,
 } from '../../../types/graphQLTypes';
 import {
-  // failIfValidOrNonExhaustive,
+  failIfValidOrNonExhaustive,
   isValidURL,
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
-// import {
-//   fiveColorScale,
-//   thirteenColorScale,
-//   twoColorScale,
-// } from '../../sharedComponents/map/colorScaleColors';
+import {
+  fiveColorScale,
+  thirteenColorScale,
+  twoColorScale,
+} from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
-import { getStatesOrRegion } from '../list/PeakListCard';
-import { getType, isState } from '../Utils';
+// import { getStatesOrRegion } from '../list/PeakListCard';
+import { getType } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
@@ -325,39 +325,39 @@ const PeakListDetail = (props: Props) => {
         );
       } else {
         const {
-          type, description, optionalPeaksDescription, resources, children, parent, siblings,
+          type, optionalPeaksDescription, resources, children, parent, siblings,
         } = peakList;
-        const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
-        const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
+        // const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
+        // const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
 
-        if (peakList.states && peakList.states.length) {
-          statesArray = [...peakList.states];
-        }
+        // if (peakList.states && peakList.states.length) {
+        //   statesArray = [...peakList.states];
+        // }
 
-        let paragraphText: string;
-        if (description && description.length) {
-          paragraphText = description;
-        } else if (requiredMountains && requiredMountains.length) {
-          const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
-          const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
-          const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
-          paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
-            'list-name': peakList.name,
-            'number-of-peaks': requiredMountains.length,
-            'state-or-region': isStateOrRegion.toString(),
-            'state-region-name': statesOrRegions,
-            'highest-mountain-name': mountainsSortedByElevation[0].name,
-            'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
-            'smallest-mountain-name':
-              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-            'smallest-mountain-elevation':
-              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
-          });
-        } else {
-          paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
-            'list-name': peakList.name,
-          });
-        }
+        // let paragraphText: string;
+        // if (description && description.length) {
+        //   paragraphText = description;
+        // } else if (requiredMountains && requiredMountains.length) {
+        //   const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
+        //   const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+        //   const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
+        //   paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
+        //     'list-name': peakList.name,
+        //     'number-of-peaks': requiredMountains.length,
+        //     'state-or-region': isStateOrRegion.toString(),
+        //     'state-region-name': statesOrRegions,
+        //     'highest-mountain-name': mountainsSortedByElevation[0].name,
+        //     'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+        //     'smallest-mountain-name':
+        //       mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
+        //     'smallest-mountain-elevation':
+        //       mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+        //   });
+        // } else {
+        //   paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
+        //     'list-name': peakList.name,
+        //   });
+        // }
 
         let resourcesList: React.ReactElement<any> | null;
         if (resources && resources.length) {
@@ -454,48 +454,42 @@ const PeakListDetail = (props: Props) => {
         ) : null;
         }
 
-        // let colorScaleTitle: string | undefined;
-        // let colorScaleColors: string[];
-        // let colorScaleLabels: string[];
-        // if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        //   colorScaleTitle = undefined;
-        //   colorScaleColors = twoColorScale;
-        //   colorScaleLabels = [
-        //     getFluentString('global-text-value-not-done'),
-        //     getFluentString('global-text-value-done'),
-        //   ];
-        // } else if (type === PeakListVariants.fourSeason) {
-        //   colorScaleTitle = getFluentString('map-number-of-seasons');
-        //   colorScaleColors = fiveColorScale;
-        //   colorScaleLabels = [
-        //     getFluentString('map-no-seasons'),
-        //     getFluentString('map-all-seasons'),
-        //   ];
-        // } else if (type === PeakListVariants.grid) {
-        //   colorScaleTitle = getFluentString('map-number-of-months');
-        //   colorScaleColors = thirteenColorScale;
-        //   colorScaleLabels = [
-        //     getFluentString('map-no-months'),
-        //     getFluentString('map-all-months'),
-        //   ];
-        // } else {
-        //   colorScaleTitle = undefined;
-        //   colorScaleColors = [];
-        //   colorScaleLabels = [];
-        //   failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
-        // }
+        let colorScaleTitle: string | undefined;
+        let colorScaleColors: string[];
+        let colorScaleLabels: string[];
+        if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+          colorScaleTitle = undefined;
+          colorScaleColors = twoColorScale;
+          colorScaleLabels = [
+            getFluentString('global-text-value-not-done'),
+            getFluentString('global-text-value-done'),
+          ];
+        } else if (type === PeakListVariants.fourSeason) {
+          colorScaleTitle = getFluentString('map-number-of-seasons');
+          colorScaleColors = fiveColorScale;
+          colorScaleLabels = [
+            getFluentString('map-no-seasons'),
+            getFluentString('map-all-seasons'),
+          ];
+        } else if (type === PeakListVariants.grid) {
+          colorScaleTitle = getFluentString('map-number-of-months');
+          colorScaleColors = thirteenColorScale;
+          colorScaleLabels = [
+            getFluentString('map-no-months'),
+            getFluentString('map-all-months'),
+          ];
+        } else {
+          colorScaleTitle = undefined;
+          colorScaleColors = [];
+          colorScaleLabels = [];
+          failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
+        }
 
         const userMountains = (user && user.mountains) ? user.mountains : [];
 
-        const requiredMountainsWithDates = requiredMountains.map(mountain => {
-          const completionDates = getCompletionDates({type, mountain, userMountains});
-          return {...mountain, completionDates};
-        });
+        const requiredMountainsWithDates: any = [];
 
-        const optionalMountainsWithDates = optionalMountains.map(mountain => {
-          const completionDates = getCompletionDates({type, mountain, userMountains});
-          return {...mountain, completionDates};
-        });
+        const optionalMountainsWithDates: any = [];
 
         const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
 
@@ -590,7 +584,7 @@ const PeakListDetail = (props: Props) => {
             {friendHeader}
             <Header
               user={user}
-              mountains={requiredMountains}
+              mountains={[]}
               peakList={peakList}
               completedAscents={userMountains}
               statesArray={statesArray}
@@ -603,13 +597,13 @@ const PeakListDetail = (props: Props) => {
               highlighted={highlightedMountain}
               userId={userId}
               isOtherUser={isOtherUser}
-              colorScaleTitle={undefined}
-              colorScaleColors={[]}
-              colorScaleLabels={[]}
+              colorScaleTitle={colorScaleTitle}
+              colorScaleColors={colorScaleColors}
+              colorScaleLabels={colorScaleLabels}
               key={peakListDetailMapKey}
             />
             <PreFormattedParagraph>
-              {paragraphText}
+              {'paragraphText'}
             </PreFormattedParagraph>
             {resourcesList}
             {otherVariants}
