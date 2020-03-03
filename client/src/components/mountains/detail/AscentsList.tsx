@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import {

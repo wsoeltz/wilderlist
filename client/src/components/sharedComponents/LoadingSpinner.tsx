@@ -1,4 +1,4 @@
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import React, {useContext, useEffect, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
 import {

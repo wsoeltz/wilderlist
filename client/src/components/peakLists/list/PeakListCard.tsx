@@ -1,4 +1,4 @@
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
