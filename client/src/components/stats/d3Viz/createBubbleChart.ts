@@ -95,8 +95,18 @@ export default (input: Input) => {
       return 'translate(0px, ' + adjust + 'px)';
     })
 
-    // g.style('transform', (_d) => {
-    //     return 'scale(1.1)';
-    //   })
-    //  .style('transform-origin', 'center');
+    g.style('transform', () => {
+        let scale: number;
+        if (root && root.children && width > 600) {
+          const lowestPoint = root.children.map((n: any) => n.y - n.r).sort((a, b) => a - b)[0];
+          const highestPoint = root.children.map((n: any) => n.y + n.r).sort((a, b) => b - a)[0];
+          const groupHeight = highestPoint - lowestPoint;
+          const newHeight = height - groupHeight;
+          scale = 1 + (newHeight/height);
+        } else {
+          scale = 1;
+        }
+        return 'scale('+ scale +') translateY(' + margin.top + 'px)';
+      })
+     .style('transform-origin', 'center');
 }
