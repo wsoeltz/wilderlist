@@ -9,6 +9,9 @@ import {
   axisLeft,
 } from 'd3-axis';
 import { max, extent } from 'd3-array';
+import {
+  primaryColor,
+} from '../../../styling/styleUtils';
 
 export interface Datum {
   date: Date;
@@ -89,7 +92,7 @@ export default (input: Input) => {
       .data([data])
       .attr("class", "line")
       .attr("fill", "none")
-      .attr("stroke", "steelblue")
+      .attr("stroke", primaryColor)
       .attr("stroke-width", 1.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")

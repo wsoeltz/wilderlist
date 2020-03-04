@@ -27,13 +27,21 @@ import {
 } from '../../Utils';
 import {
   Root,
+  SingleColumn,
   TwoColumns,
   LargeStyledNumber,
-  ThreeColumns,
+  ContributionsCard,
+  CardRoot,
+  AverageTimeCard,
+  TopFourValuesList,
+  ContextNote,
 } from './styling';
 import DataViz, {
   VizType
 } from './d3Viz';
+import { RouteComponentProps, withRouter } from 'react-router';
+import {mountainDetailLink} from '../../routing/Utils';
+import PeakProgressBar from '../peakLists/list/PeakProgressBar';
 
 const GET_DATA_FOR_STATS = gql`
   query GetDataForStats($userId: ID!) {
@@ -91,12 +99,12 @@ interface CompletedMountainWithDateObject {
   dates: DateObject[];
 }
 
-interface Props {
+interface Props extends RouteComponentProps {
   userId: string;
 }
 
 const Stats = (props: Props) => {
-  const { userId } = props;
+  const { userId, history } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -229,10 +237,13 @@ const Stats = (props: Props) => {
       }
     }
 
-    let topHikedPeaksData: Array<{label: string, value: number}> =[];
+    let topHikedPeaksData: Array<{label: string, value: number, onClick: () => void}> =[];
     topPeaks.forEach(({mountain, dates}) => {
       if (mountain && dates.length) {
-        topHikedPeaksData.push({label: mountain.name, value: dates.length});
+        topHikedPeaksData.push({
+          label: mountain.name, value: dates.length,
+          onClick: () => history.push(mountainDetailLink(mountain.id)),
+        });
       }
     });
     topHikedPeaksData.reverse();
@@ -257,7 +268,9 @@ const Stats = (props: Props) => {
     });
     const avgTimeBetweenHikes = totalTimesBetween > 0 && sortedDates.length > 0
       ? totalTimesBetween/sortedDates.length : 0;
-    const startDate = sortedDates[0] ? sortedDates[0].dateAsNumber : undefined;
+    const startDate = sortedDates[0] && !isNaN(sortedDates[0].day) ? (
+      sortedDates[0].day + '/' + sortedDates[0].month + '/' + sortedDates[0].year
+    ) : undefined;
 
     const groupedStates = countBy(allStates);
     const allStatesCountObj: Array<{stateAbbr: string, count: number}> = [];
@@ -280,11 +293,11 @@ const Stats = (props: Props) => {
     const sortedYears = sortBy(allYearsCountObj, ['count'])
       .reverse()
       .slice(0, 4)
-      .map(({year, count}) => <li key={'top-peaks-list' + year}>{year} ({count})</li>);
+      .map(({year, count}) => ({label: year, count}));
 
-    const sortedSeasonsElm = sortBy(topHikedSeasons, ['count'])
+    const sortedSeasons = sortBy(topHikedSeasons, ['count'])
       .reverse()
-      .map(({season, count}) => <li key={'top-peaks-list' + season}>{season} ({count})</li>);
+      .map(({season, count}) => ({label: season, count}));
 
     const elevationDataPoints: Array<{date: Date, value: number}> = [];
     const groupedElevationDates = groupBy(sortedDates, 'dateAsNumber');
@@ -328,75 +341,120 @@ const Stats = (props: Props) => {
         <TwoColumns>
           <LargeStyledNumber
             value={totalAscents}
-            labelTop={'total overall'}
-            labelBottom={'ascents'}
+            label={'total overall ascents'}
           />
           <LargeStyledNumber
             value={uniqueMountains}
-            labelTop={'total unique'}
-            labelBottom={'mountains ascended'}
+            label={'total unique mountains ascended'}
           />
         </TwoColumns>
         <TwoColumns>
           <div>
             <SectionTitle>{'Most Hiked Mountains'}</SectionTitle>
-            <DataViz
-              id='top-12-peaks-hiked'
-              vizType={VizType.HorizontalBarChart}
-              data={topHikedPeaksData}
-            />
+            <CardRoot>
+              <DataViz
+                id='top-12-peaks-hiked'
+                vizType={VizType.HorizontalBarChart}
+                data={topHikedPeaksData}
+              />
+            </CardRoot>
           </div>
           <div>
             <SectionTitle>{'Most Hiked Months'}</SectionTitle>
+            <CardRoot>
+              <DataViz
+                id='top-months-hiked'
+                vizType={VizType.HorizontalBarChart}
+                data={sortedMonthsData}
+              />
+            </CardRoot>
+          </div>
+        </TwoColumns>
+        <SingleColumn>
+          <SectionTitle>{'Your Wilderlist Contributions'}</SectionTitle>
+          <ContributionsCard
+            tripReports={totalAuthoredTripReports}
+            mountains={totalAuthoredMountains}
+            lists={totalAuthoredPeakLists}
+            getFluentString={getFluentString}
+          />
+        </SingleColumn>
+        <SingleColumn>
+          <SectionTitle>{'Time Between Hikes'}</SectionTitle>
+          <AverageTimeCard
+            avgTime={avgTimeBetweenHikes}
+            startDate={startDate}
+            getFluentString={getFluentString}
+          />
+          <ContextNote>Average time is calculated based on the time between recorded <em>full dates</em>, starting with your first recorded date on Wilderlist to your last.</ContextNote>
+        </SingleColumn>
+        <SingleColumn>
+          <SectionTitle>{'Hiking Break Down by Top States'}</SectionTitle>
+          <CardRoot>
             <DataViz
-              id='top-months-hiked'
-              vizType={VizType.HorizontalBarChart}
-              data={sortedMonthsData}
+              id='top-states-hiked'
+              vizType={VizType.BubbleChart}
+              data={sortedStates}
+            />
+          </CardRoot>
+        </SingleColumn>
+        <TwoColumns>
+          <div>
+            <SectionTitle>{'Top Hiked Years'}</SectionTitle>
+            <TopFourValuesList
+              val1={sortedYears[0]}
+              val2={sortedYears[1]}
+              val3={sortedYears[2]}
+              val4={sortedYears[3]}
+              getFluentString={getFluentString}
+            />
+          </div>
+          <div>
+            <SectionTitle>{'Top Hiked Seasons'}</SectionTitle>
+            <TopFourValuesList
+              val1={sortedSeasons[0]}
+              val2={sortedSeasons[1]}
+              val3={sortedSeasons[2]}
+              val4={sortedSeasons[3]}
+              getFluentString={getFluentString}
             />
           </div>
         </TwoColumns>
-        <LargeStyledNumber
-          value={totalAuthoredMountains + totalAuthoredPeakLists + totalAuthoredTripReports}
-          labelTop={'total Wilderlist'}
-          labelBottom={' Contributions'}
-        />
-        <ThreeColumns>
+        <SingleColumn>
+          <SectionTitle>{'Total Lifetime elevation'}</SectionTitle>
+          <CardRoot>
+            <DataViz
+              id='total-elevation-reached'
+              vizType={VizType.LineChart}
+              data={elevationDataPoints}
+            />
+          </CardRoot>
+          <ContextNote>
+            Lifetime Elevation is calculated based on the total elevation of each peak hiked for a given day. Wilderlist does not currently take into account prominence or elevation gain.
+          </ContextNote>
+        </SingleColumn>
+        <SectionTitle>{'Your Lists'}</SectionTitle>
+        <TwoColumns>
           <LargeStyledNumber
-            value={totalAuthoredTripReports}
-            labelTop={'Trip Reports'}
-            labelBottom={'Written'}
+            value={peakLists.length}
+            label={'lists being pursued'}
           />
           <LargeStyledNumber
-            value={totalAuthoredMountains}
-            labelTop={'Mountains'}
-            labelBottom={'Added'}
+            value={numFinishedList}
+            label={'lists completed'}
           />
-          <LargeStyledNumber
-            value={totalAuthoredPeakLists}
-            labelTop={'Hiking Lists'}
-            labelBottom={'Created'}
-          />
-        </ThreeColumns>
-        <div>{`Average time between hikes (express as days, months, or years) ${avgTimeBetweenHikes} days = STYLED TIME NUMBERS since ${startDate}`}</div>
-        <div>{`Hiking break down by state = BUBBLE CHART`}</div>
-        <DataViz
-          id='top-states-hiked'
-          vizType={VizType.BubbleChart}
-          data={sortedStates}
-        />
-        <div>{`Top 4 Most hiked YEARS`}</div>
-        <ol>{sortedYears}</ol>
-        <div>{`Most hiked SEASONS = STYLED NUMBERS/Text`}</div>
-        <ol>{sortedSeasonsElm}</ol>
-        <div>{`Total elevation timeline - SPARKLINE`}</div>
-        <div>{`CALCULATED, in CONSOLE`}</div>
-        <DataViz
-          id='total-elevation-reached'
-          vizType={VizType.LineChart}
-          data={elevationDataPoints}
-        />
-        <div>{`Total number of lists being pursued ${peakLists.length} && Total number of completed lists ${numFinishedList} = STYLED NUMBERS`}</div>
-        <div>{`Percentage complete towards all your lists ${percentOfAllLists} = STYLED PERCENT`}</div>
+        </TwoColumns>
+        <SectionTitle>{'Percentage Complete For All Lists'}</SectionTitle>
+        <SingleColumn>
+          <CardRoot>
+            <PeakProgressBar
+              variant={PeakListVariants.standard}
+              completed={percentOfAllLists}
+              total={100}
+              id={'stats-all-lists-percent'}
+            />
+          </CardRoot>
+        </SingleColumn>
       </>
     );
   } else {
@@ -414,4 +472,4 @@ const Stats = (props: Props) => {
   );
 };
 
-export default Stats;
+export default withRouter(Stats);

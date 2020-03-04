@@ -5,12 +5,10 @@ import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
 import createLineChart, {Datum as LineChartDatum} from './createLineChart';
 import { AppContext } from '../../App';
-import { lightBorderColor } from '../../../styling/styleUtils';
 
 const Root = styled.div`
   height: 450px;
   width: 100%;
-  border: solid 1px ${lightBorderColor};
 
   svg {
     width: 100%;

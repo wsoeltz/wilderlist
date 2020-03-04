@@ -7,12 +7,12 @@ import {
   axisBottom,
 } from 'd3-axis';
 import { max } from 'd3-array';
-import { baseColor } from '../../../styling/styleUtils';
-import { chartGreen, chartGray } from '../styling';
+import { lightBorderColor, baseColor, linkColor } from '../../../styling/styleUtils';
 
 export interface Datum {
   label: string;
   value: number;
+  onClick?: () => void;
 }
 
 interface Dimensions {
@@ -48,7 +48,6 @@ export default (input: Input) => {
   svg
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .style('background-color', chartGray)
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
@@ -75,9 +74,21 @@ export default (input: Input) => {
         return val !== undefined ? val : 0;
       })
       .attr("height", y.bandwidth())
-      .style('fill', chartGreen)
+      .style('fill', lightBorderColor)
+      .style('cursor', (d) => {
+        if (d.onClick) {
+          return 'pointer';
+        } else {
+          return 'auto';
+        }
+      })
+      .on('click', (d) => {
+        if (d.onClick) {
+          d.onClick();
+        }
+      })
 
-  // append the rectangles for the bar chart
+  // append the text for the bar chart
   svg.selectAll()
       .data(data)
     .enter().append("text")
@@ -89,9 +100,35 @@ export default (input: Input) => {
       })
       .attr("height", y.bandwidth() / 2)
       .text(d => `${d.label} (${d.value})`)
-      .style('font-size', '14px')
+      .style('font-size', '12px')
       .style('text-transform', 'capitalize')
-      .style('fill', baseColor)
+      .style('font-weight', '600')
+      .style('fill', (d) => {
+        if (d.onClick) {
+          return linkColor;
+        } else {
+          return baseColor;
+        }
+      })
+      .style('cursor', (d) => {
+        if (d.onClick) {
+          return 'pointer';
+        } else {
+          return 'auto';
+        }
+      })
+      .style('text-decoration', (d) => {
+        if (d.onClick) {
+          return 'underline';
+        } else {
+          return 'none';
+        }
+      })
+      .on('click', (d) => {
+        if (d.onClick) {
+          d.onClick();
+        }
+      })
 
   // add the x Axis
   svg.append("g")
