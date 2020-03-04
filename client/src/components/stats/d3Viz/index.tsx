@@ -3,6 +3,7 @@ import { select } from 'd3-selection';
 import styled from 'styled-components';
 import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
+import createLineChart, {Datum as LineChartDatum} from './createLineChart';
 import { AppContext } from '../../App';
 import { lightBorderColor } from '../../../styling/styleUtils';
 
@@ -20,6 +21,7 @@ const Root = styled.div`
 export enum VizType {
   HorizontalBarChart = 'HorizontalBarChart',
   BubbleChart = 'BubbleChart',
+  LineChart = 'LineChart',
 }
 
 interface BaseProps {
@@ -35,6 +37,10 @@ type Props = BaseProps & (
   {
     vizType: VizType.BubbleChart;
     data: BubbleChartDatum[];
+  } |
+  {
+    vizType: VizType.LineChart;
+    data: LineChartDatum[];
   }
 );
 
@@ -56,6 +62,12 @@ const D3Viz = (props: Props) => {
         });
       } else if (props.vizType === VizType.BubbleChart) {
         createBubbleChart({
+          svg, data: props.data, size: {
+            width: sizingNode.clientWidth, height: sizingNode.clientHeight,
+          }
+        });
+      } else if (props.vizType === VizType.LineChart) {
+        createLineChart({
           svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
           }

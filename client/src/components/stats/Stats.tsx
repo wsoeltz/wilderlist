@@ -264,7 +264,6 @@ const Stats = (props: Props) => {
     Object.entries(groupedStates).forEach((val) => {
       allStatesCountObj.push({stateAbbr: val[0], count: val[1]});
     });
-    console.log(allStatesCountObj)
     const sortedStates = sortBy(allStatesCountObj, ['count'])
       .reverse()
       .map(({stateAbbr, count}) => {
@@ -287,16 +286,18 @@ const Stats = (props: Props) => {
       .reverse()
       .map(({season, count}) => <li key={'top-peaks-list' + season}>{season} ({count})</li>);
 
-    const elevationDataPoints: Array<{dateAsNumber: number, elevation: number}> = [];
+    const elevationDataPoints: Array<{date: Date, value: number}> = [];
     const groupedElevationDates = groupBy(sortedDates, 'dateAsNumber');
+    let totalElevationSoFar = 0;
     Object.entries(groupedElevationDates).forEach((val) => {
       let totalElevationForDay: number = 0;
       val[1].forEach(({elevation}) => {
         totalElevationForDay += elevation;
       });
-      elevationDataPoints.push({dateAsNumber: parseInt(val[0], 10), elevation: totalElevationForDay});
+      totalElevationSoFar += totalElevationForDay;
+      const {day, month, year} = val[1][0];
+      elevationDataPoints.push({date: new Date(year, month - 1, day), value: totalElevationSoFar});
     });
-    console.log(elevationDataPoints);
 
     let totalCompletedAscents: number = 0;
     let totalRequiredAscents: number = 0;
@@ -379,7 +380,7 @@ const Stats = (props: Props) => {
         <div>{`Average time between hikes (express as days, months, or years) ${avgTimeBetweenHikes} days = STYLED TIME NUMBERS since ${startDate}`}</div>
         <div>{`Hiking break down by state = BUBBLE CHART`}</div>
         <DataViz
-          id='top-months-hiked'
+          id='top-states-hiked'
           vizType={VizType.BubbleChart}
           data={sortedStates}
         />
@@ -389,6 +390,11 @@ const Stats = (props: Props) => {
         <ol>{sortedSeasonsElm}</ol>
         <div>{`Total elevation timeline - SPARKLINE`}</div>
         <div>{`CALCULATED, in CONSOLE`}</div>
+        <DataViz
+          id='total-elevation-reached'
+          vizType={VizType.LineChart}
+          data={elevationDataPoints}
+        />
         <div>{`Total number of lists being pursued ${peakLists.length} && Total number of completed lists ${numFinishedList} = STYLED NUMBERS`}</div>
         <div>{`Percentage complete towards all your lists ${percentOfAllLists} = STYLED PERCENT`}</div>
       </>
