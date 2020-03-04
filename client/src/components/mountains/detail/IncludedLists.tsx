@@ -16,6 +16,7 @@ import {
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
+import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
 
 const PlaceholderBlock = styled.div`
   width: 70%;
@@ -128,7 +129,7 @@ const IncludedLists = (props: Props) => {
           </Link>
           {' '}
           {getFluentString('mountain-detail-lists-mountain-appears-on-ranks', {
-            'elevation-rank': elevationRank,
+            'elevation-rank': ORDINAL_NUMBER([elevationRank]),
           })}
         </BasicUnorderedListItem>
       );
