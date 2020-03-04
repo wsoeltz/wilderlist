@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
 import { AppContext } from '../../App';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
 import { lightBorderColor } from '../../../styling/styleUtils';
 
 const Root = styled.div`
@@ -40,7 +39,7 @@ type Props = BaseProps & (
 );
 
 const D3Viz = (props: Props) => {
-  const { id, vizType, data } = props;
+  const { id } = props;
   const sizingNodeRef = useRef<HTMLDivElement | null>(null);
   const svgNodeRef = useRef<any>(null);
   const { windowWidth } = useContext(AppContext);
@@ -49,24 +48,22 @@ const D3Viz = (props: Props) => {
     if (svgNodeRef && svgNodeRef.current && sizingNodeRef && sizingNodeRef.current) {
       const sizingNode = sizingNodeRef.current;
       const svg = select(svgNodeRef.current);
-      if (vizType === VizType.HorizontalBarChart) {
+      if (props.vizType === VizType.HorizontalBarChart) {
         createBarGraph({
-          svg, data, size: {
+          svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
           }
         });
-      } else if (vizType === VizType.BubbleChart) {
+      } else if (props.vizType === VizType.BubbleChart) {
         createBubbleChart({
-          svg, data, size: {
+          svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
           }
         });
-      } else {
-        failIfValidOrNonExhaustive(vizType, 'Invalid vizType ' + vizType);
       }
     }
-  }, [svgNodeRef, sizingNodeRef, windowWidth, vizType, data])
- 
+  }, [svgNodeRef, sizingNodeRef, windowWidth, props.vizType, props.data])
+
   return (
     <Root ref={sizingNodeRef}>
       <svg ref={svgNodeRef}  key={id + windowWidth} />

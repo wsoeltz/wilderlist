@@ -5,6 +5,9 @@ import {
   primaryHoverColor,
 } from '../../styling/styleUtils';
 
+export const chartGreen = '#abcf6f';
+export const chartGray = '#f6f6f6';
+
 export const Root = styled.div`
   margin-bottom: 4rem;
 `;

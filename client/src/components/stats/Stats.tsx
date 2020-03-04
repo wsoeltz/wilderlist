@@ -46,6 +46,7 @@ const GET_DATA_FOR_STATS = gql`
           elevation
           state {
             id
+            name
             abbreviation
           }
         }
@@ -144,6 +145,7 @@ const Stats = (props: Props) => {
     ];
     const allYears: number[] = [];
     const allStates: string[] = [];
+    const allStateNames: Array<{abbreviation: string, name: string}> = [];
     const mountainsWithDates: Array<{mountain: Mountain, dates: DateObject[]}> = [];
     const allDates: (DateObject & {elevation: number})[] = [];
     if (mountains) {
@@ -176,12 +178,14 @@ const Stats = (props: Props) => {
                 topHikedSeasons[3].count++;
               }
             }
+            const {state} = mountain;
+            if (state) {
+              const {abbreviation, name} = state;
+              allStates.push(state.abbreviation);
+              allStateNames.push({abbreviation, name});
+            }
           });
           mountainsWithDates.push(mountainWithDates);
-          const {state} = mountain;
-          if (state) {
-            allStates.push(state.abbreviation);
-          }
         }
       });
     }
@@ -260,10 +264,13 @@ const Stats = (props: Props) => {
     Object.entries(groupedStates).forEach((val) => {
       allStatesCountObj.push({stateAbbr: val[0], count: val[1]});
     });
+    console.log(allStatesCountObj)
     const sortedStates = sortBy(allStatesCountObj, ['count'])
       .reverse()
       .map(({stateAbbr, count}) => {
-        return {label: stateAbbr, value: count};
+        const targetVal = allStateNames.find(({abbreviation}) => abbreviation === stateAbbr);
+        const name = targetVal !== undefined ? targetVal.name : '';
+        return {label: stateAbbr, value: count, name};
       });
 
     const groupedYears = countBy(allYears);
