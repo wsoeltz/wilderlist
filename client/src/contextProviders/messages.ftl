@@ -318,7 +318,7 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with {
   $state-or-region ->
     [state] within
     *[region] throughout
-} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+} { $state-region-name }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
 peak-list-detail-friend-viewing-list = Viewing list for { $username }
 peak-list-detail-friend-view-your-progress-button = View your progress
@@ -363,7 +363,7 @@ mountain-detail-add-ascent-date = Add Ascent Date
 mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
-mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak
+mountain-detail-lists-mountain-appears-on-ranks =  — { $elevation-rank } largest peak
 
 mountain-detail-enable-driving-distances = Enable Driving Distances
 mountain-detail-driving-distance = {
