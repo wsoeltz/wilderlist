@@ -73,7 +73,7 @@ export default (input: Input) => {
   const tooltipDiv = select("body").append("div")
     .style('position', 'absolute')
     .style('text-align', 'center')
-    .style("opacity", 0)
+    .style("display", 'none')
     .style("padding", '8px 12px')
     .style("background", primaryColor)
     .style("border-radius", '4px')
@@ -92,14 +92,14 @@ export default (input: Input) => {
     .on("mousemove", ({value, data: {data: {name}}}: any) => {
         const ascents = value === 1 ? 'ascent' : 'ascents';
         tooltipDiv
-            .style("opacity", 1);
+            .style("display", 'block');
         tooltipDiv.html(`${name} - ${value} ${ascents}`)
             .style("left", (event.pageX) + "px")
             .style("top", (event.pageY - 28) + "px");
         })
     .on("mouseout", () => {
         tooltipDiv
-            .style("opacity", 0);
+            .style("display", 'none');
     });
 
 
