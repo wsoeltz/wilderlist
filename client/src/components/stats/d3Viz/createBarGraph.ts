@@ -8,6 +8,7 @@ import {
 } from 'd3-axis';
 import { max } from 'd3-array';
 import { baseColor } from '../../../styling/styleUtils';
+import { chartGreen, chartGray } from '../styling';
 
 export interface Datum {
   label: string;
@@ -40,16 +41,16 @@ export default (input: Input) => {
 
   const x = scaleLinear()
             .range([0, width]);
-            
+
   // append the svg object to the body of the page
   // append a 'group' element to 'svg'
   // moves the 'group' element to the top left margin
   svg
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .style('background-color', '#f6f6f6')
+    .style('background-color', chartGray)
   .append("g")
-    .attr("transform", 
+    .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
   // format the data
@@ -74,7 +75,7 @@ export default (input: Input) => {
         return val !== undefined ? val : 0;
       })
       .attr("height", y.bandwidth())
-      .style('fill', '#abcf6f')
+      .style('fill', chartGreen)
 
   // append the rectangles for the bar chart
   svg.selectAll()

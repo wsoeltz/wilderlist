@@ -1,11 +1,16 @@
-import { Selection } from 'd3-selection';
+import { Selection, select, event } from 'd3-selection';
 import {
   pack,
   hierarchy,
   stratify,
 } from 'd3-hierarchy';
+import {
+  primaryColor,
+} from '../../../styling/styleUtils';
+import { chartGreen } from '../styling';
 
 export interface Datum {
+  name: string;
   label: string;
   value: number;
 }
@@ -15,6 +20,7 @@ interface ParentDatum {
 }
 
 interface SrcDatum extends ParentDatum {
+  name: string;
   value: number;
   parentId: string;
 };
@@ -35,7 +41,9 @@ interface Input {
 export default (input: Input) => {
   const { svg, size, data } = input;
 
-  const srcData: SrcData = data.map(d => ({id: d.label, size: d.value, parentId: 'global'}));
+  const srcData: SrcData = data.map(d => ({
+    id: d.label, size: d.value, parentId: 'global', name: d.name,
+  }));
   srcData.unshift({id: 'global'});
 
   const margin = {top: 10, right: 10, bottom: 10, left: 10};
@@ -51,7 +59,7 @@ export default (input: Input) => {
   const layout = pack()
           .size([width - 2, height - 2])
           .padding(6)
-      
+
   const stratData = stratify()(srcData);
   const root = hierarchy(stratData)
       .sum(function (d: any) { return d.data.size })
@@ -59,7 +67,19 @@ export default (input: Input) => {
   const nodes = root.descendants();
 
   layout(root)
-  
+
+
+  // Define the div for the tooltip
+  const tooltipDiv = select("body").append("div")
+    .style('position', 'absolute')
+    .style('text-align', 'center')
+    .style("opacity", 0)
+    .style("padding", '8px 12px')
+    .style("background", primaryColor)
+    .style("border-radius", '4px')
+    .style('color', '#fff')
+    .style("pointer-events", 'none')
+
   g.selectAll('circle')
     .data(nodes)
     .enter()
@@ -68,7 +88,19 @@ export default (input: Input) => {
     .attr('cx', function (d: any) { return d.x; })
     .attr('cy', function (d: any) { return d.y; })
     .attr('r', function (d: any) { return d.r; })
-    .style("fill", '#abcf6f')
+    .style("fill", chartGreen)
+    .on("mousemove", ({value, data: {data: {name}}}: any) => {
+        const ascents = value === 1 ? 'ascent' : 'ascents';
+        tooltipDiv
+            .style("opacity", 1);
+        tooltipDiv.html(`${name} - ${value} ${ascents}`)
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+    .on("mouseout", () => {
+        tooltipDiv
+            .style("opacity", 0);
+    });
 
 
   g.selectAll('text')
@@ -94,19 +126,20 @@ export default (input: Input) => {
       const adjust = parseInt(d.r, 10) * 0.3;
       return 'translate(0px, ' + adjust + 'px)';
     })
+    .style('pointer-events', 'none');
 
-    g.style('transform', () => {
-        let scale: number;
-        if (root && root.children && width > 600) {
-          const lowestPoint = root.children.map((n: any) => n.y - n.r).sort((a, b) => a - b)[0];
-          const highestPoint = root.children.map((n: any) => n.y + n.r).sort((a, b) => b - a)[0];
-          const groupHeight = highestPoint - lowestPoint;
-          const newHeight = height - groupHeight;
-          scale = 1 + (newHeight/height);
-        } else {
-          scale = 1;
-        }
-        return 'scale('+ scale +') translateY(' + margin.top + 'px)';
-      })
-     .style('transform-origin', 'center');
+  g.style('transform', () => {
+      let scale: number;
+      if (root && root.children && width > 600) {
+        const lowestPoint = root.children.map((n: any) => n.y - n.r).sort((a, b) => a - b)[0];
+        const highestPoint = root.children.map((n: any) => n.y + n.r).sort((a, b) => b - a)[0];
+        const groupHeight = highestPoint - lowestPoint;
+        const newHeight = height - groupHeight;
+        scale = 1 + (newHeight/height);
+      } else {
+        scale = 1;
+      }
+      return 'scale('+ scale +') translateY(' + margin.top + 'px)';
+    })
+   .style('transform-origin', 'center');
 }
