@@ -6,8 +6,9 @@ import {
 } from 'd3-hierarchy';
 import {
   primaryColor,
+  secondaryColor,
+  lightBorderColor,
 } from '../../../styling/styleUtils';
-import { chartGreen } from '../styling';
 
 export interface Datum {
   name: string;
@@ -75,10 +76,12 @@ export default (input: Input) => {
     .style('text-align', 'center')
     .style("display", 'none')
     .style("padding", '8px 12px')
-    .style("background", primaryColor)
+    .style("background", '#fff')
     .style("border-radius", '4px')
-    .style('color', '#fff')
+    .style('color', secondaryColor)
     .style("pointer-events", 'none')
+    .style('box-shadow', '0px 0px 3px -1px #b5b5b5')
+    .style('border', `solid 1px ${lightBorderColor}`)
 
   g.selectAll('circle')
     .data(nodes)
@@ -88,7 +91,7 @@ export default (input: Input) => {
     .attr('cx', function (d: any) { return d.x; })
     .attr('cy', function (d: any) { return d.y; })
     .attr('r', function (d: any) { return d.r; })
-    .style("fill", chartGreen)
+    .style("fill", primaryColor)
     .on("mousemove", ({value, data: {data: {name}}}: any) => {
         const ascents = value === 1 ? 'ascent' : 'ascents';
         tooltipDiv
@@ -117,6 +120,7 @@ export default (input: Input) => {
         return '';
       }
     })
+    .style('fill', '#fff')
     .style('font-size', (d: any) => {
       const fontSize = parseInt(d.r, 10) * 0.85;
       return fontSize + 'px';
