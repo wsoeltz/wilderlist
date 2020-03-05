@@ -20,7 +20,7 @@ const MountainCard = ({ mountain }: Props) => {
   return (
     <CardLinkWrapper
       mobileURL={mountainDetailLink(mountain.id)}
-      desktopURL={searchMountainsDetailLink(mountain.id)}
+      desktopURL={searchMountainsDetailLink(mountain.id) + window.location.search}
     >
       <Card>
         <CardTitle>{name}</CardTitle>
