@@ -65,6 +65,7 @@ export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
       author {
         id
         name
+        hideProfileInSearch
       }
       mountains {
         id
@@ -73,6 +74,7 @@ export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
       users {
         id
         name
+        hideProfileInSearch
       }
       notes
       link
@@ -143,9 +145,10 @@ export const isCondition = (key: string) => {
 interface Props {
   mountainId: string;
   mountainName: string;
+  userId: string | null;
 }
 
-const TripReports = ({mountainId, mountainName}: Props) => {
+const TripReports = ({mountainId, mountainName, userId}: Props) => {
 
   const [fullReport, setFullReport] = useState<TripReport | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -159,6 +162,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
     <TripReportModal
       onClose={() => setFullReport(null)}
       tripReport={fullReport}
+      userId={userId}
     />
   );
 
@@ -271,13 +275,15 @@ const TripReports = ({mountainId, mountainName}: Props) => {
           </Section>
         ) : null;
 
-        const authorName = report.author !== null ? (
-          <BoldLink to={userProfileLink(report.author.id)}>
-            {report.author.name}
-          </BoldLink>
-        ) : (
-          <span>{getFluentString('global-text-value-generic-user')}</span>
-        );
+        const authorName = report.author !== null && report.author.hideProfileInSearch !== true
+          ? report.author.name : getFluentString('global-text-value-generic-user');
+
+        const authorLink = userId !== null && report.author !== null && report.author.hideProfileInSearch !== true
+          ? (
+            <BoldLink to={userProfileLink(report.author.id)}>
+              {authorName}
+            </BoldLink>
+          ) : <span>{authorName}</span>;
 
         return (
           <ReportContainer key={report.id} id={`trip-report-${report.date}`}>
@@ -288,7 +294,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
                   {formatStringDate(report.date)}
                 </LinkButton>
                 {' by '}
-                {authorName}
+                {authorLink}
               </SemiBold>
               <ReadFullReportButton
                 className='read-full-report-button'

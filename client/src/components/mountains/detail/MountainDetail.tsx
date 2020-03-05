@@ -591,6 +591,7 @@ const MountainDetail = (props: Props) => {
           <TripReports
             mountainId={id}
             mountainName={mountain.name}
+            userId={userId}
           />
           {resourcesList}
           <LocalTrails
