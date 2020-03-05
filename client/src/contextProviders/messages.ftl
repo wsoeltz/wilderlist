@@ -147,6 +147,7 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 global-text-value-submit = Submit
 
 global-text-value-edit = Edit
+global-text-value-save-and-add = Save and Add Another
 global-text-value-save = Save
 global-text-value-save-changes = Save Changes
 global-text-value-saving = Saving
