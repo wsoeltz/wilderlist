@@ -1,12 +1,13 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { debounce } from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import {
   lightBorderColor,
   lightFontWeight,
   placeholderColor,
 } from '../../styling/styleUtils';
+import { AppContext } from '../App';
 
 const SearchContainer = styled.label`
   position: relative;
@@ -51,6 +52,7 @@ const StandardSearch = (props: Props) => {
   const { placeholder, setSearchQuery, initialQuery, focusOnMount } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
+  const { windowWidth } = useContext(AppContext);
 
   const onChange = debounce(() => {
     if (searchEl !== null && searchEl.current !== null) {
@@ -61,14 +63,14 @@ const StandardSearch = (props: Props) => {
   useEffect(() => {
     const node = searchEl.current;
     if (node) {
-      if (focusOnMount === true) {
+      if (focusOnMount === true && windowWidth > 1024) {
         node.focus();
       }
       if (!node.value) {
         node.value = initialQuery;
       }
     }
-  }, [searchEl, focusOnMount, initialQuery]);
+  }, [searchEl, focusOnMount, windowWidth, initialQuery]);
 
   return (
     <SearchContainer>
