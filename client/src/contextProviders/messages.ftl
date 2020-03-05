@@ -208,8 +208,10 @@ header-text-login-with-facebook = Login With Facebook
 
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Hiking Lists
+header-text-menu-item-lists-short = Lists
 header-text-menu-item-mountains = Mountains
 header-text-menu-item-your-stats = Your Stats
+header-text-menu-item-your-stats-short = Stats
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
