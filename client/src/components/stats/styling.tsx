@@ -6,6 +6,10 @@ import {
   lightBaseColor,
 } from '../../styling/styleUtils';
 import { GetString } from 'fluent-react/compat';
+import StarSVG from './d3Viz/icons/star.svg';
+import TripReportSVG from './d3Viz/icons/trip-report.svg';
+import AddHikingListSVG from './d3Viz/icons/add-hiking-list.svg';
+import AddMountainSVG from './d3Viz/icons/add-mountain.svg';
 
 export const Root = styled.div`
   margin-bottom: 4rem;
@@ -53,7 +57,6 @@ const BigNumber = styled.div`
 `;
 const Label = styled.div`
   font-size: 1.4rem;
-  text-transform: capitalize;
   color: ${primaryColor};
 `;
 
@@ -63,21 +66,33 @@ const SmallNumber = styled.div`
   font-weight: 600;
   color: ${primaryColor};
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 0.6rem;
 `;
 const SmallLabel = styled.div`
   font-size: 1rem;
-  text-transform: capitalize;
   color: ${primaryColor};
 `;
 
+const SvgImg = styled.img`
+  height: 3rem;
+  margin-right: 1rem;
+`;
+
+const SvgSmallImg = styled.img`
+  height: 2rem;
+  margin-right: 1rem;
+`;
+
 export const LargeStyledNumber = (
-  {value, label}: {value: number, label: string}) => {
+  {value, label, svg}: {value: number, label: string, svg: string}) => {
   return (
     <CardRoot>
-      <BigNumber>{value}</BigNumber>
+      <BigNumber>
+        <SvgImg src={svg} alt={label} />
+        {value}
+      </BigNumber>
       <Label>
         {label}
       </Label>
@@ -117,33 +132,47 @@ const TotalNumber = styled(BigNumber)`
 export const ContributionsCard = (
   {tripReports, mountains, lists, getFluentString}:
   {tripReports: number, mountains: number, lists: number, getFluentString: GetString}) => {
-  console.log(getFluentString);
   const total = tripReports + mountains + lists;
   return (
     <CardRoot>
       <ContributionsRoot>
         <TotalRoot>
-          <TotalNumber>{total}</TotalNumber>
+          <TotalNumber>
+            <SvgImg
+              src={StarSVG}
+              alt={getFluentString('stats-total-wilderlist-contributions')}
+            />
+            {total}
+          </TotalNumber>
           <Label>
-            {'Total Wilderlist Contributions'}
+            {getFluentString('stats-total-wilderlist-contributions')}
           </Label>
         </TotalRoot>
         <Segment>
-          <SmallNumber>{tripReports}</SmallNumber>
+          <SmallNumber>
+            <SvgSmallImg src={TripReportSVG} alt={getFluentString('stats-trip-reports-written')} />
+            {tripReports}
+          </SmallNumber>
           <SmallLabel>
-            {'Trip Reports Written'}
+            {getFluentString('stats-trip-reports-written')}
           </SmallLabel>
         </Segment>
         <Segment>
-          <SmallNumber>{mountains}</SmallNumber>
+          <SmallNumber>
+            <SvgSmallImg src={AddMountainSVG} alt={getFluentString('stats-mountains-added')} />
+            {mountains}
+          </SmallNumber>
           <SmallLabel>
-            {'Mountains Added'}
+            {getFluentString('stats-mountains-added')}
           </SmallLabel>
         </Segment>
         <Segment>
-          <SmallNumber>{lists}</SmallNumber>
+          <SmallNumber>
+            <SvgSmallImg src={AddHikingListSVG} alt={getFluentString('stats-hiking-lists-created')} />
+            {lists}
+          </SmallNumber>
           <SmallLabel>
-            {'Hiking Lists Created'}
+            {getFluentString('stats-hiking-lists-created')}
           </SmallLabel>
         </Segment>
       </ContributionsRoot>
@@ -172,12 +201,11 @@ export const AverageTimeCard = (
     return (
       <CardRoot>
         <Label>
-          {'You need more than one recorded hike with a full date to see your average.'}
+          {getFluentString('stats-no-average-time')}
         </Label>
       </CardRoot>
     );
   }
-  console.log(getFluentString);
   const weeksRaw = avgTime / 7;
   const weeks = Math.floor(weeksRaw);
   const daysRaw = 7 * (weeksRaw - weeks);
@@ -186,19 +214,36 @@ export const AverageTimeCard = (
   const hours = Math.floor(hoursRaw);
   const calcTime: Array<React.ReactElement<any>> = [];
   if (weeks) {
-    calcTime.push(<React.Fragment key={weeks}>{weeks}<TimeLabel>weeks</TimeLabel>{' '}</React.Fragment>);
+    const weeksText = weeks > 1 ? 'global-text-value-weeks' : 'global-text-value-week';
+    calcTime.push(
+      <React.Fragment key={weeks}>
+        {weeks}<TimeLabel>{getFluentString(weeksText)}</TimeLabel>
+        {' '}
+      </React.Fragment>
+    );
   }
   if (days) {
-    calcTime.push(<React.Fragment key={days}>{days}<TimeLabel>days</TimeLabel>{' '}</React.Fragment>);
+    const daysText = days > 1 ? 'global-text-value-days' : 'global-text-value-day';
+    calcTime.push(
+      <React.Fragment key={days}>
+        {days}<TimeLabel>{getFluentString(daysText)}</TimeLabel>
+        {' '}
+      </React.Fragment>
+    );
   }
   if (hours) {
-    calcTime.push(<React.Fragment key={hours}>{hours}<TimeLabel>hours</TimeLabel></React.Fragment>);
+    const hoursText = hours > 1 ? 'global-text-value-hours' : 'global-text-value-hour';
+    calcTime.push(
+      <React.Fragment key={hours}>
+        {hours}<TimeLabel>{getFluentString(hoursText)}</TimeLabel>
+      </React.Fragment>
+    );
   }
   return (
     <CardRoot>
       <BigNumber>{calcTime}</BigNumber>
       <Label>
-        {'Average time between hikes since ' + startDate}
+        {getFluentString('stats-average-time-since-start', {'start-date': startDate})}
       </Label>
     </CardRoot>
   );
@@ -215,6 +260,7 @@ const ValueListLabel = styled(Label)`
 const ValueLabel = styled.strong`
   width: 100%;
   text-align: right;
+  text-transform: capitalize;
 `;
 const CountLabel = styled.small`
   width: 100%;
@@ -228,7 +274,7 @@ export const TopFourValuesList = (
     val3: {label: string, count: number} | undefined,
     val4: {label: string, count: number} | undefined,
     getFluentString: GetString}) => {
-  console.log(getFluentString);
+  const ascentsText = getFluentString('global-text-value-ascents');
   const label1 = val1 ? (
     <ValueListLabel>
       <ValueLabel>
@@ -236,7 +282,7 @@ export const TopFourValuesList = (
       </ValueLabel>
       <div>-</div>
       <CountLabel>
-        {val1.count} ascents
+        {val1.count} {ascentsText}
       </CountLabel>
     </ValueListLabel>
   ) : null;
@@ -247,7 +293,7 @@ export const TopFourValuesList = (
       </ValueLabel>
       <div>-</div>
       <CountLabel>
-        {val2.count} ascents
+        {val2.count} {ascentsText}
       </CountLabel>
     </ValueListLabel>
   ) : null;
@@ -258,7 +304,7 @@ export const TopFourValuesList = (
       </ValueLabel>
       <div>-</div>
       <CountLabel>
-        {val3.count} ascents
+        {val3.count} {ascentsText}
       </CountLabel>
     </ValueListLabel>
   ) : null;
@@ -269,7 +315,7 @@ export const TopFourValuesList = (
       </ValueLabel>
       <div>-</div>
       <CountLabel>
-        {val4.count} ascents
+        {val4.count} {ascentsText}
       </CountLabel>
     </ValueListLabel>
   ) : null;
