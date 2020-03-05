@@ -1,14 +1,14 @@
-import {
-  scaleTime,
-  scaleLinear,
-} from 'd3-scale';
-import { Selection } from 'd3-selection';
-import { line } from 'd3-shape'
+import { extent, max } from 'd3-array';
 import {
   axisBottom,
   axisLeft,
 } from 'd3-axis';
-import { max, extent } from 'd3-array';
+import {
+  scaleLinear,
+  scaleTime,
+} from 'd3-scale';
+import { Selection } from 'd3-selection';
+import { line } from 'd3-shape';
 import {
   primaryColor,
 } from '../../../styling/styleUtils';
@@ -35,17 +35,17 @@ const ranges = [
   { divider: 1e12 , suffix: 'T' },
   { divider: 1e9 , suffix: 'G' },
   { divider: 1e6 , suffix: 'M' },
-  { divider: 1e3 , suffix: 'k' }
+  { divider: 1e3 , suffix: 'k' },
 ];
 
 const formatNumber = (n: number) => {
-  for (var i = 0; i < ranges.length; i++) {
-    if (n >= ranges[i].divider) {
-      return (n / ranges[i].divider).toString() + ranges[i].suffix + ' ft';
+  for (const range of ranges) {
+    if (n >= range.divider) {
+      return (n / range.divider).toString() + range.suffix + ' ft';
     }
   }
   return n.toString() + ' ft';
-}
+};
 
 export default (input: Input) => {
   const { svg, data, size } = input;
@@ -55,11 +55,11 @@ export default (input: Input) => {
   const height = size.height - margin.bottom - margin.top;
 
   // set the ranges
-  var x = scaleTime().range([0, width]);
-  var y = scaleLinear().range([height, 0]);
+  const x = scaleTime().range([0, width]);
+  const y = scaleLinear().range([height, 0]);
 
   // define the line
-  var valueline: any = line()
+  const valueline: any = line()
     .x(function(d: any) { return x(d.date); })
     .y(function(d: any) { return y(d.value); });
 
@@ -67,12 +67,11 @@ export default (input: Input) => {
   // appends a 'group' element to 'svg'
   // moves the 'group' element to the top left margin
   svg
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom);
 
-  const g = svg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+  const g = svg.append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
   // Add X axis --> it is a date format
   const allDates = data.map(({date}) => date);
@@ -88,28 +87,27 @@ export default (input: Input) => {
   y.domain([0, maxValue]);
 
   // Add the valueline path.
-  g.append("path")
+  g.append('path')
       .data([data])
-      .attr("class", "line")
-      .attr("fill", "none")
-      .attr("stroke", primaryColor)
-      .attr("stroke-width", 1.5)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("d", valueline)
-      .attr("transform", "translate(" + margin.left + ", 0)");
+      .attr('class', 'line')
+      .attr('fill', 'none')
+      .attr('stroke', primaryColor)
+      .attr('stroke-width', 1.5)
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('d', valueline)
+      .attr('transform', 'translate(' + margin.left + ', 0)');
 
   // Add the x Axis
-  g.append("g")
-      .attr("transform", "translate(" + margin.left + "," + height + ")")
-      .call(axisBottom(x))
+  g.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + height + ')')
+      .call(axisBottom(x));
 
   // Add the y Axis
-  g.append("g")
+  g.append('g')
       .call(axisLeft(y).tickFormat(formatNumber))
-      .attr("transform", "translate(" + margin.left + ", 0)");
+      .attr('transform', 'translate(' + margin.left + ', 0)');
 
   g.style('transform', 'scale(0.95) translateY(' + margin.top + 'px)')
    .style('transform-origin', 'center');
-
-}
+};

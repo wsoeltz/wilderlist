@@ -2,8 +2,8 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
-  ContentHeader,
   ContentFull,
+  ContentHeader,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
 import MountainDetail from './MountainDetail';

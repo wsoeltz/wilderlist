@@ -1,13 +1,13 @@
-import { Selection, select, event } from 'd3-selection';
 import {
-  pack,
   hierarchy,
+  pack,
   stratify,
 } from 'd3-hierarchy';
+import { event, select, Selection } from 'd3-selection';
 import {
+  lightBorderColor,
   primaryColor,
   secondaryColor,
-  lightBorderColor,
 } from '../../../styling/styleUtils';
 
 export interface Datum {
@@ -24,7 +24,7 @@ interface SrcDatum extends ParentDatum {
   name: string;
   value: number;
   parentId: string;
-};
+}
 
 type SrcData = Array<SrcDatum | ParentDatum>;
 
@@ -51,68 +51,66 @@ export default (input: Input) => {
   const width = size.width - margin.left - margin.right;
   const height = size.height - margin.bottom - margin.top;
 
-  svg.attr("width", width)
-     .attr("height", height);
+  svg.attr('width', width)
+     .attr('height', height);
 
-  const g = svg.append("g")
+  const g = svg.append('g')
             .attr('class', 'main-group');
 
   const layout = pack()
           .size([width - 2, height - 2])
-          .padding(6)
+          .padding(6);
 
   const stratData = stratify()(srcData);
   const root = hierarchy(stratData)
-      .sum(function (d: any) { return d.data.size })
-      .sort(function(a: any, b: any) { return b.value - a.value });
+      .sum(function(d: any) { return d.data.size; })
+      .sort(function(a: any, b: any) { return b.value - a.value; });
   const nodes = root.descendants();
 
-  layout(root)
-
+  layout(root);
 
   // Define the div for the tooltip
-  const tooltipDiv = select("body").append("div")
+  const tooltipDiv = select('body').append('div')
     .style('position', 'absolute')
     .style('text-align', 'center')
-    .style("display", 'none')
-    .style("padding", '8px 12px')
-    .style("background", '#fff')
-    .style("border-radius", '4px')
+    .style('display', 'none')
+    .style('padding', '8px 12px')
+    .style('background', '#fff')
+    .style('border-radius', '4px')
     .style('color', secondaryColor)
-    .style("pointer-events", 'none')
+    .style('pointer-events', 'none')
     .style('box-shadow', '0px 0px 3px -1px #b5b5b5')
-    .style('border', `solid 1px ${lightBorderColor}`)
+    .style('border', `solid 1px ${lightBorderColor}`);
 
   g.selectAll('circle')
     .data(nodes)
     .enter()
     .filter((d) => d.parent !== null )
     .append('circle')
-    .attr('cx', function (d: any) { return d.x; })
-    .attr('cy', function (d: any) { return d.y; })
-    .attr('r', function (d: any) { return d.r; })
-    .style("fill", primaryColor)
-    .on("mousemove", ({value, data: {data: {name}}}: any) => {
+    .attr('cx', function(d: any) { return d.x; })
+    .attr('cy', function(d: any) { return d.y; })
+    .attr('r', function(d: any) { return d.r; })
+    .style('fill', primaryColor)
+    .on('mousemove', ({value, data: {data: {name}}}: any) => {
         const ascents = value === 1 ? 'ascent' : 'ascents';
         tooltipDiv
-            .style("display", 'block');
+            .style('display', 'block');
         tooltipDiv.html(`${name} - ${value} ${ascents}`)
-            .style("left", (event.pageX) + "px")
-            .style("top", (event.pageY - 28) + "px");
+            .style('left', (event.pageX) + 'px')
+            .style('top', (event.pageY - 28) + 'px');
         })
-    .on("mouseout", () => {
+    .on('mouseout', () => {
         tooltipDiv
-            .style("display", 'none');
+            .style('display', 'none');
     });
-
 
   g.selectAll('text')
     .data(nodes)
     .enter()
     .filter((d) => d.parent !== null )
     .append('text')
-    .attr('x', function (d: any) { return d.x; })
-    .attr('y', function (d: any) { return d.y; })
+    .attr('x', function(d: any) { return d.x; })
+    .attr('y', function(d: any) { return d.y; })
     .text(d => {
       if (d.data.id) {
         return d.data.id;
@@ -125,7 +123,7 @@ export default (input: Input) => {
       const fontSize = parseInt(d.r, 10) * 0.85;
       return fontSize + 'px';
     })
-    .attr("text-anchor", "middle")
+    .attr('text-anchor', 'middle')
     .style('transform', (d: any) => {
       const adjust = parseInt(d.r, 10) * 0.3;
       return 'translate(0px, ' + adjust + 'px)';
@@ -139,11 +137,11 @@ export default (input: Input) => {
         const highestPoint = root.children.map((n: any) => n.y + n.r).sort((a, b) => b - a)[0];
         const groupHeight = highestPoint - lowestPoint;
         const newHeight = height - groupHeight;
-        scale = 1 + (newHeight/height);
+        scale = 1 + (newHeight / height);
       } else {
         scale = 1;
       }
-      return 'scale('+ scale +') translateY(' + margin.top + 'px)';
+      return 'scale(' + scale + ') translateY(' + margin.top + 'px)';
     })
    .style('transform-origin', 'center');
-}
+};

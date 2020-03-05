@@ -1,15 +1,15 @@
+import { GetString } from 'fluent-react/compat';
 import React from 'react';
 import styled from 'styled-components';
 import {
-  primaryColor,
   Card,
   lightBaseColor,
+  primaryColor,
 } from '../../styling/styleUtils';
-import { GetString } from 'fluent-react/compat';
-import StarSVG from './d3Viz/icons/star.svg';
-import TripReportSVG from './d3Viz/icons/trip-report.svg';
 import AddHikingListSVG from './d3Viz/icons/add-hiking-list.svg';
 import AddMountainSVG from './d3Viz/icons/add-mountain.svg';
+import StarSVG from './d3Viz/icons/star.svg';
+import TripReportSVG from './d3Viz/icons/trip-report.svg';
 
 export const Root = styled.div`
   margin-bottom: 4rem;
@@ -98,7 +98,7 @@ export const LargeStyledNumber = (
       </Label>
     </CardRoot>
   );
-}
+};
 
 const ContributionsRoot = styled.div`
   display: grid;
@@ -178,7 +178,7 @@ export const ContributionsCard = (
       </ContributionsRoot>
     </CardRoot>
   );
-}
+};
 
 const TimeLabel = styled.span`
   font-size: 1rem;
@@ -219,7 +219,7 @@ export const AverageTimeCard = (
       <React.Fragment key={weeks}>
         {weeks}<TimeLabel>{getFluentString(weeksText)}</TimeLabel>
         {' '}
-      </React.Fragment>
+      </React.Fragment>,
     );
   }
   if (days) {
@@ -228,7 +228,7 @@ export const AverageTimeCard = (
       <React.Fragment key={days}>
         {days}<TimeLabel>{getFluentString(daysText)}</TimeLabel>
         {' '}
-      </React.Fragment>
+      </React.Fragment>,
     );
   }
   if (hours) {
@@ -236,7 +236,7 @@ export const AverageTimeCard = (
     calcTime.push(
       <React.Fragment key={hours}>
         {hours}<TimeLabel>{getFluentString(hoursText)}</TimeLabel>
-      </React.Fragment>
+      </React.Fragment>,
     );
   }
   return (
@@ -248,7 +248,7 @@ export const AverageTimeCard = (
     </CardRoot>
   );
 
-}
+};
 
 const ValueListLabel = styled(Label)`
   display: grid;
@@ -328,4 +328,3 @@ export const TopFourValuesList = (
     </CardRoot>
   );
 };
-
