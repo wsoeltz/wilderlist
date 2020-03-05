@@ -1,7 +1,9 @@
 import { useQuery } from '@apollo/react-hooks';
+import axios from 'axios';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import React, {useContext} from 'react';
+import publicIp from 'public-ip';
+import React, {useContext, useEffect, useState} from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
@@ -26,10 +28,10 @@ import { mobileSize } from '../../Utils';
 import { AppContext } from '../App';
 import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
-import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
 import SuggestedLists from '../peakLists/list/SuggestedLists';
 import BackButton from '../sharedComponents/BackButton';
+import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AllMountains from '../stats/AllMountains';
 
@@ -87,6 +89,20 @@ const Dashboard = (props: Props) => {
 
   const { windowWidth } = useContext(AppContext);
 
+  const [usersState, setUsersState] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const getUsersIpLocation = async () => {
+      const ip = await publicIp.v4();
+      const res = await axios.get('http://www.geoplugin.net/json.gp?ip=' + ip);
+      if (res && res.data && res.data.geoplugin_regionCode) {
+        setUsersState(res.data.geoplugin_regionCode);
+      } else {
+        setUsersState('unknown');
+      }
+    };
+    getUsersIpLocation();
+  });
+
   const {
     loading: listLoading,
     error: listsError,
@@ -97,11 +113,7 @@ const Dashboard = (props: Props) => {
 
   let peakListsList: React.ReactElement<any> | null;
   if (listLoading === true) {
-    const loadingListCards: Array<React.ReactElement<any>> = [];
-    for (let i = 0; i < 3; i++) {
-      loadingListCards.push(<GhostPeakListCard key={i} />);
-    }
-    peakListsList = <>{loadingListCards}</>;
+    peakListsList = <LoadingSpinner />;
   } else if (listsError !== undefined) {
     console.error(listsError);
     peakListsList = (
@@ -111,7 +123,8 @@ const Dashboard = (props: Props) => {
   } else if (listsData !== undefined) {
     const { user } = listsData;
     const { peakLists } = user;
-    const suggestedLists = peakLists.length < 3 ? <SuggestedLists userId={userId} /> : null;
+    const suggestedLists = peakLists.length < 3 && usersState !== undefined
+      ? <SuggestedLists userId={userId} usersState={usersState} /> : null;
     if (peakLists.length === 0) {
       peakListsList = (
         <div>
