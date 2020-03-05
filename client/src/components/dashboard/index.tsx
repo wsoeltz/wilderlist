@@ -16,7 +16,11 @@ import {
   ContentRightSmall,
   SearchContainer,
 } from '../../styling/Grid';
-import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
+import {
+  ButtonPrimaryLink,
+  PlaceholderText,
+  SectionTitleH3,
+} from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
 import { mobileSize } from '../../Utils';
 import { AppContext } from '../App';
@@ -24,6 +28,7 @@ import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
+import SuggestedLists from '../peakLists/list/SuggestedLists';
 import BackButton from '../sharedComponents/BackButton';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AllMountains from '../stats/AllMountains';
@@ -106,37 +111,43 @@ const Dashboard = (props: Props) => {
   } else if (listsData !== undefined) {
     const { user } = listsData;
     const { peakLists } = user;
+    const suggestedLists = peakLists.length < 3 ? <SuggestedLists userId={userId} /> : null;
     if (peakLists.length === 0) {
       peakListsList = (
-        <PlaceholderText>
-          <div>
-            <p>
-              {getFluentString('dashboard-empty-state-no-active-lists-text')}
-            </p>
-            <p>
-              <PlaceholderButton
-                to={searchListDetailLink('search')}
-              >
-                {getFluentString('dashboard-empty-state-no-active-lists-button')}
-              </PlaceholderButton>
-            </p>
-          </div>
-        </PlaceholderText>
+        <div>
+          <SectionTitleH3>{
+            getFluentString('user-profile-lists-in-progress')}
+          </SectionTitleH3>
+          <p>
+            {getFluentString('dashboard-empty-state-no-active-lists-text')}
+          </p>
+          <p style={{textAlign: 'center'}}>
+            <PlaceholderButton
+              to={searchListDetailLink('search')}
+            >
+              {getFluentString('dashboard-empty-state-no-active-lists-button')}
+            </PlaceholderButton>
+          </p>
+          {suggestedLists}
+        </div>
       );
     } else {
       const usersLists = peakLists.map(peakList => peakList.id);
       peakListsList = (
-        <ListPeakLists
-          viewMode={ViewMode.Card}
-          peakListData={peakLists}
-          userListData={usersLists}
-          listAction={null}
-          actionText={''}
-          profileId={undefined}
-          noResultsText={''}
-          showTrophies={true}
-          dashboardView={true}
-        />
+        <>
+          <ListPeakLists
+            viewMode={ViewMode.Card}
+            peakListData={peakLists}
+            userListData={usersLists}
+            listAction={null}
+            actionText={''}
+            profileId={undefined}
+            noResultsText={''}
+            showTrophies={true}
+            dashboardView={true}
+          />
+          {suggestedLists}
+        </>
       );
     }
   } else {

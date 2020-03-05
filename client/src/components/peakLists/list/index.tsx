@@ -94,7 +94,7 @@ const ListIcon = styled(FontAwesomeIcon)`
   font-size: 1.1rem;
 `;
 
-const SEARCH_PEAK_LISTS = gql`
+export const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
     $userId: ID,
     $searchQuery: String!,
@@ -187,7 +187,7 @@ export const getRefetchSearchQueries = (userId: string) => [
   }},
 ];
 
-interface CardSuccessResponse {
+export interface CardSuccessResponse {
   peakLists: CardPeakListDatum[];
   user: null | {
     id: User['id'];

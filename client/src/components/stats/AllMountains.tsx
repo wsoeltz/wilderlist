@@ -42,7 +42,7 @@ const SelectBoxContiner = styled.div`
   grid-column-gap: 1rem;
 `;
 
-const GET_ALL_USERS_MOUNTAINS = gql`
+export const GET_ALL_USERS_MOUNTAINS = gql`
   query GetUsersMountains($userId: ID!) {
     user(id: $userId) {
       id

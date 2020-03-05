@@ -306,10 +306,11 @@ privacy-and-usage-policy-content =
   <p>We are not responsible for the republishing of the content found on this site on other Web sites or media without our permission.</p>
   <p>This privacy and usage policy is subject to change without notice.</p>
 
-dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet.
-dashboard-empty-state-no-active-lists-button = Find Lists
+dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Begin List' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+dashboard-empty-state-no-active-lists-button = Find Hiking Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
+dashboard-suggested-lists = Suggested Lists
 
 your-stats-title = Your Stats
 
