@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
+  FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailLink } from '../../../routing/Utils';
 import {
@@ -343,15 +344,15 @@ const PeakListDetail = (props: Props) => {
           const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
           paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
             'list-name': peakList.name,
-            'number-of-peaks': requiredMountains.length,
+            'number-of-peaks': '' + requiredMountains.length,
             'state-or-region': isStateOrRegion.toString(),
-            'state-region-name': statesOrRegions,
+            'state-region-name': FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions),
             'highest-mountain-name': mountainsSortedByElevation[0].name,
-            'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+            'highest-mountain-elevation': '' + mountainsSortedByElevation[0].elevation,
             'smallest-mountain-name':
               mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
             'smallest-mountain-elevation':
-              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+              '' + mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
           });
         } else {
           paragraphText = getFluentString('peak-list-detail-list-overview-empty', {

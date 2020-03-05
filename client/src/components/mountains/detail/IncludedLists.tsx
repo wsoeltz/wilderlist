@@ -1,10 +1,11 @@
 import { useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import {
   lightBorderColor,
@@ -128,7 +129,7 @@ const IncludedLists = (props: Props) => {
           </Link>
           {' '}
           {getFluentString('mountain-detail-lists-mountain-appears-on-ranks', {
-            'elevation-rank': elevationRank,
+            'elevation-rank': ORDINAL_NUMBER([elevationRank]),
           })}
         </BasicUnorderedListItem>
       );

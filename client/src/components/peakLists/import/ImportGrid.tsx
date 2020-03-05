@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks';
 import axios from 'axios';
 import csv from 'csvtojson';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import raw from 'raw.macro';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';

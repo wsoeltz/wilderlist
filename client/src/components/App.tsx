@@ -41,6 +41,7 @@ import PeakListPage from './peakLists/list';
 import PrivacyPolicy from './privacyPolicy';
 import PageNotFound from './sharedComponents/404';
 import Header from './sharedComponents/Header';
+import YourStats from './stats/';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserSettings from './users/settings';
@@ -218,6 +219,9 @@ const App: React.FC = () => {
               peakListPermissions={user.peakListPermissions}
             />
           )}
+        />
+        <TrackedRoute exact path={Routes.YourStats}
+          render={(props: any) => <YourStats {...props} userId={user._id} />}
         />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         {adminRoutes}

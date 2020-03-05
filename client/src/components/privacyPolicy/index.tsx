@@ -1,4 +1,4 @@
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import React, { useContext } from 'react';
 import Helmet from 'react-helmet';
 import {
@@ -6,7 +6,7 @@ import {
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
-  ContentLeftLarge,
+  ContentFull,
 } from '../../styling/Grid';
 
 const PrivacyPolicy = () => {
@@ -29,12 +29,12 @@ const PrivacyPolicy = () => {
           content={metaDescription}
         />
       </Helmet>
-      <ContentLeftLarge>
+      <ContentFull>
         <ContentBody>
           <h1>{getFluentString('header-text-menu-privacy-policy')}</h1>
           <div dangerouslySetInnerHTML={{__html: getFluentString('privacy-and-usage-policy-content')}} />
         </ContentBody>
-      </ContentLeftLarge>
+      </ContentFull>
     </>
   );
 };

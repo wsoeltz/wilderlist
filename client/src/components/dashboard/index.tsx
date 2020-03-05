@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import Helmet from 'react-helmet';
@@ -18,6 +18,8 @@ import {
 } from '../../styling/Grid';
 import { ButtonPrimaryLink, PlaceholderText } from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
+import { mobileSize } from '../../Utils';
+import { AppContext } from '../App';
 import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import GhostPeakListCard from '../peakLists/list/GhostPeakListCard';
@@ -77,6 +79,8 @@ const Dashboard = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const { windowWidth } = useContext(AppContext);
 
   const {
     loading: listLoading,
@@ -144,7 +148,9 @@ const Dashboard = (props: Props) => {
   }
 
   let rightSideContent: React.ReactElement<any> | null;
-  if (peakListId !== undefined) {
+  if (windowWidth < mobileSize) {
+    rightSideContent = null;
+  } else if (peakListId !== undefined) {
     rightSideContent = (
       <PeakListDetail userId={userId} id={peakListId} mountainId={undefined}/>
     );

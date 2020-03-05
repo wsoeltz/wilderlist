@@ -3,7 +3,7 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';
 import {

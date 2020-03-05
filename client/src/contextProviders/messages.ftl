@@ -6,6 +6,7 @@ meta-data-mtn-search-default-title = Search mountains - Wilderlist
 meta-data-friend-search-default-title = Friends - Wilderlist
 meta-data-settings-default-title = Settings - Wilderlist
 meta-data-dashboard-default-title = Dashboard - Wilderlist
+meta-data-your-stats-default-title = Your Stats - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
 meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
 meta-data-detail-default-title = { $title }{
@@ -93,6 +94,7 @@ global-text-value-modal-request-delete-text = This will submit a request to have
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
+global-text-value-ascents = ascents
 global-text-value-dates = Dates
 global-text-value-regions = Regions
 global-text-value-state = State
@@ -123,6 +125,13 @@ global-text-value-month-short-sep = Sep
 global-text-value-month-short-oct = Oct
 global-text-value-month-short-nov = Nov
 global-text-value-month-short-dec = Dec
+
+global-text-value-weeks = weeks
+global-text-value-week = week
+global-text-value-days = days
+global-text-value-day = day
+global-text-value-hours = hours
+global-text-value-hour = hour
 
 global-text-value-open = Open
 global-text-value-open-for-winter = Open for Winter
@@ -199,7 +208,10 @@ header-text-login-with-facebook = Login With Facebook
 
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Hiking Lists
+header-text-menu-item-lists-short = Lists
 header-text-menu-item-mountains = Mountains
+header-text-menu-item-your-stats = Your Stats
+header-text-menu-item-your-stats-short = Stats
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
@@ -266,6 +278,8 @@ dashboard-empty-state-no-active-lists-button = Find Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 
+your-stats-title = Your Stats
+
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)
 stats-showing-ascents-for = Showing ascents for:
@@ -281,6 +295,29 @@ stats-mountain-panel-no-mountains-para-1 =
 
 stats-mountain-panel-no-mountains-para-2 =
   Already have spreadsheets full of your ascents? No problem! You can import any spreadsheet data directly from a Hiking List page and get your Wilderlist up to speed in no time. Just go to a Hiking List and look for the green 'Import Ascents' button.
+
+stats-total-overall-ascents = Total Overall Ascents
+stats-total-unique-mountains-ascended = Total Unique Mountains Ascended
+stats-most-hiked-mountains = Most Hiked Mountains
+stats-most-hiked-months = Most Hiked Months
+stats-your-wilderlist-contributions = Your Wilderlist Contributions
+stats-total-wilderlist-contributions = Total Wilderlist Contributions
+stats-trip-reports-written = Trip Reports Written
+stats-mountains-added = Mountains Added
+stats-hiking-lists-created = Hiking Lists Created
+stats-time-between-hikes = Time Between Hikes
+stats-average-time-context-note-html = Average time is calculated based on the time between recorded <em>full dates</em>, starting with your first recorded date on Wilderlist to your last.
+stats-top-hiked-states = Top Hiked States
+stats-top-hiked-years = Top Hiked Years
+stats-top-hiked-seasons = Top Hiked Seasons
+stats-total-lifetime-elevation = Total Lifetime elevation
+stats-total-lifetime-context-note = Lifetime Elevation is calculated based on the total elevation of each peak hiked for a given day. Wilderlist does not currently take into account prominence or elevation gain.
+stats-your-lists = Your Hiking Lists
+stats-your-lists-pursued = Hiking lists being pursued
+stats-your-lists-complete = Hiking lists completed
+stats-your-lists-percent = Percentage Complete For All Lists
+stats-no-average-time = You need more than one recorded hike with a full date to see your average.
+stats-average-time-since-start = Average time between hikes since { $start-date }
 
 list-search-list-detail-placeholder = Select a list on the left to see more details
 mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details
@@ -315,7 +352,7 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with {
   $state-or-region ->
     [state] within
     *[region] throughout
-} { FORMAT_STATE_REGION_FOR_TEXT($state-region-name) }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+} { $state-region-name }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
 peak-list-detail-friend-viewing-list = Viewing list for { $username }
 peak-list-detail-friend-view-your-progress-button = View your progress
@@ -360,7 +397,7 @@ mountain-detail-add-ascent-date = Add Ascent Date
 mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
-mountain-detail-lists-mountain-appears-on-ranks =  — { ORDINAL_NUMBER($elevation-rank) } largest peak
+mountain-detail-lists-mountain-appears-on-ranks =  — { $elevation-rank } largest peak
 
 mountain-detail-enable-driving-distances = Enable Driving Distances
 mountain-detail-driving-distance = {

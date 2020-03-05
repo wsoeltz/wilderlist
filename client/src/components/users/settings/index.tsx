@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import Helmet from 'react-helmet';
@@ -9,7 +9,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   ContentBody,
-  ContentLeftLarge,
+  ContentFull,
 } from '../../../styling/Grid';
 import {
   ButtonPrimary,
@@ -24,6 +24,7 @@ const SettingsContainer = styled.div`
   grid-template-columns: 120px 1fr;
   grid-column-gap: 3rem;
   color: ${lightBaseColor};
+  max-width: 800px;
 `;
 
 const ProfileImg = styled.img`
@@ -360,12 +361,12 @@ const Settings = ({userId}: Props) => {
       <Helmet>
         <title>{getFluentString('meta-data-settings-default-title')}</title>
       </Helmet>
-      <ContentLeftLarge>
+      <ContentFull>
         <ContentBody>
           <h1>{getFluentString('header-text-menu-settings')}</h1>
           {output}
         </ContentBody>
-      </ContentLeftLarge>
+      </ContentFull>
     </>
   );
 };

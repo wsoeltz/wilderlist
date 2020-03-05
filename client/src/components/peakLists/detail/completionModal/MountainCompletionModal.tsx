@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react';
+import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import uniq from 'lodash/uniq';
 import React, { useContext, useRef, useState } from 'react';

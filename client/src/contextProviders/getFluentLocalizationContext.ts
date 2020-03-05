@@ -1,9 +1,9 @@
 import {
-  FluentBundle,
-} from 'fluent';
-import {
   ReactLocalization,
-} from 'fluent-react';
+} from 'fluent-react/compat';
+import {
+  FluentBundle,
+} from 'fluent/compat';
 import raw from 'raw.macro';
 import {
   createContext,
@@ -14,7 +14,10 @@ const regionsThatDontStartWithThe = [
   'new england',
 ];
 
-const FORMAT_STATE_REGION_FOR_TEXT = ([name]: [string]): string => {
+export const FORMAT_STATE_REGION_FOR_TEXT = (name: string | null): string => {
+  if (name === null) {
+    return 'the world';
+  }
   const nameAsLowerCase = name.toLowerCase();
   if (states.includes(nameAsLowerCase) ||
     regionsThatDontStartWithThe.includes(nameAsLowerCase) ||
@@ -27,7 +30,7 @@ const FORMAT_STATE_REGION_FOR_TEXT = ([name]: [string]): string => {
   }
 };
 
-const POSSESSIVE = ([word]: [string]): string => {
+export const POSSESSIVE = ([word]: [string]): string => {
   const lastCharacter = word[word.length - 1];
   if (lastCharacter === 's') {
     return word + "'";
@@ -36,12 +39,12 @@ const POSSESSIVE = ([word]: [string]): string => {
   }
 };
 
-const SENTENCE_CASE = ([phrase]: [string]): string => {
+export const SENTENCE_CASE = ([phrase]: [string]): string => {
   return phrase.charAt(0).toUpperCase() + phrase.substr(1);
 };
 
 // Taken from https://stackoverflow.com/a/13627586
-const ORDINAL_SUFFIX = ([input]: [number]): string => {
+export const ORDINAL_SUFFIX = ([input]: [number]): string => {
   const j = input % 10, k = input % 100;
   if (j === 1 && k !== 11) {
       return 'st';
@@ -54,17 +57,12 @@ const ORDINAL_SUFFIX = ([input]: [number]): string => {
   }
   return 'th';
 };
-const ORDINAL_NUMBER = ([input]: [number]): string => {
+export const ORDINAL_NUMBER = ([input]: [number]): string => {
   return input + ORDINAL_SUFFIX([input]);
 };
 
 const getLocalizationInfo = (messages: string) => {
-  const bundle = new FluentBundle(['en-US'], {
-    functions: {
-      POSSESSIVE, SENTENCE_CASE, ORDINAL_SUFFIX, ORDINAL_NUMBER,
-      FORMAT_STATE_REGION_FOR_TEXT,
-    },
-  });
+  const bundle = new FluentBundle(['en-US']);
   bundle.addMessages(messages);
   function* generateBundles(_locales: string[]) {
     yield bundle;

@@ -2,8 +2,8 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   ContentBody,
+  ContentFull,
   ContentHeader,
-  ContentLeftLarge,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
 import MountainDetail from './MountainDetail';
@@ -18,14 +18,14 @@ const MountainDetailPage = (props: Props) => {
 
   return (
     <>
-      <ContentLeftLarge>
+      <ContentFull>
         <ContentHeader>
           <BackButton />
         </ContentHeader>
         <ContentBody>
           <MountainDetail userId={userId} id={id} setOwnMetaData={true} />
         </ContentBody>
-      </ContentLeftLarge>
+      </ContentFull>
     </>
   );
 };
