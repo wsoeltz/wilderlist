@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components/macro';
 
 const LetterPath = styled.path`
-  @media(max-width: 560px) {
+  @media(max-width: 690px) {
     display: none;
   }
 `;

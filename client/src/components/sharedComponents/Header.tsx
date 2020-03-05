@@ -1,4 +1,5 @@
 import {
+  faChartLine,
   faHiking,
   faHome,
   faMountain,
@@ -15,7 +16,11 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import { Routes } from '../../routing/routes';
-import { friendsWithUserProfileLink, searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
+import {
+  friendsWithUserProfileLink,
+  searchListDetailLink,
+  searchMountainsDetailLink,
+} from '../../routing/Utils';
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -26,6 +31,7 @@ import {
 } from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
+import { AppContext } from '../App';
 import NotificationBar from './NotificationBar';
 import UserMenu from './UserMenu';
 
@@ -64,10 +70,10 @@ const LogoContainer = styled(Link)`
       width: 200%;
     }
 
-    @media(max-width: 650px) {
+    @media(max-width: 790px) {
       transform: scale(0.55);
     }
-    @media(max-width: 560px) {
+    @media(max-width: 720px) {
       transform: scale(0.5);
     }
   }
@@ -88,19 +94,19 @@ const NavLink = styled(Link)`
   padding: 0 0.75rem;
   white-space: nowrap;
 
-  @media(max-width: 670px) {
+  @media(max-width: 790px) {
     padding: 0 0.5rem;
   }
 
-  @media(max-width: 470px) {
+  @media(max-width: 720px) {
     padding: 0 0.4rem;
   }
 
-  @media(max-width: 350px) {
+  @media(max-width: 690px) {
     padding: 0 0.2rem;
   }
 
-  @media(max-width: 630px) {
+  @media(max-width: 390px) {
     &.header-dashboard-link {
       display: none;
     }
@@ -147,6 +153,7 @@ const Header = (props: RouteComponentProps) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+  const { windowWidth } = useContext(AppContext);
 
   const peakListsPath = searchListDetailLink('search');
   const usersPath = friendsWithUserProfileLink('search');
@@ -156,6 +163,8 @@ const Header = (props: RouteComponentProps) => {
     let normalizedPathname: string;
     if (pathname.includes('dashboard')) {
       normalizedPathname = '/';
+    } else if  (pathname.includes('your-stats')) {
+      normalizedPathname = Routes.YourStats;
     } else if (pathname.includes('user') && !pathname.includes('settings')) {
       normalizedPathname = usersPath;
     } else if (pathname.includes('list')) {
@@ -179,6 +188,12 @@ const Header = (props: RouteComponentProps) => {
   };
 
   const renderProp = (user: User | null) => {
+    const hikingListsText = windowWidth > 530
+      ? getFluentString('header-text-menu-item-lists')
+      : getFluentString('header-text-menu-item-lists-short');
+    const yourStatsText = windowWidth > 530
+      ? getFluentString('header-text-menu-item-your-stats')
+      : getFluentString('header-text-menu-item-your-stats-short');
     if (user) {
       return (
         <>
@@ -191,8 +206,9 @@ const Header = (props: RouteComponentProps) => {
             </SemanticLogoContainer>
             <MainNav>
               {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'), faHome)}
-              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'), faHiking)}
+              {createLink(peakListsPath, hikingListsText, faHiking)}
               {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
+              {createLink(Routes.YourStats, yourStatsText, faChartLine)}
               {createLink(usersPath, getFluentString('header-text-menu-item-friends'), faUserFriends)}
             </MainNav>
             <UserMenu

@@ -8,6 +8,7 @@ import {
   faCalendarAlt,
   faCaretDown,
   faCaretUp,
+  faChartLine,
   faCheck,
   faChevronLeft,
   faChevronRight,
@@ -42,7 +43,7 @@ library.add(
   faList, faThList, faMapMarkerAlt, faSort, faSortDown,
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
   faFileExcel, faMapSigns, faMountain, faHiking,
-  faUserFriends, faHome,
+  faUserFriends, faHome, faChartLine,
 );
 
 const GlobalStyles = createGlobalStyle`
