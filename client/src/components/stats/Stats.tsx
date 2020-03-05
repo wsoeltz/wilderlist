@@ -252,8 +252,13 @@ const Stats = (props: Props) => {
     });
     topHikedPeaksData.reverse();
 
-    const sortedMonthsData = sortBy(topHikedMonths, ['count'])
-      .map(({month, count}) => ({label: month, value: count}));
+    const sortedMonthsData: Array<{label: string, value: number}> = [];
+    sortBy(topHikedMonths, ['count'])
+      .forEach(({month, count}) => {
+        if (count > 0) {
+          sortedMonthsData.push({label: month, value: count});
+        }
+      });
 
     const totalAuthoredMountains = authoredMountains ? authoredMountains.length : 0;
     const totalAuthoredPeakLists = authoredPeakLists ? authoredPeakLists.length : 0;
@@ -273,7 +278,11 @@ const Stats = (props: Props) => {
     const avgTimeBetweenHikes = totalTimesBetween > 0 && sortedDates.length > 0
       ? totalTimesBetween / sortedDates.length : 0;
     const startDate = sortedDates[0] && !isNaN(sortedDates[0].day) ? (
-      sortedDates[0].day + '/' + sortedDates[0].month + '/' + sortedDates[0].year
+      getFluentString('global-formatted-text-date', {
+        month: sortedDates[0].month,
+        day: sortedDates[0].day,
+        year: sortedDates[0].year.toString(),
+      })
     ) : undefined;
 
     const groupedStates = countBy(allStates);
@@ -299,9 +308,14 @@ const Stats = (props: Props) => {
       .slice(0, 4)
       .map(({year, count}) => ({label: year, count}));
 
-    const sortedSeasons = sortBy(topHikedSeasons, ['count'])
+    const sortedSeasons: Array<{label: string, count: number}> = [];
+    sortBy(topHikedSeasons, ['count'])
       .reverse()
-      .map(({season, count}) => ({label: season, count}));
+      .forEach(({season, count}) => {
+        if (count > 0) {
+          sortedSeasons.push({label: season, count});
+        }
+      });
 
     const elevationDataPoints: Array<{date: Date, value: number}> = [];
     const groupedElevationDates = groupBy(sortedDates, 'dateAsNumber');

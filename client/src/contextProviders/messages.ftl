@@ -126,6 +126,38 @@ global-text-value-month-short-oct = Oct
 global-text-value-month-short-nov = Nov
 global-text-value-month-short-dec = Dec
 
+global-formatted-text-date = {
+  $month ->
+  *[1] January
+  [2] February
+  [3] March
+  [4] April
+  [5] May
+  [6] June
+  [7] July
+  [8] August
+  [9] September
+  [10] October
+  [11] November
+  [12] December
+} { $day }, { $year }
+
+global-formatted-text-month-year = {
+  $month ->
+  *[1] January
+  [2] February
+  [3] March
+  [4] April
+  [5] May
+  [6] June
+  [7] July
+  [8] August
+  [9] September
+  [10] October
+  [11] November
+  [12] December
+} { $year }
+
 global-text-value-weeks = weeks
 global-text-value-week = week
 global-text-value-days = days

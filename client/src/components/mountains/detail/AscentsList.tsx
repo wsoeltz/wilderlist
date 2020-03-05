@@ -91,18 +91,34 @@ const AscentsList = (props: Props) => {
   let output: React.ReactElement<any>;
   if (completedDates && completedDates.dates.length) {
     const dates = getDates(completedDates.dates);
-    const completionListItems = dates.map((date, index) => (
-      <AscentListItem key={date.dateAsNumber + index.toString()}>
-        <strong>{formatDate(date)}</strong>
-        <GhostButton
-          onClick={
-            () => setDateToEdit(date)
-          }
+    const completionListItems = dates.map((date, index) => {
+      const {day, month, year} = date;
+      let textDate: string;
+      if (!isNaN(month) && !isNaN(year)) {
+        if (!isNaN(day)) {
+          textDate = getFluentString('global-formatted-text-date', {
+            day, month, year: year.toString(),
+          });
+        } else {
+          textDate = getFluentString('global-formatted-text-month-year', {
+            month, year: year.toString(),
+          });
+        }
+      } else {
+        textDate = formatDate(date);
+      }
+      return (
+        <AscentListItem
+          key={date.dateAsNumber + index.toString()}
+          onClick={() => setDateToEdit(date)}
         >
-          {getFluentString('trip-reports-view-edit-button')}
-        </GhostButton>
-      </AscentListItem>
-    ));
+          <strong>{textDate}</strong>
+          <GhostButton>
+            {getFluentString('trip-reports-view-edit-button')}
+          </GhostButton>
+        </AscentListItem>
+      );
+    });
     output = (
       <>
         {completionListItems}
