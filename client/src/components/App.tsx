@@ -195,7 +195,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.CreateMountain}
           render={(props: any) => (
             <CreateMountain {...props}
-              userId={user._id}
+              user={user}
               mountainPermissions={user.mountainPermissions}
             />
           )}
@@ -203,7 +203,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.EditMountain}
           render={(props: any) => (
             <CreateMountain {...props}
-              userId={user._id}
+              user={user}
               mountainPermissions={user.mountainPermissions}
             />
           )}
@@ -211,7 +211,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.CreateList}
           render={(props: any) => (
             <CreatePeakList {...props}
-              userId={user._id}
+              user={user}
               peakListPermissions={user.peakListPermissions}
             />
           )}
@@ -219,7 +219,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.EditList}
           render={(props: any) => (
             <CreatePeakList {...props}
-              userId={user._id}
+              user={user}
               peakListPermissions={user.peakListPermissions}
             />
           )}

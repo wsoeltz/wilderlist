@@ -185,7 +185,6 @@ const peakListMutations: any = {
 
         await removeConnections(PeakList, id, 'mountains', Mountain, 'lists');
         await removeConnections(PeakList, id, 'optionalMountains', Mountain, 'optionalLists');
-        await removeConnections(PeakList, id, 'users', User, 'peakLists');
         await removeConnections(PeakList, id, 'states', State, 'peakLists');
 
         const searchString = name + getType(type) + ' ' + shortName + ' ' + type;

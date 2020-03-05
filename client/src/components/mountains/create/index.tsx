@@ -14,7 +14,7 @@ import {
   ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import { ExternalResource, Mountain, User } from '../../../types/graphQLTypes';
+import { ExternalResource, Mountain, PermissionTypes, User } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
@@ -150,13 +150,15 @@ interface EditMountainVariables extends BaseMountainVariables {
 }
 
 interface Props extends RouteComponentProps {
-  userId: string | null;
+  user: User;
   mountainPermissions: null | number;
 }
 
 const MountainCreatePage = (props: Props) => {
-  const { userId, mountainPermissions, match, history } = props;
+  const { user, mountainPermissions, match, history } = props;
   const { id }: any = match.params;
+
+  const userId = user._id;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -204,7 +206,10 @@ const MountainCreatePage = (props: Props) => {
     const submitMountainForm = async (input: BaseMountainVariables) => {
       try {
         if (id) {
-          if (data && data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+          if (data && data.mountain && (
+              (data.mountain.author && data.mountain.author.id === userId) ||
+              user.permissions === PermissionTypes.admin)
+            ) {
             const res = await editMountain({variables: {...input, id}});
             if (res && res.data && res.data.mountain) {
               history.push(mountainDetailLink(res.data.mountain.id));
@@ -227,7 +232,10 @@ const MountainCreatePage = (props: Props) => {
       }
     };
 
-    if (data.mountain && data.mountain.author && data.mountain.author.id === userId) {
+    if (data.mountain && (
+        (data.mountain.author && data.mountain.author.id === userId) ||
+        user.permissions === PermissionTypes.admin)
+      ) {
       const {mountain: {name, state, flag, description, resources}, mountain} = data;
       const nonNullResources: ExternalResource[] = [];
       if (resources) {

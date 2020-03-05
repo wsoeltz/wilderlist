@@ -419,6 +419,7 @@ mountain-detail-driving-distance = {
 mountain-detail-driving-error-location = There was a problem getting your location.
 mountain-detail-driving-error-direction = There was probelm getting directions.
 mountain-detail-driving-distance-title = Driving Distance
+mountain-detail-pending-approval = This mountain is pending confirmation
 
 
 user-list-no-user-selected-text = Select a user on the left to see more details
