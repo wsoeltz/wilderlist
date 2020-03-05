@@ -54,10 +54,11 @@ const Text = styled(PreFormattedParagraph)`
 interface Props {
   onClose: () => void;
   tripReport: TripReport;
+  userId: string | null;
 }
 
 const AreYouSureModal = (props: Props) => {
-  const { tripReport, onClose } = props;
+  const { tripReport, onClose, userId } = props;
 
   const { author } = tripReport;
 
@@ -270,13 +271,15 @@ const AreYouSureModal = (props: Props) => {
     </ButtonWrapper>
   );
 
-  const authorName = author !== null ? (
-    <BoldLink to={userProfileLink(author.id)}>
-      {author.name}
-    </BoldLink>
-  ) : (
-    <span>{getFluentString('global-text-value-generic-user')}</span>
-  );
+  const authorName = author !== null && author.hideProfileInSearch !== true
+    ? author.name : getFluentString('global-text-value-generic-user');
+
+  const authorLink = userId !== null && author !== null && author.hideProfileInSearch !== true
+    ? (
+      <BoldLink to={userProfileLink(author.id)}>
+        {authorName}
+      </BoldLink>
+    ) : <span>{authorName}</span>;
 
   return (
     <Modal
@@ -290,7 +293,7 @@ const AreYouSureModal = (props: Props) => {
           {'On '}
           {formatStringDate(tripReport.date)}
           {' by '}
-          {authorName}
+          {authorLink}
         </Title>
       </ReportHeader>
       <ReportBody>
