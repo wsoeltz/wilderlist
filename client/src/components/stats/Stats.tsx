@@ -1,51 +1,51 @@
 import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
+import countBy from 'lodash/countBy';
+import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
+import {mountainDetailLink} from '../../routing/Utils';
 import {
   PlaceholderText,
   SectionTitle,
 } from '../../styling/styleUtils';
 import {
-  User,
   Mountain,
   PeakListVariants,
+  User,
 } from '../../types/graphQLTypes';
-import LoadingSpinner from '../sharedComponents/LoadingSpinner';
-import sortBy from 'lodash/sortBy';
-import countBy from 'lodash/countBy';
-import groupBy from 'lodash/groupBy';
-import { getDates, DateObject } from '../peakLists/Utils';
 import {
-  Months,
   getSeason,
-  Seasons,
+  Months,
   roundPercentToSingleDecimal,
+  Seasons,
 } from '../../Utils';
+import PeakProgressBar from '../peakLists/list/PeakProgressBar';
+import { DateObject, getDates } from '../peakLists/Utils';
+import LoadingSpinner from '../sharedComponents/LoadingSpinner';
+import DataViz, {
+  VizType,
+} from './d3Viz';
+import HikingListCompleteSVG from './d3Viz/icons/hiking-list-complete.svg';
+import HikingListProgressSVG from './d3Viz/icons/hiking-list-progress.svg';
+import MountainDoubleSVG from './d3Viz/icons/mountain-double.svg';
+import MountainSingleSVG from './d3Viz/icons/mountain-single.svg';
 import {
+  AverageTimeCard,
+  CardRoot,
+  ContextNote,
+  ContributionsCard,
+  LargeStyledNumber,
   Root,
   SingleColumn,
-  TwoColumns,
-  LargeStyledNumber,
-  ContributionsCard,
-  CardRoot,
-  AverageTimeCard,
   TopFourValuesList,
-  ContextNote,
+  TwoColumns,
 } from './styling';
-import DataViz, {
-  VizType
-} from './d3Viz';
-import { RouteComponentProps, withRouter } from 'react-router';
-import {mountainDetailLink} from '../../routing/Utils';
-import PeakProgressBar from '../peakLists/list/PeakProgressBar';
-import MountainSingleSVG from './d3Viz/icons/mountain-single.svg';
-import MountainDoubleSVG from './d3Viz/icons/mountain-double.svg';
-import HikingListProgressSVG from './d3Viz/icons/hiking-list-progress.svg';
-import HikingListCompleteSVG from './d3Viz/icons/hiking-list-complete.svg';
 
 const GET_DATA_FOR_STATS = gql`
   query GetDataForStats($userId: ID!) {
@@ -159,7 +159,7 @@ const Stats = (props: Props) => {
     const allStates: string[] = [];
     const allStateNames: Array<{abbreviation: string, name: string}> = [];
     const mountainsWithDates: Array<{mountain: Mountain, dates: DateObject[]}> = [];
-    const allDates: (DateObject & {elevation: number})[] = [];
+    const allDates: Array<DateObject & {elevation: number}> = [];
     if (mountains) {
       mountains.forEach(({mountain, dates}) => {
         if (mountain && dates.length) {
@@ -241,7 +241,7 @@ const Stats = (props: Props) => {
       }
     }
 
-    let topHikedPeaksData: Array<{label: string, value: number, onClick: () => void}> =[];
+    const topHikedPeaksData: Array<{label: string, value: number, onClick: () => void}> = [];
     topPeaks.forEach(({mountain, dates}) => {
       if (mountain && dates.length) {
         topHikedPeaksData.push({
@@ -253,7 +253,7 @@ const Stats = (props: Props) => {
     topHikedPeaksData.reverse();
 
     const sortedMonthsData = sortBy(topHikedMonths, ['count'])
-      .map(({month, count}) => ({label: month, value: count}))
+      .map(({month, count}) => ({label: month, value: count}));
 
     const totalAuthoredMountains = authoredMountains ? authoredMountains.length : 0;
     const totalAuthoredPeakLists = authoredPeakLists ? authoredPeakLists.length : 0;
@@ -261,17 +261,17 @@ const Stats = (props: Props) => {
 
     const sortedDates = sortBy(allDates, ['dateAsNumber']);
     let totalTimesBetween: number = 0;
-    sortedDates.forEach(({day, month, year}, i) => {
-      if (sortedDates[i + 1]) {
+    sortedDates.forEach(({day, month, year}, index) => {
+      if (sortedDates[index + 1]) {
         const date1 = new Date(year, month - 1, day);
-        const date2 = new Date(sortedDates[i + 1].year, sortedDates[i + 1].month - 1, sortedDates[i].day);
+        const date2 = new Date(sortedDates[index + 1].year, sortedDates[index + 1].month - 1, sortedDates[index].day);
         const diffTime = Math.abs(date2.getTime() - date1.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         totalTimesBetween += diffDays;
       }
     });
     const avgTimeBetweenHikes = totalTimesBetween > 0 && sortedDates.length > 0
-      ? totalTimesBetween/sortedDates.length : 0;
+      ? totalTimesBetween / sortedDates.length : 0;
     const startDate = sortedDates[0] && !isNaN(sortedDates[0].day) ? (
       sortedDates[0].day + '/' + sortedDates[0].month + '/' + sortedDates[0].year
     ) : undefined;
@@ -338,7 +338,6 @@ const Stats = (props: Props) => {
       }
     });
     const percentOfAllLists = roundPercentToSingleDecimal(totalCompletedAscents, totalRequiredAscents);
-
 
     output = (
       <>

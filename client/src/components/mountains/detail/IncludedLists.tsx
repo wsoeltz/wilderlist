@@ -5,6 +5,7 @@ import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import {
   lightBorderColor,
@@ -16,7 +17,6 @@ import {
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
-import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
 
 const PlaceholderBlock = styled.div`
   width: 70%;

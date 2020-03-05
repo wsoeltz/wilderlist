@@ -1,10 +1,10 @@
-import React, {useEffect, useRef, useContext} from 'react';
 import { select } from 'd3-selection';
+import React, {useContext, useEffect, useRef} from 'react';
 import styled from 'styled-components';
+import { AppContext } from '../../App';
 import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
 import createLineChart, {Datum as LineChartDatum} from './createLineChart';
-import { AppContext } from '../../App';
 
 const Root = styled.div`
   height: 450px;
@@ -56,23 +56,23 @@ const D3Viz = (props: Props) => {
         createBarGraph({
           svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
-          }
+          },
         });
       } else if (props.vizType === VizType.BubbleChart) {
         createBubbleChart({
           svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
-          }
+          },
         });
       } else if (props.vizType === VizType.LineChart) {
         createLineChart({
           svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
-          }
+          },
         });
       }
     }
-  }, [svgNodeRef, sizingNodeRef, windowWidth, props.vizType, props.data])
+  }, [svgNodeRef, sizingNodeRef, windowWidth, props.vizType, props.data]);
 
   return (
     <Root ref={sizingNodeRef}>
@@ -80,6 +80,6 @@ const D3Viz = (props: Props) => {
     </Root>
   );
 
-}
+};
 
 export default D3Viz;

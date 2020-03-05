@@ -41,10 +41,10 @@ import PeakListPage from './peakLists/list';
 import PrivacyPolicy from './privacyPolicy';
 import PageNotFound from './sharedComponents/404';
 import Header from './sharedComponents/Header';
+import YourStats from './stats/';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserSettings from './users/settings';
-import YourStats from './stats/';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});

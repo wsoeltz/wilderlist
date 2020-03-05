@@ -1,9 +1,9 @@
 import {
-  FluentBundle,
-} from 'fluent/compat';
-import {
   ReactLocalization,
 } from 'fluent-react/compat';
+import {
+  FluentBundle,
+} from 'fluent/compat';
 import raw from 'raw.macro';
 import {
   createContext,

@@ -9,13 +9,13 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../styling/Grid';
+import {
+  SectionTitleH3,
+} from '../../styling/styleUtils';
 import { mobileSize } from '../../Utils';
 import { AppContext } from '../App';
 import AllMountains from '../stats/AllMountains';
 import Stats from './Stats';
-import {
-  SectionTitleH3,
-} from '../../styling/styleUtils';
 
 interface Props {
   userId: string;
