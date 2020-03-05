@@ -2,6 +2,7 @@ import { max } from 'd3-array';
 import {
   axisBottom,
 } from 'd3-axis';
+import { format } from 'd3-format';
 import {
   scaleBand,
   scaleLinear,
@@ -132,7 +133,13 @@ export default (input: Input) => {
   // add the x Axis
   svg.append('g')
       .attr('transform', 'translate(' + margin.left + ', ' + height + ')')
-      .call(axisBottom(x))
+      .call(axisBottom(x).ticks(5, 20).tickFormat(tick => {
+        if (typeof tick === 'number' && Math.floor(tick) !== tick) {
+            return '';
+        } else {
+          return format('d')(tick);
+        }
+      }))
       .style('opacity', 0.75);
 
   // add the y Axis
