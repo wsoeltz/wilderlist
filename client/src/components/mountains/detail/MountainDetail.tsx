@@ -25,6 +25,7 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
+  PermissionTypes,
   Region,
   State,
   User,
@@ -159,6 +160,7 @@ const GET_MOUNTAIN_DETAIL = gql`
     }
     user(id: $userId) {
       id
+      permissions
       mountains {
         mountain {
           id
@@ -199,6 +201,7 @@ interface QuerySuccessResponse {
   };
   user: null | {
     id: User['name'];
+    permissions: User['permissions'];
     mountains: User['mountains'];
     mountainNote: User['mountainNote'];
     mountainPermissions: User['mountainPermissions'];
@@ -358,7 +361,7 @@ const MountainDetail = (props: Props) => {
       const title = status === CreatedItemStatus.pending ? (
         <div>
           <Title style={{marginBottom: 0}}>{name}</Title>
-          <Subtitle>This mountain is pending confirmation</Subtitle>
+          <Subtitle>{getFluentString('mountain-detail-pending-approval')}</Subtitle>
         </div>
       ) : (
         <Title>{name}</Title>
@@ -407,8 +410,8 @@ const MountainDetail = (props: Props) => {
       if (!user) {
         actionButton = null;
       } else {
-        actionButton = author && author.id && author.id === userId
-          && user.mountainPermissions !== -1 ? (
+        actionButton = (author && author.id && author.id === userId
+                  && user.mountainPermissions !== -1) || user.permissions === PermissionTypes.admin ? (
           <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
             {getFluentString('global-text-value-edit')}
           </ButtonSecondaryLink>

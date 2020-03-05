@@ -12,7 +12,11 @@ import {
   ButtonSecondaryLink,
   GhostButton,
 } from '../../../styling/styleUtils';
-import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  CompletedMountain,
+  PeakListVariants,
+  PermissionTypes,
+} from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
 import { GET_USERS_PEAK_LISTS } from '../../dashboard';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
@@ -220,8 +224,9 @@ const Header = (props: Props) => {
   if (!user) {
     editFlagButton = null;
   } else {
-    editFlagButton = user && peakList.author && user.id === peakList.author.id
-      && user.peakListPermissions !== -1 ? (
+    editFlagButton = (user && peakList.author && user.id === peakList.author.id
+          && user.peakListPermissions !== -1)
+      || (user && user.permissions === PermissionTypes.admin) ? (
       <ButtonSecondaryLink to={editPeakListLink(peakList.id)}>
         {getFluentString('global-text-value-edit')}
       </ButtonSecondaryLink>
