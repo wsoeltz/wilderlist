@@ -18,6 +18,7 @@ export enum Routes {
   UserProfile = '/user/:id',
   UserSettings = '/user-settings',
   OtherUserPeakList = '/user/:id/list/:peakListId',
+  OtherUserPeakListMountains = '/user/:id/list/:peakListId/mountain/:mountainId',
   OtherUserPeakListDetail = '/detail/user/:friendId/list/:peakListId',
   OtherUserPeakListCompare = '/user/:id/compare/:peakListId',
   ComparePeakListWithMountainDetail = 'compare/user/:id/list/:peakListId/mountain/:mountainId',

@@ -1,7 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components/macro';
-import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
+import {
+  friendsProfileWithPeakListWithMountainDetailLink,
+  listDetailWithMountainDetailLink,
+  mountainDetailLink,
+} from '../../../routing/Utils';
 import {
   ButtonSecondary,
   lightBaseColor,
@@ -169,10 +173,14 @@ interface Props {
   setEditMountainId: (mountainToEdit: MountainToEdit) => void;
   peakListId: string | null;
   isOtherUser: boolean;
+  userId: string | null;
 }
 
 const MountainRow = (props: Props) => {
-  const { index, mountain, type, setEditMountainId, peakListId, isOtherUser } = props;
+  const {
+    index, mountain, type, setEditMountainId, peakListId, isOtherUser,
+    userId,
+  } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
   const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
@@ -505,22 +513,26 @@ const MountainRow = (props: Props) => {
   const NameContainer = type === PeakListVariants.grid || type === PeakListVariants.fourSeason
     ? GridNameCell : NameCell;
 
-  const desktopURL = peakListId !== null
-    ? listDetailWithMountainDetailLink(peakListId, mountain.id)
-    : mountainDetailLink(mountain.id);
-  const mountainName = isOtherUser === true ? (<>{mountain.name}</>) : (
-    <MountainName
-      mobileURL={mountainDetailLink(mountain.id)}
-      desktopURL={desktopURL}
-    >
-      {mountain.name}
-    </MountainName>
-  );
+  let desktopURL: string;
+  if (peakListId !== null) {
+    if (isOtherUser && userId) {
+      desktopURL = friendsProfileWithPeakListWithMountainDetailLink(userId, peakListId, mountain.id);
+    } else {
+      desktopURL = listDetailWithMountainDetailLink(peakListId, mountain.id);
+    }
+  } else {
+    desktopURL = mountainDetailLink(mountain.id);
+  }
 
   return (
     <>
       <NameContainer style={{backgroundColor}}>
-        {mountainName}
+        <MountainName
+          mobileURL={mountainDetailLink(mountain.id)}
+          desktopURL={desktopURL}
+        >
+          {mountain.name}
+        </MountainName>
       </NameContainer>
       {columnDetailContent}
     </>
