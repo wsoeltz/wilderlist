@@ -25,6 +25,13 @@ export const comparePeakListWithMountainDetailLink = ((friendId: string, peakLis
     .replace(':peakListId', peakListId)
     .replace(':mountainId', mountainId);
 });
+export const friendsProfileWithPeakListWithMountainDetailLink =
+  ((friendId: string, peakListId: string, mountainId: string) => {
+  return Routes.OtherUserPeakListMountains
+    .replace(':id', friendId)
+    .replace(':peakListId', peakListId)
+    .replace(':mountainId', mountainId);
+});
 export const listDetailWithMountainDetailLink = ((peakListId: string, mountainId: string) => {
   return Routes.ListDetailWithMountainDetail.replace(':id', peakListId).replace(':mountainId', mountainId);
 });
