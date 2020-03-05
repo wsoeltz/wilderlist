@@ -42,6 +42,10 @@ import DataViz, {
 import { RouteComponentProps, withRouter } from 'react-router';
 import {mountainDetailLink} from '../../routing/Utils';
 import PeakProgressBar from '../peakLists/list/PeakProgressBar';
+import MountainSingleSVG from './d3Viz/icons/mountain-single.svg';
+import MountainDoubleSVG from './d3Viz/icons/mountain-double.svg';
+import HikingListProgressSVG from './d3Viz/icons/hiking-list-progress.svg';
+import HikingListCompleteSVG from './d3Viz/icons/hiking-list-complete.svg';
 
 const GET_DATA_FOR_STATS = gql`
   query GetDataForStats($userId: ID!) {
@@ -341,16 +345,18 @@ const Stats = (props: Props) => {
         <TwoColumns>
           <LargeStyledNumber
             value={totalAscents}
-            label={'total overall ascents'}
+            label={getFluentString('stats-total-overall-ascents')}
+            svg={MountainDoubleSVG}
           />
           <LargeStyledNumber
             value={uniqueMountains}
-            label={'total unique mountains ascended'}
+            label={getFluentString('stats-total-unique-mountains-ascended')}
+            svg={MountainSingleSVG}
           />
         </TwoColumns>
         <TwoColumns>
           <div>
-            <SectionTitle>{'Most Hiked Mountains'}</SectionTitle>
+            <SectionTitle>{getFluentString('stats-most-hiked-mountains')}</SectionTitle>
             <CardRoot>
               <DataViz
                 id='top-12-peaks-hiked'
@@ -360,7 +366,7 @@ const Stats = (props: Props) => {
             </CardRoot>
           </div>
           <div>
-            <SectionTitle>{'Most Hiked Months'}</SectionTitle>
+            <SectionTitle>{getFluentString('stats-most-hiked-months')}</SectionTitle>
             <CardRoot>
               <DataViz
                 id='top-months-hiked'
@@ -371,7 +377,7 @@ const Stats = (props: Props) => {
           </div>
         </TwoColumns>
         <SingleColumn>
-          <SectionTitle>{'Your Wilderlist Contributions'}</SectionTitle>
+          <SectionTitle>{getFluentString('stats-your-wilderlist-contributions')}</SectionTitle>
           <ContributionsCard
             tripReports={totalAuthoredTripReports}
             mountains={totalAuthoredMountains}
@@ -380,16 +386,18 @@ const Stats = (props: Props) => {
           />
         </SingleColumn>
         <SingleColumn>
-          <SectionTitle>{'Time Between Hikes'}</SectionTitle>
+          <SectionTitle>{getFluentString('stats-time-between-hikes')}</SectionTitle>
           <AverageTimeCard
             avgTime={avgTimeBetweenHikes}
             startDate={startDate}
             getFluentString={getFluentString}
           />
-          <ContextNote>Average time is calculated based on the time between recorded <em>full dates</em>, starting with your first recorded date on Wilderlist to your last.</ContextNote>
+          <ContextNote
+            dangerouslySetInnerHTML={{__html: getFluentString('stats-average-time-context-note-html')}}
+          />
         </SingleColumn>
         <SingleColumn>
-          <SectionTitle>{'Hiking Break Down by Top States'}</SectionTitle>
+          <SectionTitle>{getFluentString('stats-top-hiked-states')}</SectionTitle>
           <CardRoot>
             <DataViz
               id='top-states-hiked'
@@ -400,7 +408,7 @@ const Stats = (props: Props) => {
         </SingleColumn>
         <TwoColumns>
           <div>
-            <SectionTitle>{'Top Hiked Years'}</SectionTitle>
+            <SectionTitle>{getFluentString('stats-top-hiked-years')}</SectionTitle>
             <TopFourValuesList
               val1={sortedYears[0]}
               val2={sortedYears[1]}
@@ -410,7 +418,7 @@ const Stats = (props: Props) => {
             />
           </div>
           <div>
-            <SectionTitle>{'Top Hiked Seasons'}</SectionTitle>
+            <SectionTitle>{getFluentString('stats-top-hiked-seasons')}</SectionTitle>
             <TopFourValuesList
               val1={sortedSeasons[0]}
               val2={sortedSeasons[1]}
@@ -421,7 +429,7 @@ const Stats = (props: Props) => {
           </div>
         </TwoColumns>
         <SingleColumn>
-          <SectionTitle>{'Total Lifetime elevation'}</SectionTitle>
+          <SectionTitle>{getFluentString('stats-total-lifetime-elevation')}</SectionTitle>
           <CardRoot>
             <DataViz
               id='total-elevation-reached'
@@ -430,21 +438,23 @@ const Stats = (props: Props) => {
             />
           </CardRoot>
           <ContextNote>
-            Lifetime Elevation is calculated based on the total elevation of each peak hiked for a given day. Wilderlist does not currently take into account prominence or elevation gain.
+            {getFluentString('stats-total-lifetime-context-note')}
           </ContextNote>
         </SingleColumn>
-        <SectionTitle>{'Your Lists'}</SectionTitle>
+        <SectionTitle>{getFluentString('stats-your-lists')}</SectionTitle>
         <TwoColumns>
           <LargeStyledNumber
             value={peakLists.length}
-            label={'lists being pursued'}
+            label={getFluentString('stats-your-lists-pursued')}
+            svg={HikingListProgressSVG}
           />
           <LargeStyledNumber
             value={numFinishedList}
-            label={'lists completed'}
+            label={getFluentString('stats-your-lists-complete')}
+            svg={HikingListCompleteSVG}
           />
         </TwoColumns>
-        <SectionTitle>{'Percentage Complete For All Lists'}</SectionTitle>
+        <SectionTitle>{getFluentString('stats-your-lists-percent')}</SectionTitle>
         <SingleColumn>
           <CardRoot>
             <PeakProgressBar
