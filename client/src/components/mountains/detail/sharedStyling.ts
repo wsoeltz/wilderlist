@@ -53,6 +53,7 @@ export const AscentListItem = styled(BasicListItem)`
 
   &:hover {
     background-color: ${lightBorderColor};
+    cursor: pointer;
   }
 `;
 
