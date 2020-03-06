@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
@@ -11,6 +12,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
   ButtonSecondary,
   ButtonWarning,
@@ -18,6 +20,8 @@ import {
   InputBase,
   lightBlue,
   lightBorderColor,
+  Required,
+  RequiredNote as RequiredNoteBase,
   warningColor,
 } from '../../../../styling/styleUtils';
 import {
@@ -123,6 +127,12 @@ const DateInputContainer = styled.div`
 export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+`;
+
+const RequiredNote = styled(RequiredNoteBase)`
+  margin-right: auto;
+  margin-left: 1rem;
 `;
 
 export const CancelButton = styled(ButtonSecondary)`
@@ -1392,6 +1402,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         defaultValue={initialLink}
         ref={tripLinkEl}
         maxLength={1000}
+        autoComplete={'off'}
       />
     </ReportContent>
   ) : null;
@@ -1399,6 +1410,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const deleteAscentButton =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
       <DeleteButton onClick={() => setIsAreYouSureModalOpen(true)}>
+        <BasicIconInText icon={faTrash} />
         Delete Ascent
       </DeleteButton>
     ) : null;
@@ -1407,10 +1419,14 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
       ? getFluentString('global-text-value-save')
       : getFluentString('global-text-value-modal-mark-complete');
-
   const actions = (
     <ButtonWrapper>
       {deleteAscentButton}
+      <RequiredNote
+          dangerouslySetInnerHTML={{
+            __html: getFluentString('global-form-html-required-note'),
+          }}
+        />
       <CancelButton onClick={closeEditMountainModalModal}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
@@ -1418,6 +1434,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         onClick={() => validateAndAddMountainCompletion(editMountainId)}
         disabled={isConfirmDisabled()}
       >
+        <BasicIconInText icon={faCheck} />
         {saveButtonText}
       </ButtonPrimary>
     </ButtonWrapper>
@@ -1434,6 +1451,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         <TitleText>{title}</TitleText>
         <ColumnRoot>
           <LeftColumn>
+            <SectionTitle>
+              {getFluentString('global-text-value-date')}
+              <Required>*</Required>
+            </SectionTitle>
             {toggleButtons}
             <DateInputContainer>
               {datePickers}
@@ -1459,6 +1480,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
                 onChange={e => setEmailInput(e.target.value)}
                 onKeyPress={onEnterPress}
                 maxLength={1000}
+                autoComplete={'off'}
               />
               <AddEmailButton
                 disabled={emailInput === ''}

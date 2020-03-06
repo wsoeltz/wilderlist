@@ -80,6 +80,7 @@ const StandardSearch = (props: Props) => {
         type='text'
         placeholder={placeholder}
         onChange={onChange}
+        autoComplete={'off'}
       />
     </SearchContainer>
   );

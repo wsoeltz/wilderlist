@@ -12,7 +12,7 @@ export const Root = styled.div`
 `;
 
 export const Title = styled.h1`
-  margin-top: 0;
+  margin: 0;
 `;
 
 export const FullColumn = styled.div`
@@ -27,16 +27,15 @@ export const CheckboxLabel = styled(CheckboxLabelBase)`
 
 export const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
 `;
 
 export const SaveButton = styled(ButtonPrimary)`
   min-width: 100px;
-  margin-left: 1rem;
+  margin-left: auto;
 `;
 
 export const DeleteButton = styled(ButtonWarning)`
-  margin-right: auto;
+  margin-right: 1rem;
 `;
 
 export const ResourceContainer = styled.div`

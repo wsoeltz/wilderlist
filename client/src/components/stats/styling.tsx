@@ -5,6 +5,8 @@ import {
   Card,
   lightBaseColor,
   primaryColor,
+  SvgImg,
+  SvgSmallImg,
 } from '../../styling/styleUtils';
 import AddHikingListSVG from './d3Viz/icons/add-hiking-list.svg';
 import AddMountainSVG from './d3Viz/icons/add-mountain.svg';
@@ -73,16 +75,6 @@ const SmallNumber = styled.div`
 const SmallLabel = styled.div`
   font-size: 1rem;
   color: ${primaryColor};
-`;
-
-const SvgImg = styled.img`
-  height: 3rem;
-  margin-right: 1rem;
-`;
-
-const SvgSmallImg = styled.img`
-  height: 2rem;
-  margin-right: 1rem;
 `;
 
 export const LargeStyledNumber = (
