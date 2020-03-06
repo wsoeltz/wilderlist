@@ -93,8 +93,11 @@ const Dashboard = (props: Props) => {
   useEffect(() => {
     const getUsersIpLocation = async () => {
       try {
+        const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
         const ip = await publicIp.v4();
-        const res = await axios.get('https://www.geoplugin.net/json.gp?ip=' + ip);
+        const res = await axios.get(
+          `https://ssl.geoplugin.net/json.gp?k=${key}&ip=${ip}`,
+        );
         if (res && res.data && res.data.geoplugin_regionCode) {
           setUsersState(res.data.geoplugin_regionCode);
         } else {
