@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, { useContext, useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import {
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
 import {
+  BasicIconInText,
   ButtonSecondaryLink,
   GhostButton,
   lightBorderColor,
@@ -417,6 +419,7 @@ const MountainDetail = (props: Props) => {
           </ButtonSecondaryLink>
         ) : (
           <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+            <BasicIconInText icon={faFlag} />
             {getFluentString('global-text-value-flag')}
           </GhostButton>
         );

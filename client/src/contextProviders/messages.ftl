@@ -96,6 +96,7 @@ global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
 global-text-value-ascents = ascents
 global-text-value-dates = Dates
+global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
@@ -185,9 +186,12 @@ global-text-value-save-changes = Save Changes
 global-text-value-saving = Saving
 global-text-value-all-changes-saved = All Changes Saved
 
+global-form-html-required-note = <span class="red-text">*</span> Indicates a required field
+
 global-text-value-selected = Selected
 
 global-text-value-delete = Delete
+global-text-value-remove = Remove
 
 global-text-value-flag = Flag
 global-text-value-optional = Optional

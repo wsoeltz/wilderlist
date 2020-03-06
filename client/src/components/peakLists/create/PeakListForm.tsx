@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
+import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -10,6 +11,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
   CheckboxInput,
   CheckboxRoot,
@@ -18,6 +20,8 @@ import {
   Label,
   LabelContainer,
   PlaceholderText,
+  Required,
+  RequiredNote as RequiredNoteBase,
   SelectBox,
   SmallTextNote,
   TextareaBase,
@@ -49,6 +53,11 @@ import { StateDatum } from '../list/ListPeakLists';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
 import ParentModal, {PeakListDatum} from './ParentModal';
+
+export const RequiredNote = styled(RequiredNoteBase)`
+  margin: 0.67rem 0;
+  text-align: right;
+`;
 
 const NoMountainSelection = styled(PlaceholderText)`
   min-height: 200px;
@@ -295,6 +304,7 @@ const PeakListForm = (props: Props) => {
     <DeleteButton
       onClick={() => setDeleteModalOpen(true)}
     >
+      <BasicIconInText icon={faTrash} />
       {deleteButtonText}
     </DeleteButton>
   );
@@ -357,14 +367,16 @@ const PeakListForm = (props: Props) => {
         value={resource.title}
         onChange={e => handleExternalResourceChange(e)('title', i)}
         placeholder={getFluentString('global-text-value-resource-title')}
+        autoComplete={'off'}
       />
       <InputBase
         value={resource.url}
         onChange={e => handleExternalResourceChange(e)('url', i)}
         placeholder={getFluentString('global-text-value-resource-url')}
+        autoComplete={'off'}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
-        {getFluentString('global-text-value-delete')}
+        × {getFluentString('global-text-value-remove')}
       </GhostButton>
     </ResourceContainer>
   ));
@@ -426,6 +438,7 @@ const PeakListForm = (props: Props) => {
         <LabelContainer>
           <Label>
             {getFluentString('global-text-value-mountains')}
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <AddMountains
@@ -493,11 +506,17 @@ const PeakListForm = (props: Props) => {
     <Root>
       <FullColumn>
         <Title>{titleText}</Title>
+        <RequiredNote
+            dangerouslySetInnerHTML={{
+              __html: getFluentString('global-form-html-required-note'),
+            }}
+          />
       </FullColumn>
       <FullColumn>
         <LabelContainer htmlFor={'create-peak-list-name'}>
           <Label>
             {getFluentString('create-peak-list-peak-list-name-label')}
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <InputBase
@@ -506,7 +525,8 @@ const PeakListForm = (props: Props) => {
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder={getFluentString('create-peak-list-peak-list-name-placeholder')}
-          autoComplete={'off'}
+          /* autoComplete='off' is ignored in Chrome, but other strings aren't */
+          autoComplete={'nope'}
           maxLength={1000}
         />
       </FullColumn>
@@ -516,6 +536,7 @@ const PeakListForm = (props: Props) => {
             {getFluentString('create-peak-list-peak-list-short-name-label')}
             {' '}
             <small>({getFluentString('create-peak-list-peak-list-short-name-note')})</small>
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <InputBase
@@ -532,6 +553,7 @@ const PeakListForm = (props: Props) => {
         <LabelContainer htmlFor={'create-peak-list-select-type'}>
           <Label>
             {getFluentString('global-text-value-type')}
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <SelectBox
@@ -610,6 +632,7 @@ const PeakListForm = (props: Props) => {
         <LabelContainer htmlFor={'create-peak-list-select-tier'}>
           <Label>
             {getFluentString('global-text-value-tier')}
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <SelectBox
@@ -669,6 +692,7 @@ const PeakListForm = (props: Props) => {
           />
           <CheckboxLabel htmlFor={'create-peak-list-verify-changes-are-accurate'}>
             {getFluentString('create-peak-list-check-your-work')}
+            <Required children={'*'} />
            </CheckboxLabel>
         </CheckboxRoot>
         <ButtonWrapper>
@@ -680,6 +704,7 @@ const PeakListForm = (props: Props) => {
             disabled={!verify()}
             onClick={validateAndSave}
           >
+            <BasicIconInText icon={faCheck} />
             {saveButtonText}
           </SaveButton>
         </ButtonWrapper>
