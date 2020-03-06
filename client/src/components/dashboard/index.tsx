@@ -92,11 +92,19 @@ const Dashboard = (props: Props) => {
   const [usersState, setUsersState] = useState<string | undefined>(undefined);
   useEffect(() => {
     const getUsersIpLocation = async () => {
-      const ip = await publicIp.v4();
-      const res = await axios.get('http://www.geoplugin.net/json.gp?ip=' + ip);
-      if (res && res.data && res.data.geoplugin_regionCode) {
-        setUsersState(res.data.geoplugin_regionCode);
-      } else {
+      try {
+        const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
+        const ip = await publicIp.v4();
+        const res = await axios.get(
+          `https://ssl.geoplugin.net/json.gp?k=${key}&ip=${ip}`,
+        );
+        if (res && res.data && res.data.geoplugin_regionCode) {
+          setUsersState(res.data.geoplugin_regionCode);
+        } else {
+          setUsersState('unknown');
+        }
+      } catch (e) {
+        console.error(e);
         setUsersState('unknown');
       }
     };

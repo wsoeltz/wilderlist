@@ -12,9 +12,11 @@ import {
   faCheck,
   faChevronLeft,
   faChevronRight,
+  faClone,
   faEnvelope,
   faFileCsv,
   faFileExcel,
+  faFlag,
   faHiking,
   faHome,
   faList,
@@ -26,6 +28,7 @@ import {
   faSortDown,
   faSortUp,
   faThList,
+  faTrash,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components/macro';
@@ -43,7 +46,8 @@ library.add(
   faList, faThList, faMapMarkerAlt, faSort, faSortDown,
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
   faFileExcel, faMapSigns, faMountain, faHiking,
-  faUserFriends, faHome, faChartLine,
+  faUserFriends, faHome, faChartLine, faTrash, faClone,
+  faFlag,
 );
 
 const GlobalStyles = createGlobalStyle`

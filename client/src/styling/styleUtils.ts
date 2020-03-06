@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { darken } from 'polished';
 import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
@@ -371,6 +372,12 @@ export const PlusIcon = styled.span`
   top: 2px;
 `;
 
+export const BasicIconInText = styled(FontAwesomeIcon)`
+  position: relative;
+  top: -1px;
+  margin-right: 0.6rem;
+`;
+
 export const PlaceholderText = styled.div`
   width: 100%;
   height: 100%;
@@ -461,4 +468,34 @@ export const ResourceItem = styled.li`
     position: absolute;
     left: 0.5rem;
   }
+`;
+
+export const RequiredNote = styled.div`
+  color: ${lightBaseColor};
+  font-size: 0.8rem;
+
+  span.red-text {
+    color: ${warningColor};
+  }
+`;
+
+export const Required = styled.span`
+  color: ${warningColor};
+`;
+
+export const SvgImg = styled.img`
+  height: 3rem;
+  margin-right: 1rem;
+`;
+
+export const SvgSmallImg = styled.img`
+  height: 2rem;
+  margin-right: 1rem;
+`;
+
+export const SvgMiniImg = styled.img`
+  height: 1rem;
+  position: relative;
+  margin-right: 0.6rem;
+  top: 3px;
 `;

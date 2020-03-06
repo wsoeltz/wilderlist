@@ -120,6 +120,10 @@ if (process.env.NODE_ENV === 'production') {
       res.send(err);
     }
   });
+  app.get('/geoplugin_activation.html', async (req, res) => {
+      res.type('text/html');
+      res.send('iSg6MNkmBmqtbOlazg6spoQNpWMdib');
+  });
 
   app.get('/download/grid-application.xlsx', async (req, res) => {
     if (!req.user) {

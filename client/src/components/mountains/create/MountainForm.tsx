@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { faCheck, faClone, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -8,6 +9,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
   CheckboxInput,
   CheckboxRoot,
@@ -15,6 +17,7 @@ import {
   InputBase,
   Label,
   LabelContainer,
+  Required,
   SelectBox,
   TextareaBase,
 } from '../../../styling/styleUtils';
@@ -24,6 +27,7 @@ import {
   MountainFlag,
   State,
 } from '../../../types/graphQLTypes';
+import { RequiredNote } from '../../peakLists/create/PeakListForm';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
@@ -316,14 +320,16 @@ const MountainForm = (props: Props) => {
         value={resource.title}
         onChange={e => handleExternalResourceChange(e)('title', i)}
         placeholder={getFluentString('global-text-value-resource-title')}
+        autoComplete={'off'}
       />
       <InputBase
         value={resource.url}
         onChange={e => handleExternalResourceChange(e)('url', i)}
         placeholder={getFluentString('global-text-value-resource-url')}
+        autoComplete={'off'}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
-        {getFluentString('global-text-value-delete')}
+        × {getFluentString('global-text-value-remove')}
       </GhostButton>
     </ResourceContainer>
   ));
@@ -367,6 +373,7 @@ const MountainForm = (props: Props) => {
     <DeleteButton
       onClick={() => setDeleteModalOpen(true)}
     >
+      <BasicIconInText icon={faTrash} />
       {deleteButtonText}
     </DeleteButton>
   );
@@ -379,6 +386,7 @@ const MountainForm = (props: Props) => {
       disabled={preventSubmit()}
       onClick={validateAndSaveAndAdd}
     >
+      <BasicIconInText icon={faClone} />
       {createAnotherText}
     </SaveButton>
   );
@@ -387,11 +395,17 @@ const MountainForm = (props: Props) => {
     <Root>
       <FullColumn>
         <Title>{titleText}</Title>
+        <RequiredNote
+          dangerouslySetInnerHTML={{
+            __html: getFluentString('global-form-html-required-note'),
+          }}
+        />
       </FullColumn>
       <FullColumn>
         <LabelContainer htmlFor={'create-mountain-name'}>
           <Label>
             {getFluentString('create-mountain-mountain-name-placeholder')}
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <InputBase
@@ -400,6 +414,7 @@ const MountainForm = (props: Props) => {
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder={getFluentString('create-mountain-mountain-name-placeholder')}
+          /* autoComplete='off' is ignored in Chrome, but other strings aren't */
           autoComplete={'off'}
           maxLength={1000}
         />
@@ -408,6 +423,7 @@ const MountainForm = (props: Props) => {
         <LabelContainer htmlFor={'create-mountain-select-a-state'}>
           <Label>
             {getFluentString('global-text-value-state')}
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <SelectBox
@@ -426,6 +442,7 @@ const MountainForm = (props: Props) => {
             {getFluentString('global-text-value-elevation')}
             {' '}
             <small>({getFluentString('global-text-value-feet')})</small>
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <InputBase
@@ -445,6 +462,7 @@ const MountainForm = (props: Props) => {
             {getFluentString('global-text-value-latitude')}
             {' '}
             <small>({getFluentString('create-mountain-latlong-note')})</small>
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <InputBase
@@ -464,6 +482,7 @@ const MountainForm = (props: Props) => {
             {getFluentString('global-text-value-longitude')}
             {' '}
             <small>({getFluentString('create-mountain-latlong-note')})</small>
+            <Required children={'*'} />
           </Label>
         </LabelContainer>
         <InputBase
@@ -523,6 +542,7 @@ const MountainForm = (props: Props) => {
           />
           <CheckboxLabel htmlFor={`create-mountain-verify-changes-are-accurate`}>
             {getFluentString('create-mountain-check-your-work')}
+            <Required children={'*'} />
            </CheckboxLabel>
         </CheckboxRoot>
         <ButtonWrapper>
@@ -535,6 +555,7 @@ const MountainForm = (props: Props) => {
             disabled={preventSubmit()}
             onClick={validateAndSave}
           >
+            <BasicIconInText icon={faCheck} />
             {saveButtonText}
           </SaveButton>
         </ButtonWrapper>
