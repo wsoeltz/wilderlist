@@ -30,5 +30,6 @@ export enum Routes {
   AdminPeakLists = '/admin/lists',
   AdminUsers = '/admin/users',
   PrivacyPolicy = '/privacy-policy',
+  TermsOfUse = '/terms-of-use',
   YourStats = '/your-stats',
 }

@@ -46,6 +46,7 @@ export enum Routes {
   // AdminPeakLists = '/admin/lists',
   // AdminUsers = '/admin/users',
   PrivacyPolicy = '/privacy-policy',
+  TermsOfUse = '/terms-of-use',
 }
 
 export const getListData = async (id: string) => {

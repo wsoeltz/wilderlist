@@ -42,6 +42,7 @@ import PrivacyPolicy from './privacyPolicy';
 import PageNotFound from './sharedComponents/404';
 import Header from './sharedComponents/Header';
 import YourStats from './stats/';
+import TermsOfUse from './termsOfUse';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
 import UserPeakListWithMountain from './users/peakListMountain';
@@ -228,6 +229,7 @@ const App: React.FC = () => {
           render={(props: any) => <YourStats {...props} userId={user._id} />}
         />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
         {adminRoutes}
         {/* 404 Route -> */}
         <Route component={PageNotFound} />
@@ -262,6 +264,7 @@ const App: React.FC = () => {
           render={(props: any) => <MountainDetailPage {...props} userId={null} />}
         />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
         {/* Routes that may be shared while a user that is logged in
             should redirect to the closest possible public page -> */}
 
