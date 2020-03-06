@@ -206,6 +206,9 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
         <UserMenuLink to={Routes.PrivacyPolicy}>
           {getFluentString('header-text-menu-privacy-policy')}
         </UserMenuLink>
+        <UserMenuLink to={Routes.TermsOfUse}>
+          {getFluentString('header-text-menu-terms-of-use')}
+        </UserMenuLink>
         {adminPanel}
         <UserMenuAnchor href='/api/logout'>
           {getFluentString('header-text-menu-item-logout')}

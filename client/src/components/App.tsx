@@ -4,7 +4,7 @@ import axios from 'axios';
 import 'cross-fetch/polyfill';
 import debounce from 'lodash/debounce';
 import 'normalize.css';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import Helmet from 'react-helmet';
 import {
@@ -23,29 +23,33 @@ import GlobalStyles from '../styling/GlobalStyles';
 import { Root } from '../styling/Grid';
 import { PermissionTypes, User } from '../types/graphQLTypes';
 import { overlayPortalContainerId } from '../Utils';
-import AdminPanel from './adminPanel';
-import AdminMountains from './adminPanel/AdminMountains';
-import AdminPeakLists from './adminPanel/AdminPeakLists';
-import AdminRegions from './adminPanel/AdminRegions';
-import AdminStates from './adminPanel/AdminStates';
-import AdminUsers from './adminPanel/AdminUsers';
-import Dashboard from './dashboard';
-import LoginPage from './login';
-import CreateMountain from './mountains/create';
 import MountainDetailPage from './mountains/detail';
 import ListMountainsPage from './mountains/list';
-import ComparePeakListPage from './peakLists/compare';
-import CreatePeakList from './peakLists/create';
 import PeakListDetailPage from './peakLists/detail';
 import PeakListPage from './peakLists/list';
-import PrivacyPolicy from './privacyPolicy';
-import PageNotFound from './sharedComponents/404';
 import Header from './sharedComponents/Header';
-import YourStats from './stats/';
-import UserProfile from './users/detail';
-import ListUsersPage from './users/list';
-import UserPeakListWithMountain from './users/peakListMountain';
-import UserSettings from './users/settings';
+import LoadingSuspense from './sharedComponents/LoadingSuspense';
+
+const PrivacyPolicy = React.lazy(() => import('./privacyPolicy'));
+const TermsOfUse = React.lazy(() => import('./termsOfUse'));
+const Dashboard = React.lazy(() => import('./dashboard'));
+const LoginPage = React.lazy(() => import('./login'));
+const YourStats = React.lazy(() => import('./stats'));
+const UserProfile = React.lazy(() => import('./users/detail'));
+const ListUsersPage = React.lazy(() => import('./users/list'));
+const UserPeakListWithMountain = React.lazy(() => import('./users/peakListMountain'));
+const UserSettings = React.lazy(() => import('./users/settings'));
+const PageNotFound = React.lazy(() => import('./sharedComponents/404'));
+const CreatePeakList = React.lazy(() => import('./peakLists/create'));
+const CreateMountain = React.lazy(() => import('./mountains/create'));
+const ComparePeakListPage = React.lazy(() => import('./peakLists/compare'));
+
+const AdminPanel = React.lazy(() => import ('./adminPanel'));
+const AdminMountains = React.lazy(() => import ('./adminPanel/AdminMountains'));
+const AdminPeakLists = React.lazy(() => import ('./adminPanel/AdminPeakLists'));
+const AdminRegions = React.lazy(() => import ('./adminPanel/AdminRegions'));
+const AdminStates = React.lazy(() => import ('./adminPanel/AdminStates'));
+const AdminUsers = React.lazy(() => import ('./adminPanel/AdminUsers'));
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});
@@ -228,6 +232,7 @@ const App: React.FC = () => {
           render={(props: any) => <YourStats {...props} userId={user._id} />}
         />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
         {adminRoutes}
         {/* 404 Route -> */}
         <Route component={PageNotFound} />
@@ -262,6 +267,7 @@ const App: React.FC = () => {
           render={(props: any) => <MountainDetailPage {...props} userId={null} />}
         />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
+        <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
         {/* Routes that may be shared while a user that is logged in
             should redirect to the closest possible public page -> */}
 
@@ -316,7 +322,9 @@ const App: React.FC = () => {
             <Router>
               <Root>
                 <Header />
-                {userRoutes}
+                <Suspense fallback={LoadingSuspense}>
+                  {userRoutes}
+                </Suspense>
                 <OverlayPortal id={overlayPortalContainerId} />
               </Root>
             </Router>

@@ -41,7 +41,8 @@ meta-data-peak-list-detail-description = {
   [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and robust tracking tools.
 }
 
-meta-data-privacy-policy-description = Read Wilderlist's Privacy and Usage Policy.
+meta-data-privacy-policy-description = Read Wilderlist's Privacy Policy.
+meta-data-terms-of-use-description = Read Wilderlist's Terms of Use.
 
 global-text-value-navigation-next = Next
 global-text-value-navigation-prev = Previous
@@ -254,7 +255,8 @@ header-text-menu-item-admin-panel = Admin Panel
 header-text-menu-item-logout = Logout
 header-text-menu-my-profile = My Profile
 header-text-menu-settings = Settings
-header-text-menu-privacy-policy = Privacy & Usage Policy
+header-text-menu-privacy-policy = Privacy Policy
+header-text-menu-terms-of-use = Terms of Use
 
 notification-bar-ascent-marked = marked you as hiking
 
@@ -286,29 +288,6 @@ settings-page-notification-settings-email = Email Notifications
 
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>wilderlistapp@gmail.com</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
-
-privacy-and-usage-policy-content =
-  <h4>
-    <strong>Disclaimer</strong>
-  </h4>
-  <p>
-    The content of this site is provided for general educational and informational purposes only. All forms of outdoor recreation have a high risk and can be potentially dangerous and/or hazardous. It is the responsibility of the users of this website to learn the necessary skills, have the proper physical conditioning, and carry the correct gear, when embarking on any outdoor activity. The information on this site is not to be considered a guide and the users of this site must assume full responsibility for their actions and personal safety.
-  </p>
-  <h4>
-    <strong>Indemnification</strong>
-  </h4>
-  <p>
-    The authors of this site provide no warranties, either express or implied, that the information provided on this site is accurate or reliable. By using Wilderlist you agree to indemnify and hold harmless Wilderlist (its owners) and its affiliates with respect to any claims, damages, losses, liabilities, and all costs and expenses of defense, including but not limited to attorneys’ fees, resulting directly or indirectly from a claim by a third party that arises in connection with your use of this website.
-  </P>
-  <h4>
-    <strong>Personal Information</strong>
-  </h4>
-  <p>When you sign up for or use Wilderlist, you give us certain information voluntarily. This includes your name, email address, profile photo, and any other information you give us. Wilderlist uses authorization through Google, and we receive your account information through Google, based on the privacy settings you have with Google. Wilderlist are is not affiliated with Google, so please refer to Google's privacy policies and settings for any information that is shared or used through them.
-  </p>
-  <p>We do not share personal information with third-parties. We do store information we collect about your visit to this site through the use of cookies, which you can turn off at anytime by modifying your Internet browser’s settings. You may at any time contact us to receive all of the data that Wilderlist has stored on you. You may also contact us to have all of the data that we have on you wiped out any time.
-  </p>
-  <p>We are not responsible for the republishing of the content found on this site on other Web sites or media without our permission.</p>
-  <p>This privacy and usage policy is subject to change without notice.</p>
 
 dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Begin List' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
 dashboard-empty-state-no-active-lists-button = Find Hiking Lists

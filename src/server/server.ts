@@ -120,10 +120,6 @@ if (process.env.NODE_ENV === 'production') {
       res.send(err);
     }
   });
-  app.get('/geoplugin_activation.html', async (req, res) => {
-      res.type('text/html');
-      res.send('iSg6MNkmBmqtbOlazg6spoQNpWMdib');
-  });
 
   app.get('/download/grid-application.xlsx', async (req, res) => {
     if (!req.user) {
@@ -185,7 +181,26 @@ if (process.env.NODE_ENV === 'production') {
       data = data.replace(/\$CANONICAL_URL/g,
         `https://www.wilderlist.app/list/${Routes.PrivacyPolicy}`,
       );
-      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Privacy and Usage Policy.");
+      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Privacy Policy.");
+      res.send(result);
+    });
+
+  });
+  app.get(Routes.TermsOfUse, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, 'Terms of Use - Wilderlist');
+      data = data.replace(/\$CANONICAL_URL/g,
+        `https://www.wilderlist.app/list/${Routes.TermsOfUse}`,
+      );
+      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Terms of Use.");
       res.send(result);
     });
 
