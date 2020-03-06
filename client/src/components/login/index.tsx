@@ -6,7 +6,11 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
-import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
+import { Routes } from '../../routing/routes';
+import {
+  searchListDetailLink,
+  searchMountainsDetailLink,
+} from '../../routing/Utils';
 import { ContentFull } from '../../styling/Grid';
 import {
   ButtonBase,
@@ -23,6 +27,7 @@ const videoStyles = browser === 'Edge'
 const Root = styled(ContentFull)`
   position: relative;
   overflow: auto;
+  height: 100%;
 `;
 
 const VideoBackground = styled.video`
@@ -115,6 +120,25 @@ const TrailSign = styled(FontAwesomeIcon)`
   margin: 1rem 0 0;
 `;
 
+const DisclaimerLinks = styled.div`
+  margin-top: auto;
+  padding-bottom: 0.75rem;
+  display: flex;
+  justify-content: center;
+`;
+
+const WhiteLink = styled(Link)`
+  color: #fff;
+  margin: 0 0.4rem;
+  font-size: 0.75rem;
+`;
+
+const CopyrightText = styled.div`
+  color: #fff;
+  margin: 0 0.4rem;
+  font-size: 0.75rem;
+`;
+
 const LoginPage = () => {
   const [isSignUpModalOpen, setSignUpModalOpen] = useState<boolean>(false);
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -162,6 +186,17 @@ const LoginPage = () => {
           {getFluentString('login-page-sign-up-for-free')}
         </SignUpButton>
       </ContentRoot>
+      <DisclaimerLinks>
+        <CopyrightText>
+          Copyright © Wilderlist {new Date().getFullYear()}
+        </CopyrightText>
+        <WhiteLink to={Routes.TermsOfUse}>
+          {getFluentString('header-text-menu-terms-of-use')}
+        </WhiteLink>
+        <WhiteLink to={Routes.PrivacyPolicy}>
+          {getFluentString('header-text-menu-privacy-policy')}
+        </WhiteLink>
+      </DisclaimerLinks>
       <VideoBackground
         loop={true}
         muted={true}

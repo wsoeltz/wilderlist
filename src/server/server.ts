@@ -185,7 +185,26 @@ if (process.env.NODE_ENV === 'production') {
       data = data.replace(/\$CANONICAL_URL/g,
         `https://www.wilderlist.app/list/${Routes.PrivacyPolicy}`,
       );
-      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Privacy and Usage Policy.");
+      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Privacy Policy.");
+      res.send(result);
+    });
+
+  });
+  app.get(Routes.TermsOfUse, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, 'Terms of Use - Wilderlist');
+      data = data.replace(/\$CANONICAL_URL/g,
+        `https://www.wilderlist.app/list/${Routes.TermsOfUse}`,
+      );
+      const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Terms of Use.");
       res.send(result);
     });
 
