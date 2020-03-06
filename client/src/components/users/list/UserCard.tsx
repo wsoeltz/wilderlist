@@ -512,7 +512,7 @@ const UserCard = (props: Props) => {
       );
 
   const desktopURL = openInSidebar === true
-    ? friendsWithUserProfileLink(user.id)
+    ? friendsWithUserProfileLink(user.id) + window.location.search
     : comparePeakListLink(user.id, 'none');
 
   return (

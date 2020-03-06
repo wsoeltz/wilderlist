@@ -44,6 +44,7 @@ import Header from './sharedComponents/Header';
 import YourStats from './stats/';
 import UserProfile from './users/detail';
 import ListUsersPage from './users/list';
+import UserPeakListWithMountain from './users/peakListMountain';
 import UserSettings from './users/settings';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
@@ -179,6 +180,9 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.OtherUserPeakListDetail}
           render={(props: any) => <PeakListDetailPage {...props} userId={user._id} />}
         />
+        <TrackedRoute exact path={Routes.OtherUserPeakListMountains}
+          render={(props: any) => <UserPeakListWithMountain {...props} userId={user._id} />}
+        />
         <TrackedRoute exact path={Routes.OtherUserPeakListCompare}
           render={(props: any) => <UserProfile {...props} userId={user._id} />}
         />
@@ -191,7 +195,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.CreateMountain}
           render={(props: any) => (
             <CreateMountain {...props}
-              userId={user._id}
+              user={user}
               mountainPermissions={user.mountainPermissions}
             />
           )}
@@ -199,7 +203,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.EditMountain}
           render={(props: any) => (
             <CreateMountain {...props}
-              userId={user._id}
+              user={user}
               mountainPermissions={user.mountainPermissions}
             />
           )}
@@ -207,7 +211,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.CreateList}
           render={(props: any) => (
             <CreatePeakList {...props}
-              userId={user._id}
+              user={user}
               peakListPermissions={user.peakListPermissions}
             />
           )}
@@ -215,7 +219,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.EditList}
           render={(props: any) => (
             <CreatePeakList {...props}
-              userId={user._id}
+              user={user}
               peakListPermissions={user.peakListPermissions}
             />
           )}

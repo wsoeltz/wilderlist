@@ -216,7 +216,7 @@ export const AverageTimeCard = (
   if (weeks) {
     const weeksText = weeks > 1 ? 'global-text-value-weeks' : 'global-text-value-week';
     calcTime.push(
-      <React.Fragment key={weeks}>
+      <React.Fragment key={weeks + 'weeks'}>
         {weeks}<TimeLabel>{getFluentString(weeksText)}</TimeLabel>
         {' '}
       </React.Fragment>,
@@ -225,7 +225,7 @@ export const AverageTimeCard = (
   if (days) {
     const daysText = days > 1 ? 'global-text-value-days' : 'global-text-value-day';
     calcTime.push(
-      <React.Fragment key={days}>
+      <React.Fragment key={days + 'days'}>
         {days}<TimeLabel>{getFluentString(daysText)}</TimeLabel>
         {' '}
       </React.Fragment>,
@@ -234,7 +234,7 @@ export const AverageTimeCard = (
   if (hours) {
     const hoursText = hours > 1 ? 'global-text-value-hours' : 'global-text-value-hour';
     calcTime.push(
-      <React.Fragment key={hours}>
+      <React.Fragment key={hours + 'hours'}>
         {hours}<TimeLabel>{getFluentString(hoursText)}</TimeLabel>
       </React.Fragment>,
     );

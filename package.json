@@ -53,6 +53,7 @@
     "@types/passport": "^1.0.0",
     "@types/passport-facebook": "^2.1.9",
     "@types/passport-google-oauth20": "^2.0.2",
+    "@types/public-ip": "^3.1.0",
     "@types/react-csv": "^1.1.1",
     "apollo-boost": "^0.4.3",
     "axios": "^0.19.0",
@@ -78,6 +79,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-reddit": "^0.2.4",
+    "public-ip": "^4.0.0",
     "react-csv": "^1.1.2",
     "react-mapbox-gl": "^4.8.1",
     "rimraf": "^2.6.3"

@@ -110,6 +110,7 @@ const CreateMountainModal = (props: Props) => {
         onSubmit={onSubmit}
         mapContainer={null}
         onCancel={onCancel}
+        onSubmitAndAddAnother={null}
       />
     );
   } else {

@@ -19,6 +19,8 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
+  PermissionTypes,
+  User,
 } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext } from '../../App';
@@ -221,13 +223,15 @@ interface SuccessResponse {
 }
 
 interface Props extends RouteComponentProps {
-  userId: string | null;
+  user: User;
   peakListPermissions: null | number;
 }
 
 const PeakListCreatePage = (props: Props) => {
-  const { userId, peakListPermissions, match, history } = props;
+  const { user, peakListPermissions, match, history } = props;
   const { id }: any = match.params;
+
+  const userId = user._id;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -254,7 +258,7 @@ const PeakListCreatePage = (props: Props) => {
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
   let peakListForm: React.ReactElement<any> | null;
-  if (peakListPermissions === -1) {
+  if (peakListPermissions === -1 && user.permissions !== PermissionTypes.admin) {
     peakListForm = (
       <PlaceholderText>
         {getFluentString('global-text-value-no-permission')}
@@ -274,7 +278,11 @@ const PeakListCreatePage = (props: Props) => {
     const onSubmit = async (input: FormInput) => {
       try {
         if (id) {
-          if (data && data.peakList && data.peakList.author && data.peakList.author.id === userId) {
+          if (data && data.peakList
+              && (
+                (data.peakList.author && data.peakList.author.id === userId) ||
+                user.permissions === PermissionTypes.admin)
+            ) {
             const res = await editPeakList({variables: {...input, id}});
             if (res && res.data && res.data.peakList) {
               history.push(listDetailLink(res.data.peakList.id));
@@ -297,7 +305,10 @@ const PeakListCreatePage = (props: Props) => {
       }
     };
 
-    if (data.peakList && data.peakList.author && data.peakList.author.id === userId) {
+    if (data.peakList && (
+            (data.peakList.author && data.peakList.author.id === userId) ||
+            user.permissions === PermissionTypes.admin)
+      ) {
       const {
         peakList: {
           name, shortName, description, optionalPeaksDescription, type,

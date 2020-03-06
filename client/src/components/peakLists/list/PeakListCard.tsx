@@ -255,7 +255,7 @@ const PeakListCard = (props: Props) => {
   } else if (dashboardView === true) {
     desktopURL = dashboardWithListDetailLink(id);
   } else {
-    desktopURL = searchListDetailLink(id);
+    desktopURL = searchListDetailLink(id) + window.location.search;
   }
   const mobileURL = profileId !== undefined
     ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');

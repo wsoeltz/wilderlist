@@ -527,6 +527,7 @@ const MountainTable = (props: Props) => {
         setEditMountainId={setMountainToEdit}
         peakListId={peakListId}
         isOtherUser={isOtherUser !== undefined ? isOtherUser : false}
+        userId={user ? user.id : null}
       />
     ),
   );

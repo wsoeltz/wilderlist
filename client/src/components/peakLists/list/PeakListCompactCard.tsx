@@ -87,7 +87,7 @@ const PeakListCard = (props: Props) => {
   return (
       <CardLinkWrapper
         mobileURL={listDetailWithMountainDetailLink(id, 'none')}
-        desktopURL={searchListDetailLink(id)}
+        desktopURL={searchListDetailLink(id) + window.location.search}
       >
         <Card style={{borderLeftColor: getColorSetFromVariant(type).tertiary}}>
           <CardTitle>

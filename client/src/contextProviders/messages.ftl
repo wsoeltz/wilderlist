@@ -126,6 +126,38 @@ global-text-value-month-short-oct = Oct
 global-text-value-month-short-nov = Nov
 global-text-value-month-short-dec = Dec
 
+global-formatted-text-date = {
+  $month ->
+  *[1] January
+  [2] February
+  [3] March
+  [4] April
+  [5] May
+  [6] June
+  [7] July
+  [8] August
+  [9] September
+  [10] October
+  [11] November
+  [12] December
+} { $day }, { $year }
+
+global-formatted-text-month-year = {
+  $month ->
+  *[1] January
+  [2] February
+  [3] March
+  [4] April
+  [5] May
+  [6] June
+  [7] July
+  [8] August
+  [9] September
+  [10] October
+  [11] November
+  [12] December
+} { $year }
+
 global-text-value-weeks = weeks
 global-text-value-week = week
 global-text-value-days = days
@@ -147,6 +179,7 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 global-text-value-submit = Submit
 
 global-text-value-edit = Edit
+global-text-value-save-and-add = Save and Add Another
 global-text-value-save = Save
 global-text-value-save-changes = Save Changes
 global-text-value-saving = Saving
@@ -273,10 +306,11 @@ privacy-and-usage-policy-content =
   <p>We are not responsible for the republishing of the content found on this site on other Web sites or media without our permission.</p>
   <p>This privacy and usage policy is subject to change without notice.</p>
 
-dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet.
-dashboard-empty-state-no-active-lists-button = Find Lists
+dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Begin List' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+dashboard-empty-state-no-active-lists-button = Find Hiking Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
+dashboard-suggested-lists = Suggested Lists
 
 your-stats-title = Your Stats
 
@@ -419,6 +453,7 @@ mountain-detail-driving-distance = {
 mountain-detail-driving-error-location = There was a problem getting your location.
 mountain-detail-driving-error-direction = There was probelm getting directions.
 mountain-detail-driving-distance-title = Driving Distance
+mountain-detail-pending-approval = This mountain is pending confirmation
 
 
 user-list-no-user-selected-text = Select a user on the left to see more details
@@ -447,7 +482,7 @@ user-card-completed = Completed
 user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
-map-completed = Completed
+map-completed = You Completed On
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
 map-number-of-seasons = Number of Seasons Hiked

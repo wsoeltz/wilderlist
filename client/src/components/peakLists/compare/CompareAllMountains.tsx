@@ -17,6 +17,7 @@ const GET_PEAK_LIST = gql`
     user(id: $friendId) {
       id
       name
+      permissions
       peakLists {
         id
         type
@@ -43,6 +44,7 @@ const GET_PEAK_LIST = gql`
     me: user(id: $userId) {
       id
       name
+      permissions
       peakLists {
         id
         type
@@ -72,6 +74,7 @@ const GET_PEAK_LIST = gql`
 export interface UserDatum {
   id: User['id'];
   name: User['name'];
+  permissions: User['permissions'];
   peakLists: Array<{
     id: PeakList['id'];
     type: PeakList['type'];

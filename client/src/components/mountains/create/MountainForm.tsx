@@ -137,12 +137,13 @@ interface Props {
   states: StateDatum[];
   initialData: InitialMountainDatum;
   onSubmit: (input: BaseMountainVariables) => void;
+  onSubmitAndAddAnother: null | ((input: BaseMountainVariables) => void);
   mapContainer: HTMLDivElement | null;
   onCancel: () => void;
 }
 
 const MountainForm = (props: Props) => {
-  const { states, initialData, onSubmit, mapContainer, onCancel } = props;
+  const { states, initialData, onSubmit, onSubmitAndAddAnother, mapContainer, onCancel } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -341,6 +342,16 @@ const MountainForm = (props: Props) => {
     }
   };
 
+  const validateAndSaveAndAdd = () => {
+    if (name && selectedState && latitude && longitude &&
+        elevation && verifyChangesIsChecked && !loadingSubmit && onSubmitAndAddAnother) {
+      setLoadingSubmit(true);
+      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
+      onSubmitAndAddAnother({
+        name, latitude, longitude, elevation, state: selectedState, description, resources});
+    }
+  };
+
   const saveButtonText = loadingSubmit === true
     ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
 
@@ -358,6 +369,18 @@ const MountainForm = (props: Props) => {
     >
       {deleteButtonText}
     </DeleteButton>
+  );
+
+  const createAnotherText = loadingSubmit === true
+    ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save-and-add');
+
+  const createAnother = initialData.id ? null && onSubmitAndAddAnother !== null : (
+    <SaveButton
+      disabled={preventSubmit()}
+      onClick={validateAndSaveAndAdd}
+    >
+      {createAnotherText}
+    </SaveButton>
   );
 
   return (
@@ -507,6 +530,7 @@ const MountainForm = (props: Props) => {
           <GhostButton onClick={onCancel}>
             {getFluentString('global-text-value-modal-cancel')}
           </GhostButton>
+          {createAnother}
           <SaveButton
             disabled={preventSubmit()}
             onClick={validateAndSave}

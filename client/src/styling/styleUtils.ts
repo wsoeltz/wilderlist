@@ -137,6 +137,7 @@ export const Card = styled.div`
   border: solid 1px ${lightBorderColor};
   box-shadow: 0px 0px 3px -1px #b5b5b5;
   margin-bottom: 2rem;
+  background-color: #fff;
 
   &:hover {
     cursor: pointer;
