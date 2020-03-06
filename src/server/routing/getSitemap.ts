@@ -49,6 +49,11 @@ export default async () => {
       '<url>' +
         `<loc>${baseUrl}privacy-policy</loc>` +
       '</url>';
+    // Terms of Use
+    data +=
+      '<url>' +
+        `<loc>${baseUrl}terms-of-use</loc>` +
+      '</url>';
     return header + data + footer;
   } catch (err) {
     console.error(err);
