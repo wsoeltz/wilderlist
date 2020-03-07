@@ -9,6 +9,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
+  FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
   BasicIconInText,
@@ -271,13 +272,13 @@ const PeakListForm = (props: Props) => {
       'list-name': name.length ? name : '[List Name]',
       'number-of-peaks': mountains.length,
       'state-or-region': isStateOrRegion.toString(),
-      'state-region-name': statesOrRegions,
+      'state-region-name': FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions),
       'highest-mountain-name': mountainsSortedByElevation[0].name,
-      'highest-mountain-elevation': mountainsSortedByElevation[0].elevation,
+      'highest-mountain-elevation': '' + mountainsSortedByElevation[0].elevation,
       'smallest-mountain-name':
         mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
       'smallest-mountain-elevation':
-        mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+        '' + mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
     });
   } else {
     descriptionPlaceholderText = getFluentString('peak-list-detail-list-overview-empty', {

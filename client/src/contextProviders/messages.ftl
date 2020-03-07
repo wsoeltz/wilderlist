@@ -478,6 +478,9 @@ map-all-months = 12
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Lat/Long to these values
 
+map-refresh-map = Reset Map
+map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
+
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.
 import-ascents-date-note = <strong>Note:</strong>&#32;Dates must be in&#32;<strong>Month/Day/Year</strong>&#32;format in order to be properly read.

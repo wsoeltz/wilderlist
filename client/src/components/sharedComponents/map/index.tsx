@@ -1,3 +1,7 @@
+import {
+  faLongArrowAltDown,
+  faSync,
+} from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
 import React, {
@@ -20,6 +24,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
+  BasicIconInText,
   lightBorderColor,
   linkStyles,
   placeholderColor,
@@ -123,9 +128,42 @@ const Crosshair = styled.div`
   }
 `;
 
-// const ColorScaleContainer = styled.div`
-//   width: 100%;
-// `;
+const ReloadMapContainer = styled.div`
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+  left: 0;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  width: 100px;
+  margin: auto;
+  text-align: center;
+  padding: 0.2rem;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+`;
+
+const BrokenMapMessage = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  background-color: ${lightBorderColor};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.75;
+  font-weight: 600;
+  color: #585858;
+`;
 
 const getMinMax = (coordinates: Coordinate[]) => {
   if (coordinates.length === 0) {
@@ -189,7 +227,8 @@ const Map = (props: Props) => {
   } else {
     initialCenter = [-71.52769471, 43.20415146];
   }
-
+  const [mapReloadCount, setMapReloadCount] = useState<number>(0);
+  const incReload = () => setMapReloadCount(mapReloadCount + 1);
   const [popupInfo, setPopupInfo] = useState<CoordinateWithDates | null>(null);
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
   const closeEditMountainModalModal = () => {
@@ -253,6 +292,8 @@ const Map = (props: Props) => {
       document.body.removeEventListener('touchstart', disableDragPanOnTouchDevics);
       if (map && showCenterCrosshairs) {
         map.off('move', getCenterCoords);
+        // destroy the map on unmount
+        map.remove();
       }
     };
   }, [map, showCenterCrosshairs, fillSpace]);
@@ -495,7 +536,7 @@ const Map = (props: Props) => {
         fitBounds={fitBounds}
         fitBoundsOptions={{padding: 50, linear: true}}
         movingMethod={'flyTo'}
-        key={`mapkey-${colorScaleHeight}`}
+        key={`mapkey-${colorScaleHeight}-${mapReloadCount}`}
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
@@ -517,6 +558,22 @@ const Map = (props: Props) => {
         </Layer>
         {popup}
         {crosshairs}
+        <BrokenMapMessage>
+          {getFluentString('map-broken-message')}
+          <BasicIconInText
+            icon={faLongArrowAltDown}
+            style={{
+              fontSize: '1rem',
+              margin: '1rem 0',
+            }}
+          />
+        </BrokenMapMessage>
+        <ReloadMapContainer
+          onClick={incReload}
+        >
+          <BasicIconInText icon={faSync} />
+          {getFluentString('map-refresh-map')}
+        </ReloadMapContainer>
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
       <ColorScale

@@ -20,6 +20,7 @@ import {
   faHiking,
   faHome,
   faList,
+  faLongArrowAltDown,
   faMapMarkerAlt,
   faMapSigns,
   faMountain,
@@ -27,6 +28,7 @@ import {
   faSort,
   faSortDown,
   faSortUp,
+  faSync,
   faThList,
   faTrash,
   faUserFriends,
@@ -47,7 +49,7 @@ library.add(
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
   faFileExcel, faMapSigns, faMountain, faHiking,
   faUserFriends, faHome, faChartLine, faTrash, faClone,
-  faFlag,
+  faFlag, faSync, faLongArrowAltDown,
 );
 
 const GlobalStyles = createGlobalStyle`
