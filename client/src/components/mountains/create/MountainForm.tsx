@@ -381,7 +381,7 @@ const MountainForm = (props: Props) => {
   const createAnotherText = loadingSubmit === true
     ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save-and-add');
 
-  const createAnother = initialData.id ? null && onSubmitAndAddAnother !== null : (
+  const createAnother = !initialData.id && onSubmitAndAddAnother !== null ? (
     <SaveButton
       disabled={preventSubmit()}
       onClick={validateAndSaveAndAdd}
@@ -389,7 +389,7 @@ const MountainForm = (props: Props) => {
       <BasicIconInText icon={faClone} />
       {createAnotherText}
     </SaveButton>
-  );
+  ) : null;
 
   return (
     <Root>
