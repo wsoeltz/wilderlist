@@ -322,7 +322,7 @@ const App: React.FC = () => {
             <Router>
               <Root>
                 <Header />
-                <Suspense fallback={LoadingSuspense}>
+                <Suspense fallback={<LoadingSuspense />}>
                   {userRoutes}
                 </Suspense>
                 <OverlayPortal id={overlayPortalContainerId} />
