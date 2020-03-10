@@ -214,8 +214,15 @@ export const getMonthIndex = (month: Months) => {
   }
 };
 
+interface SeasonStartDates {
+  firstDayOfSummer: string;
+  firstDayOfFall: string;
+  firstDayOfWinter: string;
+  firstDayOfSpring: string;
+}
+
 export const getSolsticeAndEquinox = (year: number) => {
-  return getSolsticeAndEquinoxUtility(year);
+  return getSolsticeAndEquinoxUtility(year) as SeasonStartDates;
 };
 
 function toDegreesMinutesAndSeconds(coordinate: number) {
