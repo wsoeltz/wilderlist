@@ -416,6 +416,8 @@ peak-list-detail-friend-view-your-progress-button = View your progress
 peak-list-detail-text-optional-mountains = Optional Mountains
 peak-list-detail-text-optional-mountains-desc = The following mountains are considered optional for this list. They fit the criteria needed to be on here, but for one reason or another they are not required for completion. Common reasons include the peak being on private property or requiring special permissions to be able to climb. Optional peaks do not count towards a 100% completion for this list.
 
+peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
+
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
