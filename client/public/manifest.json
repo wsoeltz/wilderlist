@@ -53,7 +53,7 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#fff",
-  "theme_color": "#3b5526",
+  "theme_color": "#fff",
   "description": "Track, plan and share your hiking and mountaineering.",
   "dir": "ltr",
   "lang": "en-US"
