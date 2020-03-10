@@ -379,7 +379,7 @@ const PeakListDetail = (props: Props) => {
             if (resource.title.length && resource.url.length && isValidURL(resource.url)) {
               resourcesArray.push(
                 <ResourceItem key={resource.url + resource.title}>
-                  <a href={resource.url}>{resource.title}</a>
+                  <a href={resource.url} target='_blank' rel='noopener noreferrer'>{resource.title}</a>
                 </ResourceItem>,
               );
             }
