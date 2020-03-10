@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,6 +14,7 @@ import { listDetailLink } from '../../../routing/Utils';
 import {
   ButtonPrimaryLink,
   lightBorderColor,
+  LinkButton,
   PlaceholderText,
   PreFormattedDiv,
   PreFormattedParagraph,
@@ -76,7 +77,7 @@ const Text = styled.div`
   transform: translate(0, 25%);
 `;
 
-const LinkButton = styled(ButtonPrimaryLink)`
+const ButtonPrimaryLinkSmall = styled(ButtonPrimaryLink)`
   flex-shrink: 0;
   padding: 0.4rem;
   font-size: 0.7rem;
@@ -306,6 +307,8 @@ const PeakListDetail = (props: Props) => {
     variables: { id, userId },
   });
 
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+
   const [addPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(ADD_PEAKLIST_NOTE);
   const [editPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(EDIT_PEAKLIST_NOTE);
 
@@ -367,6 +370,7 @@ const PeakListDetail = (props: Props) => {
             </p>
           );
         }
+        const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
 
         let resourcesList: React.ReactElement<any> | null;
         if (resources && resources.length) {
@@ -380,6 +384,16 @@ const PeakListDetail = (props: Props) => {
               );
             }
           });
+          if (id === '5d8952e6d9d8254dd40b7627' && isOtherUser === false) { // id for the NH48
+            resourcesArray.push(
+              <ResourceItem
+                key={'grid-trigger-modal-for-exports'}
+                onClick={() => setIsExportModalOpen(true)}
+              >
+                <LinkButton>{getFluentString('peak-list-export-grid-special-link')}</LinkButton>
+              </ResourceItem>,
+            );
+          }
           resourcesList = resourcesArray.length ? (
             <>
               <SectionTitle>
@@ -511,16 +525,14 @@ const PeakListDetail = (props: Props) => {
         const activeMountain = allMountainsWithDates.find(mtn => mtn.id === mountainId);
         const highlightedMountain = activeMountain ? [activeMountain] : undefined;
 
-        const isOtherUser = (me && user) && (me._id !== user.id) ? true : false;
-
         const friendHeader = isOtherUser === true && user !== null ? (
            <FriendHeader>
             <Text>
               {getFluentString('peak-list-detail-friend-viewing-list', {username: user.name})}
             </Text>
-            <LinkButton to={listDetailLink(peakList.id)}>
+            <ButtonPrimaryLinkSmall to={listDetailLink(peakList.id)}>
               {getFluentString('peak-list-detail-friend-view-your-progress-button')}
-            </LinkButton>
+            </ButtonPrimaryLinkSmall>
            </FriendHeader>
          ) : null;
 
@@ -555,6 +567,8 @@ const PeakListDetail = (props: Props) => {
               peakListShortName={peakList.shortName}
               isOtherUser={isOtherUser}
               showImportExport={false}
+              isExportModalOpen={isExportModalOpen}
+              setIsExportModalOpen={setIsExportModalOpen}
             />
           </>
         ) : null;
@@ -637,6 +651,8 @@ const PeakListDetail = (props: Props) => {
               isOtherUser={isOtherUser}
               showImportExport={true}
               queryRefetchArray={queryRefetchArray}
+              isExportModalOpen={isExportModalOpen}
+              setIsExportModalOpen={setIsExportModalOpen}
             />
             {optionalMountainsTable}
           </>

@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
+import noop from 'lodash/noop';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
 import {
@@ -226,6 +227,8 @@ const AllMountains = (props: Props) => {
           ]}
           disallowImports={true}
           disallowExports={true}
+          isExportModalOpen={false}
+          setIsExportModalOpen={noop}
         />
       ) : null;
 
