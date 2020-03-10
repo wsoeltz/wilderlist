@@ -15,6 +15,7 @@ import {
   ButtonPrimaryLink,
   lightBorderColor,
   PlaceholderText,
+  PreFormattedDiv,
   PreFormattedParagraph,
   ResourceItem,
   ResourceList,
@@ -45,6 +46,7 @@ import { getStatesOrRegion } from '../list/PeakListCard';
 import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
+import IntroText from './IntroText';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
 
 const peakListDetailMapKey = 'peakListDetailMapKey';
@@ -337,29 +339,33 @@ const PeakListDetail = (props: Props) => {
           statesArray = [...peakList.states];
         }
 
-        let paragraphText: string;
+        let paragraphText: React.ReactElement<any>;
         if (description && description.length) {
-          paragraphText = description;
+          paragraphText = <p>{description}</p>;
         } else if (requiredMountains && requiredMountains.length) {
           const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
           const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
           const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
-          paragraphText = getFluentString('peak-list-detail-list-overview-para-1', {
-            'list-name': peakList.name,
-            'number-of-peaks': '' + requiredMountains.length,
-            'state-or-region': isStateOrRegion.toString(),
-            'state-region-name': FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions),
-            'highest-mountain-name': mountainsSortedByElevation[0].name,
-            'highest-mountain-elevation': '' + mountainsSortedByElevation[0].elevation,
-            'smallest-mountain-name':
-              mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-            'smallest-mountain-elevation':
-              '' + mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
-          });
+          paragraphText = (
+            <IntroText
+              getFluentString={getFluentString}
+              listName={peakList.name}
+              numberOfPeaks={requiredMountains.length}
+              isStateOrRegion={isStateOrRegion}
+              stateRegionName={FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions)}
+              highestMountain={mountainsSortedByElevation[0]}
+              smallestMountain={mountainsSortedByElevation[mountainsSortedByElevation.length - 1]}
+              type={type}
+              parent={parent}
+              shortName={peakList.shortName}
+            />
+          );
         } else {
-          paragraphText = getFluentString('peak-list-detail-list-overview-empty', {
-            'list-name': peakList.name,
-          });
+          paragraphText = (
+            <p>
+              {getFluentString('peak-list-detail-list-overview-empty', {'list-name': peakList.name})}
+            </p>
+          );
         }
 
         let resourcesList: React.ReactElement<any> | null;
@@ -611,9 +617,9 @@ const PeakListDetail = (props: Props) => {
               colorScaleLabels={colorScaleLabels}
               key={peakListDetailMapKey}
             />
-            <PreFormattedParagraph>
+            <PreFormattedDiv>
               {paragraphText}
-            </PreFormattedParagraph>
+            </PreFormattedDiv>
             {resourcesList}
             {otherVariants}
             <UserNote

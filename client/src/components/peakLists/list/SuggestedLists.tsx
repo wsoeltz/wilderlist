@@ -38,9 +38,6 @@ const getSelectionArray = (state: string) => {
     ];
   } else if (state === 'VT') {
   // FOR ME or VT
-    // NE67
-    // NE100
-    // NH48
     return [
       '5d8cb3d65a452f00176cf801', // NE67
       '5d8d2e6b5a452f00176cf80f', // NE100
@@ -50,7 +47,7 @@ const getSelectionArray = (state: string) => {
   // FOR NY
     return [
       '5db9dd4c2d4ef1001786a43e', // ADK46
-      '5db9de0d2d4ef1001786a440', // NY4k Catskills (coming soon)
+      '5e62edb65bff660017daec9a', // Catskills
       '5db9de782d4ef1001786a442', // NE111
     ];
   } else {

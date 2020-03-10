@@ -50,6 +50,7 @@ import {
 } from '../../sharedComponents/formUtils';
 import Map from '../../sharedComponents/map';
 import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
+import { getSentences } from '../detail/IntroText';
 import { StateDatum } from '../list/ListPeakLists';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
@@ -268,18 +269,23 @@ const PeakListForm = (props: Props) => {
     const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
     const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
     const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
-    descriptionPlaceholderText = getFluentString('peak-list-detail-list-overview-para-1', {
-      'list-name': name.length ? name : '[List Name]',
-      'number-of-peaks': mountains.length,
-      'state-or-region': isStateOrRegion.toString(),
-      'state-region-name': FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions),
-      'highest-mountain-name': mountainsSortedByElevation[0].name,
-      'highest-mountain-elevation': '' + mountainsSortedByElevation[0].elevation,
-      'smallest-mountain-name':
-        mountainsSortedByElevation[mountainsSortedByElevation.length - 1].name,
-      'smallest-mountain-elevation':
-        '' + mountainsSortedByElevation[mountainsSortedByElevation.length - 1].elevation,
+    const {firstParagraph, secondParagraph, thirdParagraph} = getSentences({
+      listName: name.length ? name : '[List Name]',
+      numberOfPeaks: mountains.length,
+      isStateOrRegion,
+      stateRegionName: FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions),
+      highestMountain: mountainsSortedByElevation[0],
+      smallestMountain: mountainsSortedByElevation[mountainsSortedByElevation.length - 1],
+      parent,
+      getFluentString,
+      type,
+      shortName,
     });
+    descriptionPlaceholderText = firstParagraph +
+      '\n\n' +
+      secondParagraph +
+      '\n\n' +
+      thirdParagraph;
   } else {
     descriptionPlaceholderText = getFluentString('peak-list-detail-list-overview-empty', {
       'list-name': name.length ? name : '[List Name]',

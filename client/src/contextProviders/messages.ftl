@@ -304,8 +304,8 @@ global-text-value-list-type = {
   $type ->
     *[standard] Any Time
     [winter] Winter Only
-    [fourSeason] Each Season
-    [grid] Each Month
+    [fourSeason] Each Season (4-Season)
+    [grid] Each Month (Grid)
 }
 stats-mountain-panel-no-mountains-para-1 =
   Once you start adding lists and marking mountains complete you will see them here. This space will list everything you've completed to date as well as everything you're pursuing.
@@ -361,7 +361,14 @@ peak-list-detail-select-mountain = Select a mountain to see its details and your
 peak-list-detail-filter-mountains = Filter mountains
 
 peak-list-detail-list-overview-empty = { $list-name } does not yet have any mountains associated with it.
-peak-list-detail-list-overview-para-1 = { $list-name } is a list with {
+
+peak-list-detail-list-standard-para-1 = { $list-name } {
+  $type ->
+    *[standard] {""}
+    [winter] in the Winter
+    [fourSeason] 4-Season
+    [grid] Grid
+} is a list with {
   $number-of-peaks ->
     [1] 1 mountain that is
     *[other] { $number-of-peaks } mountains that are
@@ -370,6 +377,38 @@ peak-list-detail-list-overview-para-1 = { $list-name } is a list with {
     [state] within
     *[region] throughout
 } { $state-region-name }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+
+peak-list-detail-list-standard-para-2 = Explore the different peaks and track your progress towards completing { $list-name } below.
+
+peak-list-detail-list-winter-has-parent-para-1 = { $list-name } In the Winter ({ $short-name } - Winter) takes the standard { $parent-list-name } list to the next level. Just like it's any-season counterpart, { $short-name } - Winter spans { 
+  $number-of-peaks ->
+    [1] 1 peak
+    *[other] { $number-of-peaks } peaks
+} in { $state-region-name }. Each mountain stands at over { $min-elevation-rounded } feet of elevation, ranging from { $smallest-mountain-name } at { $smallest-mountain-elevation } feet tall to { $highest-mountain-name } at { $highest-mountain-elevation } feet.
+
+peak-list-detail-list-winter-para-2 = Winter conditions can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the mountains of { $list-name } in the winter. In order for an ascent to count towards { $short-name } - Winter, it must be completed during the official calendar winter between the solstice and spring equinox. For this { $current-or-upcoming } season, those dates are between { $solstice } and { $equinox }. Wilderlist automatically tracks any ascent recorded in this time frame for you, across all of your past hikes of any year.
+
+peak-list-detail-list-winter-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing { $list-name } In the Winter below.
+
+peak-list-detail-list-4-season-has-parent-para-1 = { $list-name } 4-Season ({ $short-name } - 4-Season) gives you the experience of seeing the mountains of { $parent-list-name } through the ever changing seasons. Just like it's standard counterpart, { $short-name } - 4-Season includes { 
+  $number-of-peaks ->
+    [1] 1 peak
+    *[other] { $number-of-peaks } peaks
+} in { $state-region-name }. Each mountain stands at over { $min-elevation-rounded } feet of elevation, ranging from { $smallest-mountain-name } at { $smallest-mountain-elevation } feet tall to { $highest-mountain-name } at { $highest-mountain-elevation } feet.
+
+peak-list-detail-list-4-season-para-2 = Mountain conditions in the late fall, winter, and spring can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the mountains of { $list-name } in those times of the year. Ascents for each season in { $short-name } - 4-Season are counted based on the official calendar seasons of a given year. For { $current-year }, spring starts on { $first-day-of-spring }, summer starts on { $first-day-of-summer }, fall starts on { $first-day-of-fall }, and winter starts on { $first-day-of-winter }. Wilderlist automatically tracks any ascents recorded in their respective seasons, across all of your hikes for any and all years.
+
+peak-list-detail-list-4-season-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing { $list-name } - 4-Season below.
+
+peak-list-detail-list-grid-has-parent-para-1 = { $list-name } Grid ({ $short-name } Grid) is the the ultimate hiking challenge for { $parent-list-name }. { $short-name } Grid includes the same { 
+  $number-of-peaks ->
+    [1] 1 peak
+    *[other] { $number-of-peaks } peaks
+} in { $state-region-name } as found on the standard list. But to finish the Grid, you must complete each of these peaks every month of the year, for a total of { $total-ascents } ascents.
+
+peak-list-detail-list-grid-para-2 = Mountain conditions in the late fall, winter, and spring can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the mountains of { $list-name } in those times of the year. Wilderlist automatically tracks any ascents recorded in their respective months, across all of your hikes for any and all years. A { $list-name } Grid often takes people years to complete.
+
+peak-list-detail-list-grid-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing { $list-name } Grid below.
 
 peak-list-detail-friend-viewing-list = Viewing list for { $username }
 peak-list-detail-friend-view-your-progress-button = View your progress
