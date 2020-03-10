@@ -267,12 +267,15 @@ interface Props {
   queryRefetchArray?: Array<{query: any, variables: any}>;
   disallowImports?: boolean;
   disallowExports?: boolean;
+  isExportModalOpen: boolean;
+  setIsExportModalOpen: (val: boolean) => void;
 }
 
 const MountainTable = (props: Props) => {
   const {
     mountains, user, type, peakListId, peakListShortName, isOtherUser,
     showImportExport, queryRefetchArray, disallowImports, disallowExports,
+    isExportModalOpen, setIsExportModalOpen,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -280,7 +283,6 @@ const MountainTable = (props: Props) => {
 
   const [mountainToEdit, setMountainToEdit] = useState<MountainToEdit | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const localSortCategory = localStorage.getItem(localStorageSortingCategoryVariable);
