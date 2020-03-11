@@ -22,7 +22,11 @@ import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { listDetailWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
+import {
+  friendsProfileWithPeakListWithMountainDetailLink,
+  listDetailWithMountainDetailLink,
+  mountainDetailLink,
+} from '../../../routing/Utils';
 import {
   BasicIconInText,
   lightBorderColor,
@@ -376,9 +380,10 @@ const Map = (props: Props) => {
     if (dates) {
       if (dates.type === PeakListVariants.standard) {
         if (dates.standard !== undefined) {
+          const completedTextFluentId = isOtherUser ? 'map-completed-other-user' : 'map-completed';
           return (
             <Date>
-              <strong>{getFluentString('map-completed')}: </strong>
+              <strong>{getFluentString(completedTextFluentId)}: </strong>
               {formatDate(dates.standard)}
             </Date>
           );
@@ -468,12 +473,16 @@ const Map = (props: Props) => {
     if (id === mountainId || id === null) {
       return mountainDetailLink(mountainId);
     } else {
-      return listDetailWithMountainDetailLink(id, mountainId);
+      if (isOtherUser && userId) {
+        return friendsProfileWithPeakListWithMountainDetailLink(userId, id, mountainId);
+      } else {
+        return listDetailWithMountainDetailLink(id, mountainId);
+      }
     }
   };
 
   const getMountainPopupName = (mtnId: string, mtnName: string) => {
-    return isOtherUser ? <strong>{mtnName}</strong> : (
+    return (
       <DynamicLink
         mobileURL={mountainDetailLink(mtnId)}
         desktopURL={getDesktopUrl(mtnId)}
