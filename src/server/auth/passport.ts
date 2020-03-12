@@ -35,7 +35,13 @@ if (process.env.FACEBOOK_REDIRECT_URI === undefined) {
 }
 
 passport.serializeUser((user: IUser, done) => {
-  done(null, user.id);
+  try {
+    if (user && user.id) {
+      done(null, user.id);
+    }
+  } catch (err) {
+    throw new Error('Unable to sarialize user with passport');
+  }
 });
 
 passport.deserializeUser(async (id, done) => {
