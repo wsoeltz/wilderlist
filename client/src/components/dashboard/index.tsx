@@ -2,7 +2,6 @@ import { useQuery } from '@apollo/react-hooks';
 import axios from 'axios';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import publicIp from 'public-ip';
 import React, {useContext, useEffect, useState} from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -94,9 +93,8 @@ const Dashboard = (props: Props) => {
     const getUsersIpLocation = async () => {
       try {
         const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
-        const ip = await publicIp.v4();
         const res = await axios.get(
-          `https://ssl.geoplugin.net/json.gp?k=${key}&ip=${ip}`,
+          `https://ssl.geoplugin.net/json.gp?k=${key}`,
         );
         if (res && res.data && res.data.geoplugin_regionCode) {
           setUsersState(res.data.geoplugin_regionCode);
