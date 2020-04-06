@@ -6,6 +6,8 @@ If you would like to get involved in the development, please contact us at wilde
 
 Live website - https://www.wilderlist.app
 
+License - [Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 ## Table of Contents
   - [Contributing](#contributing)
     - [Getting Started](#gettingstarted)
