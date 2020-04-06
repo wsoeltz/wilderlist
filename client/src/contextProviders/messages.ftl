@@ -507,6 +507,7 @@ user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
 map-completed = You Completed On
+map-completed-other-user = Completed On
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
 map-number-of-seasons = Number of Seasons Hiked

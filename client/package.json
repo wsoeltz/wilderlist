@@ -1,6 +1,8 @@
 {
   "name": "wilderlist-client",
-  "version": "0.1.0",
+  "license": "CC BY-NC-SA 4.0",
+  "version": "1.0.0",
+  "author": "Kyle Soeltz",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.21",
