@@ -380,7 +380,7 @@ peak-list-detail-list-standard-para-1 = The { $list-name } {
 
 peak-list-detail-list-standard-para-2 = Explore the different peaks and track your progress towards completing the { $list-name } below.
 
-peak-list-detail-list-winter-has-parent-para-1 = The { $list-name } In the Winter ({ $short-name } - Winter) takes the standard { $parent-list-name } list to the next level. Just like it's any-season counterpart, { $short-name } - Winter spans { 
+peak-list-detail-list-winter-has-parent-para-1 = The { $list-name } In the Winter ({ $short-name } - Winter) takes the standard { $parent-list-name } list to the next level. Just like it's any-season counterpart, { $short-name } - Winter spans {
   $number-of-peaks ->
     [1] 1 peak
     *[other] { $number-of-peaks } peaks
@@ -390,7 +390,7 @@ peak-list-detail-list-winter-para-2 = Winter conditions can be a lot more diffic
 
 peak-list-detail-list-winter-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } In the Winter below.
 
-peak-list-detail-list-4-season-has-parent-para-1 = The { $list-name } 4-Season ({ $short-name } - 4-Season) gives you the experience of seeing the mountains of the { $parent-list-name } through the ever changing seasons. Just like it's standard counterpart, { $short-name } - 4-Season includes { 
+peak-list-detail-list-4-season-has-parent-para-1 = The { $list-name } 4-Season ({ $short-name } - 4-Season) gives you the experience of seeing the mountains of the { $parent-list-name } through the ever changing seasons. Just like it's standard counterpart, { $short-name } - 4-Season includes {
   $number-of-peaks ->
     [1] 1 peak
     *[other] { $number-of-peaks } peaks
@@ -400,7 +400,7 @@ peak-list-detail-list-4-season-para-2 = Mountain conditions in the late fall, wi
 
 peak-list-detail-list-4-season-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } 4-Season below.
 
-peak-list-detail-list-grid-has-parent-para-1 = The { $list-name } Grid ({ $short-name } Grid) is the the ultimate hiking challenge for the { $parent-list-name }. { $short-name } Grid includes the same { 
+peak-list-detail-list-grid-has-parent-para-1 = The { $list-name } Grid ({ $short-name } Grid) is the the ultimate hiking challenge for the { $parent-list-name }. { $short-name } Grid includes the same {
   $number-of-peaks ->
     [1] 1 peak
     *[other] { $number-of-peaks } peaks
@@ -578,7 +578,7 @@ weather-forecast-high = High
 weather-forecast-low = Low
 weather-forecast-wind = Wind
 weather-forecast-detailed-report = Detailed Report
-weather-forecast-network-error = There was a network error retrieving weather data. Please try again later.
+weather-forecast-network-error = Weather for this location is not available at this time.
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes

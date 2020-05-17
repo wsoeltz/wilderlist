@@ -127,17 +127,11 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   useEffect(() => {
     const getWeatherData = async () => {
       try {
-        const res = await getWeather(`https://api.weather.gov/points/${latitude},${longitude}`);
-        if (res && res.data && res.data.properties && res.data.properties.forecast) {
-          const forecastData = await getWeather(res.data.properties.forecast);
-          if (forecastData && forecastData.data && forecastData.data.properties
-            && forecastData.data.properties.periods) {
-            setForecast(forecastData.data.properties.periods);
-          } else {
-            setError('There was an error getting the forecast');
-          }
+        const res = await getWeather(`/api/weather?lat=${latitude}&lng=${longitude}`);
+        if (res && res.data && res.data.length) {
+          setForecast(res.data);
         } else {
-          setError('There was an error getting the location response');
+          setError(getFluentString('weather-forecast-network-error'));
         }
       } catch (err) {
         console.error(err);
