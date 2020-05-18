@@ -36,7 +36,7 @@ import {
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
-import getTrails, {TrailsDatum} from '../../../utilities/getTrails';
+import getTrails, {TrailsDatum, TrailType} from '../../../utilities/getTrails';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   VariableDate,
@@ -48,7 +48,7 @@ import {
 import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
 import ColorScale from './ColorScale';
-import {legendColorScheme} from './colorScaleColors';
+import {legendColorScheme, legendSymbolScheme} from './colorScaleColors';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -219,6 +219,7 @@ interface Coordinate {
 interface Trail extends Coordinate {
   url: string;
   mileage: number;
+  type: TrailType;
 }
 
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
@@ -249,6 +250,7 @@ interface Props {
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
   colorScaleTitle?: string;
   colorScaleColors: string[];
+  colorScaleSymbols: string[];
   colorScaleLabels: string[];
   fillSpace?: boolean;
   showNearbyTrails?: boolean;
@@ -260,7 +262,7 @@ const Map = (props: Props) => {
     userId, isOtherUser, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
-    colorScaleTitle, showNearbyTrails,
+    colorScaleTitle, showNearbyTrails, colorScaleSymbols,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -314,6 +316,7 @@ const Map = (props: Props) => {
                 elevation: trailDatum.ascent,
                 url: trailDatum.url,
                 mileage: trailDatum.length,
+                type: trailDatum.type,
               };
             });
             setTrailData([...cleanedTrailData]);
@@ -406,19 +409,25 @@ const Map = (props: Props) => {
       setCenter([point.longitude, point.latitude]);
     };
     let circleColor: string;
+    let iconImage: string;
     if (colorScaleColors.length === 0) {
       circleColor = legendColorScheme.primary;
+      iconImage = legendSymbolScheme.primary;
     } else if (completionDates === null || completionDates === undefined) {
       if (createOrEditMountain === true && highlighted && highlighted.length &&
         (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
         circleColor = colorScaleColors[1];
+        iconImage = colorScaleSymbols[1];
       } else {
         circleColor = colorScaleColors[0];
+        iconImage = colorScaleSymbols[0];
       }
     } else if (completionDates.type === PeakListVariants.standard) {
       circleColor = completionDates.standard !== undefined ? colorScaleColors[1] : colorScaleColors[0];
+      iconImage = completionDates.standard !== undefined ? colorScaleSymbols[1] : colorScaleSymbols[0];
     } else if (completionDates.type === PeakListVariants.winter) {
       circleColor = completionDates.winter !== undefined ? colorScaleColors[1] : colorScaleColors[0];
+      iconImage = completionDates.winter !== undefined ? colorScaleSymbols[1] : colorScaleSymbols[0];
     } else if (completionDates.type === PeakListVariants.fourSeason) {
       let completionCount: number = 0;
       Object.keys(completionDates).forEach(function(season: keyof VariableDate) {
@@ -427,6 +436,7 @@ const Map = (props: Props) => {
         }
       });
       circleColor = colorScaleColors[completionCount];
+      iconImage = colorScaleSymbols[completionCount];
     } else if (completionDates.type === PeakListVariants.grid) {
       let completionCount: number = 0;
       Object.keys(completionDates).forEach(function(month: keyof VariableDate) {
@@ -435,8 +445,10 @@ const Map = (props: Props) => {
         }
       });
       circleColor = colorScaleColors[completionCount];
+      iconImage = colorScaleSymbols[completionCount];
     } else {
       circleColor = colorScaleColors[1];
+      iconImage = colorScaleSymbols[1];
     }
     return (
       <Feature
@@ -446,6 +458,7 @@ const Map = (props: Props) => {
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
         properties={{
           'circle-color': circleColor,
+          'icon-image': iconImage,
         }}
         key={'' + point.latitude + point.longitude}
       />
@@ -585,12 +598,16 @@ const Map = (props: Props) => {
       setPopupInfo({type: PopupDataTypes.Trail, data: {...point}});
       setCenter([point.longitude, point.latitude]);
     };
+    const iconImage = point.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
     return (
       <Feature
         coordinates={[point.longitude, point.latitude]}
         onClick={onClick}
         onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
+        properties={{
+          'icon-image': iconImage,
+        }}
         key={point.id + point.latitude + point.longitude}
       />
     );
@@ -600,8 +617,10 @@ const Map = (props: Props) => {
     <Layer
       type='symbol'
       id='trail-signs'
-      layout={{ 'icon-image': 'trail-sign', 'icon-size': 0.03 }}
-      minZoom={8}
+      layout={{
+        'icon-image': ['get', 'icon-image'],
+        'icon-size': 1,
+      }}
     >
       {trails}
     </Layer>
@@ -689,7 +708,8 @@ const Map = (props: Props) => {
         {trailLayer}
         <Layer
           type='circle'
-          id='marker'
+          id='marker-circle'
+          maxZoom={9.85}
           paint={{
             'circle-color': ['get', 'circle-color'],
             'circle-radius': {
@@ -699,6 +719,25 @@ const Map = (props: Props) => {
                 [10, 10],
               ],
             },
+          }}
+        >
+          {features}
+        </Layer>
+        <Layer
+          type='symbol'
+          id='marker-icon'
+          minZoom={9.85}
+          layout={{
+            'icon-image': ['get', 'icon-image'],
+            'icon-size': {
+              base: 0.5,
+              stops: [
+                [1, 0.4],
+                [10, 0.7],
+                [20, 1],
+              ],
+            },
+            'icon-allow-overlap': true,
           }}
         >
           {features}

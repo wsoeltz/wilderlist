@@ -39,8 +39,11 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import {
   fiveColorScale,
+  fiveSymbolScale,
   thirteenColorScale,
+  thirteenSymbolScale,
   twoColorScale,
+  twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import { getStatesOrRegion } from '../list/PeakListCard';
@@ -479,10 +482,12 @@ const PeakListDetail = (props: Props) => {
 
         let colorScaleTitle: string | undefined;
         let colorScaleColors: string[];
+        let colorScaleSymbols: string[];
         let colorScaleLabels: string[];
         if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
           colorScaleTitle = undefined;
           colorScaleColors = twoColorScale;
+          colorScaleSymbols = twoSymbolScale;
           colorScaleLabels = [
             getFluentString('global-text-value-not-done'),
             getFluentString('global-text-value-done'),
@@ -490,6 +495,7 @@ const PeakListDetail = (props: Props) => {
         } else if (type === PeakListVariants.fourSeason) {
           colorScaleTitle = getFluentString('map-number-of-seasons');
           colorScaleColors = fiveColorScale;
+          colorScaleSymbols = fiveSymbolScale;
           colorScaleLabels = [
             getFluentString('map-no-seasons'),
             getFluentString('map-all-seasons'),
@@ -497,6 +503,7 @@ const PeakListDetail = (props: Props) => {
         } else if (type === PeakListVariants.grid) {
           colorScaleTitle = getFluentString('map-number-of-months');
           colorScaleColors = thirteenColorScale;
+          colorScaleSymbols = thirteenSymbolScale;
           colorScaleLabels = [
             getFluentString('map-no-months'),
             getFluentString('map-all-months'),
@@ -504,6 +511,7 @@ const PeakListDetail = (props: Props) => {
         } else {
           colorScaleTitle = undefined;
           colorScaleColors = [];
+          colorScaleSymbols = [];
           colorScaleLabels = [];
           failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
         }
@@ -628,6 +636,7 @@ const PeakListDetail = (props: Props) => {
               isOtherUser={isOtherUser}
               colorScaleTitle={colorScaleTitle}
               colorScaleColors={colorScaleColors}
+              colorScaleSymbols={colorScaleSymbols}
               colorScaleLabels={colorScaleLabels}
               showNearbyTrails={true}
               key={peakListDetailMapKey}

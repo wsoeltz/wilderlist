@@ -45,6 +45,7 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Map from '../../sharedComponents/map';
 import {
   twoColorScale,
+  twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
@@ -554,6 +555,7 @@ const MountainDetail = (props: Props) => {
             coordinates={[{...mountain, completionDates}]}
             userId={userId}
             colorScaleColors={twoColorScale}
+            colorScaleSymbols={twoSymbolScale}
             colorScaleLabels={[
               getFluentString('global-text-value-not-done'),
               getFluentString('global-text-value-done'),

@@ -1,10 +1,16 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 
+export enum TrailType {
+  Trail = 'Trail',
+  Connector = 'Connector',
+  FeaturedHike = 'Featured Hike',
+}
+
 export interface TrailsDatum {
   id: number;
   name: string;
-  type: 'Trail' | 'Connector' | 'Featured Hike';
+  type: TrailType;
   summary: string;
   difficulty: string;
   stars: number;

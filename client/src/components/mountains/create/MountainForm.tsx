@@ -42,7 +42,7 @@ import {
   Title,
 } from '../../sharedComponents/formUtils';
 import Map, {CoordinateWithDates} from '../../sharedComponents/map';
-import { legendColorScheme } from '../../sharedComponents/map/colorScaleColors';
+import { legendColorScheme, legendSymbolScheme } from '../../sharedComponents/map/colorScaleColors';
 import { BaseMountainVariables } from './';
 
 const GET_NEARBY_MOUNTAINS = gql`
@@ -253,6 +253,7 @@ const MountainForm = (props: Props) => {
               showCenterCrosshairs={true}
               returnLatLongOnClick={setLatLongFromMap}
               colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+              colorScaleSymbols={[legendSymbolScheme.secondary, legendSymbolScheme.primary]}
               colorScaleLabels={[
                 getFluentString('create-mountain-map-nearby-mountains'),
                 getFluentString('create-mountain-map-your-mountain'),
@@ -277,6 +278,7 @@ const MountainForm = (props: Props) => {
             showCenterCrosshairs={true}
             returnLatLongOnClick={setLatLongFromMap}
             colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
+            colorScaleSymbols={[legendSymbolScheme.secondary, legendSymbolScheme.primary]}
             colorScaleLabels={[
               getFluentString('create-mountain-map-nearby-mountains'),
               getFluentString('create-mountain-map-your-mountain'),

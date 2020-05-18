@@ -328,6 +328,7 @@ const PeakListForm = (props: Props) => {
           userId={null}
           isOtherUser={true}
           colorScaleColors={[]}
+          colorScaleSymbols={[]}
           colorScaleLabels={[]}
           fillSpace={true}
           key={'create-peak-list-key'}
@@ -343,6 +344,7 @@ const PeakListForm = (props: Props) => {
           userId={null}
           isOtherUser={true}
           colorScaleColors={[]}
+          colorScaleSymbols={[]}
           colorScaleLabels={[]}
           key={'create-peak-list-key'}
         />

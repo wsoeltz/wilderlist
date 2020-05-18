@@ -30,6 +30,42 @@ export const thirteenColorScale:
 ];
 
 export const legendColorScheme = {
-  primary: '#ca4a19',
-  secondary: '#216ba5',
+  primary: '#216ba5',
+  secondary: '#848484',
+};
+
+const startSymbol = 'mountain-perc-0';
+const endSymbol = 'mountain-perc-100';
+
+export const twoSymbolScale: [string, string] = [
+  startSymbol,
+  endSymbol,
+];
+export const fiveSymbolScale: [string, string, string, string, string] = [
+  startSymbol,
+  'mountain-perc-25',
+  'mountain-perc-50',
+  'mountain-perc-75',
+  endSymbol,
+];
+export const thirteenSymbolScale:
+  [string, string, string, string, string, string, string, string, string, string, string, string, string] = [
+  startSymbol,
+  'mountain-perc-8',
+  'mountain-perc-17',
+  'mountain-perc-25',
+  'mountain-perc-33',
+  'mountain-perc-42',
+  'mountain-perc-50',
+  'mountain-perc-58',
+  'mountain-perc-67',
+  'mountain-perc-75',
+  'mountain-perc-83',
+  'mountain-perc-92',
+  endSymbol,
+];
+
+export const legendSymbolScheme = {
+  primary: 'mountain-highlighted',
+  secondary: 'mountain-default',
 };
