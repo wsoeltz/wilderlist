@@ -131,7 +131,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
         if (res && res.data && res.data.length) {
           setForecast(res.data);
         } else {
-          setError(getFluentString('weather-forecast-network-error'));
+          setError('Weather for this location is not available at this time.');
         }
       } catch (err) {
         console.error(err);
