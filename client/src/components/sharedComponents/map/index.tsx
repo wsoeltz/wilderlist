@@ -19,6 +19,7 @@ import ReactMapboxGl, {
   ZoomControl,
 } from 'react-mapbox-gl';
 import styled from 'styled-components';
+import HikingProjectSvgLogo from '../../../assets/images/hiking-project-logo.svg';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -35,6 +36,7 @@ import {
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import getTrails, {TrailsDatum} from '../../../utilities/getTrails';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   VariableDate,
@@ -59,6 +61,13 @@ const Mapbox = ReactMapboxGl({
 const Root = styled.div`
   margin: 2rem 0;
   border: 1px solid ${lightBorderColor};
+
+  .mapboxgl-popup-tip {
+    border-top-color: rgba(255, 255, 255, 0.85);
+  }
+  .mapboxgl-popup-content {
+    background-color: rgba(255, 255, 255, 0.85);
+  }
 `;
 
 const StyledPopup = styled.div`
@@ -99,6 +108,21 @@ const AddAscentButton = styled.button`
   font-weight: 600;
   font-size: 0.6rem;
   background-color: transparent;
+`;
+
+const ExternalLink = styled.a`
+  ${linkStyles}
+`;
+
+const HikingProjectLink = styled.a`
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  margin: 0.6rem auto;
+
+  img {
+    width: 100%;
+  }
 `;
 
 const Crosshair = styled.div`
@@ -192,7 +216,27 @@ interface Coordinate {
   elevation: number;
 }
 
+interface Trail extends Coordinate {
+  url: string;
+  mileage: number;
+}
+
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
+
+enum PopupDataTypes {
+  Coordinate,
+  Trail,
+}
+
+type PopupData = (
+  {
+    type: PopupDataTypes.Coordinate;
+    data: CoordinateWithDates;
+  } | {
+    type: PopupDataTypes.Trail;
+    data: Trail;
+  }
+);
 
 interface Props {
   id: string | null;
@@ -207,6 +251,7 @@ interface Props {
   colorScaleColors: string[];
   colorScaleLabels: string[];
   fillSpace?: boolean;
+  showNearbyTrails?: boolean;
 }
 
 const Map = (props: Props) => {
@@ -215,7 +260,7 @@ const Map = (props: Props) => {
     userId, isOtherUser, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
-    colorScaleTitle,
+    colorScaleTitle, showNearbyTrails,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -233,7 +278,7 @@ const Map = (props: Props) => {
   }
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
-  const [popupInfo, setPopupInfo] = useState<CoordinateWithDates | null>(null);
+  const [popupInfo, setPopupInfo] = useState<PopupData | null>(null);
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
   const closeEditMountainModalModal = () => {
     setEditMountainId(null);
@@ -242,6 +287,7 @@ const Map = (props: Props) => {
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
+  const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
 
@@ -251,6 +297,36 @@ const Map = (props: Props) => {
       setColorScaleHeight(colorScaleRef.current.offsetHeight);
     }
   }, [colorScaleRef, setColorScaleHeight]);
+
+  useEffect(() => {
+    if (showNearbyTrails === true && trailData === undefined) {
+      const getTrailsData = async () => {
+        try {
+          const res = await getTrails({params: {lat: center[1], lon: center[0], maxDistance: 180}});
+          if (res && res.data && res.data.trails) {
+            const rawData: TrailsDatum[] = res.data.trails;
+            const cleanedTrailData: Trail[] = rawData.map(trailDatum => {
+              return {
+                id: trailDatum.id.toString(),
+                latitude: trailDatum.latitude,
+                longitude: trailDatum.longitude,
+                name: trailDatum.name,
+                elevation: trailDatum.ascent,
+                url: trailDatum.url,
+                mileage: trailDatum.length,
+              };
+            });
+            setTrailData([...cleanedTrailData]);
+          } else {
+            console.error('There was an error getting the location response');
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      getTrailsData();
+    }
+  }, [setTrailData, showNearbyTrails, trailData, center]);
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
@@ -311,10 +387,10 @@ const Map = (props: Props) => {
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
-      setPopupInfo({...highlighted[0]});
+      setPopupInfo({type: PopupDataTypes.Coordinate, data: {...highlighted[0]}});
       setCenter([highlighted[0].longitude, highlighted[0].latitude]);
     } else if (coordinates.length === 1) {
-      setPopupInfo({...coordinates[0]});
+      setPopupInfo({type: PopupDataTypes.Coordinate, data: {...coordinates[0]}});
       setCenter([coordinates[0].longitude, coordinates[0].latitude]);
     }
   }, [highlighted, setPopupInfo, setCenter, coordinates]);
@@ -326,7 +402,7 @@ const Map = (props: Props) => {
   const features = coordinates.map(point => {
     const { completionDates } = point;
     const onClick = () => {
-      setPopupInfo({...point});
+      setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
       setCenter([point.longitude, point.latitude]);
     };
     let circleColor: string;
@@ -451,7 +527,7 @@ const Map = (props: Props) => {
       editMountainModal = (
         <SignUpModal
           text={getFluentString('global-text-value-modal-sign-up-today-ascents-list', {
-            'mountain-name': popupInfo.name,
+            'mountain-name': popupInfo.data.name,
           })}
           onCancel={closeEditMountainModalModal}
         />
@@ -462,7 +538,7 @@ const Map = (props: Props) => {
           editMountainId={editMountainId}
           closeEditMountainModalModal={closeEditMountainModalModal}
           userId={userId}
-          mountainName={popupInfo.name}
+          mountainName={popupInfo.data.name}
           variant={PeakListVariants.standard}
         />
       );
@@ -502,28 +578,89 @@ const Map = (props: Props) => {
     );
   };
 
-  const popup = !popupInfo ? <></> : (
-    <Popup
-      coordinates={[popupInfo.longitude, popupInfo.latitude]}
-      style={{opacity: 0.85}}
+  const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
+
+  const trails = showNearbyTrails && trailData !== undefined ? trailData.map(point => {
+    const onClick = () => {
+      setPopupInfo({type: PopupDataTypes.Trail, data: {...point}});
+      setCenter([point.longitude, point.latitude]);
+    };
+    return (
+      <Feature
+        coordinates={[point.longitude, point.latitude]}
+        onClick={onClick}
+        onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
+        onMouseLeave={(event: any) => togglePointer(event.map, '')}
+        key={point.id + point.latitude + point.longitude}
+      />
+    );
+  }) : null;
+
+  const trailLayer = trails && trails.length ? (
+    <Layer
+      type='symbol'
+      id='trail-signs'
+      layout={{ 'icon-image': 'trail-sign', 'icon-size': 0.03 }}
+      minZoom={8}
     >
-      <StyledPopup>
-        {getMountainPopupName(popupInfo.id, popupInfo.name)}
-        <br />
-        {popupInfo.elevation}ft
-        {renderCompletionDates(popupInfo.completionDates)}
-        {getAddAscentButton(popupInfo.id)}
-        <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
-      </StyledPopup>
-    </Popup>
-  );
+      {trails}
+    </Layer>
+  ) : <></>;
+
+  let popup: React.ReactElement<any>;
+  if (!popupInfo) {
+    popup = <></>;
+  } else if (popupInfo.type === PopupDataTypes.Coordinate) {
+    const {data: popupData} = popupInfo;
+    popup = (
+      <Popup
+        coordinates={[popupData.longitude, popupData.latitude]}
+      >
+        <StyledPopup>
+          {getMountainPopupName(popupData.id, popupData.name)}
+          <br />
+          {popupData.elevation}ft
+          {renderCompletionDates(popupData.completionDates)}
+          {getAddAscentButton(popupData.id)}
+          <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
+        </StyledPopup>
+      </Popup>
+    );
+  } else if (popupInfo.type === PopupDataTypes.Trail) {
+    const {data: popupData} = popupInfo;
+    popup = (
+      <Popup
+        coordinates={[popupData.longitude, popupData.latitude]}
+      >
+        <StyledPopup>
+          <ExternalLink
+            href={popupData.url}
+            target='_blank'
+          >
+            {popupData.name}
+          </ExternalLink>
+          <br />
+          {popupData.mileage} miles long
+          <br />
+          {popupData.elevation}ft of elevation gain
+          <HikingProjectLink
+            href={popupData.url}
+            target='_blank'
+          >
+            <img src={HikingProjectSvgLogo} alt='The Hiking Project' />
+          </HikingProjectLink>
+          <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
+        </StyledPopup>
+      </Popup>
+    );
+  } else {
+    popup = <></>;
+  }
 
   const mapRenderProps = (mapEl: any) => {
     setMap(mapEl);
     return null;
   };
-
-  const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
 
   return (
     <Root
@@ -549,6 +686,7 @@ const Map = (props: Props) => {
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
+        {trailLayer}
         <Layer
           type='circle'
           id='marker'

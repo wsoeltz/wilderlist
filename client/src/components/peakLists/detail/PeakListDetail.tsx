@@ -629,6 +629,7 @@ const PeakListDetail = (props: Props) => {
               colorScaleTitle={colorScaleTitle}
               colorScaleColors={colorScaleColors}
               colorScaleLabels={colorScaleLabels}
+              showNearbyTrails={true}
               key={peakListDetailMapKey}
             />
             <PreFormattedDiv>
