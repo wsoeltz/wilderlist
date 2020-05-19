@@ -1,9 +1,13 @@
 import {
+  faCalendarAlt,
+  faCar,
   faLongArrowAltDown,
   faSync,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
+import {lighten} from 'polished';
 import React, {
   useContext,
   useEffect,
@@ -18,8 +22,7 @@ import ReactMapboxGl, {
   RotationControl,
   ZoomControl,
 } from 'react-mapbox-gl';
-import styled from 'styled-components';
-import HikingProjectSvgLogo from '../../../assets/images/hiking-project-logo.svg';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -30,9 +33,12 @@ import {
 } from '../../../routing/Utils';
 import {
   BasicIconInText,
+  borderRadius,
+  ButtonSecondary,
   lightBorderColor,
   linkStyles,
   placeholderColor,
+  primaryColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
@@ -53,7 +59,7 @@ import {
 import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
 import ColorScale from './ColorScale';
-import {legendColorScheme, legendSymbolScheme} from './colorScaleColors';
+import {getImageAndIcon} from './colorScaleColors';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -76,7 +82,40 @@ const Root = styled.div`
 `;
 
 const StyledPopup = styled.div`
-  text-align: center;
+`;
+
+interface ColorProps {
+  color: string;
+}
+
+const PopupHeader = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Icon = styled.div`
+  margin-right: 0.5rem;
+`;
+
+const PopupTitleInternal = styled(DynamicLink)<ColorProps>`
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: ${({color}) => color};
+
+  &:hover {
+    color: ${({color}) => lighten(0.1, color)};
+  }
+`;
+
+const PopupTitleExternal = styled.a<ColorProps>`
+  ${linkStyles}
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: ${({color}) => color};
+
+  &:hover {
+    color: ${({color}) => lighten(0.1, color)};
+  }
 `;
 
 const ClosePopup = styled.div`
@@ -92,41 +131,36 @@ const ClosePopup = styled.div`
   }
 `;
 
+const PopupDetail = styled.div`
+  font-size: 0.7rem;
+  line-height: 0.8;
+  margin-bottom: 0.5rem;
+`;
+
 const PopupDates = styled.div`
   display: flex;
-  justify-content: center;
+  align-items: center;
 `;
 
 const Date = styled.div`
-  margin: 0 0.5rem;
+  margin-right: 0.5rem;
   font-size: 0.7rem;
   text-transform: uppercase;
+  line-height: 1.4;
 `;
 
 const GridNumbers = styled.div`
   letter-spacing: -1px;
 `;
 
-const AddAscentButton = styled.button`
-  ${linkStyles}
+const AddAscentButton = styled(ButtonSecondary)`
+  padding: 0.3rem;
   text-transform: uppercase;
   font-weight: 600;
-  font-size: 0.6rem;
-  background-color: transparent;
-`;
+  font-size: 100%;
 
-const ExternalLink = styled.a`
-  ${linkStyles}
-`;
-
-const HikingProjectLink = styled.a`
-  width: 100px;
-  display: flex;
-  justify-content: center;
-  margin: 0.6rem auto;
-
-  img {
-    width: 100%;
+  &:not(:first-child) {
+    margin-left: auto;
   }
 `;
 
@@ -197,6 +231,75 @@ const BrokenMapMessage = styled.div`
   font-weight: 600;
   color: #585858;
 `;
+
+const DirectionsContainer = styled.div`
+  display: flex;
+  margin-top: 0.8rem;
+`;
+
+const DirectionsIcon = styled.div`
+  border: solid 1px ${primaryColor};
+  border-top-left-radius: ${borderRadius}px;
+  border-bottom-left-radius: ${borderRadius}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  color: ${primaryColor};
+`;
+
+const directionsContentStyles = `
+  border: solid 1px ${primaryColor};
+  border-top-right-radius: ${borderRadius}px;
+  border-bottom-right-radius: ${borderRadius}px;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  font-weight: 600;
+`;
+
+const DirectionsContent = styled.div`
+  ${directionsContentStyles}
+  background-color: ${lighten(0.4, primaryColor)};
+`;
+
+const DirectionsButton = styled.button`
+  ${directionsContentStyles}
+  background-color: ${primaryColor};
+  color: #fff;
+  text-transform: uppercase;
+
+  &:hover {
+    background-color: ${lighten(0.1, primaryColor)};
+  }
+`;
+const getTrailsData = async (lat: number, lon: number, setTrailData: (input: Trail[]) => void) => {
+  try {
+    const res = await getTrails({params: {lat, lon, maxDistance: 180}});
+    if (res && res.data && res.data.trails) {
+      const rawData: TrailsDatum[] = res.data.trails;
+      const cleanedTrailData: Trail[] = rawData.map(trailDatum => {
+        return {
+          id: trailDatum.id.toString(),
+          latitude: trailDatum.latitude,
+          longitude: trailDatum.longitude,
+          name: trailDatum.name,
+          elevation: trailDatum.ascent,
+          url: trailDatum.url,
+          mileage: trailDatum.length,
+          type: trailDatum.type,
+        };
+      });
+      setTrailData([...cleanedTrailData]);
+    } else {
+      console.error('There was an error getting the location response');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 const getMinMax = (coordinates: Coordinate[]) => {
   if (coordinates.length === 0) {
@@ -424,32 +527,7 @@ const Map = (props: Props) => {
 
   useEffect(() => {
     if (showNearbyTrails === true && trailData === undefined) {
-      const getTrailsData = async () => {
-        try {
-          const res = await getTrails({params: {lat: center[1], lon: center[0], maxDistance: 180}});
-          if (res && res.data && res.data.trails) {
-            const rawData: TrailsDatum[] = res.data.trails;
-            const cleanedTrailData: Trail[] = rawData.map(trailDatum => {
-              return {
-                id: trailDatum.id.toString(),
-                latitude: trailDatum.latitude,
-                longitude: trailDatum.longitude,
-                name: trailDatum.name,
-                elevation: trailDatum.ascent,
-                url: trailDatum.url,
-                mileage: trailDatum.length,
-                type: trailDatum.type,
-              };
-            });
-            setTrailData([...cleanedTrailData]);
-          } else {
-            console.error('There was an error getting the location response');
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      };
-      getTrailsData();
+      getTrailsData(center[1], center[0], setTrailData);
     }
   }, [setTrailData, showNearbyTrails, trailData, center]);
 
@@ -528,53 +606,17 @@ const Map = (props: Props) => {
   };
 
   const features = coordinates.map(point => {
-    const { completionDates } = point;
     const onClick = () => {
       setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
       setCenter([point.longitude, point.latitude]);
-    };
-    let circleColor: string;
-    let iconImage: string;
-    if (colorScaleColors.length === 0) {
-      circleColor = legendColorScheme.primary;
-      iconImage = legendSymbolScheme.primary;
-    } else if (completionDates === null || completionDates === undefined) {
-      if (createOrEditMountain === true && highlighted && highlighted.length &&
-        (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
-        circleColor = colorScaleColors[1];
-        iconImage = colorScaleSymbols[1];
-      } else {
-        circleColor = colorScaleColors[0];
-        iconImage = colorScaleSymbols[0];
+      if (showNearbyTrails === true) {
+        getTrailsData(point.latitude, point.longitude, setTrailData);
       }
-    } else if (completionDates.type === PeakListVariants.standard) {
-      circleColor = completionDates.standard !== undefined ? colorScaleColors[1] : colorScaleColors[0];
-      iconImage = completionDates.standard !== undefined ? colorScaleSymbols[1] : colorScaleSymbols[0];
-    } else if (completionDates.type === PeakListVariants.winter) {
-      circleColor = completionDates.winter !== undefined ? colorScaleColors[1] : colorScaleColors[0];
-      iconImage = completionDates.winter !== undefined ? colorScaleSymbols[1] : colorScaleSymbols[0];
-    } else if (completionDates.type === PeakListVariants.fourSeason) {
-      let completionCount: number = 0;
-      Object.keys(completionDates).forEach(function(season: keyof VariableDate) {
-        if (season !== 'type' && completionDates[season] !== undefined) {
-          completionCount += 1;
-        }
-      });
-      circleColor = colorScaleColors[completionCount];
-      iconImage = colorScaleSymbols[completionCount];
-    } else if (completionDates.type === PeakListVariants.grid) {
-      let completionCount: number = 0;
-      Object.keys(completionDates).forEach(function(month: keyof VariableDate) {
-        if (month !== 'type' && completionDates[month] !== undefined) {
-          completionCount += 1;
-        }
-      });
-      circleColor = colorScaleColors[completionCount];
-      iconImage = colorScaleSymbols[completionCount];
-    } else {
-      circleColor = colorScaleColors[1];
-      iconImage = colorScaleSymbols[1];
-    }
+    };
+    const {circleColor, iconImage} = getImageAndIcon({
+      colorScaleColors, point, createOrEditMountain,
+      highlighted, colorScaleSymbols,
+    });
     return (
       <Feature
         coordinates={[point.longitude, point.latitude]}
@@ -627,9 +669,9 @@ const Map = (props: Props) => {
           }
         });
         return (
-          <PopupDates>
+          <>
             {datesElm}
-          </PopupDates>
+          </>
         );
       }
       if (dates.type === PeakListVariants.grid) {
@@ -648,9 +690,9 @@ const Map = (props: Props) => {
           }
         });
         return (
-          <PopupDates>
+          <>
             {datesElm}
-          </PopupDates>
+          </>
         );
       }
     }
@@ -695,24 +737,24 @@ const Map = (props: Props) => {
     }
   };
 
-  const getMountainPopupName = (mtnId: string, mtnName: string) => {
+  const getMountainPopupName = (mtnId: string, mtnName: string, color: string) => {
     return (
-      <DynamicLink
+      <PopupTitleInternal
         mobileURL={mountainDetailLink(mtnId)}
         desktopURL={getDesktopUrl(mtnId)}
+        color={color}
       >
-        <strong>{mtnName}</strong>
-      </DynamicLink>
+        {mtnName}
+      </PopupTitleInternal>
     );
   };
 
-  const getAddAscentButton = (mtnId: string) => {
+  const getAddAscentButton = (mtnId: string, showText: boolean) => {
+    const text = showText ? getFluentString('map-add-ascent') : '';
     return isOtherUser ? null : (
-      <div>
-        <AddAscentButton onClick={() => setEditMountainId(mtnId)}>
-          {getFluentString('map-add-ascent')}
-        </AddAscentButton>
-      </div>
+      <AddAscentButton onClick={() => setEditMountainId(mtnId)}>
+        <FontAwesomeIcon icon={faCalendarAlt} /> {text}
+      </AddAscentButton>
     );
   };
 
@@ -805,9 +847,9 @@ const Map = (props: Props) => {
     if (destination && destination.key === popupData.id && directionsData) {
       const {hours, minutes, miles} = directionsData;
       drivingInfo = (
-        <p>
-          <strong>Driving Distance:</strong> {hours}hrs {minutes}m ({miles} miles)
-        </p>
+        <DirectionsContent>
+          {hours}hrs {minutes}m ({miles} miles)
+        </DirectionsContent>
       );
     } else {
       const onClick = () => {
@@ -824,20 +866,45 @@ const Map = (props: Props) => {
         }
       };
       drivingInfo = (
-        <button onClick={onClick}>{getFluentString('map-get-directions')}</button>
+        <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
     }
+
+    const {circleColor, iconImage} = getImageAndIcon({
+      colorScaleColors, point: popupData, createOrEditMountain,
+      highlighted, colorScaleSymbols,
+    });
+    const dateElms = renderCompletionDates(popupData.completionDates);
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
       >
         <StyledPopup>
-          {getMountainPopupName(popupData.id, popupData.name)}
-          <br />
-          {popupData.elevation}ft
-          {renderCompletionDates(popupData.completionDates)}
-          {getAddAscentButton(popupData.id)}
-          {drivingInfo}
+          <PopupHeader>
+            <Icon>
+              <img
+                src={require('./images/custom-icons/' + iconImage + '.svg')}
+                alt='Major Trails Legend Icon'
+                style={{width: '1.65rem'}}
+              />
+            </Icon>
+            <div>
+              {getMountainPopupName(popupData.id, popupData.name, circleColor)}
+              <PopupDetail>
+                {popupData.elevation}ft
+              </PopupDetail>
+            </div>
+          </PopupHeader>
+          <PopupDates>
+            {dateElms}
+            {getAddAscentButton(popupData.id, !dateElms)}
+          </PopupDates>
+          <DirectionsContainer>
+            <DirectionsIcon>
+              <FontAwesomeIcon icon={faCar} />
+            </DirectionsIcon>
+            {drivingInfo}
+          </DirectionsContainer>
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
         </StyledPopup>
       </Popup>
@@ -848,9 +915,9 @@ const Map = (props: Props) => {
     if (destination && destination.key === popupData.id && directionsData) {
       const {hours, minutes, miles} = directionsData;
       drivingInfo = (
-        <p>
-          <strong>Driving Distance:</strong> {hours}hrs {minutes}m ({miles} miles)
-        </p>
+        <DirectionsContent>
+          {hours}hrs {minutes}m ({miles} miles)
+        </DirectionsContent>
       );
     } else {
       const onClick = () => {
@@ -867,31 +934,43 @@ const Map = (props: Props) => {
         }
       };
       drivingInfo = (
-        <button onClick={onClick}>{getFluentString('map-get-directions')}</button>
+        <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
     }
+    const imageIcon = popupData.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
       >
         <StyledPopup>
-          <ExternalLink
-            href={popupData.url}
-            target='_blank'
-          >
-            {popupData.name}
-          </ExternalLink>
-          <br />
-          {popupData.mileage} miles long
-          <br />
-          {popupData.elevation}ft of elevation gain
-          <HikingProjectLink
-            href={popupData.url}
-            target='_blank'
-          >
-            <img src={HikingProjectSvgLogo} alt='The Hiking Project' />
-          </HikingProjectLink>
-          {drivingInfo}
+          <PopupHeader>
+            <Icon>
+              <img
+                src={require('./images/custom-icons/' + imageIcon + '.svg')}
+                alt='Major Trails Legend Icon'
+                style={{width: '1.65rem'}}
+              />
+            </Icon>
+            <div>
+              <PopupTitleExternal
+                href={popupData.url}
+                target='_blank'
+                color={'#7a3800'}
+              >
+                {popupData.name}
+              </PopupTitleExternal>
+              <PopupDetail>
+                <strong>{popupData.mileage}mi</strong> long,{' '}
+                <strong>{popupData.elevation}ft</strong> elev. gain
+              </PopupDetail>
+            </div>
+         </PopupHeader>
+          <DirectionsContainer>
+            <DirectionsIcon>
+              <FontAwesomeIcon icon={faCar} />
+            </DirectionsIcon>
+            {drivingInfo}
+          </DirectionsContainer>
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
         </StyledPopup>
       </Popup>

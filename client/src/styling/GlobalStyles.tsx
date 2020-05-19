@@ -6,6 +6,7 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import {
   faCalendarAlt,
+  faCar,
   faCaretDown,
   faCaretUp,
   faChartLine,
@@ -49,7 +50,7 @@ library.add(
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
   faFileExcel, faMapSigns, faMountain, faHiking,
   faUserFriends, faHome, faChartLine, faTrash, faClone,
-  faFlag, faSync, faLongArrowAltDown,
+  faFlag, faSync, faLongArrowAltDown, faCar,
 );
 
 const GlobalStyles = createGlobalStyle`
