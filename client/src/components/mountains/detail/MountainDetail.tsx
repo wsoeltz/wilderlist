@@ -560,6 +560,7 @@ const MountainDetail = (props: Props) => {
               getFluentString('global-text-value-not-done'),
               getFluentString('global-text-value-done'),
             ]}
+            showNearbyTrails={true}
             key={mountainDetailMapKey}
           />
           {description}

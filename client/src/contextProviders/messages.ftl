@@ -520,6 +520,18 @@ map-all-months = 12
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Lat/Long to these values
 
+map-legend-location = Your Location &amp;<br />Driving Directions
+map-legend-location-tooltip = <strong>Driving Directions</strong>: View the driving times and routes from your location to any mountain or trailhead. Click on a point on the map and then click "Directions to Here".
+map-legend-trails-major = Major Trails &amp;<br /> Trailheads
+map-legend-trails-tooltip = Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be more trails in a given area than what is listed.
+map-legend-trails-minor = Minor Trails &amp;<br /> Connectors
+map-legend-show-hide = click to {
+  $shown ->
+    [true] hide
+    [false] show
+    *[other] toggle
+}
+
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
 

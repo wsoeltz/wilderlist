@@ -254,6 +254,10 @@ interface Props {
   colorScaleLabels: string[];
   fillSpace?: boolean;
   showNearbyTrails?: boolean;
+  defaultMajorTrailsOn?: boolean;
+  defaultMinorTrailsOn?: boolean;
+  showYourLocation?: boolean;
+  defaultLocationOn?: boolean;
 }
 
 const Map = (props: Props) => {
@@ -263,6 +267,7 @@ const Map = (props: Props) => {
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
+    showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -292,6 +297,14 @@ const Map = (props: Props) => {
   const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
+
+  const initialMajorTrailsSetting = defaultMajorTrailsOn ? true : false;
+  const [majorTrailsOn, setMajorTrailsOn] = useState<boolean>(initialMajorTrailsSetting);
+  const toggleMajorTrails = () => setMajorTrailsOn(!majorTrailsOn);
+
+  const initialMinorTrailsSetting = defaultMinorTrailsOn ? true : false;
+  const [minorTrailsOn, setMinorTrailsOn] = useState<boolean>(initialMinorTrailsSetting);
+  const toggleMinorTrails = () => setMinorTrailsOn(!minorTrailsOn);
 
   const colorScaleRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -593,25 +606,34 @@ const Map = (props: Props) => {
 
   const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
 
-  const trails = showNearbyTrails && trailData !== undefined ? trailData.map(point => {
-    const onClick = () => {
-      setPopupInfo({type: PopupDataTypes.Trail, data: {...point}});
-      setCenter([point.longitude, point.latitude]);
-    };
-    const iconImage = point.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
-    return (
-      <Feature
-        coordinates={[point.longitude, point.latitude]}
-        onClick={onClick}
-        onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
-        onMouseLeave={(event: any) => togglePointer(event.map, '')}
-        properties={{
-          'icon-image': iconImage,
-        }}
-        key={point.id + point.latitude + point.longitude}
-      />
-    );
-  }) : null;
+  const trails: Array<React.ReactElement<any>> = [];
+
+  if (showNearbyTrails && trailData !== undefined) {
+    trailData.forEach(point => {
+      const onClick = () => {
+        setPopupInfo({type: PopupDataTypes.Trail, data: {...point}});
+        setCenter([point.longitude, point.latitude]);
+      };
+      if (
+        !((point.type === TrailType.Connector && !minorTrailsOn) ||
+          (point.type !== TrailType.Connector && !majorTrailsOn))
+       ) {
+        const iconImage = point.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
+        trails.push(
+          <Feature
+            coordinates={[point.longitude, point.latitude]}
+            onClick={onClick}
+            onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
+            onMouseLeave={(event: any) => togglePointer(event.map, '')}
+            properties={{
+              'icon-image': iconImage,
+            }}
+            key={point.id + point.latitude + point.longitude}
+          />,
+        );
+      }
+    });
+  }
 
   const trailLayer = trails && trails.length ? (
     <Layer
@@ -619,7 +641,15 @@ const Map = (props: Props) => {
       id='trail-signs'
       layout={{
         'icon-image': ['get', 'icon-image'],
-        'icon-size': 1,
+        'icon-size': {
+          base: 0.5,
+          stops: [
+            [1, 0.2],
+            [10, 0.45],
+            [17, 0.75],
+            [20, 1],
+          ],
+        },
       }}
     >
       {trails}
@@ -769,6 +799,12 @@ const Map = (props: Props) => {
         colorScaleTitle={colorScaleTitle}
         colorScaleColors={colorScaleColors}
         colorScaleLabels={colorScaleLabels}
+        showNearbyTrails={showNearbyTrails}
+        showYourLocation={showYourLocation}
+        majorTrailsOn={majorTrailsOn}
+        toggleMajorTrails={toggleMajorTrails}
+        minorTrailsOn={minorTrailsOn}
+        toggleMinorTrails={toggleMinorTrails}
         ref={colorScaleRef}
       />
       {editMountainModal}

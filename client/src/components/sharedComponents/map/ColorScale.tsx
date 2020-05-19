@@ -5,10 +5,12 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  baseColor,
   ButtonPrimary,
   lightBorderColor,
   tertiaryColor,
 } from '../../../styling/styleUtils';
+import Tooltip from '../Tooltip';
 
 const ColorScaleLegend = styled.div`
   padding: 0.6rem 0;
@@ -97,6 +99,60 @@ const ActionButton = styled(ButtonPrimary)`
   padding: 0.2rem 0.3rem;
 `;
 
+const AdditionalItems = styled.div`
+  width: 100%;
+  flex-shrink: 0;
+  padding: 1.5rem 0 1rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+const LegendToggle = styled.button`
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+`;
+
+const Icon = styled.div`
+  margin-right: 0.5rem;
+`;
+
+const IconDisabled = styled(Icon)`
+  opacity: 0.3;
+  position: relative;
+
+  &:after {
+    content: '';
+    width: 0.1rem;
+    border-radius: 80px;
+    height: 120%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    transform: rotate(45deg);
+    background-color: ${baseColor};
+    border: 1px solid ${tertiaryColor};
+  }
+`;
+
+const Label = styled.span`
+  text-transform: uppercase;
+  font-weight: 600;
+`;
+
+const Status = styled.em`
+  display: block;
+  font-size: 0.6rem;
+`;
+
 interface Props {
   centerCoords: [string, string];
   showCenterCrosshairs?: boolean;
@@ -104,13 +160,23 @@ interface Props {
   colorScaleTitle?: string;
   colorScaleColors: string[];
   colorScaleLabels: string[];
+  showNearbyTrails?: boolean;
+  showYourLocation?: boolean;
+  majorTrailsOn?: boolean;
+  toggleMajorTrails?: () => void;
+  minorTrailsOn?: boolean;
+  toggleMinorTrails?: () => void;
+  yourLocationOn?: boolean;
+  toggleYourLocation?: () => void;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
   const {
     centerCoords, colorScaleColors, colorScaleLabels,
     showCenterCrosshairs, returnLatLongOnClick,
-    colorScaleTitle,
+    colorScaleTitle, showNearbyTrails, showYourLocation,
+    toggleMajorTrails, toggleMinorTrails, toggleYourLocation,
+    majorTrailsOn, minorTrailsOn, yourLocationOn,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -139,6 +205,102 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   } else {
     latLongLegend = null;
   }
+
+  const LocationIcon = yourLocationOn ? Icon : IconDisabled;
+  const MajorTrailsIcon = majorTrailsOn ? Icon : IconDisabled;
+  const MinorTrailsIcon = minorTrailsOn ? Icon : IconDisabled;
+
+  const locationLegend = showYourLocation ? (
+    <Tooltip
+    explanation={
+        <div
+          dangerouslySetInnerHTML={{__html: getFluentString('map-legend-location-tooltip')}}
+        />
+      }
+      cursor={'pointer'}
+    >
+      <LegendToggle
+        onClick={toggleYourLocation}
+      >
+        <LocationIcon>
+          <img
+            src={require('./images/custom-icons/your-location.svg')}
+            alt='Your Location Legend Icon'
+            style={{width: '1rem'}}
+          />
+        </LocationIcon>
+        <div>
+          <Label
+            dangerouslySetInnerHTML={{__html: getFluentString('map-legend-location')}}
+          />
+          <Status>({getFluentString('map-legend-show-hide', {
+            shown: yourLocationOn ? 'true' : 'false',
+          })})</Status>
+        </div>
+      </LegendToggle>
+    </Tooltip>
+  ) : null;
+
+  const trailsLegend = showNearbyTrails ? (
+    <>
+      <Tooltip
+        explanation={getFluentString('map-legend-trails-tooltip')}
+        cursor={'pointer'}
+      >
+        <LegendToggle
+          onClick={toggleMajorTrails}
+        >
+          <MajorTrailsIcon>
+            <img
+              src={require('./images/custom-icons/trail-default.svg')}
+              alt='Major Trails Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </MajorTrailsIcon>
+          <div>
+            <Label
+              dangerouslySetInnerHTML={{__html: getFluentString('map-legend-trails-major')}}
+            />
+            <Status>({getFluentString('map-legend-show-hide', {
+              shown: majorTrailsOn ? 'true' : 'false',
+            })})</Status>
+          </div>
+        </LegendToggle>
+      </Tooltip>
+      <Tooltip
+        explanation={getFluentString('map-legend-trails-tooltip')}
+        cursor={'pointer'}
+      >
+        <LegendToggle
+          onClick={toggleMinorTrails}
+        >
+          <MinorTrailsIcon>
+            <img
+              src={require('./images/custom-icons/trail-connector.svg')}
+              alt='Minor Trails Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </MinorTrailsIcon>
+          <div>
+            <Label
+              dangerouslySetInnerHTML={{__html: getFluentString('map-legend-trails-minor')}}
+            />
+            <Status>({getFluentString('map-legend-show-hide', {
+              shown: minorTrailsOn ? 'true' : 'false',
+            })})</Status>
+          </div>
+        </LegendToggle>
+      </Tooltip>
+    </>
+  ) : null;
+
+  const additionalItems = showYourLocation || showNearbyTrails ? (
+    <AdditionalItems>
+      {locationLegend}
+      {trailsLegend}
+    </AdditionalItems>
+  ) : null;
+
   const title = colorScaleTitle ? <LegendTitle>{colorScaleTitle}</LegendTitle> : null;
   const startColor = colorScaleColors[0];
   const endColor = colorScaleColors[colorScaleColors.length - 1];
@@ -157,6 +319,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
         {title}
         {latLongLegend}
         {legendNodes}
+        {additionalItems}
       </ColorScaleLegend>
     );
   } else if (colorScaleColors.length < 8) {
@@ -177,6 +340,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
         <SeasonLabelEnd style={{color: endColor}}>
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </SeasonLabelEnd>
+        {additionalItems}
       </ColorScaleLegend>
     );
   } else {
@@ -203,6 +367,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           <Circle style={{backgroundColor: endColor}} />
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </GridLabelEnd>
+        {additionalItems}
       </ColorScaleLegend>
     );
   }
