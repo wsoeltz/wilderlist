@@ -61,6 +61,9 @@ import TripReports from './TripReports';
 import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
+const localstorageShowMajorTrailsMtnDetailKey = 'localstorageShowMajorTrailsMtnDetailKey';
+const localstorageShowMinorTrailsMtnDetailKey = 'localstorageShowMinorTrailsMtnDetailKey';
+const localstorageShowYourLocationMtnDetailKey = 'localstorageShowYourLocationMtnDetailKey';
 
 const MountainNameHeader = styled.div`
   display: flex;
@@ -541,6 +544,15 @@ const MountainDetail = (props: Props) => {
         </Helmet>
       ) : null;
 
+      const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsMtnDetailKey);
+      const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsMtnDetailKey);
+      const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationMtnDetailKey);
+      const defaultMajorTrails = (
+        localstorageMajorTrailsVal === 'true' || localstorageMajorTrailsVal === null
+      ) ? true : false;
+      const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
+      const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+
       return (
         <>
           {metaData}
@@ -561,6 +573,14 @@ const MountainDetail = (props: Props) => {
               getFluentString('global-text-value-done'),
             ]}
             showNearbyTrails={true}
+            defaultLocationOn={defaultYourLocation}
+            defaultMajorTrailsOn={defaultMajorTrails}
+            defaultMinorTrailsOn={defaultMinorTrails}
+            localstorageKeys={{
+              majorTrail: localstorageShowMajorTrailsMtnDetailKey,
+              minorTrail: localstorageShowMinorTrailsMtnDetailKey,
+              yourLocation: localstorageShowYourLocationMtnDetailKey,
+            }}
             key={mountainDetailMapKey}
           />
           {description}

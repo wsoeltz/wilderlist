@@ -54,6 +54,9 @@ import IntroText from './IntroText';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
 
 const peakListDetailMapKey = 'peakListDetailMapKey';
+const localstorageShowMajorTrailsPeakListKey = 'localstorageShowMajorTrailsPeakListKey';
+const localstorageShowMinorTrailsPeakListKey = 'localstorageShowMinorTrailsPeakListKey';
+const localstorageShowYourLocationPeakListKey = 'localstorageShowYourLocationPeakListKey';
 
 export const friendHeaderHeight = 2.6; // in rem
 
@@ -615,6 +618,13 @@ const PeakListDetail = (props: Props) => {
           </Helmet>
         ) : null;
 
+        const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsPeakListKey);
+        const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsPeakListKey);
+        const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationPeakListKey);
+        const defaultMajorTrails = localstorageMajorTrailsVal === 'true' ? true : false;
+        const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
+        const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+
         return (
           <>
             {metaData}
@@ -639,6 +649,14 @@ const PeakListDetail = (props: Props) => {
               colorScaleSymbols={colorScaleSymbols}
               colorScaleLabels={colorScaleLabels}
               showNearbyTrails={true}
+              defaultLocationOn={defaultYourLocation}
+              defaultMajorTrailsOn={defaultMajorTrails}
+              defaultMinorTrailsOn={defaultMinorTrails}
+              localstorageKeys={{
+                majorTrail: localstorageShowMajorTrailsPeakListKey,
+                minorTrail: localstorageShowMinorTrailsPeakListKey,
+                yourLocation: localstorageShowYourLocationPeakListKey,
+              }}
               key={peakListDetailMapKey}
             />
             <PreFormattedDiv>

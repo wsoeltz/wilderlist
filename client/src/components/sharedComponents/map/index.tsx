@@ -258,6 +258,11 @@ interface Props {
   defaultMinorTrailsOn?: boolean;
   showYourLocation?: boolean;
   defaultLocationOn?: boolean;
+  localstorageKeys?: {
+    majorTrail?: string;
+    minorTrail?: string;
+    yourLocation?: string;
+  };
 }
 
 const Map = (props: Props) => {
@@ -268,6 +273,7 @@ const Map = (props: Props) => {
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
+    localstorageKeys,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -300,11 +306,23 @@ const Map = (props: Props) => {
 
   const initialMajorTrailsSetting = defaultMajorTrailsOn ? true : false;
   const [majorTrailsOn, setMajorTrailsOn] = useState<boolean>(initialMajorTrailsSetting);
-  const toggleMajorTrails = () => setMajorTrailsOn(!majorTrailsOn);
+  const toggleMajorTrails = () => {
+    const newValue = !majorTrailsOn;
+    setMajorTrailsOn(newValue);
+    if (localstorageKeys && localstorageKeys.majorTrail) {
+      localStorage.setItem(localstorageKeys.majorTrail, newValue.toString());
+    }
+  };
 
   const initialMinorTrailsSetting = defaultMinorTrailsOn ? true : false;
   const [minorTrailsOn, setMinorTrailsOn] = useState<boolean>(initialMinorTrailsSetting);
-  const toggleMinorTrails = () => setMinorTrailsOn(!minorTrailsOn);
+  const toggleMinorTrails = () => {
+    const newValue = !minorTrailsOn;
+    setMinorTrailsOn(newValue);
+    if (localstorageKeys && localstorageKeys.minorTrail) {
+      localStorage.setItem(localstorageKeys.minorTrail, newValue.toString());
+    }
+  };
 
   const colorScaleRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
