@@ -36,7 +36,12 @@ import {
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
 import getTrails, {TrailsDatum, TrailType} from '../../../utilities/getTrails';
+import {
+  setUserAllowsLocation,
+  userAllowsLocation,
+} from '../../../Utils';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   VariableDate,
@@ -239,6 +244,15 @@ type PopupData = (
   }
 );
 
+interface IUserLocation {
+  loading: boolean;
+  error: string | undefined;
+  coordinates: undefined | {
+    latitude: number;
+    longitude: number;
+  };
+}
+
 interface Props {
   id: string | null;
   userId: string | null;
@@ -273,7 +287,7 @@ const Map = (props: Props) => {
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
-    localstorageKeys,
+    localstorageKeys, defaultLocationOn,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -323,6 +337,83 @@ const Map = (props: Props) => {
       localStorage.setItem(localstorageKeys.minorTrail, newValue.toString());
     }
   };
+
+  const initiaYourLocationSetting = defaultLocationOn ? true : false;
+  const [yourLocationOn, setYourLocationOn] = useState<boolean>(initiaYourLocationSetting);
+  const toggleYourLocation = () => {
+    const newValue = !yourLocationOn;
+    setYourLocationOn(newValue);
+    if (localstorageKeys && localstorageKeys.yourLocation) {
+      localStorage.setItem(localstorageKeys.yourLocation, newValue.toString());
+    }
+    if (userAllowsLocation() === false) {
+      alert('You must enable location services for directions');
+    }
+  };
+
+  const [usersLocation, setUsersLocation] = useState<IUserLocation>({
+    error: undefined, loading: false, coordinates: undefined,
+  });
+  const [destination, setDestination] =
+    useState<{key: string, latitude: number, longitude: number} | undefined>(undefined);
+  const [directionsCache, setDirectionsCache] = useState<Array<DrivingData & {key: string}>>([]);
+  const [directionsData, setDirectionsData] = useState<DrivingData | undefined>(undefined);
+
+  useEffect(() => {
+    if (yourLocationOn === true) {
+      const onSuccess = ({coords: {latitude, longitude}}: Position) => {
+        setUsersLocation({coordinates: {latitude, longitude}, error: undefined, loading: false});
+        if (localstorageKeys && localstorageKeys.yourLocation) {
+          localStorage.setItem(localstorageKeys.yourLocation, 'true');
+        }
+        setUserAllowsLocation(true);
+      };
+      const onError = () => {
+        setUsersLocation({
+          coordinates: undefined, error: 'You must enable location services for directions', loading: false,
+        });
+        setUserAllowsLocation(false);
+      };
+      if (!navigator.geolocation) {
+        setUsersLocation({
+          coordinates: undefined, error: 'Geolocation is not supported by your browser', loading: false,
+        });
+      } else {
+        setUsersLocation({coordinates: undefined, error: undefined, loading: true});
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+      }
+    } else {
+      if (localstorageKeys && localstorageKeys.yourLocation) {
+        localStorage.setItem(localstorageKeys.yourLocation, 'false');
+      }
+    }
+  }, [yourLocationOn, localstorageKeys]);
+
+  useEffect(() => {
+    if (usersLocation.error === undefined &&
+        usersLocation.loading === false &&
+        usersLocation.coordinates !== undefined &&
+        destination !== undefined) {
+      const cachedData = directionsCache.find(({key}) => key === destination.key);
+      if (cachedData) {
+        setDirectionsData(cachedData);
+      } else {
+        getDrivingDistances(
+          usersLocation.coordinates.latitude, usersLocation.coordinates.longitude,
+          destination.latitude, destination.longitude)
+        .then(res => {
+          if (res) {
+            setDirectionsData(res);
+            const cachedRes = {...res, key: destination.key};
+            setDirectionsCache([...directionsCache, cachedRes]);
+          } else {
+            setDirectionsData(undefined);
+          }
+        })
+        .catch(err => console.error(err));
+      }
+    }
+  }, [usersLocation, destination, setDirectionsCache, directionsCache]);
 
   const colorScaleRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -426,6 +517,9 @@ const Map = (props: Props) => {
     } else if (coordinates.length === 1) {
       setPopupInfo({type: PopupDataTypes.Coordinate, data: {...coordinates[0]}});
       setCenter([coordinates[0].longitude, coordinates[0].latitude]);
+      setDestination({
+        key: coordinates[0].id, latitude: coordinates[0].latitude, longitude: coordinates[0].longitude,
+      });
     }
   }, [highlighted, setPopupInfo, setCenter, coordinates]);
 
@@ -674,11 +768,65 @@ const Map = (props: Props) => {
     </Layer>
   ) : <></>;
 
+  const yourLocationLayer = showYourLocation && yourLocationOn && usersLocation.coordinates !== undefined ? (
+    <Layer
+      type='symbol'
+      id='your-location'
+      layout={{
+        'icon-image': 'your-location',
+        'icon-size': 1,
+        'icon-allow-overlap': true,
+      }}
+    >
+      <Feature
+        coordinates={[usersLocation.coordinates.longitude, usersLocation.coordinates.latitude]}
+        onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
+        onMouseLeave={(event: any) => togglePointer(event.map, '')}
+      />
+    </Layer>
+  ) : <></>;
+
+  const directionsLayer = showYourLocation && yourLocationOn && directionsData !== undefined ? (
+    <Layer
+       type='line'
+       id='directions-layer'
+       layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+       paint={{ 'line-color': '#206ca6', 'line-width': 4 }}>
+       <Feature coordinates={directionsData.coordinates}/>
+    </Layer>
+  ) : <></>;
+
   let popup: React.ReactElement<any>;
   if (!popupInfo) {
     popup = <></>;
   } else if (popupInfo.type === PopupDataTypes.Coordinate) {
     const {data: popupData} = popupInfo;
+    let drivingInfo: React.ReactElement<any>;
+    if (destination && destination.key === popupData.id && directionsData) {
+      const {hours, minutes, miles} = directionsData;
+      drivingInfo = (
+        <p>
+          <strong>Driving Distance:</strong> {hours}hrs {minutes}m ({miles} miles)
+        </p>
+      );
+    } else {
+      const onClick = () => {
+        setDestination({
+          key: popupData.id,
+          latitude: popupData.latitude,
+          longitude: popupData.longitude,
+        });
+        if (!yourLocationOn) {
+          setYourLocationOn(true);
+        }
+        if (userAllowsLocation() === false) {
+          alert('You must enable location services for directions');
+        }
+      };
+      drivingInfo = (
+        <button onClick={onClick}>{getFluentString('map-get-directions')}</button>
+      );
+    }
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
@@ -689,12 +837,39 @@ const Map = (props: Props) => {
           {popupData.elevation}ft
           {renderCompletionDates(popupData.completionDates)}
           {getAddAscentButton(popupData.id)}
+          {drivingInfo}
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
         </StyledPopup>
       </Popup>
     );
   } else if (popupInfo.type === PopupDataTypes.Trail) {
     const {data: popupData} = popupInfo;
+    let drivingInfo: React.ReactElement<any>;
+    if (destination && destination.key === popupData.id && directionsData) {
+      const {hours, minutes, miles} = directionsData;
+      drivingInfo = (
+        <p>
+          <strong>Driving Distance:</strong> {hours}hrs {minutes}m ({miles} miles)
+        </p>
+      );
+    } else {
+      const onClick = () => {
+        setDestination({
+          key: popupData.id,
+          latitude: popupData.latitude,
+          longitude: popupData.longitude,
+        });
+        if (!yourLocationOn) {
+          setYourLocationOn(true);
+        }
+        if (userAllowsLocation() === false) {
+          alert('You must enable location services for directions');
+        }
+      };
+      drivingInfo = (
+        <button onClick={onClick}>{getFluentString('map-get-directions')}</button>
+      );
+    }
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
@@ -716,6 +891,7 @@ const Map = (props: Props) => {
           >
             <img src={HikingProjectSvgLogo} alt='The Hiking Project' />
           </HikingProjectLink>
+          {drivingInfo}
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
         </StyledPopup>
       </Popup>
@@ -753,6 +929,7 @@ const Map = (props: Props) => {
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
+        {directionsLayer}
         {trailLayer}
         <Layer
           type='circle'
@@ -790,6 +967,7 @@ const Map = (props: Props) => {
         >
           {features}
         </Layer>
+        {yourLocationLayer}
         {popup}
         {crosshairs}
         <BrokenMapMessage>
@@ -823,6 +1001,8 @@ const Map = (props: Props) => {
         toggleMajorTrails={toggleMajorTrails}
         minorTrailsOn={minorTrailsOn}
         toggleMinorTrails={toggleMinorTrails}
+        yourLocationOn={yourLocationOn}
+        toggleYourLocation={toggleYourLocation}
         ref={colorScaleRef}
       />
       {editMountainModal}

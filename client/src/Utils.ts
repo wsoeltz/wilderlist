@@ -2,6 +2,22 @@ import {
   getSeasonUtility,
   getSolsticeAndEquinoxUtility,
 } from './utilities/getSeason';
+
+const localstorageUserAllowsLocationKey = 'localstorageUserAllowsLocationKey';
+export const userAllowsLocation = () => {
+  const value = localStorage.getItem(localstorageUserAllowsLocationKey);
+  if (value === null) {
+    return undefined;
+  } else if (value === 'false') {
+    return false;
+  } else if (value === 'true') {
+    return true;
+  }
+};
+export const setUserAllowsLocation = (val: boolean) => {
+  localStorage.setItem(localstorageUserAllowsLocationKey, val.toString());
+};
+
 // Errors out at compile time if a discriminating `switch` doesn't catch all cases
 // of an enum and at run time if for some reason an invalid enum value is passed.
 // See https://basarat.gitbooks.io/typescript/content/docs/types/discriminated-unions.html

@@ -573,6 +573,7 @@ const MountainDetail = (props: Props) => {
               getFluentString('global-text-value-done'),
             ]}
             showNearbyTrails={true}
+            showYourLocation={true}
             defaultLocationOn={defaultYourLocation}
             defaultMajorTrailsOn={defaultMajorTrails}
             defaultMinorTrailsOn={defaultMinorTrails}

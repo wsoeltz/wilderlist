@@ -649,6 +649,7 @@ const PeakListDetail = (props: Props) => {
               colorScaleSymbols={colorScaleSymbols}
               colorScaleLabels={colorScaleLabels}
               showNearbyTrails={true}
+              showYourLocation={true}
               defaultLocationOn={defaultYourLocation}
               defaultMajorTrailsOn={defaultMajorTrails}
               defaultMinorTrailsOn={defaultMinorTrails}
