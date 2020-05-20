@@ -608,7 +608,6 @@ const Map = (props: Props) => {
   const features = coordinates.map(point => {
     const onClick = () => {
       setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
-      setCenter([point.longitude, point.latitude]);
       if (showNearbyTrails === true) {
         getTrailsData(point.latitude, point.longitude, setTrailData);
       }
@@ -766,7 +765,9 @@ const Map = (props: Props) => {
     trailData.forEach(point => {
       const onClick = () => {
         setPopupInfo({type: PopupDataTypes.Trail, data: {...point}});
-        setCenter([point.longitude, point.latitude]);
+        if (showNearbyTrails === true) {
+          getTrailsData(point.latitude, point.longitude, setTrailData);
+        }
       };
       if (
         !((point.type === TrailType.Connector && !minorTrailsOn) ||
