@@ -102,9 +102,10 @@ const ActionButton = styled(ButtonPrimary)`
 const AdditionalItems = styled.div`
   width: 100%;
   flex-shrink: 0;
-  padding: 1.5rem 0 1rem;
+  padding: 1.5rem 0 0;
   box-sizing: border-box;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
 `;
@@ -116,6 +117,8 @@ const LegendToggle = styled.button`
   border: none;
   cursor: pointer;
   font-size: 0.7rem;
+  white-space: nowrap;
+  margin-bottom: 0.6rem;
 `;
 
 const Icon = styled.div`
