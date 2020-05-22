@@ -827,6 +827,20 @@ const Map = (props: Props) => {
     </Layer>
   ) : <></>;
 
+  const directionsExtensionLayer =
+    showYourLocation && yourLocationOn && directionsData !== undefined && destination !== undefined ? (
+    <Layer
+       type='line'
+       id='directions-layer-extension'
+       layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+       paint={{ 'line-color': '#206ca6', 'line-width': 4, 'line-dasharray': [0.1, 1.8] }}>
+       <Feature coordinates={[
+         directionsData.coordinates[directionsData.coordinates.length - 1],
+         [destination.longitude, destination.latitude],
+       ]}/>
+    </Layer>
+  ) : <></>;
+
   let popup: React.ReactElement<any>;
   if (!popupInfo) {
     popup = <></>;
@@ -1055,6 +1069,7 @@ const Map = (props: Props) => {
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
+        {directionsExtensionLayer}
         {directionsLayer}
         {trailLayer}
         <Layer
