@@ -33,17 +33,19 @@ import {
 } from '../../../routing/Utils';
 import {
   BasicIconInText,
-  borderRadius,
   ButtonSecondary,
   lightBorderColor,
   linkStyles,
   placeholderColor,
-  primaryColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
-import getTrails, {TrailsDatum, TrailType} from '../../../utilities/getTrails';
+import getTrails, {
+  TrailDifficulty,
+  TrailsDatum,
+  TrailType,
+} from '../../../utilities/getTrails';
 import {
   setUserAllowsLocation,
   userAllowsLocation,
@@ -60,6 +62,13 @@ import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
 import ColorScale from './ColorScale';
 import {getImageAndIcon} from './colorScaleColors';
+import {
+  DirectionsButton,
+  DirectionsContainer,
+  DirectionsContent,
+  DirectionsIcon,
+} from './styleUtils';
+import TrailDetailModal from './TrailDetailModal';
 
 const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
@@ -107,13 +116,16 @@ const PopupTitleInternal = styled(DynamicLink)<ColorProps>`
   }
 `;
 
-const PopupTitleExternal = styled.a<ColorProps>`
+const PopupTitleExternal = styled.button<ColorProps>`
   ${linkStyles}
   font-size: 0.85rem;
   font-weight: 600;
   color: ${({color}) => color};
+  padding: 0;
+  outline: none;
 
   &:hover {
+    cursor: pointer;
     color: ${({color}) => lighten(0.1, color)};
   }
 `;
@@ -142,7 +154,7 @@ const PopupDates = styled.div`
   align-items: center;
 `;
 
-const Date = styled.div`
+const DateDiv = styled.div`
   margin-right: 0.5rem;
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -232,49 +244,6 @@ const BrokenMapMessage = styled.div`
   color: #585858;
 `;
 
-const DirectionsContainer = styled.div`
-  display: flex;
-  margin-top: 0.8rem;
-`;
-
-const DirectionsIcon = styled.div`
-  border: solid 1px ${primaryColor};
-  border-top-left-radius: ${borderRadius}px;
-  border-bottom-left-radius: ${borderRadius}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  padding: 0.25rem 0.5rem;
-  color: ${primaryColor};
-`;
-
-const directionsContentStyles = `
-  border: solid 1px ${primaryColor};
-  border-top-right-radius: ${borderRadius}px;
-  border-bottom-right-radius: ${borderRadius}px;
-  display: flex;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  line-height: 1;
-  font-weight: 600;
-`;
-
-const DirectionsContent = styled.div`
-  ${directionsContentStyles}
-  background-color: ${lighten(0.4, primaryColor)};
-`;
-
-const DirectionsButton = styled.button`
-  ${directionsContentStyles}
-  background-color: ${primaryColor};
-  color: #fff;
-  text-transform: uppercase;
-
-  &:hover {
-    background-color: ${lighten(0.1, primaryColor)};
-  }
-`;
 const getTrailsData = async (lat: number, lon: number, setTrailData: (input: Trail[]) => void) => {
   try {
     const res = await getTrails({params: {lat, lon, maxDistance: 180}});
@@ -290,6 +259,15 @@ const getTrailsData = async (lat: number, lon: number, setTrailData: (input: Tra
           url: trailDatum.url,
           mileage: trailDatum.length,
           type: trailDatum.type,
+          summary: trailDatum.summary,
+          difficulty: trailDatum.difficulty,
+          location: trailDatum.location,
+          image: trailDatum.imgMedium,
+          conditionStatus: trailDatum.conditionStatus,
+          conditionDetails: trailDatum.conditionDetails,
+          conditionDate: new Date(trailDatum.conditionDate),
+          highPoint: trailDatum.high,
+          lowPoint: trailDatum.low,
         };
       });
       setTrailData([...cleanedTrailData]);
@@ -324,10 +302,19 @@ interface Coordinate {
   elevation: number;
 }
 
-interface Trail extends Coordinate {
+export interface Trail extends Coordinate {
   url: string;
   mileage: number;
   type: TrailType;
+  summary: string;
+  difficulty: TrailDifficulty;
+  location: string;
+  image: string;
+  conditionStatus: string;
+  conditionDetails: string;
+  conditionDate: Date;
+  highPoint: number;
+  lowPoint: number;
 }
 
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
@@ -418,6 +405,7 @@ const Map = (props: Props) => {
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
   const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
+  const [trailModalOpen, setTrailModalOpen] = useState<boolean>(false);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
 
@@ -637,20 +625,20 @@ const Map = (props: Props) => {
         if (dates.standard !== undefined) {
           const completedTextFluentId = isOtherUser ? 'map-completed-other-user' : 'map-completed';
           return (
-            <Date>
+            <DateDiv>
               <strong>{getFluentString(completedTextFluentId)}: </strong>
               {formatDate(dates.standard)}
-            </Date>
+            </DateDiv>
           );
         }
       }
       if (dates.type === PeakListVariants.winter) {
         if (dates.winter !== undefined) {
           return (
-            <Date>
+            <DateDiv>
               <strong>{getFluentString('map-completed-in-winter')}: </strong>
               {formatDate(dates.winter)}
-            </Date>
+            </DateDiv>
           );
         }
       }
@@ -660,10 +648,10 @@ const Map = (props: Props) => {
           if (season !== 'type' && dates[season] !== undefined) {
             const seasonAsString = season as string;
             datesElm.push(
-              <Date key={season}>
+              <DateDiv key={season}>
                 <strong>{seasonAsString}</strong>
                 <div>{formatDate(dates[season])}</div>
-              </Date>,
+              </DateDiv>,
             );
           }
         });
@@ -681,10 +669,10 @@ const Map = (props: Props) => {
             const monthNameArray = monthAsString.match(/.{1,3}/g);
             const monthName = monthNameArray !== null && monthNameArray.length ? monthNameArray[0] : '';
             datesElm.push(
-              <Date key={monthName}>
+              <DateDiv key={monthName}>
                 <strong>{monthName}</strong>
                 <GridNumbers>{formatGridDate(dates[month])}</GridNumbers>
-              </Date>,
+              </DateDiv>,
             );
           }
         });
@@ -845,11 +833,25 @@ const Map = (props: Props) => {
   } else if (popupInfo.type === PopupDataTypes.Coordinate) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
-    if (destination && destination.key === popupData.id && directionsData) {
-      const {hours, minutes, miles} = directionsData;
+    if (usersLocation.loading === true) {
       drivingInfo = (
         <DirectionsContent>
-          {hours}hrs {minutes}m ({miles} miles)
+          {getFluentString('global-text-value-loading')}...
+        </DirectionsContent>
+      );
+    } else if (usersLocation.error !== undefined) {
+      drivingInfo = (
+        <DirectionsContent>
+          {getFluentString('mountain-detail-driving-error-location')}
+        </DirectionsContent>
+      );
+    } else if (destination && destination.key === popupData.id && directionsData) {
+      const {miles} = directionsData;
+      const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
+      const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      drivingInfo = (
+        <DirectionsContent>
+          {hours} {minutes} ({miles} miles)
         </DirectionsContent>
       );
     } else {
@@ -913,11 +915,25 @@ const Map = (props: Props) => {
   } else if (popupInfo.type === PopupDataTypes.Trail) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
-    if (destination && destination.key === popupData.id && directionsData) {
-      const {hours, minutes, miles} = directionsData;
+    if (usersLocation.loading === true) {
       drivingInfo = (
         <DirectionsContent>
-          {hours}hrs {minutes}m ({miles} miles)
+          {getFluentString('global-text-value-loading')}
+        </DirectionsContent>
+      );
+    } else if (usersLocation.error !== undefined) {
+      drivingInfo = (
+        <DirectionsContent>
+          {getFluentString('mountain-detail-driving-error-location')}
+        </DirectionsContent>
+      );
+    } else if (destination && destination.key === popupData.id && directionsData) {
+      const {miles} = directionsData;
+      const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
+      const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      drivingInfo = (
+        <DirectionsContent>
+          {hours} {minutes} ({miles} miles)
         </DirectionsContent>
       );
     } else {
@@ -939,6 +955,15 @@ const Map = (props: Props) => {
       );
     }
     const imageIcon = popupData.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
+
+    const openTrailModal = () => {
+      setTrailModalOpen(true);
+      setDestination({
+        key: popupData.id,
+        latitude: popupData.latitude,
+        longitude: popupData.longitude,
+      });
+    };
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
@@ -954,8 +979,7 @@ const Map = (props: Props) => {
             </Icon>
             <div>
               <PopupTitleExternal
-                href={popupData.url}
-                target='_blank'
+                onClick={openTrailModal}
                 color={'#7a3800'}
               >
                 {popupData.name}
@@ -979,6 +1003,28 @@ const Map = (props: Props) => {
   } else {
     popup = <></>;
   }
+
+  const trailModal = trailModalOpen && popupInfo !== null && popupInfo.type === PopupDataTypes.Trail ? (
+    <TrailDetailModal
+      onClose={() => setTrailModalOpen(false)}
+      trailDatum={popupInfo.data}
+      directionsData={directionsData}
+      getDirections={() => {
+        setDestination({
+          key: popupInfo.data.id,
+          latitude: popupInfo.data.latitude,
+          longitude: popupInfo.data.longitude,
+        });
+        if (!yourLocationOn) {
+          setYourLocationOn(true);
+        }
+        if (userAllowsLocation() === false) {
+          alert('You must enable location services for directions');
+        }
+      }}
+      usersLocation={usersLocation.coordinates}
+    />
+  ) : null;
 
   const mapRenderProps = (mapEl: any) => {
     setMap(mapEl);
@@ -1086,6 +1132,7 @@ const Map = (props: Props) => {
         ref={colorScaleRef}
       />
       {editMountainModal}
+      {trailModal}
     </Root>
   );
 

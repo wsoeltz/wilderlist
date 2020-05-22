@@ -170,6 +170,21 @@ export const CardSubtitle = styled.div`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const DetailBox = styled.div`
+  border: 1px solid ${lightBorderColor};
+  background-color: ${tertiaryColor};
+  padding: 1rem;
+`;
+
+export const DetailBoxTitle = styled.h3`
+  border: 1px solid ${lightBorderColor};
+  border-bottom: none;
+  background-color: #d7d7d7;
+  margin: 0;
+  padding: 0.15rem 1rem;
+  color: ${baseColor};
+`;
+
 export const SmallTextNote = styled.div`
   font-size: 0.8rem;
   color: ${lightBaseColor};
@@ -462,11 +477,14 @@ export const ResourceList = styled.ul`
   list-style: none;
 `;
 
-export const ResourceItem = styled.li`
-  padding-left: 1rem;
-  position: relative;
+export const SimpleListItem = styled.li`
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
+`;
+
+export const ResourceItem = styled(SimpleListItem)`
+  padding-left: 1rem;
+  position: relative;
 
   &:before {
     content: '›';

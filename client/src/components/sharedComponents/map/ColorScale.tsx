@@ -308,7 +308,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   if (colorScaleColors.length <= 2) {
     const legendNodes = colorScaleColors.map((c, i) => {
       return (
-        <LegendItem key={c}>
+        <LegendItem key={c} style={{color: c}}>
           <Circle style={{backgroundColor: c}} />
           {colorScaleLabels[i]}
         </LegendItem>

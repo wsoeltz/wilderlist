@@ -4,7 +4,16 @@ import { setupCache } from 'axios-cache-adapter';
 export enum TrailType {
   Trail = 'Trail',
   Connector = 'Connector',
-  FeaturedHike = 'Featured Hike',
+  FeaturedHike = 'Hike',
+}
+
+export enum TrailDifficulty {
+  Easy = 'green',
+  EasyIntermediate = 'greenBlue',
+  Intermediate = 'blue',
+  IntermediateDifficult = 'blueBlack',
+  Difficult = 'black',
+  VeryDifficult = 'dblack',
 }
 
 export interface TrailsDatum {
@@ -12,7 +21,7 @@ export interface TrailsDatum {
   name: string;
   type: TrailType;
   summary: string;
-  difficulty: string;
+  difficulty: TrailDifficulty;
   stars: number;
   starVotes: number;
   location: string;

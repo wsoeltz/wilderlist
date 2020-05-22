@@ -13,18 +13,15 @@ import {
 } from '../../../styling/styleUtils';
 import getWeather from '../../../utilities/getWeather';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import {
-  ItemTitle,
-  VerticalContentItem,
-} from './sharedStyling';
 import WeatherDetailModal from './WeatherDetailModal';
 
 const ForecastContainer = styled.div`
   display: flex;
   width: 100%;
-  min-height: 70px;
+  min-height: 146px;
   overflow: auto;
   padding: 1rem 0;
+  box-sizing: border-box;
 
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -233,15 +230,12 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   );
 
   return (
-    <VerticalContentItem>
-      <ItemTitle>
-        {getFluentString('weather-forecast-weather')}
-      </ItemTitle>
+    <>
       <ForecastContainer>
         {output}
       </ForecastContainer>
       {weatherDetailModal}
-    </VerticalContentItem>
+    </>
   );
 };
 

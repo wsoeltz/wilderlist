@@ -611,10 +611,13 @@ const MountainDetail = (props: Props) => {
             {drivingDistanceContent}
           </HorizontalContentItem>
           {regionsContent}
-          <WeatherReport
-            latitude={latitude}
-            longitude={longitude}
-          />
+          <VerticalContentItem>
+            <ItemTitleShort>{getFluentString('weather-forecast-weather')}:</ItemTitleShort>
+            <WeatherReport
+              latitude={latitude}
+              longitude={longitude}
+            />
+          </VerticalContentItem>
           <TripReports
             mountainId={id}
             mountainName={mountain.name}

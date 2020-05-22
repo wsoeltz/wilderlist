@@ -101,6 +101,10 @@ global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
+global-text-value-elevation-gain = Elevation Gain
+global-text-value-high-point = Highest Point
+global-text-value-low-point = Lowest Point
+global-text-value-trail = Trail
 global-text-value-feet = feet
 global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
@@ -108,8 +112,8 @@ global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Your Ascents
-global-text-value-done = Done
-global-text-value-not-done = Not Done
+global-text-value-done = Hiked
+global-text-value-not-done = Not Hiked
 global-text-value-today = Today
 global-text-value-summer = Summer
 global-text-value-fall = Fall
@@ -536,6 +540,24 @@ map-legend-show-hide = click to {
 
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
+
+map-trails-trail-desc = { 
+  $miles ->
+    [1] mile
+    *[other] miles
+} long
+map-trails-difficulty-desc = {
+  $difficulty ->
+    [green] No obstacles. Flat.
+    [greenBlue] Some uneven terrain. Mostly flat.
+    [blue] Moderate inclines. Uneven terrain.
+    [blueBlack] Some rocks, roots. Steep sections.
+    [black] Steep. Tricky terrain.
+    [dblack] Very steep. Hazardous terrain.
+    *[other] Difficulty unknown.
+}
+map-trails-
+
 
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.

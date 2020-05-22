@@ -9,11 +9,13 @@ import {
   faCar,
   faCaretDown,
   faCaretUp,
+  faChartArea,
   faChartLine,
   faCheck,
   faChevronLeft,
   faChevronRight,
   faClone,
+  faCloudSun,
   faEnvelope,
   faFileCsv,
   faFileExcel,
@@ -50,7 +52,8 @@ library.add(
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
   faFileExcel, faMapSigns, faMountain, faHiking,
   faUserFriends, faHome, faChartLine, faTrash, faClone,
-  faFlag, faSync, faLongArrowAltDown, faCar,
+  faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
+  faCloudSun,
 );
 
 const GlobalStyles = createGlobalStyle`
