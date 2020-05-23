@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faCloudSun, faEdit, faFlag } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import {
@@ -13,10 +13,13 @@ import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
   ButtonSecondaryLink,
+  DetailBox as DetailBoxBase,
+  DetailBoxFooter,
+  DetailBoxTitle,
   GhostButton,
-  lightBorderColor,
-  LinkButton,
+  InlineTitle,
   lowWarningColorDark,
+  placeholderColor,
   PlaceholderText,
   PreFormattedParagraph,
   ResourceItem,
@@ -28,12 +31,10 @@ import {
   PeakList,
   PeakListVariants,
   PermissionTypes,
-  Region,
   State,
   User,
 } from '../../../types/graphQLTypes';
-import getDrivingDistances from '../../../utilities/getDrivingDistances';
-import { convertDMS, mobileSize } from '../../../Utils';
+import { convertDMS } from '../../../Utils';
 import {
   isValidURL,
 } from '../../../Utils';
@@ -53,7 +54,6 @@ import FlagModal from './FlagModal';
 import IncludedLists from './IncludedLists';
 import LocalTrails from './LocalTrails';
 import {
-  ContentItem,
   ItemTitle,
   VerticalContentItem,
 } from './sharedStyling';
@@ -78,29 +78,15 @@ const Subtitle = styled.em`
   color: ${lowWarningColorDark};
 `;
 
-const titleWidth = 150; // in px
-const smallScreenSize = 560; // in px
-
-const ItemTitleShort = styled(ItemTitle)`
-  width: ${titleWidth}px;
-
-  @media(max-width: ${smallScreenSize}px) {
-    width: auto;
-    margin-right: 0.7rem;
-  }
-`;
-
-const HorizontalContentItem = styled(ContentItem)`
-  display: flex;
-  align-items: center;
-`;
-
-const LocationLinksContainer = styled.div`
+const Details = styled.h2`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-grow: 1;
+  margin: 0.5rem 0 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 400;
 `;
+
+const smallScreenSize = 380; // in px
 
 const ExternalMapsButtons = styled.div`
   margin-left: 1rem;
@@ -111,28 +97,42 @@ const ExternalMapsButtons = styled.div`
   }
 `;
 
-const LatLongContainer = styled.div`
-  @media(max-width: ${smallScreenSize}px) {
-    display: flex;
-    flex-direction: column;
-  }
-  @media (min-width: ${mobileSize}px) and (max-width: 1490px) {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-  }
-`;
-
 const Divider = styled.div`
   display: inline-block;
   height: 1rem;
   width: 1px;
-  background-color: ${lightBorderColor};
+  background-color: ${placeholderColor};
   margin: 0 0.4rem;
 
   @media(max-width: ${smallScreenSize}px) {
     display: none;
   }
+`;
+
+const LocationBox = styled(DetailBoxFooter)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin-bottom: 2rem;
+`;
+
+const LatLong = styled.div`
+  white-space: nowrap;
+  flex-shrink: 0;
+`;
+
+const InlineSectionContainer = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const DetailBox = styled(DetailBoxBase)`
+  margin-bottom: 2rem;
+`;
+
+const NotesTitle = styled(ItemTitle)`
+  margin-bottom: 0.5rem;
 `;
 
 const GET_MOUNTAIN_DETAIL = gql`
@@ -151,10 +151,6 @@ const GET_MOUNTAIN_DETAIL = gql`
       state {
         id
         name
-        regions {
-          id
-          name
-        }
       }
       lists {
         id
@@ -194,10 +190,6 @@ interface QuerySuccessResponse {
     state: {
       id: State['id'];
       name: State['name'];
-      regions: Array<{
-        id: Region['id'];
-        name: Region['name'];
-      }>;
     };
     lists: Array<{
       id: PeakList['id'];
@@ -264,8 +256,6 @@ interface MountainNoteVariables {
   text: string;
 }
 
-const localStorageShowDrivingTimesVariable = 'localStorageShowDrivingTimesVariable';
-
 interface Props {
   userId: string | null;
   id: string;
@@ -287,52 +277,6 @@ const MountainDetail = (props: Props) => {
 
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
   const closeFlagModal = () => setIsFlagModalOpen(false);
-
-  const [usersLocation, setUsersLocation] = useState<{
-    error: string | undefined, latitude: number | undefined, longitude: number | undefined,
-  } | undefined>(undefined);
-  const [mountainLocation, setMountainLocation] = useState<{latitude: number, longitude: number} | undefined>();
-
-  const localShowDrivingDirectionsVariable = localStorage.getItem(localStorageShowDrivingTimesVariable);
-  const initialShowDrivingDrivingDirectionsVariable = localShowDrivingDirectionsVariable === 'true' ? true : false;
-  const [showDrivingDirections, setShowDrivingDirections] =
-    useState<boolean>(initialShowDrivingDrivingDirectionsVariable);
-  const [drivingDistance, setDrivingDistance] =
-    useState<{hours: number, minutes: number, miles: number} | null | 'loading'>(null);
-
-  useEffect(() => {
-    if (showDrivingDirections === true) {
-      const onSuccess = ({coords: {latitude, longitude}}: Position) => {
-        setUsersLocation({latitude, longitude, error: undefined});
-        localStorage.setItem(localStorageShowDrivingTimesVariable, 'true');
-      };
-      const onError = () => {
-        setUsersLocation({latitude: undefined, longitude: undefined, error: 'Unable to retrieve your location'});
-      };
-      if (!navigator.geolocation) {
-        setUsersLocation({
-          latitude: undefined, longitude: undefined, error: 'Geolocation is not supported by your browser',
-        });
-      } else {
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
-      }
-    } else {
-      localStorage.setItem(localStorageShowDrivingTimesVariable, 'false');
-    }
-  }, [showDrivingDirections]);
-
-  useEffect(() => {
-    if (usersLocation !== undefined &&
-        usersLocation.latitude !== undefined &&
-        usersLocation.longitude !== undefined &&
-        mountainLocation !== undefined) {
-      getDrivingDistances(
-        usersLocation.latitude, usersLocation.longitude,
-        mountainLocation.latitude, mountainLocation.longitude)
-      .then(res => setDrivingDistance(res))
-      .catch(err => console.error(err));
-    }
-  }, [usersLocation, mountainLocation]);
 
   if (loading === true) {
     return <LoadingSpinner />;
@@ -357,13 +301,6 @@ const MountainDetail = (props: Props) => {
         author, status, resources,
       } = mountain;
 
-      if (mountainLocation === undefined ||
-          mountainLocation.latitude !== latitude ||
-          mountainLocation.longitude !== longitude
-        ) {
-        setMountainLocation({latitude, longitude});
-      }
-
       const title = status === CreatedItemStatus.pending ? (
         <div>
           <Title style={{marginBottom: 0}}>{name}</Title>
@@ -376,21 +313,6 @@ const MountainDetail = (props: Props) => {
       const userMountains = (user && user.mountains) ? user.mountains : [];
       const completedDates = userMountains.find(
         (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
-
-      const regions = state.regions.map((region, index) => {
-        if (index === state.regions.length - 1 ) {
-          return `${region.name}`;
-        } else {
-          return `${region.name}, `;
-        }
-      });
-
-      const regionsContent = regions.length < 1 ? null : (
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('global-text-value-regions')}:</ItemTitleShort>
-            <strong>{regions}</strong>
-          </HorizontalContentItem>
-        );
 
       const {lat, long} = convertDMS(latitude, longitude);
       const completionDates: VariableDate | null = completedDates !== undefined && completedDates.dates.length ? {
@@ -438,11 +360,11 @@ const MountainDetail = (props: Props) => {
       );
 
       const description = mountain.description && mountain.description.length ? (
-        <VerticalContentItem>
+        <div>
           <PreFormattedParagraph>
             {mountain.description}
           </PreFormattedParagraph>
-        </VerticalContentItem>
+        </div>
       ) : null;
 
       let resourcesList: React.ReactElement<any> | null;
@@ -459,10 +381,10 @@ const MountainDetail = (props: Props) => {
         });
         resourcesList = resourcesArray.length ? (
           <>
-            <ItemTitle>
-              {getFluentString('global-text-value-external-resources')}
-            </ItemTitle>
             <VerticalContentItem>
+              <NotesTitle>
+                {getFluentString('global-text-value-external-resources')}
+              </NotesTitle>
               <ResourceList>
                 {resourcesArray}
               </ResourceList>
@@ -471,55 +393,6 @@ const MountainDetail = (props: Props) => {
         ) : null;
       } else {
         resourcesList = null;
-      }
-
-      let drivingDistanceContent: React.ReactElement<any>;
-      if (showDrivingDirections === false) {
-        drivingDistanceContent = (
-          <LinkButton
-            onClick={() => {
-              setShowDrivingDirections(true);
-              setDrivingDistance('loading');
-            }}
-          >
-            {getFluentString('mountain-detail-enable-driving-distances')}
-          </LinkButton>
-        );
-      } else {
-        let drivingDistanceText: React.ReactElement<any>;
-        if (usersLocation && usersLocation.error !== undefined) {
-          drivingDistanceText = <em>{usersLocation.error}</em>;
-        } else if (drivingDistance === 'loading') {
-          drivingDistanceText = (
-            <em>
-              {getFluentString('global-text-value-loading')}...
-            </em>
-          );
-        } else if (usersLocation === undefined || mountainLocation === undefined) {
-          drivingDistanceText = <em>{getFluentString('mountain-detail-driving-error-location')}</em>;
-        } else if (drivingDistance === null) {
-          drivingDistanceText = <em>{getFluentString('mountain-detail-driving-error-direction')}</em>;
-        } else {
-          drivingDistanceText = (
-            <a href={
-                'https://www.google.com/maps' +
-                  `?saddr=${usersLocation.latitude},${usersLocation.longitude}` +
-                  `&daddr=${mountainLocation.latitude},${mountainLocation.longitude}`
-              }
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              {getFluentString('mountain-detail-driving-distance', {
-                hours: drivingDistance.hours,
-                minutes: drivingDistance.minutes,
-                miles: drivingDistance.miles,
-              })}
-            </a>
-          );
-        }
-        drivingDistanceContent = (
-          <>{drivingDistanceText}</>
-        );
       }
 
       const metaDescription = getFluentString('meta-data-mountain-detail-description', {
@@ -562,6 +435,10 @@ const MountainDetail = (props: Props) => {
               {actionButton}
             </div>
           </MountainNameHeader>
+          <Details>
+            <span>{state.name}</span>
+            <span>{elevation}ft</span>
+          </Details>
           <Map
             id={id}
             coordinates={[{...mountain, completionDates}]}
@@ -584,45 +461,58 @@ const MountainDetail = (props: Props) => {
             }}
             key={mountainDetailMapKey}
           />
+          <LocationBox>
+            <LatLong>
+              {getFluentString('global-text-value-location')}:{' '}
+              <strong>{lat}</strong>, <strong>{long}</strong>
+            </LatLong>
+            <ExternalMapsButtons>
+              <GoogleMapsLink lat={latitude} long={longitude} />
+              <Divider />
+              <CaltopoLink lat={latitude} long={longitude} />
+            </ExternalMapsButtons>
+          </LocationBox>
           {description}
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('global-text-value-elevation')}:</ItemTitleShort>
-            <strong>{elevation}ft</strong>
-          </HorizontalContentItem>
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('global-text-value-location')}:</ItemTitleShort>
-            <LocationLinksContainer>
-              <LatLongContainer>
-                <strong>{lat},</strong> <strong>{long}</strong>
-              </LatLongContainer>
-              <ExternalMapsButtons>
-                <GoogleMapsLink lat={latitude} long={longitude} />
-                <Divider />
-                <CaltopoLink lat={latitude} long={longitude} />
-              </ExternalMapsButtons>
-            </LocationLinksContainer>
-          </HorizontalContentItem>
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('global-text-value-state')}:</ItemTitleShort>
-            <strong>{state.name}</strong>
-          </HorizontalContentItem>
-          <HorizontalContentItem>
-            <ItemTitleShort>{getFluentString('mountain-detail-driving-distance-title')}:</ItemTitleShort>
-            {drivingDistanceContent}
-          </HorizontalContentItem>
-          {regionsContent}
-          <VerticalContentItem>
-            <ItemTitleShort>{getFluentString('weather-forecast-weather')}:</ItemTitleShort>
-            <WeatherReport
-              latitude={latitude}
-              longitude={longitude}
+          <DetailBoxTitle>
+            <BasicIconInText icon={faCloudSun} />
+            {getFluentString('mountain-detail-weather-and-reports')}
+          </DetailBoxTitle>
+          <DetailBox>
+            <InlineSectionContainer>
+              <WeatherReport
+                latitude={latitude}
+                longitude={longitude}
+              />
+            </InlineSectionContainer>
+            <TripReports
+              mountainId={id}
+              mountainName={mountain.name}
+              userId={userId}
             />
-          </VerticalContentItem>
-          <TripReports
-            mountainId={id}
-            mountainName={mountain.name}
-            userId={userId}
-          />
+          </DetailBox>
+          <DetailBoxTitle>
+            <BasicIconInText icon={faEdit} />
+            {getFluentString('mountain-detail-notes-and-ascents')}
+          </DetailBoxTitle>
+          <DetailBox>
+            <InlineSectionContainer>
+              <NotesTitle>Notes:</NotesTitle>
+              <UserNote
+                placeholder={notesPlaceholderText}
+                defaultValue={defaultNoteText}
+                onSave={saveNote}
+                key={defaultNoteText}
+              />
+            </InlineSectionContainer>
+            <AscentsList
+              completedDates={completedDates}
+              userId={userId}
+              mountainId={id}
+              mountainName={name}
+              getFluentString={getFluentString}
+            />
+          </DetailBox>
+          <InlineTitle>{getFluentString('global-text-value-additional-resources')}</InlineTitle>
           {resourcesList}
           <LocalTrails
             mountainName={mountain.name}
@@ -635,21 +525,6 @@ const MountainDetail = (props: Props) => {
             mountainId={id}
             mountainName={name}
             numLists={lists.length}
-          />
-          <ContentItem>
-            <UserNote
-              placeholder={notesPlaceholderText}
-              defaultValue={defaultNoteText}
-              onSave={saveNote}
-              key={defaultNoteText}
-            />
-          </ContentItem>
-          <AscentsList
-            completedDates={completedDates}
-            userId={userId}
-            mountainId={id}
-            mountainName={name}
-            getFluentString={getFluentString}
           />
           {flagModal}
         </>

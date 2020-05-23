@@ -170,15 +170,29 @@ export const CardSubtitle = styled.div`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const InlineTitle = styled.h3`
+  color: ${baseColor};
+  margin: 0.5rem 0;
+`;
+
 export const DetailBox = styled.div`
   border: 1px solid ${lightBorderColor};
   background-color: ${tertiaryColor};
   padding: 1rem;
 `;
 
-export const DetailBoxTitle = styled.h3`
+export const DetailBoxTitle = styled(InlineTitle)`
   border: 1px solid ${lightBorderColor};
   border-bottom: none;
+  background-color: #d7d7d7;
+  margin: 0;
+  padding: 0.15rem 1rem;
+  color: ${baseColor};
+`;
+
+export const DetailBoxFooter = styled.h4`
+  border: 1px solid ${lightBorderColor};
+  border-top: none;
   background-color: #d7d7d7;
   margin: 0;
   padding: 0.15rem 1rem;
@@ -472,7 +486,7 @@ export const CollapsedParagraph = styled.p`
 `;
 
 export const ResourceList = styled.ul`
-  margin-top: 0;
+  margin: 0;
   padding-left: 0;
   list-style: none;
 `;

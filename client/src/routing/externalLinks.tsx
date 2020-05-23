@@ -17,12 +17,10 @@ const ExternalLink = styled.a`
 `;
 
 const GoogleMapsLogo = styled.img`
-  max-width: 90px;
+  max-width: 80px;
 `;
 const CaltopoLogo = styled.img`
-  max-width: 80px;
-  position: relative;
-  top: 2px;
+  max-width: 60px;
 `;
 
 const HikingProjectLogo = styled.img`

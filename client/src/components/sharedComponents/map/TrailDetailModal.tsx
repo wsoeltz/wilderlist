@@ -35,10 +35,11 @@ const Header = styled.div`
  display: grid;
  grid-template-columns: 1fr auto;
  grid-column-gap: 1rem;
+ margin-bottom: 1rem;
 `;
 
 const CoverPhoto = styled.div`
-  height: 230px;
+  max-height: 230px;
   overflow: hidden;
   display: flex;
   align-items: center;

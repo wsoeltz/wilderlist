@@ -1,3 +1,4 @@
+import { faDownload, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react/compat';
 import { sortBy } from 'lodash';
@@ -7,6 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
   lightBorderColor,
   placeholderColor,
@@ -902,6 +904,7 @@ const MountainTable = (props: Props) => {
         <ButtonPrimary
           onClick={() => setIsImportModalOpen(true)}
         >
+          <BasicIconInText icon={faFileImport} />
           {getFluentString('mountain-table-import-button')}
         </ButtonPrimary>
     ) : null;
@@ -914,6 +917,7 @@ const MountainTable = (props: Props) => {
     <ExportButton
       onClick={() => setIsExportModalOpen(true)}
     >
+      <BasicIconInText icon={faDownload} />
       {getFluentString('mountain-table-export-button')}
     </ExportButton>
   ) : null;

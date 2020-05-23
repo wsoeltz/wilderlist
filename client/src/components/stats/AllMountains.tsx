@@ -23,7 +23,7 @@ import {
 import getCompletionDates, {VariableDate} from '../peakLists/detail/getCompletionDates';
 import MountainTable from '../peakLists/detail/MountainTable';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
-import Map from '../sharedComponents/map';
+import Map, {MapContainer} from '../sharedComponents/map';
 import {
   fiveColorScale,
   fiveSymbolScale,
@@ -251,17 +251,19 @@ const AllMountains = (props: Props) => {
             </Subtitle>
           </SectionTitleH3>
           {toggleType}
-          <Map
-            id={null}
-            coordinates={allMountainsWithDates}
-            highlighted={undefined}
-            userId={userId}
-            colorScaleTitle={colorScaleTitle}
-            colorScaleColors={colorScaleColors}
-            colorScaleSymbols={colorScaleSymbols}
-            colorScaleLabels={colorScaleLabels}
-            key={'stats-all-mountains-in-progress-and-complete-key'}
-          />
+          <MapContainer>
+            <Map
+              id={null}
+              coordinates={allMountainsWithDates}
+              highlighted={undefined}
+              userId={userId}
+              colorScaleTitle={colorScaleTitle}
+              colorScaleColors={colorScaleColors}
+              colorScaleSymbols={colorScaleSymbols}
+              colorScaleLabels={colorScaleLabels}
+              key={'stats-all-mountains-in-progress-and-complete-key'}
+            />
+          </MapContainer>
           {table}
         </>
       );

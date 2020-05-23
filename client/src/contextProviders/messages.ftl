@@ -204,6 +204,7 @@ global-text-value-parent = Parent
 
 global-text-value-other-list-versions = Other Version of this list
 
+global-text-value-additional-resources = Additional Resources
 global-text-value-external-resources = External Resources
 global-text-value-add-external-resources = Add Another Resource
 global-text-value-resource-title = Resource Title
@@ -449,7 +450,7 @@ mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
 mountain-table-import-button = Import Ascents from Spreadsheet
-mountain-table-export-button = Export Ascents
+mountain-table-export-button = Download Ascent Data
 download-csv-button = Download CSV
 download-official-grid-xlsx-button = Download Official Grid Application
 
@@ -482,6 +483,9 @@ mountain-detail-driving-error-location = There was a problem getting your locati
 mountain-detail-driving-error-direction = There was probelm getting directions.
 mountain-detail-driving-distance-title = Driving Distance
 mountain-detail-pending-approval = This mountain is pending confirmation
+
+mountain-detail-weather-and-reports = Weather & Trip Reports
+mountain-detail-notes-and-ascents = Notes & Ascents
 
 
 user-list-no-user-selected-text = Select a user on the left to see more details
@@ -615,6 +619,7 @@ weather-forecast-low = Low
 weather-forecast-wind = Wind
 weather-forecast-detailed-report = Detailed Report
 weather-forecast-network-error = Weather for this location is not available at this time.
+weather-loading-report = Getting your forecast
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes

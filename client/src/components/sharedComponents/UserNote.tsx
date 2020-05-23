@@ -16,7 +16,6 @@ import {
   lightFontWeight,
   lowWarningColor,
   placeholderColor,
-  SectionTitle,
 } from '../../styling/styleUtils';
 import { UserContext } from '../App';
 import {
@@ -175,7 +174,6 @@ const UserNote = (props: Props) => {
 
   return (
     <>
-      <SectionTitle>Notes</SectionTitle>
       <Textarea
         placeholder={placeholder}
         value={value}

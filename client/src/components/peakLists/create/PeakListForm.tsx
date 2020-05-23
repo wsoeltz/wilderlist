@@ -48,7 +48,7 @@ import {
   SaveButton,
   Title,
 } from '../../sharedComponents/formUtils';
-import Map from '../../sharedComponents/map';
+import Map, {MapContainer} from '../../sharedComponents/map';
 import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
 import { getSentences } from '../detail/IntroText';
 import { StateDatum } from '../list/ListPeakLists';
@@ -338,16 +338,18 @@ const PeakListForm = (props: Props) => {
   } else {
     map = (
       <FullColumn>
-        <Map
-          id={''}
-          coordinates={mountainCoordinates}
-          userId={null}
-          isOtherUser={true}
-          colorScaleColors={[]}
-          colorScaleSymbols={[]}
-          colorScaleLabels={[]}
-          key={'create-peak-list-key'}
-        />
+        <MapContainer>
+          <Map
+            id={''}
+            coordinates={mountainCoordinates}
+            userId={null}
+            isOtherUser={true}
+            colorScaleColors={[]}
+            colorScaleSymbols={[]}
+            colorScaleLabels={[]}
+            key={'create-peak-list-key'}
+          />
+        </MapContainer>
       </FullColumn>
     );
   }

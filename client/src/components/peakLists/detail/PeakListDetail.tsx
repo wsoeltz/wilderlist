@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -12,7 +13,10 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailLink } from '../../../routing/Utils';
 import {
+  BasicIconInText,
   ButtonPrimaryLink,
+  DetailBox,
+  DetailBoxTitle,
   lightBorderColor,
   LinkButton,
   PlaceholderText,
@@ -36,7 +40,7 @@ import {
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Map from '../../sharedComponents/map';
+import Map, {MapContainer} from '../../sharedComponents/map';
 import {
   fiveColorScale,
   fiveSymbolScale,
@@ -87,6 +91,10 @@ const ButtonPrimaryLinkSmall = styled(ButtonPrimaryLink)`
   flex-shrink: 0;
   padding: 0.4rem;
   font-size: 0.7rem;
+`;
+
+const OtherLists = styled(ResourceList)`
+  margin-bottom: 2rem;
 `;
 
 const GET_PEAK_LIST = gql`
@@ -440,10 +448,10 @@ const PeakListDetail = (props: Props) => {
               <SectionTitle>
                 {getFluentString('global-text-value-other-list-versions')}
               </SectionTitle>
-              <ResourceList>
+              <OtherLists>
                 {parentVariant}
                 {otherVariantsArray}
-              </ResourceList>
+              </OtherLists>
             </>
           ) : null;
         } else if (siblings && siblings.length) {
@@ -464,10 +472,10 @@ const PeakListDetail = (props: Props) => {
               <SectionTitle>
                 {getFluentString('global-text-value-other-list-versions')}
               </SectionTitle>
-              <ResourceList>
+              <OtherLists>
                 {parentVariant}
                 {otherVariantsArray}
-              </ResourceList>
+              </OtherLists>
             </>
           ) : null;
         } else {
@@ -476,9 +484,9 @@ const PeakListDetail = (props: Props) => {
             <SectionTitle>
               {getFluentString('global-text-value-other-list-versions')}
             </SectionTitle>
-            <ResourceList>
+            <OtherLists>
               {parentVariant}
-            </ResourceList>
+            </OtherLists>
           </>
         ) : null;
         }
@@ -638,39 +646,47 @@ const PeakListDetail = (props: Props) => {
               isOtherUser={isOtherUser}
               queryRefetchArray={queryRefetchArray}
             />
-            <Map
-              id={peakList.id}
-              coordinates={allMountainsWithDates}
-              highlighted={highlightedMountain}
-              userId={userId}
-              isOtherUser={isOtherUser}
-              colorScaleTitle={colorScaleTitle}
-              colorScaleColors={colorScaleColors}
-              colorScaleSymbols={colorScaleSymbols}
-              colorScaleLabels={colorScaleLabels}
-              showNearbyTrails={true}
-              showYourLocation={true}
-              defaultLocationOn={defaultYourLocation}
-              defaultMajorTrailsOn={defaultMajorTrails}
-              defaultMinorTrailsOn={defaultMinorTrails}
-              localstorageKeys={{
-                majorTrail: localstorageShowMajorTrailsPeakListKey,
-                minorTrail: localstorageShowMinorTrailsPeakListKey,
-                yourLocation: localstorageShowYourLocationPeakListKey,
-              }}
-              key={peakListDetailMapKey}
-            />
+            <MapContainer>
+              <Map
+                id={peakList.id}
+                coordinates={allMountainsWithDates}
+                highlighted={highlightedMountain}
+                userId={userId}
+                isOtherUser={isOtherUser}
+                colorScaleTitle={colorScaleTitle}
+                colorScaleColors={colorScaleColors}
+                colorScaleSymbols={colorScaleSymbols}
+                colorScaleLabels={colorScaleLabels}
+                showNearbyTrails={true}
+                showYourLocation={true}
+                defaultLocationOn={defaultYourLocation}
+                defaultMajorTrailsOn={defaultMajorTrails}
+                defaultMinorTrailsOn={defaultMinorTrails}
+                localstorageKeys={{
+                  majorTrail: localstorageShowMajorTrailsPeakListKey,
+                  minorTrail: localstorageShowMinorTrailsPeakListKey,
+                  yourLocation: localstorageShowYourLocationPeakListKey,
+                }}
+                key={peakListDetailMapKey}
+              />
+            </MapContainer>
             <PreFormattedDiv>
               {paragraphText}
             </PreFormattedDiv>
             {resourcesList}
             {otherVariants}
-            <UserNote
-              placeholder={notesPlaceholderText}
-              defaultValue={defaultNoteText}
-              onSave={saveNote}
-              key={defaultNoteText}
-            />
+            <DetailBoxTitle>
+              <BasicIconInText icon={faEdit} />
+              Notes
+            </DetailBoxTitle>
+            <DetailBox>
+              <UserNote
+                placeholder={notesPlaceholderText}
+                defaultValue={defaultNoteText}
+                onSave={saveNote}
+                key={defaultNoteText}
+              />
+            </DetailBox>
             <MountainTable
               user={user}
               mountains={requiredMountainsWithDates}

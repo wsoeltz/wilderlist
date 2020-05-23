@@ -78,8 +78,11 @@ const Mapbox = ReactMapboxGl({
   scrollZoom: false,
 });
 
-const Root = styled.div`
+export const MapContainer = styled.div`
   margin: 2rem 0;
+`;
+
+const Root = styled.div`
   border: 1px solid ${lightBorderColor};
 
   .mapboxgl-popup-tip {
@@ -123,6 +126,8 @@ const PopupTitleExternal = styled.button<ColorProps>`
   color: ${({color}) => color};
   padding: 0;
   outline: none;
+  background-color: transparent;
+  border: none;
 
   &:hover {
     cursor: pointer;
@@ -725,15 +730,23 @@ const Map = (props: Props) => {
   };
 
   const getMountainPopupName = (mtnId: string, mtnName: string, color: string) => {
-    return (
-      <PopupTitleInternal
-        mobileURL={mountainDetailLink(mtnId)}
-        desktopURL={getDesktopUrl(mtnId)}
-        color={color}
-      >
-        {mtnName}
-      </PopupTitleInternal>
-    );
+    if (mtnId) {
+      return (
+        <PopupTitleInternal
+          mobileURL={mountainDetailLink(mtnId)}
+          desktopURL={getDesktopUrl(mtnId)}
+          color={color}
+        >
+          {mtnName}
+        </PopupTitleInternal>
+      );
+    } else {
+      return (
+        <span style={{color, fontWeight: 600}}>
+          {mtnName}
+        </span>
+      );
+    }
   };
 
   const getAddAscentButton = (mtnId: string, showText: boolean) => {
@@ -887,6 +900,15 @@ const Map = (props: Props) => {
       );
     }
 
+    const drivingContent = showYourLocation ? (
+      <DirectionsContainer>
+        <DirectionsIcon>
+          <FontAwesomeIcon icon={faCar} />
+        </DirectionsIcon>
+        {drivingInfo}
+      </DirectionsContainer>
+    ) : <></>;
+
     const {circleColor, iconImage} = getImageAndIcon({
       colorScaleColors, point: popupData, createOrEditMountain,
       highlighted, colorScaleSymbols,
@@ -916,12 +938,7 @@ const Map = (props: Props) => {
             {dateElms}
             {getAddAscentButton(popupData.id, !dateElms)}
           </PopupDates>
-          <DirectionsContainer>
-            <DirectionsIcon>
-              <FontAwesomeIcon icon={faCar} />
-            </DirectionsIcon>
-            {drivingInfo}
-          </DirectionsContainer>
+          {drivingContent}
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
         </StyledPopup>
       </Popup>
@@ -968,6 +985,16 @@ const Map = (props: Props) => {
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
     }
+
+    const drivingContent = showYourLocation ? (
+      <DirectionsContainer>
+        <DirectionsIcon>
+          <FontAwesomeIcon icon={faCar} />
+        </DirectionsIcon>
+        {drivingInfo}
+      </DirectionsContainer>
+    ) : <></>;
+
     const imageIcon = popupData.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
 
     const openTrailModal = () => {
@@ -1004,12 +1031,7 @@ const Map = (props: Props) => {
               </PopupDetail>
             </div>
          </PopupHeader>
-          <DirectionsContainer>
-            <DirectionsIcon>
-              <FontAwesomeIcon icon={faCar} />
-            </DirectionsIcon>
-            {drivingInfo}
-          </DirectionsContainer>
+         {drivingContent}
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>
         </StyledPopup>
       </Popup>
