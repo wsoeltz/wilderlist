@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';
+import BackupImage from '../../../assets/images/default-user-image.jpg';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -90,18 +91,6 @@ const ProfilePicture = styled.img`
   }
 `;
 
-const ProfilePictureEmpty = styled.div`
-  max-width: 100%;
-  width: 10rem;
-  padding-top: 100%;
-  border-radius: 4000px;
-  background-color: gray;
-
-  @media(max-width: 550px) {
-    max-width: 6rem;
-  }
-`;
-
 const BoldLink = styled.a`
   font-weight: ${boldFontWeight};
   white-space: nowrap;
@@ -153,7 +142,7 @@ interface Props {
 
 const Header = (props: Props) => {
   const {
-    user: { name, email, profilePictureUrl, redditId }, user,
+    user: { name, email, redditId }, user,
     currentUserId, friendStatus,
   } = props;
 
@@ -161,6 +150,9 @@ const Header = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [removeFriendModalOpen, setRemoveFriendModalOpen] = useState<boolean>(false);
+
+  const initialProfilePictureUrl = user.hideProfilePicture ? BackupImage : user.profilePictureUrl;
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string>(initialProfilePictureUrl);
 
   let actionButtons: React.ReactElement<any> | null;
   const [sendFriendRequestMutation] =
@@ -321,15 +313,11 @@ const Header = (props: Props) => {
     emailOutput = null;
   }
 
-  const profilePicture = user.hideProfilePicture === true ? (
-      <ProfilePictureContainer>
-        <ProfilePictureEmpty />
-      </ProfilePictureContainer>
-    ) : (
-      <ProfilePictureContainer>
-        <ProfilePicture alt={name} title={name} src={profilePictureUrl}/>
-      </ProfilePictureContainer>
-    );
+  const onImageError = () => {
+    if (profilePictureUrl !== BackupImage) {
+      setProfilePictureUrl(BackupImage);
+    }
+  };
 
   return (
     <Root>
@@ -337,7 +325,14 @@ const Header = (props: Props) => {
         <Title>{name}</Title>
         {emailOutput}
       </TitleContent>
-      {profilePicture}
+      <ProfilePictureContainer>
+        <ProfilePicture
+          alt={name}
+          title={name}
+          src={profilePictureUrl}
+          onError={onImageError}
+        />
+      </ProfilePictureContainer>
       <ButtonContainer>
         <ActionButtonContainer>
           {actionButtons}

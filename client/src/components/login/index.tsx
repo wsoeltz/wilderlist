@@ -30,6 +30,15 @@ const Root = styled(ContentFull)`
   height: 100%;
 `;
 
+const PlaceholderBackground = styled.div`
+  object-fit: cover;
+  ${videoStyles}
+  position: fixed;
+  z-index: -2;
+  background-image: url("${require('../../assets/video/landing-video-placeholder.jpg')}");
+  background-size: cover;
+  background-repeat: no-repeat;
+`;
 const VideoBackground = styled.video`
   object-fit: cover;
   ${videoStyles}
@@ -197,6 +206,7 @@ const LoginPage = () => {
           {getFluentString('header-text-menu-privacy-policy')}
         </WhiteLink>
       </DisclaimerLinks>
+      <PlaceholderBackground />
       <VideoBackground
         loop={true}
         muted={true}

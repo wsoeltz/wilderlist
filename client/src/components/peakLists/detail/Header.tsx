@@ -268,10 +268,11 @@ const Header = (props: Props) => {
   } else if (type === PeakListVariants.grid) {
     totalRequiredAscents = mountains.length * 12;
   } else {
-    failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
     totalRequiredAscents = 0;
+    failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
   }
 
+  let listCount: string | number;
   let listInfoContent: React.ReactElement<any> | null;
   if (user && comparisonUser !== undefined && comparisonAscents !== undefined) {
 
@@ -293,6 +294,7 @@ const Header = (props: Props) => {
         </TextRight>
       </ActiveListContentContainer>
     );
+    listCount = totalRequiredAscents;
   } else if (active === true) {
     const latestDate = getLatestAscent(mountains, completedAscents, type);
 
@@ -315,11 +317,7 @@ const Header = (props: Props) => {
     listInfoContent = (
       <>
         <ActiveListContentContainer>
-          <div>
-            <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
-            {getFluentString('peak-list-text-total-ascents')}
-          </div>
-          <TextRight>{latestDateText}</TextRight>
+          <div>{latestDateText}</div>
         </ActiveListContentContainer>
         <ProgressBarContainer>
           <PeakProgressBar
@@ -332,8 +330,10 @@ const Header = (props: Props) => {
       </>
     );
 
+    listCount = `${numCompletedAscents}/${totalRequiredAscents}`;
   } else {
     listInfoContent = null;
+    listCount = totalRequiredAscents;
   }
 
   const mountainLogoId = parent === null ? id : parent.id;
@@ -345,7 +345,7 @@ const Header = (props: Props) => {
           {getStatesOrRegion(statesArray, getFluentString)}
         </ListInfo>
         <ListInfo>
-          {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
+          {listCount} {getFluentString('peak-list-text-total-ascents')}
         </ListInfo>
       </TitleContent>
       <LogoContainer>

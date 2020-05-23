@@ -19,7 +19,6 @@ import {
   AscentListItem,
   BasicListItem,
   ItemTitle,
-  VerticalContentItem,
 } from './sharedStyling';
 
 const AddAscentButton = styled(ButtonPrimary)`
@@ -143,11 +142,11 @@ const AscentsList = (props: Props) => {
     );
   }
   return (
-    <VerticalContentItem>
+    <>
       <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
       {output}
       {ascentModal}
-    </VerticalContentItem>
+    </>
   );
 };
 

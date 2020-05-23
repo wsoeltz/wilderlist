@@ -71,37 +71,57 @@ const Text = styled.div`
   font-style: italic;
 `;
 
-const LoadingSpinner = () => {
+interface Props {
+  hideText?: boolean;
+  message?: {
+    basic?: string;
+    medium?: string;
+    long?: string;
+    extraLong?: string;
+  };
+}
+
+const LoadingSpinner = (props: Props) => {
+  const {message, hideText} = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const [loadingMessage, setLoadingMessage] = useState<string>('global-text-value-loading');
+  const initialMessage = message && message.basic !== undefined
+    ? message.basic : getFluentString('global-text-value-loading');
+
+  const [loadingMessage, setLoadingMessage] = useState<string>(initialMessage);
 
   useEffect(() => {
-    const mediumTimer = setTimeout(() =>
-      setLoadingMessage('global-text-value-loading-medium'),
-      2500);
-    const longTimer = setTimeout(() =>
-      setLoadingMessage('global-text-value-loading-long'),
-      8000);
-    const extraLongTimer = setTimeout(() =>
-      setLoadingMessage('global-text-value-loading-extra-long'),
-      15000);
+    const mediumTimer = setTimeout(() => {
+      const newMessage = message && message.medium !== undefined
+        ? message.medium : getFluentString('global-text-value-loading-medium');
+      setLoadingMessage(newMessage);
+    }, 2500);
+    const longTimer = setTimeout(() => {
+      const newMessage = message && message.long !== undefined
+        ? message.long : getFluentString('global-text-value-loading-long');
+      setLoadingMessage(newMessage);
+    }, 8000);
+    const extraLongTimer = setTimeout(() => {
+      const newMessage = message && message.extraLong !== undefined
+        ? message.extraLong : getFluentString('global-text-value-loading-extra-long');
+      setLoadingMessage(newMessage);
+    }, 15000);
     return () => {
       clearTimeout(mediumTimer);
       clearTimeout(longTimer);
       clearTimeout(extraLongTimer);
     };
-  }, []);
+  });
+
+  const text = hideText ? null : <Text>{loadingMessage}...</Text>;
 
   return (
     <Root>
       <Compass>
         <Needle />
       </Compass>
-      <Text>
-        {getFluentString(loadingMessage)}...
-      </Text>
+      {text}
     </Root>
   );
 };

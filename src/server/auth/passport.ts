@@ -40,17 +40,15 @@ passport.serializeUser((user: IUser, done) => {
       done(null, user.id);
     }
   } catch (err) {
-    throw new Error('Unable to sarialize user with passport');
+    throw new Error('Unable to serialize user with passport');
   }
 });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (err) {
-    throw new Error('Unable to desarialize user');
-  }
+// used to deserialize the user
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
 });
 
 const updateUserGoogle = async (profile: Profile) => {

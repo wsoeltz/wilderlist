@@ -27,6 +27,7 @@ import {
 } from './routing';
 import getSitemap from './routing/getSitemap';
 import getGridApplication from './utilities/getGridApplication/index';
+import getWeatherData from './utilities/getWeather';
 
 require('./auth/passport');
 
@@ -101,6 +102,18 @@ app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
 
 // Send invites to ascent added emails
 notificationRoutes(app);
+
+app.get('/api/weather', async (req, res) => {
+  try {
+    const lat = req.query && req.query.lat ? req.query.lat : undefined;
+    const lng = req.query && req.query.lng ? req.query.lng : undefined;
+    const weatherData = await getWeatherData(lat, lng);
+    res.json(weatherData);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
 
 if (process.env.NODE_ENV === 'production') {
 

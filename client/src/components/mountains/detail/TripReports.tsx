@@ -8,6 +8,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { userProfileLink } from '../../../routing/Utils';
 import {
+  ButtonSecondary,
   CollapsedParagraph,
   GhostButton,
   LinkButton as LinkButtonBase,
@@ -35,7 +36,6 @@ import {
   ReportHeader,
   Section,
   SectionTitle,
-  VerticalContentItem,
 } from './sharedStyling';
 import TripReportModal from './TripReportModal';
 
@@ -43,8 +43,7 @@ const LinkButton = styled(LinkButtonBase)`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
-const ReadFullReportButton = styled(GhostButton)`
-  padding-top: 0;
+const ReadFullReportButton = styled(ButtonSecondary)`
   font-size: 0.7rem;
   margin: 0 0.2rem;
   visibility: hidden;
@@ -337,13 +336,13 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
     output = null;
   }
   return (
-    <VerticalContentItem id={'trip-reports'}>
+    <div id={'trip-reports'}>
       <ItemTitle>
         {getFluentString('trip-reports-title')}
       </ItemTitle>
       {output}
       {tripReportModal}
-    </VerticalContentItem>
+    </div>
   );
 
 };

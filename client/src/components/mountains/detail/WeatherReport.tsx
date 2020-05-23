@@ -13,18 +13,15 @@ import {
 } from '../../../styling/styleUtils';
 import getWeather from '../../../utilities/getWeather';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import {
-  ItemTitle,
-  VerticalContentItem,
-} from './sharedStyling';
 import WeatherDetailModal from './WeatherDetailModal';
 
 const ForecastContainer = styled.div`
   display: flex;
   width: 100%;
-  min-height: 70px;
+  min-height: 129px;
   overflow: auto;
-  padding: 1rem 0;
+  padding: 0 0 1rem;
+  box-sizing: border-box;
 
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -86,6 +83,11 @@ const DetailModalButton = styled(LinkButton)`
   outline: none;
 `;
 
+const LoadingContainer = styled.div`
+  height: 5rem;
+  width: 100%;
+`;
+
 interface LatLong {
   latitude: number;
   longitude: number;
@@ -127,17 +129,11 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   useEffect(() => {
     const getWeatherData = async () => {
       try {
-        const res = await getWeather(`https://api.weather.gov/points/${latitude},${longitude}`);
-        if (res && res.data && res.data.properties && res.data.properties.forecast) {
-          const forecastData = await getWeather(res.data.properties.forecast);
-          if (forecastData && forecastData.data && forecastData.data.properties
-            && forecastData.data.properties.periods) {
-            setForecast(forecastData.data.properties.periods);
-          } else {
-            setError('There was an error getting the forecast');
-          }
+        const res = await getWeather(`/api/weather?lat=${latitude}&lng=${longitude}`);
+        if (res && res.data && res.data.length) {
+          setForecast(res.data);
         } else {
-          setError('There was an error getting the location response');
+          setError('Weather for this location is not available at this time.');
         }
       } catch (err) {
         console.error(err);
@@ -151,7 +147,18 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   if (error !== null) {
     output = <>{getFluentString('weather-forecast-network-error')}</>;
   } else if (forecast === null) {
-    output = <LoadingSpinner />;
+    output = (
+      <LoadingContainer>
+        <LoadingSpinner
+          message={{
+            basic: getFluentString('weather-loading-report'),
+            medium: getFluentString('weather-loading-report'),
+            long: getFluentString('weather-loading-report'),
+            extraLong: getFluentString('weather-loading-report'),
+          }}
+        />
+      </LoadingContainer>
+    );
   } else if (forecast) {
     const start = forecast[0].isDaytime === true ? 0 : -1;
     const forecastDays: Array<React.ReactElement<any>> = [];
@@ -239,15 +246,12 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   );
 
   return (
-    <VerticalContentItem>
-      <ItemTitle>
-        {getFluentString('weather-forecast-weather')}
-      </ItemTitle>
+    <>
       <ForecastContainer>
         {output}
       </ForecastContainer>
       {weatherDetailModal}
-    </VerticalContentItem>
+    </>
   );
 };
 

@@ -6,16 +6,22 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import {
   faCalendarAlt,
+  faCar,
   faCaretDown,
   faCaretUp,
+  faChartArea,
   faChartLine,
   faCheck,
   faChevronLeft,
   faChevronRight,
   faClone,
+  faCloudSun,
+  faDownload,
+  faEdit,
   faEnvelope,
   faFileCsv,
   faFileExcel,
+  faFileImport,
   faFlag,
   faHiking,
   faHome,
@@ -49,7 +55,8 @@ library.add(
   faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
   faFileExcel, faMapSigns, faMountain, faHiking,
   faUserFriends, faHome, faChartLine, faTrash, faClone,
-  faFlag, faSync, faLongArrowAltDown,
+  faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
+  faCloudSun, faEdit, faFileImport, faDownload,
 );
 
 const GlobalStyles = createGlobalStyle`

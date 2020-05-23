@@ -101,6 +101,10 @@ global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-elevation = Elevation
+global-text-value-elevation-gain = Elevation Gain
+global-text-value-high-point = Highest Point
+global-text-value-low-point = Lowest Point
+global-text-value-trail = Trail
 global-text-value-feet = feet
 global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
@@ -108,8 +112,8 @@ global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Your Ascents
-global-text-value-done = Done
-global-text-value-not-done = Not Done
+global-text-value-done = Hiked
+global-text-value-not-done = Not Hiked
 global-text-value-today = Today
 global-text-value-summer = Summer
 global-text-value-fall = Fall
@@ -200,6 +204,7 @@ global-text-value-parent = Parent
 
 global-text-value-other-list-versions = Other Version of this list
 
+global-text-value-additional-resources = Additional Resources
 global-text-value-external-resources = External Resources
 global-text-value-add-external-resources = Add Another Resource
 global-text-value-resource-title = Resource Title
@@ -380,7 +385,7 @@ peak-list-detail-list-standard-para-1 = The { $list-name } {
 
 peak-list-detail-list-standard-para-2 = Explore the different peaks and track your progress towards completing the { $list-name } below.
 
-peak-list-detail-list-winter-has-parent-para-1 = The { $list-name } In the Winter ({ $short-name } - Winter) takes the standard { $parent-list-name } list to the next level. Just like it's any-season counterpart, { $short-name } - Winter spans { 
+peak-list-detail-list-winter-has-parent-para-1 = The { $list-name } In the Winter ({ $short-name } - Winter) takes the standard { $parent-list-name } list to the next level. Just like it's any-season counterpart, { $short-name } - Winter spans {
   $number-of-peaks ->
     [1] 1 peak
     *[other] { $number-of-peaks } peaks
@@ -390,7 +395,7 @@ peak-list-detail-list-winter-para-2 = Winter conditions can be a lot more diffic
 
 peak-list-detail-list-winter-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } In the Winter below.
 
-peak-list-detail-list-4-season-has-parent-para-1 = The { $list-name } 4-Season ({ $short-name } - 4-Season) gives you the experience of seeing the mountains of the { $parent-list-name } through the ever changing seasons. Just like it's standard counterpart, { $short-name } - 4-Season includes { 
+peak-list-detail-list-4-season-has-parent-para-1 = The { $list-name } 4-Season ({ $short-name } - 4-Season) gives you the experience of seeing the mountains of the { $parent-list-name } through the ever changing seasons. Just like it's standard counterpart, { $short-name } - 4-Season includes {
   $number-of-peaks ->
     [1] 1 peak
     *[other] { $number-of-peaks } peaks
@@ -400,7 +405,7 @@ peak-list-detail-list-4-season-para-2 = Mountain conditions in the late fall, wi
 
 peak-list-detail-list-4-season-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } 4-Season below.
 
-peak-list-detail-list-grid-has-parent-para-1 = The { $list-name } Grid ({ $short-name } Grid) is the the ultimate hiking challenge for the { $parent-list-name }. { $short-name } Grid includes the same { 
+peak-list-detail-list-grid-has-parent-para-1 = The { $list-name } Grid ({ $short-name } Grid) is the the ultimate hiking challenge for the { $parent-list-name }. { $short-name } Grid includes the same {
   $number-of-peaks ->
     [1] 1 peak
     *[other] { $number-of-peaks } peaks
@@ -445,7 +450,7 @@ mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
 mountain-table-import-button = Import Ascents from Spreadsheet
-mountain-table-export-button = Export Ascents
+mountain-table-export-button = Download Ascent Data
 download-csv-button = Download CSV
 download-official-grid-xlsx-button = Download Official Grid Application
 
@@ -478,6 +483,9 @@ mountain-detail-driving-error-location = There was a problem getting your locati
 mountain-detail-driving-error-direction = There was probelm getting directions.
 mountain-detail-driving-distance-title = Driving Distance
 mountain-detail-pending-approval = This mountain is pending confirmation
+
+mountain-detail-weather-and-reports = Weather & Trip Reports
+mountain-detail-notes-and-ascents = Notes & Ascents
 
 
 user-list-no-user-selected-text = Select a user on the left to see more details
@@ -520,8 +528,40 @@ map-all-months = 12
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Lat/Long to these values
 
+map-get-directions = Get Directions
+
+map-legend-location = Your Location &amp;<br />Driving Directions
+map-legend-location-tooltip = <strong>Driving Directions</strong>: View the driving times and routes from your location to any mountain or trailhead. Click on a point on the map and then click "Get Directions".
+map-legend-trails-major = Major Trails &amp;<br /> Trailheads
+map-legend-trails-tooltip = Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be more trails in a given area than what is listed.
+map-legend-trails-minor = Minor Trails &amp;<br /> Connectors
+map-legend-show-hide = click to {
+  $shown ->
+    [true] hide
+    [false] show
+    *[other] toggle
+}
+
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
+
+map-trails-trail-desc = { 
+  $miles ->
+    [1] mile
+    *[other] miles
+} long
+map-trails-difficulty-desc = {
+  $difficulty ->
+    [green] No obstacles. Flat.
+    [greenBlue] Some uneven terrain. Mostly flat.
+    [blue] Moderate inclines. Uneven terrain.
+    [blueBlack] Some rocks, roots. Steep sections.
+    [black] Steep. Tricky terrain.
+    [dblack] Very steep. Hazardous terrain.
+    *[other] Difficulty unknown.
+}
+map-trails-
+
 
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.
@@ -578,7 +618,8 @@ weather-forecast-high = High
 weather-forecast-low = Low
 weather-forecast-wind = Wind
 weather-forecast-detailed-report = Detailed Report
-weather-forecast-network-error = There was a network error retrieving weather data. Please try again later.
+weather-forecast-network-error = Weather for this location is not available at this time.
+weather-loading-report = Getting your forecast
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes

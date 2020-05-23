@@ -3,6 +3,8 @@ import styled from 'styled-components/macro';
 import AllTrailsLogoImageUrl from '../assets/images/alltrails-logo.svg';
 import CaltopoLogoImageUrl from '../assets/images/caltopo-logo.png';
 import GoogleMapsLogoImageUrl from '../assets/images/google-maps-logo.png';
+import HikingProjectLogoImageUrl from '../assets/images/hiking-project-logo.svg';
+import { borderRadius, primaryColor } from '../styling/styleUtils';
 
 const TextContainer = styled.span`
   display: inline-block;
@@ -15,16 +17,45 @@ const ExternalLink = styled.a`
 `;
 
 const GoogleMapsLogo = styled.img`
-  max-width: 90px;
+  max-width: 80px;
 `;
 const CaltopoLogo = styled.img`
-  max-width: 80px;
-  position: relative;
-  top: 2px;
+  max-width: 60px;
+`;
+
+const HikingProjectLogo = styled.img`
+  max-width: 115px;
+`;
+
+const ExternalLinkButton = styled.a`
+  border: solid 1px ${primaryColor};
+  padding: 0.5rem;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: ${borderRadius}px;
 `;
 
 export const GoogleMapsLink = ({lat, long}: {lat: number, long: number}) => {
   const googleUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${long}`;
+  return (
+    <ExternalLink href={googleUrl} target='_blank' rel='noopener' title='Google Maps'>
+      <GoogleMapsLogo src={GoogleMapsLogoImageUrl} />
+    </ExternalLink>
+  );
+};
+
+export const GoogleMapsDirectionsLink = (
+  {lat, long, userLat, userLong}: {lat: number, long: number, userLat: number, userLong: number}) => {
+  const googleUrl = 'https://www.google.com/maps' +
+              `?saddr=${userLat},${userLong}` +
+              `&daddr=${lat},${long}`;
   return (
     <ExternalLink href={googleUrl} target='_blank' rel='noopener' title='Google Maps'>
       <GoogleMapsLogo src={GoogleMapsLogoImageUrl} />
@@ -168,4 +199,13 @@ export const generateHikingProjectLink = (state: string | null) => {
   } else {
     return 'https://www.hikingproject.com/';
   }
+};
+
+export const HikingProjectTrailLink = ({url}: {url: string}) => {
+  return (
+    <ExternalLinkButton href={url} target='_blank' rel='noopener' title="REI's Hiking Project">
+      <span>View Trail At The</span>
+      <HikingProjectLogo src={HikingProjectLogoImageUrl} />
+    </ExternalLinkButton>
+  );
 };

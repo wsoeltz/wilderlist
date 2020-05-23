@@ -1,3 +1,9 @@
+import { PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  VariableDate,
+} from '../../peakLists/detail/getCompletionDates';
+import {CoordinateWithDates} from './';
+
 const startColor = '#dc4900';
 const endColor = '#145500';
 
@@ -30,6 +36,105 @@ export const thirteenColorScale:
 ];
 
 export const legendColorScheme = {
-  primary: '#ca4a19',
-  secondary: '#216ba5',
+  primary: '#216ba5',
+  secondary: '#848484',
+};
+
+const startSymbol = 'mountain-perc-0';
+const endSymbol = 'mountain-perc-100';
+
+export const twoSymbolScale: [string, string] = [
+  startSymbol,
+  endSymbol,
+];
+export const fiveSymbolScale: [string, string, string, string, string] = [
+  startSymbol,
+  'mountain-perc-25',
+  'mountain-perc-50',
+  'mountain-perc-75',
+  endSymbol,
+];
+export const thirteenSymbolScale:
+  [string, string, string, string, string, string, string, string, string, string, string, string, string] = [
+  startSymbol,
+  'mountain-perc-8',
+  'mountain-perc-17',
+  'mountain-perc-25',
+  'mountain-perc-33',
+  'mountain-perc-42',
+  'mountain-perc-50',
+  'mountain-perc-58',
+  'mountain-perc-67',
+  'mountain-perc-75',
+  'mountain-perc-83',
+  'mountain-perc-92',
+  endSymbol,
+];
+
+export const legendSymbolScheme = {
+  primary: 'mountain-highlighted',
+  secondary: 'mountain-default',
+};
+
+interface ImageAndIconInput {
+  colorScaleColors: string[];
+  colorScaleSymbols: string[];
+  point: CoordinateWithDates;
+  createOrEditMountain: boolean | undefined;
+  highlighted: undefined | CoordinateWithDates[];
+}
+export const getImageAndIcon = (input: ImageAndIconInput): {circleColor: string, iconImage: string} => {
+  const {
+    colorScaleColors,
+    point, createOrEditMountain, highlighted,
+    colorScaleSymbols,
+  } = input;
+
+  let circleColor: string;
+  let iconImage: string;
+
+  const {completionDates} = point;
+
+  if (colorScaleColors.length === 0) {
+    circleColor = legendColorScheme.primary;
+    iconImage = legendSymbolScheme.primary;
+  } else if (completionDates === null || completionDates === undefined) {
+    if (createOrEditMountain === true && highlighted && highlighted.length &&
+      (point.latitude === highlighted[0].latitude && point.longitude === highlighted[0].longitude)) {
+      circleColor = colorScaleColors[1];
+      iconImage = colorScaleSymbols[1];
+    } else {
+      circleColor = colorScaleColors[0];
+      iconImage = colorScaleSymbols[0];
+    }
+  } else if (completionDates.type === PeakListVariants.standard) {
+    circleColor = completionDates.standard !== undefined ? colorScaleColors[1] : colorScaleColors[0];
+    iconImage = completionDates.standard !== undefined ? colorScaleSymbols[1] : colorScaleSymbols[0];
+  } else if (completionDates.type === PeakListVariants.winter) {
+    circleColor = completionDates.winter !== undefined ? colorScaleColors[1] : colorScaleColors[0];
+    iconImage = completionDates.winter !== undefined ? colorScaleSymbols[1] : colorScaleSymbols[0];
+  } else if (completionDates.type === PeakListVariants.fourSeason) {
+    let completionCount: number = 0;
+    Object.keys(completionDates).forEach(function(season: keyof VariableDate) {
+      if (season !== 'type' && completionDates[season] !== undefined) {
+        completionCount += 1;
+      }
+    });
+    circleColor = colorScaleColors[completionCount];
+    iconImage = colorScaleSymbols[completionCount];
+  } else if (completionDates.type === PeakListVariants.grid) {
+    let completionCount: number = 0;
+    Object.keys(completionDates).forEach(function(month: keyof VariableDate) {
+      if (month !== 'type' && completionDates[month] !== undefined) {
+        completionCount += 1;
+      }
+    });
+    circleColor = colorScaleColors[completionCount];
+    iconImage = colorScaleSymbols[completionCount];
+  } else {
+    circleColor = colorScaleColors[1];
+    iconImage = colorScaleSymbols[1];
+  }
+
+  return {circleColor, iconImage};
 };

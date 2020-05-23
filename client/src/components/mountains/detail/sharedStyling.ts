@@ -8,7 +8,6 @@ import {
   lightBlue,
   lightBorderColor,
   semiBoldFontBoldWeight,
-  tertiaryColor,
 } from '../../../styling/styleUtils';
 
 export const ItemTitle = styled.h2`
@@ -85,7 +84,7 @@ export const ReportContainer = styled(BasicListItem)`
   padding: 0.5rem 0;
 
   &:hover {
-    background-color: ${tertiaryColor};
+    background-color: ${lightBorderColor};
 
     .read-full-report-button {
       visibility: visible;

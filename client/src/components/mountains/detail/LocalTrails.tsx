@@ -8,7 +8,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { AllTrailsLink, generateHikingProjectLink } from '../../../routing/externalLinks';
 import { CollapsedParagraph } from '../../../styling/styleUtils';
-import getTrails from '../../../utilities/getTrails';
+import getTrails, {TrailsDatum} from '../../../utilities/getTrails';
 import { getDistanceFromLatLonInMiles } from '../../../Utils';
 import { genericWords } from '../../peakLists/import';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -43,32 +43,6 @@ interface LatLong {
   longitude: number;
 }
 
-interface TrailsDatum {
-  id: number;
-  name: string;
-  type: 'Trail' | 'Connector' | 'Featured Hike';
-  summary: string;
-  difficulty: string;
-  stars: number;
-  starVotes: number;
-  location: string;
-  url: string;
-  imgSqSmall: string;
-  imgSmall: string;
-  imgSmallMed: string;
-  imgMedium: string;
-  length: number;
-  ascent: number;
-  descent: number;
-  high: number;
-  low: number;
-  longitude: number;
-  latitude: number;
-  conditionStatus: string;
-  conditionDetails: string;
-  conditionDate: string;
-}
-
 interface Props extends LatLong {
   mountainName: string;
   state: string | null;
@@ -84,7 +58,7 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
   useEffect(() => {
     const getTrailsData = async () => {
       try {
-        const res = await getTrails({params: {lat: latitude, lon: longitude}});
+        const res = await getTrails({params: {lat: latitude, lon: longitude, maxDistance: 1}});
         if (res && res.data && res.data.trails) {
           setTrails(res.data.trails);
         } else {

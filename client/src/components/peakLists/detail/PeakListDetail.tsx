@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -12,7 +13,10 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { listDetailLink } from '../../../routing/Utils';
 import {
+  BasicIconInText,
   ButtonPrimaryLink,
+  DetailBox,
+  DetailBoxTitle,
   lightBorderColor,
   LinkButton,
   PlaceholderText,
@@ -36,11 +40,14 @@ import {
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Map from '../../sharedComponents/map';
+import Map, {MapContainer} from '../../sharedComponents/map';
 import {
   fiveColorScale,
+  fiveSymbolScale,
   thirteenColorScale,
+  thirteenSymbolScale,
   twoColorScale,
+  twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
 import { getStatesOrRegion } from '../list/PeakListCard';
@@ -51,6 +58,9 @@ import IntroText from './IntroText';
 import MountainTable, {topOfPageBuffer} from './MountainTable';
 
 const peakListDetailMapKey = 'peakListDetailMapKey';
+const localstorageShowMajorTrailsPeakListKey = 'localstorageShowMajorTrailsPeakListKey';
+const localstorageShowMinorTrailsPeakListKey = 'localstorageShowMinorTrailsPeakListKey';
+const localstorageShowYourLocationPeakListKey = 'localstorageShowYourLocationPeakListKey';
 
 export const friendHeaderHeight = 2.6; // in rem
 
@@ -81,6 +91,10 @@ const ButtonPrimaryLinkSmall = styled(ButtonPrimaryLink)`
   flex-shrink: 0;
   padding: 0.4rem;
   font-size: 0.7rem;
+`;
+
+const OtherLists = styled(ResourceList)`
+  margin-bottom: 2rem;
 `;
 
 const GET_PEAK_LIST = gql`
@@ -434,10 +448,10 @@ const PeakListDetail = (props: Props) => {
               <SectionTitle>
                 {getFluentString('global-text-value-other-list-versions')}
               </SectionTitle>
-              <ResourceList>
+              <OtherLists>
                 {parentVariant}
                 {otherVariantsArray}
-              </ResourceList>
+              </OtherLists>
             </>
           ) : null;
         } else if (siblings && siblings.length) {
@@ -458,10 +472,10 @@ const PeakListDetail = (props: Props) => {
               <SectionTitle>
                 {getFluentString('global-text-value-other-list-versions')}
               </SectionTitle>
-              <ResourceList>
+              <OtherLists>
                 {parentVariant}
                 {otherVariantsArray}
-              </ResourceList>
+              </OtherLists>
             </>
           ) : null;
         } else {
@@ -470,19 +484,21 @@ const PeakListDetail = (props: Props) => {
             <SectionTitle>
               {getFluentString('global-text-value-other-list-versions')}
             </SectionTitle>
-            <ResourceList>
+            <OtherLists>
               {parentVariant}
-            </ResourceList>
+            </OtherLists>
           </>
         ) : null;
         }
 
         let colorScaleTitle: string | undefined;
         let colorScaleColors: string[];
+        let colorScaleSymbols: string[];
         let colorScaleLabels: string[];
         if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
           colorScaleTitle = undefined;
           colorScaleColors = twoColorScale;
+          colorScaleSymbols = twoSymbolScale;
           colorScaleLabels = [
             getFluentString('global-text-value-not-done'),
             getFluentString('global-text-value-done'),
@@ -490,6 +506,7 @@ const PeakListDetail = (props: Props) => {
         } else if (type === PeakListVariants.fourSeason) {
           colorScaleTitle = getFluentString('map-number-of-seasons');
           colorScaleColors = fiveColorScale;
+          colorScaleSymbols = fiveSymbolScale;
           colorScaleLabels = [
             getFluentString('map-no-seasons'),
             getFluentString('map-all-seasons'),
@@ -497,6 +514,7 @@ const PeakListDetail = (props: Props) => {
         } else if (type === PeakListVariants.grid) {
           colorScaleTitle = getFluentString('map-number-of-months');
           colorScaleColors = thirteenColorScale;
+          colorScaleSymbols = thirteenSymbolScale;
           colorScaleLabels = [
             getFluentString('map-no-months'),
             getFluentString('map-all-months'),
@@ -504,6 +522,7 @@ const PeakListDetail = (props: Props) => {
         } else {
           colorScaleTitle = undefined;
           colorScaleColors = [];
+          colorScaleSymbols = [];
           colorScaleLabels = [];
           failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
         }
@@ -607,6 +626,13 @@ const PeakListDetail = (props: Props) => {
           </Helmet>
         ) : null;
 
+        const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsPeakListKey);
+        const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsPeakListKey);
+        const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationPeakListKey);
+        const defaultMajorTrails = localstorageMajorTrailsVal === 'true' ? true : false;
+        const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
+        const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+
         return (
           <>
             {metaData}
@@ -620,28 +646,47 @@ const PeakListDetail = (props: Props) => {
               isOtherUser={isOtherUser}
               queryRefetchArray={queryRefetchArray}
             />
-            <Map
-              id={peakList.id}
-              coordinates={allMountainsWithDates}
-              highlighted={highlightedMountain}
-              userId={userId}
-              isOtherUser={isOtherUser}
-              colorScaleTitle={colorScaleTitle}
-              colorScaleColors={colorScaleColors}
-              colorScaleLabels={colorScaleLabels}
-              key={peakListDetailMapKey}
-            />
+            <MapContainer>
+              <Map
+                id={peakList.id}
+                coordinates={allMountainsWithDates}
+                highlighted={highlightedMountain}
+                userId={userId}
+                isOtherUser={isOtherUser}
+                colorScaleTitle={colorScaleTitle}
+                colorScaleColors={colorScaleColors}
+                colorScaleSymbols={colorScaleSymbols}
+                colorScaleLabels={colorScaleLabels}
+                showNearbyTrails={true}
+                showYourLocation={true}
+                defaultLocationOn={defaultYourLocation}
+                defaultMajorTrailsOn={defaultMajorTrails}
+                defaultMinorTrailsOn={defaultMinorTrails}
+                localstorageKeys={{
+                  majorTrail: localstorageShowMajorTrailsPeakListKey,
+                  minorTrail: localstorageShowMinorTrailsPeakListKey,
+                  yourLocation: localstorageShowYourLocationPeakListKey,
+                }}
+                key={peakListDetailMapKey}
+              />
+            </MapContainer>
             <PreFormattedDiv>
               {paragraphText}
             </PreFormattedDiv>
             {resourcesList}
             {otherVariants}
-            <UserNote
-              placeholder={notesPlaceholderText}
-              defaultValue={defaultNoteText}
-              onSave={saveNote}
-              key={defaultNoteText}
-            />
+            <DetailBoxTitle>
+              <BasicIconInText icon={faEdit} />
+              Notes
+            </DetailBoxTitle>
+            <DetailBox>
+              <UserNote
+                placeholder={notesPlaceholderText}
+                defaultValue={defaultNoteText}
+                onSave={saveNote}
+                key={defaultNoteText}
+              />
+            </DetailBox>
             <MountainTable
               user={user}
               mountains={requiredMountainsWithDates}
