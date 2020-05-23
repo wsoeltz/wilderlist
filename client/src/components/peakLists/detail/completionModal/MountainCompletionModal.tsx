@@ -17,6 +17,7 @@ import {
   ButtonSecondary,
   ButtonWarning,
   GhostButton,
+  InlineTitle,
   InputBase,
   lightBlue,
   lightBorderColor,
@@ -48,7 +49,7 @@ import {
 } from '../../../mountains/detail/TripReports';
 import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
 import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
-import Modal from '../../../sharedComponents/Modal';
+import Modal, {mobileWidth as modalMobileWidth} from '../../../sharedComponents/Modal';
 import {
   CLEAR_ASCENT_NOTIFICATION,
   ClearNotificationVariables,
@@ -70,6 +71,10 @@ const ColumnRoot = styled.div`
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
   }
+`;
+
+const TitleText = styled(InlineTitle)`
+  margin: 0 0 1rem;
 `;
 
 const TripReportRoot = styled.div`
@@ -131,12 +136,15 @@ export const ButtonWrapper = styled.div`
 `;
 
 const RequiredNote = styled(RequiredNoteBase)`
-  margin-right: auto;
-  margin-left: 1rem;
+  text-align: right;
 `;
 
 export const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+
+  @media (max-width: ${modalMobileWidth}px) {
+    margin-right: 0;
+  }
 `;
 
 const DeleteButton = styled(ButtonWarning)`
@@ -205,10 +213,6 @@ const SelectYearYearOnly = styled(SelectBoxBase)`
 const NoDateText = styled.p`
   text-align: center;
   font-style: italic;
-`;
-
-const TitleText = styled.h3`
-  text-transform: capitalize;
 `;
 
 const ToggleTypeButtonContainer = styled.div`
@@ -1409,7 +1413,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const deleteAscentButton =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
-      <DeleteButton onClick={() => setIsAreYouSureModalOpen(true)}>
+      <DeleteButton onClick={() => setIsAreYouSureModalOpen(true)} mobileExtend={true}>
         <BasicIconInText icon={faTrash} />
         Delete Ascent
       </DeleteButton>
@@ -1422,17 +1426,13 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const actions = (
     <ButtonWrapper>
       {deleteAscentButton}
-      <RequiredNote
-          dangerouslySetInnerHTML={{
-            __html: getFluentString('global-form-html-required-note'),
-          }}
-        />
-      <CancelButton onClick={closeEditMountainModalModal}>
+      <CancelButton onClick={closeEditMountainModalModal} mobileExtend={true}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
       <ButtonPrimary
         onClick={() => validateAndAddMountainCompletion(editMountainId)}
         disabled={isConfirmDisabled()}
+         mobileExtend={true}
       >
         <BasicIconInText icon={faCheck} />
         {saveButtonText}
@@ -1448,7 +1448,14 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         height={'auto'}
         actions={actions}
       >
-        <TitleText>{title}</TitleText>
+        <RequiredNote
+          dangerouslySetInnerHTML={{
+            __html: getFluentString('global-form-html-required-note'),
+          }}
+        />
+        <TitleText>
+          {title}
+        </TitleText>
         <ColumnRoot>
           <LeftColumn>
             <SectionTitle>

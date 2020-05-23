@@ -134,12 +134,18 @@ const DisclaimerLinks = styled.div`
   padding-bottom: 0.75rem;
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 100;
 `;
 
 const WhiteLink = styled(Link)`
   color: #fff;
   margin: 0 0.4rem;
   font-size: 0.75rem;
+
+  &:hover {
+    color: #fff;
+  }
 `;
 
 const CopyrightText = styled.div`

@@ -18,14 +18,20 @@ const Caret = styled(FontAwesomeIcon)`
   margin-right: 0.6rem;
 `;
 
-const BackButton = (props: RouteComponentProps) => {
+interface Props extends RouteComponentProps {
+  onClick?: () => void;
+}
+
+const BackButton = (props: Props) => {
   const { history } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const onClick = props.onClick !== undefined ? props.onClick : history.goBack;
+
   return (
-    <Button onClick={history.goBack}>
+    <Button onClick={onClick}>
       <Caret icon={'chevron-left'} />
       {getFluentString('global-text-value-back')}
     </Button>

@@ -24,7 +24,7 @@ import {
 } from '../../../styling/styleUtils';
 import { Mountain, State } from '../../../types/graphQLTypes';
 import { asyncForEach, convertFieldsToDate, roundPercentToSingleDecimal } from '../../../Utils';
-import Modal from '../../sharedComponents/Modal';
+import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
@@ -75,6 +75,10 @@ const ButtonWrapper = styled.div`
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    margin-right: 0;
+  }
 `;
 
 const SubmitButton = styled(ButtonPrimary)`
@@ -583,7 +587,7 @@ const ImportAscentsModal = (props: Props) => {
     : getFluentString('global-text-value-saving') + ` - (${percent}%)`;
 
   const submitBtn = allDataAvailable
-      ? <SubmitButton onClick={onConfirm}>{submitBtnText}</SubmitButton>
+      ? <SubmitButton onClick={onConfirm} mobileExtend={true}>{submitBtnText}</SubmitButton>
       : null;
 
   const style: React.CSSProperties = isLoading === false ? {} : {
@@ -593,7 +597,7 @@ const ImportAscentsModal = (props: Props) => {
 
   const actions = (
     <ButtonWrapper style={style}>
-      <CancelButton onClick={onCancel}>
+      <CancelButton onClick={onCancel} mobileExtend={true}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
       {submitBtn}

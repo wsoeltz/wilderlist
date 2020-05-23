@@ -164,6 +164,7 @@ const DateDiv = styled.div`
   font-size: 0.7rem;
   text-transform: uppercase;
   line-height: 1.4;
+  text-align: center;
 `;
 
 const GridNumbers = styled.div`
@@ -625,26 +626,30 @@ const Map = (props: Props) => {
   });
 
   const renderCompletionDates = (dates: VariableDate | null | undefined) => {
+    let output: React.ReactElement<any> | null = null;
+    let length: number = 0;
     if (dates) {
       if (dates.type === PeakListVariants.standard) {
         if (dates.standard !== undefined) {
           const completedTextFluentId = isOtherUser ? 'map-completed-other-user' : 'map-completed';
-          return (
+          output = (
             <DateDiv>
               <strong>{getFluentString(completedTextFluentId)}: </strong>
               {formatDate(dates.standard)}
             </DateDiv>
           );
+          length = 1;
         }
       }
       if (dates.type === PeakListVariants.winter) {
         if (dates.winter !== undefined) {
-          return (
+          output = (
             <DateDiv>
               <strong>{getFluentString('map-completed-in-winter')}: </strong>
               {formatDate(dates.winter)}
             </DateDiv>
           );
+          length = 1;
         }
       }
       if (dates.type === PeakListVariants.fourSeason) {
@@ -660,11 +665,12 @@ const Map = (props: Props) => {
             );
           }
         });
-        return (
+        output = (
           <>
             {datesElm}
           </>
         );
+        length = datesElm.length;
       }
       if (dates.type === PeakListVariants.grid) {
         const datesElm: Array<React.ReactElement<any>> = [];
@@ -681,14 +687,15 @@ const Map = (props: Props) => {
             );
           }
         });
-        return (
+        output = (
           <>
             {datesElm}
           </>
         );
+        length = datesElm.length;
       }
     }
-    return null;
+    return {dateElms: output, length};
   };
 
   let editMountainModal: React.ReactElement<any> | null;
@@ -913,7 +920,7 @@ const Map = (props: Props) => {
       colorScaleColors, point: popupData, createOrEditMountain,
       highlighted, colorScaleSymbols,
     });
-    const dateElms = renderCompletionDates(popupData.completionDates);
+    const {dateElms, length} = renderCompletionDates(popupData.completionDates);
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
@@ -936,7 +943,7 @@ const Map = (props: Props) => {
           </PopupHeader>
           <PopupDates>
             {dateElms}
-            {getAddAscentButton(popupData.id, !dateElms)}
+            {getAddAscentButton(popupData.id, !length)}
           </PopupDates>
           {drivingContent}
           <ClosePopup onClick={() => setPopupInfo(null)}>×</ClosePopup>

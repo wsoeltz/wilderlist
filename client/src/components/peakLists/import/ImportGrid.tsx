@@ -21,7 +21,7 @@ import {
 } from '../../../styling/styleUtils';
 import { convertFieldsToDate } from '../../../Utils';
 import { asyncForEach, roundPercentToSingleDecimal } from '../../../Utils';
-import Modal from '../../sharedComponents/Modal';
+import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
@@ -58,6 +58,10 @@ const ButtonWrapper = styled.div`
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    margin-right: 0;
+  }
 `;
 
 const SubmitButton = styled(ButtonPrimary)`
@@ -343,7 +347,7 @@ const ImportAscentsModal = (props: Props) => {
       ? getFluentString('global-text-value-modal-confirm')
       : getFluentString('global-text-value-saving') + ` - (${percent}%)`;
     confirmButton = (
-      <SubmitButton onClick={onConfirm}>
+      <SubmitButton onClick={onConfirm} mobileExtend={true}>
         {confirmBtnText}
       </SubmitButton>
     );
@@ -359,7 +363,7 @@ const ImportAscentsModal = (props: Props) => {
 
   const actions = (
     <ButtonWrapper style={actionStyles}>
-      <CancelButton onClick={onCancel}>
+      <CancelButton onClick={onCancel} mobileExtend={true}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
       {confirmButton}

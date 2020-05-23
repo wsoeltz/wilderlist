@@ -33,6 +33,7 @@ const ExpectedDate = styled(TableCell)`
 const MountainSelect = styled.select`
   padding: 0.3rem;
   border-radius: 4px;
+  max-width: 14.375rem;
 `;
 const DateInputContainer = styled.div`
   display: grid;

@@ -121,7 +121,7 @@ const EditAscentReport = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <CancelButton onClick={props.closeEditMountainModalModal}>
+      <CancelButton onClick={props.closeEditMountainModalModal} mobileExtend={true}>
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
     </ButtonWrapper>

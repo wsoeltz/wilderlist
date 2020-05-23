@@ -74,7 +74,7 @@ const ExportAscentsModal = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <ButtonSecondary onClick={onCancel}>
+      <ButtonSecondary onClick={onCancel} mobileExtend={true}>
         {getFluentString('global-text-value-modal-close')}
       </ButtonSecondary>
     </ButtonWrapper>

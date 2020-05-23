@@ -11,7 +11,7 @@ import {
   lightBaseColor,
   warmRedColor,
 } from '../../../styling/styleUtils';
-import Modal from '../../sharedComponents/Modal';
+import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import { Forecast } from './WeatherReport';
 
 const ForecastContainer = styled.div`
@@ -57,6 +57,10 @@ const ButtonWrapper = styled.div`
 
 const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    margin-right: 0;
+  }
 `;
 
 const TempHigh = styled.div`
@@ -117,7 +121,7 @@ const AreYouSureModal = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <CancelButton onClick={onCancel}>
+      <CancelButton onClick={onCancel} mobileExtend={true}>
         {getFluentString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>
