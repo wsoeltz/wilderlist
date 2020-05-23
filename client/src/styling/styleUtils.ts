@@ -223,7 +223,7 @@ export const ButtonBase = styled.button<{mobileExtend?: boolean; }>`
   ${({mobileExtend}) => mobileExtend ? `
     @media (max-width: 600px) {
       width: 100%;
-      padding: 0.9rem 0.9rem 7vh;
+      padding: 0.9rem 0.9rem 8vh;
       font-size: 1.1rem;
       border-radius: 0;
     }

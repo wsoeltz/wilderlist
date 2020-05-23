@@ -78,6 +78,7 @@ const Content = styled.div`
   @media(max-width: ${mobileWidth}px) {
     overflow: visible;
     flex-grow: 1;
+    padding-bottom: 15vh;
   }
 `;
 
@@ -90,6 +91,10 @@ const Actions = styled.div`
 
   @media(max-width: ${mobileWidth}px) {
     padding: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 `;
 
