@@ -15,7 +15,7 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakList } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Modal from '../../sharedComponents/Modal';
+import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   CheckboxContainer,
@@ -117,6 +117,10 @@ const SelectedItem = styled(PeakListItem)`
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding: 1rem 0.5rem;
+  }
 `;
 
 const CancelButton = styled(ButtonSecondary)`

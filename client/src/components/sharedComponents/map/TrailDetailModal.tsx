@@ -143,7 +143,7 @@ const TrailDetailModal = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <ButtonSecondary onClick={onClose}>
+      <ButtonSecondary onClick={onClose} mobileExtend={true} style={{gridColumn: '1 / -1'}}>
         {getFluentString('global-text-value-modal-close')}
       </ButtonSecondary>
     </ButtonWrapper>

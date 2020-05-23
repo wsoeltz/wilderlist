@@ -96,14 +96,11 @@ const NavLink = styled(Link)`
 
   @media(max-width: 790px) {
     padding: 0 0.5rem;
-  }
-
-  @media(max-width: 720px) {
-    padding: 0 0.4rem;
+    font-size: 0.9rem;
   }
 
   @media(max-width: 690px) {
-    padding: 0 0.2rem;
+    font-size: 0.8rem;
   }
 
   @media(max-width: 390px) {

@@ -1,8 +1,12 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components/macro';
 import { borderRadius } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
+import {AppContext} from '../App';
+import BackButton from './BackButton';
+
+export const mobileWidth = 600; // in px
 
 const Root = styled.div`
   position: fixed;
@@ -28,16 +32,30 @@ const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.3);
 `;
 
-const Container = styled.div`
+interface Dimensions {
+  width: string;
+  height: string;
+}
+
+const Container = styled.div<{dimensions: Dimensions}>`
   background-color: #fff;
   position: relative;
   border-radius: ${borderRadius}px;
   display: grid;
   grid-template-rows: 1fr auto;
   max-height: 90%;
+  max-width: ${({dimensions: {width}}) => width};
+  height: ${({dimensions: {height}}) => height};
 
-  @media(max-width: 600px) {
+  @media(max-width: ${mobileWidth}px) {
     max-height: 100%;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
 `;
 
@@ -56,6 +74,11 @@ const Content = styled.div`
   ::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, .1);
   }
+
+  @media(max-width: ${mobileWidth}px) {
+    overflow: visible;
+    flex-grow: 1;
+  }
 `;
 
 const Actions = styled.div`
@@ -65,11 +88,13 @@ const Actions = styled.div`
   border-bottom-left-radius: ${borderRadius}px;
   border-bottom-right-radius: ${borderRadius}px;
 
-  @media(max-width: 600px) {
-    padding-bottom: 7vh;
-    position: sticky;
-    bottom: 0;
+  @media(max-width: ${mobileWidth}px) {
+    padding: 0;
   }
+`;
+
+const BackButtonContainer = styled.div`
+  width: 100%;
 `;
 
 interface Props {
@@ -94,18 +119,27 @@ const Modal = (props: Props) => {
     }
   }, []);
 
+  const { windowWidth } = useContext(AppContext);
+
   const actions = props.actions === null ? null : (
     <Actions>
       {props.actions}
     </Actions>
   );
 
+  const mobileBackButton = windowWidth <= mobileWidth ? (
+    <BackButtonContainer>
+      <BackButton onClick={onClose}/>
+    </BackButtonContainer>
+  ) : null;
+
   let modal: React.ReactElement<any> | null;
   if (isModalRendered === true && overlayPortalContainerNodeRef.current !== null) {
     modal = createPortal((
       <Root>
         <Overlay onClick={onClose} />
-        <Container style={{ maxWidth: width, height }}>
+        <Container dimensions={{ width, height }}>
+          {mobileBackButton}
           <Content>
             {children}
           </Content>

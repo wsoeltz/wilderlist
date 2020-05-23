@@ -4,15 +4,24 @@ import {
   ButtonSecondary,
   ButtonWarning,
 } from '../../styling/styleUtils';
-import Modal from './Modal';
+import Modal, {mobileWidth} from './Modal';
 
 export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
+
+  @media (max-width: ${mobileWidth}px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 `;
 
 export const CancelButton = styled(ButtonSecondary)`
   margin-right: 1rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    margin-right: 0;
+  }
 `;
 
 export interface Props {
@@ -29,10 +38,10 @@ const AreYouSureModal = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <CancelButton onClick={onCancel}>
+      <CancelButton onClick={onCancel} mobileExtend={true}>
         {cancelText}
       </CancelButton>
-      <ButtonWarning onClick={onConfirm}>
+      <ButtonWarning onClick={onConfirm} mobileExtend={true}>
         {confirmText}
       </ButtonWarning>
     </ButtonWrapper>

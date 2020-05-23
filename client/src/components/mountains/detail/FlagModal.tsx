@@ -43,16 +43,16 @@ const FlagModal = (props: Props) => {
 
   const actions = flagSubmitted === false ? (
     <ButtonWrapper>
-      <CancelButton onClick={onClose}>
+      <CancelButton onClick={onClose} mobileExtend={true}>
         {getFluentString('global-text-value-modal-close')}
       </CancelButton>
-      <ButtonPrimary onClick={onSubmit}>
+      <ButtonPrimary onClick={onSubmit} mobileExtend={true}>
         {getFluentString('global-text-value-submit')}
       </ButtonPrimary>
     </ButtonWrapper>
   ) : (
     <ButtonWrapper>
-      <CancelButton onClick={onClose}>
+      <CancelButton onClick={onClose} mobileExtend={true} style={{gridColumn: '1 / -1'}}>
         {getFluentString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>

@@ -401,7 +401,7 @@ const PeakListCreatePage = (props: Props) => {
       width={'600px'}
       height={'auto'}
       actions={(
-        <ButtonSecondary onClick={closeErrorModal}>
+        <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
           {getFluentString('global-text-value-modal-close')}
         </ButtonSecondary>
         )}

@@ -63,13 +63,13 @@ const TitleContent = styled.div`
 
 const BeginRemoveListButtonContainer = styled.div`
   grid-column: 3;
-  grid-row: 1;
+  grid-row: 3;
   text-align: right;
 `;
 
 const EditFlagButtonContainer = styled.div`
   grid-column: 3;
-  grid-row: 3;
+  grid-row: 1;
   text-align: right;
 `;
 

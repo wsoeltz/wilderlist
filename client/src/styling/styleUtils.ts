@@ -206,7 +206,7 @@ export const SmallTextNote = styled.div`
 
 export const borderRadius = 6; // in px
 
-export const ButtonBase = styled.button`
+export const ButtonBase = styled.button<{mobileExtend?: boolean; }>`
   padding: 0.4rem;
   text-transform: uppercase;
   color: #fff;
@@ -219,6 +219,15 @@ export const ButtonBase = styled.button`
     cursor: not-allowed;
     opacity: 0.5;
   }
+
+  ${({mobileExtend}) => mobileExtend ? `
+    @media (max-width: 600px) {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1.1rem;
+      border-radius: 0;
+    }
+  ` : ''}
 `;
 
 export const ButtonPrimary = styled(ButtonBase)`
@@ -242,7 +251,7 @@ export const ButtonTertiary = styled(ButtonBase)`
     background-color: ${tertiaryColor};
 
   &:hover {
-  background-color: ${lightBorderColor};
+    background-color: ${lightBorderColor};
   }
 `;
 

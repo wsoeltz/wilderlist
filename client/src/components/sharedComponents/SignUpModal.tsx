@@ -15,7 +15,7 @@ import {
   lightBaseColor,
   lightBorderColor,
 } from '../../styling/styleUtils';
-import Modal from './Modal';
+import Modal, {mobileWidth} from './Modal';
 
 export const googleBlue = '#4285f4';
 export const facebookBlue = '#1877F2';
@@ -66,6 +66,18 @@ const LoginButton = styled(LoginButtonBase)`
   border: 1px solid ${lightBorderColor};
 `;
 
+const CloseButton = styled(GhostButton)`
+  display: flex;
+  margin-left: auto;
+
+  @media (max-width: ${mobileWidth}px) {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    justify-content: center;
+  }
+`;
+
 interface Props {
   text: string;
   onCancel: () => void;
@@ -78,9 +90,9 @@ const SignUpModal = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const actions = (
-    <GhostButton onClick={onCancel}>
+    <CloseButton onClick={onCancel}>
       {getFluentString('global-text-value-modal-close')}
-    </GhostButton>
+    </CloseButton>
   );
 
   return (
