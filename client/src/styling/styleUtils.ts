@@ -224,8 +224,9 @@ export const ButtonBase = styled.button<{mobileExtend?: boolean; }>`
     @media (max-width: 600px) {
       width: 100%;
       padding: 0.9rem;
-      font-size: 1.1rem;
+      font-size: 1rem;
       border-radius: 0;
+      white-space: nowrap;
     }
   ` : ''}
 `;

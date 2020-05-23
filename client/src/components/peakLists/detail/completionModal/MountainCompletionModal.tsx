@@ -133,12 +133,6 @@ export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-
-  @media (max-width: ${modalMobileWidth}px) {
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-flow: column;
-  }
 `;
 
 const RequiredNote = styled(RequiredNoteBase)`
