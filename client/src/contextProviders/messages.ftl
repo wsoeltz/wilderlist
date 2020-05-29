@@ -73,11 +73,11 @@ global-text-value-back = Back
 global-text-value-loading = Loading
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
-global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at wilderlistapp@gmail.com if these loading times continue
+global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at help@wilderlist.app if these loading times continue
 
-global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at wilderlistapp@gmail.com
-global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at wilderlistapp@gmail.com
-global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at wilderlistapp@gmail.com
+global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at help@wilderlist.app
+global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
+global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at help@wilderlist.app
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
@@ -292,7 +292,7 @@ settings-page-notification-settings = Notifications Settings
 settings-page-notification-settings-email = Email Notifications
 
 settings-page-delete-account = Delete your Account
-settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>wilderlistapp@gmail.com</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
+settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>help@wilderlist.app</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
 
 dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Begin List' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
 dashboard-empty-state-no-active-lists-button = Find Hiking Lists
@@ -756,4 +756,4 @@ create-peak-list-selected-mountain-count = Selected mountains ({ $total } total)
 
 page-not-found-404-title = The page you are looking for seems to be off the trail.
 page-not-found-404-desc = Try searching what you are looking for at one of the following pages -
-page-not-found-404-contact = If you think this page should be here, contact us at <a href='mailto: wilderlistapp@gmail.com'>wilderlistapp@gmail.com</a>.
+page-not-found-404-contact = If you think this page should be here, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.
