@@ -61,6 +61,7 @@ const peakListDetailMapKey = 'peakListDetailMapKey';
 const localstorageShowMajorTrailsPeakListKey = 'localstorageShowMajorTrailsPeakListKey';
 const localstorageShowMinorTrailsPeakListKey = 'localstorageShowMinorTrailsPeakListKey';
 const localstorageShowYourLocationPeakListKey = 'localstorageShowYourLocationPeakListKey';
+const localstorageShowNearbyMountainsPeakListKey = 'localstorageShowNearbyMountainsPeakListKey';
 
 export const friendHeaderHeight = 2.6; // in rem
 
@@ -629,9 +630,11 @@ const PeakListDetail = (props: Props) => {
         const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsPeakListKey);
         const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsPeakListKey);
         const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationPeakListKey);
+        const localstorageNearbyMountainsVal = localStorage.getItem(localstorageShowNearbyMountainsPeakListKey);
         const defaultMajorTrails = localstorageMajorTrailsVal === 'true' ? true : false;
         const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
         const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+        const defaultNearbyMountainsOn = localstorageNearbyMountainsVal === 'true' ? true : false;
 
         return (
           <>
@@ -659,13 +662,16 @@ const PeakListDetail = (props: Props) => {
                 colorScaleLabels={colorScaleLabels}
                 showNearbyTrails={true}
                 showYourLocation={true}
+                showNearbyMountains={true}
                 defaultLocationOn={defaultYourLocation}
                 defaultMajorTrailsOn={defaultMajorTrails}
                 defaultMinorTrailsOn={defaultMinorTrails}
+                defaultNearbyMountainsOn={defaultNearbyMountainsOn}
                 localstorageKeys={{
                   majorTrail: localstorageShowMajorTrailsPeakListKey,
                   minorTrail: localstorageShowMinorTrailsPeakListKey,
                   yourLocation: localstorageShowYourLocationPeakListKey,
+                  nearbyMountains: localstorageShowNearbyMountainsPeakListKey,
                 }}
                 key={peakListDetailMapKey}
               />

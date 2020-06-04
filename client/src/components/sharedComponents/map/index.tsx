@@ -62,6 +62,7 @@ import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
 import ColorScale from './ColorScale';
 import {getImageAndIcon} from './colorScaleColors';
+import NearbyMountains from './NearbyMountains';
 import {
   DirectionsButton,
   DirectionsContainer,
@@ -325,7 +326,7 @@ export interface Trail extends Coordinate {
 
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
 
-enum PopupDataTypes {
+export enum PopupDataTypes {
   Coordinate,
   Trail,
 }
@@ -368,10 +369,13 @@ interface Props {
   defaultMinorTrailsOn?: boolean;
   showYourLocation?: boolean;
   defaultLocationOn?: boolean;
+  showNearbyMountains?: boolean;
+  defaultNearbyMountainsOn?: boolean;
   localstorageKeys?: {
     majorTrail?: string;
     minorTrail?: string;
     yourLocation?: string;
+    nearbyMountains?: string;
   };
 }
 
@@ -383,7 +387,7 @@ const Map = (props: Props) => {
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
-    localstorageKeys, defaultLocationOn,
+    localstorageKeys, defaultLocationOn, showNearbyMountains,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -393,11 +397,11 @@ const Map = (props: Props) => {
 
   let initialCenter: [number, number];
   if (highlighted && highlighted.length === 1) {
-    initialCenter = [highlighted[0].longitude, highlighted[0].latitude];
+    initialCenter = [ highlighted[0].latitude, highlighted[0].longitude];
   } else if (coordinates.length) {
-    initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
+    initialCenter = [(maxLat + minLat) / 2, (maxLong + minLong) / 2];
   } else {
-    initialCenter = [-71.52769471, 43.20415146];
+    initialCenter = [43.20415146, -71.52769471];
   }
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
@@ -562,6 +566,10 @@ const Map = (props: Props) => {
     if (map && showCenterCrosshairs) {
       map.on('move', getCenterCoords);
     }
+    if (map && showNearbyMountains) {
+      map.on('dragend', getCenterCoords);
+      map.on('zoomend', getCenterCoords);
+    }
 
     return () => {
       document.body.removeEventListener('keydown', enableZoom);
@@ -572,8 +580,14 @@ const Map = (props: Props) => {
         // destroy the map on unmount
         map.remove();
       }
+      if (map && showNearbyMountains) {
+        map.off('dragend', getCenterCoords);
+        map.off('zoomend', getCenterCoords);
+        // destroy the map on unmount
+        map.remove();
+      }
     };
-  }, [map, showCenterCrosshairs, fillSpace]);
+  }, [map, showCenterCrosshairs, fillSpace, showNearbyMountains]);
 
   useEffect(() => {
     if (!createOrEditMountain) {
@@ -599,13 +613,15 @@ const Map = (props: Props) => {
     mapEl.getCanvas().style.cursor = cursor;
   };
 
+  const onFeatureClick = (point: CoordinateWithDates) => {
+    setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
+    if (showNearbyTrails === true) {
+      getTrailsData(point.latitude, point.longitude, setTrailData);
+    }
+  };
+
   const features = coordinates.map(point => {
-    const onClick = () => {
-      setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
-      if (showNearbyTrails === true) {
-        getTrailsData(point.latitude, point.longitude, setTrailData);
-      }
-    };
+    const onClick = () => onFeatureClick(point);
     const {circleColor, iconImage} = getImageAndIcon({
       colorScaleColors, point, createOrEditMountain,
       highlighted, colorScaleSymbols,
@@ -1101,6 +1117,13 @@ const Map = (props: Props) => {
         {directionsExtensionLayer}
         {directionsLayer}
         {trailLayer}
+        <NearbyMountains
+          latitude={parseFloat(centerCoords[0])}
+          longitude={parseFloat(centerCoords[1])}
+          mountainsToIgnore={coordinates.map(mtn => mtn.id)}
+          onFeatureClick={onFeatureClick}
+          togglePointer={togglePointer}
+        />
         <Layer
           type='circle'
           id='marker-circle'
