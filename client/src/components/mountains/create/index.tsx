@@ -7,6 +7,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
@@ -219,7 +220,10 @@ const MountainCreatePage = (props: Props) => {
             ) {
             const res = await editMountain({variables: {...input, id}});
             if (addAnother === true) {
-              window.location.reload();
+              window.location.href =
+                Routes.CreateMountain +
+                '?lat=' + (input.latitude + 0.001) +
+                '&lng=' + (input.longitude + 0.001);
             } else if (res && res.data && res.data.mountain) {
               history.push(mountainDetailLink(res.data.mountain.id));
             } else {
@@ -231,7 +235,10 @@ const MountainCreatePage = (props: Props) => {
         } else if (userId) {
           const res = await addMountain({variables: {...input, author: userId}});
           if (addAnother === true) {
-            window.location.reload();
+            window.location.href =
+              Routes.CreateMountain +
+              '?lat=' + (input.latitude + 0.001) +
+              '&lng=' + (input.longitude + 0.001);
           } else if (res && res.data && res.data.mountain) {
             history.push(mountainDetailLink(res.data.mountain.id));
           } else {
