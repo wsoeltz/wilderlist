@@ -253,7 +253,8 @@ const AllMountains = (props: Props) => {
           {toggleType}
           <MapContainer>
             <Map
-              id={null}
+              peakListId={null}
+              mountainId={null}
               coordinates={allMountainsWithDates}
               highlighted={undefined}
               userId={userId}

@@ -29,6 +29,8 @@ const PeakListDetailPage = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const peakListUser = Types.ObjectId.isValid(friendId) ? friendId : userId;
+  const listId = Types.ObjectId.isValid(peakListId) ? peakListId : id;
   const mountainDetail = !Types.ObjectId.isValid(mountainId)
     ? (
         <PlaceholderText>
@@ -36,10 +38,8 @@ const PeakListDetailPage = (props: Props) => {
         </PlaceholderText>
       )
     : (
-        <MountainDetail userId={userId} id={mountainId} />
+        <MountainDetail userId={userId} id={mountainId} peakListId={listId} />
       );
-  const peakListUser = Types.ObjectId.isValid(friendId) ? friendId : userId;
-  const listId = Types.ObjectId.isValid(peakListId) ? peakListId : id;
 
   return (
     <>

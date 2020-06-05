@@ -38,6 +38,7 @@ import { convertDMS } from '../../../Utils';
 import {
   isValidURL,
 } from '../../../Utils';
+import {UserContext} from '../../App';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
@@ -64,6 +65,7 @@ const mountainDetailMapKey = 'mountainDetailMapKey';
 const localstorageShowMajorTrailsMtnDetailKey = 'localstorageShowMajorTrailsMtnDetailKey';
 const localstorageShowMinorTrailsMtnDetailKey = 'localstorageShowMinorTrailsMtnDetailKey';
 const localstorageShowYourLocationMtnDetailKey = 'localstorageShowYourLocationMtnDetailKey';
+const localstorageShowOtherMountainsMtnDetailKey = 'localstorageShowOtherMountainsMtnDetailKey';
 
 const MountainNameHeader = styled.div`
   display: flex;
@@ -260,13 +262,17 @@ interface Props {
   userId: string | null;
   id: string;
   setOwnMetaData?: boolean;
+  peakListId: string | null;
+  otherUserId?: string;
 }
 
 const MountainDetail = (props: Props) => {
-  const { userId, id, setOwnMetaData } = props;
+  const { userId, id, setOwnMetaData, peakListId, otherUserId } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const me = useContext(UserContext);
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
@@ -420,11 +426,15 @@ const MountainDetail = (props: Props) => {
       const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsMtnDetailKey);
       const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsMtnDetailKey);
       const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationMtnDetailKey);
+      const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowOtherMountainsMtnDetailKey);
       const defaultMajorTrails = (
         localstorageMajorTrailsVal === 'true' || localstorageMajorTrailsVal === null
       ) ? true : false;
       const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
       const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+      const defaultOtherMountainsOn = (
+        localstorageOtherMountainsVal === 'true' || localstorageOtherMountainsVal === null
+      ) ? true : false;
 
       return (
         <>
@@ -440,9 +450,12 @@ const MountainDetail = (props: Props) => {
             <span>{elevation}ft</span>
           </Details>
           <Map
-            id={id}
+            mountainId={id}
+            peakListId={peakListId}
             coordinates={[{...mountain, completionDates}]}
-            userId={userId}
+            userId={me && me._id ? me._id : null}
+            otherUserId={otherUserId}
+            isOtherUser={false}
             colorScaleColors={twoColorScale}
             colorScaleSymbols={twoSymbolScale}
             colorScaleLabels={[
@@ -451,13 +464,16 @@ const MountainDetail = (props: Props) => {
             ]}
             showNearbyTrails={true}
             showYourLocation={true}
+            showOtherMountains={true}
             defaultLocationOn={defaultYourLocation}
             defaultMajorTrailsOn={defaultMajorTrails}
             defaultMinorTrailsOn={defaultMinorTrails}
+            defaultOtherMountainsOn={defaultOtherMountainsOn}
             localstorageKeys={{
               majorTrail: localstorageShowMajorTrailsMtnDetailKey,
               minorTrail: localstorageShowMinorTrailsMtnDetailKey,
               yourLocation: localstorageShowYourLocationMtnDetailKey,
+              otherMountains: localstorageShowOtherMountainsMtnDetailKey,
             }}
             key={mountainDetailMapKey}
           />

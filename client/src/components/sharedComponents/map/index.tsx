@@ -351,11 +351,13 @@ interface IUserLocation {
 }
 
 interface Props {
-  id: string | null;
+  mountainId: string | null;
+  peakListId: string | null;
   userId: string | null;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
   isOtherUser?: boolean;
+  otherUserId?: string;
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
@@ -369,25 +371,26 @@ interface Props {
   defaultMinorTrailsOn?: boolean;
   showYourLocation?: boolean;
   defaultLocationOn?: boolean;
-  showNearbyMountains?: boolean;
-  defaultNearbyMountainsOn?: boolean;
+  showOtherMountains?: boolean;
+  defaultOtherMountainsOn?: boolean;
   localstorageKeys?: {
     majorTrail?: string;
     minorTrail?: string;
     yourLocation?: string;
-    nearbyMountains?: string;
+    otherMountains?: string;
   };
 }
 
 const Map = (props: Props) => {
   const {
-    id, coordinates, highlighted,
-    userId, isOtherUser, createOrEditMountain,
+    mountainId, peakListId, coordinates, highlighted,
+    userId, isOtherUser, otherUserId, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
-    localstorageKeys, defaultLocationOn, showNearbyMountains,
+    localstorageKeys, defaultLocationOn, showOtherMountains,
+    defaultOtherMountainsOn,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -449,6 +452,16 @@ const Map = (props: Props) => {
     }
     if (userAllowsLocation() === false) {
       alert('You must enable location services for directions');
+    }
+  };
+
+  const initialOtherMountainsSetting = defaultOtherMountainsOn ? true : false;
+  const [otherMountainsOn, setOtherMountainsOn] = useState<boolean>(initialOtherMountainsSetting);
+  const toggleOtherMountains = () => {
+    const newValue = !otherMountainsOn;
+    setOtherMountainsOn(newValue);
+    if (localstorageKeys && localstorageKeys.otherMountains) {
+      localStorage.setItem(localstorageKeys.otherMountains, newValue.toString());
     }
   };
 
@@ -566,7 +579,7 @@ const Map = (props: Props) => {
     if (map && showCenterCrosshairs) {
       map.on('move', getCenterCoords);
     }
-    if (map && showNearbyMountains) {
+    if (map && showOtherMountains) {
       map.on('dragend', getCenterCoords);
       map.on('zoomend', getCenterCoords);
     }
@@ -580,14 +593,14 @@ const Map = (props: Props) => {
         // destroy the map on unmount
         map.remove();
       }
-      if (map && showNearbyMountains) {
+      if (map && showOtherMountains) {
         map.off('dragend', getCenterCoords);
         map.off('zoomend', getCenterCoords);
         // destroy the map on unmount
         map.remove();
       }
     };
-  }, [map, showCenterCrosshairs, fillSpace, showNearbyMountains]);
+  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains]);
 
   useEffect(() => {
     if (!createOrEditMountain) {
@@ -647,7 +660,7 @@ const Map = (props: Props) => {
     if (dates) {
       if (dates.type === PeakListVariants.standard) {
         if (dates.standard !== undefined) {
-          const completedTextFluentId = isOtherUser ? 'map-completed-other-user' : 'map-completed';
+          const completedTextFluentId = isOtherUser && otherUserId ? 'map-completed-other-user' : 'map-completed';
           output = (
             <DateDiv>
               <strong>{getFluentString(completedTextFluentId)}: </strong>
@@ -740,20 +753,22 @@ const Map = (props: Props) => {
     }
   }
 
-  const getDesktopUrl = (mountainId: Mountain['id']) => {
-    if (id === mountainId || id === null) {
-      return mountainDetailLink(mountainId);
-    } else {
-      if (isOtherUser && userId) {
-        return friendsProfileWithPeakListWithMountainDetailLink(userId, id, mountainId);
+  const getDesktopUrl = (id: Mountain['id']) => {
+    if (peakListId === null || mountainId === id) {
+      return mountainDetailLink(id);
+    } else if (peakListId !== null) {
+      if (isOtherUser && otherUserId) {
+        return friendsProfileWithPeakListWithMountainDetailLink(otherUserId, peakListId, id);
       } else {
-        return listDetailWithMountainDetailLink(id, mountainId);
+        return listDetailWithMountainDetailLink(peakListId, id);
       }
+    } else {
+      return mountainDetailLink(id);
     }
   };
 
   const getMountainPopupName = (mtnId: string, mtnName: string, color: string) => {
-    if (mtnId) {
+    if (mtnId && !(peakListId === null && mountainId === null)) {
       return (
         <PopupTitleInternal
           mobileURL={mountainDetailLink(mtnId)}
@@ -875,6 +890,16 @@ const Map = (props: Props) => {
          [destination.longitude, destination.latitude],
        ]}/>
     </Layer>
+  ) : <></>;
+
+  const otherMountains = showOtherMountains && otherMountainsOn ? (
+    <NearbyMountains
+      latitude={parseFloat(centerCoords[0])}
+      longitude={parseFloat(centerCoords[1])}
+      mountainsToIgnore={coordinates.map(mtn => mtn.id)}
+      onFeatureClick={onFeatureClick}
+      togglePointer={togglePointer}
+    />
   ) : <></>;
 
   let popup: React.ReactElement<any>;
@@ -1117,13 +1142,7 @@ const Map = (props: Props) => {
         {directionsExtensionLayer}
         {directionsLayer}
         {trailLayer}
-        <NearbyMountains
-          latitude={parseFloat(centerCoords[0])}
-          longitude={parseFloat(centerCoords[1])}
-          mountainsToIgnore={coordinates.map(mtn => mtn.id)}
-          onFeatureClick={onFeatureClick}
-          togglePointer={togglePointer}
-        />
+        {otherMountains}
         <Layer
           type='circle'
           id='marker-circle'
@@ -1196,6 +1215,9 @@ const Map = (props: Props) => {
         toggleMinorTrails={toggleMinorTrails}
         yourLocationOn={yourLocationOn}
         toggleYourLocation={toggleYourLocation}
+        showOtherMountains={showOtherMountains}
+        otherMountainsOn={otherMountainsOn}
+        toggleOtherMountains={toggleOtherMountains}
         ref={colorScaleRef}
       />
       {editMountainModal}

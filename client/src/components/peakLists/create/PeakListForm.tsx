@@ -323,7 +323,8 @@ const PeakListForm = (props: Props) => {
     map = createPortal((
       <FullColumn style={{height: '100%'}}>
         <Map
-          id={''}
+          mountainId={null}
+          peakListId={null}
           coordinates={mountainCoordinates}
           userId={null}
           isOtherUser={true}
@@ -340,7 +341,8 @@ const PeakListForm = (props: Props) => {
       <FullColumn>
         <MapContainer>
           <Map
-            id={''}
+            mountainId={null}
+            peakListId={null}
             coordinates={mountainCoordinates}
             userId={null}
             isOtherUser={true}

@@ -244,7 +244,8 @@ const MountainForm = (props: Props) => {
       ? createPortal((
           <FullColumn style={{height: '100%'}}>
             <Map
-              id={''}
+              mountainId={null}
+              peakListId={null}
               coordinates={[coordinate, ...nearbyMountains]}
               highlighted={[coordinate]}
               userId={null}
@@ -270,7 +271,8 @@ const MountainForm = (props: Props) => {
         <FullColumn>
           <MapContainer>
             <Map
-              id={''}
+              mountainId={null}
+              peakListId={null}
               coordinates={[coordinate, ...nearbyMountains]}
               highlighted={[coordinate]}
               userId={null}
