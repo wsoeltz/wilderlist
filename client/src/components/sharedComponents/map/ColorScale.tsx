@@ -11,6 +11,8 @@ import {
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import Tooltip from '../Tooltip';
+import {Link} from 'react-router-dom';
+import {Routes} from '../../../routing/routes';
 
 const ColorScaleLegend = styled.div`
   padding: 0.6rem 0;
@@ -165,6 +167,12 @@ const Status = styled.em`
   font-size: 0.6rem;
 `;
 
+const MissingMountainLink = styled.div`
+  margin: 0.5rem 0 0;
+  font-size: 0.7rem;
+  opacity: 0.7;
+`;
+
 interface Props {
   centerCoords: [string, string];
   showCenterCrosshairs?: boolean;
@@ -293,6 +301,16 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     </AdditionalItem>
   ) : null;
 
+  const addMountainLink = showOtherMountains ? (
+    <MissingMountainLink>
+      {getFluentString('map-missing-mountain-text')}
+      {' '}
+      <Link to={Routes.CreateMountain + '?lat=' + centerCoords[0] + '&lng=' + centerCoords[1]}>
+        {getFluentString('map-missing-mountain-link')}
+      </Link>
+    </MissingMountainLink>
+  ) : null;
+
   const trailsLegend = showNearbyTrails ? (
     <>
       <AdditionalItem>
@@ -350,16 +368,19 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     </>
   ) : null;
 
-  const additionalItems = showYourLocation || showNearbyTrails ? (
-    <AdditionalItemsRoot>
-      <AdditionalItemsColumn>
-        {otherMountainsLegend}
-        {locationLegend}
-      </AdditionalItemsColumn>
-      <AdditionalItemsColumn>
-        {trailsLegend}
-      </AdditionalItemsColumn>
-    </AdditionalItemsRoot>
+  const additionalItems = showYourLocation || showNearbyTrails || showOtherMountains ? (
+    <>
+      <AdditionalItemsRoot>
+        <AdditionalItemsColumn>
+          {otherMountainsLegend}
+          {locationLegend}
+        </AdditionalItemsColumn>
+        <AdditionalItemsColumn>
+          {trailsLegend}
+        </AdditionalItemsColumn>
+      </AdditionalItemsRoot>
+      {addMountainLink}
+    </>
   ) : null;
 
   const title = colorScaleTitle ? <LegendTitle>{colorScaleTitle}</LegendTitle> : null;

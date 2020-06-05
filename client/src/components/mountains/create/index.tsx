@@ -21,6 +21,7 @@ import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
+import queryString from 'query-string';
 
 const mountainQuery = `
       id
@@ -149,14 +150,20 @@ interface EditMountainVariables extends BaseMountainVariables {
   id: string;
 }
 
+interface QueryVariables {
+  lat?: string;
+  lng?: string;
+}
+
 interface Props extends RouteComponentProps {
   user: User;
   mountainPermissions: null | number;
 }
 
 const MountainCreatePage = (props: Props) => {
-  const { user, mountainPermissions, match, history } = props;
+  const { user, mountainPermissions, match, history, location } = props;
   const { id }: any = match.params;
+  const {lat, lng}: QueryVariables = queryString.parse(location.search);
 
   const userId = user._id;
 
@@ -276,11 +283,13 @@ const MountainCreatePage = (props: Props) => {
         </PlaceholderText>
       );
     } else {
+      const latitude: string = lat ? lat : '';
+      const longitude: string = lng ? lng : '';
       const initialMountain: InitialMountainDatum = {
         id: '',
         name: '',
-        latitude: '',
-        longitude: '',
+        latitude,
+        longitude,
         elevation: '',
         state: null,
         flag: null,

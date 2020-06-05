@@ -533,7 +533,7 @@ map-get-directions = Get Directions
 map-legend-location = Your Location &amp;<br />Driving Directions
 map-legend-location-tooltip = <strong>Driving Directions</strong>: View the driving times and routes from your location to any mountain or trailhead. Click on a point on the map and then click "Get Directions".
 map-legend-other-mountains = Other Mountains<br />On Wilderlist
-map-legend-other-mountains-tooltip = <strong>Other Mountains</strong>: View other mountains in the Wilderlist database. Is a mountain missing? Add it with the link below!
+map-legend-other-mountains-tooltip = <strong>Other Mountains</strong>: View other mountains in the Wilderlist database. Is a mountain missing? Add it with the link below.
 map-legend-trails-major = Major Trails &amp;<br /> Trailheads
 map-legend-trails-tooltip = Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be more trails in a given area than what is listed.
 map-legend-trails-minor = Minor Trails &amp;<br /> Connectors
@@ -543,6 +543,9 @@ map-legend-show-hide = click to {
     [false] show
     *[other] toggle
 }
+
+map-missing-mountain-text = Is a mountain missing?
+map-missing-mountain-link = Click here to add it
 
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
