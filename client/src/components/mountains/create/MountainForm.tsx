@@ -260,6 +260,7 @@ const MountainForm = (props: Props) => {
                 getFluentString('create-mountain-map-your-mountain'),
               ]}
               fillSpace={true}
+              completedAscents={[]}
               key={'create-mountain-key'}
             />
           </FullColumn>
@@ -287,6 +288,7 @@ const MountainForm = (props: Props) => {
                 getFluentString('create-mountain-map-your-mountain'),
               ]}
               key={'create-mountain-key'}
+              completedAscents={[]}
             />
           </MapContainer>
         </FullColumn>

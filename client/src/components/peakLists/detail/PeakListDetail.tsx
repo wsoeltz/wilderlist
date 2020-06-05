@@ -655,6 +655,7 @@ const PeakListDetail = (props: Props) => {
                 peakListId={peakList.id}
                 coordinates={allMountainsWithDates}
                 highlighted={highlightedMountain}
+                completedAscents={userMountains}
                 userId={me && me._id ? me._id : null}
                 isOtherUser={isOtherUser}
                 otherUserId={isOtherUser && userId ? userId : undefined}

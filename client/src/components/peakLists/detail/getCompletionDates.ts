@@ -9,7 +9,6 @@ import {
   getStandardCompletion,
   getWinterCompletion,
 } from '../Utils';
-import { MountainDatum } from './PeakListDetail';
 
 export type VariableDate = {
   type: PeakListVariants.standard;
@@ -41,7 +40,7 @@ export type VariableDate = {
 
 interface Input {
   type: PeakListVariants;
-  mountain: MountainDatum;
+  mountain: {id: string};
   userMountains: CompletedMountain[];
 }
 

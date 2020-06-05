@@ -262,6 +262,7 @@ const AllMountains = (props: Props) => {
               colorScaleColors={colorScaleColors}
               colorScaleSymbols={colorScaleSymbols}
               colorScaleLabels={colorScaleLabels}
+              completedAscents={userMountains}
               key={'stats-all-mountains-in-progress-and-complete-key'}
             />
           </MapContainer>

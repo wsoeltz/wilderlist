@@ -39,7 +39,7 @@ import {
   placeholderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
 import getTrails, {
   TrailDifficulty,
@@ -54,6 +54,7 @@ import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentRep
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
+import getCompletionDates from '../../peakLists/detail/getCompletionDates';
 import {
   formatDate,
   formatGridDate,
@@ -379,6 +380,7 @@ interface Props {
     yourLocation?: string;
     otherMountains?: string;
   };
+  completedAscents: CompletedMountain[];
 }
 
 const Map = (props: Props) => {
@@ -390,7 +392,7 @@ const Map = (props: Props) => {
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
     localstorageKeys, defaultLocationOn, showOtherMountains,
-    defaultOtherMountainsOn,
+    defaultOtherMountainsOn, completedAscents,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -957,11 +959,18 @@ const Map = (props: Props) => {
       </DirectionsContainer>
     ) : <></>;
 
+    const completionDates = popupData.completionDates === undefined
+      ? getCompletionDates({
+          type: PeakListVariants.standard,
+          mountain: {id: popupData.id},
+          userMountains: completedAscents,
+        })
+      : popupData.completionDates;
     const {circleColor, iconImage} = getImageAndIcon({
-      colorScaleColors, point: popupData, createOrEditMountain,
+      colorScaleColors, point: {...popupData, completionDates}, createOrEditMountain,
       highlighted, colorScaleSymbols,
     });
-    const {dateElms, length} = renderCompletionDates(popupData.completionDates);
+    const {dateElms, length} = renderCompletionDates(completionDates);
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}

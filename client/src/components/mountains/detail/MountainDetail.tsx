@@ -475,6 +475,7 @@ const MountainDetail = (props: Props) => {
               yourLocation: localstorageShowYourLocationMtnDetailKey,
               otherMountains: localstorageShowOtherMountainsMtnDetailKey,
             }}
+            completedAscents={userMountains}
             key={mountainDetailMapKey}
           />
           <LocationBox>

@@ -332,6 +332,7 @@ const PeakListForm = (props: Props) => {
           colorScaleSymbols={[]}
           colorScaleLabels={[]}
           fillSpace={true}
+          completedAscents={[]}
           key={'create-peak-list-key'}
         />
       </FullColumn>
@@ -349,6 +350,7 @@ const PeakListForm = (props: Props) => {
             colorScaleColors={[]}
             colorScaleSymbols={[]}
             colorScaleLabels={[]}
+            completedAscents={[]}
             key={'create-peak-list-key'}
           />
         </MapContainer>
