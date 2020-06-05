@@ -11,6 +11,7 @@ interface Output {
   error: string | undefined;
   data: undefined | {
     state: string | null;
+    elevation: number | null;
   };
 }
 
@@ -22,26 +23,44 @@ export default (input: Input) => {
   const [data, setData] = useState<Output['data']>(undefined);
 
   useEffect(() => {
-    const getUsersIpLocation = async () => {
+    const getLocationData = async () => {
       try {
-        const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
-        const res = await axios.get(
-          `https://ssl.geoplugin.net/extras/location.gp?lat=${latitude}&lon=${longitude}&format=json&k=${key}`,
-        );
-        if (res && res.data && res.data.geoplugin_region) {
-          setData({state: res.data.geoplugin_region});
-          setLoading(false);
+        let state: string | null;
+        let elevation: number | null;
+        if (latitude && longitude) {
+          const geoKey = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
+          const resGeo = await axios.get(
+            `https://ssl.geoplugin.net/extras/location.gp?lat=${latitude}&lon=${longitude}&format=json&k=${geoKey}`,
+          );
+          const resUSGS = await axios.get(
+            `https://nationalmap.gov/epqs/pqs.php?x=${longitude}&y=${latitude}&units=Feet&output=json`,
+          );
+          if (resGeo && resGeo.data && resGeo.data.geoplugin_region) {
+            state = resGeo.data.geoplugin_region;
+          } else {
+            state = null;
+          }
+          if (resUSGS && resUSGS.data &&
+              resUSGS.data.USGS_Elevation_Point_Query_Service &&
+              resUSGS.data.USGS_Elevation_Point_Query_Service.Elevation_Query &&
+              resUSGS.data.USGS_Elevation_Point_Query_Service.Elevation_Query.Elevation) {
+            elevation = Math.round(resUSGS.data.USGS_Elevation_Point_Query_Service.Elevation_Query.Elevation);
+          } else {
+            elevation = null;
+          }
         } else {
-          setData({state: null});
-          setLoading(false);
+          state = null;
+          elevation = null;
         }
+        setData({state, elevation});
+        setLoading(false);
       } catch (e) {
         console.error(e);
         setError('Unable to fetch state data');
         setLoading(false);
       }
     };
-    getUsersIpLocation();
+    getLocationData();
   }, [latitude, longitude, setLoading, setError, setData]);
 
   return {loading, error, data};
