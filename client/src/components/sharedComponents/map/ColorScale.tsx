@@ -1,9 +1,11 @@
 import { GetString } from 'fluent-react/compat';
 import React, {RefObject, useContext} from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import {Routes} from '../../../routing/routes';
 import {
   baseColor,
   ButtonPrimary,
@@ -11,8 +13,6 @@ import {
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import Tooltip from '../Tooltip';
-import {Link} from 'react-router-dom';
-import {Routes} from '../../../routing/routes';
 
 const ColorScaleLegend = styled.div`
   padding: 0.6rem 0;

@@ -3,11 +3,12 @@ import { faCheck, faClone, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { createPortal } from 'react-dom';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePointLocationData from '../../../hooks/usePointLocationData';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -160,6 +161,21 @@ const MountainForm = (props: Props) => {
   const [selectedState, setSelectedState] = useState<State['id'] | null>(
     initialData.state === null ? null : initialData.state.id,
   );
+
+  const {data: locationData} = usePointLocationData({
+    latitude: stringLat ? parseFloat(stringLat) : undefined,
+    longitude: stringLong ? parseFloat(stringLong) : undefined,
+  });
+
+  useEffect(() => {
+    if (locationData && locationData.state !== null) {
+      const targetState = states.find(
+        state => state.name.toLowerCase() === (locationData.state as string).toLowerCase());
+      if (targetState && targetState.id !== selectedState) {
+        setSelectedState(targetState.id);
+      }
+    }
+  }, [locationData, selectedState, states]);
 
   const [description, setDescription] = useState<string>(initialData.description);
   const [externalResources, setExternalResources] =
