@@ -2,7 +2,7 @@
 
 Wilderlist is an online tool for planning and tracking your hiking adventures. Plan the mountains you want to hike, find the best trails, view upcoming weather forecasts, and check the latest trail conditions leading up to your trip. Record your activity post hike, share your trail conditions with your friends, and see how far you have to go to complete your hiking list.
 
-If you would like to get involved in the development, please contact us at wilderlistapp@gmail.com
+If you would like to get involved in the development, please contact us at dev@wilderlist.app
 
 Live website - https://www.wilderlist.app
 

@@ -1,11 +1,13 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
+import queryString from 'query-string';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
@@ -149,14 +151,20 @@ interface EditMountainVariables extends BaseMountainVariables {
   id: string;
 }
 
+interface QueryVariables {
+  lat?: string;
+  lng?: string;
+}
+
 interface Props extends RouteComponentProps {
   user: User;
   mountainPermissions: null | number;
 }
 
 const MountainCreatePage = (props: Props) => {
-  const { user, mountainPermissions, match, history } = props;
+  const { user, mountainPermissions, match, history, location } = props;
   const { id }: any = match.params;
+  const {lat, lng}: QueryVariables = queryString.parse(location.search);
 
   const userId = user._id;
 
@@ -212,7 +220,10 @@ const MountainCreatePage = (props: Props) => {
             ) {
             const res = await editMountain({variables: {...input, id}});
             if (addAnother === true) {
-              window.location.reload();
+              window.location.href =
+                Routes.CreateMountain +
+                '?lat=' + (input.latitude + 0.001) +
+                '&lng=' + (input.longitude + 0.001);
             } else if (res && res.data && res.data.mountain) {
               history.push(mountainDetailLink(res.data.mountain.id));
             } else {
@@ -224,7 +235,10 @@ const MountainCreatePage = (props: Props) => {
         } else if (userId) {
           const res = await addMountain({variables: {...input, author: userId}});
           if (addAnother === true) {
-            window.location.reload();
+            window.location.href =
+              Routes.CreateMountain +
+              '?lat=' + (input.latitude + 0.001) +
+              '&lng=' + (input.longitude + 0.001);
           } else if (res && res.data && res.data.mountain) {
             history.push(mountainDetailLink(res.data.mountain.id));
           } else {
@@ -276,11 +290,13 @@ const MountainCreatePage = (props: Props) => {
         </PlaceholderText>
       );
     } else {
+      const latitude: string = lat ? lat : '';
+      const longitude: string = lng ? lng : '';
       const initialMountain: InitialMountainDatum = {
         id: '',
         name: '',
-        latitude: '',
-        longitude: '',
+        latitude,
+        longitude,
         elevation: '',
         state: null,
         flag: null,

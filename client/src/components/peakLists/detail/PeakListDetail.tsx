@@ -61,6 +61,7 @@ const peakListDetailMapKey = 'peakListDetailMapKey';
 const localstorageShowMajorTrailsPeakListKey = 'localstorageShowMajorTrailsPeakListKey';
 const localstorageShowMinorTrailsPeakListKey = 'localstorageShowMinorTrailsPeakListKey';
 const localstorageShowYourLocationPeakListKey = 'localstorageShowYourLocationPeakListKey';
+const localstorageShowNearbyMountainsPeakListKey = 'localstorageShowNearbyMountainsPeakListKey';
 
 export const friendHeaderHeight = 2.6; // in rem
 
@@ -629,9 +630,11 @@ const PeakListDetail = (props: Props) => {
         const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsPeakListKey);
         const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsPeakListKey);
         const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationPeakListKey);
+        const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowNearbyMountainsPeakListKey);
         const defaultMajorTrails = localstorageMajorTrailsVal === 'true' ? true : false;
         const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
         const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+        const defaultOtherMountainsOn = localstorageOtherMountainsVal === 'true' ? true : false;
 
         return (
           <>
@@ -648,24 +651,30 @@ const PeakListDetail = (props: Props) => {
             />
             <MapContainer>
               <Map
-                id={peakList.id}
+                mountainId={mountainId ? mountainId : null}
+                peakListId={peakList.id}
                 coordinates={allMountainsWithDates}
                 highlighted={highlightedMountain}
-                userId={userId}
+                completedAscents={userMountains}
+                userId={me && me._id ? me._id : null}
                 isOtherUser={isOtherUser}
+                otherUserId={isOtherUser && userId ? userId : undefined}
                 colorScaleTitle={colorScaleTitle}
                 colorScaleColors={colorScaleColors}
                 colorScaleSymbols={colorScaleSymbols}
                 colorScaleLabels={colorScaleLabels}
                 showNearbyTrails={true}
                 showYourLocation={true}
+                showOtherMountains={true}
                 defaultLocationOn={defaultYourLocation}
                 defaultMajorTrailsOn={defaultMajorTrails}
                 defaultMinorTrailsOn={defaultMinorTrails}
+                defaultOtherMountainsOn={defaultOtherMountainsOn}
                 localstorageKeys={{
                   majorTrail: localstorageShowMajorTrailsPeakListKey,
                   minorTrail: localstorageShowMinorTrailsPeakListKey,
                   yourLocation: localstorageShowYourLocationPeakListKey,
+                  otherMountains: localstorageShowNearbyMountainsPeakListKey,
                 }}
                 key={peakListDetailMapKey}
               />

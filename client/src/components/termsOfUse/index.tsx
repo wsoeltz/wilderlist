@@ -222,7 +222,7 @@ const PrivacyPolicy = () => {
               Wilderlist
               <br/>__________
               <br/>Phone: 5085176476
-              <br/>wilderlistapp@gmail.com
+              <br/>help@wilderlist.app
             </p>
             </div>
         </ContentBody>

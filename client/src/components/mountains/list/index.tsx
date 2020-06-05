@@ -199,7 +199,7 @@ const MountainSearchPage = (props: Props) => {
     ? (
         <PlaceholderText>{getFluentString('mountain-search-mountains-detail-placeholder')}</PlaceholderText>
       )
-    : ( <MountainDetail userId={userId} id={id} setOwnMetaData={true} />);
+    : ( <MountainDetail userId={userId} id={id} peakListId={null} setOwnMetaData={true} />);
 
   const addMountainButton = userId && mountainPermissions !== -1 ? (
     <FloatingButtonContainer>

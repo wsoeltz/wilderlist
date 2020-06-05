@@ -14,7 +14,9 @@ interface Props extends RouteComponentProps {
 
 const MountainDetailPage = (props: Props) => {
   const { userId, match } = props;
-  const { id }: any = match.params;
+  const { id, mountainId: possibleMountainId }: any = match.params;
+  const mountainId = possibleMountainId ? possibleMountainId : id;
+  const peakListId = possibleMountainId ? id : null;
 
   return (
     <>
@@ -23,7 +25,7 @@ const MountainDetailPage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          <MountainDetail userId={userId} id={id} setOwnMetaData={true} />
+          <MountainDetail userId={userId} id={mountainId} peakListId={peakListId} setOwnMetaData={true} />
         </ContentBody>
       </ContentFull>
     </>

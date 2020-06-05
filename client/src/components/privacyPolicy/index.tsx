@@ -82,7 +82,7 @@ const PrivacyPolicy = () => {
 
           <h4><strong>Deletion Personally-Identifying Information</strong></h4>
 
-          <p>You may at any time contact us at <a href='mailto:wilderlistapp@gmail.com'>wilderlistapp@gmail.com</a> to request all of your personal information be deleted and it will be permanently removed without undue delay.</p>
+          <p>You may at any time contact us at <a href='mailto:help@wilderlist.app'>help@wilderlist.app</a> to request all of your personal information be deleted and it will be permanently removed without undue delay.</p>
 
           <h4><strong>Aggregated Statistics</strong></h4>
 
@@ -102,7 +102,7 @@ const PrivacyPolicy = () => {
 
           <h3>Credit &amp; Contact Information</h3>
 
-          <p><small>This privacy policy was created in part and with the aid of <a href='https://privacytermsgenerator.com/' title='Privacy policy template generator' target='_blank' rel='noopener noreferrer'>privacytermsgenerator.com</a>. If you have any questions about this Privacy Policy, please contact us via <a href='mailto:wilderlistapp@gmail.com'>wilderlistapp@gmail.com</a>.</small></p>
+          <p><small>This privacy policy was created in part and with the aid of <a href='https://privacytermsgenerator.com/' title='Privacy policy template generator' target='_blank' rel='noopener noreferrer'>privacytermsgenerator.com</a>. If you have any questions about this Privacy Policy, please contact us via <a href='mailto:help@wilderlist.app'>help@wilderlist.app</a>.</small></p>
 
           </div>
         </ContentBody>

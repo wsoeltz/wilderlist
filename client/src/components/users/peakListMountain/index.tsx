@@ -36,7 +36,7 @@ const UserProfilePage = (props: Props) => {
         </PlaceholderText>
       )
     : (
-        <MountainDetail userId={userId} id={mountainId} />
+        <MountainDetail userId={userId} otherUserId={profileId} id={mountainId} peakListId={peakListId} />
       );
 
   return (

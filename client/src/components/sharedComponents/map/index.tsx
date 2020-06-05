@@ -39,7 +39,7 @@ import {
   placeholderColor,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
 import getTrails, {
   TrailDifficulty,
@@ -54,6 +54,7 @@ import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentRep
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
+import getCompletionDates from '../../peakLists/detail/getCompletionDates';
 import {
   formatDate,
   formatGridDate,
@@ -62,6 +63,7 @@ import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
 import ColorScale from './ColorScale';
 import {getImageAndIcon} from './colorScaleColors';
+import NearbyMountains from './NearbyMountains';
 import {
   DirectionsButton,
   DirectionsContainer,
@@ -325,7 +327,7 @@ export interface Trail extends Coordinate {
 
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
 
-enum PopupDataTypes {
+export enum PopupDataTypes {
   Coordinate,
   Trail,
 }
@@ -350,11 +352,13 @@ interface IUserLocation {
 }
 
 interface Props {
-  id: string | null;
+  mountainId: string | null;
+  peakListId: string | null;
   userId: string | null;
   coordinates: CoordinateWithDates[];
   highlighted?: CoordinateWithDates[];
   isOtherUser?: boolean;
+  otherUserId?: string;
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
@@ -368,22 +372,27 @@ interface Props {
   defaultMinorTrailsOn?: boolean;
   showYourLocation?: boolean;
   defaultLocationOn?: boolean;
+  showOtherMountains?: boolean;
+  defaultOtherMountainsOn?: boolean;
   localstorageKeys?: {
     majorTrail?: string;
     minorTrail?: string;
     yourLocation?: string;
+    otherMountains?: string;
   };
+  completedAscents: CompletedMountain[];
 }
 
 const Map = (props: Props) => {
   const {
-    id, coordinates, highlighted,
-    userId, isOtherUser, createOrEditMountain,
+    mountainId, peakListId, coordinates, highlighted,
+    userId, isOtherUser, otherUserId, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
-    localstorageKeys, defaultLocationOn,
+    localstorageKeys, defaultLocationOn, showOtherMountains,
+    defaultOtherMountainsOn, completedAscents,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -393,11 +402,11 @@ const Map = (props: Props) => {
 
   let initialCenter: [number, number];
   if (highlighted && highlighted.length === 1) {
-    initialCenter = [highlighted[0].longitude, highlighted[0].latitude];
+    initialCenter = [ highlighted[0].latitude, highlighted[0].longitude];
   } else if (coordinates.length) {
-    initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
+    initialCenter = [(maxLat + minLat) / 2, (maxLong + minLong) / 2];
   } else {
-    initialCenter = [-71.52769471, 43.20415146];
+    initialCenter = [43.20415146, -71.52769471];
   }
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
@@ -445,6 +454,16 @@ const Map = (props: Props) => {
     }
     if (userAllowsLocation() === false) {
       alert('You must enable location services for directions');
+    }
+  };
+
+  const initialOtherMountainsSetting = defaultOtherMountainsOn ? true : false;
+  const [otherMountainsOn, setOtherMountainsOn] = useState<boolean>(initialOtherMountainsSetting);
+  const toggleOtherMountains = () => {
+    const newValue = !otherMountainsOn;
+    setOtherMountainsOn(newValue);
+    if (localstorageKeys && localstorageKeys.otherMountains) {
+      localStorage.setItem(localstorageKeys.otherMountains, newValue.toString());
     }
   };
 
@@ -562,6 +581,10 @@ const Map = (props: Props) => {
     if (map && showCenterCrosshairs) {
       map.on('move', getCenterCoords);
     }
+    if (map && showOtherMountains) {
+      map.on('dragend', getCenterCoords);
+      map.on('zoomend', getCenterCoords);
+    }
 
     return () => {
       document.body.removeEventListener('keydown', enableZoom);
@@ -572,8 +595,14 @@ const Map = (props: Props) => {
         // destroy the map on unmount
         map.remove();
       }
+      if (map && showOtherMountains) {
+        map.off('dragend', getCenterCoords);
+        map.off('zoomend', getCenterCoords);
+        // destroy the map on unmount
+        map.remove();
+      }
     };
-  }, [map, showCenterCrosshairs, fillSpace]);
+  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains]);
 
   useEffect(() => {
     if (!createOrEditMountain) {
@@ -599,13 +628,15 @@ const Map = (props: Props) => {
     mapEl.getCanvas().style.cursor = cursor;
   };
 
+  const onFeatureClick = (point: CoordinateWithDates) => {
+    setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
+    if (showNearbyTrails === true) {
+      getTrailsData(point.latitude, point.longitude, setTrailData);
+    }
+  };
+
   const features = coordinates.map(point => {
-    const onClick = () => {
-      setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
-      if (showNearbyTrails === true) {
-        getTrailsData(point.latitude, point.longitude, setTrailData);
-      }
-    };
+    const onClick = () => onFeatureClick(point);
     const {circleColor, iconImage} = getImageAndIcon({
       colorScaleColors, point, createOrEditMountain,
       highlighted, colorScaleSymbols,
@@ -631,7 +662,7 @@ const Map = (props: Props) => {
     if (dates) {
       if (dates.type === PeakListVariants.standard) {
         if (dates.standard !== undefined) {
-          const completedTextFluentId = isOtherUser ? 'map-completed-other-user' : 'map-completed';
+          const completedTextFluentId = isOtherUser && otherUserId ? 'map-completed-other-user' : 'map-completed';
           output = (
             <DateDiv>
               <strong>{getFluentString(completedTextFluentId)}: </strong>
@@ -724,20 +755,22 @@ const Map = (props: Props) => {
     }
   }
 
-  const getDesktopUrl = (mountainId: Mountain['id']) => {
-    if (id === mountainId || id === null) {
-      return mountainDetailLink(mountainId);
-    } else {
-      if (isOtherUser && userId) {
-        return friendsProfileWithPeakListWithMountainDetailLink(userId, id, mountainId);
+  const getDesktopUrl = (id: Mountain['id']) => {
+    if (peakListId === null || mountainId === id) {
+      return mountainDetailLink(id);
+    } else if (peakListId !== null) {
+      if (isOtherUser && otherUserId) {
+        return friendsProfileWithPeakListWithMountainDetailLink(otherUserId, peakListId, id);
       } else {
-        return listDetailWithMountainDetailLink(id, mountainId);
+        return listDetailWithMountainDetailLink(peakListId, id);
       }
+    } else {
+      return mountainDetailLink(id);
     }
   };
 
   const getMountainPopupName = (mtnId: string, mtnName: string, color: string) => {
-    if (mtnId) {
+    if (mtnId && !(peakListId === null && mountainId === null)) {
       return (
         <PopupTitleInternal
           mobileURL={mountainDetailLink(mtnId)}
@@ -861,6 +894,16 @@ const Map = (props: Props) => {
     </Layer>
   ) : <></>;
 
+  const otherMountains = showOtherMountains && otherMountainsOn ? (
+    <NearbyMountains
+      latitude={parseFloat(centerCoords[0])}
+      longitude={parseFloat(centerCoords[1])}
+      mountainsToIgnore={coordinates.map(mtn => mtn.id)}
+      onFeatureClick={onFeatureClick}
+      togglePointer={togglePointer}
+    />
+  ) : <></>;
+
   let popup: React.ReactElement<any>;
   if (!popupInfo) {
     popup = <></>;
@@ -916,11 +959,18 @@ const Map = (props: Props) => {
       </DirectionsContainer>
     ) : <></>;
 
+    const completionDates = popupData.completionDates === undefined
+      ? getCompletionDates({
+          type: PeakListVariants.standard,
+          mountain: {id: popupData.id},
+          userMountains: completedAscents,
+        })
+      : popupData.completionDates;
     const {circleColor, iconImage} = getImageAndIcon({
-      colorScaleColors, point: popupData, createOrEditMountain,
+      colorScaleColors, point: {...popupData, completionDates}, createOrEditMountain,
       highlighted, colorScaleSymbols,
     });
-    const {dateElms, length} = renderCompletionDates(popupData.completionDates);
+    const {dateElms, length} = renderCompletionDates(completionDates);
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
@@ -1101,6 +1151,7 @@ const Map = (props: Props) => {
         {directionsExtensionLayer}
         {directionsLayer}
         {trailLayer}
+        {otherMountains}
         <Layer
           type='circle'
           id='marker-circle'
@@ -1173,6 +1224,9 @@ const Map = (props: Props) => {
         toggleMinorTrails={toggleMinorTrails}
         yourLocationOn={yourLocationOn}
         toggleYourLocation={toggleYourLocation}
+        showOtherMountains={showOtherMountains}
+        otherMountainsOn={otherMountainsOn}
+        toggleOtherMountains={toggleOtherMountains}
         ref={colorScaleRef}
       />
       {editMountainModal}

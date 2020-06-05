@@ -25,13 +25,13 @@ export default (userEmail: string) => {
     <h3 style="text-align: center;margin-top: 40px;">
       Questions or Comments?
     </h3>
-    <p style="line-height: 1.7;">If you have any questions, comments or feedback you can contact me, Kyle Soeltz, directly at <a href="mailto:wilderlistapp@gmail.com" style="color:#2b5b37;">wilderlistapp@gmail.com</a>. I am always looking to make Wilderlist the best tool it can be for the hiking community.</p>
+    <p style="line-height: 1.7;">If you have any questions, comments or feedback you can contact me, Kyle Soeltz, directly at <a href="mailto:kyle@wilderlist.app" style="color:#2b5b37;">kyle@wilderlist.app</a>. I am always looking to make Wilderlist the best tool it can be for the hiking community.</p>
     <img style="max-width: 100%; margin-top: 60px;" src="https://www.wilderlist.app/mountain-range.png" />
     <hr style="margin-top: 20px;"/>
     <div style="color: #7c7c7c; padding: 10px; text-align: center; margin-top: 20px; line-height: 1.5;">
       <p style="font-size: 12px">
         393 Broadway, Cambridge, MA 02139 | 508-517-6476
-        <br /><a href="https://www.wilderlist.app/" style="color:#2b5b37;">Wilderlist</a> | <a href="mailto:wilderlistapp@gmail.com" style="color:#2b5b37;">wilderlistapp@gmail.com</a>
+        <br /><a href="https://www.wilderlist.app/" style="color:#2b5b37;">Wilderlist</a> | <a href="mailto:help@wilderlist.app" style="color:#2b5b37;">help@wilderlist.app</a>
         <br />
         <br />This message was sent to <a href="mailto:${userEmail}" style="color:#2b5b37;">${userEmail}</a> by <a href="https://www.wilderlist.app/" style="color:#2b5b37;">Wilderlist</a>.
         <br ><a href="https://www.wilderlist.app/user-settings" style="color:#2b5b37;">Unsubscribe through your Wilderlist account here</a>.
