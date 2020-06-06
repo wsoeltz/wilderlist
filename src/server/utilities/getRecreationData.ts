@@ -9,7 +9,7 @@ const getRecreation = axios.create({
   adapter: cache.adapter,
 });
 
-const baseUrl = 'https://ridb.recreation.gov/api/v1/facilities';
+export const baseUrl = 'https://ridb.recreation.gov/api/v1/facilities';
 
 type Longitude = number;
 type Latitude = number;
