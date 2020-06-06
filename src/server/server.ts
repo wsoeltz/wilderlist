@@ -27,6 +27,7 @@ import {
 } from './routing';
 import getSitemap from './routing/getSitemap';
 import getGridApplication from './utilities/getGridApplication/index';
+import getRecreationData from './utilities/getRecreationData';
 import getWeatherData from './utilities/getWeather';
 
 require('./auth/passport');
@@ -109,6 +110,19 @@ app.get('/api/weather', async (req, res) => {
     const lng = req.query && req.query.lng ? req.query.lng : undefined;
     const weatherData = await getWeatherData(lat, lng);
     res.json(weatherData);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.get('/api/recreationgov', async (req, res) => {
+  try {
+    const lat = req.query && req.query.lat ? req.query.lat : undefined;
+    const lng = req.query && req.query.lng ? req.query.lng : undefined;
+    const filter = req.query && req.query.filter ? req.query.filter : undefined;
+    const recreationData = await getRecreationData(lat, lng, filter);
+    res.json(recreationData);
   } catch (err) {
     res.status(500);
     res.send(err);
