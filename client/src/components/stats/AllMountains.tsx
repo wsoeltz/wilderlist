@@ -254,7 +254,7 @@ const AllMountains = (props: Props) => {
           <MapContainer>
             <Map
               peakListId={null}
-              mountainId={null}
+              mountainId={'all'}
               coordinates={allMountainsWithDates}
               highlighted={undefined}
               userId={userId}

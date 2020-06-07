@@ -171,17 +171,15 @@ const MountainForm = (props: Props) => {
     if (locationData && locationData.state !== null) {
       const targetState = states.find(
         state => state.name.toLowerCase() === (locationData.state as string).toLowerCase());
-      if (targetState && targetState.id !== selectedState) {
-        setSelectedState(targetState.id);
+      if (targetState) {
+        setSelectedState(curVal => targetState.id !== curVal ? targetState.id : curVal);
       }
     }
     if (locationData && locationData.elevation !== null) {
       const newElevation = locationData.elevation.toString();
-      if (newElevation !== stringElevation) {
-        setStringElevation(newElevation);
-      }
+      setStringElevation(curVal => newElevation !== curVal ? newElevation : curVal);
     }
-  }, [locationData, selectedState, states, stringElevation]);
+  }, [locationData, states]);
 
   const [description, setDescription] = useState<string>(initialData.description);
   const [externalResources, setExternalResources] =
