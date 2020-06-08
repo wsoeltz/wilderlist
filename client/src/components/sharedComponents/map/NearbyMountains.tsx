@@ -7,8 +7,8 @@ import {
 } from 'react-mapbox-gl';
 import usePrevious from '../../../hooks/usePrevious';
 import { Mountain } from '../../../types/graphQLTypes';
-import {CoordinateWithDates} from './';
 import {legendColorScheme, legendSymbolScheme} from './colorScaleColors';
+import {CoordinateWithDates} from './types';
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
@@ -46,6 +46,8 @@ interface Variables {
 }
 
 interface Props {
+  showOtherMountains: boolean | undefined;
+  otherMountainsOn: boolean;
   latitude: number;
   longitude: number;
   mountainsToIgnore: string[];
@@ -57,6 +59,7 @@ const Map = (props: Props) => {
   const {
     latitude, longitude, mountainsToIgnore,
     onFeatureClick, togglePointer,
+    showOtherMountains, otherMountainsOn,
   } = props;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
@@ -64,6 +67,10 @@ const Map = (props: Props) => {
   });
 
   const prevData = usePrevious(data);
+
+  if (!(showOtherMountains && otherMountainsOn)) {
+    return <></>;
+  }
 
   let nearbyMountains: CoordinateWithDates[];
   if (loading || error) {

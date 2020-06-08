@@ -2,7 +2,7 @@ import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
-import {CoordinateWithDates} from './';
+import {CoordinateWithDates} from './types';
 
 const startColor = '#dc4900';
 const endColor = '#145500';

@@ -23,13 +23,13 @@ import {DrivingData} from '../../../utilities/getDrivingDistances';
 import WeatherReport from '../../mountains/detail/WeatherReport';
 import { ButtonWrapper } from '../AreYouSureModal';
 import Modal from '../Modal';
-import {Trail} from './';
 import {
   DirectionsButton,
   DirectionsContainer,
   DirectionsContent,
   DirectionsIcon,
 } from './styleUtils';
+import {Trail} from './types';
 
 const Header = styled.div`
  display: grid;
