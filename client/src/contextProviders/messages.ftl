@@ -534,9 +534,10 @@ map-legend-location = Your Location &amp;<br />Driving Directions
 map-legend-location-tooltip = <strong>Driving Directions</strong>: View the driving times and routes from your location to any mountain or trailhead. Click on a point on the map and then click "Get Directions".
 map-legend-other-mountains = Other Mountains<br />On Wilderlist
 map-legend-other-mountains-tooltip = <strong>Other Mountains</strong>: View other mountains in the Wilderlist database. Is a mountain missing? Add it with the link below.
-map-legend-trails-major = Major Trails &amp;<br /> Trailheads
-map-legend-trails-tooltip = Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be more trails in a given area than what is listed.
-map-legend-trails-minor = Minor Trails &amp;<br /> Connectors
+map-legend-trails-major = Nearby Trails &amp;<br /> Trailheads
+map-legend-trails-tooltip = <strong>Show trails within a 50 mile radius of the map center.</strong><br /><small>Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be other trails in a given area than what is listed.</small>
+map-legend-campsites = Nearby Camping &amp;<br /> Shelters
+map-legend-campsites-tooltip = <strong>Show camping, tentsites, and shelters within a 50 mile radius of the map center.</strong><br /><small>Camping data is provided via Recreation.gov (no affiliation). There may be other sites in a given area than what is listed.</small>
 map-legend-show-hide = click to {
   $shown ->
     [true] hide

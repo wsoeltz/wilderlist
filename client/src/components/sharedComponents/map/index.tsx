@@ -31,6 +31,7 @@ import {
   setUserAllowsLocation,
   userAllowsLocation,
 } from '../../../Utils';
+import CampsitesLayer, {getCampsitesData} from './CampsitesLayer';
 import ColorScale from './ColorScale';
 import DirectionsAndLocation from './DirectionsAndLocation';
 import MapPopup from './MapPopup';
@@ -171,14 +172,15 @@ interface Props {
   fillSpace?: boolean;
   showNearbyTrails?: boolean;
   defaultMajorTrailsOn?: boolean;
-  defaultMinorTrailsOn?: boolean;
   showYourLocation?: boolean;
   defaultLocationOn?: boolean;
   showOtherMountains?: boolean;
   defaultOtherMountainsOn?: boolean;
+  showCampsites?: boolean;
+  defaultCampsitesOn?: boolean;
   localstorageKeys?: {
     majorTrail?: string;
-    minorTrail?: string;
+    campsites?: string;
     yourLocation?: string;
     otherMountains?: string;
   };
@@ -192,9 +194,10 @@ const Map = (props: Props) => {
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleColors, colorScaleLabels, fillSpace,
     colorScaleTitle, showNearbyTrails, colorScaleSymbols,
-    showYourLocation, defaultMajorTrailsOn, defaultMinorTrailsOn,
+    showYourLocation, defaultMajorTrailsOn,
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
+    defaultCampsitesOn, showCampsites,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -218,6 +221,7 @@ const Map = (props: Props) => {
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
   const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
+  const [campsiteData, setCampsiteData] = useState<undefined | any>(undefined);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
 
@@ -231,13 +235,13 @@ const Map = (props: Props) => {
     }
   };
 
-  const initialMinorTrailsSetting = defaultMinorTrailsOn ? true : false;
-  const [minorTrailsOn, setMinorTrailsOn] = useState<boolean>(initialMinorTrailsSetting);
-  const toggleMinorTrails = () => {
-    const newValue = !minorTrailsOn;
-    setMinorTrailsOn(newValue);
-    if (localstorageKeys && localstorageKeys.minorTrail) {
-      localStorage.setItem(localstorageKeys.minorTrail, newValue.toString());
+  const initialCampsitesSetting = defaultCampsitesOn ? true : false;
+  const [campsitesOn, setCampsitesOn] = useState<boolean>(initialCampsitesSetting);
+  const toggleCampsites = () => {
+    const newValue = !campsitesOn;
+    setCampsitesOn(newValue);
+    if (localstorageKeys && localstorageKeys.campsites) {
+      localStorage.setItem(localstorageKeys.campsites, newValue.toString());
     }
   };
 
@@ -353,6 +357,26 @@ const Map = (props: Props) => {
   }, [setTrailData, showNearbyTrails, trailData, centerCoords, prevCenterCoords]);
 
   useEffect(() => {
+    if (showCampsites === true &&
+        (campsiteData === undefined ||
+          (prevCenterCoords === undefined ||
+            !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
+          )
+      ) {
+      getCampsitesData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setCampsiteData);
+    }
+  }, [setCampsiteData, showCampsites, campsiteData, centerCoords, prevCenterCoords]);
+
+  const setAllExtraData = (lat: number, long: number) => {
+    if (showNearbyTrails === true) {
+      getTrailsData(lat, long, setTrailData);
+    }
+    if (showCampsites === true) {
+      getCampsitesData(lat, long, setCampsiteData);
+    }
+  };
+
+  useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
       if (e.shiftKey && map) {
         map.scrollZoom.enable();
@@ -399,8 +423,9 @@ const Map = (props: Props) => {
     if (map && showCenterCrosshairs) {
       map.on('dragend', getPreciseCenterCoords);
     }
-    if (map && showOtherMountains) {
+    if (map && (showOtherMountains || showNearbyTrails)) {
       map.on('dragend', getRoughCenterCoords);
+      map.on('zoomend', getRoughCenterCoords);
     }
 
     return () => {
@@ -412,13 +437,14 @@ const Map = (props: Props) => {
         // destroy the map on unmount
         map.remove();
       }
-      if (map && showOtherMountains) {
+      if (map && (showOtherMountains || showNearbyTrails)) {
         map.off('dragend', getRoughCenterCoords);
+        map.off('zoomend', getRoughCenterCoords);
         // destroy the map on unmount
         map.remove();
       }
     };
-  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains, center]);
+  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains, showNearbyTrails]);
 
   useEffect(() => {
     if (!createOrEditMountain) {
@@ -446,9 +472,7 @@ const Map = (props: Props) => {
 
   const onFeatureClick = (point: CoordinateWithDates) => {
     setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
-    if (showNearbyTrails === true) {
-      getTrailsData(point.latitude, point.longitude, setTrailData);
-    }
+    setAllExtraData(point.latitude, point.longitude);
   };
 
   const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
@@ -495,8 +519,15 @@ const Map = (props: Props) => {
           trailData={trailData}
           setTrailData={setTrailData}
           setPopupInfo={setPopupInfo}
-          minorTrailsOn={minorTrailsOn}
           majorTrailsOn={majorTrailsOn}
+          togglePointer={togglePointer}
+        />
+        <CampsitesLayer
+          showCampsites={showCampsites}
+          campsiteData={campsiteData}
+          setCampsiteData={setCampsiteData}
+          setPopupInfo={setPopupInfo}
+          campsitesOn={campsitesOn}
           togglePointer={togglePointer}
         />
         <NearbyMountains
@@ -568,13 +599,14 @@ const Map = (props: Props) => {
         showYourLocation={showYourLocation}
         majorTrailsOn={majorTrailsOn}
         toggleMajorTrails={toggleMajorTrails}
-        minorTrailsOn={minorTrailsOn}
-        toggleMinorTrails={toggleMinorTrails}
         yourLocationOn={yourLocationOn}
         toggleYourLocation={toggleYourLocation}
         showOtherMountains={showOtherMountains}
         otherMountainsOn={otherMountainsOn}
         toggleOtherMountains={toggleOtherMountains}
+        showCampsites={showCampsites}
+        campsitesOn={campsitesOn}
+        toggleCampsites={toggleCampsites}
         ref={colorScaleRef}
       />
     </Root>

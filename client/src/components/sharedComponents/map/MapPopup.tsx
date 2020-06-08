@@ -60,9 +60,6 @@ import {
   PopupDataTypes,
 } from './types';
 
-const StyledPopup = styled.div`
-`;
-
 interface ColorProps {
   color: string;
 }
@@ -376,29 +373,27 @@ const MapPopup = (props: Props) => {
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
       >
-        <StyledPopup>
-          <PopupHeader>
-            <Icon>
-              <img
-                src={require('./images/custom-icons/' + iconImage + '.svg')}
-                alt='Major Trails Legend Icon'
-                style={{width: '1.65rem'}}
-              />
-            </Icon>
-            <div>
-              {getMountainPopupName(popupData.id, popupData.name, circleColor)}
-              <PopupDetail>
-                {popupData.elevation}ft
-              </PopupDetail>
-            </div>
-          </PopupHeader>
-          <PopupDates>
-            {dateElms}
-            {getAddAscentButton(popupData.id, !length)}
-          </PopupDates>
-          {drivingContent}
-          <ClosePopup onClick={closePopup}>×</ClosePopup>
-        </StyledPopup>
+        <PopupHeader>
+          <Icon>
+            <img
+              src={require('./images/custom-icons/' + iconImage + '.svg')}
+              alt='Mountain Icon'
+              style={{width: '1.65rem'}}
+            />
+          </Icon>
+          <div>
+            {getMountainPopupName(popupData.id, popupData.name, circleColor)}
+            <PopupDetail>
+              {popupData.elevation}ft
+            </PopupDetail>
+          </div>
+        </PopupHeader>
+        <PopupDates>
+          {dateElms}
+          {getAddAscentButton(popupData.id, !length)}
+        </PopupDates>
+        {drivingContent}
+        <ClosePopup onClick={closePopup}>×</ClosePopup>
       </Popup>
     );
   } else if (popupInfo.type === PopupDataTypes.Trail) {
@@ -467,31 +462,105 @@ const MapPopup = (props: Props) => {
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
       >
-        <StyledPopup>
-          <PopupHeader>
-            <Icon>
-              <img
-                src={require('./images/custom-icons/' + imageIcon + '.svg')}
-                alt='Major Trails Legend Icon'
-                style={{width: '1.65rem'}}
-              />
-            </Icon>
-            <div>
-              <PopupTitleExternal
-                onClick={openTrailModal}
-                color={'#7a3800'}
-              >
-                {popupData.name}
-              </PopupTitleExternal>
-              <PopupDetail>
-                <strong>{popupData.mileage}mi</strong> long,{' '}
-                <strong>{popupData.elevation}ft</strong> elev. gain
-              </PopupDetail>
-            </div>
-         </PopupHeader>
-         {drivingContent}
-          <ClosePopup onClick={closePopup}>×</ClosePopup>
-        </StyledPopup>
+        <PopupHeader>
+          <Icon>
+            <img
+              src={require('./images/custom-icons/' + imageIcon + '.svg')}
+              alt='Major Trails Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </Icon>
+          <div>
+            <PopupTitleExternal
+              onClick={openTrailModal}
+              color={'#7a3800'}
+            >
+              {popupData.name}
+            </PopupTitleExternal>
+            <PopupDetail>
+              <strong>{popupData.mileage}mi</strong> long,{' '}
+              <strong>{popupData.elevation}ft</strong> elev. gain
+            </PopupDetail>
+          </div>
+       </PopupHeader>
+       {drivingContent}
+        <ClosePopup onClick={closePopup}>×</ClosePopup>
+      </Popup>
+    );
+  } else if (popupInfo.type === PopupDataTypes.Campsite) {
+    const {data: popupData} = popupInfo;
+    let drivingInfo: React.ReactElement<any>;
+    if (usersLocation.loading === true) {
+      drivingInfo = (
+        <DirectionsContent>
+          {getFluentString('global-text-value-loading')}
+        </DirectionsContent>
+      );
+    } else if (usersLocation.error !== undefined) {
+      drivingInfo = (
+        <DirectionsContent>
+          {getFluentString('mountain-detail-driving-error-location')}
+        </DirectionsContent>
+      );
+    } else if (destination && destination.key === popupData.id && directionsData) {
+      const {miles} = directionsData;
+      const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
+      const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      drivingInfo = (
+        <DirectionsContent>
+          {hours} {minutes} ({miles} miles)
+        </DirectionsContent>
+      );
+    } else {
+      const onClick = () => {
+        setDestination({
+          key: popupData.id,
+          latitude: popupData.latitude,
+          longitude: popupData.longitude,
+        });
+        if (!yourLocationOn) {
+          setYourLocationOn(true);
+        }
+        if (userAllowsLocation() === false) {
+          alert('You must enable location services for directions');
+        }
+      };
+      drivingInfo = (
+        <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
+      );
+    }
+
+    const drivingContent = showYourLocation ? (
+      <DirectionsContainer>
+        <DirectionsIcon>
+          <FontAwesomeIcon icon={faCar} />
+        </DirectionsIcon>
+        {drivingInfo}
+      </DirectionsContainer>
+    ) : <></>;
+
+    popup = (
+      <Popup
+        coordinates={[popupData.longitude, popupData.latitude]}
+      >
+        <PopupHeader>
+          <Icon>
+            <img
+              src={require('./images/custom-icons/tent-default.svg')}
+              alt='Campsite Icon'
+              style={{width: '1.65rem'}}
+            />
+          </Icon>
+          <div>
+            <PopupTitleExternal
+              color={'#7a3800'}
+            >
+              {popupData.name}
+            </PopupTitleExternal>
+          </div>
+       </PopupHeader>
+       {drivingContent}
+        <ClosePopup onClick={closePopup}>×</ClosePopup>
       </Popup>
     );
   } else {

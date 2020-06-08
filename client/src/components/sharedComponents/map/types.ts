@@ -1,4 +1,7 @@
 import {
+  Campsite,
+} from '../../../utilities/getCampsites';
+import {
   TrailDifficulty,
   TrailType,
 } from '../../../utilities/getTrails';
@@ -49,6 +52,7 @@ export interface DestinationDatum {
 export enum PopupDataTypes {
   Coordinate,
   Trail,
+  Campsite,
 }
 
 export type PopupData = (
@@ -58,5 +62,8 @@ export type PopupData = (
   } | {
     type: PopupDataTypes.Trail;
     data: Trail;
+  } | {
+    type: PopupDataTypes.Campsite;
+    data: Campsite;
   }
 );

@@ -15,7 +15,7 @@ import {
 
 export const getTrailsData = async (lat: number, lon: number, setTrailData: (input: Trail[]) => void) => {
   try {
-    const res = await getTrails({params: {lat, lon, maxDistance: 180}});
+    const res = await getTrails({params: {lat, lon, maxDistance: 25}});
     if (res && res.data && res.data.trails) {
       const rawData: TrailsDatum[] = res.data.trails;
       const cleanedTrailData: Trail[] = rawData.map(trailDatum => {
@@ -53,7 +53,6 @@ interface Props {
   trailData: Trail[] | undefined;
   setTrailData: (value: Trail[] | undefined) => void;
   setPopupInfo: (value: PopupData | null) => void;
-  minorTrailsOn: boolean;
   majorTrailsOn: boolean;
   togglePointer: (mapEl: any, cursor: string) => void;
 }
@@ -61,7 +60,7 @@ interface Props {
 const TrailsLayer = (props: Props) => {
   const {
     showNearbyTrails, trailData, setTrailData, setPopupInfo,
-    majorTrailsOn, minorTrailsOn, togglePointer,
+    majorTrailsOn, togglePointer,
   } = props;
 
   const trails: Array<React.ReactElement<any>> = [];
@@ -74,11 +73,8 @@ const TrailsLayer = (props: Props) => {
           getTrailsData(point.latitude, point.longitude, setTrailData);
         }
       };
-      if (
-        !((point.type === TrailType.Connector && !minorTrailsOn) ||
-          (point.type !== TrailType.Connector && !majorTrailsOn))
-       ) {
-        const iconImage = point.type === TrailType.Connector ? 'trail-connector' : 'trail-default';
+      if (point.type !== TrailType.Connector && majorTrailsOn) {
+        const iconImage = 'trail-default';
         trails.push(
           <Feature
             coordinates={[point.longitude, point.latitude]}
