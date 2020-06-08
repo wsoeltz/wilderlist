@@ -3,6 +3,7 @@ import {
   faSync,
 } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
+import debounce from 'lodash/debounce';
 import sortBy from 'lodash/sortBy';
 import React, {
   useContext,
@@ -19,6 +20,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePrevious from '../../../hooks/usePrevious';
 import {
   BasicIconInText,
   lightBorderColor,
@@ -333,15 +335,23 @@ const Map = (props: Props) => {
     }
   }, [colorScaleRef, setColorScaleHeight]);
 
-  useEffect(() => {
-    if (showNearbyTrails === true && trailData === undefined) {
-      getTrailsData(center[1], center[0], setTrailData);
-    }
-  }, [setTrailData, showNearbyTrails, trailData, center]);
-
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
     [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
+
+  const prevCenterCoords = usePrevious(centerCoords);
+
+  useEffect(() => {
+    if (showNearbyTrails === true &&
+        (trailData === undefined ||
+          (prevCenterCoords === undefined ||
+            !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
+          )
+      ) {
+      getTrailsData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setTrailData);
+    }
+  }, [setTrailData, showNearbyTrails, trailData, centerCoords, prevCenterCoords]);
+
   useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
       if (e.shiftKey && map) {
@@ -367,18 +377,30 @@ const Map = (props: Props) => {
       document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
     }
 
-    const getCenterCoords = () => {
+    const getPreciseCenterCoords = debounce(() => {
       if (map) {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
         setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
       }
-    };
+    }, 250);
+
+    let prevVal = [0, 0];
+    const getRoughCenterCoords = debounce(() => {
+      if (map) {
+        const {lat, lng}: {lat: number, lng: number} = map.getCenter();
+        const latDiff = Math.abs(Math.abs(lat) - Math.abs(prevVal[0]));
+        const lngDiff = Math.abs(Math.abs(lng) - Math.abs(prevVal[1]));
+        if (latDiff > 0.2 || lngDiff > 0.2) {
+          prevVal = [lat, lng];
+          setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+        }
+      }
+    }, 400);
     if (map && showCenterCrosshairs) {
-      map.on('move', getCenterCoords);
+      map.on('dragend', getPreciseCenterCoords);
     }
     if (map && showOtherMountains) {
-      map.on('dragend', getCenterCoords);
-      map.on('zoomend', getCenterCoords);
+      map.on('dragend', getRoughCenterCoords);
     }
 
     return () => {
@@ -386,18 +408,17 @@ const Map = (props: Props) => {
       document.body.removeEventListener('keyup', disableZoom);
       document.body.removeEventListener('touchstart', disableDragPanOnTouchDevics);
       if (map && showCenterCrosshairs) {
-        map.off('move', getCenterCoords);
+        map.off('dragend', getPreciseCenterCoords);
         // destroy the map on unmount
         map.remove();
       }
       if (map && showOtherMountains) {
-        map.off('dragend', getCenterCoords);
-        map.off('zoomend', getCenterCoords);
+        map.off('dragend', getRoughCenterCoords);
         // destroy the map on unmount
         map.remove();
       }
     };
-  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains]);
+  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains, center]);
 
   useEffect(() => {
     if (!createOrEditMountain) {

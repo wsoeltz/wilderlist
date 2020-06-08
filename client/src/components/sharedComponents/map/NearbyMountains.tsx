@@ -63,7 +63,7 @@ const Map = (props: Props) => {
   } = props;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
-    variables: { latitude, longitude, latDistance: 0.4, longDistance: 0.4 },
+    variables: { latitude, longitude, latDistance: 0.4, longDistance: 0.5 },
   });
 
   const prevData = usePrevious(data);
