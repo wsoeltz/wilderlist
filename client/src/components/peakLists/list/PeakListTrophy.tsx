@@ -7,7 +7,6 @@ import {
   otherUserPeakListLink,
   searchListDetailLink,
 } from '../../../routing/Utils';
-import { tertiaryColor } from '../../../styling/styleUtils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { CardPeakListDatum } from './ListPeakLists';
@@ -29,9 +28,11 @@ const Root = styled.div`
   width: ${dimensions}rem;
   height: ${dimensions}rem;
   padding: 0 1rem;
+  transition: transform 0.2s ease;
+  transform: scale(0.92);
 
   &:hover {
-    background-color: ${tertiaryColor};
+    transform: scale(1);
   }
 
   @media(max-width: 500px) {

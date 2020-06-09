@@ -1,15 +1,14 @@
 import { GetString } from 'fluent-react/compat';
 import React, {RefObject, useContext} from 'react';
-import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import {Routes} from '../../../routing/routes';
 import {
   baseColor,
   ButtonPrimary,
   lightBorderColor,
+  LinkButton,
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import Tooltip from '../Tooltip';
@@ -170,7 +169,7 @@ const Status = styled.em`
 const MissingMountainLink = styled.div`
   margin: 0.5rem 0 0;
   font-size: 0.7rem;
-  opacity: 0.7;
+  opacity: 0.85;
 `;
 
 interface Props {
@@ -193,6 +192,7 @@ interface Props {
   otherMountainsOn?: boolean;
   toggleOtherMountains?: () => void;
   userId: string | null;
+  onAddMountainClick: () => void;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -204,6 +204,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
     showCampsites, toggleCampsites, campsitesOn, userId,
+    onAddMountainClick,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -308,9 +309,9 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     <MissingMountainLink>
       {getFluentString('map-missing-mountain-text')}
       {' '}
-      <Link to={Routes.CreateMountain + '?lat=' + centerCoords[0] + '&lng=' + centerCoords[1]}>
+      <LinkButton onClick={onAddMountainClick}>
         {getFluentString('map-missing-mountain-link')}
-      </Link>
+      </LinkButton>
     </MissingMountainLink>
   ) : null;
 

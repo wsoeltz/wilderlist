@@ -16,11 +16,13 @@ import ReactMapboxGl, {
   RotationControl,
   ZoomControl,
 } from 'react-mapbox-gl';
+import {useHistory} from 'react-router';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
+import {Routes} from '../../../routing/routes';
 import {
   BasicIconInText,
   lightBorderColor,
@@ -205,6 +207,8 @@ const Map = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const history = useHistory();
 
   const { minLat, maxLat, minLong, maxLong } = getMinMax(coordinates);
 
@@ -474,6 +478,13 @@ const Map = (props: Props) => {
     setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
   };
 
+  const onAddMountainClick = () => {
+    if (map) {
+      const {lat, lng}: {lat: number, lng: number} = map.getCenter();
+      history.push(Routes.CreateMountain + '?lat=' + lat + '&lng=' + lng);
+    }
+  };
+
   const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
 
   const mapRenderProps = (mapEl: any) => {
@@ -605,6 +616,7 @@ const Map = (props: Props) => {
         campsitesOn={campsitesOn}
         toggleCampsites={toggleCampsites}
         userId={userId}
+        onAddMountainClick={onAddMountainClick}
         ref={colorScaleRef}
       />
     </Root>

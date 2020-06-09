@@ -1,3 +1,4 @@
+import {faTrophy} from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
@@ -6,7 +7,13 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import { NoResults } from '../../../styling/styleUtils';
-import { SectionTitleH3 } from '../../../styling/styleUtils';
+import {
+  BasicIconInText,
+  DetailBox,
+  lightBorderColor,
+  SectionTitleH3,
+  tertiaryColor,
+} from '../../../styling/styleUtils';
 import {
   PeakList,
   PeakListVariants,
@@ -19,11 +26,22 @@ import PeakListCard from './PeakListCard';
 import PeakListCompactCard from './PeakListCompactCard';
 import PeakListTrophy from './PeakListTrophy';
 
-const TrophyContainer = styled.div`
+const TrophyTitle = styled(SectionTitleH3)`
+  border: 1px solid ${lightBorderColor};
+  border-bottom: none;
+  background-color: ${tertiaryColor};
+  padding: 1rem 1rem 0;
+  margin-bottom: 0;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  align-items: center;
+`;
 
+const TrophyContainer = styled(DetailBox)`
+  display: flex;
+  overflow: auto;
+  padding: 0 0 0.5rem;
+  margin-bottom: 2rem;
+  border-top: none;
 `;
 
 export interface RegionDatum {
@@ -100,7 +118,7 @@ const ListPeakLists = (props: Props) => {
   if (props.peakListData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
-  const trophies: Array<React.ReactElement<any> | null> = [];
+  const trophiesDatum: CardPeakListDatum[] = [];
   if (props.viewMode === ViewMode.Card) {
     const peakLists = props.peakListData.map(peakList => {
       const {
@@ -116,19 +134,12 @@ const ListPeakLists = (props: Props) => {
       } else if (type === PeakListVariants.grid) {
         totalRequiredAscents = numMountains * 12;
       } else {
-        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
       }
 
       if (showTrophies === true && totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {
-        trophies.push(
-          <PeakListTrophy
-            peakList={peakList}
-            profileId={profileId}
-            dashboardView={dashboardView === true ? true : false}
-            key={peakList.id}
-          />,
-        );
+        trophiesDatum.push(peakList);
         return null;
       }
       return (
@@ -157,11 +168,26 @@ const ListPeakLists = (props: Props) => {
       }).reverse()
       : peakLists;
 
+    const sortedTrophies =
+      sortBy(trophiesDatum, ({latestAscent}) => latestAscent ? new Date(latestAscent) : 0).reverse();
+
+    const trophies = sortedTrophies.map((peakList) => {
+      return (
+        <PeakListTrophy
+          peakList={peakList}
+          profileId={profileId}
+          dashboardView={dashboardView === true ? true : false}
+          key={peakList.id}
+        />
+      );
+    });
+
     const trophyContent = showTrophies === true && trophies.length > 0 ? (
       <>
-        <SectionTitleH3>
-          {getFluentString('user-profile-lists-completed')}
-        </SectionTitleH3>
+        <TrophyTitle>
+          <BasicIconInText icon={faTrophy} />
+          {getFluentString('user-profile-lists-completed')} ({trophies.length})
+        </TrophyTitle>
         <TrophyContainer>
           {trophies}
         </TrophyContainer>
@@ -196,8 +222,8 @@ const ListPeakLists = (props: Props) => {
       } else if (type === PeakListVariants.grid) {
         totalRequiredAscents = numMountains * 12;
       } else {
-        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
       }
       return (
           <PeakListCompactCard
