@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
+import {xml2json} from 'xml-js';
 
 const cache: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
@@ -9,7 +10,15 @@ const getRecreation = axios.create({
   adapter: cache.adapter,
 });
 
+const getActiveRecreation = axios.create({
+  adapter: cache.adapter,
+});
+
 export const baseUrl = 'https://ridb.recreation.gov/api/v1/facilities';
+
+const backupBaseUrl =
+  // `http://api.amp.active.com/camping/campgrounds/?landmarkName=true&api_key=${process.env.ACTIVE_API_CAMPING_KEY}`;
+  `https://www.reserveamerica.com/campgroundSearch.do?landmarkName=true&xml=true&expwith=1&expfits=1`;
 
 type Longitude = number;
 type Latitude = number;
@@ -58,8 +67,55 @@ interface SuccessResponse {
   };
 }
 
+interface ReserveAmericaDatum {
+  type: string;
+  name: string;
+  attributes: {
+    agencyIcon: string;
+    agencyName: string;
+    availabilityStatus: string;
+    contractID: string;
+    contractType: string;
+    facilityID: string;
+    facilityName: string;
+    faciltyPhoto: string;
+    favorite: string;
+    latitude: string;
+    listingOnly: string;
+    longitude: string;
+    regionName: string;
+    reservationChannel: string;
+    shortName: string;
+    sitesWithAmps: string;
+    sitesWithPetsAllowed: string;
+    sitesWithSewerHookup: string;
+    sitesWithWaterHookup: string;
+    sitesWithWaterfront: string;
+    state: string;
+  };
+}
+
+interface ReserveAmericaSuccessResponse {
+  elements: Array<{
+    type: string;
+    name: string;
+    attributes: {
+      count: string;
+      resultType: string;
+    },
+    elements: ReserveAmericaDatum[];
+  }>;
+}
+
+export enum Sources {
+  RecrationGov = 'recreationgov',
+  ReserveAmerica = 'reserveamerica',
+}
+
 interface ReturnDatum {
   id: string;
+  source: Sources;
+  contractCode: string | null;
   name: string;
   description: string | null;
   directions: string | null;
@@ -80,7 +136,7 @@ enum Filter {
 }
 
 const campingKeywords = [
-  'tent', 'shelter', 'camp', 'lean', 'platform', 'cabin', 'lodge', 'sleep', 'site', 'hut', 'resort',
+  'tent', 'shelter', 'camp', 'lean', 'platform', 'cabin', 'lodge', 'sleep', 'hut', 'resort',
 ];
 
 const trailKeywords = [
@@ -148,6 +204,8 @@ const getRecreationData = async (latitude: string, longitude: string, filter: Fi
         allIds.push(FacilityID);
         returnData.push({
           id: FacilityID,
+          source: Sources.RecrationGov,
+          contractCode: null,
           name: FacilityName,
           description: FacilityDescription && FacilityDescription.length ? FacilityDescription : null,
           directions: FacilityDirections && FacilityDirections.length ? FacilityDirections : null,
@@ -163,6 +221,48 @@ const getRecreationData = async (latitude: string, longitude: string, filter: Fi
         });
       }
     });
+    if (returnData.length < 50) {
+      const altData = await getActiveRecreation(backupBaseUrl, {
+        params: {
+          landmarkLat: latitude, landmarkLong: longitude,
+        },
+      });
+      if (altData && altData.data) {
+        const reserveAmericaData = JSON.parse(xml2json(altData.data)) as ReserveAmericaSuccessResponse;
+        if (reserveAmericaData && reserveAmericaData.elements &&
+            reserveAmericaData.elements[0] && reserveAmericaData.elements[0].elements) {
+          reserveAmericaData.elements[0].elements.forEach(campsite => {
+            if (campsite && campsite.attributes) {
+              const {
+                facilityID, contractID, facilityName,
+              } = campsite.attributes;
+              returnData.push({
+                id: facilityID,
+                source: Sources.ReserveAmerica,
+                contractCode: contractID,
+                name: facilityName,
+                description: null,
+                directions: null,
+                fee: null,
+                contact: {
+                  phone: null,
+                  email: null,
+                  reservationUrl:
+                    `https://www.reserveamerica.com/campgroundDetails.do?contractCode=${
+                      contractID
+                    }&parkId=${
+                      facilityID
+                    }`,
+                  mapUrl: null,
+                },
+                latitude: parseFloat(campsite.attributes.latitude),
+                longitude: parseFloat(campsite.attributes.longitude),
+              });
+            }
+          });
+        }
+      }
+    }
     return returnData;
 
   } catch (err) {

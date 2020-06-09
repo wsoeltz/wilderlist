@@ -28,7 +28,6 @@ export const getCampsitesData = async (lat: number, lng: number, setCampsiteData
 interface Props {
   showCampsites: boolean | undefined;
   campsiteData: Campsite[] | undefined;
-  setCampsiteData: (value: Campsite[] | undefined) => void;
   setPopupInfo: (value: PopupData | null) => void;
   campsitesOn: boolean;
   togglePointer: (mapEl: any, cursor: string) => void;
@@ -36,7 +35,7 @@ interface Props {
 
 const CampsiteLayer = (props: Props) => {
   const {
-    showCampsites, campsiteData, setCampsiteData, setPopupInfo,
+    showCampsites, campsiteData, setPopupInfo,
     campsitesOn, togglePointer,
   } = props;
 
@@ -46,9 +45,6 @@ const CampsiteLayer = (props: Props) => {
     campsiteData.forEach(point => {
       const onClick = () => {
         setPopupInfo({type: PopupDataTypes.Campsite, data: {...point}});
-        if (showCampsites === true) {
-          getCampsitesData(point.latitude, point.longitude, setCampsiteData);
-        }
       };
       campsites.push(
         <Feature

@@ -233,6 +233,9 @@ const Map = (props: Props) => {
     if (localstorageKeys && localstorageKeys.majorTrail) {
       localStorage.setItem(localstorageKeys.majorTrail, newValue.toString());
     }
+    if (newValue === false) {
+      setTrailData(undefined);
+    }
   };
 
   const initialCampsitesSetting = defaultCampsitesOn ? true : false;
@@ -242,6 +245,9 @@ const Map = (props: Props) => {
     setCampsitesOn(newValue);
     if (localstorageKeys && localstorageKeys.campsites) {
       localStorage.setItem(localstorageKeys.campsites, newValue.toString());
+    }
+    if (newValue === false) {
+      setCampsiteData(undefined);
     }
   };
 
@@ -346,7 +352,7 @@ const Map = (props: Props) => {
   const prevCenterCoords = usePrevious(centerCoords);
 
   useEffect(() => {
-    if (showNearbyTrails === true &&
+    if (showNearbyTrails === true && majorTrailsOn &&
         (trailData === undefined ||
           (prevCenterCoords === undefined ||
             !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
@@ -354,10 +360,10 @@ const Map = (props: Props) => {
       ) {
       getTrailsData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setTrailData);
     }
-  }, [setTrailData, showNearbyTrails, trailData, centerCoords, prevCenterCoords]);
+  }, [setTrailData, showNearbyTrails, trailData, centerCoords, prevCenterCoords, majorTrailsOn]);
 
   useEffect(() => {
-    if (showCampsites === true &&
+    if (showCampsites === true && campsitesOn &&
         (campsiteData === undefined ||
           (prevCenterCoords === undefined ||
             !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
@@ -365,16 +371,7 @@ const Map = (props: Props) => {
       ) {
       getCampsitesData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setCampsiteData);
     }
-  }, [setCampsiteData, showCampsites, campsiteData, centerCoords, prevCenterCoords]);
-
-  const setAllExtraData = (lat: number, long: number) => {
-    if (showNearbyTrails === true) {
-      getTrailsData(lat, long, setTrailData);
-    }
-    if (showCampsites === true) {
-      getCampsitesData(lat, long, setCampsiteData);
-    }
-  };
+  }, [setCampsiteData, showCampsites, campsiteData, centerCoords, prevCenterCoords, campsitesOn]);
 
   useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
@@ -414,7 +411,7 @@ const Map = (props: Props) => {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
         const latDiff = Math.abs(Math.abs(lat) - Math.abs(prevVal[0]));
         const lngDiff = Math.abs(Math.abs(lng) - Math.abs(prevVal[1]));
-        if (latDiff > 0.2 || lngDiff > 0.2) {
+        if (latDiff > 0.55 || lngDiff > 0.55) {
           prevVal = [lat, lng];
           setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
         }
@@ -472,7 +469,6 @@ const Map = (props: Props) => {
 
   const onFeatureClick = (point: CoordinateWithDates) => {
     setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
-    setAllExtraData(point.latitude, point.longitude);
   };
 
   const crosshairs = showCenterCrosshairs === true ? <Crosshair /> : <React.Fragment />;
@@ -517,7 +513,6 @@ const Map = (props: Props) => {
         <TrailsLayer
           showNearbyTrails={showNearbyTrails}
           trailData={trailData}
-          setTrailData={setTrailData}
           setPopupInfo={setPopupInfo}
           majorTrailsOn={majorTrailsOn}
           togglePointer={togglePointer}
@@ -525,7 +520,6 @@ const Map = (props: Props) => {
         <CampsitesLayer
           showCampsites={showCampsites}
           campsiteData={campsiteData}
-          setCampsiteData={setCampsiteData}
           setPopupInfo={setPopupInfo}
           campsitesOn={campsitesOn}
           togglePointer={togglePointer}
