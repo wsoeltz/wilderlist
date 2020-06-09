@@ -188,6 +188,7 @@ export const DetailBoxTitle = styled(InlineTitle)`
   margin: 0;
   padding: 0.15rem 1rem;
   color: ${baseColor};
+  font-size: 0.9rem;
 `;
 
 export const DetailBoxFooter = styled.h4`

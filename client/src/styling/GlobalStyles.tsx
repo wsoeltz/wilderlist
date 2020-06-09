@@ -5,6 +5,9 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import {
+  faAddressBook,
+  faAlignLeft,
+  faAt,
   faCalendarAlt,
   faCar,
   faCaretDown,
@@ -25,11 +28,13 @@ import {
   faFlag,
   faHiking,
   faHome,
+  faLink,
   faList,
   faLongArrowAltDown,
   faMapMarkerAlt,
   faMapSigns,
   faMountain,
+  faPhone,
   faSearch,
   faSort,
   faSortDown,
@@ -56,7 +61,8 @@ library.add(
   faFileExcel, faMapSigns, faMountain, faHiking,
   faUserFriends, faHome, faChartLine, faTrash, faClone,
   faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
-  faCloudSun, faEdit, faFileImport, faDownload,
+  faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
+  faAddressBook, faAt, faPhone, faLink,
 );
 
 const GlobalStyles = createGlobalStyle`

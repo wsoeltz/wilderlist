@@ -1,27 +1,17 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 
-export enum Sources {
-  RecrationGov = 'recreationgov',
-  ReserveAmerica = 'reserveamerica',
-}
-
-export interface Campsite {
+export interface CampsiteDetail {
   id: string;
-  source: Sources;
-  contractCode: string | null;
-  name: string;
+  image: string | null;
   description: string | null;
   directions: string | null;
-  fee: string | null;
   contact: {
     phone: string | null;
     email: string | null;
     reservationUrl: string | null;
     mapUrl: string | null;
   };
-  latitude: number;
-  longitude: number;
 }
 
 const cache: any = setupCache({
@@ -29,8 +19,7 @@ const cache: any = setupCache({
 });
 
 const getCampsites = axios.create({
-  /* tslint:disable:max-line-length */
-  baseURL: '/api/recreationgov?filter=campsites',
+  baseURL: '/api/recreationgovdetail',
   adapter: cache.adapter,
 });
 

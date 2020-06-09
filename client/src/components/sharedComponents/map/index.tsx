@@ -26,6 +26,9 @@ import {
   lightBorderColor,
 } from '../../../styling/styleUtils';
 import { CompletedMountain } from '../../../types/graphQLTypes';
+import {
+  Campsite,
+} from '../../../utilities/getCampsites';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
 import {
   setUserAllowsLocation,
@@ -221,7 +224,7 @@ const Map = (props: Props) => {
     useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
   const [map, setMap] = useState<any>(null);
   const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
-  const [campsiteData, setCampsiteData] = useState<undefined | any>(undefined);
+  const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
 

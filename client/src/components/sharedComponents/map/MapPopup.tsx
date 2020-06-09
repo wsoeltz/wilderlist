@@ -44,6 +44,7 @@ import {
 } from '../../peakLists/Utils';
 import DynamicLink from '../DynamicLink';
 import SignUpModal from '../SignUpModal';
+import CampsiteDetailModal from './CampsiteDetailModal';
 import {getImageAndIcon} from './colorScaleColors';
 import {
   DirectionsButton,
@@ -185,6 +186,7 @@ const MapPopup = (props: Props) => {
     setEditMountainId(null);
   };
   const [trailModalOpen, setTrailModalOpen] = useState<boolean>(false);
+  const [campsiteModalOpen, setCampsiteModalOpen] = useState<boolean>(false);
 
   const getDesktopUrl = (id: Mountain['id']) => {
     if (peakListId === null || mountainId === id) {
@@ -539,6 +541,14 @@ const MapPopup = (props: Props) => {
       </DirectionsContainer>
     ) : <></>;
 
+    const openCampsiteModal = () => {
+      setCampsiteModalOpen(true);
+      setDestination({
+        key: popupData.id,
+        latitude: popupData.latitude,
+        longitude: popupData.longitude,
+      });
+    };
     popup = (
       <Popup
         coordinates={[popupData.longitude, popupData.latitude]}
@@ -553,10 +563,11 @@ const MapPopup = (props: Props) => {
           </Icon>
           <div>
             <PopupTitleExternal
+              onClick={openCampsiteModal}
               color={'#7a3800'}
-            >
-              {popupData.name}
-            </PopupTitleExternal>
+              dangerouslySetInnerHTML={{__html: popupData.name.toLowerCase()}}
+              style={{textTransform: 'capitalize'}}
+            />
           </div>
        </PopupHeader>
        {drivingContent}
@@ -615,11 +626,34 @@ const MapPopup = (props: Props) => {
     />
   ) : <></>;
 
+  const campsiteModal = campsiteModalOpen && popupInfo !== null && popupInfo.type === PopupDataTypes.Campsite ? (
+    <CampsiteDetailModal
+      onClose={() => setCampsiteModalOpen(false)}
+      campsiteDatum={popupInfo.data}
+      directionsData={directionsData}
+      getDirections={() => {
+        setDestination({
+          key: popupInfo.data.id,
+          latitude: popupInfo.data.latitude,
+          longitude: popupInfo.data.longitude,
+        });
+        if (!yourLocationOn) {
+          setYourLocationOn(true);
+        }
+        if (userAllowsLocation() === false) {
+          alert('You must enable location services for directions');
+        }
+      }}
+      usersLocation={usersLocation.coordinates}
+    />
+  ) : <></>;
+
   return (
     <>
       {popup}
       {editMountainModal}
       {trailModal}
+      {campsiteModal}
     </>
   );
 

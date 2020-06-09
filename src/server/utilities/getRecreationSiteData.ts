@@ -8,8 +8,6 @@ import {Sources} from './getRecreationData';
 
 axiosCookieJarSupport(axios);
 
-const cookieJar = new tough.CookieJar();
-
 const cache: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
 });
@@ -20,6 +18,8 @@ const getRecreationSite = axios.create({
 
 const getReserveAmericaSite = axios.create({
   adapter: cache.adapter,
+  jar: new tough.CookieJar(),
+  withCredentials: true,
 });
 
 interface RecreationMediaDatum {
@@ -159,10 +159,7 @@ const getRecreationSiteData = async (id: string, contract: string | undefined, s
       }
     } else if (source === Sources.ReserveAmerica && contract !== undefined) {
       const media = await getReserveAmericaSite(
-        `http://www.reserveamerica.com/campgroundDetails.do?contractCode=${contract}&parkId=${id}&xml=true`, {
-        jar: cookieJar,
-        withCredentials: true,
-      });
+        `http://www.reserveamerica.com/campgroundDetails.do?contractCode=${contract}&parkId=${id}&xml=true`);
       if (media && media.data) {
         const reserveAmericaData = JSON.parse(xml2json(media.data)) as ReserveAmericaSuccessResponse;
         if (reserveAmericaData && reserveAmericaData.elements && reserveAmericaData.elements[0]) {
