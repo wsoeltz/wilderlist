@@ -10,8 +10,9 @@ import { NoResults } from '../../../styling/styleUtils';
 import {
   BasicIconInText,
   DetailBox,
-  DetailBoxTitle,
+  lightBorderColor,
   SectionTitleH3,
+  tertiaryColor,
 } from '../../../styling/styleUtils';
 import {
   PeakList,
@@ -25,12 +26,22 @@ import PeakListCard from './PeakListCard';
 import PeakListCompactCard from './PeakListCompactCard';
 import PeakListTrophy from './PeakListTrophy';
 
+const TrophyTitle = styled(SectionTitleH3)`
+  border: 1px solid ${lightBorderColor};
+  border-bottom: none;
+  background-color: ${tertiaryColor};
+  padding: 1rem 1rem 0;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+`;
+
 const TrophyContainer = styled(DetailBox)`
   display: flex;
-  justify-content: space-between;
   overflow: auto;
   padding: 0 0 0.5rem;
   margin-bottom: 2rem;
+  border-top: none;
 `;
 
 export interface RegionDatum {
@@ -173,10 +184,10 @@ const ListPeakLists = (props: Props) => {
 
     const trophyContent = showTrophies === true && trophies.length > 0 ? (
       <>
-        <DetailBoxTitle>
+        <TrophyTitle>
           <BasicIconInText icon={faTrophy} />
           {getFluentString('user-profile-lists-completed')} ({trophies.length})
-        </DetailBoxTitle>
+        </TrophyTitle>
         <TrophyContainer>
           {trophies}
         </TrophyContainer>
