@@ -42,6 +42,7 @@ import {
   faSync,
   faThList,
   faTrash,
+  faTrophy,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { createGlobalStyle } from 'styled-components/macro';
@@ -62,7 +63,7 @@ library.add(
   faUserFriends, faHome, faChartLine, faTrash, faClone,
   faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
   faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
-  faAddressBook, faAt, faPhone, faLink,
+  faAddressBook, faAt, faPhone, faLink, faTrophy,
 );
 
 const GlobalStyles = createGlobalStyle`
