@@ -40,13 +40,6 @@ const BadgeGridContainer = styled.div`
   align-items: center;
 `;
 
-const RibbonGridContainer = styled.div`
-  grid-row: 1;
-  grid-column: 1;
-  height: 100%;
-  justify-content: center;
-`;
-
 const BadgeSVGContainer = styled.div`
   position: relative;
   transition: all 0.2s ease-in-out;
@@ -101,7 +94,7 @@ const ShortName = styled.svg<ShortNameProps>`
     stroke-width: ${({shortNameStroke}) => shortNameStroke}px;
   }
 `;
-const VariantName = styled.svg<StyleProps>`
+const VariantName = styled.svg`
   width: 100%;
   position: absolute;
   left: 0;
@@ -113,7 +106,7 @@ const VariantName = styled.svg<StyleProps>`
     font-size: 0.45rem;
     font-family: DeliciousWeb;
     text-transform: uppercase;
-    fill: ${({colorSet}) => colorSet.primary};
+    stroke-width: 0.5px;
   }
 `;
 
@@ -141,30 +134,31 @@ const MountainLogo = (props: Props) => {
   const titleId = 'mountainLogoTitle-' + id;
   const colorSet = active === true || active === null ? getColorSetFromVariant(variant) : colorSetGray;
   const shortNameSize = shortName.length > 7 ? '0.7rem' : '1rem';
-  const shortNameStroke = shortName.length > 7 ? '0.5' : '0.7';
+  const shortNameStroke = shortName.length > 7 ? '0.4' : '0.7';
+  const variantColor = (completed === false || active === false) ? colorSet.primary : '#fff';
+  const variantStroke = (completed === false || active === false) ? 'none' : colorSet.primary;
+  const variantYPos = (completed === false || active === false) ? '90%' : '75%';
   const variantName = variant === PeakListVariants.standard ? null : (
     <VariantName
-      colorSet={colorSet}
       viewBox='0 0 56 18'
       textAnchor='middle'
     >
-      <text x='50%' y='90%'>
+      <text
+        x='50%' y={variantYPos}
+        fill={variantColor}
+        stroke={variantStroke}
+      >
         {variantEnumToString(variant)}
       </text>
     </VariantName>
   );
-  const badgeCompletionStyles: React.CSSProperties = (completed === false || active === false) ? {} : {
-    width: '60%',
-  };
   const ribbon = (completed === false || active === false) ? null : (
-    <RibbonGridContainer>
-      <Ribbon fill={colorSet.primary} />
-    </RibbonGridContainer>
+    <Ribbon fill={colorSet.secondary} stroke={colorSet.primary} />
   );
   return (
     <Root>
       <BadgeGridContainer>
-        <BadgeSVGContainer style={badgeCompletionStyles}>
+        <BadgeSVGContainer>
           <SVG
             colorSet={colorSet}
             xmlns='http://www.w3.org/2000/svg'
@@ -174,8 +168,15 @@ const MountainLogo = (props: Props) => {
               <path id={titleId} fill='none' d='M184.91,609.63A305,305,0,0,1,104,402.33C104,233.26,241.1,96.21,410.16,96.21S716.29,233.26,716.29,402.33a305,305,0,0,1-76,201.88'
               x='0' y='0'/>
             </defs>
-
-            <Badge id={id} />
+            <g
+              style={{
+                transform: (completed === false || active === false) ? undefined : 'scale(0.85)',
+                transformOrigin: (completed === false || active === false) ? undefined : 'center',
+              }}
+            >
+              <Badge id={id} />
+            </g>
+            {ribbon}
 
             <text>
               <textPath
@@ -202,7 +203,6 @@ const MountainLogo = (props: Props) => {
           {variantName}
         </BadgeSVGContainer>
       </BadgeGridContainer>
-      {ribbon}
     </Root>
   );
 };
