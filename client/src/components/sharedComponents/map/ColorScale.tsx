@@ -192,6 +192,7 @@ interface Props {
   toggleYourLocation?: () => void;
   otherMountainsOn?: boolean;
   toggleOtherMountains?: () => void;
+  userId: string | null;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -202,7 +203,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     toggleMajorTrails, toggleYourLocation,
     majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
-    showCampsites, toggleCampsites, campsitesOn,
+    showCampsites, toggleCampsites, campsitesOn, userId,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -295,7 +296,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
               dangerouslySetInnerHTML={{__html: getFluentString('map-legend-other-mountains')}}
             />
             <Status>({getFluentString('map-legend-show-hide', {
-              shown: yourLocationOn ? 'true' : 'false',
+              shown: otherMountainsOn ? 'true' : 'false',
             })})</Status>
           </div>
         </LegendToggle>
@@ -303,7 +304,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     </AdditionalItem>
   ) : null;
 
-  const addMountainLink = showOtherMountains ? (
+  const addMountainLink = showOtherMountains && userId ? (
     <MissingMountainLink>
       {getFluentString('map-missing-mountain-text')}
       {' '}

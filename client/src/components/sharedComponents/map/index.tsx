@@ -604,6 +604,7 @@ const Map = (props: Props) => {
         showCampsites={showCampsites}
         campsitesOn={campsitesOn}
         toggleCampsites={toggleCampsites}
+        userId={userId}
         ref={colorScaleRef}
       />
     </Root>

@@ -422,7 +422,7 @@ peak-list-detail-list-grid-para-2 = Mountain conditions in the late fall, winter
 
 peak-list-detail-list-grid-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } Grid below.
 
-peak-list-detail-friend-viewing-list = Viewing list for { $username }
+peak-list-detail-friend-viewing-list = Viewing list for
 peak-list-detail-friend-view-your-progress-button = View your progress
 
 peak-list-detail-text-optional-mountains = Optional Mountains

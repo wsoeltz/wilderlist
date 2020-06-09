@@ -11,7 +11,7 @@ import {
   AppLocalizationAndBundleContext,
   FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { listDetailLink } from '../../../routing/Utils';
+import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
   ButtonPrimaryLink,
@@ -548,7 +548,9 @@ const PeakListDetail = (props: Props) => {
         const friendHeader = isOtherUser === true && user !== null ? (
            <FriendHeader>
             <Text>
-              {getFluentString('peak-list-detail-friend-viewing-list', {username: user.name})}
+              {getFluentString('peak-list-detail-friend-viewing-list')}
+              {' '}
+              <Link to={userProfileLink(user.id)}>{user.name}</Link>
             </Text>
             <ButtonPrimaryLinkSmall to={listDetailLink(peakList.id)}>
               {getFluentString('peak-list-detail-friend-view-your-progress-button')}
