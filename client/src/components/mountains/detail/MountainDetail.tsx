@@ -63,7 +63,7 @@ import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
 const localstorageShowMajorTrailsMtnDetailKey = 'localstorageShowMajorTrailsMtnDetailKey';
-const localstorageShowMinorTrailsMtnDetailKey = 'localstorageShowMinorTrailsMtnDetailKey';
+const localstorageShowCampsitesMtnDetailKey = 'localstorageShowCampsitesMtnDetailKey';
 const localstorageShowYourLocationMtnDetailKey = 'localstorageShowYourLocationMtnDetailKey';
 const localstorageShowOtherMountainsMtnDetailKey = 'localstorageShowOtherMountainsMtnDetailKey';
 
@@ -424,13 +424,15 @@ const MountainDetail = (props: Props) => {
       ) : null;
 
       const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsMtnDetailKey);
-      const localstorageMinorTrailsVal = localStorage.getItem(localstorageShowMinorTrailsMtnDetailKey);
+      const localstorageCampsitesVal = localStorage.getItem(localstorageShowCampsitesMtnDetailKey);
       const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationMtnDetailKey);
       const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowOtherMountainsMtnDetailKey);
       const defaultMajorTrails = (
         localstorageMajorTrailsVal === 'true' || localstorageMajorTrailsVal === null
       ) ? true : false;
-      const defaultMinorTrails = localstorageMinorTrailsVal === 'true' ? true : false;
+      const defaultCampsites = (
+        localstorageCampsitesVal === 'true' || localstorageCampsitesVal === null
+      ) ? true : false;
       const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
       const defaultOtherMountainsOn = (
         localstorageOtherMountainsVal === 'true' || localstorageOtherMountainsVal === null
@@ -465,13 +467,14 @@ const MountainDetail = (props: Props) => {
             showNearbyTrails={true}
             showYourLocation={true}
             showOtherMountains={true}
+            showCampsites={true}
             defaultLocationOn={defaultYourLocation}
             defaultMajorTrailsOn={defaultMajorTrails}
-            defaultMinorTrailsOn={defaultMinorTrails}
+            defaultCampsitesOn={defaultCampsites}
             defaultOtherMountainsOn={defaultOtherMountainsOn}
             localstorageKeys={{
               majorTrail: localstorageShowMajorTrailsMtnDetailKey,
-              minorTrail: localstorageShowMinorTrailsMtnDetailKey,
+              campsites: localstorageShowCampsitesMtnDetailKey,
               yourLocation: localstorageShowYourLocationMtnDetailKey,
               otherMountains: localstorageShowOtherMountainsMtnDetailKey,
             }}

@@ -185,12 +185,14 @@ interface Props {
   showOtherMountains?: boolean;
   majorTrailsOn?: boolean;
   toggleMajorTrails?: () => void;
-  minorTrailsOn?: boolean;
-  toggleMinorTrails?: () => void;
+  campsitesOn?: boolean;
+  showCampsites?: boolean;
+  toggleCampsites?: () => void;
   yourLocationOn?: boolean;
   toggleYourLocation?: () => void;
   otherMountainsOn?: boolean;
   toggleOtherMountains?: () => void;
+  userId: string | null;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -198,9 +200,10 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     centerCoords, colorScaleColors, colorScaleLabels,
     showCenterCrosshairs, returnLatLongOnClick,
     colorScaleTitle, showNearbyTrails, showYourLocation,
-    toggleMajorTrails, toggleMinorTrails, toggleYourLocation,
-    majorTrailsOn, minorTrailsOn, yourLocationOn,
+    toggleMajorTrails, toggleYourLocation,
+    majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
+    showCampsites, toggleCampsites, campsitesOn, userId,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -233,7 +236,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   const LocationIcon = yourLocationOn ? Icon : IconDisabled;
   const OtherMountainsIcon = otherMountainsOn ? Icon : IconDisabled;
   const MajorTrailsIcon = majorTrailsOn ? Icon : IconDisabled;
-  const MinorTrailsIcon = minorTrailsOn ? Icon : IconDisabled;
+  const CampsitesIcon = campsitesOn ? Icon : IconDisabled;
 
   const locationLegend = showYourLocation ? (
     <AdditionalItem>
@@ -293,7 +296,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
               dangerouslySetInnerHTML={{__html: getFluentString('map-legend-other-mountains')}}
             />
             <Status>({getFluentString('map-legend-show-hide', {
-              shown: yourLocationOn ? 'true' : 'false',
+              shown: otherMountainsOn ? 'true' : 'false',
             })})</Status>
           </div>
         </LegendToggle>
@@ -301,7 +304,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     </AdditionalItem>
   ) : null;
 
-  const addMountainLink = showOtherMountains ? (
+  const addMountainLink = showOtherMountains && userId ? (
     <MissingMountainLink>
       {getFluentString('map-missing-mountain-text')}
       {' '}
@@ -312,60 +315,61 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   ) : null;
 
   const trailsLegend = showNearbyTrails ? (
-    <>
-      <AdditionalItem>
-        <Tooltip
-          explanation={getFluentString('map-legend-trails-tooltip')}
-          cursor={'pointer'}
+    <AdditionalItem>
+      <Tooltip
+        explanation={<div dangerouslySetInnerHTML={{__html: getFluentString('map-legend-trails-tooltip')}} />}
+        cursor={'pointer'}
+      >
+        <LegendToggle
+          onClick={toggleMajorTrails}
         >
-          <LegendToggle
-            onClick={toggleMajorTrails}
-          >
-            <MajorTrailsIcon>
-              <img
-                src={require('./images/custom-icons/trail-default.svg')}
-                alt='Major Trails Legend Icon'
-                style={{width: '1.65rem'}}
-              />
-            </MajorTrailsIcon>
-            <div>
-              <Label
-                dangerouslySetInnerHTML={{__html: getFluentString('map-legend-trails-major')}}
-              />
-              <Status>({getFluentString('map-legend-show-hide', {
-                shown: majorTrailsOn ? 'true' : 'false',
-              })})</Status>
-            </div>
-          </LegendToggle>
-        </Tooltip>
-      </AdditionalItem>
-      <AdditionalItem>
-        <Tooltip
-          explanation={getFluentString('map-legend-trails-tooltip')}
-          cursor={'pointer'}
+          <MajorTrailsIcon>
+            <img
+              src={require('./images/custom-icons/trail-default.svg')}
+              alt='Major Trails Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </MajorTrailsIcon>
+          <div>
+            <Label
+              dangerouslySetInnerHTML={{__html: getFluentString('map-legend-trails-major')}}
+            />
+            <Status>({getFluentString('map-legend-show-hide', {
+              shown: majorTrailsOn ? 'true' : 'false',
+            })})</Status>
+          </div>
+        </LegendToggle>
+      </Tooltip>
+    </AdditionalItem>
+  ) : null;
+
+  const campsitesLegend = showCampsites ? (
+    <AdditionalItem>
+      <Tooltip
+        explanation={<div dangerouslySetInnerHTML={{__html: getFluentString('map-legend-campsites-tooltip')}} />}
+        cursor={'pointer'}
+      >
+        <LegendToggle
+          onClick={toggleCampsites}
         >
-          <LegendToggle
-            onClick={toggleMinorTrails}
-          >
-            <MinorTrailsIcon>
-              <img
-                src={require('./images/custom-icons/trail-connector.svg')}
-                alt='Minor Trails Legend Icon'
-                style={{width: '1.65rem'}}
-              />
-            </MinorTrailsIcon>
-            <div>
-              <Label
-                dangerouslySetInnerHTML={{__html: getFluentString('map-legend-trails-minor')}}
-              />
-              <Status>({getFluentString('map-legend-show-hide', {
-                shown: minorTrailsOn ? 'true' : 'false',
-              })})</Status>
-            </div>
-          </LegendToggle>
-        </Tooltip>
-      </AdditionalItem>
-    </>
+          <CampsitesIcon>
+            <img
+              src={require('./images/custom-icons/tent-default.svg')}
+              alt='Minor Trails Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </CampsitesIcon>
+          <div>
+            <Label
+              dangerouslySetInnerHTML={{__html: getFluentString('map-legend-campsites')}}
+            />
+            <Status>({getFluentString('map-legend-show-hide', {
+              shown: campsitesOn ? 'true' : 'false',
+            })})</Status>
+          </div>
+        </LegendToggle>
+      </Tooltip>
+    </AdditionalItem>
   ) : null;
 
   const additionalItems = showYourLocation || showNearbyTrails || showOtherMountains ? (
@@ -377,6 +381,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
         </AdditionalItemsColumn>
         <AdditionalItemsColumn>
           {trailsLegend}
+          {campsitesLegend}
         </AdditionalItemsColumn>
       </AdditionalItemsRoot>
       {addMountainLink}

@@ -67,6 +67,8 @@ global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
 global-text-value-modal-mark-complete = Mark Complete
+global-text-value-description = Description
+global-text-value-directions = Directions
 global-text-value-more = more
 global-text-value-on = on
 global-text-value-back = Back
@@ -74,6 +76,11 @@ global-text-value-loading = Loading
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at help@wilderlist.app if these loading times continue
+
+global-text-value-contact = Contact
+global-text-value-phone = Phone
+global-text-value-website = Website
+
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at help@wilderlist.app
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
@@ -415,7 +422,7 @@ peak-list-detail-list-grid-para-2 = Mountain conditions in the late fall, winter
 
 peak-list-detail-list-grid-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } Grid below.
 
-peak-list-detail-friend-viewing-list = Viewing list for { $username }
+peak-list-detail-friend-viewing-list = Viewing list for
 peak-list-detail-friend-view-your-progress-button = View your progress
 
 peak-list-detail-text-optional-mountains = Optional Mountains
@@ -531,12 +538,13 @@ map-set-lat-long-value = Set Lat/Long to these values
 map-get-directions = Get Directions
 
 map-legend-location = Your Location &amp;<br />Driving Directions
-map-legend-location-tooltip = <strong>Driving Directions</strong>: View the driving times and routes from your location to any mountain or trailhead. Click on a point on the map and then click "Get Directions".
+map-legend-location-tooltip = <strong>Show the driving times and routes from your location to any mountain, trailhead, or campsite.</strong> Click on a point on the map and then click "Get Directions".
 map-legend-other-mountains = Other Mountains<br />On Wilderlist
-map-legend-other-mountains-tooltip = <strong>Other Mountains</strong>: View other mountains in the Wilderlist database. Is a mountain missing? Add it with the link below.
-map-legend-trails-major = Major Trails &amp;<br /> Trailheads
-map-legend-trails-tooltip = Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be more trails in a given area than what is listed.
-map-legend-trails-minor = Minor Trails &amp;<br /> Connectors
+map-legend-other-mountains-tooltip = <strong>Show other mountains in the Wilderlist database</strong><br />Is a mountain missing? Add it with the link below.
+map-legend-trails-major = Nearby Trails &amp;<br /> Trailheads
+map-legend-trails-tooltip = <strong>Show trails and trailheads.</strong><br /><small>Trail data is provided through REI's Hiking Project (no affiliation) and is not a complete set. There may be other trails in a given area than what is listed.</small>
+map-legend-campsites = Nearby Camping &amp;<br /> Shelters
+map-legend-campsites-tooltip = <strong>Show camping, tentsites, and shelters.</strong><br /><small>Camping data is provided via Recreation.gov and Reserve America (no affiliation). There may be other sites in a given area than what is listed.</small>
 map-legend-show-hide = click to {
   $shown ->
     [true] hide
@@ -565,8 +573,8 @@ map-trails-difficulty-desc = {
     [dblack] Very steep. Hazardous terrain.
     *[other] Difficulty unknown.
 }
-map-trails-
 
+campsite-modal-go-to-website = Go To Campground's Website
 
 import-ascents-title = Import Ascents
 import-ascents-para-1 = This tool will import your existing ascent data from a spreadsheet and into Wilderlist.

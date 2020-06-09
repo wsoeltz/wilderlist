@@ -42,8 +42,9 @@ import {
   SaveButton,
   Title,
 } from '../../sharedComponents/formUtils';
-import Map, {CoordinateWithDates, MapContainer} from '../../sharedComponents/map';
+import Map, {MapContainer} from '../../sharedComponents/map';
 import { legendColorScheme, legendSymbolScheme } from '../../sharedComponents/map/colorScaleColors';
+import {CoordinateWithDates} from '../../sharedComponents/map/types';
 import { BaseMountainVariables } from './';
 
 const GET_NEARBY_MOUNTAINS = gql`

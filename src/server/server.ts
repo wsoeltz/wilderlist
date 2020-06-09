@@ -133,7 +133,9 @@ app.get('/api/recreationgov', async (req, res) => {
 app.get('/api/recreationgovdetail', async (req, res) => {
   try {
     const id = req.query && req.query.id ? req.query.id : undefined;
-    const recreationData = await getRecreationSiteData(id);
+    const contract = req.query && req.query.contract ? req.query.contract : undefined;
+    const source = req.query && req.query.source ? req.query.source : undefined;
+    const recreationData = await getRecreationSiteData(id, contract, source);
     res.json(recreationData);
   } catch (err) {
     res.status(500);
