@@ -8,6 +8,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePrevious from '../../../hooks/usePrevious';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
 import {
@@ -44,7 +45,7 @@ import {
 } from '../../peakLists/detail/getCompletionDates';
 import { getDates } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Map from '../../sharedComponents/map';
+import Map, {MovingMethod, Props as MapProps} from '../../sharedComponents/map';
 import {
   twoColorScale,
   twoSymbolScale,
@@ -274,9 +275,26 @@ const MountainDetail = (props: Props) => {
 
   const me = useContext(UserContext);
 
+  const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsMtnDetailKey);
+  const localstorageCampsitesVal = localStorage.getItem(localstorageShowCampsitesMtnDetailKey);
+  const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationMtnDetailKey);
+  const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowOtherMountainsMtnDetailKey);
+  const defaultMajorTrails = (
+    localstorageMajorTrailsVal === 'true' || localstorageMajorTrailsVal === null
+  ) ? true : false;
+  const defaultCampsites = (
+    localstorageCampsitesVal === 'true' || localstorageCampsitesVal === null
+  ) ? true : false;
+  const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+  const defaultOtherMountainsOn = (
+    localstorageOtherMountainsVal === 'true' || localstorageOtherMountainsVal === null
+  ) ? true : false;
+
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
   });
+
+  const prevData = usePrevious(data);
 
   const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
@@ -284,15 +302,76 @@ const MountainDetail = (props: Props) => {
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
   const closeFlagModal = () => setIsFlagModalOpen(false);
 
+  let header: React.ReactElement<any> | null;
+  let body: React.ReactElement<any> | null;
+  let mapProps: MapProps = {
+    mountainId: id,
+    peakListId,
+    userId: me && me._id ? me._id : null,
+    isOtherUser: false,
+    otherUserId,
+    completedAscents: [],
+    coordinates: [],
+    colorScaleColors: twoColorScale,
+    colorScaleSymbols: twoSymbolScale,
+    colorScaleLabels: [
+      getFluentString('global-text-value-not-done'),
+      getFluentString('global-text-value-done'),
+    ],
+    showNearbyTrails: true,
+    showYourLocation: true,
+    showOtherMountains: true,
+    showCampsites: true,
+    defaultLocationOn: defaultYourLocation,
+    defaultMajorTrailsOn: defaultMajorTrails,
+    defaultCampsitesOn: defaultCampsites,
+    defaultOtherMountainsOn,
+  };
   if (loading === true) {
-    return <LoadingSpinner />;
+    header = <LoadingSpinner />;
+    body = null;
+    if (prevData && prevData.mountain && prevData.user) {
+      const {user, mountain} = prevData;
+
+      const userMountains = (user && user.mountains) ? user.mountains : [];
+      const completedDates = userMountains.find(
+        (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === id);
+      const completionDates: VariableDate | null = completedDates !== undefined && completedDates.dates.length ? {
+          type: PeakListVariants.standard,
+          standard: getDates(completedDates.dates)[0],
+        } : null;
+      mapProps = {
+        mountainId: id,
+        peakListId,
+        userId: me && me._id ? me._id : null,
+        isOtherUser: false,
+        otherUserId,
+        coordinates: [{...mountain, completionDates}],
+        completedAscents: userMountains,
+        colorScaleColors: twoColorScale,
+        colorScaleSymbols: twoSymbolScale,
+        colorScaleLabels: [
+          getFluentString('global-text-value-not-done'),
+          getFluentString('global-text-value-done'),
+        ],
+        showNearbyTrails: true,
+        showYourLocation: true,
+        showOtherMountains: true,
+        showCampsites: true,
+        defaultLocationOn: defaultYourLocation,
+        defaultMajorTrailsOn: defaultMajorTrails,
+        defaultCampsitesOn: defaultCampsites,
+        defaultOtherMountainsOn,
+      };
+    }
   } else if (error !== undefined) {
     console.error(error);
-    return (
+    header =  (
       <PlaceholderText>
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>
     );
+    body = null;
   } else if (data !== undefined) {
     const { mountain, user } = data;
     if (!mountain) {
@@ -423,22 +502,7 @@ const MountainDetail = (props: Props) => {
         </Helmet>
       ) : null;
 
-      const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsMtnDetailKey);
-      const localstorageCampsitesVal = localStorage.getItem(localstorageShowCampsitesMtnDetailKey);
-      const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationMtnDetailKey);
-      const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowOtherMountainsMtnDetailKey);
-      const defaultMajorTrails = (
-        localstorageMajorTrailsVal === 'true' || localstorageMajorTrailsVal === null
-      ) ? true : false;
-      const defaultCampsites = (
-        localstorageCampsitesVal === 'true' || localstorageCampsitesVal === null
-      ) ? true : false;
-      const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
-      const defaultOtherMountainsOn = (
-        localstorageOtherMountainsVal === 'true' || localstorageOtherMountainsVal === null
-      ) ? true : false;
-
-      return (
+      header = (
         <>
           {metaData}
           <MountainNameHeader>
@@ -451,36 +515,41 @@ const MountainDetail = (props: Props) => {
             <span>{state.name}</span>
             <span>{elevation}ft</span>
           </Details>
-          <Map
-            mountainId={id}
-            peakListId={peakListId}
-            coordinates={[{...mountain, completionDates}]}
-            userId={me && me._id ? me._id : null}
-            otherUserId={otherUserId}
-            isOtherUser={false}
-            colorScaleColors={twoColorScale}
-            colorScaleSymbols={twoSymbolScale}
-            colorScaleLabels={[
-              getFluentString('global-text-value-not-done'),
-              getFluentString('global-text-value-done'),
-            ]}
-            showNearbyTrails={true}
-            showYourLocation={true}
-            showOtherMountains={true}
-            showCampsites={true}
-            defaultLocationOn={defaultYourLocation}
-            defaultMajorTrailsOn={defaultMajorTrails}
-            defaultCampsitesOn={defaultCampsites}
-            defaultOtherMountainsOn={defaultOtherMountainsOn}
-            localstorageKeys={{
-              majorTrail: localstorageShowMajorTrailsMtnDetailKey,
-              campsites: localstorageShowCampsitesMtnDetailKey,
-              yourLocation: localstorageShowYourLocationMtnDetailKey,
-              otherMountains: localstorageShowOtherMountainsMtnDetailKey,
-            }}
-            completedAscents={userMountains}
-            key={mountainDetailMapKey}
-          />
+        </>
+      );
+
+      mapProps = {
+        mountainId: id,
+        peakListId,
+        coordinates: [{...mountain, completionDates}],
+        userId: me && me._id ? me._id : null,
+        otherUserId,
+        isOtherUser: false,
+        colorScaleColors: twoColorScale,
+        colorScaleSymbols: twoSymbolScale,
+        colorScaleLabels: [
+          getFluentString('global-text-value-not-done'),
+          getFluentString('global-text-value-done'),
+        ],
+        showNearbyTrails: true,
+        showYourLocation: true,
+        showOtherMountains: true,
+        showCampsites: true,
+        defaultLocationOn: defaultYourLocation,
+        defaultMajorTrailsOn: defaultMajorTrails,
+        defaultCampsitesOn: defaultCampsites,
+        defaultOtherMountainsOn,
+        localstorageKeys: {
+          majorTrail: localstorageShowMajorTrailsMtnDetailKey,
+          campsites: localstorageShowCampsitesMtnDetailKey,
+          yourLocation: localstorageShowYourLocationMtnDetailKey,
+          otherMountains: localstorageShowOtherMountainsMtnDetailKey,
+        },
+        completedAscents: userMountains,
+      };
+
+      body = (
+        <>
           <LocationBox>
             <LatLong>
               {getFluentString('global-text-value-location')}:{' '}
@@ -551,8 +620,27 @@ const MountainDetail = (props: Props) => {
       );
     }
   } else {
-    return null;
+    header = (
+      <PlaceholderText>
+        {getFluentString('global-error-retrieving-data')}
+      </PlaceholderText>
+    );
+    body = null;
   }
+
+  return (
+    <>
+      {header}
+      <div style={{visibility: loading ? 'hidden' : undefined}}>
+        <Map
+          key={mountainDetailMapKey}
+          {...mapProps}
+          movingMethod={MovingMethod.jumpTo}
+        />
+      </div>
+      {body}
+    </>
+  );
 };
 
 export default MountainDetail;

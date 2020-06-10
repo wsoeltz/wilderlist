@@ -371,33 +371,37 @@ const MapPopup = (props: Props) => {
       highlighted, colorScaleSymbols,
     });
     const {dateElms, length} = renderCompletionDates(completionDates);
-    popup = (
-      <Popup
-        coordinates={[popupData.longitude, popupData.latitude]}
-      >
-        <PopupHeader>
-          <Icon>
-            <img
-              src={require('./images/custom-icons/' + iconImage + '.svg')}
-              alt='Mountain Icon'
-              style={{width: '1.65rem'}}
-            />
-          </Icon>
-          <div>
-            {getMountainPopupName(popupData.id, popupData.name, circleColor)}
-            <PopupDetail>
-              {popupData.elevation}ft
-            </PopupDetail>
-          </div>
-        </PopupHeader>
-        <PopupDates>
-          {dateElms}
-          {getAddAscentButton(popupData.id, !length)}
-        </PopupDates>
-        {drivingContent}
-        <ClosePopup onClick={closePopup}>×</ClosePopup>
-      </Popup>
-    );
+    if (circleColor && iconImage) {
+      popup = (
+        <Popup
+          coordinates={[popupData.longitude, popupData.latitude]}
+        >
+          <PopupHeader>
+            <Icon>
+              <img
+                src={require('./images/custom-icons/' + iconImage + '.svg')}
+                alt='Mountain Icon'
+                style={{width: '1.65rem'}}
+              />
+            </Icon>
+            <div>
+              {getMountainPopupName(popupData.id, popupData.name, circleColor)}
+              <PopupDetail>
+                {popupData.elevation}ft
+              </PopupDetail>
+            </div>
+          </PopupHeader>
+          <PopupDates>
+            {dateElms}
+            {getAddAscentButton(popupData.id, !length)}
+          </PopupDates>
+          {drivingContent}
+          <ClosePopup onClick={closePopup}>×</ClosePopup>
+        </Popup>
+      );
+    } else {
+      popup = <></>;
+    }
   } else if (popupInfo.type === PopupDataTypes.Trail) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
