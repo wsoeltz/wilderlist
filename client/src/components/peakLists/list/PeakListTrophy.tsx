@@ -15,6 +15,9 @@ const LinkWrapper = styled(DynamicLink)`
   display: block;
   color: inherit;
   text-decoration: inherit;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
 
   &:hover {
     color: inherit;

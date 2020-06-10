@@ -327,6 +327,7 @@ export const FloatingButtonContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  pointer-events: none;
 `;
 
 export const FloatingButton = styled(ButtonPrimaryLink)`
@@ -335,6 +336,7 @@ export const FloatingButton = styled(ButtonPrimaryLink)`
   border-bottom: 3px solid ${darken(0.12, primaryColor)};
   border-right: 3px solid ${darken(0.12, primaryColor)};
   box-shadow: 0px 2px 4px 0px #737373;
+  pointer-events: auto;
 `;
 
 export const InputBase = styled.input`

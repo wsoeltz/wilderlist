@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import ReactMapboxGl, {
+import {
   MapContext,
   RotationControl,
   ZoomControl,
@@ -21,6 +21,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import MapboxContext from '../../../contextProviders/mapBoxContext';
 import usePrevious from '../../../hooks/usePrevious';
 import {Routes} from '../../../routing/routes';
 import {
@@ -53,13 +54,13 @@ import {
   Trail,
 } from './types';
 
-const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
+// const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
 
-const Mapbox = ReactMapboxGl({
-  accessToken,
-  maxZoom: 16,
-  scrollZoom: false,
-});
+// const Mapbox = ReactMapboxGl({
+//   accessToken,
+//   maxZoom: 16,
+//   scrollZoom: false,
+// });
 
 export const MapContainer = styled.div`
   margin: 2rem 0;
@@ -159,11 +160,21 @@ const getMinMax = (coordinates: Coordinate[]) => {
   return { minLat, maxLat, minLong, maxLong };
 };
 
-interface Props {
+export enum MovingMethod {
+  jumpTo = 'jumpTo',
+  flyTo = 'flyTo',
+  easeTo = 'easeTo',
+}
+
+export interface Props {
   mountainId: string | null;
   peakListId: string | null;
   userId: string | null;
+  completedAscents: CompletedMountain[];
   coordinates: CoordinateWithDates[];
+  colorScaleColors: string[];
+  colorScaleSymbols: string[];
+  colorScaleLabels: string[];
   highlighted?: CoordinateWithDates[];
   isOtherUser?: boolean;
   otherUserId?: string;
@@ -171,9 +182,6 @@ interface Props {
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
   colorScaleTitle?: string;
-  colorScaleColors: string[];
-  colorScaleSymbols: string[];
-  colorScaleLabels: string[];
   fillSpace?: boolean;
   showNearbyTrails?: boolean;
   defaultMajorTrailsOn?: boolean;
@@ -189,7 +197,7 @@ interface Props {
     yourLocation?: string;
     otherMountains?: string;
   };
-  completedAscents: CompletedMountain[];
+  movingMethod?: MovingMethod;
 }
 
 const Map = (props: Props) => {
@@ -202,11 +210,13 @@ const Map = (props: Props) => {
     showYourLocation, defaultMajorTrailsOn,
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
-    defaultCampsitesOn, showCampsites,
+    defaultCampsitesOn, showCampsites, movingMethod,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const Mapbox = useContext(MapboxContext);
 
   const history = useHistory();
 
@@ -452,10 +462,17 @@ const Map = (props: Props) => {
 
   useEffect(() => {
     if (!createOrEditMountain) {
-      const coords = getMinMax(coordinates);
-      setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+      setTimeout(() => {
+        const coords = getMinMax(coordinates);
+        if (fitBounds === undefined || (
+            coords.minLong !== fitBounds[0][0] || coords.minLat !== fitBounds[0][1] ||
+            coords.maxLong !== fitBounds[1][0] || coords.maxLat !== fitBounds[1][1]
+           )) {
+          setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+        }
+      }, 0);
     }
-  }, [coordinates, createOrEditMountain]);
+  }, [coordinates, createOrEditMountain, peakListId, mountainId, fitBounds]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
@@ -511,7 +528,7 @@ const Map = (props: Props) => {
         onClick={() => setPopupInfo(null)}
         fitBounds={fitBounds}
         fitBoundsOptions={{padding: 50, linear: true}}
-        movingMethod={'flyTo'}
+        movingMethod={movingMethod ? movingMethod : 'flyTo'}
         key={`mapkey-${colorScaleHeight}-${mapReloadCount}`}
       >
         <ZoomControl />

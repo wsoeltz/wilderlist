@@ -17,6 +17,7 @@ import {
   appLocalizationAndBundle as fluentValue,
   AppLocalizationAndBundleContext as FluentText,
 } from '../contextProviders/getFluentLocalizationContext';
+import MapContext, {MapboxMap} from '../contextProviders/mapBoxContext';
 import { Routes } from '../routing/routes';
 import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
@@ -321,11 +322,13 @@ const App: React.FC = () => {
             <GlobalStyles />
             <Router>
               <Root>
-                <Header />
-                <Suspense fallback={<LoadingSuspense />}>
-                  {userRoutes}
-                </Suspense>
-                <OverlayPortal id={overlayPortalContainerId} />
+                <MapContext.Provider value={MapboxMap}>
+                  <Header />
+                  <Suspense fallback={<LoadingSuspense />}>
+                    {userRoutes}
+                  </Suspense>
+                  <OverlayPortal id={overlayPortalContainerId} />
+                </MapContext.Provider>
               </Root>
             </Router>
           </FluentText.Provider>
