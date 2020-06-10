@@ -383,6 +383,7 @@ const PeakListForm = (props: Props) => {
           showOtherMountains={true}
           defaultOtherMountainsOn={true}
           addRemoveMountains={addRemoveMountains}
+          primaryMountainLegendCopy={'Mountains on this list'}
           key={'create-peak-list-key'}
         />
       </FullColumn>
@@ -404,6 +405,7 @@ const PeakListForm = (props: Props) => {
             showOtherMountains={true}
             defaultOtherMountainsOn={true}
             addRemoveMountains={addRemoveMountains}
+            primaryMountainLegendCopy={'Mountains on this list'}
             key={'create-peak-list-key'}
           />
         </MapContainer>

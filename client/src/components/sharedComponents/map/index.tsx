@@ -196,6 +196,7 @@ export interface Props {
     removeText: string;
     onRemove: (mountain: CoordinateWithDates) => void;
   };
+  primaryMountainLegendCopy?: string;
 }
 
 const Map = (props: Props) => {
@@ -209,7 +210,7 @@ const Map = (props: Props) => {
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
     defaultCampsitesOn, showCampsites, movingMethod,
-    addRemoveMountains,
+    addRemoveMountains, primaryMountainLegendCopy,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -633,6 +634,7 @@ const Map = (props: Props) => {
         toggleCampsites={toggleCampsites}
         userId={userId}
         onAddMountainClick={onAddMountainClick}
+        primaryMountainLegendCopy={primaryMountainLegendCopy}
         ref={colorScaleRef}
       />
     </Root>
