@@ -136,7 +136,7 @@ const GridNumbers = styled.div`
   letter-spacing: -1px;
 `;
 
-const AddAscentButton = styled(ButtonSecondary)`
+const ActionButton = styled(ButtonSecondary)`
   padding: 0.3rem;
   text-transform: uppercase;
   font-weight: 600;
@@ -167,6 +167,12 @@ interface Props {
   colorScaleSymbols: string[];
   createOrEditMountain?: boolean;
   highlighted?: CoordinateWithDates[];
+  addRemoveMountains?: {
+    addText: string;
+    onAdd: (mountain: CoordinateWithDates) => void;
+    removeText: string;
+    onRemove: (mountain: CoordinateWithDates) => void;
+  };
 }
 
 const MapPopup = (props: Props) => {
@@ -175,7 +181,7 @@ const MapPopup = (props: Props) => {
     otherUserId, userId, usersLocation, destination, directionsData,
     closePopup, yourLocationOn, setYourLocationOn, setDestination,
     showYourLocation, colorScaleColors, colorScaleSymbols,
-    createOrEditMountain, highlighted,
+    createOrEditMountain, highlighted, addRemoveMountains,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -298,16 +304,16 @@ const MapPopup = (props: Props) => {
   const getAddAscentButton = (mtnId: string, showText: boolean) => {
     const text = showText ? getFluentString('map-add-ascent') : '';
     return isOtherUser ? null : (
-      <AddAscentButton onClick={() => setEditMountainId(mtnId)}>
+      <ActionButton onClick={() => setEditMountainId(mtnId)}>
         <FontAwesomeIcon icon={faCalendarAlt} /> {text}
-      </AddAscentButton>
+      </ActionButton>
     );
   };
 
   let popup: React.ReactElement<any>;
   if (!popupInfo) {
     popup = <></>;
-  } else if (popupInfo.type === PopupDataTypes.Coordinate) {
+  } else if (popupInfo.type === PopupDataTypes.Coordinate || popupInfo.type === PopupDataTypes.OtherMountain) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
     if (usersLocation.loading === true) {
@@ -368,9 +374,41 @@ const MapPopup = (props: Props) => {
       : popupData.completionDates;
     const {circleColor, iconImage} = getImageAndIcon({
       colorScaleColors, point: {...popupData, completionDates}, createOrEditMountain,
-      highlighted, colorScaleSymbols,
+      highlighted, colorScaleSymbols, popUpDataType: popupInfo.type,
+      addRemoveEnabled: addRemoveMountains ? true : false,
     });
     const {dateElms, length} = renderCompletionDates(completionDates);
+
+    let actionButton: React.ReactElement<any> | null;
+    if (addRemoveMountains !== undefined) {
+      if (popupInfo.type === PopupDataTypes.Coordinate) {
+        const onClick = () => {
+          addRemoveMountains.onRemove(popupData);
+          closePopup();
+        };
+        actionButton = (
+          <ActionButton onClick={onClick}>
+            {addRemoveMountains.removeText}
+          </ActionButton>
+        );
+      } else if (popupInfo.type === PopupDataTypes.OtherMountain) {
+        const onClick = () => {
+          addRemoveMountains.onAdd(popupData);
+          closePopup();
+        };
+        actionButton = (
+          <ActionButton onClick={onClick}>
+            {addRemoveMountains.addText}
+          </ActionButton>
+        );
+      } else {
+        console.error('Invalid value for popupInfo');
+        actionButton = null;
+      }
+    } else {
+      actionButton = null;
+    }
+
     if (circleColor && iconImage) {
       popup = (
         <Popup
@@ -396,6 +434,7 @@ const MapPopup = (props: Props) => {
             {getAddAscentButton(popupData.id, !length)}
           </PopupDates>
           {drivingContent}
+          {actionButton}
           <ClosePopup onClick={closePopup}>×</ClosePopup>
         </Popup>
       );

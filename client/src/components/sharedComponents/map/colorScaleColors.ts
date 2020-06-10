@@ -2,7 +2,7 @@ import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
-import {CoordinateWithDates} from './types';
+import {CoordinateWithDates, PopupDataTypes} from './types';
 
 const startColor = '#dc4900';
 const endColor = '#145500';
@@ -82,12 +82,14 @@ interface ImageAndIconInput {
   point: CoordinateWithDates;
   createOrEditMountain: boolean | undefined;
   highlighted: undefined | CoordinateWithDates[];
+  popUpDataType: PopupDataTypes.Coordinate | PopupDataTypes.OtherMountain;
+  addRemoveEnabled?: boolean;
 }
 export const getImageAndIcon = (input: ImageAndIconInput): {circleColor: string, iconImage: string} => {
   const {
     colorScaleColors,
     point, createOrEditMountain, highlighted,
-    colorScaleSymbols,
+    colorScaleSymbols, popUpDataType, addRemoveEnabled,
   } = input;
 
   let circleColor: string;
@@ -95,7 +97,15 @@ export const getImageAndIcon = (input: ImageAndIconInput): {circleColor: string,
 
   const {completionDates} = point;
 
-  if (colorScaleColors.length === 0) {
+  if (addRemoveEnabled) {
+    if (popUpDataType === PopupDataTypes.Coordinate) {
+      circleColor = legendColorScheme.primary;
+      iconImage = legendSymbolScheme.primary;
+    } else {
+      circleColor = legendColorScheme.secondary;
+      iconImage = legendSymbolScheme.secondary;
+    }
+  } else if (colorScaleColors.length === 0) {
     circleColor = legendColorScheme.primary;
     iconImage = legendSymbolScheme.primary;
   } else if (completionDates === null || completionDates === undefined) {
