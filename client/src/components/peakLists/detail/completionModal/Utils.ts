@@ -10,10 +10,45 @@ for (let i = 1900; i < today.getFullYear() + 1; i++) {
   years.push(i);
 }
 
+export const mobileWidth = 400; // in px
+
 export const SectionTitle = styled.h4`
   margin-top: 0;
   margin-bottom: 0.2rem;
   font-size: 0.8rem;
+`;
+
+export const ColumnRoot = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+`;
+
+export const LeftColumn = styled.div`
+  padding-right: 1rem;
+  grid-column: 1;
+  grid-row: 1;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding-right: 0;
+    grid-row: auto;
+  }
+`;
+
+export const RightColumn = styled.div`
+  padding-left: 1rem;
+  grid-column: 2;
+  grid-row: 1;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding-left: 0;
+    grid-row: auto;
+    grid-column: 1;
+  }
 `;
 
 /* tslint:disable:max-line-length */

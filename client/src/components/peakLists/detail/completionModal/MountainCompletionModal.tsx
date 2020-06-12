@@ -13,11 +13,7 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   ButtonWarning,
-  CheckboxList,
-  CheckboxListCheckbox,
-  CheckboxListItem,
   InlineTitle,
-  lightBorderColor,
   RequiredNote as RequiredNoteBase,
   warningColor,
 } from '../../../../styling/styleUtils';
@@ -47,6 +43,7 @@ import { DateType, formatStringDate } from '../../Utils';
 import AddFriends from './components/AddFriends';
 import AddMountains, {MountainDatum} from './components/AddMountains';
 import DateWidget, {Restrictions} from './components/DateWidget';
+import TripDetails, {charLimit, nullConditions} from './components/TripDetails';
 import {
   ADD_ASCENT_NOTIFICATIONS,
   ADD_MOUNTAIN_COMPLETION,
@@ -63,67 +60,16 @@ import {
   REMOVE_MOUNTAIN_COMPLETION,
 } from './queries';
 import {
-  Input,
-  SectionTitle,
+  ColumnRoot,
+  LeftColumn,
+  RightColumn,
 } from './Utils';
 
 export const preferredDateFormatLocalStorageVariable = 'preferredDateFormatLocalStorageVariable';
 
-const mobileWidth = 400; // in px
-
-const ColumnRoot = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  @media (max-width: ${mobileWidth}px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
-`;
-
 const TitleText = styled(InlineTitle)`
   margin: 0 0 1rem;
   text-transform: capitalize;
-`;
-
-const TripReportRoot = styled.div`
-  margin-top: 2rem;
-`;
-
-const LeftColumn = styled.div`
-  padding-right: 1rem;
-  grid-column: 1;
-  grid-row: 1;
-
-  @media (max-width: ${mobileWidth}px) {
-    padding-right: 0;
-    grid-row: auto;
-  }
-`;
-
-const RightColumn = styled.div`
-  padding-left: 1rem;
-  grid-column: 2;
-  grid-row: 1;
-
-  @media (max-width: ${mobileWidth}px) {
-    padding-left: 0;
-    grid-row: auto;
-    grid-column: 1;
-  }
-`;
-
-const FriendColumn = styled(RightColumn)`
-  border-left: 1px solid ${lightBorderColor};
-  display: grid;
-  grid-template-rows: auto 1fr;
-  grid-gap: 2rem;
-
-  @media (max-width: ${mobileWidth}px) {
-    margin-top: 2rem;
-    padding-left: 0;
-    border-left: 0;
-  }
 `;
 
 export const ButtonWrapper = styled.div`
@@ -153,53 +99,12 @@ const Error = styled.p`
   text-align: center;
 `;
 
-const ReportContent = styled.div`
-  margin-top: 1.6rem;
-`;
-
-const ReportTextarea = styled.textarea`
-  margin: 1rem 0;
-  padding: 8px;
-  box-sizing: border-box;
-  border: solid 1px #dcdcdc;
-  font-size: 1rem;
-  font-weight: 200;
-  width: 100%;
-  min-height: 6rem;
-  line-height: 1.4;
-`;
-
-const charLimit = 5000;
-
 interface BaseProps {
   initialMountainList: MountainDatum[];
   closeEditMountainModalModal: () => void;
   userId: string;
   textNote?: React.ReactElement<any> | null;
 }
-
-const nullConditions: Conditions = {
-  mudMinor: null,
-  mudMajor: null,
-  waterSlipperyRocks: null,
-  waterOnTrail: null,
-  leavesSlippery: null,
-  iceBlack: null,
-  iceBlue: null,
-  iceCrust: null,
-  snowIceFrozenGranular: null,
-  snowIceMonorailStable: null,
-  snowIceMonorailUnstable: null,
-  snowIcePostholes: null,
-  snowMinor: null,
-  snowPackedPowder: null,
-  snowUnpackedPowder: null,
-  snowDrifts: null,
-  snowSticky: null,
-  snowSlush: null,
-  obstaclesBlowdown: null,
-  obstaclesOther: null,
-};
 
 export type Props = BaseProps & Restrictions;
 
@@ -283,9 +188,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [isAreYouSureModalOpen, setIsAreYouSureModalOpen] = useState<boolean>(false);
 
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
-
-  const updateCondition = (key: keyof Conditions) =>
-    setConditions({...conditions, [key]: !conditions[key]});
 
   const setDates = (date: Date | null) => {
     if (date !== null) {
@@ -526,70 +428,37 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const errorNote = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
 
   let title: string;
-  let dateSelect: React.ReactElement<any> | null;
+  let dateWidgetVariant: Restrictions | undefined;
   if (props.variant === PeakListVariants.standard) {
     title = tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
       ? 'Edit Ascent Report' : 'Log Ascent';
-    dateSelect = (
-      <DateWidget
-        variant={props.variant}
-        setDates={setDates}
-        setDateType={setDateType}
-        dateType={dateType}
-        setYearOnly={setYearOnly}
-        startDate={startDate}
-        initialStartDate={initialStartDate}
-        completionYear={completionYear}
-      />
-    );
+    dateWidgetVariant = {variant: props.variant};
   } else if (props.variant === PeakListVariants.winter) {
     title = `Log ${Seasons.winter} ascent`;
-    dateSelect = (
-      <DateWidget
-        variant={props.variant}
-        setDates={setDates}
-        setDateType={setDateType}
-        dateType={dateType}
-        setYearOnly={setYearOnly}
-        startDate={startDate}
-        initialStartDate={initialStartDate}
-        completionYear={completionYear}
-      />
-    );
+    dateWidgetVariant = {variant: props.variant};
   } else if (props.variant === PeakListVariants.fourSeason) {
     title = ' Log ' + props.season + ' ascent';
-    dateSelect = (
-      <DateWidget
-        variant={props.variant}
-        setDates={setDates}
-        setDateType={setDateType}
-        dateType={dateType}
-        setYearOnly={setYearOnly}
-        startDate={startDate}
-        initialStartDate={initialStartDate}
-        completionYear={completionYear}
-        season={props.season}
-      />
-    );
+    dateWidgetVariant = {variant: props.variant, season: props.season};
   } else if (props.variant === PeakListVariants.grid) {
     title = 'Log ascent for ' + props.month;
-    dateSelect = (
-      <DateWidget
-        variant={props.variant}
-        setDates={setDates}
-        setDateType={setDateType}
-        dateType={dateType}
-        setYearOnly={setYearOnly}
-        startDate={startDate}
-        initialStartDate={initialStartDate}
-        completionYear={completionYear}
-        month={props.month}
-      />
-    );
+    dateWidgetVariant = {variant: props.variant, month: props.month};
   } else {
     title = '';
-    dateSelect = null;
+    dateWidgetVariant = undefined;
   }
+
+  const dateSelect = dateWidgetVariant !== undefined ? (
+    <DateWidget
+      {...dateWidgetVariant}
+      setDates={setDates}
+      setDateType={setDateType}
+      dateType={dateType}
+      setYearOnly={setYearOnly}
+      startDate={startDate}
+      initialStartDate={initialStartDate}
+      completionYear={completionYear}
+    />
+  ) : null;
 
   const isConfirmDisabled = () => {
     if (dateType === DateType.full &&
@@ -609,56 +478,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     }
     return false;
   };
-
-  // use nullConditions keys as it is defined to always be the same as the
-  // interface Conditions, whereas the prop conditions could recieve unknown
-  // keys from the database (such as __typename)
-  const conditionsListItems = Object.keys(nullConditions).map(function(key: keyof Conditions) {
-    return (
-      <CheckboxListItem
-        htmlFor={`${key}-condition-checkbox`}
-        key={key}
-      >
-        <CheckboxListCheckbox
-          id={`${key}-condition-checkbox`} type='checkbox'
-          checked={conditions[key] ? true : false}
-          onChange={() => updateCondition(key)}
-        />
-        {getFluentString('trip-report-condition-name', {key})}
-      </CheckboxListItem>
-    );
-  });
-
-  const conditionsList = dateType === DateType.full ? (
-    <CheckboxList>
-      {conditionsListItems}
-    </CheckboxList>
-  ) : (
-    <small>
-      {getFluentString('trip-report-invalid-date-format')}
-    </small>
-  );
-
-  const reportContent = dateType === DateType.full ? (
-    <ReportContent>
-      <SectionTitle>{getFluentString('trip-report-notes-title')}</SectionTitle>
-      <ReportTextarea
-        placeholder={getFluentString('trip-report-notes-placeholder')}
-        defaultValue={initialTripNotes}
-        ref={tripNotesEl}
-        maxLength={charLimit}
-      />
-      <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
-      <Input
-        type='text'
-        placeholder={getFluentString('trip-report-link-placeholder')}
-        defaultValue={initialLink}
-        ref={tripLinkEl}
-        maxLength={1000}
-        autoComplete={'off'}
-      />
-    </ReportContent>
-  ) : null;
 
   const deleteAscentButton =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
@@ -709,7 +528,11 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
           </TitleText>
             {dateSelect}
           </LeftColumn>
-          <FriendColumn>
+          <RightColumn>
+            <AddMountains
+              selectedMountains={mountainList}
+              setSelectedMountains={setMountainList}
+            />
             <AddFriends
               userId={userId}
               emailList={emailList}
@@ -717,27 +540,18 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
               userList={userList}
               setUserList={setUserList}
             />
-          </FriendColumn>
+            <TripDetails
+              conditions={conditions}
+              setConditions={setConditions}
+              dateType={dateType}
+              initialTripNotes={initialTripNotes}
+              initialLink={initialLink}
+              ref={{tripNotesEl, tripLinkEl} as any}
+            />
+          </RightColumn>
         </ColumnRoot>
         {errorNote}
         {textNote}
-        <TripReportRoot>
-          <ColumnRoot>
-            <RightColumn>
-              <AddMountains
-                selectedMountains={mountainList}
-                setSelectedMountains={setMountainList}
-              />
-            </RightColumn>
-            <LeftColumn>
-              <SectionTitle>
-                {getFluentString('trip-report-conditions-title')}
-              </SectionTitle>
-              {conditionsList}
-            </LeftColumn>
-          </ColumnRoot>
-          {reportContent}
-        </TripReportRoot>
       </Modal>
       {areYouSureModal}
     </>
