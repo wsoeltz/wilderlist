@@ -22,7 +22,7 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
-import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
+import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import ExportAscentsModal, {SpecialExport} from '../export';

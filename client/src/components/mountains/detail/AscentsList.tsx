@@ -7,7 +7,7 @@ import {
   GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
-import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
+import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
 import EditAscentReport from '../../peakLists/detail/completionModal/EditAscentReport';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {

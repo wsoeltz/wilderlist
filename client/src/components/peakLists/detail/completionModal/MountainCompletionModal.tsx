@@ -44,8 +44,8 @@ import {
   SuccessResponse as ClearNotificationsSuccess,
 } from '../../../sharedComponents/NotificationBar';
 import { DateType, formatStringDate } from '../../Utils';
-import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
 import AddFriends from './components/AddFriends';
+import AddMountains, {MountainDatum} from './components/AddMountains';
 import DateWidget, {Restrictions} from './components/DateWidget';
 import {
   ADD_ASCENT_NOTIFICATIONS,
@@ -724,13 +724,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         <TripReportRoot>
           <ColumnRoot>
             <RightColumn>
-              <SectionTitle>
-                {getFluentString('trip-report-add-additional-mtns-title')}
-              </SectionTitle>
-              <small>
-                {getFluentString('trip-report-add-additional-mtns-desc')}
-              </small>
-              <AdditionalMountains
+              <AddMountains
                 selectedMountains={mountainList}
                 setSelectedMountains={setMountainList}
               />

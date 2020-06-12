@@ -33,7 +33,7 @@ import {
 import {
   userAllowsLocation,
 } from '../../../Utils';
-import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
+import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import getCompletionDates from '../../peakLists/detail/getCompletionDates';
 import {
