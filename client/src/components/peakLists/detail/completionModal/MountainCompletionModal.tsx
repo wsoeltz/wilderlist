@@ -74,6 +74,7 @@ const ColumnRoot = styled.div`
 
 const TitleText = styled(InlineTitle)`
   margin: 0 0 1rem;
+  text-transform: capitalize;
 `;
 
 const TripReportRoot = styled.div`
@@ -1093,7 +1094,8 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   let initialDate: Date;
   let toggleButtons: React.ReactElement<any> | null = null;
   if (props.variant === PeakListVariants.standard) {
-    title = 'Add an Ascent';
+    title = tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
+      ? 'Edit Ascent Report' : 'Log Ascent';
     initialDate = today;
     filterDate = (date: Date) => {
       const year = date.getFullYear();
@@ -1144,7 +1146,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       </ToggleTypeButtonContainer>
     );
   } else if (props.variant === PeakListVariants.winter) {
-    title = `Add a ${Seasons.winter} ascent`;
+    title = `Log ${Seasons.winter} ascent`;
     initialDate = new Date(today.getFullYear() - 1, 11);
     filterDate = (date: Date) => {
       const year = date.getFullYear();
@@ -1160,7 +1162,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       return false;
     };
   } else if (props.variant === PeakListVariants.fourSeason) {
-    title = ' Add a ' + props.season + ' ascent';
+    title = ' Log ' + props.season + ' ascent';
     if (props.season === Seasons.fall) {
       initialDate = new Date(today.getFullYear(), 8);
     } else if (props.season === Seasons.winter) {
@@ -1186,7 +1188,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       return false;
     };
   } else if (props.variant === PeakListVariants.grid) {
-    title = 'Add an ascent for ' + props.month;
+    title = 'Log ascent for ' + props.month;
     const monthIndex = getMonthIndex(props.month);
     initialDate = new Date(today.getFullYear(), monthIndex - 1);
     filterDate = (date: Date) => {
