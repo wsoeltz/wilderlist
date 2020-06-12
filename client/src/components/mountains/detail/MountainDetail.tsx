@@ -40,7 +40,6 @@ import {
   isValidURL,
 } from '../../../Utils';
 import {UserContext} from '../../App';
-import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
@@ -155,6 +154,7 @@ const GET_MOUNTAIN_DETAIL = gql`
       state {
         id
         name
+        abbreviation
       }
       lists {
         id
@@ -194,6 +194,7 @@ interface QuerySuccessResponse {
     state: {
       id: State['id'];
       name: State['name'];
+      abbreviation: State['abbreviation'];
     };
     lists: Array<{
       id: PeakList['id'];
@@ -597,7 +598,7 @@ const MountainDetail = (props: Props) => {
             <AscentsList
               completedDates={completedDates}
               userId={userId}
-              mountain={mountain as any as MountainDatum}
+              mountain={mountain}
               getFluentString={getFluentString}
             />
           </DetailBox>

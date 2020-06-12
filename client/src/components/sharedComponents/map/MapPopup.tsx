@@ -638,7 +638,7 @@ const MapPopup = (props: Props) => {
     } else {
       editMountainModal = editMountainId === null ? <></> : (
         <NewAscentReport
-          initialMountainList={[popupInfo.data as any as MountainDatum]}
+          initialMountainList={[{...popupInfo.data, state: null} as MountainDatum]}
           closeEditMountainModalModal={closeEditMountainModalModal}
           userId={userId}
           variant={PeakListVariants.standard}

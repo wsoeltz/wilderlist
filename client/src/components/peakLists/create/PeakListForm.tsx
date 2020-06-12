@@ -51,11 +51,11 @@ import {
 } from '../../sharedComponents/formUtils';
 import Map, {MapContainer} from '../../sharedComponents/map';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
-import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
 import { getSentences } from '../detail/IntroText';
 import { StateDatum } from '../list/ListPeakLists';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
+import AddMountains, {MountainDatum} from './AddMountains';
 import ParentModal, {PeakListDatum} from './ParentModal';
 
 export const RequiredNote = styled(RequiredNoteBase)`

@@ -6,18 +6,18 @@ import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   lightBaseColor,
   lightBlue,
   lightBorderColor,
   placeholderColor,
   tertiaryColor,
-} from '../../../../styling/styleUtils';
-import { Mountain, State } from '../../../../types/graphQLTypes';
-import {getDistanceFromLatLonInMiles} from '../../../../Utils';
-import StandardSearch from '../../../sharedComponents/StandardSearch';
-import { CheckboxList } from './MountainCompletionModal';
+} from '../../../styling/styleUtils';
+import { Mountain } from '../../../types/graphQLTypes';
+import {getDistanceFromLatLonInMiles} from '../../../Utils';
+import StandardSearch from '../../sharedComponents/StandardSearch';
+import { CheckboxList } from '../detail/completionModal/MountainCompletionModal';
 
 const TwoColumnRoot = styled.div`
   display: grid;
@@ -93,6 +93,7 @@ const SearchContainer = styled.div`
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
+    $targetMountainId: ID,
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!
@@ -106,9 +107,23 @@ const SEARCH_MOUNTAINS = gql`
       name
       state {
         id
+        name
         abbreviation
+        regions {
+          id
+          name
+          states {
+            id
+          }
+        }
       }
       elevation
+      latitude
+      longitude
+    }
+
+    targetMountain: mountain(id: $targetMountainId) {
+      id
       latitude
       longitude
     }
@@ -118,10 +133,7 @@ const SEARCH_MOUNTAINS = gql`
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
-  state: null | {
-    id: State['id'];
-    abbreviation: State['abbreviation'];
-  };
+  state: Mountain['state'];
   elevation: Mountain['elevation'];
   latitude: Mountain['latitude'];
   longitude: Mountain['longitude'];
@@ -129,12 +141,18 @@ export interface MountainDatum {
 
 interface SuccessResponse {
   mountains: MountainDatum[];
+  targetMountain: null | {
+    id: Mountain['id'];
+    latitude: Mountain['latitude'];
+    longitude: Mountain['longitude'];
+  };
 }
 
 interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
+  targetMountainId: Mountain['id'] | null;
 }
 
 interface Props {
@@ -148,6 +166,9 @@ const AdditionalMountains = (props: Props) => {
     selectedMountains, setSelectedMountains, expandedLayout,
   } = props;
 
+  const targetMountainId = selectedMountains.length && selectedMountains[0].id
+    ? selectedMountains[0].id : null;
+
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -158,7 +179,7 @@ const AdditionalMountains = (props: Props) => {
   const nPerPage = 30;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage },
+    variables: { searchQuery, pageNumber, nPerPage, targetMountainId },
   });
 
   const addMountainToList = (newMtn: MountainDatum) => {
@@ -185,19 +206,10 @@ const AdditionalMountains = (props: Props) => {
     searchResults = emptySearchResults;
     selectedMountainList = null;
   } else if (data !== undefined ) {
-    const { mountains } = data;
-    const targetMountain = selectedMountains.length && selectedMountains[0]
-      ? selectedMountains[0] : null;
+    const { targetMountain, mountains } = data;
     const sortedSelectedMountains = sortBy(selectedMountains, ['name']);
     selectedMountainList = sortedSelectedMountains.map(mtn => {
       if (searchSelectedQuery === '' || mtn.name.toLowerCase().includes(searchSelectedQuery.toLowerCase())) {
-        const distance = targetMountain && targetMountain.id !== mtn.id
-          ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
-            lat1: targetMountain.latitude,
-            lon1: targetMountain.longitude,
-            lat2: mtn.latitude,
-            lon2: mtn.longitude,
-          }).toFixed(2)) + ' mi from ' + targetMountain.name : '';
         return (
           <MountainItemRemove
             onClick={() => removeMountainFromList(mtn)}
@@ -207,7 +219,6 @@ const AdditionalMountains = (props: Props) => {
             <Subtitle>
               {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
               {mtn.elevation + 'ft' }
-              {distance}
             </Subtitle>
           </MountainItemRemove>
         );
@@ -218,14 +229,14 @@ const AdditionalMountains = (props: Props) => {
     if (searchQuery) {
       const mountainList: Array<React.ReactElement<any>> = [];
       mountains.forEach(mtn => {
-        if (!selectedMountains.find(m => m.id === mtn.id)) {
-          const distance = targetMountain && targetMountain.id !== mtn.id
-            ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
-              lat1: targetMountain.latitude,
-              lon1: targetMountain.longitude,
-              lat2: mtn.latitude,
-              lon2: mtn.longitude,
-            }).toFixed(2)) + ' mi from ' + targetMountain.name : '';
+        if (!selectedMountains.find(m => m.id === mtn.id)
+            && mtn.id !== targetMountainId) {
+          const distance = targetMountain ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
+            lat1: targetMountain.latitude,
+            lon1: targetMountain.longitude,
+            lat2: mtn.latitude,
+            lon2: mtn.longitude,
+          }).toFixed(2)) + ' mi away' : '';
           mountainList.push(
             <MountainItemAdd
               onClick={() => addMountainToList(mtn)}

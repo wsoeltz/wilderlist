@@ -1345,6 +1345,8 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     } else if (dateType === DateType.none &&
       (completionDay !== '' || completionMonth !== '' || completionYear !== '')) {
       return true;
+    } else if (!mountainList.length) {
+      return true;
     }
     return false;
   };

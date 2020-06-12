@@ -15,7 +15,7 @@ import {
   semiBoldFontBoldWeight,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   failIfValidOrNonExhaustive,
   mobileSize,
@@ -176,9 +176,7 @@ export const FilterBar = styled.div`
   font-size: 75%;
 `;
 
-export interface MountainToEdit {
-  id: Mountain['id'];
-  name: Mountain['name'];
+export interface MountainToEdit extends MountainDatum {
   target: Months | Seasons | null;
 }
 
@@ -353,7 +351,7 @@ const MountainTable = (props: Props) => {
         }} />;
         editMountainModal = (
           <NewAscentReport
-            initialMountainList={[mountainToEdit as any as MountainDatum]}
+            initialMountainList={[mountainToEdit]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
@@ -367,7 +365,7 @@ const MountainTable = (props: Props) => {
         }} />;
         editMountainModal = (
           <NewAscentReport
-            initialMountainList={[mountainToEdit as any as MountainDatum]}
+            initialMountainList={[mountainToEdit]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
@@ -382,7 +380,7 @@ const MountainTable = (props: Props) => {
         const season = mountainToEdit.target as Seasons;
         editMountainModal = (
           <NewAscentReport
-            initialMountainList={[mountainToEdit as any as MountainDatum]}
+            initialMountainList={[mountainToEdit]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
@@ -398,7 +396,7 @@ const MountainTable = (props: Props) => {
         const month = mountainToEdit.target as Months;
         editMountainModal = (
           <NewAscentReport
-            initialMountainList={[mountainToEdit as any as MountainDatum]}
+            initialMountainList={[mountainToEdit]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
@@ -408,8 +406,8 @@ const MountainTable = (props: Props) => {
           />
         );
       } else {
-        failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
         editMountainModal = null;
+        failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
       }
     }
   }
@@ -511,8 +509,8 @@ const MountainTable = (props: Props) => {
       return undefined;
     });
   } else {
-    failIfValidOrNonExhaustive(sortingBy, 'Invalid sort ' + sortingBy);
     sortedMountains = sortBy(mountains, mountain => mountain.elevation);
+    failIfValidOrNonExhaustive(sortingBy, 'Invalid sort ' + sortingBy);
   }
   if (sortingDirection === SortingDirection.descending) {
     sortedMountains.reverse();
