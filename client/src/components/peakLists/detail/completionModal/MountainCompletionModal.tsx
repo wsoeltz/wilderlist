@@ -28,7 +28,6 @@ import {
 import {
   Conditions,
   FriendStatus,
-  Mountain,
   PeakListVariants,
   TripReport,
   User,
@@ -626,8 +625,7 @@ interface DeleteTripReportVariables {
 const charLimit = 5000;
 
 interface BaseProps {
-  editMountainId: string;
-  mountainName: string;
+  initialMountainList: MountainDatum[];
   closeEditMountainModalModal: () => void;
   userId: string;
   textNote?: React.ReactElement<any> | null;
@@ -682,13 +680,12 @@ type PropsWithConditions = Props & {
   initialConditions: Conditions;
   initialTripNotes: string;
   initialLink: string;
-  initialMountainList: Mountain[];
 };
 
 const MountainCompletionModal = (props: PropsWithConditions) => {
   const {
-    editMountainId, closeEditMountainModalModal, userId, textNote,
-    mountainName, initialCompletionDay, initialCompletionMonth,
+    closeEditMountainModalModal, userId, textNote,
+    initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
     initialMountainList, tripReportId, refetchQuery,
@@ -701,10 +698,13 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     variables: { userId },
   });
 
-  const refetchQueries: Array<{query: any, variables: any}> = [
-    {query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {
-    mountain: editMountainId, nPerPage }},
-  ];
+  const initialMountainId = initialMountainList.length && initialMountainList[0].id ?
+    initialMountainList[0].id : null;
+
+  const refetchQueries: Array<{query: any, variables: any}> = [{
+    query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
+    variables: { mountain: initialMountainId, nPerPage },
+  }];
 
   if (refetchQuery !== undefined) {
     refetchQuery.forEach(query => refetchQueries.push(query));
@@ -820,7 +820,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const validateAndAddMountainCompletion = async (mountainId: Mountain['id']) => {
+  const validateAndAddMountainCompletion = async () => {
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     const initialCompletionDate =
       initialCompletionDay !== null && initialCompletionMonth !== null && initialCompletionYear !== null
@@ -841,7 +841,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
       closeEditMountainModalModal();
 
-      const mountainIds = [mountainId, ...mountainList.map(mtn => mtn.id)];
+      const mountainIds = [...mountainList.map(mtn => mtn.id)];
       const initialMountainIds = initialMountainList.map(mtn => mtn.id);
       // remove all dates from all mtns, old and new. dates will be readded to new and existing mtns
       const uniqueAllMountainIds = uniq([...mountainIds, ...initialMountainIds]);
@@ -958,24 +958,27 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         // mountainName should dynamically adjust based on the number of
         // additional mountains being sent (so that only a single email is sent)
         // Handled by the backend
-      let mountainNames: string;
-      if (mountainList.length === 0) {
-        mountainNames = mountainName;
-      } else if (mountainList.length === 1) {
-        mountainNames = `${mountainName} and ${mountainList[0].name}`;
-      } else {
-        mountainNames = mountainName + ', ';
-        mountainList.forEach((mtn, i) => {
-          if (i === mountainList.length - 2) {
-            mountainNames += mtn.name + ' and ';
-          } else if (i === mountainList.length - 1) {
-            mountainNames += mtn.name;
-          } else {
-            mountainNames += mtn.name + ', ';
-          }
-        });
+      if (mountainList.length) {
+        let mountainNames: string = '';
+        if (mountainList.length === 1) {
+          mountainNames = mountainList[0].name;
+        } else if (mountainList.length === 2) {
+          mountainNames = `${mountainList[0].name} and ${mountainList[1].name}`;
+        } else {
+          mountainList.forEach((mtn, i) => {
+            if (i === 0) {
+              mountainNames = `${mtn.name}, `;
+            } else if (i === mountainList.length - 2) {
+              mountainNames += mtn.name + ' and ';
+            } else if (i === mountainList.length - 1) {
+              mountainNames += mtn.name;
+            } else {
+              mountainNames += mtn.name + ', ';
+            }
+          });
+        }
+        sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
       }
-      sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
     }
     localStorage.setItem(preferredDateFormatLocalStorageVariable, dateType);
   };
@@ -992,7 +995,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const deleteAscent = () => {
     const dateToDelete = getDateToDelete();
 
-    const mountainIds = [editMountainId, ...mountainList.map(mtn => mtn.id)];
+    const mountainIds = [...mountainList.map(mtn => mtn.id)];
     mountainIds.forEach(mtn => {
       removeMountainCompletion({ variables: {
         userId, mountainId: mtn, date: dateToDelete,
@@ -1090,7 +1093,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   let initialDate: Date;
   let toggleButtons: React.ReactElement<any> | null = null;
   if (props.variant === PeakListVariants.standard) {
-    title = mountainName;
+    title = 'Add an Ascent';
     initialDate = today;
     filterDate = (date: Date) => {
       const year = date.getFullYear();
@@ -1141,7 +1144,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       </ToggleTypeButtonContainer>
     );
   } else if (props.variant === PeakListVariants.winter) {
-    title = mountainName + ' - ' + Seasons.winter;
+    title = `Add a ${Seasons.winter} ascent`;
     initialDate = new Date(today.getFullYear() - 1, 11);
     filterDate = (date: Date) => {
       const year = date.getFullYear();
@@ -1157,7 +1160,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       return false;
     };
   } else if (props.variant === PeakListVariants.fourSeason) {
-    title = mountainName + ' - ' + props.season;
+    title = ' Add a ' + props.season + ' ascent';
     if (props.season === Seasons.fall) {
       initialDate = new Date(today.getFullYear(), 8);
     } else if (props.season === Seasons.winter) {
@@ -1183,7 +1186,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       return false;
     };
   } else if (props.variant === PeakListVariants.grid) {
-    title = mountainName + ' - ' + props.month;
+    title = 'Add an ascent for ' + props.month;
     const monthIndex = getMonthIndex(props.month);
     initialDate = new Date(today.getFullYear(), monthIndex - 1);
     filterDate = (date: Date) => {
@@ -1198,7 +1201,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       return false;
     };
   } else {
-    title = mountainName;
+    title = '';
     initialDate = today;
     filterDate = () => true;
   }
@@ -1430,7 +1433,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         {getFluentString('global-text-value-modal-cancel')}
       </CancelButton>
       <ButtonPrimary
-        onClick={() => validateAndAddMountainCompletion(editMountainId)}
+        onClick={() => validateAndAddMountainCompletion()}
         disabled={isConfirmDisabled()}
          mobileExtend={true}
       >
@@ -1511,7 +1514,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
                 {getFluentString('trip-report-add-additional-mtns-desc')}
               </small>
               <AdditionalMountains
-                targetMountainId={editMountainId}
                 selectedMountains={mountainList}
                 setSelectedMountains={setMountainList}
               />

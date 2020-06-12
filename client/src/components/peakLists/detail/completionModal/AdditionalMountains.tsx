@@ -156,7 +156,6 @@ interface Variables {
 }
 
 interface Props {
-  targetMountainId: Mountain['id'] | null;
   selectedMountains: MountainDatum[];
   setSelectedMountains: (mountains: MountainDatum[]) => void;
   expandedLayout?: boolean;
@@ -164,8 +163,11 @@ interface Props {
 
 const AdditionalMountains = (props: Props) => {
   const {
-    targetMountainId, selectedMountains, setSelectedMountains, expandedLayout,
+    selectedMountains, setSelectedMountains, expandedLayout,
   } = props;
+
+  const targetMountainId = selectedMountains.length && selectedMountains[0].id
+    ? selectedMountains[0].id : null;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);

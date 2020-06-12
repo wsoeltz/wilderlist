@@ -7,6 +7,7 @@ import {
   GhostButton,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
 import EditAscentReport from '../../peakLists/detail/completionModal/EditAscentReport';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
@@ -33,17 +34,16 @@ const CalendarButton = styled(FontAwesomeIcon)`
 interface Props {
   completedDates: CompletedMountain | undefined;
   userId: string | null;
-  mountainId: string;
-  mountainName: string;
+  mountain: MountainDatum;
   getFluentString: GetString;
 }
 
 const AscentsList = (props: Props) => {
-  const { completedDates, userId, mountainId, mountainName, getFluentString } = props;
+  const { completedDates, userId, getFluentString, mountain } = props;
 
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
-  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
+  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(mountain.id);
   const closeAscentModalModal = () => {
     setEditMountainId(null);
     setDateToEdit(null);
@@ -57,7 +57,7 @@ const AscentsList = (props: Props) => {
       ascentModal = (
         <SignUpModal
           text={getFluentString('global-text-value-modal-sign-up-today-ascents-list', {
-            'mountain-name': mountainName,
+            'mountain-name': mountain.name,
           })}
           onCancel={closeAscentModalModal}
         />
@@ -65,10 +65,9 @@ const AscentsList = (props: Props) => {
     } else {
       ascentModal = editMountainId === null ? null : (
         <NewAscentReport
-          editMountainId={editMountainId}
+          initialMountainList={[mountain]}
           closeEditMountainModalModal={closeAscentModalModal}
           userId={userId}
-          mountainName={mountainName}
           variant={PeakListVariants.standard}
         />
       );
@@ -78,10 +77,9 @@ const AscentsList = (props: Props) => {
   const editAscentModal =
     dateToEdit === null || userId === null ? null : (
     <EditAscentReport
-      editMountainId={mountainId}
+      initialMountainList={[mountain]}
       closeEditMountainModalModal={closeAscentModalModal}
       userId={userId}
-      mountainName={mountainName}
       variant={PeakListVariants.standard}
       date={dateToEdit}
     />
@@ -121,7 +119,7 @@ const AscentsList = (props: Props) => {
     output = (
       <>
         {completionListItems}
-        <AddAscentButton onClick={() => setEditMountainId(mountainId)}>
+        <AddAscentButton onClick={() => setEditMountainId(mountain.id)}>
           <CalendarButton icon='calendar-alt' />
           {getFluentString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
@@ -132,9 +130,9 @@ const AscentsList = (props: Props) => {
     output = (
       <>
         <BasicListItem>{getFluentString('mountain-detail-no-ascents-text', {
-          'mountain-name': mountainName,
+          'mountain-name': mountain.name,
         })}</BasicListItem>
-        <AddAscentButton onClick={() => setEditMountainId(mountainId)}>
+        <AddAscentButton onClick={() => setEditMountainId(mountain.id)}>
           <CalendarButton icon='calendar-alt' />
           {getFluentString('mountain-detail-add-ascent-date')}
         </AddAscentButton>

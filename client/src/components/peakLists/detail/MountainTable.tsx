@@ -22,6 +22,7 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
+import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import ExportAscentsModal, {SpecialExport} from '../export';
@@ -352,11 +353,10 @@ const MountainTable = (props: Props) => {
         }} />;
         editMountainModal = (
           <NewAscentReport
-            editMountainId={mountainToEdit.id}
+            initialMountainList={[mountainToEdit as any as MountainDatum]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
-            mountainName={mountainToEdit.name}
             variant={type}
             queryRefetchArray={queryRefetchArray}
           />
@@ -367,11 +367,10 @@ const MountainTable = (props: Props) => {
         }} />;
         editMountainModal = (
           <NewAscentReport
-            editMountainId={mountainToEdit.id}
+            initialMountainList={[mountainToEdit as any as MountainDatum]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
-            mountainName={mountainToEdit.name}
             variant={type}
             queryRefetchArray={queryRefetchArray}
           />
@@ -383,11 +382,10 @@ const MountainTable = (props: Props) => {
         const season = mountainToEdit.target as Seasons;
         editMountainModal = (
           <NewAscentReport
-            editMountainId={mountainToEdit.id}
+            initialMountainList={[mountainToEdit as any as MountainDatum]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
-            mountainName={mountainToEdit.name}
             variant={type}
             season={season}
             queryRefetchArray={queryRefetchArray}
@@ -400,11 +398,10 @@ const MountainTable = (props: Props) => {
         const month = mountainToEdit.target as Months;
         editMountainModal = (
           <NewAscentReport
-            editMountainId={mountainToEdit.id}
+            initialMountainList={[mountainToEdit as any as MountainDatum]}
             closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={textNote}
-            mountainName={mountainToEdit.name}
             variant={type}
             month={month}
             queryRefetchArray={queryRefetchArray}

@@ -40,6 +40,7 @@ import {
   isValidURL,
 } from '../../../Utils';
 import {UserContext} from '../../App';
+import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
 import {
   VariableDate,
 } from '../../peakLists/detail/getCompletionDates';
@@ -596,8 +597,7 @@ const MountainDetail = (props: Props) => {
             <AscentsList
               completedDates={completedDates}
               userId={userId}
-              mountainId={id}
-              mountainName={name}
+              mountain={mountain as any as MountainDatum}
               getFluentString={getFluentString}
             />
           </DetailBox>

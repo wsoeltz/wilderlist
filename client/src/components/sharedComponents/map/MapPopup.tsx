@@ -33,6 +33,7 @@ import {
 import {
   userAllowsLocation,
 } from '../../../Utils';
+import {MountainDatum} from '../../peakLists/detail/completionModal/AdditionalMountains';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import getCompletionDates from '../../peakLists/detail/getCompletionDates';
 import {
@@ -637,10 +638,9 @@ const MapPopup = (props: Props) => {
     } else {
       editMountainModal = editMountainId === null ? <></> : (
         <NewAscentReport
-          editMountainId={editMountainId}
+          initialMountainList={[popupInfo.data as any as MountainDatum]}
           closeEditMountainModalModal={closeEditMountainModalModal}
           userId={userId}
-          mountainName={popupInfo.data.name}
           variant={PeakListVariants.standard}
         />
       );

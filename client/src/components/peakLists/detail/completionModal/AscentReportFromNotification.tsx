@@ -28,8 +28,7 @@ const NewAscentReport = (props: Props) => {
   const initialDateType = date ? getDateType(date) : DateType.full;
 
   const sameDateNotifications = props.ascentNotifications.filter(
-    n => n.date === props.date && n.mountain !== null && n.mountain.id !== props.editMountainId && n.user !== null,
-  );
+    n => n.date === props.date && n.mountain !== null && n.user !== null);
 
   const allUsers: string[] = [];
   const allMountains: Mountain[] = [];

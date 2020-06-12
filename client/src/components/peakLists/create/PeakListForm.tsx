@@ -512,7 +512,6 @@ const PeakListForm = (props: Props) => {
           </Label>
         </LabelContainer>
         <AddMountains
-          targetMountainId={null}
           selectedMountains={mountains}
           setSelectedMountains={setMountains}
           expandedLayout={true}
@@ -555,7 +554,6 @@ const PeakListForm = (props: Props) => {
           </Label>
         </LabelContainer>
         <AddMountains
-          targetMountainId={null}
           selectedMountains={optionalMountains}
           setSelectedMountains={setOptionalMountains}
           expandedLayout={true}

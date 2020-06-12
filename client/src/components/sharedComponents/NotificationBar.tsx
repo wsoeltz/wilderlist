@@ -239,11 +239,10 @@ const NotificationBar = (props: Props) => {
 
         const ascentReportModal = isAscentReportModalOpen === false ? null : (
           <AscentReportFromNotification
-            editMountainId={mountainId}
+            initialMountainList={[mountain]}
             closeEditMountainModalModal={() => setIsAscentReportModalOpen(false)}
             userId={user.id}
             textNote={null}
-            mountainName={mountain.name}
             variant={PeakListVariants.standard}
             date={date}
             ascentNotifications={user.ascentNotifications}
