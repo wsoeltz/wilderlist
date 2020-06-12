@@ -1,4 +1,7 @@
 import styled from 'styled-components/macro';
+import {
+  InputBase,
+} from '../../../../styling/styleUtils';
 
 export const today = new Date();
 
@@ -6,6 +9,12 @@ export const years: number[] = [];
 for (let i = 1900; i < today.getFullYear() + 1; i++) {
   years.push(i);
 }
+
+export const SectionTitle = styled.h4`
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+  font-size: 0.8rem;
+`;
 
 /* tslint:disable:max-line-length */
 export const SelectBoxBase = styled.select`
@@ -28,4 +37,14 @@ export const SelectBoxBase = styled.select`
 
 export const SelectDateOption = styled.option`
   padding: 4px;
+`;
+
+export const NoDateText = styled.p`
+  text-align: center;
+  font-style: italic;
+`;
+
+export const Input = styled(InputBase)`
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
 `;

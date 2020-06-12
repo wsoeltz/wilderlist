@@ -8,6 +8,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../../contextProviders/getFluentLocalizationContext';
 import {
+  CheckboxList,
   lightBaseColor,
   lightBlue,
   lightBorderColor,
@@ -17,7 +18,6 @@ import {
 import { Mountain, State } from '../../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../../Utils';
 import StandardSearch from '../../../sharedComponents/StandardSearch';
-import { CheckboxList } from './MountainCompletionModal';
 
 const TwoColumnRoot = styled.div`
   display: grid;

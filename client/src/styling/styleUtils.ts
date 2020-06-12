@@ -463,6 +463,39 @@ export const CheckboxLabel = styled.label`
   }
 `;
 
+export const CheckboxList = styled.div`
+  max-height: 200px;
+  margin-top: 1rem;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  border: 1px solid ${lightBorderColor};
+`;
+
+export const CheckboxListItem = styled.label`
+  display: block;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${lightBorderColor};
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${lightBlue};
+  }
+`;
+
+export const CheckboxListCheckbox = styled.input`
+  margin-right: 1rem;
+`;
+
+export const RemoveIcon = styled.div`
+  margin-left: auto;
+`;
+
 /* tslint:disable:max-line-length */
 export const SelectBox = styled.select`
   -moz-appearance: none;

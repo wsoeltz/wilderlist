@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import uniq from 'lodash/uniq';
@@ -13,16 +13,16 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   ButtonWarning,
+  CheckboxList,
+  CheckboxListCheckbox,
+  CheckboxListItem,
   InlineTitle,
-  InputBase,
-  lightBlue,
   lightBorderColor,
   RequiredNote as RequiredNoteBase,
   warningColor,
 } from '../../../../styling/styleUtils';
 import {
   Conditions,
-  FriendStatus,
   PeakListVariants,
 } from '../../../../types/graphQLTypes';
 import sendInvites from '../../../../utilities/sendInvites';
@@ -37,7 +37,6 @@ import {
   nPerPage,
 } from '../../../mountains/detail/TripReports';
 import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
-import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal, {mobileWidth as modalMobileWidth} from '../../../sharedComponents/Modal';
 import {
   CLEAR_ASCENT_NOTIFICATION,
@@ -46,6 +45,7 @@ import {
 } from '../../../sharedComponents/NotificationBar';
 import { DateType, formatStringDate } from '../../Utils';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
+import AddFriends from './components/AddFriends';
 import DateWidget, {Restrictions} from './components/DateWidget';
 import {
   ADD_ASCENT_NOTIFICATIONS,
@@ -58,12 +58,14 @@ import {
   DeleteTripReportVariables,
   EDIT_TRIP_REPORT,
   EditTripReportVariables,
-  FriendsDatum,
-  GET_FRIENDS,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
   REMOVE_MOUNTAIN_COMPLETION,
 } from './queries';
+import {
+  Input,
+  SectionTitle,
+} from './Utils';
 
 export const preferredDateFormatLocalStorageVariable = 'preferredDateFormatLocalStorageVariable';
 
@@ -151,59 +153,6 @@ const Error = styled.p`
   text-align: center;
 `;
 
-const NoDateText = styled.p`
-  text-align: center;
-  font-style: italic;
-`;
-
-export const CheckboxList = styled.div`
-  max-height: 200px;
-  margin-top: 1rem;
-  overflow: auto;
-  list-style: none;
-  padding: 0;
-  border: 1px solid ${lightBorderColor};
-`;
-
-const CheckboxLabel = styled.label`
-  display: block;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${lightBorderColor};
-  }
-
-  &:hover {
-    cursor: pointer;
-    background-color: ${lightBlue};
-  }
-`;
-
-const SectionTitle = styled.h4`
-  margin-top: 0;
-  margin-bottom: 0.2rem;
-  font-size: 0.8rem;
-`;
-
-const Input = styled(InputBase)`
-  margin-top: 1rem;
-  margin-bottom: 0.6rem;
-`;
-
-const AddEmailButton = styled(ButtonPrimary)`
-  width: 100%;
-`;
-
-const Checkbox = styled.input`
-  margin-right: 1rem;
-`;
-
-const RemoveIcon = styled.div`
-  margin-left: auto;
-`;
-
 const ReportContent = styled.div`
   margin-top: 1.6rem;
 `;
@@ -280,10 +229,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const tripNotesEl = useRef<HTMLTextAreaElement | null>(null);
   const tripLinkEl = useRef<HTMLInputElement | null>(null);
 
-  const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
-    variables: { userId },
-  });
-
   const initialMountainId = initialMountainList.length && initialMountainList[0].id ?
     initialMountainList[0].id : null;
 
@@ -331,7 +276,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [dateType, setDateType] = useState<DateType>(initialDateType);
-  const [emailInput, setEmailInput] = useState<string>('');
   const [emailList, setEmailList] = useState<string[]>([]);
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [mountainList, setMountainList] = useState<MountainDatum[]>(initialMountainList);
@@ -342,34 +286,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const updateCondition = (key: keyof Conditions) =>
     setConditions({...conditions, [key]: !conditions[key]});
-
-  const updateEmailList = () => {
-    if (!emailList.includes(emailInput)) {
-      setEmailList([...emailList, emailInput]);
-      setEmailInput('');
-    }
-  };
-
-  const onEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.keyCode === 13 || e.which === 13) {
-      updateEmailList();
-    }
-  };
-
-  const removeEmailFromList = (email: string) => {
-    const newEmailList = emailList.filter(e => e !== email);
-    setEmailList([...newEmailList]);
-  };
-
-  const toggleUserList = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      const newUserList = [...userList, e.target.value];
-      setUserList([...newUserList]);
-    } else {
-      const newUserList = userList.filter(usedId => usedId !== e.target.value);
-      setUserList([...newUserList]);
-    }
-  };
 
   const setDates = (date: Date | null) => {
     if (date !== null) {
@@ -675,76 +591,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     dateSelect = null;
   }
 
-  let friendsList: React.ReactElement<any> | null;
-  if (loading === true) {
-    friendsList = <LoadingSpinner />;
-  } else if (error !== undefined) {
-    console.error(error);
-    friendsList =  (
-      <NoDateText>
-        <small>
-          {getFluentString('global-error-retrieving-data')}
-        </small>
-      </NoDateText>
-    );
-  } else if (data !== undefined) {
-    const { user } = data;
-    if (!user) {
-      friendsList = (
-        <NoDateText>
-          <small>
-            {getFluentString('global-error-retrieving-data')}
-          </small>
-        </NoDateText>
-      );
-    } else {
-      const { friends } = user;
-      if (friends && friends.length) {
-        const friendElements: Array<React.ReactElement<any>> = [];
-        friends.forEach(f => {
-          if (f.status === FriendStatus.friends && f.user) {
-            friendElements.push(
-              <CheckboxLabel htmlFor={f.user.id} key={f.user.id}>
-                <Checkbox
-                  id={f.user.id} type='checkbox'
-                  value={f.user.id}
-                  checked={userList.indexOf(f.user.id) !== -1}
-                  onChange={toggleUserList}
-                />
-                {f.user.name}
-              </CheckboxLabel>,
-            );
-          }
-        });
-        if (friendElements.length) {
-          friendsList = (
-            <CheckboxList>
-              {friendElements}
-            </CheckboxList>
-          );
-        } else {
-          friendsList = (
-            <NoDateText>
-              <small>
-                {getFluentString('mountain-completion-modal-text-no-friends-yet')}
-              </small>
-            </NoDateText>
-          );
-        }
-      } else {
-        friendsList = (
-          <NoDateText>
-            <small>
-              {getFluentString('mountain-completion-modal-text-no-friends-yet')}
-            </small>
-          </NoDateText>
-        );
-      }
-    }
-  } else {
-    friendsList = null;
-  }
-
   const isConfirmDisabled = () => {
     if (dateType === DateType.full &&
       (completionDay === '' || completionMonth === '' || completionYear === '')) {
@@ -764,37 +610,22 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     return false;
   };
 
-  const emailListItems = emailList.map((email, i) => (
-    <CheckboxLabel
-      key={email + i}
-      onClick={() => removeEmailFromList(email)}
-    >
-      {email}
-      <RemoveIcon>×</RemoveIcon>
-    </CheckboxLabel>
-  ));
-  const emailListElement = emailListItems.length ? (
-    <CheckboxList>
-      {emailListItems}
-    </CheckboxList>
-  ) : null;
-
   // use nullConditions keys as it is defined to always be the same as the
   // interface Conditions, whereas the prop conditions could recieve unknown
   // keys from the database (such as __typename)
   const conditionsListItems = Object.keys(nullConditions).map(function(key: keyof Conditions) {
     return (
-      <CheckboxLabel
+      <CheckboxListItem
         htmlFor={`${key}-condition-checkbox`}
         key={key}
       >
-        <Checkbox
+        <CheckboxListCheckbox
           id={`${key}-condition-checkbox`} type='checkbox'
           checked={conditions[key] ? true : false}
           onChange={() => updateCondition(key)}
         />
         {getFluentString('trip-report-condition-name', {key})}
-      </CheckboxLabel>
+      </CheckboxListItem>
     );
   });
 
@@ -879,35 +710,13 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
             {dateSelect}
           </LeftColumn>
           <FriendColumn>
-            <div>
-              <SectionTitle>
-                {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
-              </SectionTitle>
-              {friendsList}
-            </div>
-            <div>
-              <SectionTitle>
-                {getFluentString('mountain-completion-modal-text-add-other-friends')}
-              </SectionTitle>
-              <small>
-                {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
-              </small>
-              <Input
-                placeholder={getFluentString('global-text-value-modal-email-address')}
-                value={emailInput}
-                onChange={e => setEmailInput(e.target.value)}
-                onKeyPress={onEnterPress}
-                maxLength={1000}
-                autoComplete={'off'}
-              />
-              <AddEmailButton
-                disabled={emailInput === ''}
-                onClick={updateEmailList}
-              >
-                {getFluentString('mountain-completion-modal-text-add-email-button')}
-              </AddEmailButton>
-              {emailListElement}
-            </div>
+            <AddFriends
+              userId={userId}
+              emailList={emailList}
+              setEmailList={setEmailList}
+              userList={userList}
+              setUserList={setUserList}
+            />
           </FriendColumn>
         </ColumnRoot>
         {errorNote}

@@ -21,6 +21,7 @@ import {
 import { DateType } from '../../../Utils';
 import '../react-datepicker.custom.css';
 import {
+  NoDateText,
   SelectBoxBase,
   SelectDateOption,
   today,
@@ -62,11 +63,6 @@ const ToggleTypeButton = styled(GhostButton)`
   &:hover {
     background-color: ${lightBlue};
   }
-`;
-
-const NoDateText = styled.p`
-  text-align: center;
-  font-style: italic;
 `;
 
 export type Restrictions = {
