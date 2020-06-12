@@ -1,11 +1,8 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import uniq from 'lodash/uniq';
 import React, { useContext, useRef, useState } from 'react';
-import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
 import {
@@ -16,12 +13,10 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   ButtonWarning,
-  GhostButton,
   InlineTitle,
   InputBase,
   lightBlue,
   lightBorderColor,
-  Required,
   RequiredNote as RequiredNoteBase,
   warningColor,
 } from '../../../../styling/styleUtils';
@@ -29,17 +24,12 @@ import {
   Conditions,
   FriendStatus,
   PeakListVariants,
-  TripReport,
-  User,
 } from '../../../../types/graphQLTypes';
 import sendInvites from '../../../../utilities/sendInvites';
 import {
   asyncForEach,
   convertFieldsToDate,
-  getMonthIndex,
-  getSeason,
   isValidURL,
-  Months,
   Seasons,
 } from '../../../../Utils';
 import {
@@ -56,7 +46,24 @@ import {
 } from '../../../sharedComponents/NotificationBar';
 import { DateType, formatStringDate } from '../../Utils';
 import AdditionalMountains, {MountainDatum} from './AdditionalMountains';
-import './react-datepicker.custom.css';
+import DateWidget, {Restrictions} from './components/DateWidget';
+import {
+  ADD_ASCENT_NOTIFICATIONS,
+  ADD_MOUNTAIN_COMPLETION,
+  ADD_TRIP_REPORT,
+  AddTripReportSuccess,
+  AddTripReportVariables,
+  AscentNotificationsVariables,
+  DELETE_TRIP_REPORT,
+  DeleteTripReportVariables,
+  EDIT_TRIP_REPORT,
+  EditTripReportVariables,
+  FriendsDatum,
+  GET_FRIENDS,
+  MountainCompletionSuccessResponse,
+  MountainCompletionVariables,
+  REMOVE_MOUNTAIN_COMPLETION,
+} from './queries';
 
 export const preferredDateFormatLocalStorageVariable = 'preferredDateFormatLocalStorageVariable';
 
@@ -117,18 +124,6 @@ const FriendColumn = styled(RightColumn)`
   }
 `;
 
-const DateInputContainer = styled.div`
-  display: grid;
-  grid-template-rows: auto auto;
-  grid-row-gap: 1rem;
-
-  /* This is necessary as datepicker wraps the datepicker
-     in a blank div with no class name that can't be removed */
-  div:not([class]) {
-    display: flex;
-  }
-`;
-
 export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -156,79 +151,9 @@ const Error = styled.p`
   text-align: center;
 `;
 
-const HideCalendar = styled.div`
-  display: none;
-`;
-
-const CalendarHeaderRoot = styled.div`
-  margin: 10px;
-  display: flex;
-  justify-content: center;
-`;
-
-const MonthNavBtn = styled.button`
-  background-color: transparent;
-`;
-
-/* tslint:disable:max-line-length */
-const SelectBoxBase = styled.select`
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  font-size: 1rem;
-  padding: 7px;
-  border-radius: 0;
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
-    linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%);
-  background-repeat: no-repeat, repeat;
-  background-position: right .7em top 50%, 0 0;
-  background-size: .65em auto, 100%;
-
-  &:hover {
-    cursor: pointer;
-    background-color: #ddd;
-  }
-`;
-
-const SelectYear = styled(SelectBoxBase)`
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  padding-right: 30px;
-`;
-
-const SelectMonth = styled(SelectBoxBase)`
-  border-left: none;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-  padding-right: 25px;
-`;
-const SelectDateOption = styled.option`
-  padding: 4px;
-`;
-
-const SelectYearYearOnly = styled(SelectBoxBase)`
-  border-radius: 4px;
-  max-height: 2.5rem;
-`;
-
 const NoDateText = styled.p`
   text-align: center;
   font-style: italic;
-`;
-
-const ToggleTypeButtonContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-column-gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-const ToggleTypeButton = styled(GhostButton)`
-  width: 100%;
-
-  &.active,
-  &:hover {
-    background-color: ${lightBlue};
-  }
 `;
 
 export const CheckboxList = styled.div`
@@ -295,334 +220,6 @@ const ReportTextarea = styled.textarea`
   line-height: 1.4;
 `;
 
-const GET_FRIENDS = gql`
-  query getFriends($userId: ID) {
-    user(id: $userId) {
-      id
-      friends {
-        user {
-          id
-          name
-        }
-        status
-      }
-    }
-  }
-`;
-
-interface FriendsDatum {
-  user: {
-    id: User['id'];
-    friends: User['friends'];
-  };
-}
-
-export const ADD_MOUNTAIN_COMPLETION = gql`
-  mutation addMountainCompletion(
-    $userId: ID!,
-    $mountainId: ID!,
-    $date: String!
-    ) {
-    addMountainCompletion(
-      userId: $userId,
-      mountainId: $mountainId,
-      date: $date
-    ) {
-      id
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-  }
-`;
-
-const REMOVE_MOUNTAIN_COMPLETION = gql`
-  mutation removeMountainCompletion(
-    $userId: ID!,
-    $mountainId: ID!,
-    $date: String!
-    ) {
-    removeMountainCompletion(
-      userId: $userId,
-      mountainId: $mountainId,
-      date: $date
-    ) {
-      id
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-  }
-`;
-
-export interface MountainCompletionSuccessResponse {
-  id: User['id'];
-  mountains: User['mountains'];
-}
-
-export interface MountainCompletionVariables {
-  userId: string;
-  mountainId: string;
-  date: string;
-}
-
-const ADD_ASCENT_NOTIFICATIONS = gql`
-  mutation addAscentNotifications(
-    $userId: ID!,
-    $friendId: ID!,
-    $mountainIds: [ID],
-    $date: String!
-    ) {
-    addAscentNotifications(
-      userId: $userId,
-      friendId: $friendId,
-      mountainIds: $mountainIds,
-      date: $date
-    ) {
-      id
-    }
-  }
-`;
-
-interface AscentNotificationsVariables {
-  userId: string;
-  mountainIds: string[];
-  date: string;
-  friendId: string;
-}
-
-const addTripReportVariableDeclerations = `
-  $date: String!,
-  $author: ID!,
-  $mountains: [ID],
-  $users: [ID],
-  $notes: String,
-  $link: String,
-  $mudMinor: Boolean,
-  $mudMajor: Boolean,
-  $waterSlipperyRocks: Boolean,
-  $waterOnTrail: Boolean,
-  $leavesSlippery: Boolean,
-  $iceBlack: Boolean,
-  $iceBlue: Boolean,
-  $iceCrust: Boolean,
-  $snowIceFrozenGranular: Boolean,
-  $snowIceMonorailStable: Boolean,
-  $snowIceMonorailUnstable: Boolean,
-  $snowIcePostholes: Boolean,
-  $snowMinor: Boolean,
-  $snowPackedPowder: Boolean,
-  $snowUnpackedPowder: Boolean,
-  $snowDrifts: Boolean,
-  $snowSticky: Boolean,
-  $snowSlush: Boolean,
-  $obstaclesBlowdown: Boolean,
-  $obstaclesOther: Boolean,
-`;
-const addTripReportVariableParameters = `
-  date: $date,
-  author: $author,
-  mountains: $mountains,
-  users: $users,
-  notes: $notes,
-  link: $link,
-  mudMinor: $mudMinor,
-  mudMajor: $mudMajor,
-  waterSlipperyRocks: $waterSlipperyRocks,
-  waterOnTrail: $waterOnTrail,
-  leavesSlippery: $leavesSlippery,
-  iceBlack: $iceBlack,
-  iceBlue: $iceBlue,
-  iceCrust: $iceCrust,
-  snowIceFrozenGranular: $snowIceFrozenGranular,
-  snowIceMonorailStable: $snowIceMonorailStable,
-  snowIceMonorailUnstable: $snowIceMonorailUnstable,
-  snowIcePostholes: $snowIcePostholes,
-  snowMinor: $snowMinor,
-  snowPackedPowder: $snowPackedPowder,
-  snowUnpackedPowder: $snowUnpackedPowder,
-  snowDrifts: $snowDrifts,
-  snowSticky: $snowSticky,
-  snowSlush: $snowSlush,
-  obstaclesBlowdown: $obstaclesBlowdown,
-  obstaclesOther: $obstaclesOther,
-`;
-
-const ADD_TRIP_REPORT = gql`
-  mutation addTripReport( ${addTripReportVariableDeclerations} ) {
-    tripReport: addTripReport( ${addTripReportVariableParameters} ) {
-      id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
-    }
-  }
-`;
-
-interface AddTripReportVariables {
-  date: TripReport['date'];
-  author: string;
-  mountains: string[];
-  users: string[];
-  notes: TripReport['notes'];
-  link: TripReport['link'];
-  mudMinor: TripReport['mudMinor'];
-  mudMajor: TripReport['mudMajor'];
-  waterSlipperyRocks: TripReport['waterSlipperyRocks'];
-  waterOnTrail: TripReport['waterOnTrail'];
-  leavesSlippery: TripReport['leavesSlippery'];
-  iceBlack: TripReport['iceBlack'];
-  iceBlue: TripReport['iceBlue'];
-  iceCrust: TripReport['iceCrust'];
-  snowIceFrozenGranular: TripReport['snowIceFrozenGranular'];
-  snowIceMonorailStable: TripReport['snowIceMonorailStable'];
-  snowIceMonorailUnstable: TripReport['snowIceMonorailUnstable'];
-  snowIcePostholes: TripReport['snowIcePostholes'];
-  snowMinor: TripReport['snowMinor'];
-  snowPackedPowder: TripReport['snowPackedPowder'];
-  snowUnpackedPowder: TripReport['snowUnpackedPowder'];
-  snowDrifts: TripReport['snowDrifts'];
-  snowSticky: TripReport['snowSticky'];
-  snowSlush: TripReport['snowSlush'];
-  obstaclesBlowdown: TripReport['obstaclesBlowdown'];
-  obstaclesOther: TripReport['obstaclesOther'];
-}
-interface AddTripReportSuccess {
-  tripReport: TripReport;
-}
-
-const EDIT_TRIP_REPORT = gql`
-  mutation editTripReport( $id: ID!, ${addTripReportVariableDeclerations} ) {
-    tripReport: editTripReport( id: $id, ${addTripReportVariableParameters} ) {
-      id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
-    }
-  }
-`;
-
-interface EditTripReportVariables extends AddTripReportVariables {
-  id: TripReport['id'];
-}
-
-const DELETE_TRIP_REPORT = gql`
-  mutation deleteTripReport($id: ID!) {
-    tripReport: deleteTripReport(id: $id) {
-      id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
-    }
-  }
-`;
-
-interface DeleteTripReportVariables {
-  id: TripReport['id'];
-}
-
 const charLimit = 5000;
 
 interface BaseProps {
@@ -631,18 +228,6 @@ interface BaseProps {
   userId: string;
   textNote?: React.ReactElement<any> | null;
 }
-
-type Restrictions = {
-  variant: PeakListVariants.standard;
-} | {
-  variant: PeakListVariants.winter;
-} | {
-  variant: PeakListVariants.fourSeason;
-  season: Seasons;
-} | {
-  variant: PeakListVariants.grid;
-  month: Months;
-};
 
 const nullConditions: Conditions = {
   mudMinor: null,
@@ -1023,245 +608,71 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   );
 
   const errorNote = errorMessage === undefined ? null : <Error>{errorMessage}</Error>;
-  const today = new Date();
-  const years: number[] = [];
-  for (let i = 1900; i < today.getFullYear() + 1; i++) {
-    years.push(i);
-  }
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const renderCustomHeader: ReactDatePickerProps['renderCustomHeader'] = (dateProps) => {
-    const {
-      date, changeYear, changeMonth, decreaseMonth,
-      increaseMonth,
-    } = dateProps;
-    const prevMonthButtonDisabled =
-      date.getFullYear() === years[0] && date.getMonth() === 0;
-    const nextMonthButtonDisabled =
-      date.getFullYear() === years[years.length - 1] && date.getMonth() === 11;
-    return (
-      <CalendarHeaderRoot>
-          <MonthNavBtn onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
-            <FontAwesomeIcon icon='chevron-left' />
-          </MonthNavBtn>
-          <SelectYear
-            value={date.getFullYear()}
-            onChange={({ target: { value } }) => changeYear(parseInt(value, 10))}
-          >
-            {years.map(option => (
-              <SelectDateOption key={option} value={option}>
-                {option}
-              </SelectDateOption>
-            ))}
-          </SelectYear>
-
-          <SelectMonth
-            value={months[date.getMonth()]}
-            onChange={({ target: { value } }) =>
-              changeMonth(months.indexOf(value))
-            }
-          >
-            {months.map(option => (
-              <SelectDateOption key={option} value={option}>
-                {option}
-              </SelectDateOption>
-            ))}
-          </SelectMonth>
-
-          <MonthNavBtn onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
-            <FontAwesomeIcon icon='chevron-right' />
-          </MonthNavBtn>
-        </CalendarHeaderRoot>
-    );
-  };
-
-  const yearOutOfBounds = (year: number) => year > today.getFullYear();
 
   let title: string;
-  let filterDate: (date: Date) => boolean;
-  let initialDate: Date;
-  let toggleButtons: React.ReactElement<any> | null = null;
+  let dateSelect: React.ReactElement<any> | null;
   if (props.variant === PeakListVariants.standard) {
     title = tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
       ? 'Edit Ascent Report' : 'Log Ascent';
-    initialDate = today;
-    filterDate = (date: Date) => {
-      const year = date.getFullYear();
-      if (yearOutOfBounds(year)) {
-        return false;
-      }
-      return true;
-    };
-    toggleButtons = (
-      <ToggleTypeButtonContainer>
-        <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setDateType(DateType.full);
-          }}
-          className={dateType === DateType.full ? 'active' : ''}
-        >
-          {getFluentString('mountain-completion-modal-toggle-btn-full-date')}
-        </ToggleTypeButton>
-        <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setDateType(DateType.monthYear);
-          }}
-          className={dateType === DateType.monthYear ? 'active' : ''}
-        >
-          {getFluentString('mountain-completion-modal-toggle-btn-month-year')}
-        </ToggleTypeButton>
-        <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setYearOnly(new Date().getFullYear().toString());
-            setDateType(DateType.yearOnly);
-          }}
-          className={dateType === DateType.yearOnly ? 'active' : ''}
-        >
-          {getFluentString('mountain-completion-modal-toggle-btn-year-only')}
-        </ToggleTypeButton>
-        <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setDateType(DateType.none);
-          }}
-          className={dateType === DateType.none ? 'active' : ''}
-        >
-          {getFluentString('mountain-completion-modal-toggle-btn-no-date')}
-        </ToggleTypeButton>
-      </ToggleTypeButtonContainer>
+    dateSelect = (
+      <DateWidget
+        variant={props.variant}
+        setDates={setDates}
+        setDateType={setDateType}
+        dateType={dateType}
+        setYearOnly={setYearOnly}
+        startDate={startDate}
+        initialStartDate={initialStartDate}
+        completionYear={completionYear}
+      />
     );
   } else if (props.variant === PeakListVariants.winter) {
     title = `Log ${Seasons.winter} ascent`;
-    initialDate = new Date(today.getFullYear() - 1, 11);
-    filterDate = (date: Date) => {
-      const year = date.getFullYear();
-      if (yearOutOfBounds(year)) {
-        return false;
-      }
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const season = getSeason(year, month, day);
-      if (season === Seasons.winter) {
-        return true;
-      }
-      return false;
-    };
-  } else if (props.variant === PeakListVariants.fourSeason) {
-    title = ' Log ' + props.season + ' ascent';
-    if (props.season === Seasons.fall) {
-      initialDate = new Date(today.getFullYear(), 8);
-    } else if (props.season === Seasons.winter) {
-      initialDate = new Date(today.getFullYear() - 1, 11);
-    } else if (props.season === Seasons.spring) {
-      initialDate = new Date(today.getFullYear(), 2);
-    } else if (props.season === Seasons.summer) {
-      initialDate = new Date(today.getFullYear(), 5);
-    } else {
-      initialDate = today;
-    }
-    filterDate = (date: Date) => {
-      const year = date.getFullYear();
-      if (yearOutOfBounds(year)) {
-        return false;
-      }
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const season = getSeason(year, month, day);
-      if (season === props.season) {
-        return true;
-      }
-      return false;
-    };
-  } else if (props.variant === PeakListVariants.grid) {
-    title = 'Log ascent for ' + props.month;
-    const monthIndex = getMonthIndex(props.month);
-    initialDate = new Date(today.getFullYear(), monthIndex - 1);
-    filterDate = (date: Date) => {
-      const year = date.getFullYear();
-      if (yearOutOfBounds(year)) {
-        return false;
-      }
-      const month = date.getMonth() + 1;
-      if (month === monthIndex) {
-        return true;
-      }
-      return false;
-    };
-  } else {
-    title = '';
-    initialDate = today;
-    filterDate = () => true;
-  }
-
-  let datePickers: React.ReactElement<any> | null;
-  if (dateType === DateType.full || dateType === DateType.monthYear) {
-    const input = dateType === DateType.monthYear ? null : (
-      <DatePicker
-        selected={startDate}
-        onChange={date => setDates(date)}
-        filterDate={filterDate}
-        popperContainer={HideCalendar}
-        disabledKeyboardNavigation={true}
-        isClearable={true}
-        placeholderText={'MM/DD/YYYY'}
+    dateSelect = (
+      <DateWidget
+        variant={props.variant}
+        setDates={setDates}
+        setDateType={setDateType}
+        dateType={dateType}
+        setYearOnly={setYearOnly}
+        startDate={startDate}
+        initialStartDate={initialStartDate}
+        completionYear={completionYear}
       />
     );
-    datePickers = (
-      <>
-        {input}
-        <DatePicker
-          selected={startDate}
-          onChange={date => setDates(date)}
-          filterDate={filterDate}
-          inline={true}
-          todayButton={getFluentString('global-text-value-today')}
-          showMonthDropdown={true}
-          showYearDropdown={true}
-          dropdownMode={'select'}
-          renderCustomHeader={dateType === DateType.monthYear ? undefined : renderCustomHeader}
-          fixedHeight={true}
-          calendarClassName={'mountain-completion-modal-datepicker'}
-          openToDate={initialStartDate ? initialStartDate : initialDate}
-          showMonthYearPicker={dateType === DateType.monthYear}
-        />
-      </>
+  } else if (props.variant === PeakListVariants.fourSeason) {
+    title = ' Log ' + props.season + ' ascent';
+    dateSelect = (
+      <DateWidget
+        variant={props.variant}
+        setDates={setDates}
+        setDateType={setDateType}
+        dateType={dateType}
+        setYearOnly={setYearOnly}
+        startDate={startDate}
+        initialStartDate={initialStartDate}
+        completionYear={completionYear}
+        season={props.season}
+      />
     );
-  } else if (dateType === DateType.yearOnly) {
-    datePickers = (
-      <SelectYearYearOnly
-        value={completionYear}
-        onChange={e => setYearOnly(e.target.value)}
-      >
-        {years.map(option => (
-          <SelectDateOption key={option} value={option}>
-            {option}
-          </SelectDateOption>
-        ))}
-      </SelectYearYearOnly>
-    );
-  } else if (dateType === DateType.none) {
-    datePickers = (
-      <NoDateText>
-        {getFluentString('mountain-completion-modal-no-date')}
-      </NoDateText>
+  } else if (props.variant === PeakListVariants.grid) {
+    title = 'Log ascent for ' + props.month;
+    dateSelect = (
+      <DateWidget
+        variant={props.variant}
+        setDates={setDates}
+        setDateType={setDateType}
+        dateType={dateType}
+        setYearOnly={setYearOnly}
+        startDate={startDate}
+        initialStartDate={initialStartDate}
+        completionYear={completionYear}
+        month={props.month}
+      />
     );
   } else {
-    datePickers = null;
+    title = '';
+    dateSelect = null;
   }
 
   let friendsList: React.ReactElement<any> | null;
@@ -1460,19 +871,12 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
             __html: getFluentString('global-form-html-required-note'),
           }}
         />
-        <TitleText>
-          {title}
-        </TitleText>
         <ColumnRoot>
           <LeftColumn>
-            <SectionTitle>
-              {getFluentString('global-text-value-date')}
-              <Required>*</Required>
-            </SectionTitle>
-            {toggleButtons}
-            <DateInputContainer>
-              {datePickers}
-            </DateInputContainer>
+          <TitleText>
+            {title}
+          </TitleText>
+            {dateSelect}
           </LeftColumn>
           <FriendColumn>
             <div>

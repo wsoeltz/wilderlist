@@ -21,7 +21,7 @@ import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../peakLists/detail/completionModal/MountainCompletionModal';
+} from '../peakLists/detail/completionModal/queries';
 import { formatStringDate } from '../peakLists/Utils';
 import {
   ACCEPT_FRIEND_REQUEST,
