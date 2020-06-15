@@ -8,6 +8,9 @@ import {
 import {
   GhostButton,
   lightBlue,
+  lightBorderColor,
+  secondaryColor,
+  tertiaryColor,
 } from '../../../../../styling/styleUtils';
 import {
   PeakListVariants,
@@ -29,10 +32,16 @@ import {
 } from '../Utils';
 import renderCustomHeader from './datePickerRenderProps';
 
+const Root = styled.div`
+  min-width: 248px;
+  min-height: 415px;
+`;
+
 const DateInputContainer = styled.div`
   display: grid;
   grid-template-rows: auto auto;
-  grid-row-gap: 1rem;
+  border: solid 1px ${lightBorderColor};
+  border-top: none;
 
   /* This is necessary as datepicker wraps the datepicker
      in a blank div with no class name that can't be removed */
@@ -52,16 +61,30 @@ const SelectYearYearOnly = styled(SelectBoxBase)`
 const ToggleTypeButtonContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-column-gap: 0.5rem;
-  margin-bottom: 1rem;
 `;
 
 const ToggleTypeButton = styled(GhostButton)`
   width: 100%;
+  border-radius: 0;
+  border: solid 1px ${lightBorderColor};
+  background-color: ${tertiaryColor};
 
-  &.active,
+  &:not(:first-child) {
+    border-left: none;
+  }
+
+  &.active {
+    background-color: #fff;
+    border-bottom: none;
+  }
+
   &:hover {
     background-color: ${lightBlue};
+    color: ${secondaryColor};
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -268,12 +291,12 @@ const DateWidget = (props: Props) => {
   }
 
   return (
-    <>
+    <Root>
       {toggleButtons}
       <DateInputContainer>
         {datePickers}
       </DateInputContainer>
-    </>
+    </Root>
   );
 };
 

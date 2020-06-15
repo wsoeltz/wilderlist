@@ -14,7 +14,6 @@ import {
   ButtonSecondary,
   ButtonWarning,
   InlineTitle,
-  RequiredNote as RequiredNoteBase,
   warningColor,
 } from '../../../../styling/styleUtils';
 import {
@@ -76,10 +75,6 @@ export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-`;
-
-const RequiredNote = styled(RequiredNoteBase)`
-  text-align: right;
 `;
 
 export const CancelButton = styled(ButtonSecondary)`
@@ -516,11 +511,6 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         height={'auto'}
         actions={actions}
       >
-        <RequiredNote
-          dangerouslySetInnerHTML={{
-            __html: getFluentString('global-form-html-required-note'),
-          }}
-        />
         <ColumnRoot>
           <LeftColumn>
           <TitleText>
