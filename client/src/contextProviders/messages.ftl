@@ -446,10 +446,15 @@ mountain-completion-modal-text-note-four-season =
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 
-mountain-completion-modal-text-add-wilderlist-friends = Add Wilderlist Friends To Ascent
-mountain-completion-modal-text-add-other-friends = Add Other Friends To Ascent
+mountain-completion-modal-text-add-wilderlist-friends = People Hiked With
+mountain-completion-modal-text-add-wilderlist-friends = Wilderlist Friends
+mountain-completion-modal-text-add-other-friends = Other Friends
 mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderlist to add them
-mountain-completion-modal-text-add-email-button = Add Email
+mountain-completion-modal-text-add-email-button = Add Another Email Address
+
+mountain-completion-modal-add-people = Add People
+mountain-completion-modal-add-remove-people = Add/Remove People
+mountain-completion-modal-done-adding-people = Done Updating People
 
 mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
 
@@ -672,8 +677,11 @@ trip-report-condition-name = {
     [obstaclesOther] Obstacles - Other
 }
 
-trip-report-add-additional-mtns-title = Add Additional Mountains
+trip-report-add-additional-mtns-title = Mountains Hiked
 trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
+trip-report-add-mtns-btn = Add Mountains
+trip-report-add-remove-mtns-btn = Add/Remove Mountains
+trip-report-add-mtns-done = Done Updating Mountains
 
 trip-report-notes-title = Report
 trip-report-notes-placeholder = Share more details about your trip. What trails did you take? Any recommended traction? Water crossings? Parking information? Trail-maintenance? Bugs?

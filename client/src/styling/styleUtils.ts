@@ -186,7 +186,7 @@ export const DetailBoxTitle = styled(InlineTitle)`
   border-bottom: none;
   background-color: #d7d7d7;
   margin: 0;
-  padding: 0.25rem 1rem;
+  padding: 0.5rem 1rem;
   color: ${baseColor};
   font-size: 0.9rem;
   display: flex;

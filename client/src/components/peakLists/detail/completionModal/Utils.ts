@@ -1,6 +1,7 @@
 import styled from 'styled-components/macro';
 import {
   InputBase,
+  lightBorderColor,
 } from '../../../../styling/styleUtils';
 
 export const today = new Date();
@@ -82,4 +83,24 @@ export const NoDateText = styled.p`
 export const Input = styled(InputBase)`
   margin-top: 1rem;
   margin-bottom: 0.6rem;
+`;
+
+export const ButtonWrapper = styled.div`
+  margin-top: 0.75rem;
+`;
+
+export const ListItem = styled.div`
+  padding: 0.25rem 0;
+
+  &:first-child {
+    margin-top: 0.45rem;
+  }
+
+  &:last-child {
+    margin-bottom: 0.45rem;
+  }
+
+  &:not(:last-child) {
+    border-bottom: solid 1px ${lightBorderColor};
+  }
 `;

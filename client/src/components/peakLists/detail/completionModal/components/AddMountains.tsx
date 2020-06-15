@@ -1,15 +1,22 @@
+import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
+  DetailBox,
+  DetailBoxTitle,
+  RequiredNote,
+  SemiBold,
 } from '../../../../../styling/styleUtils';
 import { Mountain, State } from '../../../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
 import {
-  SectionTitle,
+  ButtonWrapper,
+  ListItem,
 } from '../Utils';
 import MountainSelector from './MountainSelector';
 
@@ -49,11 +56,11 @@ const AdditionalMountains = (props: Props) => {
         lat1: latitude, lon1: longitude, lat2: targetMountain.latitude, lon2: targetMountain.longitude,
       }).toFixed(2)} mi from ${targetMountain.name}` : '';
     return (
-        <div>
-          <strong>{name}{stateAbbr}</strong>
+        <ListItem>
+          <SemiBold>{name}{stateAbbr}</SemiBold>
           <br />
-          <small>{elevation}ft {distance}</small>
-        </div>
+          <RequiredNote>{elevation}ft {distance}</RequiredNote>
+        </ListItem>
       );
   });
 
@@ -69,18 +76,28 @@ const AdditionalMountains = (props: Props) => {
     />
   ) : null;
 
+  const addBtnText = selectedMountains.length
+    ? getFluentString('trip-report-add-remove-mtns-btn') : getFluentString('trip-report-add-mtns-btn');
+
   return (
     <>
-      <SectionTitle>
+      <DetailBoxTitle>
+        <BasicIconInText icon={faMountain} />
         {getFluentString('trip-report-add-additional-mtns-title')}
-      </SectionTitle>
-      <small>
-        {getFluentString('trip-report-add-additional-mtns-desc')}
-      </small>
-      {selectedMountainList}
-      <ButtonPrimary onClick={() => setMountainSelectorOpen(true)}>
-        Add/Remove Mountains
-      </ButtonPrimary>
+      </DetailBoxTitle>
+      <DetailBox>
+        <RequiredNote>
+          {getFluentString('trip-report-add-additional-mtns-desc')}
+        </RequiredNote>
+        <div>
+          {selectedMountainList}
+        </div>
+        <ButtonWrapper>
+          <ButtonPrimary onClick={() => setMountainSelectorOpen(true)}>
+            {addBtnText}
+          </ButtonPrimary>
+        </ButtonWrapper>
+      </DetailBox>
       {mountainSelectorModal}
     </>
   );
