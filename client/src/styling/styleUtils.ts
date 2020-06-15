@@ -181,6 +181,10 @@ export const DetailBox = styled.div`
   padding: 1rem;
 `;
 
+export const DetailBoxWithMargin = styled(DetailBox)`
+  margin-bottom: 1rem;
+`;
+
 export const DetailBoxTitle = styled(InlineTitle)`
   border: 1px solid ${lightBorderColor};
   border-bottom: none;

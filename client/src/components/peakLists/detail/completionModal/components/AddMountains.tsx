@@ -7,8 +7,8 @@ import {
 import {
   BasicIconInText,
   ButtonPrimary,
-  DetailBox,
   DetailBoxTitle,
+  DetailBoxWithMargin,
   RequiredNote,
   SemiBold,
 } from '../../../../../styling/styleUtils';
@@ -49,14 +49,14 @@ const AdditionalMountains = (props: Props) => {
 
   const targetMountain = selectedMountains.length ? selectedMountains[0] : null;
 
-  const selectedMountainList = selectedMountains.map(({name, elevation, latitude, longitude, state}, i) => {
+  const selectedMountainList = selectedMountains.map(({id, name, elevation, latitude, longitude, state}, i) => {
     const stateAbbr = state && state.abbreviation ? ', ' + state.abbreviation : '';
     const distance = targetMountain && i !== 0
       ? ` | ${getDistanceFromLatLonInMiles({
         lat1: latitude, lon1: longitude, lat2: targetMountain.latitude, lon2: targetMountain.longitude,
       }).toFixed(2)} mi from ${targetMountain.name}` : '';
     return (
-        <ListItem>
+        <ListItem key={id}>
           <SemiBold>{name}{stateAbbr}</SemiBold>
           <br />
           <RequiredNote>{elevation}ft {distance}</RequiredNote>
@@ -85,8 +85,8 @@ const AdditionalMountains = (props: Props) => {
         <BasicIconInText icon={faMountain} />
         {getFluentString('trip-report-add-additional-mtns-title')}
       </DetailBoxTitle>
-      <DetailBox>
-        <RequiredNote>
+      <DetailBoxWithMargin>
+        <RequiredNote style={{marginBottom: '0.45rem'}}>
           {getFluentString('trip-report-add-additional-mtns-desc')}
         </RequiredNote>
         <div>
@@ -97,7 +97,7 @@ const AdditionalMountains = (props: Props) => {
             {addBtnText}
           </ButtonPrimary>
         </ButtonWrapper>
-      </DetailBox>
+      </DetailBoxWithMargin>
       {mountainSelectorModal}
     </>
   );

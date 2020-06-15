@@ -1,18 +1,24 @@
 import { useQuery } from '@apollo/react-hooks';
+import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
+  DetailBoxTitle,
+  DetailBoxWithMargin,
+  SemiBold,
 } from '../../../../../styling/styleUtils';
 import {
   FriendsDatum,
   GET_FRIENDS,
 } from '../queries';
 import {
-  SectionTitle,
+  ButtonWrapper,
+  ListItem,
 } from '../Utils';
 import FriendSelector from './FriendSelector';
 
@@ -69,7 +75,7 @@ const AddFriends = (props: Props) => {
       const friendElements = friends.length === 0 ? null : friends.map(f => {
         if (f.user && f.user.name && userList.indexOf(f.user.id) !== -1) {
           return (
-            <div><strong>{f.user.name}</strong></div>
+            <ListItem key={f.user.id}><SemiBold>{f.user.name}</SemiBold></ListItem>
           );
         } else {
           return null;
@@ -87,36 +93,35 @@ const AddFriends = (props: Props) => {
   }
 
   const emailListItems = emailList.map((email, i) => (
-    <div key={email + i}>
-      <strong>{email}</strong>
-    </div>
+    <ListItem key={email + i}>
+      <SemiBold>{email}</SemiBold>
+    </ListItem>
   ));
-  const emailListElement = emailListItems.length ? (
+
+  const friendAndEmailList = emailList.length || userList.length ? (
     <div>
+      {friendsList}
       {emailListItems}
     </div>
-  ) : null;
+  ) : <>{friendsList}</>;
+  const addBtnText = emailList.length || userList.length
+    ? getFluentString('mountain-completion-modal-add-remove-people')
+    : getFluentString('mountain-completion-modal-add-people');
 
   return (
     <>
-      <div>
-        <SectionTitle>
-          {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
-        </SectionTitle>
-        {friendsList}
-      </div>
-      <div>
-        <SectionTitle>
-          {getFluentString('mountain-completion-modal-text-add-other-friends')}
-        </SectionTitle>
-        <small>
-          {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
-        </small>
-        {emailListElement}
-        <ButtonPrimary onClick={() => setFriendSelectorModalOpen(true)}>
-          Add/Remove Friends
-        </ButtonPrimary>
-      </div>
+      <DetailBoxTitle>
+        <BasicIconInText icon={faUserFriends} />
+        {getFluentString('mountain-completion-modal-text-people-hiked-with')}
+      </DetailBoxTitle>
+      <DetailBoxWithMargin>
+      {friendAndEmailList}
+        <ButtonWrapper>
+          <ButtonPrimary onClick={() => setFriendSelectorModalOpen(true)}>
+            {addBtnText}
+          </ButtonPrimary>
+        </ButtonWrapper>
+      </DetailBoxWithMargin>
     </>
   );
 
