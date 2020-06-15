@@ -1,34 +1,20 @@
 import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
-import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import {
   ButtonPrimary,
-  CheckboxList,
-  CheckboxListCheckbox,
-  CheckboxListItem,
-  RemoveIcon,
 } from '../../../../../styling/styleUtils';
-import {
-  FriendStatus,
-} from '../../../../../types/graphQLTypes';
-import LoadingSpinner from '../../../../sharedComponents/LoadingSpinner';
 import {
   FriendsDatum,
   GET_FRIENDS,
 } from '../queries';
 import {
-  Input,
-  NoDateText,
   SectionTitle,
 } from '../Utils';
-
-const AddEmailButton = styled(ButtonPrimary)`
-  width: 100%;
-`;
+import FriendSelector from './FriendSelector';
 
 interface Props {
   userId: string;
@@ -51,119 +37,64 @@ const AddFriends = (props: Props) => {
     variables: { userId },
   });
 
-  const [emailInput, setEmailInput] = useState<string>('');
+  const [isFriendSelectorModalOpen, setFriendSelectorModalOpen] = useState<boolean>(false);
 
-  const updateEmailList = () => {
-    if (!emailList.includes(emailInput)) {
-      setEmailList([...emailList, emailInput]);
-      setEmailInput('');
-    }
-  };
-
-  const onEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.keyCode === 13 || e.which === 13) {
-      updateEmailList();
-    }
-  };
-
-  const removeEmailFromList = (email: string) => {
-    const newEmailList = emailList.filter(e => e !== email);
-    setEmailList([...newEmailList]);
-  };
-
-  const toggleUserList = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      const newUserList = [...userList, e.target.value];
-      setUserList([...newUserList]);
-    } else {
-      const newUserList = userList.filter(usedId => usedId !== e.target.value);
-      setUserList([...newUserList]);
-    }
+  const closeAndAddFriends = (friends: string[], emails: string[]) => {
+    setUserList([...friends]);
+    setEmailList([...emails]);
+    setFriendSelectorModalOpen(false);
   };
 
   let friendsList: React.ReactElement<any> | null;
   if (loading === true) {
-    friendsList = <LoadingSpinner />;
+    friendsList = null;
   } else if (error !== undefined) {
     console.error(error);
-    friendsList =  (
-      <NoDateText>
-        <small>
-          {getFluentString('global-error-retrieving-data')}
-        </small>
-      </NoDateText>
-    );
+    friendsList =  null;
   } else if (data !== undefined) {
     const { user } = data;
     if (!user) {
-      friendsList = (
-        <NoDateText>
-          <small>
-            {getFluentString('global-error-retrieving-data')}
-          </small>
-        </NoDateText>
-      );
+      friendsList = null;
     } else {
-      const { friends } = user;
-      if (friends && friends.length) {
-        const friendElements: Array<React.ReactElement<any>> = [];
-        friends.forEach(f => {
-          if (f.status === FriendStatus.friends && f.user) {
-            friendElements.push(
-              <CheckboxListItem htmlFor={f.user.id} key={f.user.id}>
-                <CheckboxListCheckbox
-                  id={f.user.id} type='checkbox'
-                  value={f.user.id}
-                  checked={userList.indexOf(f.user.id) !== -1}
-                  onChange={toggleUserList}
-                />
-                {f.user.name}
-              </CheckboxListItem>,
-            );
-          }
-        });
-        if (friendElements.length) {
-          friendsList = (
-            <CheckboxList>
-              {friendElements}
-            </CheckboxList>
+      const friends = user.friends ? user.friends : [];
+
+      const friendSelectorModal = isFriendSelectorModalOpen ? (
+        <FriendSelector
+          closeAndAddFriends={closeAndAddFriends}
+          friends={friends}
+          initialUserList={userList}
+          initialEmails={emailList}
+        />
+      ) : null;
+      const friendElements = friends.length === 0 ? null : friends.map(f => {
+        if (f.user && f.user.name && userList.indexOf(f.user.id) !== -1) {
+          return (
+            <div><strong>{f.user.name}</strong></div>
           );
         } else {
-          friendsList = (
-            <NoDateText>
-              <small>
-                {getFluentString('mountain-completion-modal-text-no-friends-yet')}
-              </small>
-            </NoDateText>
-          );
+          return null;
         }
-      } else {
-        friendsList = (
-          <NoDateText>
-            <small>
-              {getFluentString('mountain-completion-modal-text-no-friends-yet')}
-            </small>
-          </NoDateText>
-        );
-      }
+      });
+      friendsList = (
+        <>
+          {friendElements}
+          {friendSelectorModal}
+        </>
+      );
     }
   } else {
     friendsList = null;
   }
 
   const emailListItems = emailList.map((email, i) => (
-    <CheckboxListItem
-      key={email + i}
-      onClick={() => removeEmailFromList(email)}
-    >
-      {email}
-      <RemoveIcon>×</RemoveIcon>
-    </CheckboxListItem>
+    <div key={email + i}>
+      <strong>{email}</strong>
+    </div>
   ));
   const emailListElement = emailListItems.length ? (
-    <CheckboxList>
+    <div>
       {emailListItems}
-    </CheckboxList>
+    </div>
   ) : null;
 
   return (
@@ -181,21 +112,10 @@ const AddFriends = (props: Props) => {
         <small>
           {getFluentString('mountain-completion-modal-text-add-other-friends-note')}
         </small>
-        <Input
-          placeholder={getFluentString('global-text-value-modal-email-address')}
-          value={emailInput}
-          onChange={e => setEmailInput(e.target.value)}
-          onKeyPress={onEnterPress}
-          maxLength={1000}
-          autoComplete={'off'}
-        />
-        <AddEmailButton
-          disabled={emailInput === ''}
-          onClick={updateEmailList}
-        >
-          {getFluentString('mountain-completion-modal-text-add-email-button')}
-        </AddEmailButton>
         {emailListElement}
+        <ButtonPrimary onClick={() => setFriendSelectorModalOpen(true)}>
+          Add/Remove Friends
+        </ButtonPrimary>
       </div>
     </>
   );
