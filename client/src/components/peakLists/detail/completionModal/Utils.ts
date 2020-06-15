@@ -10,7 +10,7 @@ for (let i = 1900; i < today.getFullYear() + 1; i++) {
   years.push(i);
 }
 
-export const mobileWidth = 400; // in px
+export const mobileWidth = 470; // in px
 
 export const SectionTitle = styled.h4`
   margin-top: 0;
@@ -20,7 +20,7 @@ export const SectionTitle = styled.h4`
 
 export const ColumnRoot = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto;
 
   @media (max-width: ${mobileWidth}px) {
     grid-template-columns: 1fr;
