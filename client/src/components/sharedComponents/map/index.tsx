@@ -54,14 +54,6 @@ import {
   Trail,
 } from './types';
 
-// const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ? process.env.REACT_APP_MAPBOX_ACCESS_TOKEN : '';
-
-// const Mapbox = ReactMapboxGl({
-//   accessToken,
-//   maxZoom: 16,
-//   scrollZoom: false,
-// });
-
 export const MapContainer = styled.div`
   margin: 2rem 0;
 `;
@@ -198,6 +190,13 @@ export interface Props {
     otherMountains?: string;
   };
   movingMethod?: MovingMethod;
+  addRemoveMountains?: {
+    addText: string;
+    onAdd: (mountain: CoordinateWithDates) => void;
+    removeText: string;
+    onRemove: (mountain: CoordinateWithDates) => void;
+  };
+  primaryMountainLegendCopy?: string;
 }
 
 const Map = (props: Props) => {
@@ -211,6 +210,7 @@ const Map = (props: Props) => {
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
     defaultCampsitesOn, showCampsites, movingMethod,
+    addRemoveMountains, primaryMountainLegendCopy,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -428,7 +428,7 @@ const Map = (props: Props) => {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
         const latDiff = Math.abs(Math.abs(lat) - Math.abs(prevVal[0]));
         const lngDiff = Math.abs(Math.abs(lng) - Math.abs(prevVal[1]));
-        if (latDiff > 0.55 || lngDiff > 0.55) {
+        if (latDiff > 0.4 || lngDiff > 0.4) {
           prevVal = [lat, lng];
           setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
         }
@@ -461,7 +461,7 @@ const Map = (props: Props) => {
   }, [map, showCenterCrosshairs, fillSpace, showOtherMountains, showNearbyTrails]);
 
   useEffect(() => {
-    if (!createOrEditMountain) {
+    if (!createOrEditMountain && !addRemoveMountains) {
       setTimeout(() => {
         const coords = getMinMax(coordinates);
         if (fitBounds === undefined || (
@@ -472,7 +472,7 @@ const Map = (props: Props) => {
         }
       }, 0);
     }
-  }, [coordinates, createOrEditMountain, peakListId, mountainId, fitBounds]);
+  }, [coordinates, createOrEditMountain, peakListId, mountainId, fitBounds, addRemoveMountains]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
@@ -491,9 +491,8 @@ const Map = (props: Props) => {
     mapEl.getCanvas().style.cursor = cursor;
   };
 
-  const onFeatureClick = (point: CoordinateWithDates) => {
-    setPopupInfo({type: PopupDataTypes.Coordinate, data: {...point}});
-  };
+  const onFeatureClick = (popupType: PopupDataTypes.Coordinate | PopupDataTypes.OtherMountain) =>
+    (point: CoordinateWithDates) => setPopupInfo({type: popupType, data: {...point}});
 
   const onAddMountainClick = () => {
     if (map) {
@@ -559,14 +558,14 @@ const Map = (props: Props) => {
           latitude={parseFloat(centerCoords[0])}
           longitude={parseFloat(centerCoords[1])}
           mountainsToIgnore={coordinates.map(mtn => mtn.id)}
-          onFeatureClick={onFeatureClick}
+          onFeatureClick={onFeatureClick(PopupDataTypes.OtherMountain)}
           togglePointer={togglePointer}
           showOtherMountains={showOtherMountains}
           otherMountainsOn={otherMountainsOn}
         />
         <PrimaryMountains
           coordinates={coordinates}
-          onFeatureClick={onFeatureClick}
+          onFeatureClick={onFeatureClick(PopupDataTypes.Coordinate)}
           colorScaleColors={colorScaleColors}
           colorScaleSymbols={colorScaleSymbols}
           createOrEditMountain={createOrEditMountain}
@@ -593,6 +592,7 @@ const Map = (props: Props) => {
           colorScaleSymbols={colorScaleSymbols}
           createOrEditMountain={createOrEditMountain}
           highlighted={highlighted}
+          addRemoveMountains={addRemoveMountains}
         />
         {crosshairs}
         <BrokenMapMessage>
@@ -634,6 +634,7 @@ const Map = (props: Props) => {
         toggleCampsites={toggleCampsites}
         userId={userId}
         onAddMountainClick={onAddMountainClick}
+        primaryMountainLegendCopy={primaryMountainLegendCopy}
         ref={colorScaleRef}
       />
     </Root>

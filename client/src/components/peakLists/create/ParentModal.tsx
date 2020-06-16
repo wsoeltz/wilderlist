@@ -14,15 +14,15 @@ import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
 import { PeakList } from '../../../types/graphQLTypes';
-import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Modal, {mobileWidth} from '../../sharedComponents/Modal';
-import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   CheckboxContainer,
   MountainDatum,
   MountainItem as PeakListItem,
   Subtitle,
-} from '../detail/completionModal/AdditionalMountains';
+} from '../../peakLists/create/AddMountains';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import Modal, {mobileWidth} from '../../sharedComponents/Modal';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 
 const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(

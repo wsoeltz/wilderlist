@@ -193,6 +193,7 @@ interface Props {
   toggleOtherMountains?: () => void;
   userId: string | null;
   onAddMountainClick: () => void;
+  primaryMountainLegendCopy: undefined | string;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -204,14 +205,10 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
     showCampsites, toggleCampsites, campsitesOn, userId,
-    onAddMountainClick,
+    onAddMountainClick, primaryMountainLegendCopy,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
-
-  if (colorScaleColors.length === 0) {
-    return null;
-  }
 
   let latLongLegend: React.ReactElement<any> | null;
   if (showCenterCrosshairs === true) {
@@ -288,7 +285,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           <OtherMountainsIcon>
             <img
               src={require('./images/custom-icons/mountain-default.svg')}
-              alt='Your Location Legend Icon'
+              alt='Other Mountains Legend Icon'
               style={{width: '1.65rem'}}
             />
           </OtherMountainsIcon>
@@ -302,6 +299,25 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           </div>
         </LegendToggle>
       </Tooltip>
+    </AdditionalItem>
+  ) : null;
+
+  const primaryMountainsLegend = primaryMountainLegendCopy ? (
+    <AdditionalItem>
+        <LegendToggle>
+          <Icon>
+            <img
+              src={require('./images/custom-icons/mountain-highlighted.svg')}
+              alt={primaryMountainLegendCopy + ' Icon'}
+              style={{width: '1.65rem'}}
+            />
+          </Icon>
+          <div>
+            <Label
+              dangerouslySetInnerHTML={{__html: primaryMountainLegendCopy}}
+            />
+          </div>
+        </LegendToggle>
     </AdditionalItem>
   ) : null;
 
@@ -373,26 +389,52 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     </AdditionalItem>
   ) : null;
 
-  const additionalItems = showYourLocation || showNearbyTrails || showOtherMountains ? (
-    <>
-      <AdditionalItemsRoot>
-        <AdditionalItemsColumn>
-          {otherMountainsLegend}
-          {locationLegend}
-        </AdditionalItemsColumn>
-        <AdditionalItemsColumn>
-          {trailsLegend}
-          {campsitesLegend}
-        </AdditionalItemsColumn>
-      </AdditionalItemsRoot>
-      {addMountainLink}
-    </>
-  ) : null;
+  let additionalItems: React.ReactElement<any> | null;
+
+  if (showOtherMountains && primaryMountainsLegend) {
+    additionalItems = (
+      <>
+        <AdditionalItemsRoot>
+          <AdditionalItemsColumn>
+            {otherMountainsLegend}
+          </AdditionalItemsColumn>
+          <AdditionalItemsColumn>
+            {primaryMountainsLegend}
+          </AdditionalItemsColumn>
+        </AdditionalItemsRoot>
+      </>
+    );
+  } else if (showYourLocation || showNearbyTrails || showOtherMountains) {
+    additionalItems = (
+      <>
+        <AdditionalItemsRoot>
+          <AdditionalItemsColumn>
+            {otherMountainsLegend}
+            {locationLegend}
+          </AdditionalItemsColumn>
+          <AdditionalItemsColumn>
+            {trailsLegend}
+            {campsitesLegend}
+          </AdditionalItemsColumn>
+        </AdditionalItemsRoot>
+        {addMountainLink}
+      </>
+    );
+  } else {
+    additionalItems = null;
+  }
 
   const title = colorScaleTitle ? <LegendTitle>{colorScaleTitle}</LegendTitle> : null;
   const startColor = colorScaleColors[0];
   const endColor = colorScaleColors[colorScaleColors.length - 1];
 
+  if (colorScaleColors.length === 0) {
+    return (
+      <ColorScaleLegend ref={rootElRef}>
+        {additionalItems}
+      </ColorScaleLegend>
+    );
+  }
   if (colorScaleColors.length <= 2) {
     const legendNodes = colorScaleColors.map((c, i) => {
       return (

@@ -186,9 +186,7 @@ const MountainRow = (props: Props) => {
   const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
   const completeButton = (target: Months | Seasons | null) => {
       return isOtherUser ? (<EmptyDate>{'—'}</EmptyDate>) : (
-      <MarkDoneButton onClick={() => setEditMountainId({
-        id: mountain.id, name: mountain.name, target,
-      })}>
+      <MarkDoneButton onClick={() => setEditMountainId({...mountain, target})}>
         <CalendarButton icon='calendar-alt' /> {completeButtonText}
       </MarkDoneButton>
     );

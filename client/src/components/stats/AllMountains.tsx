@@ -9,7 +9,6 @@ import {
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
   PlaceholderText,
-  SectionTitleH3,
   SelectBox,
 } from '../../styling/styleUtils';
 import {
@@ -32,12 +31,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../sharedComponents/map/colorScaleColors';
-
-const Subtitle = styled.small`
-  display: block;
-  text-transform: capitalize;
-  margin-top: 0.3rem;
-`;
+import Header from './Header';
 
 const SelectBoxContiner = styled.div`
   display: grid;
@@ -116,6 +110,8 @@ const AllMountains = (props: Props) => {
     GET_ALL_USERS_MOUNTAINS, {
     variables: { userId },
   });
+
+  const queryRefetchArray = [{query: GET_ALL_USERS_MOUNTAINS, variables: {userId}}];
 
   if (loading === true) {
     return <LoadingSpinner />;
@@ -229,10 +225,7 @@ const AllMountains = (props: Props) => {
           peakListId={null}
           peakListShortName={''}
           showImportExport={true}
-          queryRefetchArray={[{
-            query: GET_ALL_USERS_MOUNTAINS,
-            variables: { userId }},
-          ]}
+          queryRefetchArray={queryRefetchArray}
           disallowImports={true}
           disallowExports={true}
           isExportModalOpen={false}
@@ -242,14 +235,11 @@ const AllMountains = (props: Props) => {
 
       return (
         <>
-          <SectionTitleH3>
-            {getFluentString('stats-mountain-panel')}
-            <Subtitle>
-              {getFluentString('stats-total-mountains', {
-                total: allMountainsWithDates.length,
-              })}
-            </Subtitle>
-          </SectionTitleH3>
+          <Header
+            userId={userId}
+            mountainCount={allMountainsWithDates.length}
+            queryRefetchArray={queryRefetchArray}
+          />
           {toggleType}
           <MapContainer>
             <Map

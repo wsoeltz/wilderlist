@@ -181,12 +181,16 @@ export const DetailBox = styled.div`
   padding: 1rem;
 `;
 
+export const DetailBoxWithMargin = styled(DetailBox)`
+  margin-bottom: 1rem;
+`;
+
 export const DetailBoxTitle = styled(InlineTitle)`
   border: 1px solid ${lightBorderColor};
   border-bottom: none;
   background-color: #d7d7d7;
   margin: 0;
-  padding: 0.25rem 1rem;
+  padding: 0.5rem 1rem;
   color: ${baseColor};
   font-size: 0.9rem;
   display: flex;
@@ -461,6 +465,39 @@ export const CheckboxLabel = styled.label`
     background-color: #eee;
     cursor: pointer;
   }
+`;
+
+export const CheckboxList = styled.div`
+  max-height: 200px;
+  margin-top: 1rem;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  border: 1px solid ${lightBorderColor};
+`;
+
+export const CheckboxListItem = styled.label`
+  display: block;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${lightBorderColor};
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${lightBlue};
+  }
+`;
+
+export const CheckboxListCheckbox = styled.input`
+  margin-right: 1rem;
+`;
+
+export const RemoveIcon = styled.div`
+  margin-left: auto;
 `;
 
 /* tslint:disable:max-line-length */

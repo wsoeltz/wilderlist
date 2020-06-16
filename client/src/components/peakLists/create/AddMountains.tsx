@@ -6,18 +6,18 @@ import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
+  CheckboxList,
   lightBaseColor,
   lightBlue,
   lightBorderColor,
   placeholderColor,
   tertiaryColor,
-} from '../../../../styling/styleUtils';
-import { Mountain } from '../../../../types/graphQLTypes';
-import {getDistanceFromLatLonInMiles} from '../../../../Utils';
-import StandardSearch from '../../../sharedComponents/StandardSearch';
-import { CheckboxList } from './MountainCompletionModal';
+} from '../../../styling/styleUtils';
+import { Mountain } from '../../../types/graphQLTypes';
+import {getDistanceFromLatLonInMiles} from '../../../Utils';
+import StandardSearch from '../../sharedComponents/StandardSearch';
 
 const TwoColumnRoot = styled.div`
   display: grid;
@@ -156,7 +156,6 @@ interface Variables {
 }
 
 interface Props {
-  targetMountainId: Mountain['id'] | null;
   selectedMountains: MountainDatum[];
   setSelectedMountains: (mountains: MountainDatum[]) => void;
   expandedLayout?: boolean;
@@ -164,8 +163,11 @@ interface Props {
 
 const AdditionalMountains = (props: Props) => {
   const {
-    targetMountainId, selectedMountains, setSelectedMountains, expandedLayout,
+    selectedMountains, setSelectedMountains, expandedLayout,
   } = props;
+
+  const targetMountainId = selectedMountains.length && selectedMountains[0].id
+    ? selectedMountains[0].id : null;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -208,12 +210,6 @@ const AdditionalMountains = (props: Props) => {
     const sortedSelectedMountains = sortBy(selectedMountains, ['name']);
     selectedMountainList = sortedSelectedMountains.map(mtn => {
       if (searchSelectedQuery === '' || mtn.name.toLowerCase().includes(searchSelectedQuery.toLowerCase())) {
-        const distance = targetMountain ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
-          lat1: targetMountain.latitude,
-          lon1: targetMountain.longitude,
-          lat2: mtn.latitude,
-          lon2: mtn.longitude,
-        }).toFixed(2)) + ' mi away' : '';
         return (
           <MountainItemRemove
             onClick={() => removeMountainFromList(mtn)}
@@ -223,7 +219,6 @@ const AdditionalMountains = (props: Props) => {
             <Subtitle>
               {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
               {mtn.elevation + 'ft' }
-              {distance}
             </Subtitle>
           </MountainItemRemove>
         );

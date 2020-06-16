@@ -90,6 +90,7 @@ const Actions = styled.div`
   border-bottom-right-radius: ${borderRadius}px;
 
   @media(max-width: ${mobileWidth}px) {
+    z-index: 100;
     padding: 0;
     position: fixed;
     bottom: 0;

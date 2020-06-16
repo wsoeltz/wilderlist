@@ -50,14 +50,19 @@ export interface DestinationDatum {
 }
 
 export enum PopupDataTypes {
-  Coordinate,
-  Trail,
-  Campsite,
+  Coordinate = 'Coordinate',
+  OtherMountain = 'OtherMountain',
+  Trail = 'Trail',
+  Campsite = 'Campsite',
 }
 
 export type PopupData = (
   {
     type: PopupDataTypes.Coordinate;
+    data: CoordinateWithDates;
+  } |
+  {
+    type: PopupDataTypes.OtherMountain;
     data: CoordinateWithDates;
   } | {
     type: PopupDataTypes.Trail;

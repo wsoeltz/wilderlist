@@ -6,6 +6,7 @@ import {
 import {getImageAndIcon} from './colorScaleColors';
 import {
   CoordinateWithDates,
+  PopupDataTypes,
 } from './types';
 
 interface Props {
@@ -28,7 +29,7 @@ const PrimaryMountains = (props: Props) => {
     const onClick = () => onFeatureClick(point);
     const {circleColor, iconImage} = getImageAndIcon({
       colorScaleColors, point, createOrEditMountain,
-      highlighted, colorScaleSymbols,
+      highlighted, colorScaleSymbols, popUpDataType: PopupDataTypes.Coordinate,
     });
     return (
       <Feature

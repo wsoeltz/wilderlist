@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -49,11 +50,12 @@ import {
   Title,
 } from '../../sharedComponents/formUtils';
 import Map, {MapContainer} from '../../sharedComponents/map';
-import AddMountains, {MountainDatum} from '../detail/completionModal/AdditionalMountains';
+import {CoordinateWithDates} from '../../sharedComponents/map/types';
 import { getSentences } from '../detail/IntroText';
 import { StateDatum } from '../list/ListPeakLists';
 import { getStatesOrRegion } from '../list/PeakListCard';
 import { isState } from '../Utils';
+import AddMountains, {MountainDatum} from './AddMountains';
 import ParentModal, {PeakListDatum} from './ParentModal';
 
 export const RequiredNote = styled(RequiredNoteBase)`
@@ -318,6 +320,51 @@ const PeakListForm = (props: Props) => {
 
   const mountainCoordinates = [...mountains, ...optionalMountains].map(mtn => ({...mtn, completionDates: null }));
 
+  const addMountainToList = (mtnToAdd: CoordinateWithDates) => {
+    if (!mountains.find(mtn => mtn.id === mtnToAdd.id)) {
+      axios.post('/graphql', {
+        query: `query GetMountainDatum($id: ID) {
+          mountain(id: $id) {
+            id
+            name
+            state {
+              id
+              name
+              abbreviation
+              regions {
+                id
+                name
+                states {
+                  id
+                }
+              }
+            }
+            elevation
+            latitude
+            longitude
+          }
+        }`,
+        variables: {id: mtnToAdd.id} },
+        { headers: {'Content-Type': 'application/json'},
+      }).then((res) => {
+        if (res && res.data && res.data.data && res.data.data.mountain) {
+          const newMountain: MountainDatum = res.data.data.mountain;
+          setMountains([...mountains, newMountain]);
+        }
+      }).catch(e => console.error(e));
+    }
+  };
+  const removeMountainFromList = (mountainToRemove: CoordinateWithDates) => {
+    const updatedMtnList = mountains.filter(mtn => mtn.id !== mountainToRemove.id);
+    setMountains([...updatedMtnList]);
+  };
+  const addRemoveMountains = parent !== null ? undefined : {
+    addText: 'Add to List',
+    onAdd: addMountainToList,
+    removeText: 'Remove from List',
+    onRemove: removeMountainFromList,
+  };
+
   let map: React.ReactElement<any> | null;
   if (mapContainer !== null) {
     map = createPortal((
@@ -333,6 +380,10 @@ const PeakListForm = (props: Props) => {
           colorScaleLabels={[]}
           fillSpace={true}
           completedAscents={[]}
+          showOtherMountains={true}
+          defaultOtherMountainsOn={true}
+          addRemoveMountains={addRemoveMountains}
+          primaryMountainLegendCopy={'Mountains on this list'}
           key={'create-peak-list-key'}
         />
       </FullColumn>
@@ -351,6 +402,10 @@ const PeakListForm = (props: Props) => {
             colorScaleSymbols={[]}
             colorScaleLabels={[]}
             completedAscents={[]}
+            showOtherMountains={true}
+            defaultOtherMountainsOn={true}
+            addRemoveMountains={addRemoveMountains}
+            primaryMountainLegendCopy={'Mountains on this list'}
             key={'create-peak-list-key'}
           />
         </MapContainer>
@@ -457,7 +512,6 @@ const PeakListForm = (props: Props) => {
           </Label>
         </LabelContainer>
         <AddMountains
-          targetMountainId={null}
           selectedMountains={mountains}
           setSelectedMountains={setMountains}
           expandedLayout={true}
@@ -500,7 +554,6 @@ const PeakListForm = (props: Props) => {
           </Label>
         </LabelContainer>
         <AddMountains
-          targetMountainId={null}
           selectedMountains={optionalMountains}
           setSelectedMountains={setOptionalMountains}
           expandedLayout={true}

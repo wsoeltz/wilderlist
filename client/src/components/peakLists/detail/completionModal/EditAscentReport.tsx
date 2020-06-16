@@ -90,7 +90,7 @@ type Props = BaseProps & {
 };
 
 const EditAscentReport = (props: Props) => {
-  const {editMountainId, userId, date} = props;
+  const {userId, date, initialMountainList} = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -105,14 +105,14 @@ const EditAscentReport = (props: Props) => {
 
   const refetchQuery = [
         {query: GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, variables: {
-          author: userId, mountain: editMountainId, date: stringDate }},
+          author: userId, mountain: initialMountainList[0].id, date: stringDate }},
         ...baseRefetchSearchQueries,
         ];
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, {
     variables: {
       author: userId,
-      mountain: editMountainId,
+      mountain: initialMountainList[0].id,
       date: stringDate,
     },
   });
@@ -156,7 +156,6 @@ const EditAscentReport = (props: Props) => {
           initialStartDate={initialStartDate}
           initialDateType={getDateType(date)}
           initialUserList={[]}
-          initialMountainList={[]}
           initialConditions={{
             mudMinor: false,
             mudMajor: false,
@@ -194,7 +193,6 @@ const EditAscentReport = (props: Props) => {
       const filteredUsers = tripReport.users.filter(notEmpty);
 
       const userList = filteredUsers.map(user => user.id);
-      const mountainList = filteredMountains.filter(mtn => mtn.id !== props.editMountainId);
       return (
         <MountainCompletionModal
           {...props}
@@ -206,7 +204,7 @@ const EditAscentReport = (props: Props) => {
           initialStartDate={initialStartDate}
           initialDateType={getDateType(date)}
           initialUserList={userList}
-          initialMountainList={mountainList}
+          initialMountainList={filteredMountains}
           initialConditions={conditions}
           initialTripNotes={notes ? notes : ''}
           initialLink={link ? link : ''}
