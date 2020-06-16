@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/react-hooks';
+import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
@@ -8,17 +9,68 @@ import {
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../../../hooks/usePrevious';
 import {
+  BasicIconInText,
   ButtonPrimary,
-  CheckboxList,
+  DetailBox,
+  DetailBoxTitle,
   lightBaseColor,
   lightBlue,
   lightBorderColor,
+  tertiaryColor,
 } from '../../../../../styling/styleUtils';
 import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
-import {ButtonWrapper} from '../../../../sharedComponents/AreYouSureModal';
+import Map from '../../../../sharedComponents/map';
 import Modal from '../../../../sharedComponents/Modal';
 import StandardSearch from '../../../../sharedComponents/StandardSearch';
 import {MountainDatum} from './AddMountains';
+
+const mobileWidth = 550; // in px
+
+const Root = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-gap: 1rem;
+  height: 100%;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-template-columns: auto;
+    grid-template-rows: auto auto 350px;
+    height: auto;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const SelectedMountainsRoot = styled.div`
+  grid-column: 1 / -1;
+  grid-row: 1;
+`;
+
+const SearchPanel = styled.div`
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+`;
+const MapPanel = styled.div`
+  grid-column: 2;
+  grid-row: 2;
+  height: 100%;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+`;
+
+const SelectedMountainsDetails = styled(DetailBox)`
+  display: flex;
+  flex-wrap: wrap;
+`;
 
 const MountainItem = styled.div`
   display: block;
@@ -55,8 +107,23 @@ const MountainItemAdd = styled(MountainItem)`
     content: '+';
   }
 `;
-const MountainItemRemove = styled(MountainItem)`
+const MountainItemRemove = styled.div`
+  flex-shrink: 0;
+  white-space: nowrap;
+  background-color: ${lightBlue};
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  margin: 0.4rem 0.8rem 0.4rem 0;
+
+  &:hover {
+    cursor: pointer;
+  }
+
   &:after {
+    margin-left: 1rem;
     content: '×';
   }
 `;
@@ -65,8 +132,13 @@ const Subtitle = styled.small`
   color: ${lightBaseColor};
 `;
 
-const SearchContainer = styled.div`
-  margin-top: 1rem;
+const SearchResults = styled.div`
+  flex-grow: 1;
+  background-color: ${tertiaryColor};
+  border: solid 1px ${lightBorderColor};
+  border-top: none;
+  height: 250px;
+  overflow: auto;
 `;
 
 const SEARCH_MOUNTAINS = gql`
@@ -152,32 +224,20 @@ const MountainSelector = (props: Props) => {
   const targetMountain = selectedMountains.length && selectedMountains[0]
     ? selectedMountains[0] : null;
   const selectedMountainList = selectedMountains.map(mtn => {
-    const distance = targetMountain && targetMountain.id !== mtn.id
-      ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
-        lat1: targetMountain.latitude,
-        lon1: targetMountain.longitude,
-        lat2: mtn.latitude,
-        lon2: mtn.longitude,
-      }).toFixed(2)) + ' mi from ' + targetMountain.name : '';
     return (
       <MountainItemRemove
         onClick={() => removeMountainFromList(mtn)}
         key={mtn.id}
       >
         {mtn.name}
-        <Subtitle>
-          {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
-          {mtn.elevation + 'ft' }
-          {distance}
-        </Subtitle>
       </MountainItemRemove>
     );
   });
 
   if (dataToUse !== undefined ) {
     const { mountains } = dataToUse;
-    if (searchQuery) {
-      const mountainList: Array<React.ReactElement<any>> = [];
+    const mountainList: Array<React.ReactElement<any>> = [];
+    if (mountains && mountains.length) {
       mountains.forEach(mtn => {
         if (!selectedMountains.find(m => m.id === mtn.id)) {
           const distance = targetMountain && targetMountain.id !== mtn.id
@@ -204,15 +264,22 @@ const MountainSelector = (props: Props) => {
           return null;
         }
       });
-      if (mountainList.length !== 0) {
+      searchResults = (
+        <>{mountainList}</>
+      );
+    } else {
+      if (loading === false) {
         searchResults = (
-          <CheckboxList>{mountainList}</CheckboxList>
+          <p style={{textAlign: 'center'}}>
+            <small
+              dangerouslySetInnerHTML={{
+                __html: getFluentString('global-text-value-no-results-found-for-term', {term: searchQuery}),
+              }} />
+          </p>
         );
       } else {
         searchResults = null;
       }
-    } else {
-      searchResults = null;
     }
   } else if (loading === true) {
     searchResults = null;
@@ -223,11 +290,14 @@ const MountainSelector = (props: Props) => {
     searchResults = null;
   }
 
-  const selectedMountainsContainer = selectedMountainList && selectedMountainList.length ? (
-    <CheckboxList>
-      {selectedMountainList}
-    </CheckboxList>
-  ) : null;
+  const mountainCoordinates = [...selectedMountains].map(mtn => ({...mtn, completionDates: null }));
+
+  const addRemoveMountains = {
+    addText: 'Add to Trip',
+    onAdd: addMountainToList,
+    removeText: 'Remove from Trip',
+    onRemove: removeMountainFromList,
+  };
 
   const onClose = () => {
     closeAndAddMountains(selectedMountains);
@@ -235,7 +305,7 @@ const MountainSelector = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <ButtonPrimary onClick={onClose}>
+      <ButtonPrimary onClick={onClose} mobileExtend={true}>
         Done Updating Mountains
       </ButtonPrimary>
     </ButtonWrapper>
@@ -245,19 +315,50 @@ const MountainSelector = (props: Props) => {
     <Modal
       onClose={onClose}
       actions={actions}
-      width={'400px'}
-      height={'400px'}
+      width={'650px'}
+      height={'600px'}
     >
-      {selectedMountainsContainer}
-      <SearchContainer>
-        <StandardSearch
-          placeholder={getFluentString('global-text-value-search-mountains')}
-          setSearchQuery={setSearchQuery}
-          focusOnMount={false}
-          initialQuery={searchQuery}
-        />
-      </SearchContainer>
-      {searchResults}
+      <Root>
+        <SelectedMountainsRoot>
+          <DetailBoxTitle>
+            <BasicIconInText icon={faMountain} />
+            {getFluentString('trip-report-add-additional-mtns-title')}
+          </DetailBoxTitle>
+          <SelectedMountainsDetails>
+            {selectedMountainList}
+          </SelectedMountainsDetails>
+        </SelectedMountainsRoot>
+        <SearchPanel>
+          <StandardSearch
+            placeholder={getFluentString('global-text-value-search-mountains')}
+            setSearchQuery={setSearchQuery}
+            focusOnMount={false}
+            initialQuery={searchQuery}
+          />
+          <SearchResults>
+            {searchResults}
+          </SearchResults>
+        </SearchPanel>
+        <MapPanel>
+          <Map
+            mountainId={null}
+            peakListId={null}
+            coordinates={mountainCoordinates}
+            userId={null}
+            isOtherUser={true}
+            colorScaleColors={[]}
+            colorScaleSymbols={[]}
+            colorScaleLabels={[]}
+            fillSpace={true}
+            completedAscents={[]}
+            showOtherMountains={true}
+            defaultOtherMountainsOn={true}
+            addRemoveMountains={addRemoveMountains}
+            primaryMountainLegendCopy={'Mountains on<br />this trip'}
+            key={'create-peak-list-key'}
+          />
+        </MapPanel>
+      </Root>
     </Modal>
   );
 };

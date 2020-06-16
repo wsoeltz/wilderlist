@@ -45,7 +45,7 @@ const AdditionalMountains = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const [isMountainSelectorOpen, setMountainSelectorOpen] = useState<boolean>(false);
+  const [isMountainSelectorOpen, setMountainSelectorOpen] = useState<boolean>(true);
 
   const targetMountain = selectedMountains.length ? selectedMountains[0] : null;
 
