@@ -1,3 +1,4 @@
+import { faAt, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';
@@ -5,29 +6,38 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
   ButtonPrimary,
   ButtonSecondary,
-  CheckboxList,
   CheckboxListCheckbox,
   CheckboxListItem,
+  DetailBox,
+  DetailBoxTitle,
   GhostButton,
 } from '../../../../../styling/styleUtils';
 import {
   FriendStatus,
 } from '../../../../../types/graphQLTypes';
-import {ButtonWrapper} from '../../../../sharedComponents/AreYouSureModal';
 import Modal from '../../../../sharedComponents/Modal';
 import {
   FriendsDatum,
 } from '../queries';
 import {
+  CheckboxList,
   Input,
+  ModalButtonWrapper,
   NoDateText,
 } from '../Utils';
 
 const Root = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 220px 300px;
+  grid-gap: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+  }
 `;
 
 const EmailRow = styled.div`
@@ -129,7 +139,7 @@ const FriendSelector = (props: Props) => {
       <Input
         value={email}
         onChange={handleEmailChange(i)}
-        placeholder={'name@example.com'}
+        placeholder={'email@example.com'}
         autoComplete={'off'}
       />
       <GhostButton onClick={deleteEmail(i)}>
@@ -143,29 +153,41 @@ const FriendSelector = (props: Props) => {
   };
 
   const actions = (
-    <ButtonWrapper>
-      <ButtonPrimary onClick={onClose}>
+    <ModalButtonWrapper>
+      <ButtonPrimary onClick={onClose} mobileExtend={true}>
         Done adding friends
       </ButtonPrimary>
-    </ButtonWrapper>
+    </ModalButtonWrapper>
   );
 
   return (
     <Modal
       onClose={onClose}
       actions={actions}
-      width={'400px'}
+      width={'600px'}
       height={'400px'}
     >
       <Root>
         <div>
-          {friendsList}
+          <DetailBoxTitle>
+            <BasicIconInText icon={faUserFriends} />
+            {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
+          </DetailBoxTitle>
+          <DetailBox>
+            {friendsList}
+          </DetailBox>
         </div>
         <div>
-          {emailInputs}
-          <ButtonSecondary onClick={() => setEmails([...emails, ''])}>
-            Add another email address
-          </ButtonSecondary>
+          <DetailBoxTitle>
+            <BasicIconInText icon={faAt} />
+            {getFluentString('mountain-completion-modal-text-add-other-friends')}
+          </DetailBoxTitle>
+          <DetailBox>
+            {emailInputs}
+            <ButtonSecondary onClick={() => setEmails([...emails, ''])}>
+              {getFluentString('mountain-completion-modal-text-add-email-button')}
+            </ButtonSecondary>
+          </DetailBox>
         </div>
       </Root>
     </Modal>

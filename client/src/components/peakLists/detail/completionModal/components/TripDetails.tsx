@@ -7,7 +7,6 @@ import {
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import {
   BasicIconInText,
-  CheckboxList as CheckboxListBase,
   CheckboxListCheckbox,
   CheckboxListItem,
   DetailBoxTitle,
@@ -19,6 +18,7 @@ import {
 import Tooltip from '../../../../sharedComponents/Tooltip';
 import { DateType } from '../../../Utils';
 import {
+  CheckboxList,
   Input,
   SectionTitle,
 } from '../Utils';
@@ -37,11 +37,6 @@ const ReportTextarea = styled.textarea`
   width: 100%;
   min-height: 6.35rem;
   line-height: 1.4;
-`;
-
-const CheckboxList = styled(CheckboxListBase)`
-  background-color: #fff;
-  margin-top: 0.3rem;
 `;
 
 export const nullConditions: Conditions = {

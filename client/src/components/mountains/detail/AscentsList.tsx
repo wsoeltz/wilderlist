@@ -43,7 +43,7 @@ const AscentsList = (props: Props) => {
 
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
-  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(mountain.id);
+  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
   const closeAscentModalModal = () => {
     setEditMountainId(null);
     setDateToEdit(null);

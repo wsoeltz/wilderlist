@@ -1,5 +1,6 @@
 import styled from 'styled-components/macro';
 import {
+  CheckboxList as CheckboxListBase,
   InputBase,
   Label,
   lightBorderColor,
@@ -105,4 +106,14 @@ export const ListItem = styled.div`
   &:not(:last-child) {
     border-bottom: solid 1px ${lightBorderColor};
   }
+`;
+
+export const ModalButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+export const CheckboxList = styled(CheckboxListBase)`
+  background-color: #fff;
+  margin-top: 0.3rem;
 `;

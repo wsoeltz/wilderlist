@@ -22,6 +22,7 @@ import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
 import Map from '../../../../sharedComponents/map';
 import Modal from '../../../../sharedComponents/Modal';
 import StandardSearch from '../../../../sharedComponents/StandardSearch';
+import {ModalButtonWrapper} from '../Utils';
 import {MountainDatum} from './AddMountains';
 
 const mobileWidth = 550; // in px
@@ -38,11 +39,6 @@ const Root = styled.div`
     grid-template-rows: auto auto 350px;
     height: auto;
   }
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
 `;
 
 const SelectedMountainsRoot = styled.div`
@@ -304,11 +300,11 @@ const MountainSelector = (props: Props) => {
   };
 
   const actions = (
-    <ButtonWrapper>
+    <ModalButtonWrapper>
       <ButtonPrimary onClick={onClose} mobileExtend={true}>
         Done Updating Mountains
       </ButtonPrimary>
-    </ButtonWrapper>
+    </ModalButtonWrapper>
   );
 
   return (
