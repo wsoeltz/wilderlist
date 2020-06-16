@@ -134,6 +134,12 @@ const FriendSelector = (props: Props) => {
     setEmails(emails.filter((_v, i) => i !== index));
   };
 
+  const onEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13 || e.which === 13) {
+      setEmails(['', ...emails]);
+    }
+  };
+
   const emailInputs = emails.map((email, i) => (
     <EmailRow key={i}>
       <Input
@@ -141,6 +147,7 @@ const FriendSelector = (props: Props) => {
         onChange={handleEmailChange(i)}
         placeholder={'email@example.com'}
         autoComplete={'off'}
+        onKeyPress={onEnterPress}
       />
       <GhostButton onClick={deleteEmail(i)}>
         ×

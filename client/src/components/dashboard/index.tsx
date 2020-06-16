@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/react-hooks';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
@@ -19,12 +20,14 @@ import {
 } from '../../styling/Grid';
 import {
   ButtonPrimaryLink,
+  ButtonSecondary,
   PlaceholderText,
   SectionTitleH3,
 } from '../../styling/styleUtils';
-import { User } from '../../types/graphQLTypes';
+import { PeakListVariants, User } from '../../types/graphQLTypes';
 import { mobileSize } from '../../Utils';
 import { AppContext } from '../App';
+import NewAscentReport from '../peakLists/detail/completionModal/NewAscentReport';
 import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
@@ -33,6 +36,17 @@ import BackButton from '../sharedComponents/BackButton';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import AllMountains from '../stats/AllMountains';
+
+const SearchRoot = styled(SearchContainer)`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-gap: 1rem;
+`;
+
+const AscentButtonRoot = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
@@ -87,6 +101,8 @@ const Dashboard = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const { windowWidth } = useContext(AppContext);
+
+  const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
 
   const [usersState, setUsersState] = useState<string | undefined>(undefined);
   useEffect(() => {
@@ -177,6 +193,24 @@ const Dashboard = (props: Props) => {
     );
   }
 
+  const addAscentButton = windowWidth < mobileSize ? (
+    <AscentButtonRoot>
+      <ButtonSecondary onClick={() => setAscentModalOpen(true)}>
+        <FontAwesomeIcon icon='calendar-alt' /> {getFluentString('map-add-ascent')}
+      </ButtonSecondary>
+    </AscentButtonRoot>
+  ) : null;
+
+  const addAscentModal = ascentModalOpen ? (
+    <NewAscentReport
+      initialMountainList={[]}
+      closeEditMountainModalModal={() => setAscentModalOpen(false)}
+      userId={userId}
+      variant={PeakListVariants.standard}
+      queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
+    />
+  ) : null;
+
   let rightSideContent: React.ReactElement<any> | null;
   if (windowWidth < mobileSize) {
     rightSideContent = null;
@@ -204,14 +238,15 @@ const Dashboard = (props: Props) => {
         <title>{getFluentString('meta-data-dashboard-default-title')}</title>
       </Helmet>
       <ContentLeftLarge>
-        <SearchContainer>
+        <SearchRoot>
           <StandardSearch
             placeholder={getFluentString('global-text-value-search-hiking-lists')}
             setSearchQuery={searchPeakLists}
             focusOnMount={false}
             initialQuery={''}
           />
-        </SearchContainer>
+          {addAscentButton}
+        </SearchRoot>
         <ContentBody>
           {peakListsList}
         </ContentBody>
@@ -222,6 +257,7 @@ const Dashboard = (props: Props) => {
           {rightSideContent}
         </ContentBody>
       </ContentRightSmall>
+      {addAscentModal}
     </>
   );
 };

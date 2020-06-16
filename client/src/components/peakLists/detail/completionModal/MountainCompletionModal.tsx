@@ -132,10 +132,10 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const initialMountainId = initialMountainList.length && initialMountainList[0].id ?
     initialMountainList[0].id : null;
 
-  const refetchQueries: Array<{query: any, variables: any}> = [{
+  const refetchQueries: Array<{query: any, variables: any}> = initialMountainId !== null ? [{
     query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
     variables: { mountain: initialMountainId, nPerPage },
-  }];
+  }] : [];
 
   if (refetchQuery !== undefined) {
     refetchQuery.forEach(query => refetchQueries.push(query));
