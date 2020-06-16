@@ -66,7 +66,7 @@ global-text-value-modal-create-trip-report = Create Trip Report
 global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
-global-text-value-modal-mark-complete = Mark Complete
+global-text-value-modal-mark-complete = Log Ascent
 global-text-value-description = Description
 global-text-value-directions = Directions
 global-text-value-more = more
@@ -648,6 +648,9 @@ local-trails-hiking-project-network-error = There was a network error retrieving
 
 local-trails-nearby-trails-title = Nearby Trails
 local-trails-all-trails-link-text = View trails for { $mountain-name } on
+
+trip-report-title = Trip Report
+trip-report-tooltip = Create an optional trip report for your records and to help the next hiker along. All trip reports are public, however you can remove your name from them by adjusting your privacy settings.
 
 trip-report-conditions-title = Conditions
 

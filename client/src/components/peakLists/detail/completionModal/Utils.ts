@@ -1,6 +1,7 @@
 import styled from 'styled-components/macro';
 import {
   InputBase,
+  Label,
   lightBorderColor,
 } from '../../../../styling/styleUtils';
 
@@ -13,15 +14,20 @@ for (let i = 1900; i < today.getFullYear() + 1; i++) {
 
 export const mobileWidth = 470; // in px
 
-export const SectionTitle = styled.h4`
+export const SectionTitle = styled(Label)`
   margin-top: 0;
   margin-bottom: 0.2rem;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 `;
 
 export const ColumnRoot = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-column-gap: 2rem;
+
+  @media (max-width: 600px) {
+    grid-column-gap: 1rem;
+  }
 
   @media (max-width: ${mobileWidth}px) {
     grid-template-columns: 1fr;
@@ -30,7 +36,6 @@ export const ColumnRoot = styled.div`
 `;
 
 export const LeftColumn = styled.div`
-  padding-right: 1rem;
   grid-column: 1;
   grid-row: 1;
 
@@ -41,7 +46,6 @@ export const LeftColumn = styled.div`
 `;
 
 export const RightColumn = styled.div`
-  padding-left: 1rem;
   grid-column: 2;
   grid-row: 1;
 
@@ -81,7 +85,7 @@ export const NoDateText = styled.p`
 `;
 
 export const Input = styled(InputBase)`
-  margin-top: 1rem;
+  margin-top: 0.3rem;
   margin-bottom: 0.6rem;
 `;
 

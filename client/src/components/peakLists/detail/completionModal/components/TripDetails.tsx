@@ -1,3 +1,4 @@
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import React, {forwardRef, RefObject, useContext} from 'react';
 import styled from 'styled-components/macro';
@@ -5,37 +6,42 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../../../contextProviders/getFluentLocalizationContext';
 import {
-  CheckboxList,
+  BasicIconInText,
+  CheckboxList as CheckboxListBase,
   CheckboxListCheckbox,
   CheckboxListItem,
+  DetailBoxTitle,
+  DetailBoxWithMargin,
 } from '../../../../../styling/styleUtils';
 import {
   Conditions,
 } from '../../../../../types/graphQLTypes';
+import Tooltip from '../../../../sharedComponents/Tooltip';
 import { DateType } from '../../../Utils';
 import {
   Input,
   SectionTitle,
 } from '../Utils';
 
-const TripReportRoot = styled.div`
-  margin-top: 2rem;
-`;
-
 const ReportContent = styled.div`
-  margin-top: 1.6rem;
+  margin-top: 1rem;
 `;
 
 const ReportTextarea = styled.textarea`
-  margin: 1rem 0;
+  margin: 0.3rem 0 1rem;
   padding: 8px;
   box-sizing: border-box;
   border: solid 1px #dcdcdc;
   font-size: 1rem;
   font-weight: 200;
   width: 100%;
-  min-height: 6rem;
+  min-height: 6.35rem;
   line-height: 1.4;
+`;
+
+const CheckboxList = styled(CheckboxListBase)`
+  background-color: #fff;
+  margin-top: 0.3rem;
 `;
 
 export const nullConditions: Conditions = {
@@ -108,9 +114,12 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
   });
 
   const conditionsList = dateType === DateType.full ? (
-    <CheckboxList>
-      {conditionsListItems}
-    </CheckboxList>
+    <>
+      <SectionTitle>{getFluentString('trip-report-conditions-title')}</SectionTitle>
+      <CheckboxList>
+        {conditionsListItems}
+      </CheckboxList>
+    </>
   ) : (
     <small>
       {getFluentString('trip-report-invalid-date-format')}
@@ -139,15 +148,19 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
   ) : null;
 
   return (
-    <TripReportRoot>
-      <div>
-        <SectionTitle>
-          {getFluentString('trip-report-conditions-title')}
-        </SectionTitle>
+    <>
+      <DetailBoxTitle>
+        <BasicIconInText icon={faEdit} />
+        {getFluentString('trip-report-title')}
+        <Tooltip
+          explanation={getFluentString('trip-report-tooltip')}
+        />
+      </DetailBoxTitle>
+      <DetailBoxWithMargin>
         {conditionsList}
-      </div>
-      {reportContent}
-    </TripReportRoot>
+        {reportContent}
+      </DetailBoxWithMargin>
+    </>
   );
 });
 

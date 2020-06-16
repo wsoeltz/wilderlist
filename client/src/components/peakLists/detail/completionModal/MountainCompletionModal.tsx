@@ -508,7 +508,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
       <Modal
         onClose={closeEditMountainModalModal}
         width={'700px'}
-        height={'auto'}
+        height={'650px'}
         actions={actions}
       >
         <ColumnRoot>

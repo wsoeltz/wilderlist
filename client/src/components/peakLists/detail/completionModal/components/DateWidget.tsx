@@ -21,6 +21,7 @@ import {
   Months,
   Seasons,
 } from '../../../../../Utils';
+import {mobileWidth} from '../../../../sharedComponents/Modal';
 import { DateType } from '../../../Utils';
 import '../react-datepicker.custom.css';
 import {
@@ -33,8 +34,12 @@ import {
 import renderCustomHeader from './datePickerRenderProps';
 
 const Root = styled.div`
-  min-width: 248px;
-  min-height: 415px;
+  margin-bottom: 1rem;
+
+  @media (min-width: ${mobileWidth}px) {
+    min-width: 248px;
+    min-height: 415px;
+  }
 `;
 
 const DateInputContainer = styled.div`
