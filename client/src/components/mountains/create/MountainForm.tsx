@@ -11,7 +11,7 @@ import {
 import usePointLocationData from '../../../hooks/usePointLocationData';
 import {
   BasicIconInText,
-  ButtonPrimary,
+  ButtonSecondary,
   CheckboxInput,
   CheckboxRoot,
   GhostButton,
@@ -28,10 +28,10 @@ import {
   MountainFlag,
   State,
 } from '../../../types/graphQLTypes';
-import { RequiredNote } from '../../peakLists/create/PeakListForm';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
+import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
 import {
   ButtonWrapper,
   CheckboxLabel,
@@ -40,7 +40,6 @@ import {
   ResourceContainer,
   Root,
   SaveButton,
-  Title,
 } from '../../sharedComponents/formUtils';
 import Map, {MapContainer} from '../../sharedComponents/map';
 import { legendColorScheme, legendSymbolScheme } from '../../sharedComponents/map/colorScaleColors';
@@ -390,10 +389,6 @@ const MountainForm = (props: Props) => {
   const saveButtonText = loadingSubmit === true
     ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
 
-  const titleText = initialData.name !== '' ? getFluentString('create-mountain-title-edit', {
-    'mountain-name': initialData.name,
-  }) : getFluentString('create-mountain-title-create');
-
   const deleteButtonText = initialData.flag !== MountainFlag.deleteRequest
     ? getFluentString('global-text-value-delete')
     : getFluentString('global-text-value-cancel-delete-request');
@@ -422,14 +417,6 @@ const MountainForm = (props: Props) => {
 
   return (
     <Root>
-      <FullColumn>
-        <Title>{titleText}</Title>
-        <RequiredNote
-          dangerouslySetInnerHTML={{
-            __html: getFluentString('global-form-html-required-note'),
-          }}
-        />
-      </FullColumn>
       <FullColumn>
         <LabelContainer htmlFor={'create-mountain-name'}>
           <Label>
@@ -527,38 +514,45 @@ const MountainForm = (props: Props) => {
       </div>
       {map}
       <FullColumn>
-        <LabelContainer htmlFor={'create-peak-list-description'}>
-          <Label>
-            {getFluentString('create-peak-list-peak-list-description-label')}
-            {' '}
-            <small>({getFluentString('global-text-value-optional')})</small>
-          </Label>
-        </LabelContainer>
-        <TextareaBase
-          id={'create-peak-list-description'}
-          rows={6}
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder={getFluentString('create-mountain-optional-description')}
-          autoComplete={'off'}
-          maxLength={5000}
-        />
-      </FullColumn>
-      <FullColumn>
-        <LabelContainer>
-          <Label>
-            {getFluentString('global-text-value-external-resources')}
-            {' '}
-            <small>({getFluentString('global-text-value-optional')})</small>
-          </Label>
-        </LabelContainer>
-        {resourceInputs}
-        <ButtonPrimary onClick={e => {
-          e.preventDefault();
-          setExternalResources([...externalResources, {title: '', url: ''}]);
-        }}>
-          {getFluentString('global-text-value-add-external-resources')}
-        </ButtonPrimary>
+        <CollapsibleDetailBox
+          title={'OPTIONAL: Additional Information'}
+        >
+          <div>
+            <LabelContainer htmlFor={'create-peak-list-description'}>
+              <Label>
+                {getFluentString('create-peak-list-peak-list-description-label')}
+                {' '}
+                <small>({getFluentString('global-text-value-optional')})</small>
+              </Label>
+            </LabelContainer>
+            <TextareaBase
+              id={'create-peak-list-description'}
+              rows={6}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder={getFluentString('create-mountain-optional-description')}
+              autoComplete={'off'}
+              maxLength={5000}
+              style={{marginBottom: '1rem'}}
+            />
+          </div>
+          <div>
+            <LabelContainer>
+              <Label>
+                {getFluentString('global-text-value-external-resources')}
+                {' '}
+                <small>({getFluentString('global-text-value-optional')})</small>
+              </Label>
+            </LabelContainer>
+            {resourceInputs}
+            <ButtonSecondary onClick={e => {
+              e.preventDefault();
+              setExternalResources([...externalResources, {title: '', url: ''}]);
+            }}>
+              {getFluentString('global-text-value-add-external-resources')}
+            </ButtonSecondary>
+          </div>
+        </CollapsibleDetailBox>
       </FullColumn>
       <FullColumn>
         <CheckboxRoot>
