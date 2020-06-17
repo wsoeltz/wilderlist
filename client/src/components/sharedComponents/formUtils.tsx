@@ -8,7 +8,7 @@ import {
 export const Root = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
+  grid-gap: 0.7rem;
 `;
 
 export const Title = styled.h1`

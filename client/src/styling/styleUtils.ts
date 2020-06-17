@@ -211,6 +211,10 @@ export const SmallTextNote = styled.div`
   color: ${lightBaseColor};
 `;
 
+export const SmallTextNoteWithMargin = styled(SmallTextNote)`
+  margin-bottom: 1rem;
+`;
+
 export const borderRadius = 6; // in px
 
 export const ButtonBase = styled.button<{mobileExtend?: boolean; }>`

@@ -538,7 +538,7 @@ map-no-months = 0
 map-all-months = 12
 
 map-coordinates-at-center = Coordinates at Center
-map-set-lat-long-value = Set Lat/Long to these values
+map-set-lat-long-value = Update Location To Map Center
 
 map-get-directions = Get Directions
 
@@ -714,14 +714,26 @@ create-mountain-title-create-question-optional = Can't find the optional mountai
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
+create-mountain-name-title = Name of Mountain
+create-mountain-location-title = Location Information
+create-mountain-location-loading = Determining location data...
+create-mountain-location-error = We were unable to automatically determine all of the location information. Please fill out the fields manually.
+
+create-mountain-location-note = Use the map {
+  $position ->
+    [below] below
+    *[right] to the right
+} to automatically set the following values or enter them manually. If your location is near a state border, double check the "State" value as the automatic value will sometimes be wrong.
 create-mountain-select-a-state = Select a State
 create-mountain-latlong-note = as a decimal
 create-mountain-latitude-placeholder = Enter the latitude in decimal format
 create-mountain-longitude-placeholder = Enter the longitude in decimal format
 create-mountain-elevation-placeholder = Enter the elevation in feet
+create-mountain-optional-title = OPTIONAL: Additional Information
+create-mountain-optional-note = The following fields are optional and may be left blank.
 create-mountain-optional-description = Enter an optional description for the mountain here.
 
-create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (highlighted in red) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
+create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (in gray) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
 
 flag-mountain-title = Submit a Flag for { $name }
 flag-mountain-text = If something seems wrong about this mountain, submit a flag and an administrator will take a look at it ASAP

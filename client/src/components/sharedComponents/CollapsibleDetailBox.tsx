@@ -8,9 +8,14 @@ import {
 } from '../../styling/styleUtils';
 import {AppContext} from '../App';
 
+const Root = styled.div`
+  margin-bottom: 1rem;
+`;
+
 const Title = styled(DetailBoxTitle)`
   display: grid;
   grid-template-columns: 1fr auto;
+  cursor: pointer;
 `;
 
 const Contents = styled.div`
@@ -63,21 +68,21 @@ const CollapsibleDetailBox = (props: Props) => {
   const toggleText = !hidden ? 'Hide' : 'Show';
 
   return (
-    <>
-      <Title>
+    <Root>
+      <Title onClick={() => setHidden(!hidden)}>
         <div>
           {title}
         </div>
         <div>
-          <ToggleButton onClick={() => setHidden(!hidden)}>[{toggleText}]</ToggleButton>
+          <ToggleButton>[{toggleText}]</ToggleButton>
         </div>
       </Title>
       <Contents ref={ref} style={{height: hidden ? 0 : contentsHeight}}>
         <DetailBox>
           {children}
         </DetailBox>
-        </Contents>
-    </>
+      </Contents>
+    </Root>
   );
 };
 

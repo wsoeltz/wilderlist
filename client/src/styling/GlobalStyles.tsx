@@ -19,6 +19,7 @@ import {
   faChevronRight,
   faClone,
   faCloudSun,
+  faCompass,
   faDownload,
   faEdit,
   faEnvelope,
@@ -63,7 +64,7 @@ library.add(
   faUserFriends, faHome, faChartLine, faTrash, faClone,
   faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
   faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
-  faAddressBook, faAt, faPhone, faLink, faTrophy,
+  faAddressBook, faAt, faPhone, faLink, faTrophy, faCompass,
 );
 
 const GlobalStyles = createGlobalStyle`

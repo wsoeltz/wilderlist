@@ -18,9 +18,12 @@ interface Output {
 export default (input: Input) => {
   const {latitude, longitude} = input;
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [data, setData] = useState<Output['data']>(undefined);
+  const [output, setOutput] = useState<Output>({
+    loading: true, error: undefined, data: undefined,
+  });
+  // const [loading, setLoading] = useState<boolean>(true);
+  // const [error, setError] = useState<string | undefined>(undefined);
+  // const [data, setData] = useState<Output['data']>(undefined);
 
   useEffect(() => {
     const getLocationData = async () => {
@@ -52,16 +55,15 @@ export default (input: Input) => {
           state = null;
           elevation = null;
         }
-        setData({state, elevation});
-        setLoading(false);
+        setOutput({loading: false, data: {state, elevation}, error: undefined});
       } catch (e) {
         console.error(e);
-        setError('Unable to fetch state data');
-        setLoading(false);
+        setOutput({loading: false, data: undefined, error: 'Unable to fetch state data'});
       }
     };
+    setOutput({loading: true, data: undefined, error: undefined});
     getLocationData();
-  }, [latitude, longitude, setLoading, setError, setData]);
+  }, [latitude, longitude, setOutput]);
 
-  return {loading, error, data};
+  return output;
 };

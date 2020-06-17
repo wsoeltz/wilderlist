@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { faCheck, faClone, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -14,12 +14,16 @@ import {
   ButtonSecondary,
   CheckboxInput,
   CheckboxRoot,
+  DetailBoxTitle,
+  DetailBoxWithMargin,
   GhostButton,
   InputBase,
   Label,
   LabelContainer,
   Required,
+  RequiredNote,
   SelectBox,
+  SmallTextNoteWithMargin,
   TextareaBase,
 } from '../../../styling/styleUtils';
 import {
@@ -38,9 +42,10 @@ import {
   DeleteButton,
   FullColumn,
   ResourceContainer,
-  Root,
+  Root as Grid,
   SaveButton,
 } from '../../sharedComponents/formUtils';
+import Loading from '../../sharedComponents/LoadingSimple';
 import Map, {MapContainer} from '../../sharedComponents/map';
 import { legendColorScheme, legendSymbolScheme } from '../../sharedComponents/map/colorScaleColors';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
@@ -162,24 +167,31 @@ const MountainForm = (props: Props) => {
     initialData.state === null ? null : initialData.state.id,
   );
 
-  const {data: locationData} = usePointLocationData({
+  const {
+    loading: loadingLocationData, data: locationData, error: locationDataError,
+  } = usePointLocationData({
     latitude: stringLat ? parseFloat(stringLat) : undefined,
     longitude: stringLong ? parseFloat(stringLong) : undefined,
   });
 
   useEffect(() => {
-    if (locationData && locationData.state !== null) {
-      const targetState = states.find(
-        state => state.name.toLowerCase() === (locationData.state as string).toLowerCase());
-      if (targetState) {
-        setSelectedState(curVal => targetState.id !== curVal ? targetState.id : curVal);
+    if (loadingLocationData === true) {
+        setSelectedState(null);
+        setStringElevation('');
+    } else {
+      if (locationData && locationData.state !== null) {
+        const targetState = states.find(
+          state => state.name.toLowerCase() === (locationData.state as string).toLowerCase());
+        if (targetState) {
+          setSelectedState(curVal => targetState.id !== curVal ? targetState.id : curVal);
+        }
+      }
+      if (locationData && locationData.elevation !== null) {
+        const newElevation = locationData.elevation.toString();
+        setStringElevation(curVal => newElevation !== curVal ? newElevation : curVal);
       }
     }
-    if (locationData && locationData.elevation !== null) {
-      const newElevation = locationData.elevation.toString();
-      setStringElevation(curVal => newElevation !== curVal ? newElevation : curVal);
-    }
-  }, [locationData, states]);
+  }, [locationData, loadingLocationData, states]);
 
   const [description, setDescription] = useState<string>(initialData.description);
   const [externalResources, setExternalResources] =
@@ -237,6 +249,28 @@ const MountainForm = (props: Props) => {
   const areYouSureModal = deleteModalOpen === false ? null : (
     <AreYouSureModal {...areYouSureProps}/>
   );
+
+  const locationInformationTitle = !loadingLocationData ? (
+    <>
+      <BasicIconInText icon={faCompass} />
+      {getFluentString('create-mountain-location-title')}
+    </>
+  ) : (
+    <>
+      <Loading size={16} color={'#666'} />
+      {getFluentString('create-mountain-location-loading')}
+    </>
+  );
+
+  const locationError = locationDataError ? (
+    <SmallTextNoteWithMargin>
+      <RequiredNote>
+        <span className={'red-text'}>
+          {getFluentString('create-mountain-location-error')}
+        </span>
+      </RequiredNote>
+    </SmallTextNoteWithMargin>
+  ) : null;
 
   let nearbyMountains: CoordinateWithDates[];
   if (!loading && !error && data !== undefined && data.mountains) {
@@ -416,14 +450,12 @@ const MountainForm = (props: Props) => {
   ) : null;
 
   return (
-    <Root>
-      <FullColumn>
-        <LabelContainer htmlFor={'create-mountain-name'}>
-          <Label>
-            {getFluentString('create-mountain-mountain-name-placeholder')}
-            <Required children={'*'} />
-          </Label>
-        </LabelContainer>
+    <>
+      <DetailBoxTitle>
+        <BasicIconInText icon={faMountain} />
+        {getFluentString('create-mountain-name-title')}
+      </DetailBoxTitle>
+      <DetailBoxWithMargin>
         <InputBase
           id={'create-mountain-name'}
           type={'text'}
@@ -434,117 +466,128 @@ const MountainForm = (props: Props) => {
           autoComplete={'off'}
           maxLength={1000}
         />
-      </FullColumn>
-      <div>
-        <LabelContainer htmlFor={'create-mountain-latitude'}>
-          <Label>
-            {getFluentString('global-text-value-latitude')}
-            {' '}
-            <small>({getFluentString('create-mountain-latlong-note')})</small>
-            <Required children={'*'} />
-          </Label>
-        </LabelContainer>
-        <InputBase
-          id={'create-mountain-latitude'}
-          type={'number'}
-          min={latitudeMin}
-          max={latitudeMax}
-          value={stringLat}
-          onChange={e => setStringLat(e.target.value)}
-          placeholder={getFluentString('create-mountain-latitude-placeholder')}
-          autoComplete={'off'}
-        />
-      </div>
-      <div>
-        <LabelContainer htmlFor={'create-mountain-longitude'}>
-          <Label>
-            {getFluentString('global-text-value-longitude')}
-            {' '}
-            <small>({getFluentString('create-mountain-latlong-note')})</small>
-            <Required children={'*'} />
-          </Label>
-        </LabelContainer>
-        <InputBase
-          id={'create-mountain-longitude'}
-          type={'number'}
-          min={longitudeMin}
-          max={longitudeMax}
-          value={stringLong}
-          onChange={e => setStringLong(e.target.value)}
-          placeholder={getFluentString('create-mountain-longitude-placeholder')}
-          autoComplete={'off'}
-        />
-      </div>
-      <div>
-        <LabelContainer htmlFor={'create-mountain-select-a-state'}>
-          <Label>
-            {getFluentString('global-text-value-state')}
-            <Required children={'*'} />
-          </Label>
-        </LabelContainer>
-        <SelectBox
-          id={'create-mountain-select-a-state'}
-          value={`${selectedState || ''}`}
-          onChange={e => setSelectedState(e.target.value)}
-          placeholder={getFluentString('create-mountain-select-a-state')}
-        >
-          <option value='' key='empty-option-to-select'></option>
-          {stateOptions}
-        </SelectBox>
-      </div>
-      <div>
-        <LabelContainer htmlFor={'create-mountain-elevation'}>
-          <Label>
-            {getFluentString('global-text-value-elevation')}
-            {' '}
-            <small>({getFluentString('global-text-value-feet')})</small>
-            <Required children={'*'} />
-          </Label>
-        </LabelContainer>
-        <InputBase
-          id={'create-mountain-elevation'}
-          type={'number'}
-          min={elevationMin}
-          max={elevationMax}
-          value={stringElevation}
-          onChange={e => setStringElevation(e.target.value)}
-          placeholder={getFluentString('create-mountain-elevation-placeholder')}
-          autoComplete={'off'}
-        />
-      </div>
-      {map}
-      <FullColumn>
-        <CollapsibleDetailBox
-          title={'OPTIONAL: Additional Information'}
-        >
+      </DetailBoxWithMargin>
+      <DetailBoxTitle>
+        {locationInformationTitle}
+      </DetailBoxTitle>
+      <DetailBoxWithMargin>
+        {locationError}
+        <SmallTextNoteWithMargin>
+          {getFluentString('create-mountain-location-note', {
+            position: mapContainer !== null ? 'right' : 'bottom',
+          })}
+        </SmallTextNoteWithMargin>
+        <Grid>
           <div>
-            <LabelContainer htmlFor={'create-peak-list-description'}>
+            <LabelContainer htmlFor={'create-mountain-latitude'}>
               <Label>
-                {getFluentString('create-peak-list-peak-list-description-label')}
+                {getFluentString('global-text-value-latitude')}
                 {' '}
-                <small>({getFluentString('global-text-value-optional')})</small>
+                <small>({getFluentString('create-mountain-latlong-note')})</small>
               </Label>
             </LabelContainer>
-            <TextareaBase
-              id={'create-peak-list-description'}
-              rows={6}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder={getFluentString('create-mountain-optional-description')}
+            <InputBase
+              id={'create-mountain-latitude'}
+              type={'number'}
+              min={latitudeMin}
+              max={latitudeMax}
+              value={stringLat}
+              onChange={e => setStringLat(e.target.value)}
+              placeholder={'e.g. 40.000'}
               autoComplete={'off'}
-              maxLength={5000}
-              style={{marginBottom: '1rem'}}
             />
           </div>
           <div>
-            <LabelContainer>
+            <LabelContainer htmlFor={'create-mountain-longitude'}>
               <Label>
-                {getFluentString('global-text-value-external-resources')}
+                {getFluentString('global-text-value-longitude')}
                 {' '}
-                <small>({getFluentString('global-text-value-optional')})</small>
+                <small>({getFluentString('create-mountain-latlong-note')})</small>
               </Label>
             </LabelContainer>
-            {resourceInputs}
+            <InputBase
+              id={'create-mountain-longitude'}
+              type={'number'}
+              min={longitudeMin}
+              max={longitudeMax}
+              value={stringLong}
+              onChange={e => setStringLong(e.target.value)}
+              placeholder={'e.g. -72.000'}
+              autoComplete={'off'}
+            />
+          </div>
+          <div>
+            <LabelContainer htmlFor={'create-mountain-select-a-state'}>
+              <Label>
+                {getFluentString('global-text-value-state')}
+              </Label>
+            </LabelContainer>
+            <SelectBox
+              id={'create-mountain-select-a-state'}
+              value={`${selectedState || ''}`}
+              onChange={e => setSelectedState(e.target.value)}
+              placeholder={getFluentString('create-mountain-select-a-state')}
+            >
+              <option value='' key='empty-option-to-select'></option>
+              {stateOptions}
+            </SelectBox>
+          </div>
+          <div>
+            <LabelContainer htmlFor={'create-mountain-elevation'}>
+              <Label>
+                {getFluentString('global-text-value-elevation')}
+                {' '}
+                <small>({getFluentString('global-text-value-feet')})</small>
+              </Label>
+            </LabelContainer>
+            <InputBase
+              id={'create-mountain-elevation'}
+              type={'number'}
+              min={elevationMin}
+              max={elevationMax}
+              value={stringElevation}
+              onChange={e => setStringElevation(e.target.value)}
+              placeholder={'e.g. 1000ft'}
+              autoComplete={'off'}
+            />
+          </div>
+        </Grid>
+      </DetailBoxWithMargin>
+      {map}
+      <CollapsibleDetailBox
+        title={
+          <>
+            <BasicIconInText icon={faEdit} />
+            {getFluentString('create-mountain-optional-title')}
+          </>
+        }
+        defaultHidden={true}
+      >
+        <div>
+          <LabelContainer htmlFor={'create-peak-list-description'}>
+            <Label>
+              {getFluentString('create-peak-list-peak-list-description-label')}
+            </Label>
+          </LabelContainer>
+          <TextareaBase
+            id={'create-peak-list-description'}
+            rows={6}
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder={getFluentString('create-mountain-optional-description')}
+            autoComplete={'off'}
+            maxLength={5000}
+            style={{marginBottom: '1rem'}}
+          />
+        </div>
+        <div>
+          <LabelContainer>
+            <Label>
+              {getFluentString('global-text-value-external-resources')}
+            </Label>
+          </LabelContainer>
+          {resourceInputs}
+          <div>
             <ButtonSecondary onClick={e => {
               e.preventDefault();
               setExternalResources([...externalResources, {title: '', url: ''}]);
@@ -552,9 +595,9 @@ const MountainForm = (props: Props) => {
               {getFluentString('global-text-value-add-external-resources')}
             </ButtonSecondary>
           </div>
-        </CollapsibleDetailBox>
-      </FullColumn>
-      <FullColumn>
+        </div>
+      </CollapsibleDetailBox>
+      <div>
         <CheckboxRoot>
           <CheckboxInput
             type='checkbox'
@@ -582,9 +625,9 @@ const MountainForm = (props: Props) => {
             {saveButtonText}
           </SaveButton>
         </ButtonWrapper>
-      </FullColumn>
+      </div>
       {areYouSureModal}
-    </Root>
+    </>
   );
 };
 
