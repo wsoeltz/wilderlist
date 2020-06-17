@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
@@ -47,44 +47,8 @@ import {
 } from '../../sharedComponents/formUtils';
 import Loading from '../../sharedComponents/LoadingSimple';
 import Map, {MapContainer} from '../../sharedComponents/map';
-import { legendColorScheme, legendSymbolScheme } from '../../sharedComponents/map/colorScaleColors';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
 import { BaseMountainVariables } from './';
-
-const GET_NEARBY_MOUNTAINS = gql`
-  query getNearbyMountains(
-    $latitude: Float!, $longitude: Float!, $latDistance: Float!, $longDistance: Float!) {
-  mountains: nearbyMountains(
-    latitude: $latitude,
-    longitude: $longitude,
-    latDistance: $latDistance,
-    longDistance: $longDistance,
-  ) {
-    id
-    name
-    latitude
-    longitude
-    elevation
-  }
-}
-`;
-
-interface SuccessResponse {
-  mountains: null | Array<{
-    id: Mountain['id'];
-    name: Mountain['name'];
-    latitude: Mountain['latitude'];
-    longitude: Mountain['longitude'];
-    elevation: Mountain['elevation'];
-  }>;
-}
-
-interface Variables {
-  latitude: number;
-  longitude: number;
-  latDistance: number;
-  longDistance: number;
-}
 
 export const FLAG_MOUNTAIN = gql`
   mutation($id: ID!, $flag: MountainFlag) {
@@ -204,10 +168,6 @@ const MountainForm = (props: Props) => {
   const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, -71.52769471);
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
-    variables: { latitude, longitude, latDistance: 0.1, longDistance: 0.2 },
-  });
-
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const closeAreYouSureModal = () => {
     setDeleteModalOpen(false);
@@ -272,13 +232,6 @@ const MountainForm = (props: Props) => {
     </SmallTextNoteWithMargin>
   ) : null;
 
-  let nearbyMountains: CoordinateWithDates[];
-  if (!loading && !error && data !== undefined && data.mountains) {
-    nearbyMountains = data.mountains.filter(mtn => mtn.id !== initialData.id);
-  } else {
-    nearbyMountains = [];
-  }
-
   const coordinate: CoordinateWithDates = {
     id: '',
     latitude, longitude,
@@ -300,19 +253,19 @@ const MountainForm = (props: Props) => {
             <Map
               mountainId={null}
               peakListId={null}
-              coordinates={[coordinate, ...nearbyMountains]}
+              coordinates={[coordinate]}
               highlighted={[coordinate]}
               userId={null}
               isOtherUser={true}
               createOrEditMountain={true}
               showCenterCrosshairs={true}
               returnLatLongOnClick={setLatLongFromMap}
-              colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
-              colorScaleSymbols={[legendSymbolScheme.secondary, legendSymbolScheme.primary]}
-              colorScaleLabels={[
-                getFluentString('create-mountain-map-nearby-mountains'),
-                getFluentString('create-mountain-map-your-mountain'),
-              ]}
+              colorScaleColors={[]}
+              colorScaleSymbols={[]}
+              colorScaleLabels={[]}
+              showOtherMountains={true}
+              defaultOtherMountainsOn={true}
+              primaryMountainLegendCopy={getFluentString('create-mountain-map-your-mountain')}
               fillSpace={true}
               completedAscents={[]}
               key={'create-mountain-key'}
@@ -328,19 +281,19 @@ const MountainForm = (props: Props) => {
             <Map
               mountainId={null}
               peakListId={null}
-              coordinates={[coordinate, ...nearbyMountains]}
+              coordinates={[coordinate]}
               highlighted={[coordinate]}
               userId={null}
               isOtherUser={true}
               createOrEditMountain={true}
               showCenterCrosshairs={true}
               returnLatLongOnClick={setLatLongFromMap}
-              colorScaleColors={[legendColorScheme.secondary, legendColorScheme.primary]}
-              colorScaleSymbols={[legendSymbolScheme.secondary, legendSymbolScheme.primary]}
-              colorScaleLabels={[
-                getFluentString('create-mountain-map-nearby-mountains'),
-                getFluentString('create-mountain-map-your-mountain'),
-              ]}
+              colorScaleColors={[]}
+              colorScaleSymbols={[]}
+              colorScaleLabels={[]}
+              primaryMountainLegendCopy={getFluentString('create-mountain-map-your-mountain')}
+              showOtherMountains={true}
+              defaultOtherMountainsOn={true}
               key={'create-mountain-key'}
               completedAscents={[]}
             />
@@ -391,7 +344,7 @@ const MountainForm = (props: Props) => {
         autoComplete={'off'}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
-        × {getFluentString('global-text-value-remove')}
+        ×
       </GhostButton>
     </ResourceContainer>
   ));

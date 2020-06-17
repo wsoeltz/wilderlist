@@ -538,7 +538,7 @@ map-no-months = 0
 map-all-months = 12
 
 map-coordinates-at-center = Coordinates at Center
-map-set-lat-long-value = Update Location To Map Center
+map-set-lat-long-value = Set Location To Center
 
 map-get-directions = Get Directions
 
