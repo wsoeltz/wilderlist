@@ -1,3 +1,4 @@
+/* tslint:disable:await-promise */
 import {
   GraphQLFloat,
   GraphQLID,
@@ -95,17 +96,52 @@ const RootQuery = new GraphQLObjectType({
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
         state: { type: GraphQLID },
       },
-      resolve(parentValue, { searchQuery, pageNumber, nPerPage, state}) {
-        const filter = state
-          ? { name: { $regex: searchQuery, $options: 'i' },
-              state,
+      async resolve(parentValue, { searchQuery, pageNumber, nPerPage, state}) {
+        try {
+          const searchWords: string[] = searchQuery.toLowerCase().split(' ');
+          const keywordRegex = searchWords.join('|');
+          const targetStates = keywordRegex ? await State.find({
+            $or: [
+              { name: { $regex: keywordRegex, $options: 'i' } },
+              { abbreviation: { $regex: keywordRegex, $options: 'i' } },
+            ],
+          }) : [];
+          let stateIds: string[] = state ? [state] : [];
+          let wordsToIgnore: string[] = [];
+          for (const s of targetStates) {
+            const {_id, name, abbreviation} = s;
+            stateIds.push(_id);
+            const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
+            let perfectMatch: string = '';
+            stateKeywords.forEach(k => {
+              const matchingWords = searchWords.filter(w => {
+                if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
+                  perfectMatch = w;
+                }
+                return k.includes(w);
+              });
+              wordsToIgnore = [...wordsToIgnore, ...matchingWords];
+            });
+            if (perfectMatch) {
+              stateIds = [_id];
+              wordsToIgnore = [perfectMatch];
+              break;
             }
-          : { name: { $regex: searchQuery, $options: 'i' } };
-        return Mountain
-          .find(filter)
-          .limit(nPerPage)
-          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
-          .sort({ name: 1 });
+          }
+          const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          return Mountain
+            .find({
+              $or: [
+                { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds } },
+                { name: { $regex: searchQuery, $options: 'i' } },
+              ],
+            })
+            .limit(nPerPage)
+            .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+            .sort({ name: 1 });
+        } catch (e) {
+          return null;
+        }
       },
     },
     tripReports: {
