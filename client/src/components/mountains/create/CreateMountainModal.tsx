@@ -8,7 +8,7 @@ import {
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
 import { UserContext } from '../../App';
-import { MountainDatum } from '../../peakLists/create/AddMountains';
+import { MountainDatum } from '../../peakLists/create/MountainSelectionModal';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import {

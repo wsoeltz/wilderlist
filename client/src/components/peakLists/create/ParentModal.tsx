@@ -19,7 +19,7 @@ import {
   MountainDatum,
   MountainItem as PeakListItem,
   Subtitle,
-} from '../../peakLists/create/AddMountains';
+} from '../../peakLists/create/MountainSelectionModal';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import StandardSearch from '../../sharedComponents/StandardSearch';

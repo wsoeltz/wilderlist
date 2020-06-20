@@ -12,7 +12,6 @@ import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
 import { createPortal } from 'react-dom';
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -59,13 +58,9 @@ import {
 import Map, {MapContainer} from '../../sharedComponents/map';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
 import Tooltip from '../../sharedComponents/Tooltip';
-import AddMountains, {MountainDatum} from './AddMountains';
+import AddMountains from './AddMountains';
+import {MountainDatum} from './MountainSelectionModal';
 import ParentModal from './ParentModal';
-
-const AddButtonsContainer = styled(Section)`
-  display: flex;
-  justify-content: space-between;
-`;
 
 export const FLAG_PEAK_LIST = gql`
   mutation($id: ID!, $flag: PeakListFlag) {
@@ -508,6 +503,7 @@ const PeakListForm = (props: Props) => {
           <>
             <BasicIconInText icon={faMountain} />
             {getFluentString('global-text-value-mountains')}
+            {' '}({mountains.length})
           </>
         }
       >
@@ -518,15 +514,11 @@ const PeakListForm = (props: Props) => {
             })}
           </SmallTextNote>
         </Section>
-        <AddButtonsContainer>
-          <ButtonSecondary onClick={() => setParentModalOpen(true)}>
-            {getFluentString('create-peak-list-select-parent-modal-button')}
-          </ButtonSecondary>
-        </AddButtonsContainer>
         <div>
           <AddMountains
             selectedMountains={mountains}
             setSelectedMountains={setMountains}
+            openParentModal={() => setParentModalOpen(true)}
           />
         </div>
       </CollapsibleDetailBox>
@@ -580,6 +572,7 @@ const PeakListForm = (props: Props) => {
           <>
             <BasicIconInText icon={faMountain} style={{opacity: 0.5}}/>
             {getFluentString('create-peak-list-peak-list-optional-mountains')}
+            {' '}({optionalMountains.length})
           </>
         }
         defaultHidden={true}
