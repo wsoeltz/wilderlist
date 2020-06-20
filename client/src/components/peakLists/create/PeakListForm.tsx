@@ -281,7 +281,12 @@ const PeakListForm = (props: Props) => {
   };
   const removeMountainFromList = (mountainToRemove: CoordinateWithDates) => {
     const updatedMtnList = mountains.filter(mtn => mtn.id !== mountainToRemove.id);
-    setMountains([...updatedMtnList]);
+    if (updatedMtnList.length === mountains.length) {
+      const updatedOptionalMtnList = optionalMountains.filter(mtn => mtn.id !== mountainToRemove.id);
+      setOptionalMountains([...updatedOptionalMtnList]);
+    } else {
+      setMountains([...updatedMtnList]);
+    }
   };
   const addRemoveMountains = {
     addText: 'Add to List',
