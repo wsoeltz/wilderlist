@@ -75,29 +75,9 @@ const SeasonLabelEnd = styled(LegendItem)`
   justify-content: center;
 `;
 
-const CenterCoordinatesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-right: auto;
-  margin-left: 1rem;
-`;
-
-const CenterCoordinatesTitle = styled.div`
-  font-size: 0.9rem;
-  font-weight: 600;
-`;
-
-const CenterCoordinatesSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-`;
-
 const ActionButton = styled(ButtonPrimary)`
-  margin-top: 0.5rem;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.3rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
 `;
 
 const AdditionalItemsRoot = styled.div`
@@ -194,6 +174,7 @@ interface Props {
   userId: string | null;
   onAddMountainClick: () => void;
   primaryMountainLegendCopy: undefined | string;
+  customContentBottom: undefined | React.ReactNode;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -205,31 +186,16 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
     showCampsites, toggleCampsites, campsitesOn, userId,
-    onAddMountainClick, primaryMountainLegendCopy,
+    onAddMountainClick, primaryMountainLegendCopy, customContentBottom,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  let latLongLegend: React.ReactElement<any> | null;
-  if (showCenterCrosshairs === true) {
-    const returnLatLongButton = returnLatLongOnClick === undefined ? null : (
+  const latLongLegend = returnLatLongOnClick === undefined || showCenterCrosshairs === false ? null : (
       <ActionButton onClick={() => returnLatLongOnClick(...centerCoords)}>
         {getFluentString('map-set-lat-long-value')}
       </ActionButton>
     );
-    latLongLegend = (
-      <CenterCoordinatesContainer>
-        <CenterCoordinatesTitle>{getFluentString('map-coordinates-at-center')}</CenterCoordinatesTitle>
-        <CenterCoordinatesSection>
-          <span>{getFluentString('global-text-value-latitude')}: {centerCoords[0]}</span>
-          <span>{getFluentString('global-text-value-longitude')}: {centerCoords[1]}</span>
-          {returnLatLongButton}
-        </CenterCoordinatesSection>
-      </CenterCoordinatesContainer>
-    );
-  } else {
-    latLongLegend = null;
-  }
 
   const LocationIcon = yourLocationOn ? Icon : IconDisabled;
   const OtherMountainsIcon = otherMountainsOn ? Icon : IconDisabled;
@@ -431,7 +397,9 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
   if (colorScaleColors.length === 0) {
     return (
       <ColorScaleLegend ref={rootElRef}>
+        {latLongLegend}
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   }
@@ -450,6 +418,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
         {latLongLegend}
         {legendNodes}
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   } else if (colorScaleColors.length < 8) {
@@ -471,6 +440,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </SeasonLabelEnd>
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   } else {
@@ -498,6 +468,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </GridLabelEnd>
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   }

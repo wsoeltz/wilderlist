@@ -99,6 +99,10 @@ export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const Section = styled.div`
+  margin-bottom: 1rem;
+`;
+
 export const SectionTitle = styled.div`
   padding: 0.5rem 0;
   text-transform: uppercase;
@@ -209,6 +213,10 @@ export const DetailBoxFooter = styled.h4`
 export const SmallTextNote = styled.div`
   font-size: 0.8rem;
   color: ${lightBaseColor};
+`;
+
+export const SmallTextNoteWithMargin = styled(SmallTextNote)`
+  margin-bottom: 1rem;
 `;
 
 export const borderRadius = 6; // in px

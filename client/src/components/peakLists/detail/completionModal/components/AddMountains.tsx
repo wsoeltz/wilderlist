@@ -9,8 +9,8 @@ import {
   ButtonPrimary,
   DetailBoxTitle,
   DetailBoxWithMargin,
-  RequiredNote,
   SemiBold,
+  SmallTextNote,
 } from '../../../../../styling/styleUtils';
 import { Mountain, State } from '../../../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
@@ -59,7 +59,7 @@ const AdditionalMountains = (props: Props) => {
         <ListItem key={id}>
           <SemiBold>{name}{stateAbbr}</SemiBold>
           <br />
-          <RequiredNote>{elevation}ft {distance}</RequiredNote>
+          <SmallTextNote>{elevation}ft {distance}</SmallTextNote>
         </ListItem>
       );
   });
@@ -86,9 +86,9 @@ const AdditionalMountains = (props: Props) => {
         {getFluentString('trip-report-add-additional-mtns-title')}
       </DetailBoxTitle>
       <DetailBoxWithMargin>
-        <RequiredNote style={{marginBottom: '0.45rem'}}>
+        <SmallTextNote style={{marginBottom: '0.45rem'}}>
           {getFluentString('trip-report-add-additional-mtns-desc')}
-        </RequiredNote>
+        </SmallTextNote>
         <div>
           {selectedMountainList}
         </div>

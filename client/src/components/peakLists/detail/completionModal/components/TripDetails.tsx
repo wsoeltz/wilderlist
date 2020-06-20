@@ -111,7 +111,7 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
   const conditionsList = dateType === DateType.full ? (
     <>
       <SectionTitle>{getFluentString('trip-report-conditions-title')}</SectionTitle>
-      <CheckboxList>
+      <CheckboxList style={{maxHeight: '100%'}}>
         {conditionsListItems}
       </CheckboxList>
     </>

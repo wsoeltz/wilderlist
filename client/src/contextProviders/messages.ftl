@@ -226,7 +226,7 @@ global-text-value-list-type = {
     [grid] Grid
 }
 
-global-text-value-tier = tier
+global-text-value-difficulty = difficulty
 global-text-value-list-tier = {
   $tier ->
     *[casual] Casual
@@ -236,7 +236,7 @@ global-text-value-list-tier = {
 }
 global-text-value-list-tier-desc =
   <p>
-  Please select a <strong>tier</strong> that corresponds with this lists difficulty.
+  Please select an appropriate difficulty for this list.
   </p>
   <p>
   <strong>Casual</strong> lists tend to have less than 20 peaks and can be completed by most people with an average to low-average fitness level.
@@ -538,7 +538,7 @@ map-no-months = 0
 map-all-months = 12
 
 map-coordinates-at-center = Coordinates at Center
-map-set-lat-long-value = Set Lat/Long to these values
+map-set-lat-long-value = Set Location To Center
 
 map-get-directions = Get Directions
 
@@ -714,14 +714,26 @@ create-mountain-title-create-question-optional = Can't find the optional mountai
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
+create-mountain-name-title = Name of Mountain
+create-mountain-location-title = Location Information
+create-mountain-location-loading = Determining location data...
+create-mountain-location-error = We were unable to automatically determine all of the location information. Please fill out the fields manually.
+
+create-mountain-location-note = Use the map {
+  $position ->
+    [below] below
+    *[right] to the right
+} to automatically set the following values or enter them manually. If your location is near a state border, double check the "State" value as the automatic value will sometimes be wrong.
 create-mountain-select-a-state = Select a State
 create-mountain-latlong-note = as a decimal
 create-mountain-latitude-placeholder = Enter the latitude in decimal format
 create-mountain-longitude-placeholder = Enter the longitude in decimal format
 create-mountain-elevation-placeholder = Enter the elevation in feet
+create-mountain-optional-title = OPTIONAL: Additional Information
+create-mountain-optional-note = The following fields are optional and may be left blank.
 create-mountain-optional-description = Enter an optional description for the mountain here.
 
-create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (highlighted in red) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
+create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (in gray) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
 
 flag-mountain-title = Submit a Flag for { $name }
 flag-mountain-text = If something seems wrong about this mountain, submit a flag and an administrator will take a look at it ASAP
@@ -753,24 +765,26 @@ flag-peak-list-select-issue-description = {
 create-peak-list-title-create = Create List
 
 create-peak-list-title-edit = Edit { $list-name }
-create-peak-list-peak-list-name-label = List Name
+create-peak-list-peak-list-name-label = Hiking List Details
 create-peak-list-peak-list-name-placeholder = i.e. New Hampshire 4000 Footers
-create-peak-list-peak-list-short-name-label = List Short Name
+create-peak-list-peak-list-short-name-label = Abbreviation
 create-peak-list-peak-list-short-name-note = max 8 characters
 create-peak-list-peak-list-short-name-placeholder = i.e. NH48
+create-peak-list-peak-list-details-title = List Details
+create-peak-list-peak-list-mountains-note = Select mountains directly on the map or by clicking {
+  $number-mountains ->
+    [0] 'Add Mountains' 
+    *[other] 'Add/Remove Mountains' 
+} below. You can also copy mountains from an existing list to add to this one.
 create-peak-list-peak-list-description-label = Description
+create-peak-list-peak-description = Enter an optional description for the list here.
+create-peak-list-peak-optional-description = Enter an optional description about the Optional Mountains on this list.
 create-peak-list-check-your-work = I have checked my work to make sure the information is accurate and follows Wilderlist's content policies. I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to create new lists.
-create-peak-list-peak-list-optional-description-label = Optional Peaks Description
-create-peak-list-select-parent-modal-button = Start with an existing list of mountains
+create-peak-list-peak-list-optional-mountains = OPTIONAL: Optional Mountains
+create-peak-list-peak-list-optional-mountains-note = Optional mountains allow for additional mountains to be on this list that do not count towards 100% completion.
+create-peak-list-peak-list-optional-description-label = Optional Mountains Description
+create-peak-list-select-parent-modal-button = Copy Mountains From Another List
 create-peak-list-copy-mountains-button = Copy Mountains
-create-peak-list-parent-mountains-button = Set As Parent
-create-peak-list-parent-or-copy-text =
-  <p>
-    <strong>Copy Mountains</strong> will create an identical set of mountains as the selected list. You will then be free to add or remove mountains as you see fit for your new list. This is ideal if you are looking to create a modified version of an existing list, for example going from a 100-Highest to a 200-Highest selection.
-  </p>
-  <p>
-    <strong>Set as Parent</strong> will keep the mountains identical to the selected parent. You will not be able to make any changes to the selection. This is ideal if you are looking to make a variation, such as creating a Winter or 4-Season version of an existing list. If a parent list is updated, so too will any connected lists.
-  </p>
 
 create-peak-list-has-parent-mountains = This list will reflect the same mountains as the selected parent
 create-peak-list-has-parent-optional-mountains = This list will reflect the same optional mountains as the selected parent

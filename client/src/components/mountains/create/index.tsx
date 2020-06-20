@@ -12,8 +12,8 @@ import {mountainDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
   ContentHeader,
-  ContentLeftLarge,
-  ContentRightSmall,
+  ContentLeftSmall,
+  ContentRightLarge,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import { ExternalResource, Mountain, PermissionTypes, User } from '../../../types/graphQLTypes';
@@ -335,7 +335,7 @@ const MountainCreatePage = (props: Props) => {
 
   return (
     <>
-      <ContentLeftLarge>
+      <ContentLeftSmall>
         <ContentHeader>
           <BackButton />
         </ContentHeader>
@@ -343,11 +343,11 @@ const MountainCreatePage = (props: Props) => {
           {mountainForm}
         </ContentBody>
         {errorModal}
-      </ContentLeftLarge>
-      <ContentRightSmall>
+      </ContentLeftSmall>
+      <ContentRightLarge>
         <ContentBody ref={mapContainerNodeRef}>
         </ContentBody>
-      </ContentRightSmall>
+      </ContentRightLarge>
     </>
   );
 };
