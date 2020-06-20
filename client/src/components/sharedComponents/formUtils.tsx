@@ -45,3 +45,7 @@ export const ResourceContainer = styled.div`
   width: 100%;
   margin-bottom: 1rem;
 `;
+
+export const Sublabel = styled.small`
+  text-transform: none;
+`;

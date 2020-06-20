@@ -99,6 +99,10 @@ export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const Section = styled.div`
+  margin-bottom: 1rem;
+`;
+
 export const SectionTitle = styled.div`
   padding: 0.5rem 0;
   text-transform: uppercase;

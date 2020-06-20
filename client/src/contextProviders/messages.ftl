@@ -226,7 +226,7 @@ global-text-value-list-type = {
     [grid] Grid
 }
 
-global-text-value-tier = tier
+global-text-value-difficulty = difficulty
 global-text-value-list-tier = {
   $tier ->
     *[casual] Casual
@@ -236,7 +236,7 @@ global-text-value-list-tier = {
 }
 global-text-value-list-tier-desc =
   <p>
-  Please select a <strong>tier</strong> that corresponds with this lists difficulty.
+  Please select an appropriate difficulty for this list.
   </p>
   <p>
   <strong>Casual</strong> lists tend to have less than 20 peaks and can be completed by most people with an average to low-average fitness level.
@@ -765,13 +765,18 @@ flag-peak-list-select-issue-description = {
 create-peak-list-title-create = Create List
 
 create-peak-list-title-edit = Edit { $list-name }
-create-peak-list-peak-list-name-label = List Name
+create-peak-list-peak-list-name-label = Hiking List Details
 create-peak-list-peak-list-name-placeholder = i.e. New Hampshire 4000 Footers
-create-peak-list-peak-list-short-name-label = List Short Name
+create-peak-list-peak-list-short-name-label = Abbreviation
 create-peak-list-peak-list-short-name-note = max 8 characters
 create-peak-list-peak-list-short-name-placeholder = i.e. NH48
+create-peak-list-peak-list-details-title = List Details
 create-peak-list-peak-list-description-label = Description
+create-peak-list-peak-description = Enter an optional description for the list here.
+create-peak-list-peak-optional-description = Enter an optional description about the Optional Mountains on this list.
 create-peak-list-check-your-work = I have checked my work to make sure the information is accurate and follows Wilderlist's content policies. I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to create new lists.
+create-peak-list-peak-list-optional-mountains = OPTIONAL: Optional Mountains
+create-peak-list-peak-list-optional-mountains-note = Optional mountains allow for additional mountains to be on this list that do not count towards 100% completion.
 create-peak-list-peak-list-optional-description-label = Optional Peaks Description
 create-peak-list-select-parent-modal-button = Start with an existing list of mountains
 create-peak-list-copy-mountains-button = Copy Mountains

@@ -107,15 +107,7 @@ const SEARCH_MOUNTAINS = gql`
       name
       state {
         id
-        name
         abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
       }
       elevation
       latitude
