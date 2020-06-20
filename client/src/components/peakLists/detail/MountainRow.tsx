@@ -31,10 +31,6 @@ import {
   MountainDatum,
 } from './PeakListDetail';
 
-export const nameColumn = 1;
-export const elevationColumn = 2;
-export const stateColumn = 3;
-export const buttonColumn = 4;
 export const horizontalPadding = 0.6; // in rem
 export const smallPadding = 0.4; // in rem
 export const extraSmallPadding = 0.3; // in rem
@@ -80,7 +76,6 @@ export const TableCellBase = styled.div`
 `;
 
 export const NameCell = styled(TableCellBase)`
-  grid-column: ${nameColumn};
   line-height: 1.4;
 
   @media ${smallColumnMediaQuery} {
@@ -89,7 +84,6 @@ export const NameCell = styled(TableCellBase)`
 `;
 
 const TableCell = styled(TableCellBase)`
-  grid-column: ${elevationColumn};
   justify-content: center;
   color: ${lightBaseColor};
 `;
@@ -138,7 +132,6 @@ const EmptyDate = styled.div`
 `;
 
 const MountainButton = styled(TableCellBase)`
-  grid-column: ${buttonColumn};
   justify-content: flex-end;
 `;
 
@@ -174,12 +167,16 @@ interface Props {
   peakListId: string | null;
   isOtherUser: boolean;
   userId: string | null;
+  disableLinks: undefined | boolean;
+  showCount: undefined | boolean;
+  customAction: undefined | ((mountain: MountainDatum) => void);
+  customActionText: undefined | React.ReactNode;
 }
 
 const MountainRow = (props: Props) => {
   const {
     index, mountain, type, setEditMountainId, peakListId, isOtherUser,
-    userId,
+    userId, disableLinks, showCount, customAction, customActionText,
   } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
@@ -222,19 +219,19 @@ const MountainRow = (props: Props) => {
       peakCompletedContent = (
         <>
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.summer]}}
+            style={{backgroundColor}}
             children={summerDate}
           />
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.fall]}}
+            style={{backgroundColor}}
             children={fallDate}
           />
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.winter]}}
+            style={{backgroundColor}}
             children={winterDate}
           />
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.spring]}}
+            style={{backgroundColor}}
             children={springDate}
           />
         </>
@@ -285,84 +282,84 @@ const MountainRow = (props: Props) => {
         <>
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.january],
+              backgroundColor,
               borderColor,
             }}
             children={januaryDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.february],
+              backgroundColor,
               borderColor,
             }}
             children={februaryDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.march],
+              backgroundColor,
               borderColor,
             }}
             children={marchDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.april],
+              backgroundColor,
               borderColor,
             }}
             children={aprilDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.may],
+              backgroundColor,
               borderColor,
             }}
             children={mayDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.june],
+              backgroundColor,
               borderColor,
             }}
             children={juneDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.july],
+              backgroundColor,
               borderColor,
             }}
             children={julyDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.august],
+              backgroundColor,
               borderColor,
             }}
             children={augustDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.september],
+              backgroundColor,
               borderColor,
             }}
             children={septemberDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.october],
+              backgroundColor,
               borderColor,
             }}
             children={octoberDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.november],
+              backgroundColor,
               borderColor,
             }}
             children={novemberDate}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.december],
+              backgroundColor,
               borderColor,
             }}
             children={decemberDate}
@@ -375,19 +372,19 @@ const MountainRow = (props: Props) => {
       peakCompletedContent = (
         <>
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.summer]}}
+            style={{backgroundColor}}
             children={completeButton(Seasons.summer)}
           />
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.fall]}}
+            style={{backgroundColor}}
             children={completeButton(Seasons.fall)}
           />
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.winter]}}
+            style={{backgroundColor}}
             children={completeButton(Seasons.winter)}
           />
           <TableCell
-            style={{backgroundColor, gridColumn: seasonColumns[Seasons.spring]}}
+            style={{backgroundColor}}
             children={completeButton(Seasons.spring)}
           />
         </>
@@ -397,84 +394,84 @@ const MountainRow = (props: Props) => {
         <>
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.january],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.january)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.february],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.february)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.march],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.march)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.april],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.april)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.may],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.may)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.june],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.june)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.july],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.july)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.august],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.august)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.september],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.september)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.october],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.october)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.november],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.november)}
           />
           <GridCell
             style={{
-              backgroundColor, gridColumn: monthColumns[Months.december],
+              backgroundColor,
               borderColor,
             }}
             children={completeButton(Months.december)}
@@ -490,22 +487,29 @@ const MountainRow = (props: Props) => {
   let columnDetailContent: React.ReactElement<any> | null;
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     const mountainState = mountain.state ? mountain.state.abbreviation : 'N/A';
+    const action = customAction && customActionText ? (
+      <MountainButton style={{backgroundColor}}>
+        <span onClick={() => customAction(mountain)}>{customActionText}</span>
+      </MountainButton>
+    ) : (
+      <MountainButton style={{backgroundColor}}>
+        {peakCompletedContent}
+      </MountainButton>
+    );
     columnDetailContent = (
       <>
-        <TableCell style={{backgroundColor, gridColumn: elevationColumn}}>{elevation}</TableCell>
-        <TableCell style={{backgroundColor, gridColumn: stateColumn}}>
+        <TableCell style={{backgroundColor}}>{elevation}</TableCell>
+        <TableCell style={{backgroundColor}}>
           {mountainState}
         </TableCell>
-        <MountainButton style={{backgroundColor}}>
-          {peakCompletedContent}
-        </MountainButton>
+        {action}
       </>
     );
   } else if (type === PeakListVariants.fourSeason || type === PeakListVariants.grid) {
     columnDetailContent = peakCompletedContent;
   } else {
-    failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
     columnDetailContent = null;
+    failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
   }
 
   const NameContainer = type === PeakListVariants.grid || type === PeakListVariants.fourSeason
@@ -522,15 +526,24 @@ const MountainRow = (props: Props) => {
     desktopURL = mountainDetailLink(mountain.id);
   }
 
+  const count = showCount ? (
+    <TableCell style={{backgroundColor}}>{index + 1}</TableCell>
+  ) : null;
+
+  const name = disableLinks ? <>{mountain.name}</> : (
+    <MountainName
+      mobileURL={mountainDetailLink(mountain.id)}
+      desktopURL={desktopURL}
+    >
+      {mountain.name}
+    </MountainName>
+  );
+
   return (
     <>
+      {count}
       <NameContainer style={{backgroundColor}}>
-        <MountainName
-          mobileURL={mountainDetailLink(mountain.id)}
-          desktopURL={desktopURL}
-        >
-          {mountain.name}
-        </MountainName>
+        {name}
       </NameContainer>
       {columnDetailContent}
     </>

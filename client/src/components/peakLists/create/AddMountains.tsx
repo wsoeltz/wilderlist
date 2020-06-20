@@ -7,8 +7,11 @@ import {
 import {
   ButtonPrimary,
   ButtonSecondary,
+  GhostButton,
   Section,
 } from '../../../styling/styleUtils';
+import { PeakListVariants } from '../../../types/graphQLTypes';
+import MountainTable from '../detail/MountainTable';
 import MountainSelectionModal, {MountainDatum} from './MountainSelectionModal';
 
 const AddButtonsContainer = styled(Section)`
@@ -53,13 +56,27 @@ const AdditionalMountains = (props: Props) => {
     />
   ) : null;
 
-  const selectedMountainsList = selectedMountains.map(mtn => {
-    return (
-      <div>
-        {mtn.name}
-      </div>
-    );
-  });
+  const removeMountainFromList = (mtnToRemove: MountainDatum) => {
+    const updatedMtnList = selectedMountains.filter(mtn => mtn.id !== mtnToRemove.id);
+    setSelectedMountains([...updatedMtnList]);
+  };
+
+  const selectedMountainsTable = selectedMountains.length ? (
+    <div style={{backgroundColor: '#fff'}}>
+      <MountainTable
+        mountains={selectedMountains.map(mtn => ({...mtn, completionDates: null}))}
+        user={null}
+        type={PeakListVariants.standard}
+        peakListId={null}
+        peakListShortName={''}
+        disableLinks={true}
+        showCount={true}
+        customAction={removeMountainFromList}
+        customActionTitle={getFluentString('global-text-value-remove')}
+        customActionText={<GhostButton>×</GhostButton>}
+      />
+    </div>
+  ) : null;
   return (
     <>
       <AddButtonsContainer>
@@ -68,7 +85,7 @@ const AdditionalMountains = (props: Props) => {
         </ButtonPrimary>
         {openParentModalButton}
       </AddButtonsContainer>
-      {selectedMountainsList}
+      {selectedMountainsTable}
       {mountainSelectionModal}
     </>
   );
