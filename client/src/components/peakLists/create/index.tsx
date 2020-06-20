@@ -305,7 +305,7 @@ const PeakListCreatePage = (props: Props) => {
       }
     };
 
-    if (data.peakList && (
+    if (data.peakList && data.peakList.type === PeakListVariants.standard && (
             (data.peakList.author && data.peakList.author.id === userId) ||
             user.permissions === PermissionTypes.admin)
       ) {
@@ -351,7 +351,7 @@ const PeakListCreatePage = (props: Props) => {
         flag,
         tier: tier ? tier : undefined,
         resources: nonNullResources,
-        parent,
+        parent: null,
       };
       peakListForm = (
         <PeakListForm

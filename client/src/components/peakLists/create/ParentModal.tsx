@@ -44,15 +44,7 @@ const SEARCH_PEAK_LISTS = gql`
         name
         state {
           id
-          name
           abbreviation
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
         }
         elevation
         latitude
@@ -63,15 +55,7 @@ const SEARCH_PEAK_LISTS = gql`
         name
         state {
           id
-          name
           abbreviation
-          regions {
-            id
-            name
-            states {
-              id
-            }
-          }
         }
         elevation
         latitude
@@ -128,13 +112,12 @@ const CancelButton = styled(ButtonSecondary)`
 `;
 
 interface Props {
-  setParent: (parentId: PeakListDatum | null) => void;
   copyMountains: (mountainArray: MountainDatum[], optionalMountainsArray: MountainDatum[]) => void;
   onCancel: () => void;
 }
 
 const AreYouSureModal = (props: Props) => {
-  const { setParent,  copyMountains, onCancel } = props;
+  const { copyMountains, onCancel } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -207,13 +190,6 @@ const AreYouSureModal = (props: Props) => {
   };
 
   const handleCopyMountains = () => {
-    setParent(null);
-    copyAndClose();
-  };
-  const handleSetParent = () => {
-    if (selectedList) {
-      setParent(selectedList);
-    }
     copyAndClose();
   };
 
@@ -224,9 +200,6 @@ const AreYouSureModal = (props: Props) => {
       </CancelButton>
       <ButtonPrimary onClick={handleCopyMountains}>
         {getFluentString('create-peak-list-copy-mountains-button')}
-      </ButtonPrimary>
-      <ButtonPrimary onClick={handleSetParent}>
-        {getFluentString('create-peak-list-parent-mountains-button')}
       </ButtonPrimary>
     </ButtonWrapper>
   );
@@ -239,9 +212,6 @@ const AreYouSureModal = (props: Props) => {
       actions={actions}
     >
       <h3>{getFluentString('create-peak-list-select-parent-modal-button')}</h3>
-      <div
-        dangerouslySetInnerHTML={{__html: getFluentString('create-peak-list-parent-or-copy-text')}}
-      />
       {selected}
       <StandardSearch
         placeholder={getFluentString('global-text-value-search-hiking-lists')}

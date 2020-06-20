@@ -197,6 +197,7 @@ export interface Props {
     onRemove: (mountain: CoordinateWithDates) => void;
   };
   primaryMountainLegendCopy?: string;
+  customScaleContentBottom?: React.ReactNode;
 }
 
 const Map = (props: Props) => {
@@ -210,7 +211,7 @@ const Map = (props: Props) => {
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
     defaultCampsitesOn, showCampsites, movingMethod,
-    addRemoveMountains, primaryMountainLegendCopy,
+    addRemoveMountains, primaryMountainLegendCopy, customScaleContentBottom,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -635,6 +636,7 @@ const Map = (props: Props) => {
         userId={userId}
         onAddMountainClick={onAddMountainClick}
         primaryMountainLegendCopy={primaryMountainLegendCopy}
+        customContentBottom={customScaleContentBottom}
         ref={colorScaleRef}
       />
     </Root>

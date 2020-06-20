@@ -174,6 +174,7 @@ interface Props {
   userId: string | null;
   onAddMountainClick: () => void;
   primaryMountainLegendCopy: undefined | string;
+  customContentBottom: undefined | React.ReactNode;
 }
 
 const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -185,7 +186,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
     showCampsites, toggleCampsites, campsitesOn, userId,
-    onAddMountainClick, primaryMountainLegendCopy,
+    onAddMountainClick, primaryMountainLegendCopy, customContentBottom,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -398,6 +399,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
       <ColorScaleLegend ref={rootElRef}>
         {latLongLegend}
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   }
@@ -416,6 +418,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
         {latLongLegend}
         {legendNodes}
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   } else if (colorScaleColors.length < 8) {
@@ -437,6 +440,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </SeasonLabelEnd>
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   } else {
@@ -464,6 +468,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </GridLabelEnd>
         {additionalItems}
+        {customContentBottom}
       </ColorScaleLegend>
     );
   }

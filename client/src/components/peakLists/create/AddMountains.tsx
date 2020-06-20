@@ -15,7 +15,7 @@ import {
   placeholderColor,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import { Mountain } from '../../../types/graphQLTypes';
+import { Mountain, State } from '../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../Utils';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 
@@ -26,7 +26,7 @@ const TwoColumnRoot = styled.div`
   grid-column-gap: 1rem;
 `;
 
-export const EmptyContent = styled.div`
+const EmptyContent = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -87,10 +87,6 @@ export const Subtitle = styled.small`
   color: ${lightBaseColor};
 `;
 
-const SearchContainer = styled.div`
-  margin-top: 1rem;
-`;
-
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
     $targetMountainId: ID,
@@ -125,7 +121,10 @@ const SEARCH_MOUNTAINS = gql`
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
-  state: Mountain['state'];
+  state: null | {
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  };
   elevation: Mountain['elevation'];
   latitude: Mountain['latitude'];
   longitude: Mountain['longitude'];
@@ -150,12 +149,11 @@ interface Variables {
 interface Props {
   selectedMountains: MountainDatum[];
   setSelectedMountains: (mountains: MountainDatum[]) => void;
-  expandedLayout?: boolean;
 }
 
 const AdditionalMountains = (props: Props) => {
   const {
-    selectedMountains, setSelectedMountains, expandedLayout,
+    selectedMountains, setSelectedMountains,
   } = props;
 
   const targetMountainId = selectedMountains.length && selectedMountains[0].id
@@ -185,8 +183,8 @@ const AdditionalMountains = (props: Props) => {
     setSelectedMountains([...updatedMtnList]);
   };
 
-  const emptySearchResults = expandedLayout === true ? null : null;
-  const listStyle: React.CSSProperties = expandedLayout === true ? {margin: 0} : {};
+  const emptySearchResults = null;
+  const listStyle: React.CSSProperties = {margin: 0};
 
   let searchResults: React.ReactElement<any> | null;
   let selectedMountainList: Array<React.ReactElement<any> | null> | null;
@@ -267,58 +265,39 @@ const AdditionalMountains = (props: Props) => {
     </CheckboxList>
   ) : null;
 
-  let output: React.ReactElement<any>;
-  if (expandedLayout === true) {
-    const total = selectedMountainList && selectedMountainList.length ? selectedMountainList.length : 0;
-    const searchResultsContent = searchResults !== null ? searchResults : (
-      <EmptyContent>Use the search bar above to find and add mountains to this list</EmptyContent>
-    );
-    const selectedMountainsContent = selectedMountainsContainer !== null ? selectedMountainsContainer : (
-      <EmptyContent>Selected mountains will show up here. You haven't selected any yet.</EmptyContent>
-    );
-    output = (
-      <TwoColumnRoot>
-        <div style={{gridRow: 1, gridColumn: 1}}>
-          <StandardSearch
-            placeholder={getFluentString('create-peak-list-search-mountain-to-add')}
-            setSearchQuery={setSearchQuery}
-            focusOnMount={false}
-            initialQuery={searchQuery}
-          />
-        </div>
-        <CheckboxContainer style={{gridRow: 2, gridColumn: 1}}>
-          {searchResultsContent}
-        </CheckboxContainer>
-        <div style={{gridRow: 1, gridColumn: 2}}>
-          <StandardSearch
-            placeholder={getFluentString('create-peak-list-selected-mountain-count', {total})}
-            setSearchQuery={setSearchSelectedQuery}
-            focusOnMount={false}
-            initialQuery={searchSelectedQuery}
-          />
-        </div>
-        <CheckboxContainer style={{gridRow: 2, gridColumn: 2}}>
-          {selectedMountainsContent}
-        </CheckboxContainer>
-      </TwoColumnRoot>
-    );
-  } else {
-    output = (
-      <>
-        {selectedMountainsContainer}
-        <SearchContainer>
-          <StandardSearch
-            placeholder={getFluentString('global-text-value-search-mountains')}
-            setSearchQuery={setSearchQuery}
-            focusOnMount={false}
-            initialQuery={searchQuery}
-          />
-        </SearchContainer>
-        {searchResults}
-      </>
-    );
-  }
-  return output;
+  const total = selectedMountainList && selectedMountainList.length ? selectedMountainList.length : 0;
+  const searchResultsContent = searchResults !== null ? searchResults : (
+    <EmptyContent>Use the search bar above to find and add mountains to this list</EmptyContent>
+  );
+  const selectedMountainsContent = selectedMountainsContainer !== null ? selectedMountainsContainer : (
+    <EmptyContent>Selected mountains will show up here. You haven't selected any yet.</EmptyContent>
+  );
+  return (
+    <TwoColumnRoot>
+      <div style={{gridRow: 1, gridColumn: 1}}>
+        <StandardSearch
+          placeholder={getFluentString('create-peak-list-search-mountain-to-add')}
+          setSearchQuery={setSearchQuery}
+          focusOnMount={false}
+          initialQuery={searchQuery}
+        />
+      </div>
+      <CheckboxContainer style={{gridRow: 2, gridColumn: 1}}>
+        {searchResultsContent}
+      </CheckboxContainer>
+      <div style={{gridRow: 1, gridColumn: 2}}>
+        <StandardSearch
+          placeholder={getFluentString('create-peak-list-selected-mountain-count', {total})}
+          setSearchQuery={setSearchSelectedQuery}
+          focusOnMount={false}
+          initialQuery={searchSelectedQuery}
+        />
+      </div>
+      <CheckboxContainer style={{gridRow: 2, gridColumn: 2}}>
+        {selectedMountainsContent}
+      </CheckboxContainer>
+    </TwoColumnRoot>
+  );
 };
 
 export default AdditionalMountains;
