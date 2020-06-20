@@ -26,18 +26,10 @@ import {
   PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
-import { State } from '../../../types/graphQLTypes';
-import {
-  LocationText,
-  MapIcon,
-  SearchAndFilterContainer,
-  SelectButton,
-} from '../../peakLists/list';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, { MountainDatum } from './ListMountains';
-import LocationFilter from './LocationFilter';
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
@@ -87,8 +79,6 @@ const MountainSearchPage = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [locationSearchValue, setLocationSearchValue] = useState<string>('Everywhere');
-  const [selectedState, setSelectedState] = useState<State['id'] | null>(null);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -128,7 +118,7 @@ const MountainSearchPage = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage, state: selectedState },
+    variables: { searchQuery, pageNumber, nPerPage, state: null },
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
@@ -228,23 +218,12 @@ const MountainSearchPage = (props: Props) => {
       </Helmet>
       <ContentLeftSmall>
         <SearchContainer>
-          <SearchAndFilterContainer>
-            <LocationFilter
-              changeLocation={setLocationSearchValue}
-              setSelectedState={setSelectedState}
-            >
-              <SelectButton>
-                <MapIcon icon='map-marker-alt' />
-                <LocationText>{locationSearchValue}</LocationText>
-              </SelectButton>
-            </LocationFilter>
-            <StandardSearch
-              placeholder={getFluentString('global-text-value-search-mountains')}
-              setSearchQuery={searchMountains}
-              focusOnMount={true}
-              initialQuery={initialSearchQuery}
-            />
-          </SearchAndFilterContainer>
+          <StandardSearch
+            placeholder={getFluentString('global-text-value-search-mountains')}
+            setSearchQuery={searchMountains}
+            focusOnMount={true}
+            initialQuery={initialSearchQuery}
+          />
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}
