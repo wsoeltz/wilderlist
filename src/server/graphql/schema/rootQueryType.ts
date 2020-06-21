@@ -49,19 +49,55 @@ const RootQuery = new GraphQLObjectType({
         searchQuery: { type: new GraphQLNonNull(GraphQLString) },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
-        selectionArray: { type: GraphQLList(GraphQLID) },
       },
-      resolve(parentValue, { searchQuery, pageNumber, nPerPage, selectionArray}) {
-        const filter = selectionArray && selectionArray.length
-          ? { searchString: { $regex: searchQuery, $options: 'i' },
-              _id : { $in : selectionArray },
+      async resolve(parentValue, {
+        searchQuery, pageNumber, nPerPage, state, minElevation, maxElevation,
+      }) {
+        try {
+          const searchWords: string[] = searchQuery.toLowerCase().split(' ');
+          const keywordRegex = searchWords.join('|');
+          const targetStates = keywordRegex ? await State.find({
+            $or: [
+              { name: { $regex: keywordRegex, $options: 'i' } },
+              { abbreviation: { $regex: keywordRegex, $options: 'i' } },
+            ],
+          }) : [];
+          let selectionArray: string[] = [];
+          let wordsToIgnore: string[] = [];
+          for (const s of targetStates) {
+            const {name, abbreviation, peakLists} = s;
+            selectionArray = [...selectionArray, ...(peakLists as any as string[])];
+            const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
+            let perfectMatch: string = '';
+            stateKeywords.forEach(k => {
+              const matchingWords = searchWords.filter(w => {
+                if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
+                  perfectMatch = w;
+                }
+                return k.includes(w);
+              });
+              wordsToIgnore = [...wordsToIgnore, ...matchingWords];
+            });
+            if (perfectMatch) {
+              selectionArray = [...(peakLists as any as string[])];
+              wordsToIgnore = [perfectMatch];
+              break;
             }
-          : { searchString: { $regex: searchQuery, $options: 'i' } };
-        return PeakList
-          .find(filter)
+          }
+          const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          return PeakList
+            .find({
+              $or: [
+                { name: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
+                { name: { $regex: searchQuery, $options: 'i' } },
+              ],
+            })
           .limit(nPerPage)
           .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
           .sort({ numUsers: -1, name: 1 });
+        } catch (e) {
+          return null;
+        }
       },
     },
     users: {

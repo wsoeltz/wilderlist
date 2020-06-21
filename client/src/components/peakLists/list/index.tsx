@@ -39,11 +39,10 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
-import LocationFilter from './LocationFilter';
 
 export const SearchAndFilterContainer = styled.div`
   display: grid;
-  grid-template-columns: 100px 1fr auto;
+  grid-template-columns: 1fr auto;
 `;
 
 export const SelectButton = styled(ButtonTertiary)`
@@ -100,13 +99,11 @@ export const SEARCH_PEAK_LISTS = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
-    $selectionArray: [ID],
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
-      selectionArray: $selectionArray,
     ) {
       id
       name
@@ -139,13 +136,11 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
-    $selectionArray: [ID],
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
-      selectionArray: $selectionArray,
     ) {
       id
       name
@@ -176,14 +171,12 @@ export const getRefetchSearchQueries = (userId: string) => [
     pageNumber: 1,
     nPerPage: cardViewNPerPage,
     userId,
-    selectionArray: null,
   }},
   {query: SEARCH_PEAK_LISTS_COMPACT, variables: {
     searchQuery: '',
     pageNumber: 1,
     nPerPage: compactViewNPerPage,
     userId,
-    selectionArray: null,
   }},
 ];
 
@@ -214,7 +207,6 @@ export interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
-  selectionArray: Array<PeakList['id']> | null;
 }
 
 export const ADD_PEAK_LIST_TO_USER = gql`
@@ -281,8 +273,6 @@ const PeakListPage = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [locationSearchValue, setLocationSearchValue] = useState<string>('Everywhere');
-  const [selectionArray, setSelectionArray] = useState<Array<PeakList['id']> | null>(null);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -341,7 +331,6 @@ const PeakListPage = (props: Props) => {
     pageNumber,
     nPerPage,
     userId,
-    selectionArray,
   };
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(graphQLQuery, {
@@ -494,15 +483,6 @@ const PeakListPage = (props: Props) => {
       <ListContainer>
         <SearchContainer>
           <SearchAndFilterContainer>
-            <LocationFilter
-              changeLocation={setLocationSearchValue}
-              setSelectionArray={setSelectionArray}
-            >
-              <SelectButton>
-                <MapIcon icon='map-marker-alt' />
-                <LocationText>{locationSearchValue}</LocationText>
-              </SelectButton>
-            </LocationFilter>
             <StandardSearch
               placeholder={getFluentString('global-text-value-search-hiking-lists')}
               setSearchQuery={searchPeakLists}
