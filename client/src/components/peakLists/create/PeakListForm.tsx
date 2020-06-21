@@ -116,10 +116,11 @@ interface Props extends RouteComponentProps {
   initialData: InitialPeakListDatum;
   onSubmit: (input: FormInput) => void;
   mapContainer: HTMLDivElement | null;
+  states: Array<{id: string, abbreviation: string}>;
 }
 
 const PeakListForm = (props: Props) => {
-  const { initialData, onSubmit, history, mapContainer } = props;
+  const { initialData, onSubmit, history, mapContainer, states } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -524,6 +525,7 @@ const PeakListForm = (props: Props) => {
             selectedMountains={mountains}
             setSelectedMountains={setMountains}
             openParentModal={() => setParentModalOpen(true)}
+            states={states}
           />
         </div>
       </CollapsibleDetailBox>
@@ -610,6 +612,7 @@ const PeakListForm = (props: Props) => {
           <AddMountains
             selectedMountains={optionalMountains}
             setSelectedMountains={setOptionalMountains}
+            states={states}
           />
         </div>
       </CollapsibleDetailBox>

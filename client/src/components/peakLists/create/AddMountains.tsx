@@ -23,11 +23,12 @@ interface Props {
   selectedMountains: MountainDatum[];
   setSelectedMountains: (mountains: MountainDatum[]) => void;
   openParentModal?: () => void;
+  states: Array<{id: string, abbreviation: string}>;
 }
 
 const AdditionalMountains = (props: Props) => {
   const {
-    selectedMountains, setSelectedMountains, openParentModal,
+    selectedMountains, setSelectedMountains, openParentModal, states,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -53,6 +54,7 @@ const AdditionalMountains = (props: Props) => {
     <MountainSelectionModal
       closeAndSetMountains={closeAndSetMountains}
       initialSelectedMountains={selectedMountains}
+      states={states}
     />
   ) : null;
 

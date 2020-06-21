@@ -11,10 +11,13 @@ import usePrevious from '../../../hooks/usePrevious';
 import {
   ButtonPrimary,
   CheckboxList as CheckboxListBase,
+  Label,
+  LabelContainer,
   lightBaseColor,
   lightBlue,
   lightBorderColor,
   placeholderColor,
+  SelectBox,
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import { Mountain, State } from '../../../types/graphQLTypes';
@@ -56,6 +59,23 @@ const CheckboxList = styled(CheckboxListBase)`
   max-height: 100%;
 `;
 
+const SearchResultsContainer = styled.div`
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+`;
+
+const AdvancedFilterContainer = styled.div`
+  background-color: ${tertiaryColor};
+  padding: 0.5rem;
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto auto auto;
+  grid-column-gap: 0.5rem;
+  grid-auto-flow: column;
+`;
+
 export const CheckboxContainer = styled.div`
   background-color: ${tertiaryColor};
   overflow: hidden;
@@ -78,9 +98,9 @@ const TwoColumnRoot = styled.div`
 const EmptyContent = styled.div`
   width: 100%;
   height: 100%;
+  padding-top: 1rem;
   display: flex;
   text-align: center;
-  align-items: center;
   padding: 1rem;
   box-sizing: border-box;
   font-style: italic;
@@ -102,11 +122,17 @@ const SEARCH_MOUNTAINS = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!
+    $state: ID,
+    $minElevation: Float,
+    $maxElevation: Float,
   ) {
     mountains: mountainSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      state: $state,
+      minElevation: $minElevation,
+      maxElevation: $maxElevation,
     ) {
       id
       name
@@ -141,21 +167,28 @@ interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
+  state: string;
+  minElevation: number;
+  maxElevation: number;
 }
 
 interface Props {
   closeAndSetMountains: (mountains: MountainDatum[]) => void;
   initialSelectedMountains: MountainDatum[];
+  states: Array<{id: string, abbreviation: string}>;
 }
 
 const MountainSelectionModal = (props: Props) => {
   const {
-    closeAndSetMountains, initialSelectedMountains,
+    closeAndSetMountains, initialSelectedMountains, states,
   } = props;
 
   const [selectedMountains, setSelectedMountains] = useState<MountainDatum[]>(initialSelectedMountains);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [state, setState] = useState<string>('');
+  const [minElevation, setMinElevation] = useState<string>('');
+  const [maxElevation, setMaxElevation] = useState<string>('');
   const [searchSelectedQuery, setSearchSelectedQuery] = useState<string>('');
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -165,7 +198,10 @@ const MountainSelectionModal = (props: Props) => {
   const nPerPage = 30;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage },
+    variables: {
+      searchQuery, pageNumber, nPerPage, state,
+      minElevation: parseFloat(minElevation), maxElevation: parseFloat(maxElevation),
+    },
   });
 
   const prevData = usePrevious(data);
@@ -196,7 +232,7 @@ const MountainSelectionModal = (props: Props) => {
   let searchResults: React.ReactElement<any> | null;
   if (dataToUse !== undefined ) {
     const { mountains } = dataToUse;
-    if (searchQuery) {
+    if (mountains) {
       const mountainList: Array<React.ReactElement<any>> = [];
       mountains.forEach(mtn => {
         if (!selectedMountains.find(m => m.id === mtn.id)) {
@@ -268,6 +304,12 @@ const MountainSelectionModal = (props: Props) => {
     <EmptyContent>Selected mountains will show up here. You haven't selected any yet.</EmptyContent>
   );
 
+  const stateFilterOptions = sortBy(states, ['abbreviation']).map(s => (
+    <option value={s.id} key={s.id}>
+      {s.abbreviation}
+    </option>
+  ));
+
   const onClose = () => closeAndSetMountains(selectedMountains);
 
   const actions = (
@@ -295,9 +337,51 @@ const MountainSelectionModal = (props: Props) => {
             initialQuery={searchQuery}
           />
         </div>
-        <CheckboxContainer style={{gridRow: 2, gridColumn: 1}}>
-          {searchResultsContent}
-        </CheckboxContainer>
+        <SearchResultsContainer style={{gridRow: 2, gridColumn: 1}}>
+          <AdvancedFilterContainer>
+            <LabelContainer htmlFor={'create-peak-list-mountain-filter-by-state'}>
+              <Label>
+                <small>{'State'}</small>
+              </Label>
+            </LabelContainer>
+            <SelectBox
+              id={'create-peak-list-mountain-filter-by-state'}
+              value={state || ''}
+              onChange={e => setState(e.target.value)}
+              placeholder={getFluentString('global-text-value-tier')}
+            >
+              <option value=''>All</option>
+              {stateFilterOptions}
+            </SelectBox>
+            <LabelContainer>
+              <Label>
+                <small>{'Min Elevation'}</small>
+              </Label>
+            </LabelContainer>
+            <StandardSearch
+              placeholder={''}
+              setSearchQuery={setMinElevation}
+              focusOnMount={false}
+              initialQuery={minElevation}
+              noSearchIcon={true}
+            />
+            <LabelContainer>
+              <Label>
+                <small>{'Max Elevation'}</small>
+              </Label>
+            </LabelContainer>
+            <StandardSearch
+              placeholder={''}
+              setSearchQuery={setMaxElevation}
+              focusOnMount={false}
+              initialQuery={maxElevation}
+              noSearchIcon={true}
+            />
+          </AdvancedFilterContainer>
+          <CheckboxContainer>
+            {searchResultsContent}
+          </CheckboxContainer>
+        </SearchResultsContainer>
         <div style={{gridRow: 1, gridColumn: 2}}>
           <h3>
             {getFluentString('create-peak-list-selected-mountain-count', {total: selectedMountains.length})}

@@ -50,9 +50,7 @@ const RootQuery = new GraphQLObjectType({
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
       },
-      async resolve(parentValue, {
-        searchQuery, pageNumber, nPerPage, state, minElevation, maxElevation,
-      }) {
+      async resolve(parentValue, {searchQuery, pageNumber, nPerPage}) {
         try {
           const searchWords: string[] = searchQuery.toLowerCase().split(' ');
           const keywordRegex = searchWords.join('|');
@@ -131,8 +129,10 @@ const RootQuery = new GraphQLObjectType({
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
         state: { type: GraphQLID },
+        minElevation: { type: GraphQLFloat },
+        maxElevation: { type: GraphQLFloat },
       },
-      async resolve(parentValue, { searchQuery, pageNumber, nPerPage, state}) {
+      async resolve(parentValue, { searchQuery, pageNumber, nPerPage, state, minElevation, maxElevation}) {
         try {
           const searchWords: string[] = searchQuery.toLowerCase().split(' ');
           const keywordRegex = searchWords.join('|');
@@ -142,34 +142,45 @@ const RootQuery = new GraphQLObjectType({
               { abbreviation: { $regex: keywordRegex, $options: 'i' } },
             ],
           }) : [];
-          let stateIds: string[] = state ? [state] : [];
+          let stateIds: string[] = [];
           let wordsToIgnore: string[] = [];
-          for (const s of targetStates) {
-            const {_id, name, abbreviation} = s;
-            stateIds.push(_id);
-            const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
-            let perfectMatch: string = '';
-            stateKeywords.forEach(k => {
-              const matchingWords = searchWords.filter(w => {
-                if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
-                  perfectMatch = w;
-                }
-                return k.includes(w);
+          if (state) {
+            stateIds = [state];
+          } else {
+            for (const s of targetStates) {
+              const {_id, name, abbreviation} = s;
+              stateIds.push(_id);
+              const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
+              let perfectMatch: string = '';
+              stateKeywords.forEach(k => {
+                const matchingWords = searchWords.filter(w => {
+                  if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
+                    perfectMatch = w;
+                  }
+                  return k.includes(w);
+                });
+                wordsToIgnore = [...wordsToIgnore, ...matchingWords];
               });
-              wordsToIgnore = [...wordsToIgnore, ...matchingWords];
-            });
-            if (perfectMatch) {
-              stateIds = [_id];
-              wordsToIgnore = [perfectMatch];
-              break;
+              if (perfectMatch) {
+                stateIds = [_id];
+                wordsToIgnore = [perfectMatch];
+                break;
+              }
             }
           }
           const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          const minElevationFilter = minElevation ? {$gte: (minElevation as number)} : null;
+          const maxElevationFilter = maxElevation ? {$lte: (maxElevation as number)} : null;
+          const elevation = minElevation || maxElevation
+            ? {elevation: {...minElevationFilter, ...maxElevationFilter}} : null;
+          // don't include the default filter if a state has been specified at the args level
+          const defaultFilter = state ? []
+            : [{ name: { $regex: searchQuery, $options: 'i' }, ...elevation }];
           return Mountain
             .find({
               $or: [
-                { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds } },
-                { name: { $regex: searchQuery, $options: 'i' } },
+                { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds }, ...elevation },
+                ...defaultFilter,
               ],
             })
             .limit(nPerPage)

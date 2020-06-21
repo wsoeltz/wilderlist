@@ -36,13 +36,11 @@ const SEARCH_MOUNTAINS = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
-    $state: ID,
   ) {
     mountains: mountainSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
-      state: $state,
     ) {
       id
       name
@@ -63,7 +61,6 @@ interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
-  state: string | null;
 }
 
 interface Props extends RouteComponentProps {
@@ -118,7 +115,7 @@ const MountainSearchPage = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage, state: null },
+    variables: { searchQuery, pageNumber, nPerPage },
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
