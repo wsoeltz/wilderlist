@@ -3,7 +3,18 @@ import {
   ButtonPrimary,
   ButtonWarning,
   CheckboxLabel as CheckboxLabelBase,
+  lightBorderColor,
+  tertiaryColor,
 } from '../../styling/styleUtils';
+import {
+    mobileWidth,
+} from './Modal';
+
+export const Wrapper = styled.div`
+  @media (max-width: ${mobileWidth}px) {
+    padding-bottom: 15vh;
+  }
+`;
 
 export const Root = styled.div`
   display: grid;
@@ -48,4 +59,23 @@ export const ResourceContainer = styled.div`
 
 export const Sublabel = styled.small`
   text-transform: none;
+`;
+
+export const ActionButtons = styled.div`
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: ${tertiaryColor};
+  border: solid 1px ${lightBorderColor};
+  z-index: 100;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding: 0;
+    position: fixed;
+  }
 `;

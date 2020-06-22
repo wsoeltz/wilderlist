@@ -46,10 +46,11 @@ interface Props {
   setSearchQuery: (value: string) => void;
   initialQuery: string;
   focusOnMount: boolean;
+  noSearchIcon?: boolean;
 }
 
 const StandardSearch = (props: Props) => {
-  const { placeholder, setSearchQuery, initialQuery, focusOnMount } = props;
+  const { placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
   const { windowWidth } = useContext(AppContext);
@@ -72,15 +73,18 @@ const StandardSearch = (props: Props) => {
     }
   }, [searchEl, focusOnMount, windowWidth, initialQuery]);
 
+  const searchIcon = noSearchIcon ? null : <SearchIcon icon='search' />;
+
   return (
     <SearchContainer>
-      <SearchIcon icon='search' />
+      {searchIcon}
       <SearchBar
         ref={searchEl}
         type='text'
         placeholder={placeholder}
         onChange={onChange}
         autoComplete={'off'}
+        style={{padding: noSearchIcon ? '0.4rem' : undefined}}
       />
     </SearchContainer>
   );

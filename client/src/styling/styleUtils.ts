@@ -524,6 +524,7 @@ export const SelectBox = styled.select`
   background-size: .65em auto, 100%;
   display: block;
   width: 100%;
+  min-width: 4.25rem;
 
   &:hover {
     cursor: pointer;

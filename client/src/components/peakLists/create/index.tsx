@@ -20,6 +20,7 @@ import {
   PeakList,
   PeakListVariants,
   PermissionTypes,
+  State,
   User,
 } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
@@ -191,6 +192,10 @@ const GET_PEAK_LIST = gql`
       id: $id) {
       ${baseQuery}
     }
+    states {
+      id
+      abbreviation
+    }
   }
 `;
 
@@ -220,6 +225,10 @@ interface SuccessResponse {
     flag: PeakList['flag'];
     status: PeakList['status'];
   };
+  states: Array<{
+    id: State['id']
+    abbreviation: State['abbreviation'],
+  }>;
 }
 
 interface Props extends RouteComponentProps {
@@ -274,7 +283,7 @@ const PeakListCreatePage = (props: Props) => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
-
+    const {states} = data;
     const onSubmit = async (input: FormInput) => {
       try {
         if (id) {
@@ -304,7 +313,6 @@ const PeakListCreatePage = (props: Props) => {
         console.error(e);
       }
     };
-
     if (data.peakList && data.peakList.type === PeakListVariants.standard && (
             (data.peakList.author && data.peakList.author.id === userId) ||
             user.permissions === PermissionTypes.admin)
@@ -358,6 +366,7 @@ const PeakListCreatePage = (props: Props) => {
           initialData={initialData}
           onSubmit={onSubmit}
           mapContainer={mapContainer}
+          states={states}
         />
       );
     } else if (data.peakList) {
@@ -386,6 +395,7 @@ const PeakListCreatePage = (props: Props) => {
           initialData={initialData}
           onSubmit={onSubmit}
           mapContainer={mapContainer}
+          states={states}
         />
       );
     }
@@ -416,7 +426,7 @@ const PeakListCreatePage = (props: Props) => {
         <ContentHeader>
           <BackButton />
         </ContentHeader>
-        <ContentBody>
+        <ContentBody style={{paddingBottom: 0}}>
           {peakListForm}
         </ContentBody>
         {errorModal}

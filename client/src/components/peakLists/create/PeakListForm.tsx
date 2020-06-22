@@ -19,15 +19,12 @@ import {
   BasicIconInText,
   ButtonPrimary,
   ButtonSecondary,
-  CheckboxInput,
-  CheckboxRoot,
   DetailBoxTitle,
   DetailBoxWithMargin,
   GhostButton,
   InputBase,
   Label,
   LabelContainer,
-  Required,
   Section,
   SelectBox,
   SmallTextNote,
@@ -46,14 +43,15 @@ import AreYouSureModal, {
 } from '../../sharedComponents/AreYouSureModal';
 import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
 import {
+  ActionButtons,
   ButtonWrapper,
-  CheckboxLabel,
   DeleteButton,
   FullColumn,
   ResourceContainer,
   Root as Grid,
   SaveButton,
   Sublabel,
+  Wrapper,
 } from '../../sharedComponents/formUtils';
 import Map, {MapContainer} from '../../sharedComponents/map';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
@@ -116,10 +114,11 @@ interface Props extends RouteComponentProps {
   initialData: InitialPeakListDatum;
   onSubmit: (input: FormInput) => void;
   mapContainer: HTMLDivElement | null;
+  states: Array<{id: string, abbreviation: string}>;
 }
 
 const PeakListForm = (props: Props) => {
-  const { initialData, onSubmit, history, mapContainer } = props;
+  const { initialData, onSubmit, history, mapContainer, states } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -137,7 +136,6 @@ const PeakListForm = (props: Props) => {
     useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
   const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
 
-  const [verifyChangesIsChecked, setVerifyChangesIsChecked] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
@@ -194,10 +192,8 @@ const PeakListForm = (props: Props) => {
     }
   });
 
-  const verify = () => (
-    name && shortName && tier && mountains.length &&
-    verifyChangesIsChecked && !loadingSubmit
-  ) ? true : false;
+  const verify = () => name && shortName && tier && mountains.length && !loadingSubmit
+    ? true : false;
 
   const validateAndSave = () => {
     if (verify() && tier) {
@@ -245,6 +241,7 @@ const PeakListForm = (props: Props) => {
   const deleteButton = !initialData.id ? null : (
     <DeleteButton
       onClick={() => setDeleteModalOpen(true)}
+      mobileExtend={true}
     >
       <BasicIconInText icon={faTrash} />
       {deleteButtonText}
@@ -420,228 +417,223 @@ const PeakListForm = (props: Props) => {
 
   return (
     <>
-      <DetailBoxTitle>
-        <BasicIconInText icon={faHiking} />
-        {getFluentString('create-peak-list-peak-list-name-label')}
-      </DetailBoxTitle>
-      <DetailBoxWithMargin>
-        <Section>
-          <LabelContainer htmlFor={'create-peak-list-name'}>
-            <Label>
-              {getFluentString('global-text-value-name')}
-            </Label>
-          </LabelContainer>
-          <InputBase
-            id={'create-peak-list-name'}
-            type={'text'}
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder={getFluentString('create-peak-list-peak-list-name-placeholder')}
-            /* autoComplete='off' is ignored in Chrome, but other strings aren't */
-            autoComplete={'nope'}
-            maxLength={1000}
-          />
-        </Section>
-        <Grid>
-          <div>
-            <LabelContainer htmlFor={'create-peak-list-short-name'}>
+      <Wrapper>
+        <DetailBoxTitle>
+          <BasicIconInText icon={faHiking} />
+          {getFluentString('create-peak-list-peak-list-name-label')}
+        </DetailBoxTitle>
+        <DetailBoxWithMargin>
+          <Section>
+            <LabelContainer htmlFor={'create-peak-list-name'}>
               <Label>
-                {getFluentString('create-peak-list-peak-list-short-name-label')}
-                {' '}
-                <Sublabel>({getFluentString('create-peak-list-peak-list-short-name-note')})</Sublabel>
+                {getFluentString('global-text-value-name')}
               </Label>
             </LabelContainer>
             <InputBase
-              id={'create-peak-list-short-name'}
+              id={'create-peak-list-name'}
               type={'text'}
-              value={shortName}
-              onChange={e => setShortName(e.target.value)}
-              placeholder={getFluentString('create-peak-list-peak-list-short-name-placeholder')}
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder={getFluentString('create-peak-list-peak-list-name-placeholder')}
+              /* autoComplete='off' is ignored in Chrome, but other strings aren't */
+              autoComplete={'nope'}
+              maxLength={1000}
+            />
+          </Section>
+          <Grid>
+            <div>
+              <LabelContainer htmlFor={'create-peak-list-short-name'}>
+                <Label>
+                  {getFluentString('create-peak-list-peak-list-short-name-label')}
+                  {' '}
+                  <Sublabel>({getFluentString('create-peak-list-peak-list-short-name-note')})</Sublabel>
+                </Label>
+              </LabelContainer>
+              <InputBase
+                id={'create-peak-list-short-name'}
+                type={'text'}
+                value={shortName}
+                onChange={e => setShortName(e.target.value)}
+                placeholder={getFluentString('create-peak-list-peak-list-short-name-placeholder')}
+                autoComplete={'off'}
+                maxLength={8}
+              />
+            </div>
+            <div>
+              <LabelContainer htmlFor={'create-peak-list-select-tier'}>
+                <Label>
+                  {getFluentString('global-text-value-difficulty')}
+                </Label>
+                <Tooltip
+                  explanation={
+                    <div dangerouslySetInnerHTML={{__html: getFluentString('global-text-value-list-tier-desc')}} />
+                  }
+                />
+              </LabelContainer>
+              <SelectBox
+                id={'create-peak-list-select-tier'}
+                value={tier || ''}
+                onChange={e => setStringToPeakListTier(e.target.value)}
+                placeholder={getFluentString('global-text-value-tier')}
+              >
+                <option value=''></option>
+                <option value={PeakListTier.casual}>
+                  {getFluentString('global-text-value-list-tier', {
+                    tier: PeakListTier.casual,
+                  })}
+                </option>
+                <option value={PeakListTier.advanced}>
+                  {getFluentString('global-text-value-list-tier', {
+                    tier: PeakListTier.advanced,
+                  })}
+                </option>
+                <option value={PeakListTier.expert}>
+                  {getFluentString('global-text-value-list-tier', {
+                    tier: PeakListTier.expert,
+                  })}
+                </option>
+                <option value={PeakListTier.mountaineer}>
+                  {getFluentString('global-text-value-list-tier', {
+                    tier: PeakListTier.mountaineer,
+                  })}
+                </option>
+              </SelectBox>
+            </div>
+          </Grid>
+        </DetailBoxWithMargin>
+        <CollapsibleDetailBox
+          title={
+            <>
+              <BasicIconInText icon={faMountain} />
+              {getFluentString('global-text-value-mountains')}
+              {' '}({mountains.length})
+            </>
+          }
+        >
+          <Section>
+            <SmallTextNote>
+              {getFluentString('create-peak-list-peak-list-mountains-note', {
+                'number-mountains': mountains.length,
+              })}
+            </SmallTextNote>
+          </Section>
+          <div>
+            <AddMountains
+              selectedMountains={mountains}
+              setSelectedMountains={setMountains}
+              openParentModal={() => setParentModalOpen(true)}
+              states={states}
+            />
+          </div>
+        </CollapsibleDetailBox>
+        {map}
+        <CollapsibleDetailBox
+          title={
+            <>
+              <BasicIconInText icon={faEdit} />
+              {getFluentString('create-mountain-optional-title')}
+            </>
+          }
+          defaultHidden={true}
+        >
+          <div>
+            <LabelContainer htmlFor={'create-peak-list-description'}>
+              <Label>
+                {getFluentString('create-peak-list-peak-list-description-label')}
+              </Label>
+            </LabelContainer>
+            <TextareaBase
+              id={'create-peak-list-description'}
+              rows={6}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder={getFluentString('create-peak-list-peak-description')}
               autoComplete={'off'}
-              maxLength={8}
+              maxLength={5000}
+              style={{marginBottom: '1rem'}}
             />
           </div>
           <div>
-            <LabelContainer htmlFor={'create-peak-list-select-tier'}>
+            <LabelContainer>
               <Label>
-                {getFluentString('global-text-value-difficulty')}
+                {getFluentString('global-text-value-external-resources')}
               </Label>
-              <Tooltip
-                explanation={
-                  <div dangerouslySetInnerHTML={{__html: getFluentString('global-text-value-list-tier-desc')}} />
-                }
-              />
             </LabelContainer>
-            <SelectBox
-              id={'create-peak-list-select-tier'}
-              value={tier || ''}
-              onChange={e => setStringToPeakListTier(e.target.value)}
-              placeholder={getFluentString('global-text-value-tier')}
-            >
-              <option value=''></option>
-              <option value={PeakListTier.casual}>
-                {getFluentString('global-text-value-list-tier', {
-                  tier: PeakListTier.casual,
-                })}
-              </option>
-              <option value={PeakListTier.advanced}>
-                {getFluentString('global-text-value-list-tier', {
-                  tier: PeakListTier.advanced,
-                })}
-              </option>
-              <option value={PeakListTier.expert}>
-                {getFluentString('global-text-value-list-tier', {
-                  tier: PeakListTier.expert,
-                })}
-              </option>
-              <option value={PeakListTier.mountaineer}>
-                {getFluentString('global-text-value-list-tier', {
-                  tier: PeakListTier.mountaineer,
-                })}
-              </option>
-            </SelectBox>
+            {resourceInputs}
+            <div>
+              <ButtonSecondary onClick={e => {
+                e.preventDefault();
+                setExternalResources([...externalResources, {title: '', url: ''}]);
+              }}>
+                {getFluentString('global-text-value-add-external-resources')}
+              </ButtonSecondary>
+            </div>
           </div>
-        </Grid>
-      </DetailBoxWithMargin>
-      <CollapsibleDetailBox
-        title={
-          <>
-            <BasicIconInText icon={faMountain} />
-            {getFluentString('global-text-value-mountains')}
-            {' '}({mountains.length})
-          </>
-        }
-      >
-        <Section>
-          <SmallTextNote>
-            {getFluentString('create-peak-list-peak-list-mountains-note', {
-              'number-mountains': mountains.length,
-            })}
-          </SmallTextNote>
-        </Section>
-        <div>
-          <AddMountains
-            selectedMountains={mountains}
-            setSelectedMountains={setMountains}
-            openParentModal={() => setParentModalOpen(true)}
-          />
-        </div>
-      </CollapsibleDetailBox>
-      {map}
-      <CollapsibleDetailBox
-        title={
-          <>
-            <BasicIconInText icon={faEdit} />
-            {getFluentString('create-mountain-optional-title')}
-          </>
-        }
-        defaultHidden={true}
-      >
-        <div>
-          <LabelContainer htmlFor={'create-peak-list-description'}>
-            <Label>
-              {getFluentString('create-peak-list-peak-list-description-label')}
-            </Label>
-          </LabelContainer>
-          <TextareaBase
-            id={'create-peak-list-description'}
-            rows={6}
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            placeholder={getFluentString('create-peak-list-peak-description')}
-            autoComplete={'off'}
-            maxLength={5000}
-            style={{marginBottom: '1rem'}}
-          />
-        </div>
-        <div>
-          <LabelContainer>
-            <Label>
-              {getFluentString('global-text-value-external-resources')}
-            </Label>
-          </LabelContainer>
-          {resourceInputs}
+        </CollapsibleDetailBox>
+
+        <CollapsibleDetailBox
+          title={
+            <>
+              <BasicIconInText icon={faMountain} style={{opacity: 0.5}}/>
+              {getFluentString('create-peak-list-peak-list-optional-mountains')}
+              {' '}({optionalMountains.length})
+            </>
+          }
+          defaultHidden={true}
+        >
+          <Section>
+            <SmallTextNote>{getFluentString('create-peak-list-peak-list-optional-mountains-note')}</SmallTextNote>
+          </Section>
+          <Section>
+            <LabelContainer htmlFor={'create-peak-list-optional-description'}>
+              <Label>
+                {getFluentString('create-peak-list-peak-list-optional-description-label')}
+              </Label>
+            </LabelContainer>
+            <TextareaBase
+              id={'create-peak-list-optional-description'}
+              rows={6}
+              value={optionalPeaksDescription}
+              onChange={e => setOptionalPeaksDescription(e.target.value)}
+              placeholder={getFluentString('create-peak-list-peak-optional-description')}
+              autoComplete={'off'}
+              maxLength={5000}
+            />
+          </Section>
           <div>
-            <ButtonSecondary onClick={e => {
-              e.preventDefault();
-              setExternalResources([...externalResources, {title: '', url: ''}]);
-            }}>
-              {getFluentString('global-text-value-add-external-resources')}
-            </ButtonSecondary>
+            <LabelContainer>
+              <Label>
+                {getFluentString('peak-list-detail-text-optional-mountains')}
+              </Label>
+            </LabelContainer>
+            <AddMountains
+              selectedMountains={optionalMountains}
+              setSelectedMountains={setOptionalMountains}
+              states={states}
+            />
           </div>
-        </div>
-      </CollapsibleDetailBox>
+        </CollapsibleDetailBox>
+      </Wrapper>
 
-      <CollapsibleDetailBox
-        title={
-          <>
-            <BasicIconInText icon={faMountain} style={{opacity: 0.5}}/>
-            {getFluentString('create-peak-list-peak-list-optional-mountains')}
-            {' '}({optionalMountains.length})
-          </>
-        }
-        defaultHidden={true}
-      >
-        <Section>
-          <SmallTextNote>{getFluentString('create-peak-list-peak-list-optional-mountains-note')}</SmallTextNote>
-        </Section>
-        <Section>
-          <LabelContainer htmlFor={'create-peak-list-optional-description'}>
-            <Label>
-              {getFluentString('create-peak-list-peak-list-optional-description-label')}
-            </Label>
-          </LabelContainer>
-          <TextareaBase
-            id={'create-peak-list-optional-description'}
-            rows={6}
-            value={optionalPeaksDescription}
-            onChange={e => setOptionalPeaksDescription(e.target.value)}
-            placeholder={getFluentString('create-peak-list-peak-optional-description')}
-            autoComplete={'off'}
-            maxLength={5000}
-          />
-        </Section>
-        <div>
-          <LabelContainer>
-            <Label>
-              {getFluentString('peak-list-detail-text-optional-mountains')}
-            </Label>
-          </LabelContainer>
-          <AddMountains
-            selectedMountains={optionalMountains}
-            setSelectedMountains={setOptionalMountains}
-          />
-        </div>
-      </CollapsibleDetailBox>
-
-      <FullColumn>
-        <CheckboxRoot>
-          <CheckboxInput
-            type='checkbox'
-            value={'create-peak-list-verify-changes-are-accurate'}
-            id={'create-peak-list-verify-changes-are-accurate'}
-            checked={verifyChangesIsChecked}
-            onChange={() => setVerifyChangesIsChecked(!verifyChangesIsChecked)}
-          />
-          <CheckboxLabel htmlFor={'create-peak-list-verify-changes-are-accurate'}>
-            {getFluentString('create-peak-list-check-your-work')}
-            <Required children={'*'} />
-           </CheckboxLabel>
-        </CheckboxRoot>
+      <ActionButtons>
         <ButtonWrapper>
           {deleteButton}
-          <GhostButton onClick={history.goBack}>
+          <GhostButton
+            onClick={history.goBack}
+            mobileExtend={true}
+          >
             {getFluentString('global-text-value-modal-cancel')}
           </GhostButton>
           <SaveButton
             disabled={!verify()}
             onClick={validateAndSave}
+            mobileExtend={true}
           >
             <BasicIconInText icon={faCheck} />
             {saveButtonText}
           </SaveButton>
         </ButtonWrapper>
-      </FullColumn>
+      </ActionButtons>
       {parentModal}
       {areYouSureModal}
       {createMountainModal}
