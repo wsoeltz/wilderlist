@@ -109,11 +109,12 @@ interface Props {
   onClose: () => void;
   width: string;
   height: string;
+  contentStyles?: React.CSSProperties;
 }
 
 const Modal = (props: Props) => {
   const {
-    children, onClose, width, height,
+    children, onClose, width, height, contentStyles,
   } = props;
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
   const [isModalRendered, setIsModalRendered] = useState<boolean>(false);
@@ -144,9 +145,9 @@ const Modal = (props: Props) => {
     modal = createPortal((
       <Root>
         <Overlay onClick={onClose} />
-        <Container dimensions={{ width, height }}>
+        <Container dimensions={{width, height}}>
           {mobileBackButton}
-          <Content>
+          <Content style={contentStyles}>
             {children}
           </Content>
           {actions}

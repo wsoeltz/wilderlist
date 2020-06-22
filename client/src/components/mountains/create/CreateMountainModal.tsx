@@ -123,6 +123,7 @@ const CreateMountainModal = (props: Props) => {
       width={'750px'}
       height={'auto'}
       actions={null}
+      contentStyles={{paddingBottom: 0}}
     >
       {modalContent}
     </Modal>

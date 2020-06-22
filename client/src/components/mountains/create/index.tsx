@@ -339,7 +339,7 @@ const MountainCreatePage = (props: Props) => {
         <ContentHeader>
           <BackButton />
         </ContentHeader>
-        <ContentBody>
+        <ContentBody style={{paddingBottom: 0}}>
           {mountainForm}
         </ContentBody>
         {errorModal}

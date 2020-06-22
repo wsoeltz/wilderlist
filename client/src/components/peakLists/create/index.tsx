@@ -426,7 +426,7 @@ const PeakListCreatePage = (props: Props) => {
         <ContentHeader>
           <BackButton />
         </ContentHeader>
-        <ContentBody>
+        <ContentBody style={{paddingBottom: 0}}>
           {peakListForm}
         </ContentBody>
         {errorModal}
