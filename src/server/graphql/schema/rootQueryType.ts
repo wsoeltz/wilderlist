@@ -86,8 +86,8 @@ const RootQuery = new GraphQLObjectType({
           return PeakList
             .find({
               $or: [
-                { name: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
-                { name: { $regex: searchQuery, $options: 'i' } },
+                { searchString: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
+                { searchString: { $regex: searchQuery, $options: 'i' } },
               ],
             })
           .limit(nPerPage)
