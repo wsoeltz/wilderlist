@@ -49,10 +49,12 @@ const RootQuery = new GraphQLObjectType({
         searchQuery: { type: new GraphQLNonNull(GraphQLString) },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+        state: { type: GraphQLID },
       },
-      async resolve(parentValue, {searchQuery, pageNumber, nPerPage}) {
+      async resolve(parentValue, {searchQuery, pageNumber, nPerPage, state}) {
         try {
-          const searchWords: string[] = searchQuery.toLowerCase().split(' ');
+          const trimmedQuery = searchQuery.replace(/\s+/g, ' ').trim();
+          const searchWords: string[] = trimmedQuery.toLowerCase().split(' ');
           const keywordRegex = searchWords.join('|');
           const targetStates = keywordRegex ? await State.find({
             $or: [
@@ -60,34 +62,37 @@ const RootQuery = new GraphQLObjectType({
               { abbreviation: { $regex: keywordRegex, $options: 'i' } },
             ],
           }) : [];
-          let selectionArray: string[] = [];
-          let wordsToIgnore: string[] = [];
-          for (const s of targetStates) {
-            const {name, abbreviation, peakLists} = s;
-            selectionArray = [...selectionArray, ...(peakLists as any as string[])];
-            const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
-            let perfectMatch: string = '';
-            stateKeywords.forEach(k => {
-              const matchingWords = searchWords.filter(w => {
-                if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
-                  perfectMatch = w;
-                }
-                return k.includes(w);
+          let stateIds: string[] = [];
+          const wordsToIgnore: string[][] = [];
+          if (state) {
+            stateIds = [state];
+          } else {
+            for (const s of targetStates) {
+              const {_id, name, abbreviation} = s;
+              let matchingWords: string[] = [];
+              const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
+              stateKeywords.forEach(k => {
+                matchingWords = [...matchingWords, ...searchWords.filter(w => {
+                  return k.includes(w);
+                })];
               });
-              wordsToIgnore = [...wordsToIgnore, ...matchingWords];
-            });
-            if (perfectMatch) {
-              selectionArray = [...(peakLists as any as string[])];
-              wordsToIgnore = [perfectMatch];
-              break;
+              stateIds.push(_id);
+              wordsToIgnore.push([...matchingWords]);
             }
           }
-          const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          const querysWithoutStateName = wordsToIgnore.map(
+            (words, i) => ({
+              searchString: { $regex: searchWords.filter(w1 => !words.find(w2 => w1 === w2)).join(' '), $options: 'i' },
+              states: stateIds[i],
+            }),
+          );
+          // const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
           return PeakList
             .find({
               $or: [
-                { searchString: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
-                { searchString: { $regex: searchQuery, $options: 'i' } },
+                // { searchString: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
+                ...querysWithoutStateName,
+                { searchString: { $regex: trimmedQuery, $options: 'i' } },
               ],
             })
           .limit(nPerPage)
@@ -134,7 +139,8 @@ const RootQuery = new GraphQLObjectType({
       },
       async resolve(parentValue, { searchQuery, pageNumber, nPerPage, state, minElevation, maxElevation}) {
         try {
-          const searchWords: string[] = searchQuery.toLowerCase().split(' ');
+          const trimmedQuery = searchQuery.replace(/\s+/g, ' ').trim();
+          const searchWords: string[] = trimmedQuery.toLowerCase().split(' ');
           const keywordRegex = searchWords.join('|');
           const targetStates = keywordRegex ? await State.find({
             $or: [
@@ -143,43 +149,42 @@ const RootQuery = new GraphQLObjectType({
             ],
           }) : [];
           let stateIds: string[] = [];
-          let wordsToIgnore: string[] = [];
+          const wordsToIgnore: string[][] = [];
           if (state) {
             stateIds = [state];
           } else {
             for (const s of targetStates) {
               const {_id, name, abbreviation} = s;
-              stateIds.push(_id);
+              let matchingWords: string[] = [];
               const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
-              let perfectMatch: string = '';
               stateKeywords.forEach(k => {
-                const matchingWords = searchWords.filter(w => {
-                  if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
-                    perfectMatch = w;
-                  }
+                matchingWords = [...matchingWords, ...searchWords.filter(w => {
                   return k.includes(w);
-                });
-                wordsToIgnore = [...wordsToIgnore, ...matchingWords];
+                })];
               });
-              if (perfectMatch) {
-                stateIds = [_id];
-                wordsToIgnore = [perfectMatch];
-                break;
-              }
+              stateIds.push(_id);
+              wordsToIgnore.push([...matchingWords]);
             }
           }
-          const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          const querysWithoutStateName = wordsToIgnore.map(
+            (words, i) => ({
+              name: { $regex: searchWords.filter(w1 => !words.find(w2 => w1 === w2)).join(' '), $options: 'i' },
+              state: { $in: [stateIds[i]] },
+              ...elevation,
+            }),
+          );
           const minElevationFilter = minElevation ? {$gte: (minElevation as number)} : null;
           const maxElevationFilter = maxElevation ? {$lte: (maxElevation as number)} : null;
           const elevation = minElevation || maxElevation
             ? {elevation: {...minElevationFilter, ...maxElevationFilter}} : null;
           // don't include the default filter if a state has been specified at the args level
           const defaultFilter = state ? []
-            : [{ name: { $regex: searchQuery, $options: 'i' }, ...elevation }];
+            : [{ name: { $regex: trimmedQuery, $options: 'i' }, ...elevation }];
           return Mountain
             .find({
               $or: [
-                { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds }, ...elevation },
+                // { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds }, ...elevation },
+                ...querysWithoutStateName,
                 ...defaultFilter,
               ],
             })
