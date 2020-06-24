@@ -15,18 +15,14 @@ import { Routes } from '../../../routing/routes';
 import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
-  ContentLeftLarge,
   ContentLeftSmall,
   ContentRightLarge,
-  ContentRightSmall,
   SearchContainer,
 } from '../../../styling/Grid';
 import {
   ButtonTertiary,
   FloatingButton,
   FloatingButtonContainer,
-  GhostButton,
-  lightBlue,
   Next,
   PaginationContainer,
   PlaceholderText,
@@ -37,7 +33,6 @@ import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
-import GhostPeakListCard from './GhostPeakListCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
 
 export const SearchAndFilterContainer = styled.div`
@@ -71,26 +66,6 @@ export const LocationText = styled.div`
 export const MapIcon = styled(FontAwesomeIcon)`
   font-size: 1rem;
   opacity: 0.5;
-`;
-
-const ViewModeContainer = styled.div`
-  display: flex;
-`;
-
-const ViewModeButton = styled(GhostButton)`
-  font-size: 0.7rem;
-  padding: 0.1rem 0.4rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  &:first-child {
-    margin-left: 0.5rem;
-  }
-`;
-
-const ListIcon = styled(FontAwesomeIcon)`
-  font-size: 1.1rem;
 `;
 
 export const SEARCH_PEAK_LISTS = gql`
@@ -155,6 +130,18 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
       latestAscent(userId: $userId)
       isActive(userId: $userId)
       stateOrRegionString
+      parent {
+        id
+        type
+      }
+      children {
+        id
+        type
+      }
+      siblings {
+        id
+        type
+      }
     }
   }
 `;
@@ -163,7 +150,7 @@ export const getRefetchSearchQueries = (userId: string) => [
   {query: SEARCH_PEAK_LISTS, variables: {
     searchQuery: '',
     pageNumber: 1,
-    nPerPage: cardViewNPerPage,
+    nPerPage: 15,
     userId,
   }},
   {query: SEARCH_PEAK_LISTS_COMPACT, variables: {
@@ -242,8 +229,6 @@ export enum ViewMode {
   Compact = 'Compact',
 }
 
-const localStorageViewModeVariable = 'listPeakListLocalStorageViewModeVariable';
-const cardViewNPerPage = 15;
 const compactViewNPerPage = 50;
 
 interface Props extends RouteComponentProps {
@@ -254,17 +239,8 @@ interface Props extends RouteComponentProps {
 const PeakListPage = (props: Props) => {
   const { userId, peakListPermissions, match, location, history } = props;
   const { id }: any = match.params;
-  const { query, page, origin } = queryString.parse(location.search);
+  const { query, page } = queryString.parse(location.search);
 
-  const initialViewMode = ( (origin && origin === 'dashboard')
-    || localStorage.getItem(localStorageViewModeVariable) === ViewMode.Card)
-    ? ViewMode.Card : ViewMode.Compact;
-  const initialNPerPage = ( (origin && origin === 'dashboard')
-    || localStorage.getItem(localStorageViewModeVariable) === ViewMode.Card)
-    ? cardViewNPerPage : compactViewNPerPage;
-
-  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
-  const [nPerPage, setNPerPage] = useState<number>(initialNPerPage);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -280,21 +256,6 @@ const PeakListPage = (props: Props) => {
     setPageNumber(newPageNumber);
     const url = searchListDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
-  };
-
-  const setViewToCard = () => {
-    if (viewMode === ViewMode.Compact) {
-      localStorage.setItem(localStorageViewModeVariable, ViewMode.Card);
-      setViewMode(ViewMode.Card);
-      setNPerPage(cardViewNPerPage);
-    }
-  };
-  const setViewToCompact = () => {
-    if (viewMode === ViewMode.Card) {
-      localStorage.setItem(localStorageViewModeVariable, ViewMode.Compact);
-      setViewMode(ViewMode.Compact);
-      setNPerPage(compactViewNPerPage);
-    }
   };
 
   useEffect(() => {
@@ -319,19 +280,15 @@ const PeakListPage = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const graphQLQuery = viewMode === ViewMode.Card ? SEARCH_PEAK_LISTS : SEARCH_PEAK_LISTS_COMPACT;
-  const variant = viewMode === ViewMode.Card ? null : PeakListVariants.standard;
-
-  const graphQLVariables = {
+  const variables = {
     searchQuery,
     pageNumber,
-    nPerPage,
+    nPerPage: compactViewNPerPage,
     userId,
-    variant,
+    variant: PeakListVariants.standard,
   };
-
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(graphQLQuery, {
-    variables: {...graphQLVariables},
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS_COMPACT, {
+    variables,
   });
 
   const listContainerElm = useRef<HTMLDivElement>(null);
@@ -345,16 +302,15 @@ const PeakListPage = (props: Props) => {
 
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER, {
-      refetchQueries: () => [{query: graphQLQuery, variables: {...graphQLVariables}}],
+      refetchQueries: () => [{query: SEARCH_PEAK_LISTS_COMPACT, variables}],
     });
   const beginList = userId ? (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}}) : null;
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
-    const GhostCard = viewMode === ViewMode.Card ? GhostPeakListCard : GhostMountainCard;
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
-      loadingCards.push(<GhostCard key={i} />);
+      loadingCards.push(<GhostMountainCard key={i} />);
     }
     list = <>{loadingCards}</>;
   } else if (error !== undefined) {
@@ -374,7 +330,7 @@ const PeakListPage = (props: Props) => {
       );
     } else {
       const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
-      const nextBtn = peakLists.length === nPerPage ? (
+      const nextBtn = peakLists.length === compactViewNPerPage ? (
         <Next onClick={incrementPageNumber}>
           {getFluentString('global-text-value-navigation-next')}
         </Next> ) : null;
@@ -386,37 +342,19 @@ const PeakListPage = (props: Props) => {
         term: searchQuery,
       });
       let listElm: React.ReactElement<any> | null;
-      if (viewMode === ViewMode.Card) {
-        const {peakLists: peakListData} = data as CardSuccessResponse;
-        listElm = (
-          <ListPeakLists
-            viewMode={ViewMode.Card}
-            peakListData={peakListData}
-            userListData={usersLists}
-            listAction={beginList}
-            actionText={'Begin List'}
-            profileId={undefined}
-            noResultsText={noResultsText}
-            showTrophies={false}
-          />
-        );
-      } else if (viewMode === ViewMode.Compact) {
-        const {peakLists: peakListData} = data as CompactSuccessResponse;
-        listElm = (
-          <ListPeakLists
-            viewMode={ViewMode.Compact}
-            peakListData={peakListData}
-            userListData={usersLists}
-            listAction={beginList}
-            actionText={'Begin List'}
-            profileId={undefined}
-            noResultsText={noResultsText}
-            showTrophies={false}
-          />
-        );
-      } else {
-        listElm = null;
-      }
+      const {peakLists: peakListData} = data as CompactSuccessResponse;
+      listElm = (
+        <ListPeakLists
+          viewMode={ViewMode.Compact}
+          peakListData={peakListData}
+          userListData={usersLists}
+          listAction={beginList}
+          actionText={'Begin List'}
+          profileId={undefined}
+          noResultsText={noResultsText}
+          showTrophies={false}
+        />
+      );
       list = (
         <>
           {listElm}
@@ -444,13 +382,10 @@ const PeakListPage = (props: Props) => {
           userId={userId}
           id={id}
           mountainId={undefined}
-          queryRefetchArray={[{query: graphQLQuery, variables: {...graphQLVariables}}]}
+          queryRefetchArray={[{query: SEARCH_PEAK_LISTS_COMPACT, variables}]}
           setOwnMetaData={true}
         />
       );
-
-  const ListContainer = viewMode === ViewMode.Card ? ContentLeftLarge : ContentLeftSmall;
-  const DetailContainer = viewMode === ViewMode.Card ? ContentRightSmall : ContentRightLarge;
 
   const addMountainButton = userId && peakListPermissions !== -1 ? (
     <FloatingButtonContainer>
@@ -477,7 +412,7 @@ const PeakListPage = (props: Props) => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchListDetailLink('search')} />
       </Helmet>
-      <ListContainer>
+      <ContentLeftSmall>
         <SearchContainer>
           <SearchAndFilterContainer>
             <StandardSearch
@@ -486,38 +421,18 @@ const PeakListPage = (props: Props) => {
               focusOnMount={true}
               initialQuery={initialSearchQuery}
             />
-            <ViewModeContainer>
-              <ViewModeButton
-                onClick={setViewToCard}
-                style={{
-                  backgroundColor: viewMode === ViewMode.Card ? lightBlue : undefined,
-                }}
-              >
-                {getFluentString('global-text-value-detail-view')}
-                <ListIcon icon='th-list' />
-              </ViewModeButton>
-              <ViewModeButton
-                onClick={setViewToCompact}
-                style={{
-                  backgroundColor: viewMode === ViewMode.Compact ? lightBlue : undefined,
-                }}
-              >
-                {getFluentString('global-text-value-list-view')}
-                <ListIcon icon='list' />
-              </ViewModeButton>
-            </ViewModeContainer>
           </SearchAndFilterContainer>
         </SearchContainer>
         <ContentBody ref={listContainerElm}>
           {list}
           {addMountainButton}
         </ContentBody>
-      </ListContainer>
-      <DetailContainer>
+      </ContentLeftSmall>
+      <ContentRightLarge>
         <ContentBody>
           {listDetail}
         </ContentBody>
-      </DetailContainer>
+      </ContentRightLarge>
     </>
   );
 };
