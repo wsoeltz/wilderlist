@@ -33,7 +33,7 @@ import {
   PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
-import { PeakList, User } from '../../../types/graphQLTypes';
+import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
@@ -99,11 +99,13 @@ export const SEARCH_PEAK_LISTS = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
+    $variant: String,
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      variant: $variant,
     ) {
       id
       name
@@ -136,11 +138,13 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
+    $variant: String,
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      variant: $variant,
     ) {
       id
       name
@@ -197,6 +201,7 @@ export interface Variables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
+  variant: PeakListVariants | null;
 }
 
 export const ADD_PEAK_LIST_TO_USER = gql`
@@ -315,12 +320,14 @@ const PeakListPage = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const graphQLQuery = viewMode === ViewMode.Card ? SEARCH_PEAK_LISTS : SEARCH_PEAK_LISTS_COMPACT;
+  const variant = viewMode === ViewMode.Card ? null : PeakListVariants.standard;
 
   const graphQLVariables = {
     searchQuery,
     pageNumber,
     nPerPage,
     userId,
+    variant,
   };
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(graphQLQuery, {

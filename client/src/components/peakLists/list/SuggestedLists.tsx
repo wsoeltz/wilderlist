@@ -81,6 +81,7 @@ const SuggestedLists = (props: Props) => {
     pageNumber: 1,
     nPerPage: 4,
     userId,
+    variant: null,
     selectionArray: getSelectionArray(usersState),
   };
 

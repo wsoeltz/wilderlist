@@ -50,12 +50,28 @@ const RootQuery = new GraphQLObjectType({
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
         state: { type: GraphQLID },
+        variant: { type: GraphQLString },
       },
-      async resolve(parentValue, {searchQuery, pageNumber, nPerPage, state}) {
+      async resolve(parentValue, {searchQuery, pageNumber, nPerPage, state, variant}) {
+        const variants = ['winter', 'fourSeason', 'grid'];
         try {
           const trimmedQuery = searchQuery.replace(/\s+/g, ' ').trim();
           const searchWords: string[] = trimmedQuery.toLowerCase().split(' ');
-          const keywordRegex = searchWords.join('|');
+          const matchedVariantWords: string[] = [];
+          const matchedVariants = variants.filter(t => searchWords.find(w => {
+            if (w.length >= 3 && t.toLowerCase().includes(w.toLowerCase())) {
+              matchedVariantWords.push(w);
+              return true;
+            } else {
+              return false;
+            }
+          }));
+          if (variant && !matchedVariantWords.length) {
+            matchedVariants.push(variant);
+          }
+          const variantsFilter = matchedVariants.length ? {type: { $in: matchedVariants }} : null;
+          const defaultQueryWords = searchWords.filter(w => !matchedVariantWords.includes(w));
+          const keywordRegex = defaultQueryWords.join('|');
           const targetStates = keywordRegex ? await State.find({
             $or: [
               { name: { $regex: keywordRegex, $options: 'i' } },
@@ -84,15 +100,14 @@ const RootQuery = new GraphQLObjectType({
             (words, i) => ({
               searchString: { $regex: searchWords.filter(w1 => !words.find(w2 => w1 === w2)).join(' '), $options: 'i' },
               states: stateIds[i],
+              ...variantsFilter,
             }),
           );
-          // const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
           return PeakList
             .find({
               $or: [
-                // { searchString: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
                 ...querysWithoutStateName,
-                { searchString: { $regex: trimmedQuery, $options: 'i' } },
+                { searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' }, ...variantsFilter },
               ],
             })
           .limit(nPerPage)
@@ -183,7 +198,6 @@ const RootQuery = new GraphQLObjectType({
           return Mountain
             .find({
               $or: [
-                // { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds }, ...elevation },
                 ...querysWithoutStateName,
                 ...defaultFilter,
               ],
