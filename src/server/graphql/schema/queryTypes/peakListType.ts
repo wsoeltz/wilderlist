@@ -15,6 +15,7 @@ import {
   RawCompletedMountain,
 } from '../../../utilities/peakListUtils';
 import { PeakList as IPeakList } from '../../graphQLTypes';
+import {getStatesOrRegion} from '../../Utils';
 import MountainType, {CreatedItemStatus} from './mountainType';
 import StateType from './stateType';
 import UserType from './userType';
@@ -410,6 +411,28 @@ const PeakListType: any = new GraphQLObjectType({
             }
           }
           return userListData.includes(parentValue._id.toString());
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    stateOrRegionString: {
+      type: GraphQLString,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {peakListLoader, stateLoader, regionLoader}, user}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.states && res.states.length) {
+              const statesData = await stateLoader.loadMany(res.states);
+              return getStatesOrRegion(statesData, regionLoader, parentValue._id);
+            }
+          } else {
+            const statesData = await stateLoader.loadMany(parentValue.states);
+            return getStatesOrRegion(statesData, regionLoader, parentValue._id);
+          }
         } catch (err) {
           return err;
         }

@@ -31,7 +31,6 @@ import {
 } from '../list';
 import {
   BigText,
-  getStatesOrRegion,
   TextRight,
 } from '../list/PeakListCard';
 import PeakProgressBar from '../list/PeakProgressBar';
@@ -41,7 +40,6 @@ import FlagModal from './FlagModal';
 import {
   MountainDatum,
   PeakListDatum,
-  StateDatum,
   UserDatum,
 } from './PeakListDetail';
 
@@ -123,7 +121,6 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
 
 interface Props {
   mountains: MountainDatum[];
-  statesArray: StateDatum[];
   peakList: PeakListDatum;
   user: UserDatum | null;
   completedAscents: CompletedMountain[];
@@ -135,8 +132,8 @@ interface Props {
 
 const Header = (props: Props) => {
   const {
-    mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
+    mountains, user, peakList: { name, id, shortName, type, parent, stateOrRegionString}, peakList,
+    completedAscents, comparisonUser, comparisonAscents, isOtherUser,
     queryRefetchArray,
   } = props;
 
@@ -342,7 +339,7 @@ const Header = (props: Props) => {
       <TitleContent>
         <Title>{name}{getType(type)}</Title>
         <ListInfo>
-          {getStatesOrRegion(statesArray, getFluentString)}
+          {stateOrRegionString}
         </ListInfo>
         <ListInfo>
           {listCount} {getFluentString('peak-list-text-total-ascents')}

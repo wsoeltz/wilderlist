@@ -23,9 +23,6 @@ import {
 } from '../../../Utils';
 import { getType } from '../Utils';
 import { CompactPeakListDatum } from './ListPeakLists';
-import {
-  getStatesOrRegion,
-} from './PeakListCard';
 
 const Card = styled(CardBase)`
   border-left-width: 8px;
@@ -48,7 +45,7 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, states},
+    peakList: {id, name, shortName, type, stateOrRegionString},
     active, listAction, actionText, totalRequiredAscents,
     numCompletedAscents,
   } = props;
@@ -62,8 +59,6 @@ const PeakListCard = (props: Props) => {
       listAction(id);
     }
   };
-
-  const statesArray = states ? states : [];
 
   let cornerContent: React.ReactElement<any> | null;
   if (active === true) {
@@ -95,7 +90,7 @@ const PeakListCard = (props: Props) => {
           </CardTitle>
           <CardSubtitle>
             <CollapsedParagraph>
-              {getStatesOrRegion(statesArray, getFluentString)}
+              {stateOrRegionString}
             </CollapsedParagraph>
             <CollapsedParagraph>
               {cornerContent}

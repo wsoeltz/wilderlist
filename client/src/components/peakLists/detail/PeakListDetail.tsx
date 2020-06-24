@@ -31,7 +31,6 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
-  Region,
   State,
   User,
 } from '../../../types/graphQLTypes';
@@ -51,7 +50,6 @@ import {
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
 import UserNote from '../../sharedComponents/UserNote';
-import { getStatesOrRegion } from '../list/PeakListCard';
 import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
@@ -152,18 +150,7 @@ const GET_PEAK_LIST = gql`
           abbreviation
         }
       }
-      states {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
+      stateOrRegionString
     }
     user(id: $userId) {
       id
@@ -186,19 +173,6 @@ const GET_PEAK_LIST = gql`
     }
   }
 `;
-
-export interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  abbreviation: State['abbreviation'];
-  regions: Array<{
-    id: Region['id'];
-    name: Region['name'];
-    states: Array<{
-      id: State['id'],
-    }>
-  }>;
-}
 
 export interface MountainDatum {
   id: Mountain['id'];
@@ -228,7 +202,7 @@ export interface PeakListDatum {
   resources: PeakList['resources'];
   mountains: MountainDatum[] | null;
   optionalMountains: MountainDatum[] | null;
-  states: StateDatum[] | null;
+  stateOrRegionString: PeakList['stateOrRegionString'];
   parent: null | ListVariantDatum;
   children: null | ListVariantDatum[];
   siblings: null | ListVariantDatum[];
@@ -470,7 +444,6 @@ const PeakListDetail = (props: Props) => {
     body = null;
   } else if (data !== undefined) {
     const { peakList, user } = data;
-    let statesArray: StateDatum[] = [];
     if (!peakList) {
       return (
         <PlaceholderText>
@@ -480,20 +453,16 @@ const PeakListDetail = (props: Props) => {
     } else {
       const {
         type, description, optionalPeaksDescription, resources, children, parent, siblings,
+        stateOrRegionString,
       } = peakList;
       const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
       const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
-
-      if (peakList.states && peakList.states.length) {
-        statesArray = [...peakList.states];
-      }
 
       let paragraphText: React.ReactElement<any>;
       if (description && description.length) {
         paragraphText = <p>{description}</p>;
       } else if (requiredMountains && requiredMountains.length) {
-        const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
-        const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+        const isStateOrRegion = isState(stateOrRegionString) === true ? 'state' : 'region';
         const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
         paragraphText = (
           <IntroText
@@ -501,7 +470,7 @@ const PeakListDetail = (props: Props) => {
             listName={peakList.name}
             numberOfPeaks={requiredMountains.length}
             isStateOrRegion={isStateOrRegion}
-            stateRegionName={FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions)}
+            stateRegionName={FORMAT_STATE_REGION_FOR_TEXT(stateOrRegionString)}
             highestMountain={mountainsSortedByElevation[0]}
             smallestMountain={mountainsSortedByElevation[mountainsSortedByElevation.length - 1]}
             type={type}
@@ -759,7 +728,6 @@ const PeakListDetail = (props: Props) => {
             mountains={requiredMountains}
             peakList={peakList}
             completedAscents={userMountains}
-            statesArray={statesArray}
             isOtherUser={isOtherUser}
             queryRefetchArray={queryRefetchArray}
           />

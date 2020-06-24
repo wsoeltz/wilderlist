@@ -1,5 +1,5 @@
 import { GetString } from 'fluent-react/compat';
-import { sortBy } from 'lodash';
+// import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
 import {
@@ -22,10 +22,10 @@ import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
-import {
-  RegionDatum,
-  StateDatum,
-} from './ListPeakLists';
+// import {
+//   RegionDatum,
+//   StateDatum,
+// } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
 const LinkWrapper = styled(DynamicLink)`
@@ -108,56 +108,56 @@ export const BigText = styled.span`
   font-weight: ${boldFontWeight};
 `;
 
-export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
-  const sortedStates = sortBy(statesArray, ['name']);
-  // If there are 3 or less states, just show the states
-  if (sortedStates.length === 1) {
-    return sortedStates[0].name;
-  } else if (sortedStates.length === 2) {
-    return sortedStates[0].name + ' & ' + sortedStates[1].name;
-  } else if (sortedStates.length === 3) {
-    return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
-  } else if (sortedStates.length > 2) {
-    const regionsArray: RegionDatum[] = [];
-    sortedStates.forEach(({regions}) => {
-      regions.forEach(region => {
-        if (region && regionsArray.filter(({id}) => id === region.id).length === 0) {
-          regionsArray.push(region);
-        }
-      });
-    });
-    // Else if they all belong to the same region, show that region
-    if (regionsArray.length === 0) {
-      return null;
-    } else if (regionsArray.length === 1) {
-      return regionsArray[0].name;
-    } else {
-      const inclusiveRegions = regionsArray.filter(
-        (region) => sortedStates.every(({regions}) => regions.find(_region => _region && region.id === _region.id)));
-      if (inclusiveRegions.length === 1) {
-        return inclusiveRegions[0].name;
-      } else if (inclusiveRegions.length > 1) {
-        // If they all belong to more than one region, show the more exclusive one
-        const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
-        return exclusiveRegions[0].name;
-      } else if (inclusiveRegions.length === 0) {
-        // if there are no inclusive regions
-        if (regionsArray.length === 2) {
-          // if only 2 regions, show them both
-          return regionsArray[0].name + ' & ' + regionsArray[1].name;
-        } else if (regionsArray.length === 3) {
-          // if only 3 regions, show them all
-          return regionsArray[0].name + ', ' + regionsArray[1].name + ' & ' + regionsArray[2].name;
-        } else {
-          // otherwise just say Across the US
-          return getFluentString('peak-list-text-across-the-us');
-        }
-      }
-    }
-  }
-  // Else list all the regions
-  return null;
-};
+// export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
+//   const sortedStates = sortBy(statesArray, ['name']);
+//   // If there are 3 or less states, just show the states
+//   if (sortedStates.length === 1) {
+//     return sortedStates[0].name;
+//   } else if (sortedStates.length === 2) {
+//     return sortedStates[0].name + ' & ' + sortedStates[1].name;
+//   } else if (sortedStates.length === 3) {
+//     return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
+//   } else if (sortedStates.length > 2) {
+//     const regionsArray: RegionDatum[] = [];
+//     sortedStates.forEach(({regions}) => {
+//       regions.forEach(region => {
+//         if (region && regionsArray.filter(({id}) => id === region.id).length === 0) {
+//           regionsArray.push(region);
+//         }
+//       });
+//     });
+//     // Else if they all belong to the same region, show that region
+//     if (regionsArray.length === 0) {
+//       return null;
+//     } else if (regionsArray.length === 1) {
+//       return regionsArray[0].name;
+//     } else {
+//       const inclusiveRegions = regionsArray.filter(
+//         (region) => sortedStates.every(({regions}) => regions.find(_region => _region && region.id === _region.id)));
+//       if (inclusiveRegions.length === 1) {
+//         return inclusiveRegions[0].name;
+//       } else if (inclusiveRegions.length > 1) {
+//         // If they all belong to more than one region, show the more exclusive one
+//         const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
+//         return exclusiveRegions[0].name;
+//       } else if (inclusiveRegions.length === 0) {
+//         // if there are no inclusive regions
+//         if (regionsArray.length === 2) {
+//           // if only 2 regions, show them both
+//           return regionsArray[0].name + ' & ' + regionsArray[1].name;
+//         } else if (regionsArray.length === 3) {
+//           // if only 3 regions, show them all
+//           return regionsArray[0].name + ', ' + regionsArray[1].name + ' & ' + regionsArray[2].name;
+//         } else {
+//           // otherwise just say Across the US
+//           return getFluentString('peak-list-text-across-the-us');
+//         }
+//       }
+//     }
+//   }
+//   // Else list all the regions
+//   return null;
+// };
 
 interface Props {
   peakList: CardPeakListDatum;
@@ -174,7 +174,7 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, parent, states},
+    peakList: {id, name, shortName, type, parent, stateOrRegionString},
     active, listAction, actionText, numCompletedAscents,
     totalRequiredAscents, profileId, dashboardView,
     latestDate, setActionDisabled,
@@ -235,15 +235,13 @@ const PeakListCard = (props: Props) => {
       </>
     );
   } else {
-    const statesArray = states && states.length ? [...states] : [];
-
     listInfoContent = (
       <>
         <span>
           <BigText>{totalRequiredAscents}</BigText>
           {getFluentString('peak-list-text-total-ascents')}
         </span>
-        <TextRight>{getStatesOrRegion(statesArray, getFluentString)}</TextRight>
+        <TextRight>{stateOrRegionString}</TextRight>
       </>
     );
   }

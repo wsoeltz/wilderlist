@@ -68,7 +68,7 @@ export interface CardPeakListDatum {
   latestAscent: PeakList['latestAscent'];
   isActive: PeakList['isActive'];
   parent: null | {id: PeakList['id']};
-  states: null | StateDatum[];
+  stateOrRegionString: PeakList['stateOrRegionString'];
 }
 
 export interface CompactPeakListDatum {
@@ -80,7 +80,7 @@ export interface CompactPeakListDatum {
   numCompletedAscents: PeakList['numCompletedAscents'];
   latestAscent: PeakList['latestAscent'];
   isActive: PeakList['isActive'];
-  states: null | StateDatum[];
+  stateOrRegionString: PeakList['stateOrRegionString'];
 }
 
 interface BaseProps {

@@ -150,17 +150,7 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
       numCompletedAscents(userId: $userId)
       latestAscent(userId: $userId)
       isActive(userId: $userId)
-      states {
-        id
-        name
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
+      stateOrRegionString
     }
   }
 `;
