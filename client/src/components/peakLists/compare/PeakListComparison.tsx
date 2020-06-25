@@ -25,6 +25,18 @@ const GET_PEAK_LIST = gql`
       type
       parent {
         id
+        name
+        type
+      }
+      children {
+        id
+        name
+        type
+      }
+      siblings {
+        id
+        name
+        type
       }
       stateOrRegionString
       mountains {
@@ -158,6 +170,7 @@ const ComparePeakListPage = (props: Props) => {
             user={user}
             me={me}
             mountains={mountains}
+            peakListId={peakListId}
           />
         </>
       );

@@ -4,15 +4,16 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { mountainDetailLink } from '../../../routing/Utils';
+import { comparePeakListWithMountainDetailLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   baseColor,
   lightBorderColor,
+  SemiBold,
   successColor,
 } from '../../../styling/styleUtils';
 import { Mountain } from '../../../types/graphQLTypes';
+import DynamicLink from '../../sharedComponents/DynamicLink';
 import {
-  MountainName,
   NameCell,
   TableCellBase,
 } from '../detail/MountainRow';
@@ -35,11 +36,16 @@ interface Props {
   userMountains: AscentGoals[];
   myMountains: AscentGoals[];
   mountain: MountainDatumLite;
+  friendId: string;
+  peakListId: string;
   index: number;
 }
 
-const ComparisonTable = (props: Props) => {
-  const { mountain, index, myMountains, userMountains } = props;
+const ComparisonRow = (props: Props) => {
+  const {
+    mountain, index, myMountains, userMountains,
+    friendId, peakListId,
+  } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -96,11 +102,12 @@ const ComparisonTable = (props: Props) => {
   return (
     <>
       <NameCell style={{backgroundColor}}>
-        <MountainName
-          to={mountainDetailLink(mountain.id)}
+        <DynamicLink
+          desktopURL={comparePeakListWithMountainDetailLink(friendId, peakListId, mountain.id)}
+          mobileURL={mountainDetailLink(mountain.id)}
          >
-          {mountain.name}
-        </MountainName>
+          <SemiBold>{mountain.name}</SemiBold>
+        </DynamicLink>
       </NameCell>
       <TableCell style={{ gridColumn: 2, backgroundColor}}>
         <span style={userStyles}>
@@ -117,4 +124,4 @@ const ComparisonTable = (props: Props) => {
 
 };
 
-export default ComparisonTable;
+export default ComparisonRow;

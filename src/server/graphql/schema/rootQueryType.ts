@@ -51,8 +51,9 @@ const RootQuery = new GraphQLObjectType({
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
         state: { type: GraphQLID },
         variant: { type: GraphQLString },
+        selectionArray: { type: GraphQLList(GraphQLID) },
       },
-      async resolve(parentValue, {searchQuery, pageNumber, nPerPage, state, variant}) {
+      async resolve(parentValue, {searchQuery, pageNumber, nPerPage, state, variant, selectionArray}) {
         const variants = ['winter', 'fourSeason', 'grid'];
         try {
           const trimmedQuery = searchQuery.replace(/\s+/g, ' ').trim();
@@ -96,18 +97,25 @@ const RootQuery = new GraphQLObjectType({
               wordsToIgnore.push([...matchingWords]);
             }
           }
+          const limitSelection = selectionArray && selectionArray.length
+            ? {_id : { $in : selectionArray }} : null;
           const querysWithoutStateName = wordsToIgnore.map(
             (words, i) => ({
               searchString: { $regex: searchWords.filter(w1 => !words.find(w2 => w1 === w2)).join(' '), $options: 'i' },
               states: stateIds[i],
               ...variantsFilter,
+              ...limitSelection,
             }),
           );
           return PeakList
             .find({
               $or: [
                 ...querysWithoutStateName,
-                { searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' }, ...variantsFilter },
+                {
+                  searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' },
+                  ...variantsFilter,
+                  ...limitSelection,
+                },
               ],
             })
           .limit(nPerPage)

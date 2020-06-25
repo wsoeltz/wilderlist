@@ -65,6 +65,7 @@ export const GET_USERS_PEAK_LISTS = gql`
           id
         }
         numMountains
+        stateOrRegionString
         numCompletedAscents(userId: $userId)
         latestAscent(userId: $userId)
         isActive(userId: $userId)

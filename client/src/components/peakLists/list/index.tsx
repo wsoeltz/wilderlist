@@ -75,17 +75,20 @@ export const SEARCH_PEAK_LISTS = gql`
     $pageNumber: Int!,
     $nPerPage: Int!,
     $variant: String,
+    $selectionArray: [ID],
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
       variant: $variant,
+      selectionArray: $selectionArray,
     ) {
       id
       name
       shortName
       type
+      stateOrRegionString
       parent {
         id
       }
@@ -93,17 +96,6 @@ export const SEARCH_PEAK_LISTS = gql`
       numCompletedAscents(userId: $userId)
       latestAscent(userId: $userId)
       isActive(userId: $userId)
-      states {
-        id
-        name
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
     }
   }
 `;

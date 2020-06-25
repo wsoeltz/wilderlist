@@ -139,12 +139,15 @@ export const LinkButton = styled.button`
   ${linkStyles}
 `;
 
-export const Card = styled.div`
+export const CardBase = styled.div`
   padding: 0.7rem;
   border: solid 1px ${lightBorderColor};
   box-shadow: 0px 0px 3px -1px #b5b5b5;
-  margin-bottom: 2rem;
   background-color: #fff;
+`;
+
+export const Card = styled(CardBase)`
+  margin-bottom: 2rem;
 
   &:hover {
     cursor: pointer;
@@ -178,8 +181,12 @@ export const StackableCardFooter = styled(Card)`
 `;
 
 const cardFooterLinkStyles = `
-  display: block;
+  display: flex;
   text-align: center;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
   width: 25%;
   font-size: 0.875rem;
   line-height: 1;
@@ -402,6 +409,23 @@ export const ButtonSecondaryLink = styled(DynamicLink)`
   }
 `;
 
+export const GhostButtonLink = styled(DynamicLink)`
+  padding: 0.6rem;
+  text-transform: uppercase;
+  color: ${secondaryColor};
+  text-align: center;
+  border-radius: ${borderRadius}px;
+  font-weight: ${semiBoldFontBoldWeight};
+  font-size: 0.8rem;
+  background-color: transparent;
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    color: ${secondaryHoverColor};
+  }
+`;
+
 export const GhostButton = styled(ButtonBase)`
   color: ${secondaryColor};
   background-color: transparent;
@@ -409,6 +433,15 @@ export const GhostButton = styled(ButtonBase)`
   &:hover {
     color: ${secondaryHoverColor};
   }
+`;
+
+export const CompactGhostButton = styled(GhostButton)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
+`;
+export const CompactGhostButtonLink = styled(GhostButtonLink)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
 `;
 
 export const FloatingButtonContainer = styled.div`

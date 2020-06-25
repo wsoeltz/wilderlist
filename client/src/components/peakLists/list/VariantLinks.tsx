@@ -24,7 +24,6 @@ import {
   mobileSize,
 } from '../../../Utils';
 import {AppContext} from '../../App';
-import { CompactPeakListDatum } from './ListPeakLists';
 
 const replaceCurrentPageId = (url: string, currentId: string, newId: string) => url.replace(currentId, newId);
 
@@ -72,8 +71,18 @@ const variantsIconMapping = [
   faTh,
 ];
 
+interface PeakListDatum {
+  id: PeakList['id'];
+  name: PeakList['name'];
+  shortName: PeakList['shortName'];
+  type: PeakListVariants;
+  parent: null | {id: PeakList['id'], type: PeakList['type']};
+  children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
+  siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
+}
+
 interface Props {
-  peakList: CompactPeakListDatum;
+  peakList: PeakListDatum;
   queryRefetchArray: Array<{query: any, variables: any}>;
   grayText?: boolean;
 }
@@ -92,9 +101,9 @@ const VariantLinks = (props: Props) => {
   const history = useHistory();
   const match = useRouteMatch<{peakListId: string | undefined, id: string | undefined}>();
   let currentListId: string | null;
-  if (match.params.peakListId && match.params.peakListId) {
+  if (match.params.peakListId && match.params.peakListId && match.params.peakListId !== 'search') {
     currentListId = match.params.peakListId;
-  } else if (match.params.id && match.params.id) {
+  } else if (match.params.id && match.params.id && match.params.id !== 'search') {
     currentListId = match.params.id;
   } else {
     currentListId = null;
@@ -106,9 +115,11 @@ const VariantLinks = (props: Props) => {
 
   const [loadingNewList, setLoadingNewList] = useState<boolean>(false);
 
-  const parent = peakList.parent !== null ? [peakList.parent] : [];
-  const children = peakList.children !== null ? peakList.children : [];
-  const siblings = peakList.siblings !== null ? peakList.siblings : [];
+  const topLevelParentId = peakList.parent && peakList.parent.id ? peakList.parent.id : id;
+
+  const parent = peakList.parent ? [peakList.parent] : [];
+  const children = peakList.children && peakList.children.length ? peakList.children : [];
+  const siblings = peakList.siblings && peakList.siblings.length ? peakList.siblings : [];
 
   const allListVariants = [{id, type}, ...parent, ...siblings, ...children];
 
@@ -133,10 +144,13 @@ const VariantLinks = (props: Props) => {
       const desktopURL = currentListId === null
         ? searchListDetailLink(target.id) + window.location.search
         : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
+      const mobileURL = currentListId === null
+        ? listDetailWithMountainDetailLink(target.id, 'none')
+        : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
       return (
         <CardFooterLink
           key={name + type + variant}
-          mobileURL={listDetailWithMountainDetailLink(target.id, 'none')}
+          mobileURL={mobileURL}
           desktopURL={desktopURL}
           $isActive={currentListId === target.id}
           color={color}
@@ -157,7 +171,7 @@ const VariantLinks = (props: Props) => {
         if (loadingNewList === false) {
           setLoadingNewList(true);
           addPeakList({variables: {
-            name, shortName, type: variant, parent: id,
+            name, shortName, type: variant, parent: topLevelParentId,
           }}).then(res => {
             if (res && res.data && res.data.peakList) {
               const desktopURL = currentListId === null

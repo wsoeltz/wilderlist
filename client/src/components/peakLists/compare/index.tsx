@@ -10,6 +10,9 @@ import {
   ContentLeftLarge,
   ContentRightSmall,
 } from '../../../styling/Grid';
+import {
+  PlaceholderText,
+} from '../../../styling/styleUtils';
 import MountainDetail from '../../mountains/detail/MountainDetail';
 import BackButton from '../../sharedComponents/BackButton';
 import CompareAllMountains from './CompareAllMountains';
@@ -25,15 +28,15 @@ const ComparePeakListPage = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
-
   let comparison: React.ReactElement<any> | null;
-  if (peakListId === undefined) {
+  if (!peakListId) {
     comparison = null;
   } else if (peakListId === 'all') {
     comparison = <CompareAllMountains userId={userId} id={profileId} />;
   } else {
     comparison = (
       <PeakListComparison
+        key={peakListId}
         userId={userId}
         friendId={profileId}
         peakListId={peakListId}
@@ -43,9 +46,9 @@ const ComparePeakListPage = (props: Props) => {
 
   const mountainDetail = mountainId === undefined
     ? (
-        <h2>
+        <PlaceholderText>
           {getFluentString('list-detail-mountain-detail-placeholder')}
-        </h2>
+        </PlaceholderText>
       )
     : (
         <MountainDetail userId={userId} id={mountainId} peakListId={peakListId} />

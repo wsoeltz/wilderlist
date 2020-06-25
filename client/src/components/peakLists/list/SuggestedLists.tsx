@@ -33,6 +33,7 @@ const getSelectionArray = (state: string) => {
   // FOR MA
     return [
       '5d8907d8db07d0b23d6c0d71', // NH48
+      '5eee2c2f204aeb00173afbd3', // HOLYOKE
       '5d8cb3d65a452f00176cf801', // NE67
       '5db9dd4c2d4ef1001786a43e', // ADK46
     ];
@@ -124,11 +125,12 @@ const SuggestedLists = (props: Props) => {
               peakListData={peakListData}
               userListData={[]}
               listAction={beginList}
-              actionText={'Begin List'}
+              actionText={getFluentString('peak-list-detail-text-begin-list')}
               profileId={undefined}
               noResultsText={''}
               showTrophies={false}
               queryRefetchArray={[{query: SEARCH_PEAK_LISTS, variables}]}
+              dashboardView={true}
             />
           </Background>
         );

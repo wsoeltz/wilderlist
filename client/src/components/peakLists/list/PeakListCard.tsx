@@ -1,5 +1,4 @@
 import { GetString } from 'fluent-react/compat';
-// import { sortBy } from 'lodash';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
 import {
@@ -14,18 +13,13 @@ import {
   searchListDetailLink,
 } from '../../../routing/Utils';
 import {
-  boldFontWeight,
-  ButtonPrimary,
   Card,
+  CompactButtonPrimary,
 } from '../../../styling/styleUtils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
-// import {
-//   RegionDatum,
-//   StateDatum,
-// } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
 const LinkWrapper = styled(DynamicLink)`
@@ -38,41 +32,60 @@ const LinkWrapper = styled(DynamicLink)`
   }
 `;
 
-const smallCardBreakpoint = 400; // in px
+const smallCardBreakpoint = 600; // in px
 
 export const Root = styled(Card)`
   display: grid;
-  grid-template-columns: 11.875rem 1fr auto;
-  grid-template-rows: auto auto 50px;
+  grid-template-columns: 11.875rem 1fr;
   grid-column-gap: 1rem;
+  grid-template-rows: auto auto;
 
-  @media(max-width: 600px) {
-    grid-template-columns: 8rem 1fr auto;
+  @media(max-width: ${smallCardBreakpoint}px) {
+    grid-template-columns: 8rem 1fr;
   }
 `;
 
-const TitleBase = styled.h1`
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
   grid-column: 2;
   grid-row: 1;
 `;
 
+const ProgressBarRow = styled.div`
+  grid-row: 2;
+  grid-column: 2;
+
+  @media(max-width: ${smallCardBreakpoint}px) {
+    grid-column: 1 / -1;
+  }
+`;
+
+const TitleBase = styled.h1`
+  margin: 2rem 0 0.5rem;
+  font-size: 1.25rem;
+`;
+
 export const TitleFull = styled.h1`
-  grid-column: 2 / span 2;
-  grid-row: 1;
+  margin: 2rem 0 0.5rem;
+  font-size: 1.25rem;
 `;
 
 const ActionButtonContainer = styled.div`
-  grid-column: 3;
-  grid-row: 1;
   text-align: right;
+  position: absolute;
+  top: 0;
+  right: 0;
 `;
 
 export const ListInfo = styled.h3`
-  grid-column: 2 / span 2;
-  grid-row: 2;
   display: flex;
   justify-content: space-between;
-  margin: 0;
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  font-weight: 400;
 
   @media(max-width: ${smallCardBreakpoint}px) {
     flex-direction: column-reverse;
@@ -80,13 +93,18 @@ export const ListInfo = styled.h3`
 `;
 
 export const LogoContainer = styled.div`
-  grid-row: 1 / span 3;
   grid-column: 1;
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+
+  @media(max-width: ${smallCardBreakpoint}px) {
+    grid-row: 1;
+  }
 `;
 
 export const ProgressBarContainer = styled.div`
-  grid-column: 2 / span 2;
-  grid-row: 3;
+  height: 3.125rem;
 `;
 
 export const TextRight = styled.div`
@@ -99,65 +117,6 @@ export const TextRight = styled.div`
     text-align: left;
   }
 `;
-
-export const BigText = styled.span`
-  font-size: 1.3rem;
-  transform: translateY(0.04rem);
-  display: inline-block;
-  margin-right: 0.25rem;
-  font-weight: ${boldFontWeight};
-`;
-
-// export const getStatesOrRegion = (statesArray: StateDatum[], getFluentString: GetString) => {
-//   const sortedStates = sortBy(statesArray, ['name']);
-//   // If there are 3 or less states, just show the states
-//   if (sortedStates.length === 1) {
-//     return sortedStates[0].name;
-//   } else if (sortedStates.length === 2) {
-//     return sortedStates[0].name + ' & ' + sortedStates[1].name;
-//   } else if (sortedStates.length === 3) {
-//     return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
-//   } else if (sortedStates.length > 2) {
-//     const regionsArray: RegionDatum[] = [];
-//     sortedStates.forEach(({regions}) => {
-//       regions.forEach(region => {
-//         if (region && regionsArray.filter(({id}) => id === region.id).length === 0) {
-//           regionsArray.push(region);
-//         }
-//       });
-//     });
-//     // Else if they all belong to the same region, show that region
-//     if (regionsArray.length === 0) {
-//       return null;
-//     } else if (regionsArray.length === 1) {
-//       return regionsArray[0].name;
-//     } else {
-//       const inclusiveRegions = regionsArray.filter(
-//         (region) => sortedStates.every(({regions}) => regions.find(_region => _region && region.id === _region.id)));
-//       if (inclusiveRegions.length === 1) {
-//         return inclusiveRegions[0].name;
-//       } else if (inclusiveRegions.length > 1) {
-//         // If they all belong to more than one region, show the more exclusive one
-//         const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
-//         return exclusiveRegions[0].name;
-//       } else if (inclusiveRegions.length === 0) {
-//         // if there are no inclusive regions
-//         if (regionsArray.length === 2) {
-//           // if only 2 regions, show them both
-//           return regionsArray[0].name + ' & ' + regionsArray[1].name;
-//         } else if (regionsArray.length === 3) {
-//           // if only 3 regions, show them all
-//           return regionsArray[0].name + ', ' + regionsArray[1].name + ' & ' + regionsArray[2].name;
-//         } else {
-//           // otherwise just say Across the US
-//           return getFluentString('peak-list-text-across-the-us');
-//         }
-//       }
-//     }
-//   }
-//   // Else list all the regions
-//   return null;
-// };
 
 interface Props {
   peakList: CardPeakListDatum;
@@ -200,9 +159,9 @@ const PeakListCard = (props: Props) => {
   const actionButton = (active === false || profileId !== undefined) && listAction !== null
     ? (
       <ActionButtonContainer>
-        <ButtonPrimary onClick={actionButtonOnClick} disabled={isDisabled()}>
+        <CompactButtonPrimary onClick={actionButtonOnClick} disabled={isDisabled()}>
           {actionText}
-        </ButtonPrimary>
+        </CompactButtonPrimary>
       </ActionButtonContainer> ) : null;
 
   const Title = (active === false || profileId !== undefined) && listAction !== null
@@ -219,7 +178,7 @@ const PeakListCard = (props: Props) => {
       });
       latestDateText = (
         <>
-          {latestAscentText} <BigText>{latestDate}</BigText>
+          {latestAscentText} {latestDate}
         </>
       );
     } else {
@@ -228,7 +187,8 @@ const PeakListCard = (props: Props) => {
     listInfoContent = (
       <>
         <span>
-          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+          {numCompletedAscents}/{totalRequiredAscents}
+          {' '}
           {getFluentString('peak-list-text-completed-ascent')}
         </span>
         <TextRight>{latestDateText}</TextRight>
@@ -238,10 +198,10 @@ const PeakListCard = (props: Props) => {
     listInfoContent = (
       <>
         <span>
-          <BigText>{totalRequiredAscents}</BigText>
+          {totalRequiredAscents}
+          {' '}
           {getFluentString('peak-list-text-total-ascents')}
         </span>
-        <TextRight>{stateOrRegionString}</TextRight>
       </>
     );
   }
@@ -260,12 +220,6 @@ const PeakListCard = (props: Props) => {
   return (
     <LinkWrapper mobileURL={mobileURL} desktopURL={desktopURL}>
       <Root>
-        <Title>
-          {name}{getType(type)}
-        </Title>
-        <ListInfo>
-          {listInfoContent}
-        </ListInfo>
         <LogoContainer>
           <MountainLogo
             id={mountainLogoId}
@@ -276,15 +230,28 @@ const PeakListCard = (props: Props) => {
             completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
           />
         </LogoContainer>
-        {actionButton}
-        <ProgressBarContainer>
-          <PeakProgressBar
-            variant={active === true ? type : null}
-            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
-            total={totalRequiredAscents}
-            id={id}
-          />
-        </ProgressBarContainer>
+        <Content>
+          <Title>
+            {name}{getType(type)}
+          </Title>
+          <ListInfo>
+            {stateOrRegionString}
+          </ListInfo>
+          <ListInfo>
+            {listInfoContent}
+          </ListInfo>
+          {actionButton}
+        </Content>
+        <ProgressBarRow>
+          <ProgressBarContainer>
+            <PeakProgressBar
+              variant={active === true ? type : null}
+              completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+              total={totalRequiredAscents}
+              id={id}
+            />
+          </ProgressBarContainer>
+        </ProgressBarRow>
       </Root>
     </LinkWrapper>
   );
