@@ -10,15 +10,19 @@ import {
   searchListDetailLink,
 } from '../../../routing/Utils';
 import {
-  ButtonPrimary,
   CardSubtitle,
   CardTitle,
   CollapsedParagraph,
+  CompactButtonPrimary,
+  lightBaseColor,
+  secondaryFont,
+  Seperator,
   StackableCardFooter,
   StackableCardSection as CardBase,
   StackedCardWrapper,
 } from '../../../styling/styleUtils';
 import { getColorSetFromVariant } from '../../../styling/styleUtils';
+import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   roundPercentToSingleDecimal,
 } from '../../../Utils';
@@ -38,16 +42,29 @@ const LinkWrapper = styled(StackedCardWrapper)`
 
 const Card = styled(CardBase)`
   border-left-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
 `;
 
 const CardFooter = styled(StackableCardFooter)`
   border-left-width: 0;
 `;
 
+const CompletedValue = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: ${lightBaseColor};
+`;
+
+const Value = styled.div`
+  font-size: 1.85rem;
+  font-family: ${secondaryFont};
+`;
+
 const SubtleText = styled.small`
   text-transform: uppercase;
-  font-size: 0.85rem;
-  opacity: 0.7;
+  font-size: 0.75rem;
 `;
 
 interface Props {
@@ -62,7 +79,7 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, type, stateOrRegionString}, peakList,
+    peakList: {id, name, type, stateOrRegionString, numMountains}, peakList,
     active, listAction, actionText, totalRequiredAscents,
     numCompletedAscents, queryRefetchArray,
   } = props;
@@ -71,6 +88,9 @@ const PeakListCard = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const [hovered, setHovered] = useState<boolean>(false);
+
+  const color = type === PeakListVariants.grid
+        ? getColorSetFromVariant(type).primary :  getColorSetFromVariant(type).tertiary;
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -84,15 +104,20 @@ const PeakListCard = (props: Props) => {
     const percent = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
     const percentComplete = isNaN(percent) ? 0 : percent;
     cornerContent = (
-      <SubtleText>
-        {percentComplete}% {getFluentString('global-text-value-complete')}
-      </SubtleText>
+      <CompletedValue>
+        <Value style={{color: percentComplete === 100 ? color : undefined}}>
+          {percentComplete}%
+        </Value>
+        <SubtleText style={{color: percentComplete === 100 ? color : undefined}}>
+          {getFluentString('global-text-value-complete')}
+        </SubtleText>
+      </CompletedValue>
     );
   } else if (listAction !== null) {
     cornerContent = (
-      <ButtonPrimary onClick={actionButtonOnClick}>
+      <CompactButtonPrimary onClick={actionButtonOnClick}>
         {actionText}
-      </ButtonPrimary>
+      </CompactButtonPrimary>
     );
   } else {
     cornerContent = null;
@@ -100,7 +125,7 @@ const PeakListCard = (props: Props) => {
 
   return (
     <Root
-      style={{borderLeftColor: getColorSetFromVariant(type).tertiary}}
+      style={{borderLeftColor: color}}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -109,17 +134,21 @@ const PeakListCard = (props: Props) => {
         desktopURL={searchListDetailLink(id) + window.location.search}
       >
         <Card>
-          <CardTitle>
-            {name}{getType(type)}
-          </CardTitle>
-          <CardSubtitle>
-            <CollapsedParagraph>
-              {stateOrRegionString}
-            </CollapsedParagraph>
-            <CollapsedParagraph>
-              {cornerContent}
-            </CollapsedParagraph>
-          </CardSubtitle>
+          <div>
+            <CardTitle>
+              {name}{getType(type)}
+            </CardTitle>
+            <CardSubtitle>
+              <CollapsedParagraph>
+                {numMountains} Peaks
+                <Seperator>|</Seperator>
+                {stateOrRegionString}
+              </CollapsedParagraph>
+            </CardSubtitle>
+          </div>
+          <div>
+            {cornerContent}
+          </div>
         </Card>
       </LinkWrapper>
       <CardFooter>

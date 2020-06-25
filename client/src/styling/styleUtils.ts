@@ -5,6 +5,8 @@ import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
 
+export const secondaryFont = 'DeliciousWeb, sans-serif';
+
 export const baseColor = '#333333'; // dark gray/black color for text
 export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and contextual information
 export const placeholderColor = '#a7a7a7'; // light gray color for placeholder text
@@ -223,17 +225,23 @@ export const StackedCardWrapper = styled(CardLinkWrapper)`
 `;
 
 export const CardTitle = styled.h1`
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   margin-top: 0;
   margin-bottom: 0.4rem;
 `;
 
 export const CardSubtitle = styled.div`
   color: ${lightBaseColor};
+  font-size: 0.95rem;
   margin: 0.4rem 0;
   display: flex;
   justify-content: space-between;
+`;
+export const Seperator = styled.span`
+  color: ${lightBaseColor};
+  opacity: 0.45;
   font-weight: ${semiBoldFontBoldWeight};
+  margin: 0 0.2rem;
 `;
 
 export const InlineTitle = styled.h3`
@@ -322,6 +330,15 @@ export const ButtonSecondary = styled(ButtonBase)`
   &:hover {
     background-color: ${secondaryHoverColor};
   }
+`;
+
+export const CompactButtonPrimary = styled(ButtonPrimary)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
+`;
+export const CompactButtonSecondary = styled(ButtonSecondary)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
 `;
 
 export const ButtonTertiary = styled(ButtonBase)`

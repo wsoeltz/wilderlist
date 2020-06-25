@@ -349,7 +349,7 @@ const PeakListPage = (props: Props) => {
           peakListData={peakListData}
           userListData={usersLists}
           listAction={beginList}
-          actionText={'Begin List'}
+          actionText={getFluentString('peak-list-detail-text-begin-list')}
           profileId={undefined}
           noResultsText={noResultsText}
           showTrophies={false}

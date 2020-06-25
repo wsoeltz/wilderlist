@@ -301,7 +301,7 @@ settings-page-notification-settings-email = Email Notifications
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>help@wilderlist.app</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
 
-dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Begin List' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Start Tracking' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
 dashboard-empty-state-no-active-lists-button = Find Hiking Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
@@ -367,8 +367,8 @@ peak-list-text-total-ascents = Total Ascents
 peak-list-text-across-the-us = Across the US
 
 peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-name }</strong>&#32;from your active lists?
-peak-list-detail-text-begin-list = Begin List
-peak-list-detail-text-remove-list = Remove List
+peak-list-detail-text-begin-list = Start Tracking
+peak-list-detail-text-remove-list = Stop Tracking
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
 peak-list-detail-filter-mountains = Filter mountains
 

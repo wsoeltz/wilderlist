@@ -3,7 +3,7 @@ import { faLeaf, faMountain, faSnowflake, faTh } from '@fortawesome/free-solid-s
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useEffect, useState} from 'react';
-import {useHistory} from 'react-router';
+import {useHistory, useRouteMatch} from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -25,6 +25,8 @@ import {
 } from '../../../Utils';
 import {AppContext} from '../../App';
 import { CompactPeakListDatum } from './ListPeakLists';
+
+const replaceCurrentPageId = (url: string, currentId: string, newId: string) => url.replace(currentId, newId);
 
 const ADD_PEAK_LIST = gql`
   mutation addPeakList(
@@ -88,6 +90,15 @@ const VariantLinks = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const history = useHistory();
+  const match = useRouteMatch<{peakListId: string | undefined, id: string | undefined}>();
+  let currentListId: string | null;
+  if (match.params.peakListId && match.params.peakListId) {
+    currentListId = match.params.peakListId;
+  } else if (match.params.id && match.params.id) {
+    currentListId = match.params.id;
+  } else {
+    currentListId = null;
+  }
 
   const [addPeakList] = useMutation<SuccessResponse, AddChildListVariables>(ADD_PEAK_LIST, {
     refetchQueries: () => queryRefetchArray,
@@ -110,21 +121,24 @@ const VariantLinks = (props: Props) => {
   }, [allListVariants.length, previousListLength, loadingNewList, setLoadingNewList]);
 
   const variantsLinks = allVariantsArray.map((variant, i) => {
-    let color: string;
-    if (grayText) {
-      color = lightBaseColor;
-    } else {
-      color = variant === PeakListVariants.grid
-        ? getColorSetFromVariant(variant).primary :  getColorSetFromVariant(variant).tertiary;
-    }
     const target = allListVariants.find(list => list.type === variant);
     if (target) {
+      let color: string;
+      if (grayText && currentListId !== target.id) {
+        color = lightBaseColor;
+      } else {
+        color = variant === PeakListVariants.grid
+          ? getColorSetFromVariant(variant).primary :  getColorSetFromVariant(variant).tertiary;
+      }
+      const desktopURL = currentListId === null
+        ? searchListDetailLink(target.id) + window.location.search
+        : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
       return (
         <CardFooterLink
           key={name + type + variant}
           mobileURL={listDetailWithMountainDetailLink(target.id, 'none')}
-          desktopURL={searchListDetailLink(target.id) + window.location.search}
-          $isActive={false}
+          desktopURL={desktopURL}
+          $isActive={currentListId === target.id}
           color={color}
         >
           <BasicIconInText icon={variantsIconMapping[i]} />
@@ -132,6 +146,13 @@ const VariantLinks = (props: Props) => {
         </CardFooterLink>
       );
     } else {
+      let color: string;
+      if (grayText) {
+        color = lightBaseColor;
+      } else {
+        color = variant === PeakListVariants.grid
+          ? getColorSetFromVariant(variant).primary :  getColorSetFromVariant(variant).tertiary;
+      }
       const onClick = () => {
         if (loadingNewList === false) {
           setLoadingNewList(true);
@@ -139,8 +160,11 @@ const VariantLinks = (props: Props) => {
             name, shortName, type: variant, parent: id,
           }}).then(res => {
             if (res && res.data && res.data.peakList) {
-              const url = windowWidth >= mobileSize
+              const desktopURL = currentListId === null
                 ? searchListDetailLink(res.data.peakList.id) + window.location.search
+                : replaceCurrentPageId(match.url, currentListId, res.data.peakList.id) + window.location.search;
+              const url = windowWidth >= mobileSize
+                ? desktopURL
                 : listDetailWithMountainDetailLink(res.data.peakList.id, 'none');
               history.push(url);
             }
