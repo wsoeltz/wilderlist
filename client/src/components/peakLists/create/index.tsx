@@ -188,8 +188,7 @@ const EDIT_PEAK_LIST = gql`
 
 const GET_PEAK_LIST = gql`
   query getPeakList($id: ID) {
-    peakList(
-      id: $id) {
+    peakList(id: $id) {
       ${baseQuery}
     }
     states {

@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
@@ -271,7 +272,7 @@ const Header = (props: Props) => {
           {getFluentString('global-text-value-modal-reddit')}:
         </ContactLabel>
         <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
-          <EmailIcon icon={faReddit} />
+          <EmailIcon icon={faReddit as IconDefinition} />
           u/{name}
         </BoldLink>
       </ListInfo>
@@ -291,7 +292,7 @@ const Header = (props: Props) => {
             {getFluentString('global-text-value-modal-reddit')}:
           </ContactLabel>
           <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
-            <EmailIcon icon={faReddit} />
+            <EmailIcon icon={faReddit as IconDefinition} />
             u/{name}
           </BoldLink>
         </ListInfo>

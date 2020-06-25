@@ -1,4 +1,4 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { IconDefinition, library } from '@fortawesome/fontawesome-svg-core';
 import {
   faFacebook,
   faGoogle,
@@ -29,6 +29,7 @@ import {
   faFlag,
   faHiking,
   faHome,
+  faLeaf,
   faLink,
   faList,
   faLongArrowAltDown,
@@ -37,10 +38,12 @@ import {
   faMountain,
   faPhone,
   faSearch,
+  faSnowflake,
   faSort,
   faSortDown,
   faSortUp,
   faSync,
+  faTh,
   faThList,
   faTrash,
   faTrophy,
@@ -59,12 +62,14 @@ library.add(
   faCaretDown, faCaretUp, faSearch, faCalendarAlt,
   faCheck, faEnvelope, faChevronLeft, faChevronRight,
   faList, faThList, faMapMarkerAlt, faSort, faSortDown,
-  faSortUp, faFileCsv, faGoogle, faReddit, faFacebook,
+  faSortUp, faFileCsv,
+  faGoogle as IconDefinition, faReddit as IconDefinition, faFacebook as IconDefinition,
   faFileExcel, faMapSigns, faMountain, faHiking,
   faUserFriends, faHome, faChartLine, faTrash, faClone,
   faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
   faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
   faAddressBook, faAt, faPhone, faLink, faTrophy, faCompass,
+  faLeaf, faSnowflake, faTh,
 );
 
 const GlobalStyles = createGlobalStyle`

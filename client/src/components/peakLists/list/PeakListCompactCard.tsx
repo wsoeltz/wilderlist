@@ -1,5 +1,5 @@
 import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -11,11 +11,12 @@ import {
 } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  Card as CardBase,
-  CardLinkWrapper,
   CardSubtitle,
   CardTitle,
   CollapsedParagraph,
+  StackableCardFooter,
+  StackableCardSection as CardBase,
+  StackedCardWrapper,
 } from '../../../styling/styleUtils';
 import { getColorSetFromVariant } from '../../../styling/styleUtils';
 import {
@@ -23,9 +24,24 @@ import {
 } from '../../../Utils';
 import { getType } from '../Utils';
 import { CompactPeakListDatum } from './ListPeakLists';
+import VariantLinks from './VariantLinks';
+
+const Root = styled.div`
+  border-left-width: 8px;
+  border-left-style: solid;
+  margin-bottom: 2rem;
+`;
+
+const LinkWrapper = styled(StackedCardWrapper)`
+  margin-bottom: 0;
+`;
 
 const Card = styled(CardBase)`
-  border-left-width: 8px;
+  border-left-width: 0;
+`;
+
+const CardFooter = styled(StackableCardFooter)`
+  border-left-width: 0;
 `;
 
 const SubtleText = styled.small`
@@ -41,17 +57,20 @@ interface Props {
   actionText: string;
   totalRequiredAscents: number;
   numCompletedAscents: number;
+  queryRefetchArray: Array<{query: any, variables: any}>;
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, stateOrRegionString},
+    peakList: {id, name, type, stateOrRegionString}, peakList,
     active, listAction, actionText, totalRequiredAscents,
-    numCompletedAscents,
+    numCompletedAscents, queryRefetchArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const [hovered, setHovered] = useState<boolean>(false);
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -80,13 +99,18 @@ const PeakListCard = (props: Props) => {
   }
 
   return (
-      <CardLinkWrapper
+    <Root
+      style={{borderLeftColor: getColorSetFromVariant(type).tertiary}}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <LinkWrapper
         mobileURL={listDetailWithMountainDetailLink(id, 'none')}
         desktopURL={searchListDetailLink(id) + window.location.search}
       >
-        <Card style={{borderLeftColor: getColorSetFromVariant(type).tertiary}}>
+        <Card>
           <CardTitle>
-            {shortName} - {name}{getType(type)}
+            {name}{getType(type)}
           </CardTitle>
           <CardSubtitle>
             <CollapsedParagraph>
@@ -97,7 +121,15 @@ const PeakListCard = (props: Props) => {
             </CollapsedParagraph>
           </CardSubtitle>
         </Card>
-      </CardLinkWrapper>
+      </LinkWrapper>
+      <CardFooter>
+        <VariantLinks
+          peakList={peakList}
+          queryRefetchArray={queryRefetchArray}
+          grayText={!hovered}
+        />
+      </CardFooter>
+    </Root>
   );
 };
 

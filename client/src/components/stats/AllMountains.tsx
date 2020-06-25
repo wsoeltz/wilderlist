@@ -189,22 +189,22 @@ const AllMountains = (props: Props) => {
             id={'select-box-for-peak-list-type-all-mtn-stats'}
           >
             <option value={PeakListVariants.standard}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.standard,
             })}
             </option>
             <option value={PeakListVariants.winter}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.winter,
             })}
             </option>
             <option value={PeakListVariants.fourSeason}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.fourSeason,
             })}
             </option>
             <option value={PeakListVariants.grid}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.grid,
             })}
             </option>

@@ -107,7 +107,7 @@ export interface FormInput {
   parent: null;
   states: string[];
   resources: ExternalResource[] | null;
-  tier: PeakListTier;
+  tier: PeakListTier | null;
 }
 
 interface Props extends RouteComponentProps {

@@ -81,6 +81,9 @@ export interface CompactPeakListDatum {
   latestAscent: PeakList['latestAscent'];
   isActive: PeakList['isActive'];
   stateOrRegionString: PeakList['stateOrRegionString'];
+  parent: null | {id: PeakList['id'], type: PeakList['type']};
+  children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
+  siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
 }
 
 interface BaseProps {
@@ -92,6 +95,7 @@ interface BaseProps {
   viewMode: ViewMode;
   dashboardView?: boolean;
   setActionDisabled?: (peakListId: string) => boolean;
+  queryRefetchArray: Array<{query: any, variables: any}>;
 }
 
 type Props = BaseProps & (
@@ -109,7 +113,7 @@ const ListPeakLists = (props: Props) => {
     listAction, actionText,
     noResultsText, showTrophies,
     profileId, dashboardView,
-    setActionDisabled,
+    setActionDisabled, queryRefetchArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -234,6 +238,7 @@ const ListPeakLists = (props: Props) => {
             actionText={actionText}
             totalRequiredAscents={totalRequiredAscents}
             numCompletedAscents={numCompletedAscents}
+            queryRefetchArray={queryRefetchArray}
           />
         );
     });

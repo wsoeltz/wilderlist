@@ -1,3 +1,4 @@
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faFacebook,
   faGoogle,
@@ -220,7 +221,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
       <UserMenuListContainer ref={node} onClick={closeUserMenu}>
         <LoginButtonListItem href='/auth/google'>
           <BrandIcon
-            icon={faGoogle}
+            icon={faGoogle as IconDefinition}
             style={{color: googleBlue}}
           />
           <LoginText>
@@ -229,7 +230,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
         </LoginButtonListItem>
         <LoginButtonListItem href='/auth/facebook'>
           <BrandIcon
-            icon={faFacebook}
+            icon={faFacebook as IconDefinition}
             style={{color: facebookBlue}}
           />
           <LoginText>
@@ -238,7 +239,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
         </LoginButtonListItem>
         <LoginButtonListItem href='/auth/reddit'>
           <BrandIcon
-            icon={faReddit}
+            icon={faReddit as IconDefinition}
             style={{color: redditRed}}
           />
           <LoginText>
@@ -315,7 +316,7 @@ const UserMenuComponent = (props: Props) => {
         <UserMenu>
           <LoginButton href='/auth/google'>
             <BrandIcon
-              icon={faGoogle}
+              icon={faGoogle as IconDefinition}
               style={{color: googleBlue}}
             />
             <LoginText>
@@ -324,7 +325,7 @@ const UserMenuComponent = (props: Props) => {
           </LoginButton>
           <LoginButton href='/auth/facebook'>
             <BrandIcon
-              icon={faFacebook}
+              icon={faFacebook as IconDefinition}
               style={{color: facebookBlue}}
             />
             <LoginText>
@@ -333,7 +334,7 @@ const UserMenuComponent = (props: Props) => {
           </LoginButton>
           <LoginButton href='/auth/reddit'>
             <BrandIcon
-              icon={faReddit}
+              icon={faReddit as IconDefinition}
               style={{color: redditRed}}
             />
             <LoginText>

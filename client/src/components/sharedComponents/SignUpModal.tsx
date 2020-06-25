@@ -1,3 +1,4 @@
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faFacebook,
   faGoogle,
@@ -106,7 +107,7 @@ const SignUpModal = (props: Props) => {
         <Title>{text}</Title>
         <LoginButton href='/auth/google'>
           <BrandIcon
-            icon={faGoogle}
+            icon={faGoogle as IconDefinition}
             style={{color: googleBlue}}
           />
           <LoginText>
@@ -115,7 +116,7 @@ const SignUpModal = (props: Props) => {
         </LoginButton>
         <LoginButton href='/auth/facebook'>
           <BrandIcon
-            icon={faFacebook}
+            icon={faFacebook as IconDefinition}
             style={{color: facebookBlue}}
           />
           <LoginText>
@@ -124,7 +125,7 @@ const SignUpModal = (props: Props) => {
         </LoginButton>
         <LoginButton href='/auth/reddit'>
           <BrandIcon
-            icon={faReddit}
+            icon={faReddit as IconDefinition}
             style={{color: redditRed}}
           />
           <LoginText>

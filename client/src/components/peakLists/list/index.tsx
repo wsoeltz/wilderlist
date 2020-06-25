@@ -353,6 +353,7 @@ const PeakListPage = (props: Props) => {
           profileId={undefined}
           noResultsText={noResultsText}
           showTrophies={false}
+          queryRefetchArray={[{query: SEARCH_PEAK_LISTS_COMPACT, variables}]}
         />
       );
       list = (

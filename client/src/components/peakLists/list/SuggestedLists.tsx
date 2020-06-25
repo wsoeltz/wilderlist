@@ -128,6 +128,7 @@ const SuggestedLists = (props: Props) => {
               profileId={undefined}
               noResultsText={''}
               showTrophies={false}
+              queryRefetchArray={[{query: SEARCH_PEAK_LISTS, variables}]}
             />
           </Background>
         );

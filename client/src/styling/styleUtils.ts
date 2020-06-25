@@ -160,6 +160,68 @@ export const CardLinkWrapper = styled(DynamicLink)`
   }
 `;
 
+export const StackableCardSection = styled(Card)`
+  box-shadow: none;
+  border-bottom: none;
+  margin-bottom: 0;
+`;
+
+export const StackableCardFooter = styled(Card)`
+  background-color: ${tertiaryColor};
+  box-shadow: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const cardFooterLinkStyles = `
+  display: block;
+  text-align: center;
+  width: 25%;
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 0.25rem;
+
+  &:not(:last-child) {
+    border-right: solid 1px ${lightBorderColor};
+  }
+`;
+
+interface ColorProps {
+  color: string;
+  $isActive: boolean;
+}
+
+export const CardFooterLink = styled(DynamicLink)<ColorProps>`
+  ${cardFooterLinkStyles}
+  color: ${(p) => p.$isActive ? '#fff' : p.color};
+  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
+  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
+
+  &:hover {
+    color: #fff;
+    background-color: ${({color}) => color};
+    text-decoration: none;
+  }
+`;
+export const CardFooterButton = styled.button<ColorProps>`
+  ${cardFooterLinkStyles}
+  color: ${(p) => p.$isActive ? '#fff' : p.color};
+  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
+  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
+
+  &:hover {
+    color: #fff;
+    background-color: ${({color}) => color};
+    text-decoration: none;
+  }
+`;
+
+export const StackedCardWrapper = styled(CardLinkWrapper)`
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+`;
+
 export const CardTitle = styled.h1`
   font-size: 1.3rem;
   margin-top: 0;

@@ -180,6 +180,7 @@ const Dashboard = (props: Props) => {
             noResultsText={''}
             showTrophies={true}
             dashboardView={true}
+            queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
           />
           {suggestedLists}
         </>

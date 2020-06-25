@@ -312,7 +312,7 @@ your-stats-title = Your Stats
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)
 stats-showing-ascents-for = Showing ascents for:
-global-text-value-list-type = {
+global-text-value-list-type-description = {
   $type ->
     *[standard] Any Time
     [winter] Winter Only
@@ -563,7 +563,7 @@ map-missing-mountain-link = Click here to add it
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
 
-map-trails-trail-desc = { 
+map-trails-trail-desc = {
   $miles ->
     [1] mile
     *[other] miles
@@ -773,8 +773,8 @@ create-peak-list-peak-list-short-name-placeholder = i.e. NH48
 create-peak-list-peak-list-details-title = List Details
 create-peak-list-peak-list-mountains-note = Select mountains directly on the map or by clicking {
   $number-mountains ->
-    [0] 'Add Mountains' 
-    *[other] 'Add/Remove Mountains' 
+    [0] 'Add Mountains'
+    *[other] 'Add/Remove Mountains'
 } below. You can also copy mountains from an existing list to add to this one.
 create-peak-list-peak-list-description-label = Description
 create-peak-list-peak-description = Enter an optional description for the list here.
