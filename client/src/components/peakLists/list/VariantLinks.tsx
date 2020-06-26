@@ -3,7 +3,7 @@ import { faLeaf, faMountain, faSnowflake, faTh } from '@fortawesome/free-solid-s
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useEffect, useState} from 'react';
-import {useHistory, useRouteMatch} from 'react-router';
+import {useRouteMatch} from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -98,7 +98,7 @@ const VariantLinks = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const history = useHistory();
+  // const history = useHistory();
   const match = useRouteMatch<{peakListId: string | undefined, id: string | undefined}>();
   let currentListId: string | null;
   if (match.params.peakListId && match.params.peakListId && match.params.peakListId !== 'search') {
@@ -180,7 +180,7 @@ const VariantLinks = (props: Props) => {
               const url = windowWidth >= mobileSize
                 ? desktopURL
                 : listDetailWithMountainDetailLink(res.data.peakList.id, 'none');
-              history.push(url);
+              window.location.href = url;
             }
           }).catch(e => console.error(e));
         }

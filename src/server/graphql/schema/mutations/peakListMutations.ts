@@ -13,6 +13,7 @@ import {
   Mountain as IMountain,
   PeakList as IPeakList,
   PeakListFlag as PeakListFlagEnum,
+  PeakListVariants as VariantsEnum,
   PermissionTypes,
   State as IState,
   User as IUser,
@@ -87,7 +88,7 @@ const peakListMutations: any = {
       } = input;
       if (name !== '' && shortName !== '' && type !== null) {
         const authorObj = await User.findById(author);
-        if (!(isCorrectUser(user, authorObj) || isAdmin(user))) {
+        if (!(isCorrectUser(user, authorObj) || isAdmin(user) || (type !== VariantsEnum.standard && parent))) {
           throw new Error('Invalid user match');
         }
         let status: CreatedItemStatusEnum | null;
