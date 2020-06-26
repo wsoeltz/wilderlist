@@ -48,7 +48,9 @@ const HelpTextContainer = styled.div`
   grid-template-columns: auto 1fr;
 `;
 
-const HelpText = styled(HelpTextBase)`
+const HelpText = styled.div`
+  padding: 0 0.7rem;
+  line-height: 1.4;
   grid-column: 2;
 `;
 

@@ -1,9 +1,10 @@
 import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
   preventNavigation,
@@ -26,6 +27,8 @@ import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   roundPercentToSingleDecimal,
 } from '../../../Utils';
+import ImportAscentNotification from '../import/ImportAscentsNotification';
+import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import { getType } from '../Utils';
 import { CompactPeakListDatum } from './ListPeakLists';
 import VariantLinks from './VariantLinks';
@@ -86,6 +89,23 @@ const PeakListCard = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
+
+  const prevActive = usePrevious(active);
+  useEffect(() => {
+    if (prevActive === false && active === true && showImportNotification === false) {
+      setShowImportNotification(true);
+    }
+  }, [prevActive, active, showImportNotification, setShowImportNotification]);
+  const importAscentsNotification = showImportNotification &&
+    (type === PeakListVariants.standard || type === PeakListVariants.winter || id === NH48_GRID_OBJECT_ID) ? (
+    <ImportAscentNotification
+      closeNotification={() => setShowImportNotification(false)}
+      type={type}
+      peakListId={id}
+    />
+  ) : null;
 
   const [hovered, setHovered] = useState<boolean>(false);
 
@@ -157,6 +177,7 @@ const PeakListCard = (props: Props) => {
           queryRefetchArray={queryRefetchArray}
           grayText={!hovered}
         />
+        {importAscentsNotification}
       </CardFooter>
     </Root>
   );

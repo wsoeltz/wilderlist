@@ -178,6 +178,7 @@ export const StackableCardFooter = styled(Card)`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 `;
 
 const cardFooterLinkStyles = `

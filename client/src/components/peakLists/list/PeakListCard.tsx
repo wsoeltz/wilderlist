@@ -1,9 +1,10 @@
 import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePrevious from '../../../hooks/usePrevious';
 import {
   dashboardWithListDetailLink,
   listDetailWithMountainDetailLink,
@@ -16,7 +17,10 @@ import {
   Card,
   CompactButtonPrimary,
 } from '../../../styling/styleUtils';
+import { PeakListVariants } from '../../../types/graphQLTypes';
 import DynamicLink from '../../sharedComponents/DynamicLink';
+import ImportAscentNotification from '../import/ImportAscentsNotification';
+import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import MountainLogo from '../mountainLogo';
 import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
@@ -39,6 +43,7 @@ export const Root = styled(Card)`
   grid-template-columns: 11.875rem 1fr;
   grid-column-gap: 1rem;
   grid-template-rows: auto auto;
+  position: relative;
 
   @media(max-width: ${smallCardBreakpoint}px) {
     grid-template-columns: 8rem 1fr;
@@ -141,6 +146,23 @@ const PeakListCard = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
+
+  const prevActive = usePrevious(active);
+  useEffect(() => {
+    if (prevActive === false && active === true && showImportNotification === false) {
+      setShowImportNotification(true);
+    }
+  }, [prevActive, active, showImportNotification, setShowImportNotification]);
+  const importAscentsNotification = showImportNotification &&
+    (type === PeakListVariants.standard || type === PeakListVariants.winter || id === NH48_GRID_OBJECT_ID) ? (
+    <ImportAscentNotification
+      closeNotification={() => setShowImportNotification(false)}
+      type={type}
+      peakListId={id}
+    />
+  ) : null;
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -252,6 +274,7 @@ const PeakListCard = (props: Props) => {
             />
           </ProgressBarContainer>
         </ProgressBarRow>
+        {importAscentsNotification}
       </Root>
     </LinkWrapper>
   );

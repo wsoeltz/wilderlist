@@ -98,7 +98,6 @@ const VariantLinks = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  // const history = useHistory();
   const match = useRouteMatch<{peakListId: string | undefined, id: string | undefined}>();
   let currentListId: string | null;
   if (match.params.peakListId && match.params.peakListId && match.params.peakListId !== 'search') {
