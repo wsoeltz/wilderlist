@@ -307,6 +307,8 @@ dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 dashboard-suggested-lists = Suggested Lists
 
+dashboard-back-to-dashboard = Back to Dashboard
+
 your-stats-title = Your Stats
 
 stats-mountain-panel = All In Progress & Completed Mountains
@@ -630,6 +632,8 @@ import-grid-img-alt-file-upload = Then select FILE UPLOAD
 import-grid-img-alt-file-publish = Go to File > Publish to the web
 import-grid-img-alt-publish-setting = Select the Grid you would like to publish and set it to CSV
 import-grid-img-alt-publish-link = Copy the generated link
+
+import-ascents-notification-text = Already have a spreadsheet of ascents?
 
 weather-forecast-weather = Weather
 weather-forecast-high = High

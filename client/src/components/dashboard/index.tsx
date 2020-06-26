@@ -10,6 +10,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
+import { Routes } from '../../routing/routes';
 import { searchListDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
@@ -230,7 +231,10 @@ const Dashboard = (props: Props) => {
 
   const rightSideUtility = peakListId !== undefined ? (
       <ContentHeader>
-        <BackButton />
+        <BackButton
+          onClick={() => history.push(Routes.Dashboard)}
+          text={getFluentString('dashboard-back-to-dashboard')}
+        />
       </ContentHeader>
     ) : null;
 

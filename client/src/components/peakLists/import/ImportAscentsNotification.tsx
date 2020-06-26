@@ -1,7 +1,11 @@
 import { useQuery } from '@apollo/react-hooks';
+import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
+import {
+  AppLocalizationAndBundleContext,
+} from '../../../contextProviders/getFluentLocalizationContext';
 import {
   CompactButtonPrimary,
   CompactGhostButton,
@@ -77,6 +81,9 @@ const ImportAscentsNotification = (props: Props) => {
 
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
 
+  const {localization} = useContext(AppLocalizationAndBundleContext);
+  const getFluentString: GetString = (...args) => localization.getString(...args);
+
   const user = useContext(UserContext);
 
   const {loading, error, data} = useQuery<SuccessResponse, {id: string}>(GET_PEAK_LIST, {
@@ -114,9 +121,11 @@ const ImportAscentsNotification = (props: Props) => {
   return (
     <Root>
       <Content>
-        <small>Already have a spreadsheet of ascents?</small>
+        <small>{getFluentString('import-ascents-notification-text')}</small>
         <div>
-          <CompactButtonPrimary onClick={() => setIsImportModalOpen(true)}>Import Ascents</CompactButtonPrimary>
+          <CompactButtonPrimary onClick={() => setIsImportModalOpen(true)}>
+            {getFluentString('import-ascents-title')}
+          </CompactButtonPrimary>
           <CompactGhostButton onClick={closeNotification}>Dismiss</CompactGhostButton>
         </div>
       </Content>
