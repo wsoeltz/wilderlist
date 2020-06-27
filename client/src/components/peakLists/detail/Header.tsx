@@ -328,12 +328,14 @@ const Header = (props: Props) => {
       <ActiveListContentContainer>
         <div>
           <strong>{numFriendsCompletedAscents}/{totalRequiredAscents}</strong>
+          {' '}
           {getFluentString('user-profile-compare-completed-by', {
             'user-name': comparisonUser.name,
           })}
         </div>
         <TextRight>
           <strong>{numCompletedAscents}/{totalRequiredAscents}</strong>
+          {' '}
           {getFluentString('user-profile-compare-completed-by', {
             'user-name': user.name,
           })}

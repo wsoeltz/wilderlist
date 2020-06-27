@@ -34,15 +34,6 @@ export interface Trail extends Coordinate {
 
 export type CoordinateWithDates = Coordinate & {completionDates?: VariableDate | null};
 
-export interface IUserLocation {
-  loading: boolean;
-  error: string | undefined;
-  coordinates: undefined | {
-    latitude: number;
-    longitude: number;
-  };
-}
-
 export interface DestinationDatum {
   key: string;
   latitude: number;

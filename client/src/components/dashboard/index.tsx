@@ -1,9 +1,8 @@
 import { useQuery } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
@@ -102,30 +101,12 @@ const Dashboard = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const { windowWidth } = useContext(AppContext);
+  const { windowWidth, usersLocation } = useContext(AppContext);
+
+  const usersState = usersLocation && usersLocation.data && usersLocation.data.stateAbbreviation
+    ? usersLocation.data.stateAbbreviation : undefined;
 
   const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
-
-  const [usersState, setUsersState] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    const getUsersIpLocation = async () => {
-      try {
-        const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
-        const res = await axios.get(
-          `https://ssl.geoplugin.net/json.gp?k=${key}`,
-        );
-        if (res && res.data && res.data.geoplugin_regionCode) {
-          setUsersState(res.data.geoplugin_regionCode);
-        } else {
-          setUsersState('unknown');
-        }
-      } catch (e) {
-        console.error(e);
-        setUsersState('unknown');
-      }
-    };
-    getUsersIpLocation();
-  });
 
   const {
     loading: listLoading,

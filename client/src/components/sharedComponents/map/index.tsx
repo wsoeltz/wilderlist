@@ -33,10 +33,7 @@ import {
   Campsite,
 } from '../../../utilities/getCampsites';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
-import {
-  setUserAllowsLocation,
-  userAllowsLocation,
-} from '../../../Utils';
+import {AppContext} from '../../App';
 import CampsitesLayer, {getCampsitesData} from './CampsitesLayer';
 import ColorScale from './ColorScale';
 import DirectionsAndLocation from './DirectionsAndLocation';
@@ -48,7 +45,6 @@ import {
   Coordinate,
   CoordinateWithDates,
   DestinationDatum,
-  IUserLocation,
   PopupData,
   PopupDataTypes,
   Trail,
@@ -217,6 +213,8 @@ const Map = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const {usersLocation} = useContext(AppContext);
+
   const Mapbox = useContext(MapboxContext);
 
   const history = useHistory();
@@ -277,8 +275,8 @@ const Map = (props: Props) => {
     if (localstorageKeys && localstorageKeys.yourLocation) {
       localStorage.setItem(localstorageKeys.yourLocation, newValue.toString());
     }
-    if (userAllowsLocation() === false) {
-      alert('You must enable location services for directions');
+    if (newValue === true && usersLocation && usersLocation.requestAccurateLocation) {
+      usersLocation.requestAccurateLocation();
     }
   };
 
@@ -292,55 +290,23 @@ const Map = (props: Props) => {
     }
   };
 
-  const [usersLocation, setUsersLocation] = useState<IUserLocation>({
-    error: undefined, loading: false, coordinates: undefined,
-  });
   const [destination, setDestination] =
     useState<DestinationDatum | undefined>(undefined);
   const [directionsCache, setDirectionsCache] = useState<Array<DrivingData & {key: string}>>([]);
   const [directionsData, setDirectionsData] = useState<DrivingData | undefined>(undefined);
 
   useEffect(() => {
-    if (yourLocationOn === true) {
-      const onSuccess = ({coords: {latitude, longitude}}: Position) => {
-        setUsersLocation({coordinates: {latitude, longitude}, error: undefined, loading: false});
-        if (localstorageKeys && localstorageKeys.yourLocation) {
-          localStorage.setItem(localstorageKeys.yourLocation, 'true');
-        }
-        setUserAllowsLocation(true);
-      };
-      const onError = () => {
-        setUsersLocation({
-          coordinates: undefined, error: 'You must enable location services for directions', loading: false,
-        });
-        setUserAllowsLocation(false);
-      };
-      if (!navigator.geolocation) {
-        setUsersLocation({
-          coordinates: undefined, error: 'Geolocation is not supported by your browser', loading: false,
-        });
-      } else {
-        setUsersLocation({coordinates: undefined, error: undefined, loading: true});
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
-      }
-    } else {
-      if (localstorageKeys && localstorageKeys.yourLocation) {
-        localStorage.setItem(localstorageKeys.yourLocation, 'false');
-      }
-    }
-  }, [yourLocationOn, localstorageKeys]);
-
-  useEffect(() => {
-    if (usersLocation.error === undefined &&
+    if (usersLocation &&
         usersLocation.loading === false &&
-        usersLocation.coordinates !== undefined &&
+        usersLocation.data !== undefined &&
+        usersLocation.data.coordinates !== undefined &&
         destination !== undefined) {
       const cachedData = directionsCache.find(({key}) => key === destination.key);
       if (cachedData) {
         setDirectionsData(cachedData);
       } else {
         getDrivingDistances(
-          usersLocation.coordinates.latitude, usersLocation.coordinates.longitude,
+          usersLocation.data.coordinates.lat, usersLocation.data.coordinates.lng,
           destination.latitude, destination.longitude)
         .then(res => {
           if (res) {
@@ -534,7 +500,6 @@ const Map = (props: Props) => {
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
         <DirectionsAndLocation
-          usersLocation={usersLocation}
           destination={destination}
           directionsData={directionsData}
           yourLocationOn={yourLocationOn}
@@ -581,7 +546,6 @@ const Map = (props: Props) => {
           userId={userId}
           isOtherUser={isOtherUser}
           otherUserId={otherUserId}
-          usersLocation={usersLocation}
           destination={destination}
           setDestination={setDestination}
           directionsData={directionsData}

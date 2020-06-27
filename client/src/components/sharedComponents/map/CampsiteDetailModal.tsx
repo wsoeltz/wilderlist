@@ -32,6 +32,7 @@ import {
   Sources,
 } from '../../../utilities/getCampsites';
 import {DrivingData} from '../../../utilities/getDrivingDistances';
+import {AppContext} from '../../App';
 import WeatherReport from '../../mountains/detail/WeatherReport';
 import { ButtonWrapper } from '../AreYouSureModal';
 import LoadingSpinner from '../LoadingSpinner';
@@ -63,12 +64,11 @@ interface Props {
   campsiteDatum: Campsite;
   directionsData: DrivingData | undefined;
   getDirections: () => void;
-  usersLocation: {latitude: number, longitude: number} | undefined;
 }
 
 const TrailDetailModal = (props: Props) => {
   const {
-    onClose, campsiteDatum, directionsData, getDirections, usersLocation,
+    onClose, campsiteDatum, directionsData, getDirections,
   } = props;
   const {
     name, latitude, longitude, id, contractCode, source,
@@ -76,6 +76,7 @@ const TrailDetailModal = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+  const {usersLocation} = useContext(AppContext);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [details, setDetails] = useState<CampsiteDetail | undefined>(undefined);
@@ -103,18 +104,21 @@ const TrailDetailModal = (props: Props) => {
 
   const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
   const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
-  const directions = directionsData !== undefined && usersLocation !== undefined ?
-    <DirectionsContent>
-      {hours} {minutes} ({directionsData.miles} miles)
-      <GoogleButton>
-        <GoogleMapsDirectionsLink
-          lat={latitude}
-          long={longitude}
-          userLat={usersLocation.latitude}
-          userLong={usersLocation.longitude}
-        />
-      </GoogleButton>
-    </DirectionsContent>
+  const directions = directionsData !== undefined && usersLocation !== undefined &&
+    usersLocation.data && usersLocation.data.coordinates
+    ? (
+      <DirectionsContent>
+        {hours} {minutes} ({directionsData.miles} miles)
+        <GoogleButton>
+          <GoogleMapsDirectionsLink
+            lat={latitude}
+            long={longitude}
+            userLat={usersLocation.data.coordinates.lat}
+            userLong={usersLocation.data.coordinates.lng}
+          />
+        </GoogleButton>
+      </DirectionsContent>
+    )
   : (
     <DirectionsButton onClick={getDirections}>
       {getFluentString('map-get-directions')}

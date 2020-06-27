@@ -17,6 +17,7 @@ import {
   SimpleListItem,
 } from '../../../styling/styleUtils';
 import {DrivingData} from '../../../utilities/getDrivingDistances';
+import {AppContext} from '../../App';
 import WeatherReport from '../../mountains/detail/WeatherReport';
 import { ButtonWrapper } from '../AreYouSureModal';
 import Modal from '../Modal';
@@ -41,12 +42,11 @@ interface Props {
   trailDatum: Trail;
   directionsData: DrivingData | undefined;
   getDirections: () => void;
-  usersLocation: {latitude: number, longitude: number} | undefined;
 }
 
 const TrailDetailModal = (props: Props) => {
   const {
-    onClose, trailDatum, directionsData, getDirections, usersLocation,
+    onClose, trailDatum, directionsData, getDirections,
   } = props;
   const {
     name, location, image, mileage, difficulty,
@@ -56,6 +56,7 @@ const TrailDetailModal = (props: Props) => {
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+  const {usersLocation} = useContext(AppContext);
 
   const [showImage, setShowImage] = useState<boolean>(true);
 
@@ -75,18 +76,21 @@ const TrailDetailModal = (props: Props) => {
 
   const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
   const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
-  const directions = directionsData !== undefined && usersLocation !== undefined ?
-    <DirectionsContent>
-      {hours} {minutes} ({directionsData.miles} miles)
-      <GoogleButton>
-        <GoogleMapsDirectionsLink
-          lat={latitude}
-          long={longitude}
-          userLat={usersLocation.latitude}
-          userLong={usersLocation.longitude}
-        />
-      </GoogleButton>
-    </DirectionsContent>
+  const directions = directionsData !== undefined && usersLocation !== undefined &&
+    usersLocation.data && usersLocation.data.coordinates
+    ? (
+      <DirectionsContent>
+        {hours} {minutes} ({directionsData.miles} miles)
+        <GoogleButton>
+          <GoogleMapsDirectionsLink
+            lat={latitude}
+            long={longitude}
+            userLat={usersLocation.data.coordinates.lat}
+            userLong={usersLocation.data.coordinates.lng}
+          />
+        </GoogleButton>
+      </DirectionsContent>
+    )
   : (
     <DirectionsButton onClick={getDirections}>
       {getFluentString('map-get-directions')}
