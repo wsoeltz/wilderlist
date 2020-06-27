@@ -55,6 +55,7 @@ global-text-value-search-mountains = Search mountains
 global-text-value-search-users = Search users
 
 global-text-value-generic-user = Wilderlist User
+global-text-value-private = Private
 
 
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
@@ -432,7 +433,9 @@ peak-list-detail-text-optional-mountains-desc = The following mountains are cons
 
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
+user-notes-title = Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
+user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year

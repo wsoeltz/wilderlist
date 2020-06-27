@@ -22,6 +22,8 @@ const MoreInformationI = styled.span`
   font-family: 'Times New Roman', 'Times', 'Georiga', serif;
   font-style: italic;
   font-weight: 600;
+  text-transform: none;
+  font-size: 0.9rem;
 `;
 
 const TooltipBase = styled.div`

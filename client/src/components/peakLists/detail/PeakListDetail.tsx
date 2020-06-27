@@ -49,6 +49,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
 import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
@@ -91,10 +92,6 @@ const ButtonPrimaryLinkSmall = styled(ButtonPrimaryLink)`
   flex-shrink: 0;
   padding: 0.4rem;
   font-size: 0.7rem;
-`;
-
-const OtherLists = styled(ResourceList)`
-  margin-bottom: 2rem;
 `;
 
 const GET_PEAK_LIST = gql`
@@ -452,7 +449,7 @@ const PeakListDetail = (props: Props) => {
       );
     } else {
       const {
-        type, description, optionalPeaksDescription, resources, children, parent, siblings,
+        type, description, optionalPeaksDescription, resources, parent,
         stateOrRegionString,
       } = peakList;
       const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
@@ -520,75 +517,6 @@ const PeakListDetail = (props: Props) => {
         ) : null;
       } else {
         resourcesList = null;
-      }
-      const parentVariant = parent && parent.name.length ? (
-        <ResourceItem key={parent.id}>
-          <Link to={listDetailLink(parent.id)}>
-            {parent.name} - {getFluentString('global-text-value-list-type', {type: parent.type})}
-          </Link>
-        </ResourceItem>
-      ) : null;
-
-      let otherVariants: React.ReactElement<any> | null;
-      if (children && children.length) {
-        const otherVariantsArray: Array<React.ReactElement<any>> = [];
-        children.forEach(child => {
-          if (child.name.length) {
-            otherVariantsArray.push(
-              <ResourceItem key={child.id}>
-                <Link to={listDetailLink(child.id)}>
-                  {child.name} - {getFluentString('global-text-value-list-type', {type: child.type})}
-                </Link>
-              </ResourceItem>,
-            );
-          }
-        });
-        otherVariants = otherVariantsArray.length ? (
-          <>
-            <SectionTitle>
-              {getFluentString('global-text-value-other-list-versions')}
-            </SectionTitle>
-            <OtherLists>
-              {parentVariant}
-              {otherVariantsArray}
-            </OtherLists>
-          </>
-        ) : null;
-      } else if (siblings && siblings.length) {
-        const otherVariantsArray: Array<React.ReactElement<any>> = [];
-        siblings.forEach(sibling => {
-          if (sibling.name.length) {
-            otherVariantsArray.push(
-              <ResourceItem key={sibling.id}>
-                <Link to={listDetailLink(sibling.id)}>
-                  {sibling.name} - {getFluentString('global-text-value-list-type', {type: sibling.type})}
-                </Link>
-              </ResourceItem>,
-            );
-          }
-        });
-        otherVariants = otherVariantsArray.length ? (
-          <>
-            <SectionTitle>
-              {getFluentString('global-text-value-other-list-versions')}
-            </SectionTitle>
-            <OtherLists>
-              {parentVariant}
-              {otherVariantsArray}
-            </OtherLists>
-          </>
-        ) : null;
-      } else {
-        otherVariants = parent && parent.name.length ? (
-        <>
-          <SectionTitle>
-            {getFluentString('global-text-value-other-list-versions')}
-          </SectionTitle>
-          <OtherLists>
-            {parentVariant}
-          </OtherLists>
-        </>
-      ) : null;
       }
 
       const {
@@ -740,10 +668,13 @@ const PeakListDetail = (props: Props) => {
             {paragraphText}
           </PreFormattedDiv>
           {resourcesList}
-          {otherVariants}
           <DetailBoxTitle>
             <BasicIconInText icon={faEdit} />
-            Notes
+            {getFluentString('user-notes-title')}
+            <small style={{marginLeft: '0.4rem'}}>({getFluentString('global-text-value-private')})</small>
+            <Tooltip
+              explanation={getFluentString('user-notes-tooltip')}
+            />
           </DetailBoxTitle>
           <DetailBox>
             <UserNote

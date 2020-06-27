@@ -50,6 +50,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
 import FlagModal from './FlagModal';
@@ -587,7 +588,13 @@ const MountainDetail = (props: Props) => {
           </DetailBoxTitle>
           <DetailBox>
             <InlineSectionContainer>
-              <NotesTitle>Notes:</NotesTitle>
+              <NotesTitle>
+                {getFluentString('user-notes-title')}
+                <small style={{marginLeft: '0.4rem'}}>({getFluentString('global-text-value-private')})</small>
+                <Tooltip
+                  explanation={getFluentString('user-notes-tooltip')}
+                />
+              </NotesTitle>
               <UserNote
                 placeholder={notesPlaceholderText}
                 defaultValue={defaultNoteText}
