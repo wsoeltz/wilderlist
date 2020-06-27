@@ -121,7 +121,7 @@ const MountainForm = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {windowWidth} = useContext(AppContext);
+  const {windowWidth, usersLocation} = useContext(AppContext);
 
   const [name, setName] = useState<string>(initialData.name);
 
@@ -165,8 +165,17 @@ const MountainForm = (props: Props) => {
 
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, 43.20415146);
-  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, -71.52769471);
+  let defaultLatitude: number;
+  let defaultLongitude: number;
+  if (usersLocation && usersLocation.data && usersLocation.data.coordinates) {
+    defaultLatitude = usersLocation.data.coordinates.lat;
+    defaultLongitude = usersLocation.data.coordinates.lng;
+  } else {
+    defaultLatitude = 43.20415146;
+    defaultLongitude = -71.52769471;
+  }
+  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, defaultLatitude);
+  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, defaultLongitude);
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);

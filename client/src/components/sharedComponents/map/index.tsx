@@ -226,15 +226,21 @@ const Map = (props: Props) => {
     initialCenter = [ highlighted[0].latitude, highlighted[0].longitude];
   } else if (coordinates.length) {
     initialCenter = [(maxLat + minLat) / 2, (maxLong + minLong) / 2];
+  } else if (usersLocation && usersLocation.data) {
+    const {lat, lng} = usersLocation.data.coordinates;
+    initialCenter = [lat, lng];
   } else {
     initialCenter = [43.20415146, -71.52769471];
   }
+  const initialBounds: [[number, number], [number, number]] = coordinates.length
+    ? [[minLong, minLat], [maxLong, maxLat]]
+    : [[initialCenter[1] + 1, initialCenter[0] - 1], [initialCenter[1] - 1, initialCenter[0] + 1]];
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
   const [popupInfo, setPopupInfo] = useState<PopupData | null>(null);
   const [center, setCenter] = useState<[number, number]>(initialCenter);
   const [fitBounds, setFitBounds] =
-    useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
+    useState<[[number, number], [number, number]] | undefined>(initialBounds);
   const [map, setMap] = useState<any>(null);
   const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
   const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
