@@ -46,6 +46,9 @@ const Circle = styled.div`
     height: 14px;
   }
 `;
+const Icon = styled.img`
+  width: 100%;
+`;
 
 const GridLegendLabel = styled(LegendItem)`
   white-space: nowrap;
@@ -78,21 +81,23 @@ interface Props {
 
 const ColorScale = (props: Props) => {
   const {
-    colorScaleColors, colorScaleLabels, colorScaleTitle,
+    colorScaleSymbols, colorScaleLabels, colorScaleTitle, colorScaleColors,
   } = props;
 
   const title = colorScaleTitle ? <LegendTitle>{colorScaleTitle}</LegendTitle> : null;
   const startColor = colorScaleColors[0];
   const endColor = colorScaleColors[colorScaleColors.length - 1];
 
-  if (colorScaleColors.length === 0) {
+  if (colorScaleSymbols.length === 0) {
     return null;
   }
-  if (colorScaleColors.length <= 2) {
-    const legendNodes = colorScaleColors.map((c, i) => {
+  if (colorScaleSymbols.length <= 2) {
+    const legendNodes = colorScaleSymbols.map((c, i) => {
       return (
-        <LegendItem key={c} style={{color: c}}>
-          <Circle style={{backgroundColor: c}} />
+        <LegendItem key={c} style={{color: colorScaleColors[i]}}>
+          <Circle>
+            <Icon src={require('./images/custom-icons/' + c + '.svg')} alt={'Mountain Icon'} />
+          </Circle>
           {colorScaleLabels[i]}
         </LegendItem>
       );
@@ -103,11 +108,13 @@ const ColorScale = (props: Props) => {
         {legendNodes}
       </Root>
     );
-  } else if (colorScaleColors.length < 8) {
-    const legendNodes = colorScaleColors.map((c) => {
+  } else if (colorScaleSymbols.length < 8) {
+    const legendNodes = colorScaleSymbols.map((c) => {
       return (
         <LegendItem key={c}>
-          <Circle style={{backgroundColor: c}} />
+          <Circle>
+            <Icon src={require('./images/custom-icons/' + c + '.svg')} alt={'Mountain Icon'} />
+          </Circle>
         </LegendItem>
       );
     });
@@ -124,13 +131,15 @@ const ColorScale = (props: Props) => {
       </Root>
     );
   } else {
-    const legendNodes = colorScaleColors.map((c, i) => {
+    const legendNodes = colorScaleSymbols.map((c, i) => {
       if (i === 0 || i === 12) {
         return null;
       } else {
         return (
           <LegendItem key={c}>
-            <Circle style={{backgroundColor: c}} />
+            <Circle>
+              <Icon src={require('./images/custom-icons/' + c + '.svg')} alt={'Mountain Icon'} />
+            </Circle>
           </LegendItem>
         );
       }
@@ -139,12 +148,22 @@ const ColorScale = (props: Props) => {
       <Root>
         {title}
         <GridLabelStart style={{color: startColor}}>
-          <Circle style={{backgroundColor: startColor}} />
+          <Circle>
+              <Icon
+                src={require('./images/custom-icons/' + colorScaleSymbols[0] + '.svg')}
+                alt={'Mountain Icon'}
+              />
+          </Circle>
           {colorScaleLabels[0]}
         </GridLabelStart>
         {legendNodes}
         <GridLabelEnd style={{color: endColor}}>
-          <Circle style={{backgroundColor: endColor}} />
+          <Circle>
+              <Icon
+                src={require('./images/custom-icons/' + colorScaleSymbols[colorScaleSymbols.length - 1] + '.svg')}
+                alt={'Mountain Icon'}
+              />
+          </Circle>
           {colorScaleLabels[colorScaleLabels.length - 1]}
         </GridLabelEnd>
       </Root>
