@@ -23,7 +23,6 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import MapboxContext from '../../../contextProviders/mapBoxContext';
 import usePrevious from '../../../hooks/usePrevious';
-import useTrails from '../../../hooks/useTrailData';
 import {Routes} from '../../../routing/routes';
 import {
   BasicIconInText,
@@ -338,12 +337,6 @@ const Map = (props: Props) => {
 
   const prevCenterCoords = usePrevious(centerCoords);
 
-  const trailData = useTrails({
-    lat: parseFloat(centerCoords[0]),
-    lon: parseFloat(centerCoords[1]),
-    active: showNearbyTrails === true && majorTrailsOn,
-  });
-
   useEffect(() => {
     if (showCampsites === true && campsitesOn &&
         (campsiteData === undefined ||
@@ -500,7 +493,7 @@ const Map = (props: Props) => {
         />
         <TrailsLayer
           showNearbyTrails={showNearbyTrails}
-          trailData={trailData ? trailData.trails : undefined}
+          centerCoords={centerCoords}
           setPopupInfo={setPopupInfo}
           majorTrailsOn={majorTrailsOn}
           togglePointer={togglePointer}

@@ -3,18 +3,18 @@ import {
   Feature,
   Layer,
 } from 'react-mapbox-gl';
+import useTrails from '../../../hooks/useTrailData';
 import {
   TrailType,
 } from '../../../utilities/getTrails';
 import {
   PopupData,
   PopupDataTypes,
-  Trail,
 } from './types';
 
 interface Props {
   showNearbyTrails: boolean | undefined;
-  trailData: Trail[] | undefined;
+  centerCoords: [string, string];
   setPopupInfo: (value: PopupData | null) => void;
   majorTrailsOn: boolean;
   togglePointer: (mapEl: any, cursor: string) => void;
@@ -22,14 +22,20 @@ interface Props {
 
 const TrailsLayer = (props: Props) => {
   const {
-    showNearbyTrails, trailData, setPopupInfo,
+    showNearbyTrails, setPopupInfo, centerCoords,
     majorTrailsOn, togglePointer,
   } = props;
 
+  const trailData = useTrails({
+    lat: parseFloat(centerCoords[0]),
+    lon: parseFloat(centerCoords[1]),
+    active: showNearbyTrails === true && majorTrailsOn,
+  });
+
   const trails: Array<React.ReactElement<any>> = [];
 
-  if (showNearbyTrails && trailData !== undefined) {
-    trailData.forEach(point => {
+  if (showNearbyTrails && trailData !== undefined && trailData.trails) {
+    trailData.trails.forEach(point => {
       const onClick = () => {
         setPopupInfo({type: PopupDataTypes.Trail, data: {...point}});
       };
