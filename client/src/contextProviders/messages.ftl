@@ -573,6 +573,9 @@ map-missing-mountain-link = Click here to add it
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
 
+map-scroll-zoom-text = Use SHIFT + SCROLL to zoom
+map-scroll-zoom-text-mobile = Use two fingers to scroll & zoom
+
 map-trails-trail-desc = {
   $miles ->
     [1] mile

@@ -50,6 +50,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import MapZoomScrollText from '../../sharedComponents/map/MapZoomScrollText';
 import MountainColorScale from '../../sharedComponents/map/MountainColorScale';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
@@ -514,6 +515,7 @@ const MountainDetail = (props: Props) => {
           <DetailBoxTitle>
             <BasicIconInText icon={faMapMarkedAlt} />
             {getFluentString('map-mountain-title')}
+            <MapZoomScrollText />
           </DetailBoxTitle>
           <MountainColorScale
               colorScaleColors={twoColorScale}

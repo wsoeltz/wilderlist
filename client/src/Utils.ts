@@ -360,3 +360,19 @@ export const isValidURL = (link: string) => {
 };
 
 export const latLonKey = ({lat, lon}: {lat: number, lon: number}) => lat.toString() + lon.toString();
+
+// https://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
+export function isTouchDevice() {
+  const prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
+  const mq = function(q: string) {
+    return window.matchMedia(q).matches;
+  };
+  if (('ontouchstart' in window) ||
+      ((window as any).DocumentTouch && document instanceof (window as any).DocumentTouch)) {
+    return true;
+  }
+  // include the 'heartz' as a way to have a non matching MQ to help terminate the join
+  // https://git.io/vznFH
+  const query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
+  return mq(query);
+}

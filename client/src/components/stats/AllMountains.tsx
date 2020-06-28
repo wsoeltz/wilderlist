@@ -24,6 +24,7 @@ import MountainTable from '../peakLists/detail/MountainTable';
 import { getColorScale } from '../peakLists/detail/PeakListDetail';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 import Map, {MapContainer} from '../sharedComponents/map';
+import MapZoomScrollText from '../sharedComponents/map/MapZoomScrollText';
 import MountainColorScale from '../sharedComponents/map/MountainColorScale';
 import Header from './Header';
 
@@ -208,6 +209,7 @@ const AllMountains = (props: Props) => {
             <DetailBoxTitle>
               <BasicIconInText icon={faMapMarkedAlt} />
               {getFluentString('map-generic-title')}
+              <MapZoomScrollText />
             </DetailBoxTitle>
             <MountainColorScale
               colorScaleColors={colorScaleColors}

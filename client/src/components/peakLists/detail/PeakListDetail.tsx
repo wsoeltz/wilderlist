@@ -50,6 +50,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import MapZoomScrollText from '../../sharedComponents/map/MapZoomScrollText';
 import MountainColorScale from '../../sharedComponents/map/MountainColorScale';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
@@ -659,6 +660,7 @@ const PeakListDetail = (props: Props) => {
           <DetailBoxTitle>
             <BasicIconInText icon={faMapMarkedAlt} />
             {getFluentString('map-list-title', {'short-name': peakList.shortName})}
+            <MapZoomScrollText />
           </DetailBoxTitle>
           <MountainColorScale
               colorScaleColors={colorScaleColors}
