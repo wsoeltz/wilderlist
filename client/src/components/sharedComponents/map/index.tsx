@@ -29,25 +29,21 @@ import {
   lightBorderColor,
 } from '../../../styling/styleUtils';
 import { CompletedMountain } from '../../../types/graphQLTypes';
-import {
-  Campsite,
-} from '../../../utilities/getCampsites';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
 import {AppContext} from '../../App';
-import CampsitesLayer, {getCampsitesData} from './CampsitesLayer';
+import CampsitesLayer from './CampsitesLayer';
 import ColorScale from './ColorScale';
 import DirectionsAndLocation from './DirectionsAndLocation';
 import MapPopup from './MapPopup';
 import NearbyMountains from './NearbyMountains';
 import PrimaryMountains from './PrimaryMountains';
-import TrailsLayer/*, {getTrailsData}*/ from './TrailsLayer';
+import TrailsLayer from './TrailsLayer';
 import {
   Coordinate,
   CoordinateWithDates,
   DestinationDatum,
   PopupData,
   PopupDataTypes,
-  // Trail,
 } from './types';
 
 export const MapContainer = styled.div`
@@ -242,7 +238,7 @@ const Map = (props: Props) => {
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>(initialBounds);
   const [map, setMap] = useState<any>(null);
-  const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
+  // const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
 
@@ -263,9 +259,6 @@ const Map = (props: Props) => {
     setCampsitesOn(newValue);
     if (localstorageKeys && localstorageKeys.campsites) {
       localStorage.setItem(localstorageKeys.campsites, newValue.toString());
-    }
-    if (newValue === false) {
-      setCampsiteData(undefined);
     }
   };
 
@@ -334,19 +327,6 @@ const Map = (props: Props) => {
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
     [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
-
-  const prevCenterCoords = usePrevious(centerCoords);
-
-  useEffect(() => {
-    if (showCampsites === true && campsitesOn &&
-        (campsiteData === undefined ||
-          (prevCenterCoords === undefined ||
-            !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
-          )
-      ) {
-      getCampsitesData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setCampsiteData);
-    }
-  }, [setCampsiteData, showCampsites, campsiteData, centerCoords, prevCenterCoords, campsitesOn]);
 
   useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
@@ -500,7 +480,7 @@ const Map = (props: Props) => {
         />
         <CampsitesLayer
           showCampsites={showCampsites}
-          campsiteData={campsiteData}
+          centerCoords={centerCoords}
           setPopupInfo={setPopupInfo}
           campsitesOn={campsitesOn}
           togglePointer={togglePointer}

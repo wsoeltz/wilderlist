@@ -358,3 +358,5 @@ export const isValidURL = (link: string) => {
   const urlRegex = new RegExp(/^(http|https)(:\/\/)?[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/, 'i');
   return urlRegex.test(link);
 };
+
+export const latLonKey = ({lat, lon}: {lat: number, lon: number}) => lat.toString() + lon.toString();

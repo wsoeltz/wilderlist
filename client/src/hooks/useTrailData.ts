@@ -3,6 +3,7 @@ import { Trail } from '../components/sharedComponents/map/types';
 import getTrails, {
   TrailsDatum,
 } from '../utilities/getTrails';
+import {latLonKey} from '../Utils';
 import usePrevious from './usePrevious';
 
 interface Input {
@@ -19,8 +20,6 @@ interface CachedDatum {
 interface Output {
   trails: Trail[] | undefined;
 }
-
-const latLonKey = ({lat, lon}: {lat: number, lon: number}) => lat.toString() + lon.toString();
 
 const getTrailsData = async (
   lat: number, lon: number,
