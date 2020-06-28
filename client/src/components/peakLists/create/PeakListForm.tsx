@@ -316,7 +316,6 @@ const PeakListForm = (props: Props) => {
           isOtherUser={true}
           colorScaleColors={[]}
           colorScaleSymbols={[]}
-          colorScaleLabels={[]}
           fillSpace={true}
           completedAscents={[]}
           showOtherMountains={true}
@@ -340,7 +339,6 @@ const PeakListForm = (props: Props) => {
             isOtherUser={true}
             colorScaleColors={[]}
             colorScaleSymbols={[]}
-            colorScaleLabels={[]}
             completedAscents={[]}
             showOtherMountains={true}
             defaultOtherMountainsOn={true}

@@ -531,6 +531,11 @@ user-card-completed = Completed
 user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
+map-mountain-title = Map of Mountain
+map-generic-title = Map
+map-list-title = Map of Mountains on { $short-name }
+map-mountains-colored = Mountains Colored By Completion
+map-mountain-colored = Mountain Colored By Completion
 map-completed = You Completed On
 map-completed-other-user = Completed On
 map-completed-in-winter = Completed in winter

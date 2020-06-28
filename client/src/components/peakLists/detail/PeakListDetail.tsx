@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -15,6 +15,7 @@ import usePrevious from '../../../hooks/usePrevious';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
+  Block,
   ButtonPrimaryLink,
   DetailBox,
   DetailBoxTitle,
@@ -40,7 +41,7 @@ import {
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Map, {MapContainer, Props as MapProps} from '../../sharedComponents/map';
+import Map, {Props as MapProps} from '../../sharedComponents/map';
 import {
   fiveColorScale,
   fiveSymbolScale,
@@ -49,6 +50,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import MountainColorScale from '../../sharedComponents/map/MountainColorScale';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
 import { getType, isState } from '../Utils';
@@ -276,13 +278,13 @@ interface PeakListNoteVariables {
   text: string;
 }
 
-const getColorScale = (type: PeakListVariants, getFluentString: GetString) => {
+export const getColorScale = (type: PeakListVariants, getFluentString: GetString) => {
   let colorScaleTitle: string | undefined;
   let colorScaleColors: string[];
   let colorScaleSymbols: string[];
   let colorScaleLabels: string[];
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-    colorScaleTitle = undefined;
+    colorScaleTitle = getFluentString('map-mountains-colored');
     colorScaleColors = twoColorScale;
     colorScaleSymbols = twoSymbolScale;
     colorScaleLabels = [
@@ -369,7 +371,6 @@ const PeakListDetail = (props: Props) => {
     coordinates: [],
     colorScaleColors: [],
     colorScaleSymbols: [],
-    colorScaleLabels: [],
     showNearbyTrails: true,
     showYourLocation: true,
     showOtherMountains: true,
@@ -404,7 +405,7 @@ const PeakListDetail = (props: Props) => {
       });
 
       const {
-        colorScaleTitle, colorScaleColors, colorScaleSymbols, colorScaleLabels,
+        colorScaleColors, colorScaleSymbols,
       } = getColorScale(type, getFluentString);
 
       const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
@@ -417,10 +418,8 @@ const PeakListDetail = (props: Props) => {
         userId: me && me._id ? me._id : null,
         isOtherUser,
         otherUserId: isOtherUser && userId ? userId : undefined,
-        colorScaleTitle,
         colorScaleColors,
         colorScaleSymbols,
-        colorScaleLabels,
         showNearbyTrails: true,
         showYourLocation: true,
         showOtherMountains: true,
@@ -633,10 +632,8 @@ const PeakListDetail = (props: Props) => {
         userId: me && me._id ? me._id : null,
         isOtherUser,
         otherUserId: isOtherUser && userId ? userId : undefined,
-        colorScaleTitle,
         colorScaleColors,
         colorScaleSymbols,
-        colorScaleLabels,
         showNearbyTrails: true,
         showYourLocation: true,
         showOtherMountains: true,
@@ -659,15 +656,33 @@ const PeakListDetail = (props: Props) => {
             isOtherUser={isOtherUser}
             queryRefetchArray={queryRefetchArray}
           />
+          <DetailBoxTitle>
+            <BasicIconInText icon={faMapMarkedAlt} />
+            {getFluentString('map-list-title', {'short-name': peakList.shortName})}
+          </DetailBoxTitle>
+          <MountainColorScale
+              colorScaleColors={colorScaleColors}
+              colorScaleSymbols={colorScaleSymbols}
+              colorScaleLabels={colorScaleLabels}
+              colorScaleTitle={colorScaleTitle}
+          />
         </>
       );
 
       body = (
         <>
-          <PreFormattedDiv>
-            {paragraphText}
-          </PreFormattedDiv>
-          {resourcesList}
+          <Block>
+            <DetailBoxTitle>
+              <BasicIconInText icon={faAlignLeft} />
+              {getFluentString('global-text-value-description')}
+            </DetailBoxTitle>
+            <DetailBox>
+              <PreFormattedDiv>
+                {paragraphText}
+              </PreFormattedDiv>
+              {resourcesList}
+            </DetailBox>
+          </Block>
           <DetailBoxTitle>
             <BasicIconInText icon={faEdit} />
             {getFluentString('user-notes-title')}
@@ -712,7 +727,7 @@ const PeakListDetail = (props: Props) => {
   return (
     <>
       {header}
-      <MapContainer style={{visibility: loading ? 'hidden' : undefined}}>
+      <div style={{visibility: loading ? 'hidden' : undefined}}>
         <Map
           {...mapProps}
           localstorageKeys={{
@@ -723,7 +738,7 @@ const PeakListDetail = (props: Props) => {
           }}
           key={peakListDetailMapKey}
         />
-      </MapContainer>
+      </div>
       {body}
     </>
   );

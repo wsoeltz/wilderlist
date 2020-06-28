@@ -32,8 +32,8 @@ import { CompletedMountain } from '../../../types/graphQLTypes';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
 import {AppContext} from '../../App';
 import CampsitesLayer from './CampsitesLayer';
-import ColorScale from './ColorScale';
 import DirectionsAndLocation from './DirectionsAndLocation';
+import MapLegend from './MapLegend';
 import MapPopup from './MapPopup';
 import NearbyMountains from './NearbyMountains';
 import PrimaryMountains from './PrimaryMountains';
@@ -158,14 +158,12 @@ export interface Props {
   coordinates: CoordinateWithDates[];
   colorScaleColors: string[];
   colorScaleSymbols: string[];
-  colorScaleLabels: string[];
   highlighted?: CoordinateWithDates[];
   isOtherUser?: boolean;
   otherUserId?: string;
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
-  colorScaleTitle?: string;
   fillSpace?: boolean;
   showNearbyTrails?: boolean;
   defaultMajorTrailsOn?: boolean;
@@ -197,8 +195,8 @@ const Map = (props: Props) => {
     mountainId, peakListId, coordinates, highlighted,
     userId, isOtherUser, otherUserId, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
-    colorScaleColors, colorScaleLabels, fillSpace,
-    colorScaleTitle, showNearbyTrails, colorScaleSymbols,
+    colorScaleColors, fillSpace,
+    showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn,
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
@@ -238,9 +236,8 @@ const Map = (props: Props) => {
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>(initialBounds);
   const [map, setMap] = useState<any>(null);
-  // const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
 
-  const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
+  const [mapLegendHeight, setMapLegendHeight] = useState<number>(0);
 
   const initialMajorTrailsSetting = defaultMajorTrailsOn ? true : false;
   const [majorTrailsOn, setMajorTrailsOn] = useState<boolean>(initialMajorTrailsSetting);
@@ -317,12 +314,12 @@ const Map = (props: Props) => {
     }
   }, [usersLocation, destination, setDirectionsCache, directionsCache]);
 
-  const colorScaleRef = useRef<HTMLDivElement | null>(null);
+  const mapLegendRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (colorScaleRef && colorScaleRef.current) {
-      setColorScaleHeight(colorScaleRef.current.offsetHeight);
+    if (mapLegendRef && mapLegendRef.current) {
+      setMapLegendHeight(mapLegendRef.current.offsetHeight);
     }
-  }, [colorScaleRef, setColorScaleHeight]);
+  }, [mapLegendRef, setMapLegendHeight]);
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
@@ -452,7 +449,7 @@ const Map = (props: Props) => {
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
         containerStyle={{
-          height: fillSpace === true ? `calc(100% - ${colorScaleHeight}px)` : '500px',
+          height: fillSpace === true ? `calc(100% - ${mapLegendHeight}px)` : '500px',
           width: '100%',
         }}
         center={center}
@@ -460,7 +457,7 @@ const Map = (props: Props) => {
         fitBounds={fitBounds}
         fitBoundsOptions={{padding: 50, linear: true}}
         movingMethod={movingMethod ? movingMethod : 'flyTo'}
-        key={`mapkey-${colorScaleHeight}-${mapReloadCount}`}
+        key={`mapkey-${mapLegendHeight}-${mapReloadCount}`}
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
@@ -543,13 +540,10 @@ const Map = (props: Props) => {
         </ReloadMapContainer>
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
-      <ColorScale
+      <MapLegend
         centerCoords={centerCoords}
         showCenterCrosshairs={showCenterCrosshairs}
         returnLatLongOnClick={returnLatLongOnClick}
-        colorScaleTitle={colorScaleTitle}
-        colorScaleColors={colorScaleColors}
-        colorScaleLabels={colorScaleLabels}
         showNearbyTrails={showNearbyTrails}
         showYourLocation={showYourLocation}
         majorTrailsOn={majorTrailsOn}
@@ -566,7 +560,7 @@ const Map = (props: Props) => {
         onAddMountainClick={onAddMountainClick}
         primaryMountainLegendCopy={primaryMountainLegendCopy}
         customContentBottom={customScaleContentBottom}
-        ref={colorScaleRef}
+        ref={mapLegendRef}
       />
     </Root>
   );

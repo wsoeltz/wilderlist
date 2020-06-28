@@ -272,7 +272,6 @@ const MountainForm = (props: Props) => {
               returnLatLongOnClick={setLatLongFromMap}
               colorScaleColors={[]}
               colorScaleSymbols={[]}
-              colorScaleLabels={[]}
               showOtherMountains={true}
               defaultOtherMountainsOn={true}
               primaryMountainLegendCopy={getFluentString('create-mountain-map-your-mountain')}
@@ -300,7 +299,6 @@ const MountainForm = (props: Props) => {
               returnLatLongOnClick={setLatLongFromMap}
               colorScaleColors={[]}
               colorScaleSymbols={[]}
-              colorScaleLabels={[]}
               primaryMountainLegendCopy={getFluentString('create-mountain-map-your-mountain')}
               showOtherMountains={true}
               defaultOtherMountainsOn={true}

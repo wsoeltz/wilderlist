@@ -33,6 +33,7 @@ import {
   faLink,
   faList,
   faLongArrowAltDown,
+  faMapMarkedAlt,
   faMapMarkerAlt,
   faMapSigns,
   faMountain,
@@ -69,7 +70,7 @@ library.add(
   faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
   faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
   faAddressBook, faAt, faPhone, faLink, faTrophy, faCompass,
-  faLeaf, faSnowflake, faTh,
+  faLeaf, faSnowflake, faTh, faMapMarkedAlt,
 );
 
 const GlobalStyles = createGlobalStyle`

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { faCloudSun, faEdit, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faCloudSun, faEdit, faFlag, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, { useContext, useState } from 'react';
@@ -13,11 +13,11 @@ import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
-  ButtonSecondaryLink,
+  CompactGhostButton,
+  CompactGhostButtonLink,
   DetailBox as DetailBoxBase,
   DetailBoxFooter,
   DetailBoxTitle,
-  GhostButton,
   InlineTitle,
   lowWarningColorDark,
   placeholderColor,
@@ -50,6 +50,7 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import MountainColorScale from '../../sharedComponents/map/MountainColorScale';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
@@ -317,10 +318,6 @@ const MountainDetail = (props: Props) => {
     coordinates: [],
     colorScaleColors: twoColorScale,
     colorScaleSymbols: twoSymbolScale,
-    colorScaleLabels: [
-      getFluentString('global-text-value-not-done'),
-      getFluentString('global-text-value-done'),
-    ],
     showNearbyTrails: true,
     showYourLocation: true,
     showOtherMountains: true,
@@ -353,10 +350,6 @@ const MountainDetail = (props: Props) => {
         completedAscents: userMountains,
         colorScaleColors: twoColorScale,
         colorScaleSymbols: twoSymbolScale,
-        colorScaleLabels: [
-          getFluentString('global-text-value-not-done'),
-          getFluentString('global-text-value-done'),
-        ],
         showNearbyTrails: true,
         showYourLocation: true,
         showOtherMountains: true,
@@ -428,14 +421,14 @@ const MountainDetail = (props: Props) => {
       } else {
         actionButton = (author && author.id && author.id === userId
                   && user.mountainPermissions !== -1) || user.permissions === PermissionTypes.admin ? (
-          <ButtonSecondaryLink to={editMountainLink(mountain.id)}>
+          <CompactGhostButtonLink to={editMountainLink(mountain.id)}>
             {getFluentString('global-text-value-edit')}
-          </ButtonSecondaryLink>
+          </CompactGhostButtonLink>
         ) : (
-          <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+          <CompactGhostButton onClick={() => setIsFlagModalOpen(true)}>
             <BasicIconInText icon={faFlag} />
             {getFluentString('global-text-value-flag')}
-          </GhostButton>
+          </CompactGhostButton>
         );
       }
 
@@ -518,6 +511,19 @@ const MountainDetail = (props: Props) => {
             <span>{state.name}</span>
             <span>{elevation}ft</span>
           </Details>
+          <DetailBoxTitle>
+            <BasicIconInText icon={faMapMarkedAlt} />
+            {getFluentString('map-mountain-title')}
+          </DetailBoxTitle>
+          <MountainColorScale
+              colorScaleColors={twoColorScale}
+              colorScaleSymbols={twoSymbolScale}
+              colorScaleLabels={[
+                getFluentString('global-text-value-not-done'),
+                getFluentString('global-text-value-done'),
+              ]}
+              colorScaleTitle={getFluentString('map-mountain-colored')}
+          />
         </>
       );
 
@@ -530,10 +536,6 @@ const MountainDetail = (props: Props) => {
         isOtherUser: false,
         colorScaleColors: twoColorScale,
         colorScaleSymbols: twoSymbolScale,
-        colorScaleLabels: [
-          getFluentString('global-text-value-not-done'),
-          getFluentString('global-text-value-done'),
-        ],
         showNearbyTrails: true,
         showYourLocation: true,
         showOtherMountains: true,

@@ -105,6 +105,10 @@ export const Section = styled.div`
   margin-bottom: 1rem;
 `;
 
+export const Block = styled.div`
+  margin: 2rem 0;
+`;
+
 export const SectionTitle = styled.div`
   padding: 0.5rem 0;
   text-transform: uppercase;
