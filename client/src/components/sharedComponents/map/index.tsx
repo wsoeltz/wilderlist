@@ -382,19 +382,35 @@ const Map = (props: Props) => {
     }
   }, [map, fillSpace]);
 
+  const previousUserLocation = usePrevious(usersLocation);
   useEffect(() => {
     if (!createOrEditMountain && !addRemoveMountains) {
       setTimeout(() => {
         const coords = getMinMax(coordinates);
-        if (fitBounds === undefined || (
-            coords.minLong !== fitBounds[0][0] || coords.minLat !== fitBounds[0][1] ||
-            coords.maxLong !== fitBounds[1][0] || coords.maxLat !== fitBounds[1][1]
-           )) {
-          setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+        if (coordinates.length) {
+          if (fitBounds === undefined || (
+              coords.minLong !== fitBounds[0][0] || coords.minLat !== fitBounds[0][1] ||
+              coords.maxLong !== fitBounds[1][0] || coords.maxLat !== fitBounds[1][1]
+             )) {
+            setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+          }
+        } else if (previousUserLocation !== undefined && usersLocation !== undefined) {
+          if (usersLocation.data !== undefined && (
+               previousUserLocation.data === undefined ||
+               (previousUserLocation.data.text !== usersLocation.data.text)
+             )) {
+            const {lat, lng}: {lat: number, lng: number} = usersLocation.data.coordinates;
+            setFitBounds([
+              [lng - 0.05, lat + 0.05],
+              [lng + 0.05, lat - 0.05],
+            ]);
+            setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+          }
         }
       }, 0);
     }
-  }, [coordinates, createOrEditMountain, peakListId, mountainId, fitBounds, addRemoveMountains]);
+  }, [coordinates, createOrEditMountain, peakListId, mountainId,
+      fitBounds, addRemoveMountains, usersLocation, previousUserLocation]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
