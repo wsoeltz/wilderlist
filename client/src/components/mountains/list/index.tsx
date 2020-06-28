@@ -22,6 +22,7 @@ import {
   FloatingButton,
   FloatingButtonContainer,
   Next,
+  NoResults,
   PaginationContainer,
   PlaceholderText,
   PlusIcon,
@@ -161,6 +162,8 @@ const MountainSearchPage = (props: Props) => {
 
   let variables: Variables;
   let GQL_QUERY: any;
+  let queryText: React.ReactElement<any> | null;
+  let noResultsText: string;
   if (!query && mapCenter) {
     variables = {
       latitude: mapCenter.latitude,
@@ -169,9 +172,17 @@ const MountainSearchPage = (props: Props) => {
       longDistance: 0.5,
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
+    queryText = (
+      <NoResults>Showing mountains within <strong>70 miles</strong> of the map center</NoResults>
+    );
+    noResultsText = 'No mountains found here. Try moving the map or using the search above.';
   } else {
     variables = { searchQuery, pageNumber, nPerPage };
     GQL_QUERY = SEARCH_MOUNTAINS;
+    queryText = (
+      <NoResults>Showing mountains for query <strong>{searchQuery}</strong>.</NoResults>
+    );
+    noResultsText = getFluentString('global-text-value-no-results-found');
   }
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GQL_QUERY, {variables});
@@ -196,7 +207,7 @@ const MountainSearchPage = (props: Props) => {
   }, [listContainerElm, pageNumber]);
 
   let list: React.ReactElement<any> | null;
-  if ((loading === true || (!query && !mapCenter)) && (dataToUse === undefined && !query)) {
+  if ((loading === true || (!searchQuery && !mapCenter)) && (dataToUse === undefined && !searchQuery)) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostMountainCard key={i} />);
@@ -209,7 +220,7 @@ const MountainSearchPage = (props: Props) => {
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (dataToUse !== undefined && (query || mapCenter)) {
+  } else if (dataToUse !== undefined && (searchQuery || mapCenter)) {
     if (!dataToUse.mountains) {
       list = null;
     } else {
@@ -227,11 +238,9 @@ const MountainSearchPage = (props: Props) => {
         <Prev onClick={decrementPageNumber}>
           {getFluentString('global-text-value-navigation-prev')}
         </Prev> ) : null;
-      const noResultsText = getFluentString('global-text-value-no-results-found-for-term', {
-        term: searchQuery,
-      });
       list = (
         <>
+          {queryText}
           <ListMountains
             mountainData={mountains}
             noResultsText={noResultsText}

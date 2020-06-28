@@ -567,6 +567,7 @@ export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};
   text-align: center;
+  margin-bottom: 1.2rem;
 `;
 
 export const CheckboxRoot = styled.div`
