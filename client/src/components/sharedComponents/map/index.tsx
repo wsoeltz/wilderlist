@@ -191,6 +191,7 @@ export interface Props {
   customScaleContentBottom?: React.ReactNode;
   centerCoordsCallback?: (coords: {latitude: number, longitude: number}) => void;
   toggleVisibility?: boolean | null | string | number;
+  useGenericFunctionality?: boolean;
 }
 
 const Map = (props: Props) => {
@@ -205,7 +206,7 @@ const Map = (props: Props) => {
     defaultOtherMountainsOn, completedAscents,
     defaultCampsitesOn, showCampsites, movingMethod,
     addRemoveMountains, primaryMountainLegendCopy, customScaleContentBottom,
-    centerCoordsCallback, toggleVisibility,
+    centerCoordsCallback, toggleVisibility, useGenericFunctionality,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -524,6 +525,7 @@ const Map = (props: Props) => {
           togglePointer={togglePointer}
           showOtherMountains={showOtherMountains}
           otherMountainsOn={otherMountainsOn}
+          useGenericFunctionality={useGenericFunctionality}
         />
         <PrimaryMountains
           coordinates={coordinates}
@@ -554,6 +556,7 @@ const Map = (props: Props) => {
           createOrEditMountain={createOrEditMountain}
           highlighted={highlighted}
           addRemoveMountains={addRemoveMountains}
+          useGenericFunctionality={useGenericFunctionality}
         />
         {crosshairs}
         <BrokenMapMessage>
@@ -594,6 +597,7 @@ const Map = (props: Props) => {
         onAddMountainClick={onAddMountainClick}
         primaryMountainLegendCopy={primaryMountainLegendCopy}
         customContentBottom={customScaleContentBottom}
+        useGenericFunctionality={useGenericFunctionality}
         ref={mapLegendRef}
       />
     </Root>

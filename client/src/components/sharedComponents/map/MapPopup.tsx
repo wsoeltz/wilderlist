@@ -18,6 +18,7 @@ import {
   friendsProfileWithPeakListWithMountainDetailLink,
   listDetailWithMountainDetailLink,
   mountainDetailLink,
+  searchMountainsDetailLink,
 } from '../../../routing/Utils';
 import {
   ButtonSecondary,
@@ -171,6 +172,7 @@ interface Props {
     removeText: string;
     onRemove: (mountain: CoordinateWithDates) => void;
   };
+  useGenericFunctionality: boolean | undefined;
 }
 
 const MapPopup = (props: Props) => {
@@ -180,6 +182,7 @@ const MapPopup = (props: Props) => {
     closePopup, yourLocationOn, setYourLocationOn, setDestination,
     showYourLocation, colorScaleColors, colorScaleSymbols,
     createOrEditMountain, highlighted, addRemoveMountains,
+    useGenericFunctionality,
   } = props;
 
   const {usersLocation} = useContext(AppContext);
@@ -195,7 +198,9 @@ const MapPopup = (props: Props) => {
   const [campsiteModalOpen, setCampsiteModalOpen] = useState<boolean>(false);
 
   const getDesktopUrl = (id: Mountain['id']) => {
-    if (peakListId === null || mountainId === id) {
+    if (useGenericFunctionality) {
+      return searchMountainsDetailLink(id) + window.location.search;
+    } else if (peakListId === null || mountainId === id) {
       return mountainDetailLink(id);
     } else if (peakListId !== null) {
       if (isOtherUser && otherUserId) {
@@ -282,7 +287,7 @@ const MapPopup = (props: Props) => {
   };
 
   const getMountainPopupName = (mtnId: string, mtnName: string, color: string) => {
-    if (mtnId && !(peakListId === null && mountainId === null)) {
+    if (mtnId && !(peakListId === null && mountainId === null && !useGenericFunctionality)) {
       return (
         <PopupTitleInternal
           mobileURL={mountainDetailLink(mtnId)}

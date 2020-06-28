@@ -119,6 +119,7 @@ interface Props {
   onAddMountainClick: () => void;
   primaryMountainLegendCopy: undefined | string;
   customContentBottom: undefined | React.ReactNode;
+  useGenericFunctionality: boolean | undefined;
 }
 
 const MapLegend = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
@@ -129,6 +130,7 @@ const MapLegend = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivEl
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
     showCampsites, toggleCampsites, campsitesOn, userId,
     onAddMountainClick, primaryMountainLegendCopy, customContentBottom,
+    useGenericFunctionality,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -177,7 +179,7 @@ const MapLegend = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivEl
     </AdditionalItem>
   ) : null;
 
-  const otherMountainsLegend = showOtherMountains ? (
+  const otherMountainsLegend = showOtherMountains && !useGenericFunctionality ? (
     <AdditionalItem>
       <Tooltip
       explanation={
@@ -204,6 +206,35 @@ const MapLegend = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivEl
             <Status>({getFluentString('map-legend-show-hide', {
               shown: otherMountainsOn ? 'true' : 'false',
             })})</Status>
+          </div>
+        </LegendToggle>
+      </Tooltip>
+    </AdditionalItem>
+  ) : null;
+
+  const allMountainsLegend = useGenericFunctionality ? (
+    <AdditionalItem>
+      <Tooltip
+      explanation={
+          <div
+            dangerouslySetInnerHTML={{__html: getFluentString('map-legend-other-mountains-tooltip')}}
+          />
+        }
+        cursor={'pointer'}
+      >
+        <LegendToggle>
+          <OtherMountainsIcon>
+            <img
+              src={require('./images/custom-icons/mountain-highlighted.svg')}
+              alt='Mountains Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </OtherMountainsIcon>
+          <div>
+            <Label>
+              Mountains on<br />
+              Wilderlist
+            </Label>
           </div>
         </LegendToggle>
       </Tooltip>
@@ -312,11 +343,12 @@ const MapLegend = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivEl
         </AdditionalItemsRoot>
       </>
     );
-  } else if (showYourLocation || showNearbyTrails || showOtherMountains) {
+  } else if (showYourLocation || showNearbyTrails || showOtherMountains || allMountainsLegend) {
     additionalItems = (
       <>
         <AdditionalItemsRoot>
           <AdditionalItemsColumn>
+            {allMountainsLegend}
             {otherMountainsLegend}
             {locationLegend}
           </AdditionalItemsColumn>

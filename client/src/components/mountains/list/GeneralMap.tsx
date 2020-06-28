@@ -59,6 +59,7 @@ const GeneralMap = (props: Props) => {
         fillSpace={true}
         toggleVisibility={visible}
         centerCoordsCallback={getMapCenter}
+        useGenericFunctionality={true}
       />
     </FullColumn>
   );
