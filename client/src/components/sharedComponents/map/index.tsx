@@ -23,6 +23,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import MapboxContext from '../../../contextProviders/mapBoxContext';
 import usePrevious from '../../../hooks/usePrevious';
+import useTrails from '../../../hooks/useTrailData';
 import {Routes} from '../../../routing/routes';
 import {
   BasicIconInText,
@@ -40,14 +41,14 @@ import DirectionsAndLocation from './DirectionsAndLocation';
 import MapPopup from './MapPopup';
 import NearbyMountains from './NearbyMountains';
 import PrimaryMountains from './PrimaryMountains';
-import TrailsLayer, {getTrailsData} from './TrailsLayer';
+import TrailsLayer/*, {getTrailsData}*/ from './TrailsLayer';
 import {
   Coordinate,
   CoordinateWithDates,
   DestinationDatum,
   PopupData,
   PopupDataTypes,
-  Trail,
+  // Trail,
 } from './types';
 
 export const MapContainer = styled.div`
@@ -242,7 +243,6 @@ const Map = (props: Props) => {
   const [fitBounds, setFitBounds] =
     useState<[[number, number], [number, number]] | undefined>(initialBounds);
   const [map, setMap] = useState<any>(null);
-  const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
   const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
 
   const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
@@ -254,9 +254,6 @@ const Map = (props: Props) => {
     setMajorTrailsOn(newValue);
     if (localstorageKeys && localstorageKeys.majorTrail) {
       localStorage.setItem(localstorageKeys.majorTrail, newValue.toString());
-    }
-    if (newValue === false) {
-      setTrailData(undefined);
     }
   };
 
@@ -341,16 +338,11 @@ const Map = (props: Props) => {
 
   const prevCenterCoords = usePrevious(centerCoords);
 
-  useEffect(() => {
-    if (showNearbyTrails === true && majorTrailsOn &&
-        (trailData === undefined ||
-          (prevCenterCoords === undefined ||
-            !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
-          )
-      ) {
-      getTrailsData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setTrailData);
-    }
-  }, [setTrailData, showNearbyTrails, trailData, centerCoords, prevCenterCoords, majorTrailsOn]);
+  const trailData = useTrails({
+    lat: parseFloat(centerCoords[0]),
+    lon: parseFloat(centerCoords[1]),
+    active: showNearbyTrails === true && majorTrailsOn,
+  });
 
   useEffect(() => {
     if (showCampsites === true && campsitesOn &&
@@ -395,38 +387,18 @@ const Map = (props: Props) => {
       }
     }, 250);
 
-    let prevVal = [0, 0];
-    const getRoughCenterCoords = debounce(() => {
-      if (map) {
-        const {lat, lng}: {lat: number, lng: number} = map.getCenter();
-        const latDiff = Math.abs(Math.abs(lat) - Math.abs(prevVal[0]));
-        const lngDiff = Math.abs(Math.abs(lng) - Math.abs(prevVal[1]));
-        if (latDiff > 0.4 || lngDiff > 0.4) {
-          prevVal = [lat, lng];
-          setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
-        }
-      }
-    }, 400);
-    if (map && showCenterCrosshairs) {
+    if (map && (showOtherMountains || showNearbyTrails || showCenterCrosshairs)) {
       map.on('dragend', getPreciseCenterCoords);
-    }
-    if (map && (showOtherMountains || showNearbyTrails)) {
-      map.on('dragend', getRoughCenterCoords);
-      map.on('zoomend', getRoughCenterCoords);
+      map.on('zoomend', getPreciseCenterCoords);
     }
 
     return () => {
       document.body.removeEventListener('keydown', enableZoom);
       document.body.removeEventListener('keyup', disableZoom);
       document.body.removeEventListener('touchstart', disableDragPanOnTouchDevics);
-      if (map && showCenterCrosshairs) {
+      if (map && (showOtherMountains || showNearbyTrails || showCenterCrosshairs)) {
         map.off('dragend', getPreciseCenterCoords);
-        // destroy the map on unmount
-        map.remove();
-      }
-      if (map && (showOtherMountains || showNearbyTrails)) {
-        map.off('dragend', getRoughCenterCoords);
-        map.off('zoomend', getRoughCenterCoords);
+        map.off('zoomend', getPreciseCenterCoords);
         // destroy the map on unmount
         map.remove();
       }
@@ -459,6 +431,20 @@ const Map = (props: Props) => {
       });
     }
   }, [highlighted, setPopupInfo, setCenter, coordinates]);
+
+  const previousCoordinates = usePrevious(coordinates);
+
+  useEffect(() => {
+    if ((coordinates && coordinates.length) &&
+        (!previousCoordinates || previousCoordinates.length !== coordinates.length)
+      ) {
+        const newCoords = getMinMax(coordinates);
+        setCenterCoords([
+          ((newCoords.maxLat + newCoords.minLat) / 2).toFixed(2),
+          ((newCoords.maxLong + newCoords.minLong) / 2).toFixed(2),
+        ]);
+    }
+  }, [previousCoordinates, coordinates]);
 
   const togglePointer = (mapEl: any, cursor: string) => {
     mapEl.getCanvas().style.cursor = cursor;
@@ -514,7 +500,7 @@ const Map = (props: Props) => {
         />
         <TrailsLayer
           showNearbyTrails={showNearbyTrails}
-          trailData={trailData}
+          trailData={trailData ? trailData.trails : undefined}
           setPopupInfo={setPopupInfo}
           majorTrailsOn={majorTrailsOn}
           togglePointer={togglePointer}
