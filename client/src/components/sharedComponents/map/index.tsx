@@ -6,6 +6,7 @@ import { GetString } from 'fluent-react/compat';
 import debounce from 'lodash/debounce';
 import sortBy from 'lodash/sortBy';
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -188,6 +189,8 @@ export interface Props {
   };
   primaryMountainLegendCopy?: string;
   customScaleContentBottom?: React.ReactNode;
+  centerCoordsCallback?: (coords: {latitude: number, longitude: number}) => void;
+  toggleVisibility?: boolean | null | string | number;
 }
 
 const Map = (props: Props) => {
@@ -202,6 +205,7 @@ const Map = (props: Props) => {
     defaultOtherMountainsOn, completedAscents,
     defaultCampsitesOn, showCampsites, movingMethod,
     addRemoveMountains, primaryMountainLegendCopy, customScaleContentBottom,
+    centerCoordsCallback, toggleVisibility,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -324,6 +328,14 @@ const Map = (props: Props) => {
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
     [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
+  const updateCenterCoords = useCallback((coords: [string, string]) => {
+      setCenterCoords([coords[0], coords[1]]);
+      if (centerCoordsCallback !== undefined) {
+        centerCoordsCallback({latitude: parseFloat(coords[0]), longitude: parseFloat(coords[1])});
+      }
+    },
+    [centerCoordsCallback],
+  );
 
   useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
@@ -332,15 +344,19 @@ const Map = (props: Props) => {
       }
     };
     const disableZoom = () => {
-      if (map) {
+      if (map && fillSpace !== true) {
         map.scrollZoom.disable();
       }
     };
     const disableDragPanOnTouchDevics = () => {
-      if (map) {
+      if (map && fillSpace !== true) {
         map.dragPan.disable();
       }
     };
+
+    if (map && fillSpace === true) {
+      map.scrollZoom.enable();
+    }
 
     document.body.addEventListener('keydown', enableZoom);
     document.body.addEventListener('keyup', disableZoom);
@@ -349,7 +365,7 @@ const Map = (props: Props) => {
     const getPreciseCenterCoords = debounce(() => {
       if (map) {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
-        setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+        updateCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
       }
     }, 250);
 
@@ -369,18 +385,13 @@ const Map = (props: Props) => {
         map.remove();
       }
     };
-  }, [map, showCenterCrosshairs, showOtherMountains, showNearbyTrails]);
+  }, [map, showCenterCrosshairs, showOtherMountains, showNearbyTrails, updateCenterCoords, fillSpace]);
 
   useEffect(() => {
     if (map) {
       map.resize();
-      if (fillSpace === true) {
-        map.scrollZoom.enable();
-      } else {
-        map.scrollZoom.disable();
-      }
     }
-  }, [map, fillSpace]);
+  }, [map, toggleVisibility]);
 
   const previousUserLocation = usePrevious(usersLocation);
   useEffect(() => {
@@ -404,13 +415,13 @@ const Map = (props: Props) => {
               [lng - 0.05, lat + 0.05],
               [lng + 0.05, lat - 0.05],
             ]);
-            setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+            updateCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
           }
         }
       }, 0);
     }
   }, [coordinates, createOrEditMountain, peakListId, mountainId,
-      fitBounds, addRemoveMountains, usersLocation, previousUserLocation]);
+      fitBounds, addRemoveMountains, usersLocation, previousUserLocation, updateCenterCoords]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
@@ -432,12 +443,12 @@ const Map = (props: Props) => {
         (!previousCoordinates || previousCoordinates.length !== coordinates.length)
       ) {
         const newCoords = getMinMax(coordinates);
-        setCenterCoords([
+        updateCenterCoords([
           ((newCoords.maxLat + newCoords.minLat) / 2).toFixed(2),
           ((newCoords.maxLong + newCoords.minLong) / 2).toFixed(2),
         ]);
     }
-  }, [previousCoordinates, coordinates]);
+  }, [previousCoordinates, coordinates, updateCenterCoords]);
 
   const togglePointer = (mapEl: any, cursor: string) => {
     mapEl.getCanvas().style.cursor = cursor;

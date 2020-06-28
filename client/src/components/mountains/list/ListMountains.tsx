@@ -1,15 +1,20 @@
 import React from 'react';
 import { NoResults } from '../../../styling/styleUtils';
 import {
-  Mountain,
+  Mountain, State,
  } from '../../../types/graphQLTypes';
 import MountainCard from './MountainCard';
 
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
-  state: Mountain['state'];
+  state: null | {
+    id: State['id'],
+    name: State['name'],
+  };
   elevation: Mountain['elevation'];
+  latitude: Mountain['latitude'];
+  longitude: Mountain['longitude'];
 }
 
 interface Props {

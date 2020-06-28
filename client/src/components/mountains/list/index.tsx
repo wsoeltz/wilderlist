@@ -9,6 +9,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePrevious from '../../../hooks/usePrevious';
 import { Routes } from '../../../routing/routes';
 import { searchMountainsDetailLink } from '../../../routing/Utils';
 import {
@@ -26,10 +27,24 @@ import {
   PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
+import {AppContext} from '../../App';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
+import GeneralMap from './GeneralMap';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, { MountainDatum } from './ListMountains';
+
+const baseQuery = `
+  id
+  name
+  state {
+    id
+    name
+  }
+  elevation
+  latitude
+  longitude
+`;
 
 const SEARCH_MOUNTAINS = gql`
   query SearchMountains(
@@ -42,26 +57,41 @@ const SEARCH_MOUNTAINS = gql`
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
     ) {
-      id
-      name
-      state {
-        id
-        name
-      }
-      elevation
+      ${baseQuery}
     }
   }
+`;
+
+const GET_NEARBY_MOUNTAINS = gql`
+  query getNearbyMountains(
+    $latitude: Float!, $longitude: Float!, $latDistance: Float!, $longDistance: Float!) {
+  mountains: nearbyMountains(
+    latitude: $latitude,
+    longitude: $longitude,
+    latDistance: $latDistance,
+    longDistance: $longDistance,
+  ) {
+    ${baseQuery}
+  }
+}
 `;
 
 interface SuccessResponse {
   mountains: MountainDatum[];
 }
 
-interface Variables {
+interface SearchVariables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
 }
+interface LocationVariables {
+  latitude: number;
+  longitude: number;
+  latDistance: number;
+  longDistance: number;
+}
+type Variables = SearchVariables | LocationVariables;
 
 interface Props extends RouteComponentProps {
   userId: string | null;
@@ -73,9 +103,17 @@ const MountainSearchPage = (props: Props) => {
   const { id }: any = match.params;
   const { query, page } = queryString.parse(location.search);
 
+  const {usersLocation} = useContext(AppContext);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.coordinates
+    ? {latitude: usersLocation.data.coordinates.lat, longitude: usersLocation.data.coordinates.lng}
+    : undefined;
+
+  const [mapCenter, setMapCenter] = useState<{latitude: number, longitude: number} | undefined>(initialMapCenter);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -104,6 +142,13 @@ const MountainSearchPage = (props: Props) => {
     }
   }, [query, page]);
 
+  useEffect(() => {
+    if (mapCenter === undefined && usersLocation && usersLocation.data && usersLocation.data.coordinates) {
+      const {lat, lng} = usersLocation.data.coordinates;
+      setMapCenter({latitude: lat, longitude: lng});
+    }
+  }, [usersLocation, mapCenter]);
+
   const searchMountains = (value: string) => {
     setSearchQuery(value);
     setPageNumber(1);
@@ -114,9 +159,32 @@ const MountainSearchPage = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage },
-  });
+  let variables: Variables;
+  let GQL_QUERY: any;
+  if (!query && mapCenter) {
+    variables = {
+      latitude: mapCenter.latitude,
+      longitude: mapCenter.longitude,
+      latDistance: 0.4,
+      longDistance: 0.5,
+    };
+    GQL_QUERY = GET_NEARBY_MOUNTAINS;
+  } else {
+    variables = { searchQuery, pageNumber, nPerPage };
+    GQL_QUERY = SEARCH_MOUNTAINS;
+  }
+
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GQL_QUERY, {variables});
+
+  const prevData = usePrevious(data);
+  let dataToUse: SuccessResponse | undefined;
+  if (data !== undefined) {
+    dataToUse = data;
+  } else if (prevData !== undefined) {
+    dataToUse = prevData;
+  } else {
+    dataToUse = undefined;
+  }
 
   const listContainerElm = useRef<HTMLDivElement>(null);
 
@@ -128,7 +196,7 @@ const MountainSearchPage = (props: Props) => {
   }, [listContainerElm, pageNumber]);
 
   let list: React.ReactElement<any> | null;
-  if (loading === true) {
+  if ((loading === true || (!query && !mapCenter)) && (dataToUse === undefined && !query)) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostMountainCard key={i} />);
@@ -141,15 +209,16 @@ const MountainSearchPage = (props: Props) => {
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (data !== undefined) {
-    const { mountains } = data;
-    if (!mountains) {
-      list = (
-        <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
-        </PlaceholderText>
-      );
+  } else if (dataToUse !== undefined && (query || mapCenter)) {
+    if (!dataToUse.mountains) {
+      list = null;
     } else {
+      let mountains: MountainDatum[];
+      if (dataToUse.mountains.length > nPerPage) {
+        mountains = dataToUse.mountains.slice(nPerPage * (pageNumber - 1), nPerPage * pageNumber);
+      } else {
+        mountains = dataToUse.mountains;
+      }
       const nextBtn = mountains.length === nPerPage ? (
         <Next onClick={incrementPageNumber}>
           {getFluentString('global-text-value-navigation-next')}
@@ -175,18 +244,16 @@ const MountainSearchPage = (props: Props) => {
       );
     }
   } else {
-    list =  (
-      <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
-      </PlaceholderText>
-    );
+    list = null;
   }
 
   const mountainDetail = !Types.ObjectId.isValid(id)
-    ? (
-        <MountainDetail userId={userId} id={null} peakListId={null} setOwnMetaData={true} />
-      )
+    ? null
     : ( <MountainDetail userId={userId} id={id} peakListId={null} setOwnMetaData={true} />);
+
+  const generalMountainStyles: React.CSSProperties | undefined = !Types.ObjectId.isValid(id)
+    ? {height: '100%'}
+    : {visibility: 'hidden', position: 'absolute', pointerEvents: 'none', bottom: 0};
 
   const addMountainButton = userId && mountainPermissions !== -1 ? (
     <FloatingButtonContainer>
@@ -230,6 +297,12 @@ const MountainSearchPage = (props: Props) => {
       <ContentRightLarge>
         <ContentBody>
           {mountainDetail}
+          <div style={generalMountainStyles}>
+            <GeneralMap
+              getMapCenter={setMapCenter}
+              visible={!Types.ObjectId.isValid(id)}
+            />
+          </div>
         </ContentBody>
       </ContentRightLarge>
     </>

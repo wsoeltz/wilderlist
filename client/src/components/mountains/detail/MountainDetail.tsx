@@ -215,7 +215,7 @@ interface QuerySuccessResponse {
 }
 
 interface QueryVariables {
-  id: string | null;
+  id: string;
   userId: string | null;
 }
 
@@ -266,7 +266,7 @@ interface MountainNoteVariables {
 
 interface Props {
   userId: string | null;
-  id: string | null;
+  id: string;
   setOwnMetaData?: boolean;
   peakListId: string | null;
   otherUserId?: string;
@@ -296,7 +296,7 @@ const MountainDetail = (props: Props) => {
   ) ? true : false;
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
-    variables: { id: id ? id : 'return_null', userId },
+    variables: { id, userId },
   });
 
   const prevData = usePrevious(data);
@@ -328,11 +328,7 @@ const MountainDetail = (props: Props) => {
     defaultCampsitesOn: defaultCampsites,
     defaultOtherMountainsOn,
   };
-  if (id === null) {
-    header = null;
-    body = null;
-    mapProps = {...mapProps, fillSpace: true};
-  } else if (loading === true) {
+  if (loading === true) {
     header = <LoadingSpinner />;
     body = null;
     if (prevData && prevData.mountain && prevData.user) {
