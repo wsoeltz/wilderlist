@@ -28,6 +28,11 @@ import MapZoomScrollText from '../sharedComponents/map/MapZoomScrollText';
 import MountainColorScale from '../sharedComponents/map/MountainColorScale';
 import Header from './Header';
 
+const localstorageShowMajorTrailsAllMtnsKey = 'localstorageShowMajorTrailsAllMtnsKey';
+const localstorageShowCampsitesAllMtnsKey = 'localstorageShowCampsitesAllMtnsKey';
+const localstorageShowYourLocationAllMtnsKey = 'localstorageShowYourLocationAllMtnsKey';
+const localstorageShowNearbyMountainsAllMtnsKey = 'localstorageShowNearbyMountainsAllMtnsKey';
+
 const SelectBoxContiner = styled.div`
   display: grid;
   grid-template-columns: auto 1fr;
@@ -82,6 +87,15 @@ interface Props {
 
 const AllMountains = (props: Props) => {
   const {userId} = props;
+
+  const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsAllMtnsKey);
+  const localstorageCampsitesVal = localStorage.getItem(localstorageShowCampsitesAllMtnsKey);
+  const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationAllMtnsKey);
+  const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowNearbyMountainsAllMtnsKey);
+  const defaultMajorTrails = localstorageMajorTrailsVal === 'true' ? true : false;
+  const defaultCampsites = localstorageCampsitesVal === 'true' ? true : false;
+  const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+  const defaultOtherMountainsOn = localstorageOtherMountainsVal === 'true' ? true : false;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -226,6 +240,14 @@ const AllMountains = (props: Props) => {
               colorScaleColors={colorScaleColors}
               colorScaleSymbols={colorScaleSymbols}
               completedAscents={userMountains}
+              showNearbyTrails={true}
+              showYourLocation={true}
+              showOtherMountains={true}
+              showCampsites={true}
+              defaultLocationOn={defaultYourLocation}
+              defaultMajorTrailsOn={defaultMajorTrails}
+              defaultCampsitesOn={defaultCampsites}
+              defaultOtherMountainsOn={defaultOtherMountainsOn}
               key={'stats-all-mountains-in-progress-and-complete-key'}
             />
           </MapContainer>
