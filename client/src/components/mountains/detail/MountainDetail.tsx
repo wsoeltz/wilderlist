@@ -186,7 +186,7 @@ const GET_MOUNTAIN_DETAIL = gql`
 `;
 
 interface QuerySuccessResponse {
-  mountain: {
+  mountain: null | {
     id: Mountain['name'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
@@ -215,7 +215,7 @@ interface QuerySuccessResponse {
 }
 
 interface QueryVariables {
-  id: string;
+  id: string | null;
   userId: string | null;
 }
 
@@ -266,7 +266,7 @@ interface MountainNoteVariables {
 
 interface Props {
   userId: string | null;
-  id: string;
+  id: string | null;
   setOwnMetaData?: boolean;
   peakListId: string | null;
   otherUserId?: string;
@@ -296,7 +296,7 @@ const MountainDetail = (props: Props) => {
   ) ? true : false;
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
-    variables: { id, userId },
+    variables: { id: id ? id : 'return_null', userId },
   });
 
   const prevData = usePrevious(data);
@@ -328,7 +328,11 @@ const MountainDetail = (props: Props) => {
     defaultCampsitesOn: defaultCampsites,
     defaultOtherMountainsOn,
   };
-  if (loading === true) {
+  if (id === null) {
+    header = null;
+    body = null;
+    mapProps = {...mapProps, fillSpace: true};
+  } else if (loading === true) {
     header = <LoadingSpinner />;
     body = null;
     if (prevData && prevData.mountain && prevData.user) {
@@ -643,7 +647,10 @@ const MountainDetail = (props: Props) => {
   return (
     <>
       {header}
-      <div style={{visibility: loading ? 'hidden' : undefined}}>
+      <div style={{
+        visibility: loading ? 'hidden' : undefined,
+        height: id === null ? '100%' : undefined,
+      }}>
         <Map
           key={mountainDetailMapKey}
           {...mapProps}

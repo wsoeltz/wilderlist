@@ -342,13 +342,9 @@ const Map = (props: Props) => {
       }
     };
 
-    if (map && fillSpace === true) {
-      map.scrollZoom.enable();
-    } else {
-      document.body.addEventListener('keydown', enableZoom);
-      document.body.addEventListener('keyup', disableZoom);
-      document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
-    }
+    document.body.addEventListener('keydown', enableZoom);
+    document.body.addEventListener('keyup', disableZoom);
+    document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
 
     const getPreciseCenterCoords = debounce(() => {
       if (map) {
@@ -373,7 +369,18 @@ const Map = (props: Props) => {
         map.remove();
       }
     };
-  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains, showNearbyTrails]);
+  }, [map, showCenterCrosshairs, showOtherMountains, showNearbyTrails]);
+
+  useEffect(() => {
+    if (map) {
+      map.resize();
+      if (fillSpace === true) {
+        map.scrollZoom.enable();
+      } else {
+        map.scrollZoom.disable();
+      }
+    }
+  }, [map, fillSpace]);
 
   useEffect(() => {
     if (!createOrEditMountain && !addRemoveMountains) {

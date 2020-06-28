@@ -184,7 +184,7 @@ const MountainSearchPage = (props: Props) => {
 
   const mountainDetail = !Types.ObjectId.isValid(id)
     ? (
-        <PlaceholderText>{getFluentString('mountain-search-mountains-detail-placeholder')}</PlaceholderText>
+        <MountainDetail userId={userId} id={null} peakListId={null} setOwnMetaData={true} />
       )
     : ( <MountainDetail userId={userId} id={id} peakListId={null} setOwnMetaData={true} />);
 
