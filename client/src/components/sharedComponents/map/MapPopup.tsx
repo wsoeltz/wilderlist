@@ -50,6 +50,7 @@ import {
   DirectionsContainer,
   DirectionsContent,
   DirectionsIcon,
+  DirectionsText,
 } from './styleUtils';
 import TrailDetailModal from './TrailDetailModal';
 import {
@@ -334,9 +335,14 @@ const MapPopup = (props: Props) => {
       const {miles} = directionsData;
       const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
       const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      const fromText = usersLocation && usersLocation.data
+        ? <small>from {usersLocation.data.text}</small> : null;
       drivingInfo = (
         <DirectionsContent>
-          {hours} {minutes} ({miles} miles)
+          <DirectionsText>
+            <div>{hours} {minutes} ({miles} miles)</div>
+            {fromText}
+          </DirectionsText>
         </DirectionsContent>
       );
     } else {
@@ -464,9 +470,14 @@ const MapPopup = (props: Props) => {
       const {miles} = directionsData;
       const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
       const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      const fromText = usersLocation && usersLocation.data
+        ? <small>from {usersLocation.data.text}</small> : null;
       drivingInfo = (
         <DirectionsContent>
-          {hours} {minutes} ({miles} miles)
+          <DirectionsText>
+            <div>{hours} {minutes} ({miles} miles)</div>
+            {fromText}
+          </DirectionsText>
         </DirectionsContent>
       );
     } else {
@@ -557,9 +568,14 @@ const MapPopup = (props: Props) => {
       const {miles} = directionsData;
       const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
       const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      const fromText = usersLocation && usersLocation.data
+        ? <small>from {usersLocation.data.text}</small> : null;
       drivingInfo = (
         <DirectionsContent>
-          {hours} {minutes} ({miles} miles)
+          <DirectionsText>
+            <div>{hours} {minutes} ({miles} miles)</div>
+            {fromText}
+          </DirectionsText>
         </DirectionsContent>
       );
     } else {

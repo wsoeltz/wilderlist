@@ -29,6 +29,7 @@ import {
   DirectionsContent,
   DirectionsIcon,
   DirectionsRoot,
+  DirectionsText,
   FlexDetailBox,
   GoogleButton,
   Header,
@@ -73,14 +74,18 @@ const TrailDetailModal = (props: Props) => {
   const description = summary.length > 25 ? (
     <p style={{textAlign: 'center'}}>&ldquo;<em>{summary}</em>&rdquo;</p>
   ) : null;
-
+  const fromText = usersLocation && usersLocation.data
+          ? <small>from {usersLocation.data.text}</small> : null;
   const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
   const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
   const directions = directionsData !== undefined && usersLocation !== undefined &&
     usersLocation.data && usersLocation.data.coordinates
     ? (
       <DirectionsContent>
-        {hours} {minutes} ({directionsData.miles} miles)
+        <DirectionsText>
+          {hours} {minutes} ({directionsData.miles} miles)
+          {fromText}
+        </DirectionsText>
         <GoogleButton>
           <GoogleMapsDirectionsLink
             lat={latitude}

@@ -101,7 +101,7 @@ export default (): UsersLocation => {
   const requestAccurateLocation = () => {
     const currentData = output && output.data ? {...output.data} : undefined;
     const onSuccess = ({coords: {latitude, longitude}}: Position) => {
-      const text = 'Your Location';
+      const text = 'your location';
       const coordinates = {lat: latitude, lng: longitude};
       const city = currentData && currentData.city ? currentData.city : null;
       const stateAbbreviation = currentData && currentData.city ? currentData.city : null;

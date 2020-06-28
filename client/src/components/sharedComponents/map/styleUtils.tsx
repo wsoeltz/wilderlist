@@ -1,12 +1,16 @@
-import {lighten} from 'polished';
+import {lighten, rgba} from 'polished';
 import styled from 'styled-components/macro';
 import {
   borderRadius,
   DetailBox,
   lightBorderColor,
-  primaryColor,
+  // primaryColor,
+  // secondaryColor,
   ResourceList,
 } from '../../../styling/styleUtils';
+
+const locationColor = '#206ca6';
+// const locationColor = secondaryColor;
 
 export const DirectionsContainer = styled.div`
   display: flex;
@@ -14,41 +18,48 @@ export const DirectionsContainer = styled.div`
 `;
 
 export const DirectionsIcon = styled.div`
-  border: solid 1px ${primaryColor};
+  border: solid 1px ${locationColor};
   border-top-left-radius: ${borderRadius}px;
   border-bottom-left-radius: ${borderRadius}px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  padding: 0.25rem 0.5rem;
-  color: ${primaryColor};
+  padding: 0.175rem 0.3rem;
+  color: ${locationColor};
 `;
 
 const directionsContentStyles = `
-  border: solid 1px ${primaryColor};
+  border: solid 1px ${locationColor};
   border-top-right-radius: ${borderRadius}px;
   border-bottom-right-radius: ${borderRadius}px;
   display: flex;
   align-items: center;
-  padding: 0.25rem 0.5rem;
+  justify-content: space-between;
+  padding: 0.175rem 0.3rem;
   line-height: 1;
   font-weight: 600;
 `;
 
 export const DirectionsContent = styled.div`
   ${directionsContentStyles}
-  background-color: ${lighten(0.4, primaryColor)};
+  background-color: ${lighten(0.4, locationColor)};
+`;
+
+export const DirectionsText = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 export const DirectionsButton = styled.button`
   ${directionsContentStyles}
-  background-color: ${primaryColor};
-  color: #fff;
+  color: ${locationColor};
+  background-color: transparent;
   text-transform: uppercase;
 
   &:hover {
-    background-color: ${lighten(0.1, primaryColor)};
+    background-color: ${rgba(locationColor, 0.1)};
   }
 `;
 

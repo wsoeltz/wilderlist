@@ -43,6 +43,7 @@ import {
   DirectionsContent,
   DirectionsIcon,
   DirectionsRoot,
+  DirectionsText,
   FlexDetailBox,
   GoogleButton,
   Header,
@@ -102,13 +103,18 @@ const TrailDetailModal = (props: Props) => {
     fetchCampsiteDetails();
   }, [id, contractCode, source, setDetails, setLoading]);
 
+  const fromText = usersLocation && usersLocation.data
+          ? <small>from {usersLocation.data.text}</small> : null;
   const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
   const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
   const directions = directionsData !== undefined && usersLocation !== undefined &&
     usersLocation.data && usersLocation.data.coordinates
     ? (
       <DirectionsContent>
-        {hours} {minutes} ({directionsData.miles} miles)
+        <DirectionsText>
+          {hours} {minutes} ({directionsData.miles} miles)
+          {fromText}
+        </DirectionsText>
         <GoogleButton>
           <GoogleMapsDirectionsLink
             lat={latitude}
