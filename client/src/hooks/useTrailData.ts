@@ -74,7 +74,8 @@ export default (input: Input): Output => {
     if (input.active === false && trailData !== undefined) {
       setTrailData(undefined);
     } else if (prevInput === undefined ||
-              (prevInput.lat !== input.lat && prevInput.lon !== input.lon)
+              (prevInput.lat !== input.lat && prevInput.lon !== input.lon) ||
+              (prevInput.active === false && input.active === true)
        ) {
       const lat = parseFloat(input.lat.toFixed(2));
       const lon = parseFloat(input.lon.toFixed(2));
