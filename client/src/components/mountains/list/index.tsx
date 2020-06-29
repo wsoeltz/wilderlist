@@ -15,6 +15,7 @@ import { Routes } from '../../../routing/routes';
 import { searchMountainsDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
+  ContentHeader,
   ContentLeftSmall,
   ContentRightLarge,
   SearchContainer,
@@ -31,6 +32,7 @@ import {
 } from '../../../styling/styleUtils';
 import {getDistanceFromLatLonInMiles} from '../../../Utils';
 import {AppContext} from '../../App';
+import BackButton from '../../sharedComponents/BackButton';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
 import GeneralMap from './GeneralMap';
@@ -277,9 +279,24 @@ const MountainSearchPage = (props: Props) => {
     list = null;
   }
 
+  const backButton = !Types.ObjectId.isValid(id)
+    ? null
+    : (
+      <ContentHeader>
+        <BackButton
+          onClick={() => {
+            history.push(searchMountainsDetailLink('search') + '?query=' + searchQuery + '&page=' + pageNumber);
+          }}
+          text={'Back to Map'}
+        />
+      </ContentHeader>
+    );
+
   const mountainDetail = !Types.ObjectId.isValid(id)
     ? null
-    : ( <MountainDetail userId={userId} id={id} peakListId={null} setOwnMetaData={true} />);
+    : (
+        <MountainDetail userId={userId} id={id} peakListId={null} setOwnMetaData={true} />
+    );
 
   const generalMountainStyles: React.CSSProperties | undefined = !Types.ObjectId.isValid(id)
     ? {height: '100%'}
@@ -325,6 +342,7 @@ const MountainSearchPage = (props: Props) => {
         </ContentBody>
       </ContentLeftSmall>
       <ContentRightLarge>
+        {backButton}
         <ContentBody>
           {mountainDetail}
           <div style={generalMountainStyles}>
