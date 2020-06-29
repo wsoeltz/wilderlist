@@ -38,7 +38,10 @@ import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
 import GeneralMap from './GeneralMap';
 import GhostMountainCard from './GhostMountainCard';
-import ListMountains, { MountainDatum } from './ListMountains';
+import ListMountains, {
+  MountainDatum,
+  MountainDatumWithDistance,
+} from './ListMountains';
 
 const baseQuery = `
   id
@@ -99,11 +102,6 @@ interface LocationVariables {
 }
 type Variables = SearchVariables | LocationVariables;
 
-interface MountainDatumWithDistance extends MountainDatum {
-  distanceToUser: number | null;
-  distanceToMapCenter: number | null;
-}
-
 interface Props extends RouteComponentProps {
   userId: string | null;
   mountainPermissions: number | null;
@@ -121,6 +119,15 @@ const MountainSearchPage = (props: Props) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
 
   const [highlighted, setHighlighted] = useState<CoordinateWithDates[] | undefined>(undefined);
+  const returnToMap = () => {
+    history.push(searchMountainsDetailLink('search') + '?query=' + searchQuery + '&page=' + pageNumber);
+  };
+  const updateHiglighted = (coordinate: CoordinateWithDates[] | undefined) => {
+    if (Types.ObjectId.isValid(id)) {
+      returnToMap();
+    }
+    setHighlighted(coordinate);
+  };
 
   const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.coordinates
     ? {latitude: usersLocation.data.coordinates.lat, longitude: usersLocation.data.coordinates.lng}
@@ -256,7 +263,7 @@ const MountainSearchPage = (props: Props) => {
         return {...mtn, distanceToUser, distanceToMapCenter};
       });
       let mountains: MountainDatumWithDistance[];
-      if (!query) {
+      if (!searchQuery) {
         const sortedMountains = sortBy(extendedMountains, ['distanceToMapCenter']);
         mountains = sortedMountains.slice(nPerPage * (pageNumber - 1), nPerPage * pageNumber);
       } else {
@@ -276,7 +283,7 @@ const MountainSearchPage = (props: Props) => {
           <ListMountains
             mountainData={mountains}
             noResultsText={noResultsText}
-            setHighlighted={setHighlighted}
+            setHighlighted={updateHiglighted}
           />
           <PaginationContainer>
             {prevBtn}
@@ -294,9 +301,7 @@ const MountainSearchPage = (props: Props) => {
     : (
       <ContentHeader>
         <BackButton
-          onClick={() => {
-            history.push(searchMountainsDetailLink('search') + '?query=' + searchQuery + '&page=' + pageNumber);
-          }}
+          onClick={returnToMap}
           text={'Back to Map'}
         />
       </ContentHeader>
@@ -344,7 +349,7 @@ const MountainSearchPage = (props: Props) => {
             initialQuery={initialSearchQuery}
           />
         </SearchContainer>
-        <ContentBody ref={listContainerElm}>
+        <ContentBody ref={listContainerElm} style={{paddingTop: 0}}>
           {list}
           {addMountainButton}
         </ContentBody>

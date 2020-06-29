@@ -9,7 +9,6 @@ import {CoordinateWithDates} from '../../sharedComponents/map/types';
 const localstorageShowMajorTrailsGeneralMapKey = 'localstorageShowMajorTrailsGeneralMapKey';
 const localstorageShowCampsitesGeneralMapKey = 'localstorageShowCampsitesGeneralMapKey';
 const localstorageShowYourLocationGeneralMapKey = 'localstorageShowYourLocationGeneralMapKey';
-const localstorageShowOtherMountainsGeneralMapKey = 'localstorageShowOtherMountainsGeneralMapKey';
 
 interface Props {
   visible: boolean;
@@ -25,7 +24,6 @@ const GeneralMap = (props: Props) => {
   const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsGeneralMapKey);
   const localstorageCampsitesVal = localStorage.getItem(localstorageShowCampsitesGeneralMapKey);
   const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationGeneralMapKey);
-  const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowOtherMountainsGeneralMapKey);
   const defaultMajorTrails = (
     localstorageMajorTrailsVal === 'true' || localstorageMajorTrailsVal === null
   ) ? true : false;
@@ -33,9 +31,6 @@ const GeneralMap = (props: Props) => {
     localstorageCampsitesVal === 'true' || localstorageCampsitesVal === null
   ) ? true : false;
   const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
-  const defaultOtherMountainsOn = (
-    localstorageOtherMountainsVal === 'true' || localstorageOtherMountainsVal === null
-  ) ? true : false;
 
   const me = useContext(UserContext);
 
@@ -58,11 +53,16 @@ const GeneralMap = (props: Props) => {
         defaultLocationOn={defaultYourLocation}
         defaultMajorTrailsOn={defaultMajorTrails}
         defaultCampsitesOn={defaultCampsites}
-        defaultOtherMountainsOn={defaultOtherMountainsOn}
+        defaultOtherMountainsOn={true}
         fillSpace={true}
         toggleVisibility={visible}
         centerCoordsCallback={getMapCenter}
         useGenericFunctionality={true}
+        localstorageKeys={{
+          majorTrail: localstorageShowMajorTrailsGeneralMapKey,
+          campsites: localstorageShowCampsitesGeneralMapKey,
+          yourLocation: localstorageShowYourLocationGeneralMapKey,
+        }}
       />
     </FullColumn>
   );

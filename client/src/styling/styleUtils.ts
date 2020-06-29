@@ -546,10 +546,16 @@ export const PlusIcon = styled.span`
   top: 2px;
 `;
 
-export const BasicIconInText = styled(FontAwesomeIcon)`
+const IconInTextBase = styled(FontAwesomeIcon)`
   position: relative;
   top: -1px;
+`;
+
+export const BasicIconInText = styled(IconInTextBase)`
   margin-right: 0.6rem;
+`;
+export const BasicIconAtEndOfText = styled(IconInTextBase)`
+  margin-left: 0.6rem;
 `;
 
 export const PlaceholderText = styled.div`

@@ -7,6 +7,7 @@ import {
 import {
   faAddressBook,
   faAlignLeft,
+  faArrowRight,
   faAt,
   faCalendarAlt,
   faCar,
@@ -20,6 +21,7 @@ import {
   faClone,
   faCloudSun,
   faCompass,
+  faCrow,
   faDownload,
   faEdit,
   faEnvelope,
@@ -70,7 +72,8 @@ library.add(
   faFlag, faSync, faLongArrowAltDown, faCar, faChartArea,
   faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
   faAddressBook, faAt, faPhone, faLink, faTrophy, faCompass,
-  faLeaf, faSnowflake, faTh, faMapMarkedAlt,
+  faLeaf, faSnowflake, faTh, faMapMarkedAlt, faCrow,
+  faArrowRight,
 );
 
 const GlobalStyles = createGlobalStyle`

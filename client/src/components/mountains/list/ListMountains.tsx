@@ -17,8 +17,13 @@ export interface MountainDatum {
   longitude: Mountain['longitude'];
 }
 
+export interface MountainDatumWithDistance extends MountainDatum {
+  distanceToUser: number | null;
+  distanceToMapCenter: number | null;
+}
+
 interface Props {
-  mountainData: MountainDatum[];
+  mountainData: MountainDatumWithDistance[];
   noResultsText: string;
   setHighlighted: (highlighted: MountainDatum[]) => void;
 }
