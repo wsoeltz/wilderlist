@@ -37,6 +37,8 @@ export const warmRedColor = '#d92a21';
 
 export const lightBlue = '#d1e2e9';
 
+export const locationColor = '#206ca6';
+
 export interface ColorSet {
   primary: string;
   secondary: string;
@@ -192,7 +194,6 @@ const cardFooterLinkStyles = `
   justify-content: center;
   height: 100%;
   box-sizing: border-box;
-  width: 25%;
   font-size: 0.875rem;
   line-height: 1;
   padding: 0.25rem;

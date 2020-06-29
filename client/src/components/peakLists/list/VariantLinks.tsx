@@ -4,6 +4,7 @@ import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useEffect, useState} from 'react';
 import {useRouteMatch} from 'react-router';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -24,6 +25,14 @@ import {
   mobileSize,
 } from '../../../Utils';
 import {AppContext} from '../../App';
+
+const VariantLink = styled(CardFooterLink)`
+  width: 25%;
+`;
+
+const VariantButton = styled(CardFooterButton)`
+  width: 25%;
+`;
 
 const replaceCurrentPageId = (url: string, currentId: string, newId: string) => url.replace(currentId, newId);
 
@@ -147,7 +156,7 @@ const VariantLinks = (props: Props) => {
         ? listDetailWithMountainDetailLink(target.id, 'none')
         : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
       return (
-        <CardFooterLink
+        <VariantLink
           key={name + type + variant}
           mobileURL={mobileURL}
           desktopURL={desktopURL}
@@ -156,7 +165,7 @@ const VariantLinks = (props: Props) => {
         >
           <BasicIconInText icon={variantsIconMapping[i]} />
           {getFluentString('global-text-value-list-type', {type: variant})}
-        </CardFooterLink>
+        </VariantLink>
       );
     } else {
       let color: string;
@@ -185,7 +194,7 @@ const VariantLinks = (props: Props) => {
         }
       };
       return (
-        <CardFooterButton
+        <VariantButton
           onClick={onClick}
           key={name + type + variant}
           disabled={loadingNewList}
@@ -194,7 +203,7 @@ const VariantLinks = (props: Props) => {
         >
           <BasicIconInText icon={variantsIconMapping[i]} />
           {getFluentString('global-text-value-list-type', {type: variant})}
-        </CardFooterButton>
+        </VariantButton>
       );
     }
   });

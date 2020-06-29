@@ -20,11 +20,12 @@ export interface MountainDatum {
 interface Props {
   mountainData: MountainDatum[];
   noResultsText: string;
+  setHighlighted: (highlighted: MountainDatum[]) => void;
 }
 
 const ListMountains = (props: Props) => {
   const {
-    mountainData, noResultsText,
+    mountainData, noResultsText, setHighlighted,
   } = props;
 
   if (mountainData.length === 0) {
@@ -35,6 +36,7 @@ const ListMountains = (props: Props) => {
       <MountainCard
         key={mountain.id}
         mountain={mountain}
+        setHighlighted={setHighlighted}
       />
     );
   });

@@ -4,13 +4,9 @@ import {
   borderRadius,
   DetailBox,
   lightBorderColor,
-  // primaryColor,
-  // secondaryColor,
+  locationColor,
   ResourceList,
 } from '../../../styling/styleUtils';
-
-const locationColor = '#206ca6';
-// const locationColor = secondaryColor;
 
 export const DirectionsContainer = styled.div`
   display: flex;

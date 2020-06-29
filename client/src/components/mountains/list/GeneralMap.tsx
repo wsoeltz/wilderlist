@@ -4,6 +4,7 @@ import {
   FullColumn,
 } from '../../sharedComponents/formUtils';
 import Map from '../../sharedComponents/map';
+import {CoordinateWithDates} from '../../sharedComponents/map/types';
 
 const localstorageShowMajorTrailsGeneralMapKey = 'localstorageShowMajorTrailsGeneralMapKey';
 const localstorageShowCampsitesGeneralMapKey = 'localstorageShowCampsitesGeneralMapKey';
@@ -13,11 +14,12 @@ const localstorageShowOtherMountainsGeneralMapKey = 'localstorageShowOtherMounta
 interface Props {
   visible: boolean;
   getMapCenter: (coords: {latitude: number, longitude: number}) => void;
+  highlighted: CoordinateWithDates[] | undefined;
 }
 
 const GeneralMap = (props: Props) => {
   const {
-    getMapCenter, visible,
+    getMapCenter, visible, highlighted,
   } = props;
 
   const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsGeneralMapKey);
@@ -46,6 +48,7 @@ const GeneralMap = (props: Props) => {
         isOtherUser={false}
         completedAscents={[]}
         coordinates={[]}
+        highlighted={highlighted}
         colorScaleColors={[]}
         colorScaleSymbols={[]}
         showNearbyTrails={true}

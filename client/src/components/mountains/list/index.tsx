@@ -33,6 +33,7 @@ import {
 import {getDistanceFromLatLonInMiles} from '../../../Utils';
 import {AppContext} from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
+import {CoordinateWithDates} from '../../sharedComponents/map/types';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
 import GeneralMap from './GeneralMap';
@@ -119,6 +120,8 @@ const MountainSearchPage = (props: Props) => {
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
 
+  const [highlighted, setHighlighted] = useState<CoordinateWithDates[] | undefined>(undefined);
+
   const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.coordinates
     ? {latitude: usersLocation.data.coordinates.lat, longitude: usersLocation.data.coordinates.lng}
     : undefined;
@@ -158,6 +161,12 @@ const MountainSearchPage = (props: Props) => {
       setMapCenter({latitude: lat, longitude: lng});
     }
   }, [usersLocation, mapCenter]);
+
+  useEffect(() => {
+    if (highlighted !== undefined) {
+      setHighlighted(undefined);
+    }
+  }, [highlighted, mapCenter]);
 
   const searchMountains = (value: string) => {
     setSearchQuery(value);
@@ -267,6 +276,7 @@ const MountainSearchPage = (props: Props) => {
           <ListMountains
             mountainData={mountains}
             noResultsText={noResultsText}
+            setHighlighted={setHighlighted}
           />
           <PaginationContainer>
             {prevBtn}
@@ -347,6 +357,7 @@ const MountainSearchPage = (props: Props) => {
             <GeneralMap
               getMapCenter={setMapCenter}
               visible={!Types.ObjectId.isValid(id)}
+              highlighted={highlighted}
             />
           </div>
         </ContentBody>
