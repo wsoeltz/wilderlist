@@ -292,11 +292,9 @@ const MountainSearchPage = (props: Props) => {
       </ContentHeader>
     );
 
-  const mountainDetail = !Types.ObjectId.isValid(id)
+  const mountainId = !Types.ObjectId.isValid(id)
     ? null
-    : (
-        <MountainDetail userId={userId} id={id} peakListId={null} setOwnMetaData={true} />
-    );
+    : id;
 
   const generalMountainStyles: React.CSSProperties | undefined = !Types.ObjectId.isValid(id)
     ? {height: '100%'}
@@ -344,7 +342,7 @@ const MountainSearchPage = (props: Props) => {
       <ContentRightLarge>
         {backButton}
         <ContentBody>
-          {mountainDetail}
+          <MountainDetail userId={userId} id={mountainId} peakListId={null} setOwnMetaData={true} />
           <div style={generalMountainStyles}>
             <GeneralMap
               getMapCenter={setMapCenter}

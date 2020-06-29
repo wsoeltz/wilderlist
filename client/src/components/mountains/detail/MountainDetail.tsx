@@ -142,7 +142,7 @@ const NotesTitle = styled(ItemTitle)`
 `;
 
 const GET_MOUNTAIN_DETAIL = gql`
-  query getMountain($id: ID!, $userId: ID) {
+  query getMountain($id: ID, $userId: ID) {
     mountain(id: $id) {
       id
       name
@@ -215,7 +215,7 @@ interface QuerySuccessResponse {
 }
 
 interface QueryVariables {
-  id: string;
+  id: string | null;
   userId: string | null;
 }
 
@@ -266,7 +266,7 @@ interface MountainNoteVariables {
 
 interface Props {
   userId: string | null;
-  id: string;
+  id: string | null;
   setOwnMetaData?: boolean;
   peakListId: string | null;
   otherUserId?: string;
@@ -328,7 +328,10 @@ const MountainDetail = (props: Props) => {
     defaultCampsitesOn: defaultCampsites,
     defaultOtherMountainsOn,
   };
-  if (loading === true) {
+  if (id === null) {
+    header = null;
+    body = null;
+  } else if (loading === true) {
     header = <LoadingSpinner />;
     body = null;
     if (prevData && prevData.mountain && prevData.user) {
@@ -640,13 +643,14 @@ const MountainDetail = (props: Props) => {
     body = null;
   }
 
+  const mapStyles: React.CSSProperties | undefined = loading || id === null
+    ? {visibility: 'hidden', position: 'absolute', pointerEvents: 'none', bottom: 0}
+    : undefined;
+
   return (
     <>
       {header}
-      <div style={{
-        visibility: loading ? 'hidden' : undefined,
-        height: id === null ? '100%' : undefined,
-      }}>
+      <div style={mapStyles}>
         <Map
           key={mountainDetailMapKey}
           {...mapProps}
