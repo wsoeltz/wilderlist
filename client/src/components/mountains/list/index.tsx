@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
+import sortBy from 'lodash/sortBy';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -28,6 +29,7 @@ import {
   PlusIcon,
   Prev,
 } from '../../../styling/styleUtils';
+import {getDistanceFromLatLonInMiles} from '../../../Utils';
 import {AppContext} from '../../App';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
@@ -93,6 +95,11 @@ interface LocationVariables {
   longDistance: number;
 }
 type Variables = SearchVariables | LocationVariables;
+
+interface MountainDatumWithDistance extends MountainDatum {
+  distanceToUser: number | null;
+  distanceToMapCenter: number | null;
+}
 
 interface Props extends RouteComponentProps {
   userId: string | null;
@@ -224,11 +231,25 @@ const MountainSearchPage = (props: Props) => {
     if (!dataToUse.mountains) {
       list = null;
     } else {
-      let mountains: MountainDatum[];
-      if (dataToUse.mountains.length > nPerPage) {
-        mountains = dataToUse.mountains.slice(nPerPage * (pageNumber - 1), nPerPage * pageNumber);
+      const rawMountains = dataToUse.mountains;
+      const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.coordinates : undefined;
+      const extendedMountains: MountainDatumWithDistance[] = rawMountains.map(mtn => {
+        const distanceToUser = usersCoords ? getDistanceFromLatLonInMiles({
+          lat1: usersCoords.lat, lon1: usersCoords.lng,
+          lat2: mtn.latitude, lon2: mtn.longitude,
+        }) : null;
+        const distanceToMapCenter = mapCenter ? getDistanceFromLatLonInMiles({
+          lat1: mapCenter.latitude, lon1: mapCenter.longitude,
+          lat2: mtn.latitude, lon2: mtn.longitude,
+        }) : null;
+        return {...mtn, distanceToUser, distanceToMapCenter};
+      });
+      let mountains: MountainDatumWithDistance[];
+      if (!query) {
+        const sortedMountains = sortBy(extendedMountains, ['distanceToMapCenter']);
+        mountains = sortedMountains.slice(nPerPage * (pageNumber - 1), nPerPage * pageNumber);
       } else {
-        mountains = dataToUse.mountains;
+        mountains = extendedMountains;
       }
       const nextBtn = mountains.length === nPerPage ? (
         <Next onClick={incrementPageNumber}>
