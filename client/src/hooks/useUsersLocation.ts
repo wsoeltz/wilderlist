@@ -131,7 +131,7 @@ export default (): UsersLocation => {
         isPrecise: false,
       });
     } else {
-      setOuput({loading: true, error: undefined, data: undefined, isPrecise: false});
+      setOuput({loading: true, error: undefined, data: output.data, isPrecise: false});
       navigator.geolocation.getCurrentPosition(onSuccess, onError);
     }
   };

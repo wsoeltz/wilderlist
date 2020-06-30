@@ -654,6 +654,7 @@ const MountainDetail = (props: Props) => {
         <Map
           key={mountainDetailMapKey}
           {...mapProps}
+          toggleVisibility={Math.random()}
           movingMethod={MovingMethod.jumpTo}
         />
       </div>

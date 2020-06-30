@@ -266,15 +266,21 @@ const Map = (props: Props) => {
 
   const initiaYourLocationSetting = defaultLocationOn ? true : false;
   const [yourLocationOn, setYourLocationOn] = useState<boolean>(initiaYourLocationSetting);
-  const toggleYourLocation = () => {
-    const newValue = !yourLocationOn;
+  const updateYourLocationOn = (newValue: boolean) => {
     setYourLocationOn(newValue);
     if (localstorageKeys && localstorageKeys.yourLocation) {
       localStorage.setItem(localstorageKeys.yourLocation, newValue.toString());
     }
-    if (newValue === true && usersLocation && usersLocation.requestAccurateLocation) {
+    if (newValue === true &&
+        usersLocation &&
+        !usersLocation.isPrecise &&
+        usersLocation.requestAccurateLocation
+      ) {
       usersLocation.requestAccurateLocation();
     }
+  };
+  const toggleYourLocation = () => {
+    updateYourLocationOn(!yourLocationOn);
   };
 
   const initialOtherMountainsSetting = defaultOtherMountainsOn ? true : false;
@@ -550,7 +556,7 @@ const Map = (props: Props) => {
           closePopup={() => setPopupInfo(null)}
           yourLocationOn={yourLocationOn}
           showYourLocation={showYourLocation}
-          setYourLocationOn={setYourLocationOn}
+          setYourLocationOn={updateYourLocationOn}
           colorScaleColors={colorScaleColors}
           colorScaleSymbols={colorScaleSymbols}
           createOrEditMountain={createOrEditMountain}

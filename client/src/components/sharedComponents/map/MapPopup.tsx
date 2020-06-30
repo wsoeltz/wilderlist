@@ -315,6 +315,18 @@ const MapPopup = (props: Props) => {
     );
   };
 
+  const getDrivingData = ({id, latitude, longitude}: {id: string, latitude: number, longitude: number}) => {
+    setDestination({key: id, latitude, longitude});
+    if (!yourLocationOn) {
+      setYourLocationOn(true);
+      if (usersLocation &&
+          !usersLocation.isPrecise &&
+          usersLocation.requestAccurateLocation) {
+        usersLocation.requestAccurateLocation();
+      }
+    }
+  };
+
   let popup: React.ReactElement<any>;
   if (!popupInfo) {
     popup = <></>;
@@ -351,19 +363,7 @@ const MapPopup = (props: Props) => {
         </DirectionsContent>
       );
     } else {
-      const onClick = () => {
-        setDestination({
-          key: popupData.id,
-          latitude: popupData.latitude,
-          longitude: popupData.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-          if (usersLocation && usersLocation.requestAccurateLocation) {
-            usersLocation.requestAccurateLocation();
-          }
-        }
-      };
+      const onClick = () => getDrivingData({...popupData});
       drivingInfo = (
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
@@ -486,19 +486,7 @@ const MapPopup = (props: Props) => {
         </DirectionsContent>
       );
     } else {
-      const onClick = () => {
-        setDestination({
-          key: popupData.id,
-          latitude: popupData.latitude,
-          longitude: popupData.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-          if (usersLocation && usersLocation.requestAccurateLocation) {
-            usersLocation.requestAccurateLocation();
-          }
-        }
-      };
+      const onClick = () => getDrivingData({...popupData});
       drivingInfo = (
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
@@ -584,16 +572,7 @@ const MapPopup = (props: Props) => {
         </DirectionsContent>
       );
     } else {
-      const onClick = () => {
-        setDestination({
-          key: popupData.id,
-          latitude: popupData.latitude,
-          longitude: popupData.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-        }
-      };
+      const onClick = () => getDrivingData({...popupData});
       drivingInfo = (
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
@@ -674,19 +653,7 @@ const MapPopup = (props: Props) => {
       onClose={() => setTrailModalOpen(false)}
       trailDatum={popupInfo.data}
       directionsData={directionsData}
-      getDirections={() => {
-        setDestination({
-          key: popupInfo.data.id,
-          latitude: popupInfo.data.latitude,
-          longitude: popupInfo.data.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-          if (usersLocation && usersLocation.requestAccurateLocation) {
-            usersLocation.requestAccurateLocation();
-          }
-        }
-      }}
+      getDirections={() => getDrivingData({...popupInfo.data})}
     />
   ) : <></>;
 
@@ -695,19 +662,7 @@ const MapPopup = (props: Props) => {
       onClose={() => setCampsiteModalOpen(false)}
       campsiteDatum={popupInfo.data}
       directionsData={directionsData}
-      getDirections={() => {
-        setDestination({
-          key: popupInfo.data.id,
-          latitude: popupInfo.data.latitude,
-          longitude: popupInfo.data.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-          if (usersLocation && usersLocation.requestAccurateLocation) {
-            usersLocation.requestAccurateLocation();
-          }
-        }
-      }}
+      getDirections={() => getDrivingData({...popupInfo.data})}
     />
   ) : <></>;
 

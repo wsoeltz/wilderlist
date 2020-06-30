@@ -193,12 +193,12 @@ const MountainSearchPage = (props: Props) => {
     variables = {
       latitude: mapCenter.latitude,
       longitude: mapCenter.longitude,
-      latDistance: 0.4,
-      longDistance: 0.5,
+      latDistance: 0.45,
+      longDistance: 0.55,
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
     queryText = (
-      <NoResults>Showing mountains within <strong>70 miles</strong> of the map center</NoResults>
+      <NoResults>Showing mountains within <strong>35 miles</strong> of the map center</NoResults>
     );
     noResultsText = 'No mountains found here. Try moving the map or using the search above.';
   } else {
