@@ -722,3 +722,20 @@ export const SvgMiniImg = styled.img`
   margin-right: 0.6rem;
   top: 3px;
 `;
+
+export const SecondaryNavigationContainer = styled.div`
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  width: 100%;
+`;
+export const SecondaryNavigationButton = styled.button`
+  padding: 0.75rem;
+  text-align: center;
+  color: ${secondaryColor};
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  background-color: #fff;
+  border: solid 1px ${lightBorderColor};
+  border-top: none;
+`;

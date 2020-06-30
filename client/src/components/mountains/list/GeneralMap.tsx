@@ -11,7 +11,7 @@ const localstorageShowCampsitesGeneralMapKey = 'localstorageShowCampsitesGeneral
 const localstorageShowYourLocationGeneralMapKey = 'localstorageShowYourLocationGeneralMapKey';
 
 interface Props {
-  visible: boolean;
+  visible: string;
   getMapCenter: (coords: {latitude: number, longitude: number}) => void;
   highlighted: CoordinateWithDates[] | undefined;
 }

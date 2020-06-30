@@ -1,4 +1,8 @@
 import { useQuery } from '@apollo/react-hooks';
+import {
+  faList,
+  faMapMarkedAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -18,9 +22,12 @@ import {
   ContentHeader,
   ContentLeftSmall,
   ContentRightLarge,
+  gridLines,
+  PreContentHeaderFull,
   SearchContainer,
 } from '../../../styling/Grid';
 import {
+  BasicIconInText,
   FloatingButton,
   FloatingButtonContainer,
   Next,
@@ -29,8 +36,11 @@ import {
   PlaceholderText,
   PlusIcon,
   Prev,
+  secondaryColor,
+  SecondaryNavigationButton,
+  SecondaryNavigationContainer,
 } from '../../../styling/styleUtils';
-import {getDistanceFromLatLonInMiles} from '../../../Utils';
+import {getDistanceFromLatLonInMiles, mobileSize} from '../../../Utils';
 import {AppContext} from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
@@ -102,6 +112,11 @@ interface LocationVariables {
 }
 type Variables = SearchVariables | LocationVariables;
 
+enum View {
+  Map,
+  List,
+}
+
 interface Props extends RouteComponentProps {
   userId: string | null;
   mountainPermissions: number | null;
@@ -112,11 +127,13 @@ const MountainSearchPage = (props: Props) => {
   const { id }: any = match.params;
   const { query, page } = queryString.parse(location.search);
 
-  const {usersLocation} = useContext(AppContext);
+  const {usersLocation, windowWidth} = useContext(AppContext);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const [mobileView, setMobileView] = useState<View>(View.List);
 
   const [highlighted, setHighlighted] = useState<CoordinateWithDates[] | undefined>(undefined);
   const returnToMap = () => {
@@ -127,6 +144,9 @@ const MountainSearchPage = (props: Props) => {
       returnToMap();
     }
     setHighlighted(coordinate);
+    if (windowWidth < mobileSize) {
+      setMobileView(View.Map);
+    }
   };
 
   const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.coordinates
@@ -197,10 +217,21 @@ const MountainSearchPage = (props: Props) => {
       longDistance: 0.55,
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
+    const centerToYou = usersLocation.data
+      ? getDistanceFromLatLonInMiles({
+        lat1: usersLocation.data.coordinates.lat,
+        lon1: usersLocation.data.coordinates.lng,
+        lat2: mapCenter.latitude,
+        lon2: mapCenter.longitude,
+      }) : null;
+    const mapCenterText = centerToYou !== null && centerToYou < 5 && usersLocation.data
+      ? usersLocation.data.text : 'the map center';
     queryText = (
-      <NoResults>Showing mountains within <strong>35 miles</strong> of the map center</NoResults>
+      <NoResults>Showing mountains within <strong>35 miles</strong> of {mapCenterText}</NoResults>
     );
-    noResultsText = 'No mountains found here. Try moving the map or using the search above.';
+    noResultsText = windowWidth < mobileSize
+      ? `No mountains found near ${mapCenterText}. Use the search above or go to the map view to explore.`
+      : 'No mountains found here. Try moving the map or using the search above.';
   } else if (searchQuery) {
     variables = { searchQuery, pageNumber, nPerPage };
     GQL_QUERY = SEARCH_MOUNTAINS;
@@ -316,6 +347,50 @@ const MountainSearchPage = (props: Props) => {
     ? null
     : id;
 
+  const mapSearchToggleBar = windowWidth < mobileSize
+    ? (
+      <PreContentHeaderFull>
+        <SecondaryNavigationContainer>
+          <SecondaryNavigationButton
+            style={{
+              color: mobileView === View.List ? '#fff' : undefined,
+              backgroundColor: mobileView === View.List ? secondaryColor : undefined,
+            }}
+            onClick={() => setMobileView(View.List)}
+          >
+            <BasicIconInText icon={faList} />
+            List View
+          </SecondaryNavigationButton>
+          <SecondaryNavigationButton
+            onClick={() => setMobileView(View.Map)}
+            style={{
+              color: mobileView === View.Map ? '#fff' : undefined,
+              backgroundColor: mobileView === View.Map ? secondaryColor : undefined,
+            }}
+          >
+            <BasicIconInText icon={faMapMarkedAlt} />
+            Map View
+          </SecondaryNavigationButton>
+        </SecondaryNavigationContainer>
+      </PreContentHeaderFull>
+      )
+    : null;
+  const mobileMapStyles = windowWidth < mobileSize && mobileView === View.Map
+    ? {
+        width: 'auto',
+        height: '100%',
+        gridColumn: `${gridLines.pageLeft} / ${gridLines.pageRight}`,
+      }
+    : undefined;
+
+  const mobileSearchStyles = windowWidth < mobileSize && mobileView === View.Map
+    ? {
+        width: '0',
+        height: '0',
+        display: 'none',
+      }
+    : undefined;
+
   const generalMountainStyles: React.CSSProperties | undefined = !Types.ObjectId.isValid(id)
     ? {height: '100%'}
     : {visibility: 'hidden', position: 'absolute', pointerEvents: 'none', bottom: 0};
@@ -345,7 +420,8 @@ const MountainSearchPage = (props: Props) => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchMountainsDetailLink('search')} />
       </Helmet>
-      <ContentLeftSmall>
+      {mapSearchToggleBar}
+      <ContentLeftSmall style={mobileSearchStyles}>
         <SearchContainer>
           <StandardSearch
             placeholder={getFluentString('global-text-value-search-mountains')}
@@ -359,14 +435,14 @@ const MountainSearchPage = (props: Props) => {
           {addMountainButton}
         </ContentBody>
       </ContentLeftSmall>
-      <ContentRightLarge>
+      <ContentRightLarge style={mobileMapStyles}>
         {backButton}
         <ContentBody>
           <MountainDetail userId={userId} id={mountainId} peakListId={null} setOwnMetaData={true} />
           <div style={generalMountainStyles}>
             <GeneralMap
               getMapCenter={setMapCenter}
-              visible={!Types.ObjectId.isValid(id)}
+              visible={(!Types.ObjectId.isValid(id)).toString() + windowWidth + mobileView}
               highlighted={highlighted}
             />
           </div>

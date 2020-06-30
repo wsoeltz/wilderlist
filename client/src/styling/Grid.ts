@@ -2,7 +2,7 @@ import styled from 'styled-components/macro';
 import { mobileSize } from '../Utils';
 import { standardContainerPadding } from './styleUtils';
 
-const gridLines = {
+export const gridLines = {
   // Horizontal Grid Lines
   pageTop: 'wilderListGlobalGridPageTop',
   bannerTop: 'wilderListGlobalGridBannerTop',

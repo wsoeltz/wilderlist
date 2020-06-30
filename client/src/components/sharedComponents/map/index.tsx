@@ -52,6 +52,8 @@ export const MapContainer = styled.div`
 
 const Root = styled.div`
   border: 1px solid ${lightBorderColor};
+  display: grid;
+  grid-template-rows: 1fr auto;
 
   .mapboxgl-popup-tip {
     border-top-color: rgba(255, 255, 255, 0.85);
@@ -454,7 +456,6 @@ const Map = (props: Props) => {
     setMap(mapEl);
     return null;
   };
-
   return (
     <Root
       style={{
@@ -467,7 +468,8 @@ const Map = (props: Props) => {
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
         containerStyle={{
-          height: fillSpace === true ? `calc(100% - ${mapLegendHeight}px)` : '500px',
+          height: fillSpace === true ? `100%` : '500px',
+          //height: fillSpace === true ? `calc(100% - ${mapLegendHeight}px)` : '500px',
           width: '100%',
         }}
         center={center}
@@ -551,29 +553,31 @@ const Map = (props: Props) => {
         </ReloadMapContainer>
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
-      <MapLegend
-        centerCoords={centerCoords}
-        showCenterCrosshairs={showCenterCrosshairs}
-        returnLatLongOnClick={returnLatLongOnClick}
-        showNearbyTrails={showNearbyTrails}
-        showYourLocation={showYourLocation}
-        majorTrailsOn={majorTrailsOn}
-        toggleMajorTrails={toggleMajorTrails}
-        yourLocationOn={yourLocationOn}
-        toggleYourLocation={toggleYourLocation}
-        showOtherMountains={showOtherMountains}
-        otherMountainsOn={otherMountainsOn}
-        toggleOtherMountains={toggleOtherMountains}
-        showCampsites={showCampsites}
-        campsitesOn={campsitesOn}
-        toggleCampsites={toggleCampsites}
-        userId={userId}
-        onAddMountainClick={onAddMountainClick}
-        primaryMountainLegendCopy={primaryMountainLegendCopy}
-        customContentBottom={customScaleContentBottom}
-        useGenericFunctionality={useGenericFunctionality}
-        ref={mapLegendRef}
-      />
+      <div>
+        <MapLegend
+          centerCoords={centerCoords}
+          showCenterCrosshairs={showCenterCrosshairs}
+          returnLatLongOnClick={returnLatLongOnClick}
+          showNearbyTrails={showNearbyTrails}
+          showYourLocation={showYourLocation}
+          majorTrailsOn={majorTrailsOn}
+          toggleMajorTrails={toggleMajorTrails}
+          yourLocationOn={yourLocationOn}
+          toggleYourLocation={toggleYourLocation}
+          showOtherMountains={showOtherMountains}
+          otherMountainsOn={otherMountainsOn}
+          toggleOtherMountains={toggleOtherMountains}
+          showCampsites={showCampsites}
+          campsitesOn={campsitesOn}
+          toggleCampsites={toggleCampsites}
+          userId={userId}
+          onAddMountainClick={onAddMountainClick}
+          primaryMountainLegendCopy={primaryMountainLegendCopy}
+          customContentBottom={customScaleContentBottom}
+          useGenericFunctionality={useGenericFunctionality}
+          ref={mapLegendRef}
+        />
+      </div>
     </Root>
   );
 
