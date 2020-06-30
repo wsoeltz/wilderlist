@@ -80,14 +80,20 @@ const OverlayPortal = styled.div`
 
 export interface IAppContext {
   windowWidth: number;
-  usersLocation: UsersLocation | undefined;
+  usersLocation: UsersLocation;
 }
 
 const client = new ApolloClient();
 export const UserContext = React.createContext<User | null>(null);
 export const AppContext = React.createContext<IAppContext>({
   windowWidth: window.innerWidth,
-  usersLocation: undefined,
+  usersLocation: {
+    loading: true,
+    error: undefined,
+    data: undefined,
+    isPrecise: false,
+    requestAccurateLocation: undefined,
+  },
 });
 
 const App: React.FC = () => {
@@ -101,7 +107,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (usersLocation !== undefined && usersLocation.loading === false && checkedForAccurateLocationOnLoad === false) {
-      if (userAllowsPreciseLocation()) {
+      if (userAllowsPreciseLocation() && usersLocation.requestAccurateLocation) {
         usersLocation.requestAccurateLocation();
       }
       setCheckedForAccurateLocationOnLoad(true);

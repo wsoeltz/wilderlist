@@ -86,7 +86,7 @@ const MountainCard = ({ mountain, setHighlighted }: Props) => {
     ? (
         <span>
           <Tooltip
-            explanation={'Caclulated as-the-Crow-flies. For driving directions, select and individual mountain.'}
+            explanation={'Caclulated as-the-Crow-flies. For driving directions, select an individual mountain.'}
           >
             <BasicIconInText icon={faCrow} />
           </Tooltip>

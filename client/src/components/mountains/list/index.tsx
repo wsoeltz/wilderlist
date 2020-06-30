@@ -189,7 +189,7 @@ const MountainSearchPage = (props: Props) => {
   let GQL_QUERY: any;
   let queryText: React.ReactElement<any> | null;
   let noResultsText: string;
-  if (!query && mapCenter) {
+  if (!searchQuery && mapCenter && usersLocation && usersLocation.loading === false) {
     variables = {
       latitude: mapCenter.latitude,
       longitude: mapCenter.longitude,
@@ -201,13 +201,18 @@ const MountainSearchPage = (props: Props) => {
       <NoResults>Showing mountains within <strong>35 miles</strong> of the map center</NoResults>
     );
     noResultsText = 'No mountains found here. Try moving the map or using the search above.';
-  } else {
+  } else if (searchQuery) {
     variables = { searchQuery, pageNumber, nPerPage };
     GQL_QUERY = SEARCH_MOUNTAINS;
     queryText = (
       <NoResults>Showing mountains for query <strong>{searchQuery}</strong>.</NoResults>
     );
     noResultsText = getFluentString('global-text-value-no-results-found');
+  } else {
+    GQL_QUERY = SEARCH_MOUNTAINS;
+    variables = { searchQuery, pageNumber, nPerPage: 0 };
+    queryText = null;
+    noResultsText = '';
   }
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GQL_QUERY, {variables});
@@ -232,7 +237,7 @@ const MountainSearchPage = (props: Props) => {
   }, [listContainerElm, pageNumber]);
 
   let list: React.ReactElement<any> | null;
-  if ((loading === true || (!searchQuery && !mapCenter)) && (dataToUse === undefined && !searchQuery)) {
+  if (loading === true && ((!mapCenter && !dataToUse) || searchQuery)) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostMountainCard key={i} />);

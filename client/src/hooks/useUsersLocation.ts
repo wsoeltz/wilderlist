@@ -89,7 +89,7 @@ interface LocationResponse {
 }
 
 export interface UsersLocation extends LocationResponse {
-  requestAccurateLocation: () => void;
+  requestAccurateLocation: undefined | (() => void);
 }
 
 export default (): UsersLocation => {
