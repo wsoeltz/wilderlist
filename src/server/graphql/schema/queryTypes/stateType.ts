@@ -9,7 +9,7 @@ import {
 import mongoose, { Schema } from 'mongoose';
 import { State as IState } from '../../graphQLTypes';
 import MountainType from './mountainType';
-import PeakListType, {PeakList} from './peakListType';
+import PeakListType from './peakListType';
 import RegionType from './regionType';
 
 type StateSchemaType = mongoose.Document & IState;
@@ -77,10 +77,6 @@ const StateType: any = new GraphQLObjectType({
           let count = 0;
           if (parentValue.peakLists && parentValue.peakLists.length) {
             count += parentValue.peakLists.length;
-            const childLists = await PeakList.find({ parent: { $in: parentValue.peakLists } });
-            if (childLists && childLists.length) {
-              count += childLists.length;
-            }
           }
           return count;
         } catch (err) {

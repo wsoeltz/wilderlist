@@ -34,6 +34,7 @@ import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
+import MapSelect from './mapSelect';
 
 export const SearchAndFilterContainer = styled.div`
   display: grid;
@@ -368,7 +369,7 @@ const PeakListPage = (props: Props) => {
 
   const listDetail = !Types.ObjectId.isValid(id)
     ? (
-        <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>
+        <MapSelect />
       )
     : (
         <PeakListDetail
