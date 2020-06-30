@@ -438,6 +438,17 @@ user-notes-title = Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
 
+mountain-search-no-results-mobile = No mountains found near { $map-center-text }. Use the search above or go to the map view to explore.
+mountain-search-no-results-map = No mountains found here. Try moving the map or using the search above.
+mountain-search-query-desc = Showing mountains for query <strong>{ $search-query }</strong>.
+mountain-search-map-text = Showing mountains within <strong>{ $distance } miles</strong> of { $map-center-text }
+mountain-search-mobile-nav-list = List View
+mountain-search-mobile-nav-map = Map View
+
+mountain-card-crow-flies-tooltip = Caclulated as-the-Crow-flies. For driving directions, select an individual mountain.
+mountain-card-view-details = View details
+mountain-card-show-on-map = Show on map
+
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
 mountain-completion-modal-toggle-btn-year-only = Year Only

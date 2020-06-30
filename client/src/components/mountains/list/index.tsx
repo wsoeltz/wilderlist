@@ -227,16 +227,31 @@ const MountainSearchPage = (props: Props) => {
     const mapCenterText = centerToYou !== null && centerToYou < 5 && usersLocation.data
       ? usersLocation.data.text : 'the map center';
     queryText = (
-      <NoResults>Showing mountains within <strong>35 miles</strong> of {mapCenterText}</NoResults>
+      <NoResults
+        dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-search-map-text', {
+            'distance': 35,
+            'map-center-text': mapCenterText,
+          }),
+        }}
+      />
     );
     noResultsText = windowWidth < mobileSize
-      ? `No mountains found near ${mapCenterText}. Use the search above or go to the map view to explore.`
-      : 'No mountains found here. Try moving the map or using the search above.';
+      ? getFluentString('mountain-search-no-results-mobile', {
+        'map-center-text': mapCenterText,
+      })
+      : getFluentString('mountain-search-no-results-map');
   } else if (searchQuery) {
     variables = { searchQuery, pageNumber, nPerPage };
     GQL_QUERY = SEARCH_MOUNTAINS;
     queryText = (
-      <NoResults>Showing mountains for query <strong>{searchQuery}</strong>.</NoResults>
+      <NoResults
+        dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-search-query-desc', {
+            'search-query': searchQuery,
+          }),
+        }}
+      />
     );
     noResultsText = getFluentString('global-text-value-no-results-found');
   } else {
@@ -359,7 +374,7 @@ const MountainSearchPage = (props: Props) => {
             onClick={() => setMobileView(View.List)}
           >
             <BasicIconInText icon={faList} />
-            List View
+            {getFluentString('mountain-search-mobile-nav-list')}
           </SecondaryNavigationButton>
           <SecondaryNavigationButton
             onClick={() => setMobileView(View.Map)}
@@ -369,7 +384,7 @@ const MountainSearchPage = (props: Props) => {
             }}
           >
             <BasicIconInText icon={faMapMarkedAlt} />
-            Map View
+            {getFluentString('mountain-search-mobile-nav-map')}
           </SecondaryNavigationButton>
         </SecondaryNavigationContainer>
       </PreContentHeaderFull>
