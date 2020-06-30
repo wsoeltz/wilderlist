@@ -5,7 +5,6 @@ import {
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import max from 'lodash/max';
-import min from 'lodash/min';
 import {darken} from 'polished';
 import React, {
   useContext,
@@ -183,6 +182,42 @@ const SelectedState = styled.h1`
   pointer-events: none;
   background-color: rgba(245, 245, 245, 0.5);
 `;
+const Title = styled(SelectedState)`
+  left: 0;
+  color: ${secondaryColor};
+`;
+
+const ScaleContainer = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 300px;
+  font-style: normal;
+  font-size: 0.8rem;
+  pointer-events: none;
+`;
+
+const Scale = styled.div`
+  width: 100%;
+  background: linear-gradient(90deg, ${lightBorderColor} 0%, ${locationColor} 100%);
+  height: 1rem;
+  border: solid 1px #fff;
+`;
+
+const ScaleValues = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+`;
+
+const ScaleTitle = styled.h4`
+  margin: 0.7rem 0 0;
+  text-align: center;
+  font-weight: 400;
+`;
 
 interface Props {
   selectedState: {id: string, name: string} | null;
@@ -216,10 +251,9 @@ const ListMapSelect = (props: Props) => {
   const allValues = data && data.states
     ? data.states.map(({numPeakLists}) => numPeakLists)
     : [0, 0];
-  const minVal = min(allValues) as number;
   const maxVal = max(allValues) as number;
 
-  const colorScale = scaleLinear<string>().domain([minVal, maxVal]).range([lightBorderColor, locationColor]);
+  const colorScale = scaleLinear<string>().domain([0, maxVal]).range([lightBorderColor, locationColor]);
 
   const paths = statePaths.map(state => {
     const targetState = data && data.states
@@ -272,7 +306,7 @@ const ListMapSelect = (props: Props) => {
         {hoveredState.numPeakLists}
       </TooltipListCount>
       <small>
-        lists
+        {hoveredState.numPeakLists === 1 ? 'list' : 'lists'}
       </small>
       <TooltipClickText>
         click to filter lists  in {hoveredState.abbreviation}
@@ -292,7 +326,11 @@ const ListMapSelect = (props: Props) => {
         {selectedState.name}
       </SelectedState>
     </>
-  ) : null;
+  ) : (
+    <Title>
+      {getFluentString('map-search-states-title')}
+    </Title>
+  );
 
   return (
     <Root>
@@ -307,6 +345,16 @@ const ListMapSelect = (props: Props) => {
           {paths}
         </g>
       </Svg>
+      <ScaleContainer>
+        <ScaleValues>
+          <span>0</span>
+          <span>{maxVal}</span>
+        </ScaleValues>
+        <Scale />
+        <ScaleTitle>
+          {getFluentString('map-search-color-scale-text')}
+        </ScaleTitle>
+      </ScaleContainer>
       {tooltip}
     </Root>
   );
