@@ -84,6 +84,7 @@ const SuggestedLists = (props: Props) => {
     userId,
     variant: null,
     selectionArray: getSelectionArray(usersState),
+    state: null,
   };
 
   const {loading, error, data} = useQuery<CardSuccessResponse, Variables>(SEARCH_PEAK_LISTS, {variables });

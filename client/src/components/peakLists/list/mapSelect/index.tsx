@@ -104,7 +104,14 @@ const TooltipClickText = styled.small`
   font-style: italic;
 `;
 
-const ListMapSelect = () => {
+interface Props {
+  setSelectedState: (val: {id: string, name: string} | null) => void;
+}
+
+const ListMapSelect = (props: Props) => {
+  const {
+    setSelectedState,
+  } = props;
   const {data} = useQuery<SuccessResponse>(GET_STATES);
 
   const [hoveredState, setHoveredState] = useState<TooltipDatum | undefined>(undefined);
@@ -122,6 +129,11 @@ const ListMapSelect = () => {
       ? data.states.find(s => s.abbreviation === state.abbr)
       : undefined;
     const fill = targetState ? colorScale(targetState.numPeakLists) : lightBorderColor;
+    const onClick = () => {
+      if (targetState) {
+        setSelectedState(targetState);
+      }
+    };
     const onMouseMove = (e: React.MouseEvent) => {
       if (targetState) {
         setHoveredState({
@@ -138,6 +150,7 @@ const ListMapSelect = () => {
         fill={fill}
         onMouseMove={onMouseMove}
         onMouseLeave={() => setHoveredState(undefined)}
+        onClick={onClick}
       />
     );
   });

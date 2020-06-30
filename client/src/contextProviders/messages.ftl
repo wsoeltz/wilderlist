@@ -192,6 +192,7 @@ global-text-value-completed-in-every-season = Completed in every season
 global-text-value-mountain-not-being-pursued = This mountain is not being pursued
 
 global-text-value-submit = Submit
+global-text-value-clear = Clear
 
 global-text-value-edit = Edit
 global-text-value-save-and-add = Save and Add Another
@@ -355,6 +356,8 @@ stats-average-time-since-start = Average time between hikes since { $start-date 
 list-search-list-detail-placeholder = Select a list on the left to see more details
 mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details
 list-detail-mountain-detail-placeholder = Select a mountain to see more details
+
+peak-list-search-state = Showing lists only with mountains in <strong>{ $state-name }</strong>.
 
 peak-list-text-latest-ascent = {
   $completed ->

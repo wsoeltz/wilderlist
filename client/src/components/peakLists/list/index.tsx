@@ -23,7 +23,9 @@ import {
   ButtonTertiary,
   FloatingButton,
   FloatingButtonContainer,
+  LinkButton,
   Next,
+  NoResults,
   PaginationContainer,
   PlaceholderText,
   PlusIcon,
@@ -69,6 +71,11 @@ export const MapIcon = styled(FontAwesomeIcon)`
   opacity: 0.5;
 `;
 
+const ClearButton = styled(LinkButton)`
+  margin-left: 0.5rem;
+  font-style: italic;
+`;
+
 export const SEARCH_PEAK_LISTS = gql`
   query SearchPeakLists(
     $userId: ID,
@@ -77,6 +84,7 @@ export const SEARCH_PEAK_LISTS = gql`
     $nPerPage: Int!,
     $variant: String,
     $selectionArray: [ID],
+    $state: ID,
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
@@ -84,6 +92,7 @@ export const SEARCH_PEAK_LISTS = gql`
       nPerPage: $nPerPage,
       variant: $variant,
       selectionArray: $selectionArray,
+      state: $state,
     ) {
       id
       name
@@ -107,12 +116,14 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
     $pageNumber: Int!,
     $nPerPage: Int!,
     $variant: String,
+    $state: ID,
   ) {
     peakLists: peakListsSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
       variant: $variant,
+      state: $state,
     ) {
       id
       name
@@ -145,12 +156,14 @@ export const getRefetchSearchQueries = (userId: string) => [
     pageNumber: 1,
     nPerPage: 15,
     userId,
+    state: null,
   }},
   {query: SEARCH_PEAK_LISTS_COMPACT, variables: {
     searchQuery: '',
     pageNumber: 1,
     nPerPage: compactViewNPerPage,
     userId,
+    state: null,
   }},
 ];
 
@@ -182,6 +195,7 @@ export interface Variables {
   pageNumber: number;
   nPerPage: number;
   variant: PeakListVariants | null;
+  state: string| null;
 }
 
 export const ADD_PEAK_LIST_TO_USER = gql`
@@ -237,6 +251,7 @@ const PeakListPage = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [selectedState, setSelectedState] = useState<{id: string, name: string} | null>(null);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -279,6 +294,7 @@ const PeakListPage = (props: Props) => {
     nPerPage: compactViewNPerPage,
     userId,
     variant: PeakListVariants.standard,
+    state: selectedState ? selectedState.id : null,
   };
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS_COMPACT, {
     variables,
@@ -298,6 +314,20 @@ const PeakListPage = (props: Props) => {
       refetchQueries: () => [{query: SEARCH_PEAK_LISTS_COMPACT, variables}],
     });
   const beginList = userId ? (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}}) : null;
+
+  const queryText = selectedState ? (
+    <NoResults>
+      <span dangerouslySetInnerHTML={{
+          __html: getFluentString('peak-list-search-state', {
+            'state-name': selectedState.name,
+          }),
+        }}
+      />
+      <ClearButton onClick={() => setSelectedState(null)}>
+        {getFluentString('global-text-value-clear')}
+      </ClearButton>
+    </NoResults>
+  ) : null;
 
   let list: React.ReactElement<any> | null;
   if (loading === true) {
@@ -351,6 +381,7 @@ const PeakListPage = (props: Props) => {
       );
       list = (
         <>
+          {queryText}
           {listElm}
           <PaginationContainer>
             {prevBtn}
@@ -369,7 +400,9 @@ const PeakListPage = (props: Props) => {
 
   const listDetail = !Types.ObjectId.isValid(id)
     ? (
-        <MapSelect />
+        <MapSelect
+          setSelectedState={setSelectedState}
+        />
       )
     : (
         <PeakListDetail
@@ -417,7 +450,7 @@ const PeakListPage = (props: Props) => {
             />
           </SearchAndFilterContainer>
         </SearchContainer>
-        <ContentBody ref={listContainerElm}>
+        <ContentBody ref={listContainerElm} style={{paddingTop: queryText ? 0 : undefined}}>
           {list}
           {addMountainButton}
         </ContentBody>
