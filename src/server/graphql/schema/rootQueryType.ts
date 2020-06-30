@@ -107,15 +107,25 @@ const RootQuery = new GraphQLObjectType({
               ...limitSelection,
             }),
           );
+          // only include the default filter if a state has been specified at the args level
+          // but modify to only search for that state. There are no words to ignore
+          const defaultFilter = state
+            ? [{
+                searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' },
+                ...variantsFilter,
+                ...limitSelection,
+                states: state,
+              }]
+            : [{
+                searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' },
+                ...variantsFilter,
+                ...limitSelection,
+              }];
           return PeakList
             .find({
               $or: [
                 ...querysWithoutStateName,
-                {
-                  searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' },
-                  ...variantsFilter,
-                  ...limitSelection,
-                },
+                ...defaultFilter,
               ],
             })
           .limit(nPerPage)
@@ -200,8 +210,10 @@ const RootQuery = new GraphQLObjectType({
           const maxElevationFilter = maxElevation ? {$lte: (maxElevation as number)} : null;
           const elevation = minElevation || maxElevation
             ? {elevation: {...minElevationFilter, ...maxElevationFilter}} : null;
-          // don't include the default filter if a state has been specified at the args level
-          const defaultFilter = state ? []
+          // only include the default filter if a state has been specified at the args level
+          // but modify to only search for that state. There are no words to ignore
+          const defaultFilter = state
+            ? [{ name: { $regex: trimmedQuery, $options: 'i' }, state: { $in: [state]}, ...elevation }]
             : [{ name: { $regex: trimmedQuery, $options: 'i' }, ...elevation }];
           return Mountain
             .find({
