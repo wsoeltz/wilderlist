@@ -1,5 +1,4 @@
 import {
-  faLongArrowAltDown,
   faSync,
 } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
@@ -106,28 +105,6 @@ const ReloadMapContainer = styled.div`
   padding: 0.2rem;
   box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-`;
-
-const BrokenMapMessage = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: -1;
-  background-color: ${lightBorderColor};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0.75rem;
-  align-items: center;
-  padding: 2rem;
-  text-align: center;
-  font-size: 1rem;
-  line-height: 1.75;
-  font-weight: 600;
-  color: #585858;
 `;
 
 const getMinMax = (coordinates: Coordinate[]) => {
@@ -499,6 +476,7 @@ const Map = (props: Props) => {
         fitBoundsOptions={{padding: 50, linear: true}}
         movingMethod={movingMethod ? movingMethod : 'flyTo'}
         key={`mapkey-${mapLegendHeight}-${mapReloadCount}`}
+        onWebGlContextLost={incReload}
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
@@ -565,16 +543,6 @@ const Map = (props: Props) => {
           useGenericFunctionality={useGenericFunctionality}
         />
         {crosshairs}
-        <BrokenMapMessage>
-          {getFluentString('map-broken-message')}
-          <BasicIconInText
-            icon={faLongArrowAltDown}
-            style={{
-              fontSize: '1rem',
-              margin: '1rem 0',
-            }}
-          />
-        </BrokenMapMessage>
         <ReloadMapContainer
           onClick={incReload}
         >
