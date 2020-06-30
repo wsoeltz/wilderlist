@@ -353,7 +353,7 @@ const MountainSearchPage = (props: Props) => {
       <ContentHeader>
         <BackButton
           onClick={returnToMap}
-          text={'Back to Map'}
+          text={getFluentString('map-search-back-to-map')}
         />
       </ContentHeader>
     );

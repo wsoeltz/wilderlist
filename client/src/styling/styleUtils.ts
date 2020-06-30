@@ -567,7 +567,8 @@ export const PlaceholderText = styled.div`
   text-align: center;
   font-style: italic;
   color: ${placeholderColor};
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: rgb(245, 245, 245);
+  position: relative;
 `;
 
 export const NoResults = styled.div`

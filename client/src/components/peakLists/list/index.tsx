@@ -15,6 +15,7 @@ import { Routes } from '../../../routing/routes';
 import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
+  ContentHeader,
   ContentLeftSmall,
   ContentRightLarge,
   SearchContainer,
@@ -33,6 +34,7 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
+import BackButton from '../../sharedComponents/BackButton';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import PeakListDetail from '../detail/PeakListDetail';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
@@ -361,9 +363,9 @@ const PeakListPage = (props: Props) => {
         <Prev onClick={decrementPageNumber}>
           {getFluentString('global-text-value-navigation-prev')}
         </Prev> ) : null;
-      const noResultsText = getFluentString('global-text-value-no-results-found-for-term', {
+      const noResultsText = searchQuery ? getFluentString('global-text-value-no-results-found-for-term', {
         term: searchQuery,
-      });
+      }) : getFluentString('global-text-value-no-results-found');
       let listElm: React.ReactElement<any> | null;
       const {peakLists: peakListData} = data as CompactSuccessResponse;
       listElm = (
@@ -401,6 +403,7 @@ const PeakListPage = (props: Props) => {
   const listDetail = !Types.ObjectId.isValid(id)
     ? (
         <MapSelect
+          selectedState={selectedState}
           setSelectedState={setSelectedState}
         />
       )
@@ -413,6 +416,21 @@ const PeakListPage = (props: Props) => {
           setOwnMetaData={true}
         />
       );
+
+  const returnToMap = () => {
+    history.push(searchListDetailLink('search') + '?query=' + searchQuery + '&page=' + pageNumber);
+  };
+
+  const backButton = !Types.ObjectId.isValid(id)
+    ? null
+    : (
+      <ContentHeader>
+        <BackButton
+          onClick={returnToMap}
+          text={getFluentString('map-search-back-to-map')}
+        />
+      </ContentHeader>
+    );
 
   const addMountainButton = userId && peakListPermissions !== -1 ? (
     <FloatingButtonContainer>
@@ -456,6 +474,7 @@ const PeakListPage = (props: Props) => {
         </ContentBody>
       </ContentLeftSmall>
       <ContentRightLarge>
+        {backButton}
         <ContentBody>
           {listDetail}
         </ContentBody>

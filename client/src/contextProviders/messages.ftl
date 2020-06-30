@@ -358,6 +358,7 @@ mountain-search-mountains-detail-placeholder = Select a mountain on the left to 
 list-detail-mountain-detail-placeholder = Select a mountain to see more details
 
 peak-list-search-state = Showing lists only with mountains in <strong>{ $state-name }</strong>.
+map-search-back-to-map = Back to Map
 
 peak-list-text-latest-ascent = {
   $completed ->
