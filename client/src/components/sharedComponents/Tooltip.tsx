@@ -29,7 +29,7 @@ const MoreInformationI = styled.span`
 const TooltipBase = styled.div`
   position: fixed;
   z-index: 3000;
-  width: 16rem;
+  max-width: 16rem;
   font-size: 0.7rem;
   line-height: 1.4;
   text-transform: none;

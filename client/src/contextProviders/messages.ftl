@@ -228,6 +228,13 @@ global-text-value-list-type = {
     [fourSeason] 4-Season
     [grid] Grid
 }
+global-text-value-list-type-tooltip = {
+  $type ->
+    *[standard] Track your hikes on this list
+    [winter] Track your hikes on this list in the winter
+    [fourSeason] Track your hikes on this list over every season
+    [grid] Track your hikes on this list over every month
+}
 
 global-text-value-difficulty = difficulty
 global-text-value-list-tier = {
