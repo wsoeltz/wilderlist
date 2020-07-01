@@ -25,6 +25,7 @@ import {
   mobileSize,
 } from '../../../Utils';
 import {AppContext} from '../../App';
+import Tooltip from '../../sharedComponents/Tooltip';
 
 const VariantLink = styled(CardFooterLink)`
   width: 25%;
@@ -163,7 +164,11 @@ const VariantLinks = (props: Props) => {
           $isActive={currentListId === target.id}
           color={color}
         >
-          <BasicIconInText icon={variantsIconMapping[i]} />
+          <Tooltip explanation={getFluentString('global-text-value-list-type-tooltip', {
+            'type': variant, 'list-name': name,
+          })}>
+            <BasicIconInText icon={variantsIconMapping[i]} />
+          </Tooltip>
           {getFluentString('global-text-value-list-type', {type: variant})}
         </VariantLink>
       );
@@ -201,7 +206,11 @@ const VariantLinks = (props: Props) => {
           $isActive={false}
           color={color}
         >
-          <BasicIconInText icon={variantsIconMapping[i]} />
+          <Tooltip explanation={getFluentString('global-text-value-list-type-tooltip', {
+            'type': variant, 'list-name': name,
+          })}>
+            <BasicIconInText icon={variantsIconMapping[i]} />
+          </Tooltip>
           {getFluentString('global-text-value-list-type', {type: variant})}
         </VariantButton>
       );
