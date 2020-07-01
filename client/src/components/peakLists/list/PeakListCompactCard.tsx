@@ -1,40 +1,73 @@
 import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
   preventNavigation,
   searchListDetailLink,
 } from '../../../routing/Utils';
 import {
-  ButtonPrimary,
-  Card as CardBase,
-  CardLinkWrapper,
   CardSubtitle,
   CardTitle,
   CollapsedParagraph,
+  CompactButtonPrimary,
+  lightBaseColor,
+  secondaryFont,
+  Seperator,
+  StackableCardFooter,
+  StackableCardSection as CardBase,
+  StackedCardWrapper,
 } from '../../../styling/styleUtils';
 import { getColorSetFromVariant } from '../../../styling/styleUtils';
+import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   roundPercentToSingleDecimal,
 } from '../../../Utils';
+import ImportAscentNotification from '../import/ImportAscentsNotification';
+import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import { getType } from '../Utils';
 import { CompactPeakListDatum } from './ListPeakLists';
-import {
-  getStatesOrRegion,
-} from './PeakListCard';
+import VariantLinks from './VariantLinks';
+
+const Root = styled.div`
+  border-left-width: 8px;
+  border-left-style: solid;
+  margin-bottom: 2rem;
+`;
+
+const LinkWrapper = styled(StackedCardWrapper)`
+  margin-bottom: 0;
+`;
 
 const Card = styled(CardBase)`
-  border-left-width: 8px;
+  border-left-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+`;
+
+const CardFooter = styled(StackableCardFooter)`
+  border-left-width: 0;
+`;
+
+const CompletedValue = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: ${lightBaseColor};
+`;
+
+const Value = styled.div`
+  font-size: 1.85rem;
+  font-family: ${secondaryFont};
 `;
 
 const SubtleText = styled.small`
   text-transform: uppercase;
-  font-size: 0.85rem;
-  opacity: 0.7;
+  font-size: 0.75rem;
 `;
 
 interface Props {
@@ -44,17 +77,40 @@ interface Props {
   actionText: string;
   totalRequiredAscents: number;
   numCompletedAscents: number;
+  queryRefetchArray: Array<{query: any, variables: any}>;
 }
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, states},
+    peakList: {id, name, type, stateOrRegionString, numMountains}, peakList,
     active, listAction, actionText, totalRequiredAscents,
-    numCompletedAscents,
+    numCompletedAscents, queryRefetchArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
+
+  const prevActive = usePrevious(active);
+  useEffect(() => {
+    if (prevActive === false && active === true && showImportNotification === false) {
+      setShowImportNotification(true);
+    }
+  }, [prevActive, active, showImportNotification, setShowImportNotification]);
+  const importAscentsNotification = showImportNotification &&
+    (type === PeakListVariants.standard || type === PeakListVariants.winter || id === NH48_GRID_OBJECT_ID) ? (
+    <ImportAscentNotification
+      closeNotification={() => setShowImportNotification(false)}
+      type={type}
+      peakListId={id}
+    />
+  ) : null;
+
+  const [hovered, setHovered] = useState<boolean>(false);
+
+  const color = type === PeakListVariants.grid
+        ? getColorSetFromVariant(type).primary :  getColorSetFromVariant(type).tertiary;
 
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -63,46 +119,67 @@ const PeakListCard = (props: Props) => {
     }
   };
 
-  const statesArray = states ? states : [];
-
   let cornerContent: React.ReactElement<any> | null;
   if (active === true) {
     const percent = roundPercentToSingleDecimal(numCompletedAscents, totalRequiredAscents);
     const percentComplete = isNaN(percent) ? 0 : percent;
     cornerContent = (
-      <SubtleText>
-        {percentComplete}% {getFluentString('global-text-value-complete')}
-      </SubtleText>
+      <CompletedValue>
+        <Value style={{color: percentComplete === 100 ? color : undefined}}>
+          {percentComplete}%
+        </Value>
+        <SubtleText style={{color: percentComplete === 100 ? color : undefined}}>
+          {getFluentString('global-text-value-complete')}
+        </SubtleText>
+      </CompletedValue>
     );
   } else if (listAction !== null) {
     cornerContent = (
-      <ButtonPrimary onClick={actionButtonOnClick}>
+      <CompactButtonPrimary onClick={actionButtonOnClick}>
         {actionText}
-      </ButtonPrimary>
+      </CompactButtonPrimary>
     );
   } else {
     cornerContent = null;
   }
 
   return (
-      <CardLinkWrapper
+    <Root
+      style={{borderLeftColor: color}}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <LinkWrapper
         mobileURL={listDetailWithMountainDetailLink(id, 'none')}
         desktopURL={searchListDetailLink(id) + window.location.search}
       >
-        <Card style={{borderLeftColor: getColorSetFromVariant(type).tertiary}}>
-          <CardTitle>
-            {shortName} - {name}{getType(type)}
-          </CardTitle>
-          <CardSubtitle>
-            <CollapsedParagraph>
-              {getStatesOrRegion(statesArray, getFluentString)}
-            </CollapsedParagraph>
-            <CollapsedParagraph>
-              {cornerContent}
-            </CollapsedParagraph>
-          </CardSubtitle>
+        <Card>
+          <div>
+            <CardTitle>
+              {name}{getType(type)}
+            </CardTitle>
+            <CardSubtitle>
+              <CollapsedParagraph>
+                {numMountains} Peaks
+                <Seperator>|</Seperator>
+                {stateOrRegionString}
+              </CollapsedParagraph>
+            </CardSubtitle>
+          </div>
+          <div>
+            {cornerContent}
+          </div>
         </Card>
-      </CardLinkWrapper>
+      </LinkWrapper>
+      <CardFooter>
+        <VariantLinks
+          peakList={peakList}
+          queryRefetchArray={queryRefetchArray}
+          grayText={!hovered}
+        />
+        {importAscentsNotification}
+      </CardFooter>
+    </Root>
   );
 };
 

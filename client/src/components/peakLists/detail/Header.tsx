@@ -10,9 +10,13 @@ import {
 import { editPeakListLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
-  ButtonPrimary,
-  ButtonSecondaryLink,
-  GhostButton,
+  CardBase,
+  CompactButtonPrimary,
+  CompactButtonSecondary,
+  CompactGhostButton,
+  CompactGhostButtonLink,
+  lightBorderColor,
+  StackableCardFooter,
 } from '../../../styling/styleUtils';
 import {
   CompletedMountain,
@@ -30,40 +34,65 @@ import {
   getRefetchSearchQueries,
 } from '../list';
 import {
-  BigText,
-  getStatesOrRegion,
   TextRight,
 } from '../list/PeakListCard';
 import PeakProgressBar from '../list/PeakProgressBar';
+import VariantLinks from '../list/VariantLinks';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import FlagModal from './FlagModal';
 import {
   MountainDatum,
   PeakListDatum,
-  StateDatum,
   UserDatum,
 } from './PeakListDetail';
 
-const Root = styled.div`
+const mobileWidth = 500; // in px
+
+const Root = styled(CardBase)`
   display: grid;
-  grid-template-columns: 12.5rem 1fr auto;
-  grid-template-rows: auto auto auto auto auto;
+  grid-template-columns: minmax(10%, 12.5rem) minmax(12rem, 1fr) auto;
+  grid-template-rows: auto auto;
   grid-column-gap: 1rem;
-  grid-row-gap: 0.5rem;
+  grid-row-gap: 0rem;
+  border-bottom: none;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-template-rows: auto auto auto;
+    grid-template-columns: minmax(10%, 10.5rem) minmax(6rem, 1fr);
+    grid-column-gap: 0.4rem;
+    grid-row-gap: 0;
+  }
+`;
+
+const Footer = styled(StackableCardFooter)`
+  border-bottom: solid 1px ${lightBorderColor};
+  border-right: solid 1px ${lightBorderColor};
+  height: 2.2rem;
 `;
 
 const TitleContent = styled.div`
-  grid-column: 2 / 4;
-  grid-row: 2 / 4;
+  grid-column: 2;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-row: 2;
+  }
+`;
+
+const ListSettings = styled.div`
+  grid-column: 3;
+  grid-row: 1;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-column: 2;
+  }
 `;
 
 const BeginRemoveListButtonContainer = styled.div`
-  grid-column: 3;
-  grid-row: 3;
   text-align: right;
 `;
 
@@ -76,28 +105,45 @@ const EditFlagButtonContainer = styled.div`
 const Title = styled.h1`
   margin-bottom: 0.5rem;
   margin-top: 0;
+  font-size: 1.25rem;
 `;
 
 const ListInfo = styled.h3`
   margin-bottom: 0.5rem;
   margin-top: 0;
+  font-size: 0.9rem;
+  font-weight: 400;
 `;
 
 const LogoContainer = styled.div`
-  grid-row: 2 / 4;
   grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-row: 2;
+  }
 `;
 
 const ActiveListContentContainer = styled(ListInfo)`
   display: flex;
   justify-content: space-between;
-  grid-column: 1 / 4;
-  grid-row: 4;
+  grid-column: 1 / -1;
+  grid-row: 2;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-row: 3;
+  }
 `;
 
 const ProgressBarContainer = styled.div`
-  grid-column: 1 / 4;
-  grid-row: 5;
+  grid-column: 1 / -1;
+  grid-row: 2;
+
+  @media (max-width: ${mobileWidth}px) {
+    grid-row: 3;
+  }
 `;
 
 export const REMOVE_PEAK_LIST_FROM_USER = gql`
@@ -123,7 +169,6 @@ export const REMOVE_PEAK_LIST_FROM_USER = gql`
 
 interface Props {
   mountains: MountainDatum[];
-  statesArray: StateDatum[];
   peakList: PeakListDatum;
   user: UserDatum | null;
   completedAscents: CompletedMountain[];
@@ -135,20 +180,21 @@ interface Props {
 
 const Header = (props: Props) => {
   const {
-    mountains, user, peakList: { name, id, shortName, type, parent }, peakList,
-    completedAscents, comparisonUser, comparisonAscents, statesArray, isOtherUser,
-    queryRefetchArray,
+    mountains, user, peakList: { name, id, shortName, type, parent, stateOrRegionString}, peakList,
+    completedAscents, comparisonUser, comparisonAscents, isOtherUser,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const mutationOptions = queryRefetchArray && queryRefetchArray.length && user ? {
-    refetchQueries: () => [
-      ...queryRefetchArray,
+  const queryRefetchArray = props.queryRefetchArray && props.queryRefetchArray.length && user ? [
+      ...props.queryRefetchArray,
       ...getRefetchSearchQueries(user.id),
       {query: GET_USERS_PEAK_LISTS, variables: {userId: user.id}},
-      ],
+  ] : [];
+
+  const mutationOptions = queryRefetchArray && queryRefetchArray.length && user ? {
+    refetchQueries: () => [...queryRefetchArray],
   } : {};
 
   const [addPeakListToUser] =
@@ -213,13 +259,13 @@ const Header = (props: Props) => {
   };
 
   const beginRemoveButton = active === false || !user ? (
-    <ButtonPrimary onClick={beginList}>
+    <CompactButtonPrimary onClick={beginList}>
       {getFluentString('peak-list-detail-text-begin-list')}
-    </ButtonPrimary>
+    </CompactButtonPrimary>
    ) : (
-    <GhostButton onClick={() => setIsRemoveListModalOpen(true)}>
+    <CompactButtonSecondary onClick={() => setIsRemoveListModalOpen(true)}>
       {getFluentString('peak-list-detail-text-remove-list')}
-    </GhostButton>
+    </CompactButtonSecondary>
    ) ;
 
   let editFlagButton: React.ReactElement<any> | null;
@@ -229,14 +275,14 @@ const Header = (props: Props) => {
     editFlagButton = (user && peakList.author && user.id === peakList.author.id
           && user.peakListPermissions !== -1)
       || (user && user.permissions === PermissionTypes.admin) ? (
-      <ButtonSecondaryLink to={editPeakListLink(peakList.id)}>
+      <CompactGhostButtonLink to={editPeakListLink(peakList.id)}>
         {getFluentString('global-text-value-edit')}
-      </ButtonSecondaryLink>
+      </CompactGhostButtonLink>
     ) : (
-      <GhostButton onClick={() => setIsFlagModalOpen(true)}>
+      <CompactGhostButton onClick={() => setIsFlagModalOpen(true)}>
         <BasicIconInText icon={faFlag} />
         {getFluentString('global-text-value-flag')}
-      </GhostButton>
+      </CompactGhostButton>
     );
   }
 
@@ -272,7 +318,7 @@ const Header = (props: Props) => {
     failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
   }
 
-  let listCount: string | number;
+  let listCount: React.ReactElement<any>;
   let listInfoContent: React.ReactElement<any> | null;
   if (user && comparisonUser !== undefined && comparisonAscents !== undefined) {
 
@@ -281,20 +327,26 @@ const Header = (props: Props) => {
     listInfoContent = (
       <ActiveListContentContainer>
         <div>
-          <BigText>{numFriendsCompletedAscents}/{totalRequiredAscents}</BigText>
+          <strong>{numFriendsCompletedAscents}/{totalRequiredAscents}</strong>
+          {' '}
           {getFluentString('user-profile-compare-completed-by', {
             'user-name': comparisonUser.name,
           })}
         </div>
         <TextRight>
-          <BigText>{numCompletedAscents}/{totalRequiredAscents}</BigText>
+          <strong>{numCompletedAscents}/{totalRequiredAscents}</strong>
+          {' '}
           {getFluentString('user-profile-compare-completed-by', {
             'user-name': user.name,
           })}
         </TextRight>
       </ActiveListContentContainer>
     );
-    listCount = totalRequiredAscents;
+    listCount = (
+      <ListInfo>
+        {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
+      </ListInfo>
+    );
   } else if (active === true) {
     const latestDate = getLatestAscent(mountains, completedAscents, type);
 
@@ -308,7 +360,7 @@ const Header = (props: Props) => {
       });
       latestDateText = (
         <>
-          {latestAscentText} <BigText>{formatDate(latestDate)}</BigText>
+          {latestAscentText} {formatDate(latestDate)}
         </>
       );
     } else {
@@ -316,9 +368,6 @@ const Header = (props: Props) => {
     }
     listInfoContent = (
       <>
-        <ActiveListContentContainer>
-          <div>{latestDateText}</div>
-        </ActiveListContentContainer>
         <ProgressBarContainer>
           <PeakProgressBar
             variant={active === true ? type : null}
@@ -330,40 +379,61 @@ const Header = (props: Props) => {
       </>
     );
 
-    listCount = `${numCompletedAscents}/${totalRequiredAscents}`;
+    listCount = (
+      <>
+        <ListInfo>
+          {`${numCompletedAscents}/${totalRequiredAscents}`} {getFluentString('peak-list-text-total-ascents')}
+        </ListInfo>
+        <ListInfo>
+          {latestDateText}
+        </ListInfo>
+      </>
+    );
   } else {
     listInfoContent = null;
-    listCount = totalRequiredAscents;
+    listCount = (
+      <ListInfo>
+        {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
+      </ListInfo>
+    );
   }
 
   const mountainLogoId = parent === null ? id : parent.id;
   return (
-    <Root>
-      <TitleContent>
-        <Title>{name}{getType(type)}</Title>
-        <ListInfo>
-          {getStatesOrRegion(statesArray, getFluentString)}
-        </ListInfo>
-        <ListInfo>
-          {listCount} {getFluentString('peak-list-text-total-ascents')}
-        </ListInfo>
-      </TitleContent>
-      <LogoContainer>
-        <MountainLogo
-          id={mountainLogoId}
-          title={name}
-          shortName={shortName}
-          variant={type}
-          active={active}
-          completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
+    <>
+      <Root>
+        <TitleContent>
+          <Title>{name}{getType(type)}</Title>
+          <ListInfo>
+            {stateOrRegionString}
+          </ListInfo>
+          {listCount}
+        </TitleContent>
+        <LogoContainer>
+          <MountainLogo
+            id={mountainLogoId}
+            title={name}
+            shortName={shortName}
+            variant={type}
+            active={active}
+            completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
+          />
+        </LogoContainer>
+        <ListSettings>
+          {topLevelHeading}
+        </ListSettings>
+        {listInfoContent}
+      </Root>
+      <Footer>
+        <VariantLinks
+          peakList={peakList}
+          queryRefetchArray={queryRefetchArray}
         />
-      </LogoContainer>
-      {topLevelHeading}
-      {listInfoContent}
+      </Footer>
       {areYouSureModal}
       {signUpModal}
       {flagModal}
-    </Root>
+    </>
   );
 };
 

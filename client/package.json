@@ -19,7 +19,7 @@
     "@types/react-dom": "16.8.4",
     "@types/react-helmet": "^5.0.15",
     "@types/react-router-dom": "^4.3.5",
-    "@types/styled-components": "^4.1.18",
+    "@types/styled-components": "^5.1.0",
     "apollo-boost": "^0.4.3",
     "cross-fetch": "^3.0.4",
     "csvtojson": "^2.0.10",
@@ -37,7 +37,7 @@
     "react-helmet": "^5.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.0.1",
-    "styled-components": "^4.3.2",
+    "styled-components": "^5.1.0",
     "typescript": "3.5.3"
   },
   "scripts": {

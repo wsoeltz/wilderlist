@@ -3,31 +3,15 @@ import {
   Feature,
   Layer,
 } from 'react-mapbox-gl';
-import getCampsites, {
-  Campsite,
-} from '../../../utilities/getCampsites';
+import useCampsites from '../../../hooks/useCampsiteData';
 import {
   PopupData,
   PopupDataTypes,
 } from './types';
 
-export const getCampsitesData = async (lat: number, lng: number, setCampsiteData: (input: Campsite[]) => void) => {
-  try {
-    const res = await getCampsites({params: {lat, lng, maxDistance: 25}});
-    if (res && res.data) {
-      const data: Campsite[] = res.data;
-      setCampsiteData([...data]);
-    } else {
-      console.error('There was an error getting the location response');
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 interface Props {
   showCampsites: boolean | undefined;
-  campsiteData: Campsite[] | undefined;
+  centerCoords: [string, string];
   setPopupInfo: (value: PopupData | null) => void;
   campsitesOn: boolean;
   togglePointer: (mapEl: any, cursor: string) => void;
@@ -35,14 +19,19 @@ interface Props {
 
 const CampsiteLayer = (props: Props) => {
   const {
-    showCampsites, campsiteData, setPopupInfo,
+    showCampsites, setPopupInfo, centerCoords,
     campsitesOn, togglePointer,
   } = props;
 
+  const campsiteData = useCampsites({
+    lat: parseFloat(centerCoords[0]),
+    lon: parseFloat(centerCoords[1]),
+    active: showCampsites === true && campsitesOn,
+  });
   const campsites: Array<React.ReactElement<any>> = [];
 
-  if (showCampsites && campsiteData !== undefined && campsitesOn) {
-    campsiteData.forEach(point => {
+  if (showCampsites && campsiteData !== undefined && campsiteData.campsites && campsitesOn) {
+    campsiteData.campsites.forEach(point => {
       const onClick = () => {
         setPopupInfo({type: PopupDataTypes.Campsite, data: {...point}});
       };

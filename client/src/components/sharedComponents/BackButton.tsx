@@ -19,6 +19,7 @@ const Caret = styled(FontAwesomeIcon)`
 `;
 
 interface Props extends RouteComponentProps {
+  text?: string;
   onClick?: () => void;
 }
 
@@ -29,11 +30,12 @@ const BackButton = (props: Props) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const onClick = props.onClick !== undefined ? props.onClick : history.goBack;
+  const text = props.text ? props.text : getFluentString('global-text-value-back');
 
   return (
     <Button onClick={onClick}>
       <Caret icon={'chevron-left'} />
-      {getFluentString('global-text-value-back')}
+      {text}
     </Button>
   );
 };

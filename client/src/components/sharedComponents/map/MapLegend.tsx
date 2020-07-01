@@ -13,65 +13,12 @@ import {
 } from '../../../styling/styleUtils';
 import Tooltip from '../Tooltip';
 
-const ColorScaleLegend = styled.div`
+const Root = styled.div`
   padding: 0.6rem 0;
   border-top: 1px solid ${lightBorderColor};
   background-color: ${tertiaryColor};
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-`;
-const LegendTitle = styled.h4`
-  margin: 0.3rem 0 0.6rem;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  text-align: center;
-  font-weight: 600;
-  width: 100%;
-  flex-shrink: 0;
-`;
-const LegendItem = styled.div`
-  margin: 0 0.3rem;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const circleSmallScreenSize = 400; // in px
-
-const Circle = styled.div`
-  width: 15px;
-  height: 15px;
-  border-radius: 4000px;
-  margin-bottom: 0.2rem;
-
-  @media (max-width: ${circleSmallScreenSize}px) {
-    width: 14px;
-    height: 14px;
-  }
-`;
-
-const GridLegendLabel = styled(LegendItem)`
-  white-space: nowrap;
-  width: 15px;
-
-  @media (max-width: ${circleSmallScreenSize}px) {
-    width: 14px;
-  }
-`;
-const GridLabelStart = styled(GridLegendLabel)`
-  align-items: flex-start;
-`;
-const GridLabelEnd = styled(GridLegendLabel)`
-  align-items: flex-end;
-`;
-
-const SeasonLabelStart = styled(LegendItem)`
-  justify-content: center;
-`;
-const SeasonLabelEnd = styled(LegendItem)`
   justify-content: center;
 `;
 
@@ -156,9 +103,6 @@ interface Props {
   centerCoords: [string, string];
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
-  colorScaleTitle?: string;
-  colorScaleColors: string[];
-  colorScaleLabels: string[];
   showNearbyTrails?: boolean;
   showYourLocation?: boolean;
   showOtherMountains?: boolean;
@@ -175,18 +119,18 @@ interface Props {
   onAddMountainClick: () => void;
   primaryMountainLegendCopy: undefined | string;
   customContentBottom: undefined | React.ReactNode;
+  useGenericFunctionality: boolean | undefined;
 }
 
-const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
+const MapLegend = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivElement>) => {
   const {
-    centerCoords, colorScaleColors, colorScaleLabels,
-    showCenterCrosshairs, returnLatLongOnClick,
-    colorScaleTitle, showNearbyTrails, showYourLocation,
-    toggleMajorTrails, toggleYourLocation,
+    centerCoords, showCenterCrosshairs, returnLatLongOnClick,
+    showNearbyTrails, showYourLocation, toggleMajorTrails, toggleYourLocation,
     majorTrailsOn, yourLocationOn,
     showOtherMountains, otherMountainsOn, toggleOtherMountains,
     showCampsites, toggleCampsites, campsitesOn, userId,
     onAddMountainClick, primaryMountainLegendCopy, customContentBottom,
+    useGenericFunctionality,
   } = props;
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -235,7 +179,7 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     </AdditionalItem>
   ) : null;
 
-  const otherMountainsLegend = showOtherMountains ? (
+  const otherMountainsLegend = showOtherMountains && !useGenericFunctionality ? (
     <AdditionalItem>
       <Tooltip
       explanation={
@@ -262,6 +206,35 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
             <Status>({getFluentString('map-legend-show-hide', {
               shown: otherMountainsOn ? 'true' : 'false',
             })})</Status>
+          </div>
+        </LegendToggle>
+      </Tooltip>
+    </AdditionalItem>
+  ) : null;
+
+  const allMountainsLegend = useGenericFunctionality ? (
+    <AdditionalItem>
+      <Tooltip
+      explanation={
+          <div
+            dangerouslySetInnerHTML={{__html: getFluentString('map-legend-other-mountains-tooltip')}}
+          />
+        }
+        cursor={'pointer'}
+      >
+        <LegendToggle>
+          <OtherMountainsIcon>
+            <img
+              src={require('./images/custom-icons/mountain-highlighted.svg')}
+              alt='Mountains Legend Icon'
+              style={{width: '1.65rem'}}
+            />
+          </OtherMountainsIcon>
+          <div>
+            <Label>
+              Mountains on<br />
+              Wilderlist
+            </Label>
           </div>
         </LegendToggle>
       </Tooltip>
@@ -370,11 +343,12 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
         </AdditionalItemsRoot>
       </>
     );
-  } else if (showYourLocation || showNearbyTrails || showOtherMountains) {
+  } else if (showYourLocation || showNearbyTrails || showOtherMountains || allMountainsLegend) {
     additionalItems = (
       <>
         <AdditionalItemsRoot>
           <AdditionalItemsColumn>
+            {allMountainsLegend}
             {otherMountainsLegend}
             {locationLegend}
           </AdditionalItemsColumn>
@@ -390,88 +364,18 @@ const ColorScale = React.forwardRef((props: Props, rootElRef: RefObject<HTMLDivE
     additionalItems = null;
   }
 
-  const title = colorScaleTitle ? <LegendTitle>{colorScaleTitle}</LegendTitle> : null;
-  const startColor = colorScaleColors[0];
-  const endColor = colorScaleColors[colorScaleColors.length - 1];
-
-  if (colorScaleColors.length === 0) {
+  if (latLongLegend || additionalItems || customContentBottom) {
     return (
-      <ColorScaleLegend ref={rootElRef}>
+      <Root ref={rootElRef}>
         {latLongLegend}
         {additionalItems}
         {customContentBottom}
-      </ColorScaleLegend>
-    );
-  }
-  if (colorScaleColors.length <= 2) {
-    const legendNodes = colorScaleColors.map((c, i) => {
-      return (
-        <LegendItem key={c} style={{color: c}}>
-          <Circle style={{backgroundColor: c}} />
-          {colorScaleLabels[i]}
-        </LegendItem>
-      );
-    });
-    return (
-      <ColorScaleLegend ref={rootElRef}>
-        {title}
-        {latLongLegend}
-        {legendNodes}
-        {additionalItems}
-        {customContentBottom}
-      </ColorScaleLegend>
-    );
-  } else if (colorScaleColors.length < 8) {
-    const legendNodes = colorScaleColors.map((c) => {
-      return (
-        <LegendItem key={c}>
-          <Circle style={{backgroundColor: c}} />
-        </LegendItem>
-      );
-    });
-    return (
-      <ColorScaleLegend ref={rootElRef}>
-        {title}
-        <SeasonLabelStart style={{color: startColor}}>
-          {colorScaleLabels[0]}
-        </SeasonLabelStart>
-        {legendNodes}
-        <SeasonLabelEnd style={{color: endColor}}>
-          {colorScaleLabels[colorScaleLabels.length - 1]}
-        </SeasonLabelEnd>
-        {additionalItems}
-        {customContentBottom}
-      </ColorScaleLegend>
+      </Root>
     );
   } else {
-    const legendNodes = colorScaleColors.map((c, i) => {
-      if (i === 0 || i === 12) {
-        return null;
-      } else {
-        return (
-          <LegendItem key={c}>
-            <Circle style={{backgroundColor: c}} />
-          </LegendItem>
-        );
-      }
-    });
-    return (
-      <ColorScaleLegend ref={rootElRef}>
-        {title}
-        <GridLabelStart style={{color: startColor}}>
-          <Circle style={{backgroundColor: startColor}} />
-          {colorScaleLabels[0]}
-        </GridLabelStart>
-        {legendNodes}
-        <GridLabelEnd style={{color: endColor}}>
-          <Circle style={{backgroundColor: endColor}} />
-          {colorScaleLabels[colorScaleLabels.length - 1]}
-        </GridLabelEnd>
-        {additionalItems}
-        {customContentBottom}
-      </ColorScaleLegend>
-    );
+    return null;
   }
+
 });
 
-export default ColorScale;
+export default MapLegend;

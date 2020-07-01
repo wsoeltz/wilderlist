@@ -1,11 +1,11 @@
 import {
-  faLongArrowAltDown,
   faSync,
 } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import debounce from 'lodash/debounce';
 import sortBy from 'lodash/sortBy';
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -29,29 +29,21 @@ import {
   lightBorderColor,
 } from '../../../styling/styleUtils';
 import { CompletedMountain } from '../../../types/graphQLTypes';
-import {
-  Campsite,
-} from '../../../utilities/getCampsites';
 import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDistances';
-import {
-  setUserAllowsLocation,
-  userAllowsLocation,
-} from '../../../Utils';
-import CampsitesLayer, {getCampsitesData} from './CampsitesLayer';
-import ColorScale from './ColorScale';
+import {AppContext} from '../../App';
+import CampsitesLayer from './CampsitesLayer';
 import DirectionsAndLocation from './DirectionsAndLocation';
+import MapLegend from './MapLegend';
 import MapPopup from './MapPopup';
 import NearbyMountains from './NearbyMountains';
 import PrimaryMountains from './PrimaryMountains';
-import TrailsLayer, {getTrailsData} from './TrailsLayer';
+import TrailsLayer from './TrailsLayer';
 import {
   Coordinate,
   CoordinateWithDates,
   DestinationDatum,
-  IUserLocation,
   PopupData,
   PopupDataTypes,
-  Trail,
 } from './types';
 
 export const MapContainer = styled.div`
@@ -60,6 +52,8 @@ export const MapContainer = styled.div`
 
 const Root = styled.div`
   border: 1px solid ${lightBorderColor};
+  display: grid;
+  grid-template-rows: 1fr auto;
 
   .mapboxgl-popup-tip {
     border-top-color: rgba(255, 255, 255, 0.85);
@@ -115,28 +109,6 @@ const ReloadMapContainer = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
-const BrokenMapMessage = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: -1;
-  background-color: ${lightBorderColor};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0.75rem;
-  align-items: center;
-  padding: 2rem;
-  text-align: center;
-  font-size: 1rem;
-  line-height: 1.75;
-  font-weight: 600;
-  color: #585858;
-`;
-
 const getMinMax = (coordinates: Coordinate[]) => {
   if (coordinates.length === 0) {
     return { minLat: 22, maxLat: 54, minLong: -129, maxLong: -64 };
@@ -166,14 +138,12 @@ export interface Props {
   coordinates: CoordinateWithDates[];
   colorScaleColors: string[];
   colorScaleSymbols: string[];
-  colorScaleLabels: string[];
   highlighted?: CoordinateWithDates[];
   isOtherUser?: boolean;
   otherUserId?: string;
   createOrEditMountain?: boolean;
   showCenterCrosshairs?: boolean;
   returnLatLongOnClick?: (lat: number | string, lng: number | string) => void;
-  colorScaleTitle?: string;
   fillSpace?: boolean;
   showNearbyTrails?: boolean;
   defaultMajorTrailsOn?: boolean;
@@ -198,6 +168,9 @@ export interface Props {
   };
   primaryMountainLegendCopy?: string;
   customScaleContentBottom?: React.ReactNode;
+  centerCoordsCallback?: (coords: {latitude: number, longitude: number}) => void;
+  toggleVisibility?: boolean | null | string | number;
+  useGenericFunctionality?: boolean;
 }
 
 const Map = (props: Props) => {
@@ -205,17 +178,20 @@ const Map = (props: Props) => {
     mountainId, peakListId, coordinates, highlighted,
     userId, isOtherUser, otherUserId, createOrEditMountain,
     showCenterCrosshairs, returnLatLongOnClick,
-    colorScaleColors, colorScaleLabels, fillSpace,
-    colorScaleTitle, showNearbyTrails, colorScaleSymbols,
+    colorScaleColors, fillSpace,
+    showNearbyTrails, colorScaleSymbols,
     showYourLocation, defaultMajorTrailsOn,
     localstorageKeys, defaultLocationOn, showOtherMountains,
     defaultOtherMountainsOn, completedAscents,
     defaultCampsitesOn, showCampsites, movingMethod,
     addRemoveMountains, primaryMountainLegendCopy, customScaleContentBottom,
+    centerCoordsCallback, toggleVisibility, useGenericFunctionality,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const {usersLocation} = useContext(AppContext);
 
   const Mapbox = useContext(MapboxContext);
 
@@ -228,20 +204,24 @@ const Map = (props: Props) => {
     initialCenter = [ highlighted[0].latitude, highlighted[0].longitude];
   } else if (coordinates.length) {
     initialCenter = [(maxLat + minLat) / 2, (maxLong + minLong) / 2];
+  } else if (usersLocation && usersLocation.data) {
+    const {lat, lng} = usersLocation.data.coordinates;
+    initialCenter = [lat, lng];
   } else {
     initialCenter = [43.20415146, -71.52769471];
   }
+  const initialBounds: [[number, number], [number, number]] = coordinates.length
+    ? [[minLong, minLat], [maxLong, maxLat]]
+    : [[initialCenter[1] + 1, initialCenter[0] - 1], [initialCenter[1] - 1, initialCenter[0] + 1]];
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
   const [popupInfo, setPopupInfo] = useState<PopupData | null>(null);
   const [center, setCenter] = useState<[number, number]>(initialCenter);
   const [fitBounds, setFitBounds] =
-    useState<[[number, number], [number, number]] | undefined>([[minLong, minLat], [maxLong, maxLat]]);
+    useState<[[number, number], [number, number]] | undefined>(initialBounds);
   const [map, setMap] = useState<any>(null);
-  const [trailData, setTrailData] = useState<undefined | Trail[]>(undefined);
-  const [campsiteData, setCampsiteData] = useState<undefined | Campsite[]>(undefined);
 
-  const [colorScaleHeight, setColorScaleHeight] = useState<number>(0);
+  const [mapLegendHeight, setMapLegendHeight] = useState<number>(0);
 
   const initialMajorTrailsSetting = defaultMajorTrailsOn ? true : false;
   const [majorTrailsOn, setMajorTrailsOn] = useState<boolean>(initialMajorTrailsSetting);
@@ -250,9 +230,6 @@ const Map = (props: Props) => {
     setMajorTrailsOn(newValue);
     if (localstorageKeys && localstorageKeys.majorTrail) {
       localStorage.setItem(localstorageKeys.majorTrail, newValue.toString());
-    }
-    if (newValue === false) {
-      setTrailData(undefined);
     }
   };
 
@@ -264,22 +241,25 @@ const Map = (props: Props) => {
     if (localstorageKeys && localstorageKeys.campsites) {
       localStorage.setItem(localstorageKeys.campsites, newValue.toString());
     }
-    if (newValue === false) {
-      setCampsiteData(undefined);
-    }
   };
 
   const initiaYourLocationSetting = defaultLocationOn ? true : false;
   const [yourLocationOn, setYourLocationOn] = useState<boolean>(initiaYourLocationSetting);
-  const toggleYourLocation = () => {
-    const newValue = !yourLocationOn;
+  const updateYourLocationOn = (newValue: boolean) => {
     setYourLocationOn(newValue);
     if (localstorageKeys && localstorageKeys.yourLocation) {
       localStorage.setItem(localstorageKeys.yourLocation, newValue.toString());
     }
-    if (userAllowsLocation() === false) {
-      alert('You must enable location services for directions');
+    if (newValue === true &&
+        usersLocation &&
+        !usersLocation.isPrecise &&
+        usersLocation.requestAccurateLocation
+      ) {
+      usersLocation.requestAccurateLocation();
     }
+  };
+  const toggleYourLocation = () => {
+    updateYourLocationOn(!yourLocationOn);
   };
 
   const initialOtherMountainsSetting = defaultOtherMountainsOn ? true : false;
@@ -292,55 +272,23 @@ const Map = (props: Props) => {
     }
   };
 
-  const [usersLocation, setUsersLocation] = useState<IUserLocation>({
-    error: undefined, loading: false, coordinates: undefined,
-  });
   const [destination, setDestination] =
     useState<DestinationDatum | undefined>(undefined);
   const [directionsCache, setDirectionsCache] = useState<Array<DrivingData & {key: string}>>([]);
   const [directionsData, setDirectionsData] = useState<DrivingData | undefined>(undefined);
 
   useEffect(() => {
-    if (yourLocationOn === true) {
-      const onSuccess = ({coords: {latitude, longitude}}: Position) => {
-        setUsersLocation({coordinates: {latitude, longitude}, error: undefined, loading: false});
-        if (localstorageKeys && localstorageKeys.yourLocation) {
-          localStorage.setItem(localstorageKeys.yourLocation, 'true');
-        }
-        setUserAllowsLocation(true);
-      };
-      const onError = () => {
-        setUsersLocation({
-          coordinates: undefined, error: 'You must enable location services for directions', loading: false,
-        });
-        setUserAllowsLocation(false);
-      };
-      if (!navigator.geolocation) {
-        setUsersLocation({
-          coordinates: undefined, error: 'Geolocation is not supported by your browser', loading: false,
-        });
-      } else {
-        setUsersLocation({coordinates: undefined, error: undefined, loading: true});
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
-      }
-    } else {
-      if (localstorageKeys && localstorageKeys.yourLocation) {
-        localStorage.setItem(localstorageKeys.yourLocation, 'false');
-      }
-    }
-  }, [yourLocationOn, localstorageKeys]);
-
-  useEffect(() => {
-    if (usersLocation.error === undefined &&
+    if (usersLocation &&
         usersLocation.loading === false &&
-        usersLocation.coordinates !== undefined &&
+        usersLocation.data !== undefined &&
+        usersLocation.data.coordinates !== undefined &&
         destination !== undefined) {
       const cachedData = directionsCache.find(({key}) => key === destination.key);
       if (cachedData) {
         setDirectionsData(cachedData);
       } else {
         getDrivingDistances(
-          usersLocation.coordinates.latitude, usersLocation.coordinates.longitude,
+          usersLocation.data.coordinates.lat, usersLocation.data.coordinates.lng,
           destination.latitude, destination.longitude)
         .then(res => {
           if (res) {
@@ -356,40 +304,24 @@ const Map = (props: Props) => {
     }
   }, [usersLocation, destination, setDirectionsCache, directionsCache]);
 
-  const colorScaleRef = useRef<HTMLDivElement | null>(null);
+  const mapLegendRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (colorScaleRef && colorScaleRef.current) {
-      setColorScaleHeight(colorScaleRef.current.offsetHeight);
+    if (mapLegendRef && mapLegendRef.current) {
+      setMapLegendHeight(mapLegendRef.current.offsetHeight);
     }
-  }, [colorScaleRef, setColorScaleHeight]);
+  }, [mapLegendRef, setMapLegendHeight]);
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
     [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
-
-  const prevCenterCoords = usePrevious(centerCoords);
-
-  useEffect(() => {
-    if (showNearbyTrails === true && majorTrailsOn &&
-        (trailData === undefined ||
-          (prevCenterCoords === undefined ||
-            !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
-          )
-      ) {
-      getTrailsData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setTrailData);
-    }
-  }, [setTrailData, showNearbyTrails, trailData, centerCoords, prevCenterCoords, majorTrailsOn]);
-
-  useEffect(() => {
-    if (showCampsites === true && campsitesOn &&
-        (campsiteData === undefined ||
-          (prevCenterCoords === undefined ||
-            !(prevCenterCoords[0] === centerCoords[0] && prevCenterCoords[1] === centerCoords[1]))
-          )
-      ) {
-      getCampsitesData(parseFloat(centerCoords[0]), parseFloat(centerCoords[1]), setCampsiteData);
-    }
-  }, [setCampsiteData, showCampsites, campsiteData, centerCoords, prevCenterCoords, campsitesOn]);
+  const updateCenterCoords = useCallback((coords: [string, string]) => {
+      setCenterCoords([coords[0], coords[1]]);
+      if (centerCoordsCallback !== undefined) {
+        centerCoordsCallback({latitude: parseFloat(coords[0]), longitude: parseFloat(coords[1])});
+      }
+    },
+    [centerCoordsCallback],
+  );
 
   useEffect(() => {
     const enableZoom = (e: KeyboardEvent) => {
@@ -398,82 +330,84 @@ const Map = (props: Props) => {
       }
     };
     const disableZoom = () => {
-      if (map) {
+      if (map && fillSpace !== true) {
         map.scrollZoom.disable();
       }
     };
     const disableDragPanOnTouchDevics = () => {
-      if (map) {
+      if (map && fillSpace !== true) {
         map.dragPan.disable();
       }
     };
 
     if (map && fillSpace === true) {
       map.scrollZoom.enable();
-    } else {
-      document.body.addEventListener('keydown', enableZoom);
-      document.body.addEventListener('keyup', disableZoom);
-      document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
     }
+
+    document.body.addEventListener('keydown', enableZoom);
+    document.body.addEventListener('keyup', disableZoom);
+    document.body.addEventListener('touchstart', disableDragPanOnTouchDevics);
 
     const getPreciseCenterCoords = debounce(() => {
       if (map) {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
-        setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+        updateCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
       }
     }, 250);
 
-    let prevVal = [0, 0];
-    const getRoughCenterCoords = debounce(() => {
-      if (map) {
-        const {lat, lng}: {lat: number, lng: number} = map.getCenter();
-        const latDiff = Math.abs(Math.abs(lat) - Math.abs(prevVal[0]));
-        const lngDiff = Math.abs(Math.abs(lng) - Math.abs(prevVal[1]));
-        if (latDiff > 0.4 || lngDiff > 0.4) {
-          prevVal = [lat, lng];
-          setCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
-        }
-      }
-    }, 400);
-    if (map && showCenterCrosshairs) {
+    if (map && (showOtherMountains || showNearbyTrails || showCenterCrosshairs)) {
       map.on('dragend', getPreciseCenterCoords);
-    }
-    if (map && (showOtherMountains || showNearbyTrails)) {
-      map.on('dragend', getRoughCenterCoords);
-      map.on('zoomend', getRoughCenterCoords);
+      map.on('zoomend', getPreciseCenterCoords);
     }
 
     return () => {
       document.body.removeEventListener('keydown', enableZoom);
       document.body.removeEventListener('keyup', disableZoom);
       document.body.removeEventListener('touchstart', disableDragPanOnTouchDevics);
-      if (map && showCenterCrosshairs) {
+      if (map && (showOtherMountains || showNearbyTrails || showCenterCrosshairs)) {
         map.off('dragend', getPreciseCenterCoords);
-        // destroy the map on unmount
-        map.remove();
-      }
-      if (map && (showOtherMountains || showNearbyTrails)) {
-        map.off('dragend', getRoughCenterCoords);
-        map.off('zoomend', getRoughCenterCoords);
+        map.off('zoomend', getPreciseCenterCoords);
         // destroy the map on unmount
         map.remove();
       }
     };
-  }, [map, showCenterCrosshairs, fillSpace, showOtherMountains, showNearbyTrails]);
+  }, [map, showCenterCrosshairs, showOtherMountains, showNearbyTrails, updateCenterCoords, fillSpace]);
 
+  useEffect(() => {
+    if (map) {
+      map.resize();
+    }
+  }, [map, toggleVisibility]);
+
+  const previousUserLocation = usePrevious(usersLocation);
   useEffect(() => {
     if (!createOrEditMountain && !addRemoveMountains) {
       setTimeout(() => {
         const coords = getMinMax(coordinates);
-        if (fitBounds === undefined || (
-            coords.minLong !== fitBounds[0][0] || coords.minLat !== fitBounds[0][1] ||
-            coords.maxLong !== fitBounds[1][0] || coords.maxLat !== fitBounds[1][1]
-           )) {
-          setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+        if (coordinates.length) {
+          if (fitBounds === undefined || (
+              coords.minLong !== fitBounds[0][0] || coords.minLat !== fitBounds[0][1] ||
+              coords.maxLong !== fitBounds[1][0] || coords.maxLat !== fitBounds[1][1]
+             )) {
+            setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
+          }
+        } else if (previousUserLocation !== undefined && usersLocation !== undefined) {
+          if (usersLocation.data !== undefined && (
+               previousUserLocation.data === undefined ||
+               (previousUserLocation.data.text !== usersLocation.data.text)
+             )) {
+            const {lat, lng}: {lat: number, lng: number} = usersLocation.data.coordinates;
+            setFitBounds([
+              [lng - 0.05, lat + 0.05],
+              [lng + 0.05, lat - 0.05],
+            ]);
+            updateCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+          }
         }
       }, 0);
     }
-  }, [coordinates, createOrEditMountain, peakListId, mountainId, fitBounds, addRemoveMountains]);
+  }, [coordinates, createOrEditMountain, peakListId, mountainId,
+      fitBounds, addRemoveMountains, usersLocation, previousUserLocation, updateCenterCoords]);
 
   useEffect(() => {
     if (highlighted && highlighted.length === 1) {
@@ -487,6 +421,20 @@ const Map = (props: Props) => {
       });
     }
   }, [highlighted, setPopupInfo, setCenter, coordinates]);
+
+  const previousCoordinates = usePrevious(coordinates);
+
+  useEffect(() => {
+    if ((coordinates && coordinates.length) &&
+        (!previousCoordinates || previousCoordinates.length !== coordinates.length)
+      ) {
+        const newCoords = getMinMax(coordinates);
+        updateCenterCoords([
+          ((newCoords.maxLat + newCoords.minLat) / 2).toFixed(2),
+          ((newCoords.maxLong + newCoords.minLong) / 2).toFixed(2),
+        ]);
+    }
+  }, [previousCoordinates, coordinates, updateCenterCoords]);
 
   const togglePointer = (mapEl: any, cursor: string) => {
     mapEl.getCanvas().style.cursor = cursor;
@@ -508,7 +456,6 @@ const Map = (props: Props) => {
     setMap(mapEl);
     return null;
   };
-
   return (
     <Root
       style={{
@@ -521,7 +468,8 @@ const Map = (props: Props) => {
         // eslint-disable-next-line
         style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
         containerStyle={{
-          height: fillSpace === true ? `calc(100% - ${colorScaleHeight}px)` : '500px',
+          height: fillSpace === true ? `100%` : '500px',
+          //height: fillSpace === true ? `calc(100% - ${mapLegendHeight}px)` : '500px',
           width: '100%',
         }}
         center={center}
@@ -529,12 +477,12 @@ const Map = (props: Props) => {
         fitBounds={fitBounds}
         fitBoundsOptions={{padding: 50, linear: true}}
         movingMethod={movingMethod ? movingMethod : 'flyTo'}
-        key={`mapkey-${colorScaleHeight}-${mapReloadCount}`}
+        key={`mapkey-${mapLegendHeight}-${mapReloadCount}`}
+        onWebGlContextLost={incReload}
       >
         <ZoomControl />
         <RotationControl style={{ top: 80 }} />
         <DirectionsAndLocation
-          usersLocation={usersLocation}
           destination={destination}
           directionsData={directionsData}
           yourLocationOn={yourLocationOn}
@@ -543,14 +491,14 @@ const Map = (props: Props) => {
         />
         <TrailsLayer
           showNearbyTrails={showNearbyTrails}
-          trailData={trailData}
+          centerCoords={centerCoords}
           setPopupInfo={setPopupInfo}
           majorTrailsOn={majorTrailsOn}
           togglePointer={togglePointer}
         />
         <CampsitesLayer
           showCampsites={showCampsites}
-          campsiteData={campsiteData}
+          centerCoords={centerCoords}
           setPopupInfo={setPopupInfo}
           campsitesOn={campsitesOn}
           togglePointer={togglePointer}
@@ -563,6 +511,7 @@ const Map = (props: Props) => {
           togglePointer={togglePointer}
           showOtherMountains={showOtherMountains}
           otherMountainsOn={otherMountainsOn}
+          useGenericFunctionality={useGenericFunctionality}
         />
         <PrimaryMountains
           coordinates={coordinates}
@@ -581,31 +530,21 @@ const Map = (props: Props) => {
           userId={userId}
           isOtherUser={isOtherUser}
           otherUserId={otherUserId}
-          usersLocation={usersLocation}
           destination={destination}
           setDestination={setDestination}
           directionsData={directionsData}
           closePopup={() => setPopupInfo(null)}
           yourLocationOn={yourLocationOn}
           showYourLocation={showYourLocation}
-          setYourLocationOn={setYourLocationOn}
+          setYourLocationOn={updateYourLocationOn}
           colorScaleColors={colorScaleColors}
           colorScaleSymbols={colorScaleSymbols}
           createOrEditMountain={createOrEditMountain}
           highlighted={highlighted}
           addRemoveMountains={addRemoveMountains}
+          useGenericFunctionality={useGenericFunctionality}
         />
         {crosshairs}
-        <BrokenMapMessage>
-          {getFluentString('map-broken-message')}
-          <BasicIconInText
-            icon={faLongArrowAltDown}
-            style={{
-              fontSize: '1rem',
-              margin: '1rem 0',
-            }}
-          />
-        </BrokenMapMessage>
         <ReloadMapContainer
           onClick={incReload}
         >
@@ -614,31 +553,31 @@ const Map = (props: Props) => {
         </ReloadMapContainer>
         <MapContext.Consumer children={mapRenderProps} />
       </Mapbox>
-      <ColorScale
-        centerCoords={centerCoords}
-        showCenterCrosshairs={showCenterCrosshairs}
-        returnLatLongOnClick={returnLatLongOnClick}
-        colorScaleTitle={colorScaleTitle}
-        colorScaleColors={colorScaleColors}
-        colorScaleLabels={colorScaleLabels}
-        showNearbyTrails={showNearbyTrails}
-        showYourLocation={showYourLocation}
-        majorTrailsOn={majorTrailsOn}
-        toggleMajorTrails={toggleMajorTrails}
-        yourLocationOn={yourLocationOn}
-        toggleYourLocation={toggleYourLocation}
-        showOtherMountains={showOtherMountains}
-        otherMountainsOn={otherMountainsOn}
-        toggleOtherMountains={toggleOtherMountains}
-        showCampsites={showCampsites}
-        campsitesOn={campsitesOn}
-        toggleCampsites={toggleCampsites}
-        userId={userId}
-        onAddMountainClick={onAddMountainClick}
-        primaryMountainLegendCopy={primaryMountainLegendCopy}
-        customContentBottom={customScaleContentBottom}
-        ref={colorScaleRef}
-      />
+      <div>
+        <MapLegend
+          centerCoords={centerCoords}
+          showCenterCrosshairs={showCenterCrosshairs}
+          returnLatLongOnClick={returnLatLongOnClick}
+          showNearbyTrails={showNearbyTrails}
+          showYourLocation={showYourLocation}
+          majorTrailsOn={majorTrailsOn}
+          toggleMajorTrails={toggleMajorTrails}
+          yourLocationOn={yourLocationOn}
+          toggleYourLocation={toggleYourLocation}
+          showOtherMountains={showOtherMountains}
+          otherMountainsOn={otherMountainsOn}
+          toggleOtherMountains={toggleOtherMountains}
+          showCampsites={showCampsites}
+          campsitesOn={campsitesOn}
+          toggleCampsites={toggleCampsites}
+          userId={userId}
+          onAddMountainClick={onAddMountainClick}
+          primaryMountainLegendCopy={primaryMountainLegendCopy}
+          customContentBottom={customScaleContentBottom}
+          useGenericFunctionality={useGenericFunctionality}
+          ref={mapLegendRef}
+        />
+      </div>
     </Root>
   );
 

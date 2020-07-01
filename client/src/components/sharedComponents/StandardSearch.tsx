@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import React, { useContext, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import {
+  GhostButton,
   lightBorderColor,
   lightFontWeight,
   placeholderColor,
@@ -41,6 +42,16 @@ const SearchBar = styled.input`
   }
 `;
 
+const ClearButton = styled(GhostButton)`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+  line-height: 0;
+  font-size: 1.2rem;
+`;
+
 interface Props {
   placeholder: string;
   setSearchQuery: (value: string) => void;
@@ -53,13 +64,27 @@ const StandardSearch = (props: Props) => {
   const { placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
+  const clearEl = useRef<HTMLButtonElement | null>(null);
   const { windowWidth } = useContext(AppContext);
 
   const onChange = debounce(() => {
     if (searchEl !== null && searchEl.current !== null) {
       setSearchQuery(searchEl.current.value);
+      if (clearEl && clearEl.current) {
+        clearEl.current.style.display = searchEl.current.value.length ? 'block' : 'none';
+      }
     }
   }, 400);
+
+  const clearSearch = () => {
+    if (searchEl !== null && searchEl.current !== null) {
+      searchEl.current.value = '';
+      setSearchQuery(searchEl.current.value);
+    }
+    if (clearEl && clearEl.current) {
+      clearEl.current.style.display = 'none';
+    }
+  };
 
   useEffect(() => {
     const node = searchEl.current;
@@ -69,6 +94,9 @@ const StandardSearch = (props: Props) => {
       }
       if (!node.value) {
         node.value = initialQuery;
+      }
+      if (clearEl && clearEl.current) {
+        clearEl.current.style.display = node.value.length ? 'block' : 'none';
       }
     }
   }, [searchEl, focusOnMount, windowWidth, initialQuery]);
@@ -86,6 +114,13 @@ const StandardSearch = (props: Props) => {
         autoComplete={'off'}
         style={{padding: noSearchIcon ? '0.4rem' : undefined}}
       />
+      <ClearButton
+        ref={clearEl}
+        style={{display: 'none'}}
+        onClick={clearSearch}
+      >
+        ×
+      </ClearButton>
     </SearchContainer>
   );
 };

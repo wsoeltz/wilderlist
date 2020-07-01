@@ -10,6 +10,7 @@ import {
   ButtonSecondary,
   lightBaseColor,
   lightBorderColor,
+  SemiBold,
   semiBoldFontBoldWeight,
   successColor,
 } from '../../../styling/styleUtils';
@@ -106,10 +107,6 @@ const GridCell = styled(TableCellBase)`
   @media ${smallColumnMediaQuery} {
     padding: 0.5rem 0.1rem;
   }
-`;
-
-export const MountainName = styled(DynamicLink)`
-  font-weight: ${semiBoldFontBoldWeight};
 `;
 
 const CalendarButton = styled(FontAwesomeIcon)`
@@ -531,12 +528,12 @@ const MountainRow = (props: Props) => {
   ) : null;
 
   const name = disableLinks ? <>{mountain.name}</> : (
-    <MountainName
+    <DynamicLink
       mobileURL={mountainDetailLink(mountain.id)}
       desktopURL={desktopURL}
     >
-      {mountain.name}
-    </MountainName>
+      <SemiBold>{mountain.name}</SemiBold>
+    </DynamicLink>
   );
 
   return (

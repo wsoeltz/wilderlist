@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
@@ -15,6 +15,7 @@ import usePrevious from '../../../hooks/usePrevious';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
+  Block,
   ButtonPrimaryLink,
   DetailBox,
   DetailBoxTitle,
@@ -31,7 +32,6 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
-  Region,
   State,
   User,
 } from '../../../types/graphQLTypes';
@@ -41,7 +41,7 @@ import {
 } from '../../../Utils';
 import { UserContext } from '../../App';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Map, {MapContainer, Props as MapProps} from '../../sharedComponents/map';
+import Map, {Props as MapProps} from '../../sharedComponents/map';
 import {
   fiveColorScale,
   fiveSymbolScale,
@@ -50,8 +50,10 @@ import {
   twoColorScale,
   twoSymbolScale,
 } from '../../sharedComponents/map/colorScaleColors';
+import MapZoomScrollText from '../../sharedComponents/map/MapZoomScrollText';
+import MountainColorScale from '../../sharedComponents/map/MountainColorScale';
+import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
-import { getStatesOrRegion } from '../list/PeakListCard';
 import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
@@ -93,10 +95,6 @@ const ButtonPrimaryLinkSmall = styled(ButtonPrimaryLink)`
   flex-shrink: 0;
   padding: 0.4rem;
   font-size: 0.7rem;
-`;
-
-const OtherLists = styled(ResourceList)`
-  margin-bottom: 2rem;
 `;
 
 const GET_PEAK_LIST = gql`
@@ -152,18 +150,7 @@ const GET_PEAK_LIST = gql`
           abbreviation
         }
       }
-      states {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
+      stateOrRegionString
     }
     user(id: $userId) {
       id
@@ -186,19 +173,6 @@ const GET_PEAK_LIST = gql`
     }
   }
 `;
-
-export interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  abbreviation: State['abbreviation'];
-  regions: Array<{
-    id: Region['id'];
-    name: Region['name'];
-    states: Array<{
-      id: State['id'],
-    }>
-  }>;
-}
 
 export interface MountainDatum {
   id: Mountain['id'];
@@ -228,7 +202,7 @@ export interface PeakListDatum {
   resources: PeakList['resources'];
   mountains: MountainDatum[] | null;
   optionalMountains: MountainDatum[] | null;
-  states: StateDatum[] | null;
+  stateOrRegionString: PeakList['stateOrRegionString'];
   parent: null | ListVariantDatum;
   children: null | ListVariantDatum[];
   siblings: null | ListVariantDatum[];
@@ -305,13 +279,13 @@ interface PeakListNoteVariables {
   text: string;
 }
 
-const getColorScale = (type: PeakListVariants, getFluentString: GetString) => {
+export const getColorScale = (type: PeakListVariants, getFluentString: GetString) => {
   let colorScaleTitle: string | undefined;
   let colorScaleColors: string[];
   let colorScaleSymbols: string[];
   let colorScaleLabels: string[];
   if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-    colorScaleTitle = undefined;
+    colorScaleTitle = getFluentString('map-mountains-colored');
     colorScaleColors = twoColorScale;
     colorScaleSymbols = twoSymbolScale;
     colorScaleLabels = [
@@ -398,7 +372,6 @@ const PeakListDetail = (props: Props) => {
     coordinates: [],
     colorScaleColors: [],
     colorScaleSymbols: [],
-    colorScaleLabels: [],
     showNearbyTrails: true,
     showYourLocation: true,
     showOtherMountains: true,
@@ -433,7 +406,7 @@ const PeakListDetail = (props: Props) => {
       });
 
       const {
-        colorScaleTitle, colorScaleColors, colorScaleSymbols, colorScaleLabels,
+        colorScaleColors, colorScaleSymbols,
       } = getColorScale(type, getFluentString);
 
       const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
@@ -446,10 +419,8 @@ const PeakListDetail = (props: Props) => {
         userId: me && me._id ? me._id : null,
         isOtherUser,
         otherUserId: isOtherUser && userId ? userId : undefined,
-        colorScaleTitle,
         colorScaleColors,
         colorScaleSymbols,
-        colorScaleLabels,
         showNearbyTrails: true,
         showYourLocation: true,
         showOtherMountains: true,
@@ -470,7 +441,6 @@ const PeakListDetail = (props: Props) => {
     body = null;
   } else if (data !== undefined) {
     const { peakList, user } = data;
-    let statesArray: StateDatum[] = [];
     if (!peakList) {
       return (
         <PlaceholderText>
@@ -479,21 +449,17 @@ const PeakListDetail = (props: Props) => {
       );
     } else {
       const {
-        type, description, optionalPeaksDescription, resources, children, parent, siblings,
+        type, description, optionalPeaksDescription, resources, parent,
+        stateOrRegionString,
       } = peakList;
       const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
       const optionalMountains: MountainDatum[] = peakList.optionalMountains ? peakList.optionalMountains : [];
-
-      if (peakList.states && peakList.states.length) {
-        statesArray = [...peakList.states];
-      }
 
       let paragraphText: React.ReactElement<any>;
       if (description && description.length) {
         paragraphText = <p>{description}</p>;
       } else if (requiredMountains && requiredMountains.length) {
-        const statesOrRegions = getStatesOrRegion(statesArray, getFluentString);
-        const isStateOrRegion = isState(statesOrRegions) === true ? 'state' : 'region';
+        const isStateOrRegion = isState(stateOrRegionString) === true ? 'state' : 'region';
         const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
         paragraphText = (
           <IntroText
@@ -501,7 +467,7 @@ const PeakListDetail = (props: Props) => {
             listName={peakList.name}
             numberOfPeaks={requiredMountains.length}
             isStateOrRegion={isStateOrRegion}
-            stateRegionName={FORMAT_STATE_REGION_FOR_TEXT(statesOrRegions)}
+            stateRegionName={FORMAT_STATE_REGION_FOR_TEXT(stateOrRegionString)}
             highestMountain={mountainsSortedByElevation[0]}
             smallestMountain={mountainsSortedByElevation[mountainsSortedByElevation.length - 1]}
             type={type}
@@ -551,75 +517,6 @@ const PeakListDetail = (props: Props) => {
         ) : null;
       } else {
         resourcesList = null;
-      }
-      const parentVariant = parent && parent.name.length ? (
-        <ResourceItem key={parent.id}>
-          <Link to={listDetailLink(parent.id)}>
-            {parent.name} - {getFluentString('global-text-value-list-type', {type: parent.type})}
-          </Link>
-        </ResourceItem>
-      ) : null;
-
-      let otherVariants: React.ReactElement<any> | null;
-      if (children && children.length) {
-        const otherVariantsArray: Array<React.ReactElement<any>> = [];
-        children.forEach(child => {
-          if (child.name.length) {
-            otherVariantsArray.push(
-              <ResourceItem key={child.id}>
-                <Link to={listDetailLink(child.id)}>
-                  {child.name} - {getFluentString('global-text-value-list-type', {type: child.type})}
-                </Link>
-              </ResourceItem>,
-            );
-          }
-        });
-        otherVariants = otherVariantsArray.length ? (
-          <>
-            <SectionTitle>
-              {getFluentString('global-text-value-other-list-versions')}
-            </SectionTitle>
-            <OtherLists>
-              {parentVariant}
-              {otherVariantsArray}
-            </OtherLists>
-          </>
-        ) : null;
-      } else if (siblings && siblings.length) {
-        const otherVariantsArray: Array<React.ReactElement<any>> = [];
-        siblings.forEach(sibling => {
-          if (sibling.name.length) {
-            otherVariantsArray.push(
-              <ResourceItem key={sibling.id}>
-                <Link to={listDetailLink(sibling.id)}>
-                  {sibling.name} - {getFluentString('global-text-value-list-type', {type: sibling.type})}
-                </Link>
-              </ResourceItem>,
-            );
-          }
-        });
-        otherVariants = otherVariantsArray.length ? (
-          <>
-            <SectionTitle>
-              {getFluentString('global-text-value-other-list-versions')}
-            </SectionTitle>
-            <OtherLists>
-              {parentVariant}
-              {otherVariantsArray}
-            </OtherLists>
-          </>
-        ) : null;
-      } else {
-        otherVariants = parent && parent.name.length ? (
-        <>
-          <SectionTitle>
-            {getFluentString('global-text-value-other-list-versions')}
-          </SectionTitle>
-          <OtherLists>
-            {parentVariant}
-          </OtherLists>
-        </>
-      ) : null;
       }
 
       const {
@@ -736,10 +633,8 @@ const PeakListDetail = (props: Props) => {
         userId: me && me._id ? me._id : null,
         isOtherUser,
         otherUserId: isOtherUser && userId ? userId : undefined,
-        colorScaleTitle,
         colorScaleColors,
         colorScaleSymbols,
-        colorScaleLabels,
         showNearbyTrails: true,
         showYourLocation: true,
         showOtherMountains: true,
@@ -759,23 +654,44 @@ const PeakListDetail = (props: Props) => {
             mountains={requiredMountains}
             peakList={peakList}
             completedAscents={userMountains}
-            statesArray={statesArray}
             isOtherUser={isOtherUser}
             queryRefetchArray={queryRefetchArray}
+          />
+          <DetailBoxTitle>
+            <BasicIconInText icon={faMapMarkedAlt} />
+            {getFluentString('map-list-title', {'short-name': peakList.shortName})}
+            <MapZoomScrollText />
+          </DetailBoxTitle>
+          <MountainColorScale
+              colorScaleColors={colorScaleColors}
+              colorScaleSymbols={colorScaleSymbols}
+              colorScaleLabels={colorScaleLabels}
+              colorScaleTitle={colorScaleTitle}
           />
         </>
       );
 
       body = (
         <>
-          <PreFormattedDiv>
-            {paragraphText}
-          </PreFormattedDiv>
-          {resourcesList}
-          {otherVariants}
+          <Block>
+            <DetailBoxTitle>
+              <BasicIconInText icon={faAlignLeft} />
+              {getFluentString('global-text-value-description')}
+            </DetailBoxTitle>
+            <DetailBox>
+              <PreFormattedDiv>
+                {paragraphText}
+              </PreFormattedDiv>
+              {resourcesList}
+            </DetailBox>
+          </Block>
           <DetailBoxTitle>
             <BasicIconInText icon={faEdit} />
-            Notes
+            {getFluentString('user-notes-title')}
+            <small style={{marginLeft: '0.4rem'}}>({getFluentString('global-text-value-private')})</small>
+            <Tooltip
+              explanation={getFluentString('user-notes-tooltip')}
+            />
           </DetailBoxTitle>
           <DetailBox>
             <UserNote
@@ -813,7 +729,7 @@ const PeakListDetail = (props: Props) => {
   return (
     <>
       {header}
-      <MapContainer style={{visibility: loading ? 'hidden' : undefined}}>
+      <div style={{visibility: loading ? 'hidden' : undefined}}>
         <Map
           {...mapProps}
           localstorageKeys={{
@@ -824,7 +740,7 @@ const PeakListDetail = (props: Props) => {
           }}
           key={peakListDetailMapKey}
         />
-      </MapContainer>
+      </div>
       {body}
     </>
   );

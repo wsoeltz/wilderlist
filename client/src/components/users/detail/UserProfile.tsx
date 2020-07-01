@@ -171,6 +171,7 @@ const UserProfile = (props: Props) => {
                 noResultsText={noResultsText}
                 showTrophies={true}
                 setActionDisabled={setActionDisabled}
+                queryRefetchArray={[]}
               />
             </ListContainer>
           </>

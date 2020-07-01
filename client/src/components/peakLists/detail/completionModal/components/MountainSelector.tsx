@@ -344,7 +344,6 @@ const MountainSelector = (props: Props) => {
             isOtherUser={true}
             colorScaleColors={[]}
             colorScaleSymbols={[]}
-            colorScaleLabels={[]}
             fillSpace={true}
             completedAscents={[]}
             showOtherMountains={true}

@@ -255,9 +255,12 @@ const UserType: any = new GraphQLObjectType({
     mountainNote: {
       type: MountainNotesType,
       args: {
-        mountainId: { type: GraphQLNonNull(GraphQLID) },
+        mountainId: { type: GraphQLID },
       },
       resolve(parentValue, {mountainId}) {
+        if (!mountainId) {
+          return null;
+        }
         try {
           const { mountainNotes } = parentValue;
           if (mountainNotes && mountainNotes.length) {

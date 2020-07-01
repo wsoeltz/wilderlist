@@ -1,16 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Feature,
   Layer,
 } from 'react-mapbox-gl';
 import {DrivingData} from '../../../utilities/getDrivingDistances';
+import {AppContext} from '../../App';
 import {
   DestinationDatum,
-  IUserLocation,
 } from './types';
 
 interface Props {
-  usersLocation: IUserLocation;
   destination: DestinationDatum | undefined;
   directionsData: DrivingData | undefined;
   yourLocationOn: boolean;
@@ -20,11 +19,16 @@ interface Props {
 
 const DirectionsAndLocation = (props: Props) => {
   const {
-    usersLocation, directionsData, yourLocationOn, showYourLocation, destination,
+    directionsData, yourLocationOn, showYourLocation, destination,
     togglePointer,
   } = props;
 
-  const yourLocationLayer = showYourLocation && yourLocationOn && usersLocation.coordinates !== undefined ? (
+  const {usersLocation} = useContext(AppContext);
+
+  const usersCoordinates = usersLocation && usersLocation.data && usersLocation.data.coordinates ?
+    usersLocation.data.coordinates : undefined;
+
+  const yourLocationLayer = showYourLocation && yourLocationOn && usersCoordinates !== undefined ? (
     <Layer
       type='symbol'
       id='your-location'
@@ -35,7 +39,7 @@ const DirectionsAndLocation = (props: Props) => {
       }}
     >
       <Feature
-        coordinates={[usersLocation.coordinates.longitude, usersLocation.coordinates.latitude]}
+        coordinates={[usersCoordinates.lng, usersCoordinates.lat]}
         onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
       />

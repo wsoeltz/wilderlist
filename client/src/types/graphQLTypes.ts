@@ -102,6 +102,7 @@ export interface PeakList {
   numCompletedAscents: number;
   latestAscent: string | null;
   isActive: boolean | null;
+  stateOrRegionString: string | null;
 }
 
 export enum PermissionTypes {

@@ -1,15 +1,15 @@
 import { useQuery } from '@apollo/react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
+import { Routes } from '../../routing/routes';
 import { searchListDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
@@ -65,6 +65,7 @@ export const GET_USERS_PEAK_LISTS = gql`
           id
         }
         numMountains
+        stateOrRegionString
         numCompletedAscents(userId: $userId)
         latestAscent(userId: $userId)
         isActive(userId: $userId)
@@ -100,30 +101,12 @@ const Dashboard = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
-  const { windowWidth } = useContext(AppContext);
+  const { windowWidth, usersLocation } = useContext(AppContext);
+
+  const usersState = usersLocation && usersLocation.data && usersLocation.data.stateAbbreviation
+    ? usersLocation.data.stateAbbreviation : undefined;
 
   const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
-
-  const [usersState, setUsersState] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    const getUsersIpLocation = async () => {
-      try {
-        const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
-        const res = await axios.get(
-          `https://ssl.geoplugin.net/json.gp?k=${key}`,
-        );
-        if (res && res.data && res.data.geoplugin_regionCode) {
-          setUsersState(res.data.geoplugin_regionCode);
-        } else {
-          setUsersState('unknown');
-        }
-      } catch (e) {
-        console.error(e);
-        setUsersState('unknown');
-      }
-    };
-    getUsersIpLocation();
-  });
 
   const {
     loading: listLoading,
@@ -180,6 +163,7 @@ const Dashboard = (props: Props) => {
             noResultsText={''}
             showTrophies={true}
             dashboardView={true}
+            queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
           />
           {suggestedLists}
         </>
@@ -228,7 +212,10 @@ const Dashboard = (props: Props) => {
 
   const rightSideUtility = peakListId !== undefined ? (
       <ContentHeader>
-        <BackButton />
+        <BackButton
+          onClick={() => history.push(Routes.Dashboard)}
+          text={getFluentString('dashboard-back-to-dashboard')}
+        />
       </ContentHeader>
     ) : null;
 

@@ -53,6 +53,7 @@ interface Props {
   mountainsToIgnore: string[];
   onFeatureClick: (point: CoordinateWithDates) => void;
   togglePointer: (mapEl: any, cursor: string) => void;
+  useGenericFunctionality: boolean | undefined;
 }
 
 const Map = (props: Props) => {
@@ -60,6 +61,7 @@ const Map = (props: Props) => {
     latitude, longitude, mountainsToIgnore,
     onFeatureClick, togglePointer,
     showOtherMountains, otherMountainsOn,
+    useGenericFunctionality,
   } = props;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_NEARBY_MOUNTAINS, {
@@ -94,8 +96,8 @@ const Map = (props: Props) => {
         onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
         properties={{
-          'circle-color': legendColorScheme.secondary,
-          'icon-image': legendSymbolScheme.secondary,
+          'circle-color': useGenericFunctionality ? legendColorScheme.primary : legendColorScheme.secondary,
+          'icon-image': useGenericFunctionality ? legendSymbolScheme.primary : legendSymbolScheme.secondary,
         }}
         key={'' + point.latitude + point.longitude}
       />

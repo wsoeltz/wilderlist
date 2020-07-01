@@ -107,7 +107,7 @@ export interface FormInput {
   parent: null;
   states: string[];
   resources: ExternalResource[] | null;
-  tier: PeakListTier;
+  tier: PeakListTier | null;
 }
 
 interface Props extends RouteComponentProps {
@@ -316,7 +316,6 @@ const PeakListForm = (props: Props) => {
           isOtherUser={true}
           colorScaleColors={[]}
           colorScaleSymbols={[]}
-          colorScaleLabels={[]}
           fillSpace={true}
           completedAscents={[]}
           showOtherMountains={true}
@@ -340,7 +339,6 @@ const PeakListForm = (props: Props) => {
             isOtherUser={true}
             colorScaleColors={[]}
             colorScaleSymbols={[]}
-            colorScaleLabels={[]}
             completedAscents={[]}
             showOtherMountains={true}
             defaultOtherMountainsOn={true}

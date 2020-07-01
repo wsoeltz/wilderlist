@@ -55,8 +55,10 @@ global-text-value-search-mountains = Search mountains
 global-text-value-search-users = Search users
 
 global-text-value-generic-user = Wilderlist User
+global-text-value-private = Private
 
 
+global-text-value-no-results-found = No results found.
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
@@ -190,6 +192,7 @@ global-text-value-completed-in-every-season = Completed in every season
 global-text-value-mountain-not-being-pursued = This mountain is not being pursued
 
 global-text-value-submit = Submit
+global-text-value-clear = Clear
 
 global-text-value-edit = Edit
 global-text-value-save-and-add = Save and Add Another
@@ -301,18 +304,20 @@ settings-page-notification-settings-email = Email Notifications
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>help@wilderlist.app</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
 
-dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Begin List' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Start Tracking' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
 dashboard-empty-state-no-active-lists-button = Find Hiking Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 dashboard-suggested-lists = Suggested Lists
+
+dashboard-back-to-dashboard = Back to Dashboard
 
 your-stats-title = Your Stats
 
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)
 stats-showing-ascents-for = Showing ascents for:
-global-text-value-list-type = {
+global-text-value-list-type-description = {
   $type ->
     *[standard] Any Time
     [winter] Winter Only
@@ -352,6 +357,11 @@ list-search-list-detail-placeholder = Select a list on the left to see more deta
 mountain-search-mountains-detail-placeholder = Select a mountain on the left to see more details
 list-detail-mountain-detail-placeholder = Select a mountain to see more details
 
+peak-list-search-state = Showing lists only with mountains in <strong>{ $state-name }</strong>.
+map-search-back-to-map = Back to Map
+map-search-states-title = Explore Hiking Lists
+map-search-color-scale-text = Number of lists in state or territory
+
 peak-list-text-latest-ascent = {
   $completed ->
     [true] Completed
@@ -367,8 +377,8 @@ peak-list-text-total-ascents = Total Ascents
 peak-list-text-across-the-us = Across the US
 
 peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-name }</strong>&#32;from your active lists?
-peak-list-detail-text-begin-list = Begin List
-peak-list-detail-text-remove-list = Remove List
+peak-list-detail-text-begin-list = Start Tracking
+peak-list-detail-text-remove-list = Stop Tracking
 peak-list-detail-select-mountain = Select a mountain to see its details and your ascents
 peak-list-detail-filter-mountains = Filter mountains
 
@@ -430,7 +440,20 @@ peak-list-detail-text-optional-mountains-desc = The following mountains are cons
 
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
+user-notes-title = Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
+user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
+
+mountain-search-no-results-mobile = No mountains found near { $map-center-text }. Use the search above or go to the map view to explore.
+mountain-search-no-results-map = No mountains found here. Try moving the map or using the search above.
+mountain-search-query-desc = Showing mountains for query <strong>{ $search-query }</strong>.
+mountain-search-map-text = Showing mountains within <strong>{ $distance } miles</strong> of { $map-center-text }
+mountain-search-mobile-nav-list = List View
+mountain-search-mobile-nav-map = Map View
+
+mountain-card-crow-flies-tooltip = Caclulated as-the-Crow-flies. For driving directions, select an individual mountain.
+mountain-card-view-details = View details
+mountain-card-show-on-map = Show on map
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
@@ -526,6 +549,11 @@ user-card-completed = Completed
 user-card-working-on = Working On
 user-card-not-currently-working-on = Not currently working on any lists
 
+map-mountain-title = Map of Mountain
+map-generic-title = Map
+map-list-title = Map of Mountains on { $short-name }
+map-mountains-colored = Mountains Colored By Completion
+map-mountain-colored = Mountain Colored By Completion
 map-completed = You Completed On
 map-completed-other-user = Completed On
 map-completed-in-winter = Completed in winter
@@ -563,7 +591,10 @@ map-missing-mountain-link = Click here to add it
 map-refresh-map = Reset Map
 map-broken-message = Whoops! Looks like something happened to the map. Try clicking the 'Reset Map' button below to fix it.
 
-map-trails-trail-desc = { 
+map-scroll-zoom-text = Use SHIFT + SCROLL to zoom
+map-scroll-zoom-text-mobile = Use two fingers to scroll & zoom
+
+map-trails-trail-desc = {
   $miles ->
     [1] mile
     *[other] miles
@@ -630,6 +661,8 @@ import-grid-img-alt-file-upload = Then select FILE UPLOAD
 import-grid-img-alt-file-publish = Go to File > Publish to the web
 import-grid-img-alt-publish-setting = Select the Grid you would like to publish and set it to CSV
 import-grid-img-alt-publish-link = Copy the generated link
+
+import-ascents-notification-text = Already have a spreadsheet of ascents?
 
 weather-forecast-weather = Weather
 weather-forecast-high = High
@@ -773,8 +806,8 @@ create-peak-list-peak-list-short-name-placeholder = i.e. NH48
 create-peak-list-peak-list-details-title = List Details
 create-peak-list-peak-list-mountains-note = Select mountains directly on the map or by clicking {
   $number-mountains ->
-    [0] 'Add Mountains' 
-    *[other] 'Add/Remove Mountains' 
+    [0] 'Add Mountains'
+    *[other] 'Add/Remove Mountains'
 } below. You can also copy mountains from an existing list to add to this one.
 create-peak-list-peak-list-description-label = Description
 create-peak-list-peak-description = Enter an optional description for the list here.

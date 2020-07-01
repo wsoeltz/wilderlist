@@ -29,6 +29,7 @@ import getSitemap from './routing/getSitemap';
 import getGridApplication from './utilities/getGridApplication/index';
 import getRecreationData from './utilities/getRecreationData';
 import getRecreationSiteData from './utilities/getRecreationSiteData';
+import getStateByAbbreviation from './utilities/getStateByAbbreviation';
 import getWeatherData from './utilities/getWeather';
 
 require('./auth/passport');
@@ -137,6 +138,22 @@ app.get('/api/recreationgovdetail', async (req, res) => {
     const source = req.query && req.query.source ? req.query.source : undefined;
     const recreationData = await getRecreationSiteData(id, contract, source);
     res.json(recreationData);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.get('/api/state-by-abbreviation', async (req, res) => {
+  try {
+    const abbr = req.query && req.query.abbr ? req.query.abbr : undefined;
+    if (abbr) {
+      const stateData = await getStateByAbbreviation(abbr);
+      res.json(stateData);
+    } else {
+      res.status(500);
+      res.send({message: 'Missing abbreviation'});
+    }
   } catch (err) {
     res.status(500);
     res.send(err);

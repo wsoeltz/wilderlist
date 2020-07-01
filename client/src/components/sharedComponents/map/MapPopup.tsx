@@ -18,6 +18,7 @@ import {
   friendsProfileWithPeakListWithMountainDetailLink,
   listDetailWithMountainDetailLink,
   mountainDetailLink,
+  searchMountainsDetailLink,
 } from '../../../routing/Utils';
 import {
   ButtonSecondary,
@@ -30,9 +31,7 @@ import {DrivingData} from '../../../utilities/getDrivingDistances';
 import {
   TrailType,
 } from '../../../utilities/getTrails';
-import {
-  userAllowsLocation,
-} from '../../../Utils';
+import {AppContext} from '../../App';
 import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import getCompletionDates from '../../peakLists/detail/getCompletionDates';
@@ -52,12 +51,12 @@ import {
   DirectionsContainer,
   DirectionsContent,
   DirectionsIcon,
+  DirectionsText,
 } from './styleUtils';
 import TrailDetailModal from './TrailDetailModal';
 import {
   CoordinateWithDates,
   DestinationDatum,
-  IUserLocation,
   PopupData,
   PopupDataTypes,
 } from './types';
@@ -156,7 +155,6 @@ interface Props {
   userId: string | null;
   isOtherUser: boolean | undefined;
   otherUserId: string | undefined;
-  usersLocation: IUserLocation;
   destination: DestinationDatum | undefined;
   setDestination: (value: DestinationDatum | undefined) => void;
   directionsData: DrivingData | undefined;
@@ -174,16 +172,20 @@ interface Props {
     removeText: string;
     onRemove: (mountain: CoordinateWithDates) => void;
   };
+  useGenericFunctionality: boolean | undefined;
 }
 
 const MapPopup = (props: Props) => {
   const {
     popupInfo, completedAscents, peakListId, mountainId, isOtherUser,
-    otherUserId, userId, usersLocation, destination, directionsData,
+    otherUserId, userId, destination, directionsData,
     closePopup, yourLocationOn, setYourLocationOn, setDestination,
     showYourLocation, colorScaleColors, colorScaleSymbols,
     createOrEditMountain, highlighted, addRemoveMountains,
+    useGenericFunctionality,
   } = props;
+
+  const {usersLocation} = useContext(AppContext);
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -196,7 +198,9 @@ const MapPopup = (props: Props) => {
   const [campsiteModalOpen, setCampsiteModalOpen] = useState<boolean>(false);
 
   const getDesktopUrl = (id: Mountain['id']) => {
-    if (peakListId === null || mountainId === id) {
+    if (useGenericFunctionality) {
+      return searchMountainsDetailLink(id) + window.location.search;
+    } else if (peakListId === null || mountainId === id) {
       return mountainDetailLink(id);
     } else if (peakListId !== null) {
       if (isOtherUser && otherUserId) {
@@ -283,7 +287,7 @@ const MapPopup = (props: Props) => {
   };
 
   const getMountainPopupName = (mtnId: string, mtnName: string, color: string) => {
-    if (mtnId && !(peakListId === null && mountainId === null)) {
+    if (mtnId && !(peakListId === null && mountainId === null && !useGenericFunctionality)) {
       return (
         <PopupTitleInternal
           mobileURL={mountainDetailLink(mtnId)}
@@ -311,19 +315,34 @@ const MapPopup = (props: Props) => {
     );
   };
 
+  const getDrivingData = ({id, latitude, longitude}: {id: string, latitude: number, longitude: number}) => {
+    setDestination({key: id, latitude, longitude});
+    if (!yourLocationOn) {
+      setYourLocationOn(true);
+      if (usersLocation &&
+          !usersLocation.isPrecise &&
+          usersLocation.requestAccurateLocation) {
+        usersLocation.requestAccurateLocation();
+      }
+    }
+  };
+
   let popup: React.ReactElement<any>;
   if (!popupInfo) {
     popup = <></>;
   } else if (popupInfo.type === PopupDataTypes.Coordinate || popupInfo.type === PopupDataTypes.OtherMountain) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
-    if (usersLocation.loading === true) {
+    if (usersLocation && usersLocation.loading === true) {
       drivingInfo = (
         <DirectionsContent>
           {getFluentString('global-text-value-loading')}...
         </DirectionsContent>
       );
-    } else if (usersLocation.error !== undefined) {
+    } else if (
+      usersLocation &&
+      usersLocation.data === undefined &&
+      usersLocation.error !== undefined) {
       drivingInfo = (
         <DirectionsContent>
           {getFluentString('mountain-detail-driving-error-location')}
@@ -333,25 +352,18 @@ const MapPopup = (props: Props) => {
       const {miles} = directionsData;
       const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
       const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      const fromText = usersLocation && usersLocation.data
+        ? <small>from {usersLocation.data.text}</small> : null;
       drivingInfo = (
         <DirectionsContent>
-          {hours} {minutes} ({miles} miles)
+          <DirectionsText>
+            <div>{hours} {minutes} ({miles} miles)</div>
+            {fromText}
+          </DirectionsText>
         </DirectionsContent>
       );
     } else {
-      const onClick = () => {
-        setDestination({
-          key: popupData.id,
-          latitude: popupData.latitude,
-          longitude: popupData.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-        }
-        if (userAllowsLocation() === false) {
-          alert('You must enable location services for directions');
-        }
-      };
+      const onClick = () => getDrivingData({...popupData});
       drivingInfo = (
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
@@ -445,13 +457,15 @@ const MapPopup = (props: Props) => {
   } else if (popupInfo.type === PopupDataTypes.Trail) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
-    if (usersLocation.loading === true) {
+    if (usersLocation && usersLocation.loading === true) {
       drivingInfo = (
         <DirectionsContent>
           {getFluentString('global-text-value-loading')}
         </DirectionsContent>
       );
-    } else if (usersLocation.error !== undefined) {
+    } else if (usersLocation &&
+               usersLocation.data === undefined &&
+               usersLocation.error !== undefined) {
       drivingInfo = (
         <DirectionsContent>
           {getFluentString('mountain-detail-driving-error-location')}
@@ -461,25 +475,18 @@ const MapPopup = (props: Props) => {
       const {miles} = directionsData;
       const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
       const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      const fromText = usersLocation && usersLocation.data
+        ? <small>from {usersLocation.data.text}</small> : null;
       drivingInfo = (
         <DirectionsContent>
-          {hours} {minutes} ({miles} miles)
+          <DirectionsText>
+            <div>{hours} {minutes} ({miles} miles)</div>
+            {fromText}
+          </DirectionsText>
         </DirectionsContent>
       );
     } else {
-      const onClick = () => {
-        setDestination({
-          key: popupData.id,
-          latitude: popupData.latitude,
-          longitude: popupData.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-        }
-        if (userAllowsLocation() === false) {
-          alert('You must enable location services for directions');
-        }
-      };
+      const onClick = () => getDrivingData({...popupData});
       drivingInfo = (
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
@@ -536,13 +543,15 @@ const MapPopup = (props: Props) => {
   } else if (popupInfo.type === PopupDataTypes.Campsite) {
     const {data: popupData} = popupInfo;
     let drivingInfo: React.ReactElement<any>;
-    if (usersLocation.loading === true) {
+    if (usersLocation && usersLocation.loading === true) {
       drivingInfo = (
         <DirectionsContent>
           {getFluentString('global-text-value-loading')}
         </DirectionsContent>
       );
-    } else if (usersLocation.error !== undefined) {
+    } else if (usersLocation &&
+               usersLocation.data === undefined &&
+               usersLocation.error !== undefined) {
       drivingInfo = (
         <DirectionsContent>
           {getFluentString('mountain-detail-driving-error-location')}
@@ -552,25 +561,18 @@ const MapPopup = (props: Props) => {
       const {miles} = directionsData;
       const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
       const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
+      const fromText = usersLocation && usersLocation.data
+        ? <small>from {usersLocation.data.text}</small> : null;
       drivingInfo = (
         <DirectionsContent>
-          {hours} {minutes} ({miles} miles)
+          <DirectionsText>
+            <div>{hours} {minutes} ({miles} miles)</div>
+            {fromText}
+          </DirectionsText>
         </DirectionsContent>
       );
     } else {
-      const onClick = () => {
-        setDestination({
-          key: popupData.id,
-          latitude: popupData.latitude,
-          longitude: popupData.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-        }
-        if (userAllowsLocation() === false) {
-          alert('You must enable location services for directions');
-        }
-      };
+      const onClick = () => getDrivingData({...popupData});
       drivingInfo = (
         <DirectionsButton onClick={onClick}>{getFluentString('map-get-directions')}</DirectionsButton>
       );
@@ -621,7 +623,6 @@ const MapPopup = (props: Props) => {
   } else {
     popup = <></>;
   }
-
   let editMountainModal: React.ReactElement<any>;
   if (editMountainId === null || popupInfo === null) {
     editMountainModal = <></>;
@@ -652,20 +653,7 @@ const MapPopup = (props: Props) => {
       onClose={() => setTrailModalOpen(false)}
       trailDatum={popupInfo.data}
       directionsData={directionsData}
-      getDirections={() => {
-        setDestination({
-          key: popupInfo.data.id,
-          latitude: popupInfo.data.latitude,
-          longitude: popupInfo.data.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-        }
-        if (userAllowsLocation() === false) {
-          alert('You must enable location services for directions');
-        }
-      }}
-      usersLocation={usersLocation.coordinates}
+      getDirections={() => getDrivingData({...popupInfo.data})}
     />
   ) : <></>;
 
@@ -674,20 +662,7 @@ const MapPopup = (props: Props) => {
       onClose={() => setCampsiteModalOpen(false)}
       campsiteDatum={popupInfo.data}
       directionsData={directionsData}
-      getDirections={() => {
-        setDestination({
-          key: popupInfo.data.id,
-          latitude: popupInfo.data.latitude,
-          longitude: popupInfo.data.longitude,
-        });
-        if (!yourLocationOn) {
-          setYourLocationOn(true);
-        }
-        if (userAllowsLocation() === false) {
-          alert('You must enable location services for directions');
-        }
-      }}
-      usersLocation={usersLocation.coordinates}
+      getDirections={() => getDrivingData({...popupInfo.data})}
     />
   ) : <></>;
 

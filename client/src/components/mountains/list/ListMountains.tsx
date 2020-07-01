@@ -1,25 +1,36 @@
 import React from 'react';
 import { NoResults } from '../../../styling/styleUtils';
 import {
-  Mountain,
+  Mountain, State,
  } from '../../../types/graphQLTypes';
 import MountainCard from './MountainCard';
 
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
-  state: Mountain['state'];
+  state: null | {
+    id: State['id'],
+    name: State['name'],
+  };
   elevation: Mountain['elevation'];
+  latitude: Mountain['latitude'];
+  longitude: Mountain['longitude'];
+}
+
+export interface MountainDatumWithDistance extends MountainDatum {
+  distanceToUser: number | null;
+  distanceToMapCenter: number | null;
 }
 
 interface Props {
-  mountainData: MountainDatum[];
+  mountainData: MountainDatumWithDistance[];
   noResultsText: string;
+  setHighlighted: (highlighted: MountainDatum[]) => void;
 }
 
 const ListMountains = (props: Props) => {
   const {
-    mountainData, noResultsText,
+    mountainData, noResultsText, setHighlighted,
   } = props;
 
   if (mountainData.length === 0) {
@@ -30,6 +41,7 @@ const ListMountains = (props: Props) => {
       <MountainCard
         key={mountain.id}
         mountain={mountain}
+        setHighlighted={setHighlighted}
       />
     );
   });

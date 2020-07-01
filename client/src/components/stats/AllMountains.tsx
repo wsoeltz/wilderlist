@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/react-hooks';
+import { faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import noop from 'lodash/noop';
@@ -8,6 +9,8 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../contextProviders/getFluentLocalizationContext';
 import {
+  BasicIconInText,
+  DetailBoxTitle,
   PlaceholderText,
   SelectBox,
 } from '../../styling/styleUtils';
@@ -16,22 +19,19 @@ import {
   PeakListVariants,
   User,
 } from '../../types/graphQLTypes';
-import {
-  failIfValidOrNonExhaustive,
-} from '../../Utils';
 import getCompletionDates, {VariableDate} from '../peakLists/detail/getCompletionDates';
 import MountainTable from '../peakLists/detail/MountainTable';
+import { getColorScale } from '../peakLists/detail/PeakListDetail';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 import Map, {MapContainer} from '../sharedComponents/map';
-import {
-  fiveColorScale,
-  fiveSymbolScale,
-  thirteenColorScale,
-  thirteenSymbolScale,
-  twoColorScale,
-  twoSymbolScale,
-} from '../sharedComponents/map/colorScaleColors';
+import MapZoomScrollText from '../sharedComponents/map/MapZoomScrollText';
+import MountainColorScale from '../sharedComponents/map/MountainColorScale';
 import Header from './Header';
+
+const localstorageShowMajorTrailsAllMtnsKey = 'localstorageShowMajorTrailsAllMtnsKey';
+const localstorageShowCampsitesAllMtnsKey = 'localstorageShowCampsitesAllMtnsKey';
+const localstorageShowYourLocationAllMtnsKey = 'localstorageShowYourLocationAllMtnsKey';
+const localstorageShowNearbyMountainsAllMtnsKey = 'localstorageShowNearbyMountainsAllMtnsKey';
 
 const SelectBoxContiner = styled.div`
   display: grid;
@@ -88,6 +88,15 @@ interface Props {
 const AllMountains = (props: Props) => {
   const {userId} = props;
 
+  const localstorageMajorTrailsVal = localStorage.getItem(localstorageShowMajorTrailsAllMtnsKey);
+  const localstorageCampsitesVal = localStorage.getItem(localstorageShowCampsitesAllMtnsKey);
+  const localstorageYourLocationVal = localStorage.getItem(localstorageShowYourLocationAllMtnsKey);
+  const localstorageOtherMountainsVal = localStorage.getItem(localstorageShowNearbyMountainsAllMtnsKey);
+  const defaultMajorTrails = localstorageMajorTrailsVal === 'true' ? true : false;
+  const defaultCampsites = localstorageCampsitesVal === 'true' ? true : false;
+  const defaultYourLocation = localstorageYourLocationVal === 'true' ? true : false;
+  const defaultOtherMountainsOn = localstorageOtherMountainsVal === 'true' ? true : false;
+
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
@@ -132,41 +141,9 @@ const AllMountains = (props: Props) => {
       );
     } else {
 
-      let colorScaleTitle: string | undefined;
-      let colorScaleColors: string[];
-      let colorScaleSymbols: string[];
-      let colorScaleLabels: string[];
-      if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        colorScaleTitle = undefined;
-        colorScaleColors = twoColorScale;
-        colorScaleSymbols = twoSymbolScale;
-        colorScaleLabels = [
-          getFluentString('global-text-value-not-done'),
-          getFluentString('global-text-value-done'),
-        ];
-      } else if (type === PeakListVariants.fourSeason) {
-        colorScaleTitle = getFluentString('map-number-of-seasons');
-        colorScaleColors = fiveColorScale;
-        colorScaleSymbols = fiveSymbolScale;
-        colorScaleLabels = [
-          getFluentString('map-no-seasons'),
-          getFluentString('map-all-seasons'),
-        ];
-      } else if (type === PeakListVariants.grid) {
-        colorScaleTitle = getFluentString('map-number-of-months');
-        colorScaleColors = thirteenColorScale;
-        colorScaleSymbols = thirteenSymbolScale;
-        colorScaleLabels = [
-          getFluentString('map-no-months'),
-          getFluentString('map-all-months'),
-        ];
-      } else {
-        colorScaleTitle = undefined;
-        colorScaleColors = [];
-        colorScaleSymbols = [];
-        colorScaleLabels = [];
-        failIfValidOrNonExhaustive(type, 'Invalid peak list type ' + type);
-      }
+      const {
+        colorScaleTitle, colorScaleColors, colorScaleSymbols, colorScaleLabels,
+      } = getColorScale(type, getFluentString);
 
       const userMountains = mountains ? mountains : [];
 
@@ -189,22 +166,22 @@ const AllMountains = (props: Props) => {
             id={'select-box-for-peak-list-type-all-mtn-stats'}
           >
             <option value={PeakListVariants.standard}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.standard,
             })}
             </option>
             <option value={PeakListVariants.winter}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.winter,
             })}
             </option>
             <option value={PeakListVariants.fourSeason}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.fourSeason,
             })}
             </option>
             <option value={PeakListVariants.grid}>
-            {getFluentString('global-text-value-list-type', {
+            {getFluentString('global-text-value-list-type-description', {
               type: PeakListVariants.grid,
             })}
             </option>
@@ -242,17 +219,35 @@ const AllMountains = (props: Props) => {
           />
           {toggleType}
           <MapContainer>
+
+            <DetailBoxTitle>
+              <BasicIconInText icon={faMapMarkedAlt} />
+              {getFluentString('map-generic-title')}
+              <MapZoomScrollText />
+            </DetailBoxTitle>
+            <MountainColorScale
+              colorScaleColors={colorScaleColors}
+              colorScaleSymbols={colorScaleSymbols}
+              colorScaleLabels={colorScaleLabels}
+              colorScaleTitle={colorScaleTitle}
+            />
             <Map
               peakListId={null}
               mountainId={'all'}
               coordinates={allMountainsWithDates}
               highlighted={undefined}
               userId={userId}
-              colorScaleTitle={colorScaleTitle}
               colorScaleColors={colorScaleColors}
               colorScaleSymbols={colorScaleSymbols}
-              colorScaleLabels={colorScaleLabels}
               completedAscents={userMountains}
+              showNearbyTrails={true}
+              showYourLocation={true}
+              showOtherMountains={true}
+              showCampsites={true}
+              defaultLocationOn={defaultYourLocation}
+              defaultMajorTrailsOn={defaultMajorTrails}
+              defaultCampsitesOn={defaultCampsites}
+              defaultOtherMountainsOn={defaultOtherMountainsOn}
               key={'stats-all-mountains-in-progress-and-complete-key'}
             />
           </MapContainer>

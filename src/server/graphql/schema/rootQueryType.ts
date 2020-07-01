@@ -49,45 +49,83 @@ const RootQuery = new GraphQLObjectType({
         searchQuery: { type: new GraphQLNonNull(GraphQLString) },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
         pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+        state: { type: GraphQLID },
+        variant: { type: GraphQLString },
+        selectionArray: { type: GraphQLList(GraphQLID) },
       },
-      async resolve(parentValue, {searchQuery, pageNumber, nPerPage}) {
+      async resolve(parentValue, {searchQuery, pageNumber, nPerPage, state, variant, selectionArray}) {
+        const variants = ['winter', 'fourSeason', 'grid'];
         try {
-          const searchWords: string[] = searchQuery.toLowerCase().split(' ');
-          const keywordRegex = searchWords.join('|');
+          const trimmedQuery = searchQuery.replace(/\s+/g, ' ').trim();
+          const searchWords: string[] = trimmedQuery.toLowerCase().split(' ');
+          const matchedVariantWords: string[] = [];
+          const matchedVariants = variants.filter(t => searchWords.find(w => {
+            if (w.length >= 3 && t.toLowerCase().includes(w.toLowerCase())) {
+              matchedVariantWords.push(w);
+              return true;
+            } else {
+              return false;
+            }
+          }));
+          if (variant && !matchedVariantWords.length) {
+            matchedVariants.push(variant);
+          }
+          const variantsFilter = matchedVariants.length ? {type: { $in: matchedVariants }} : null;
+          const defaultQueryWords = searchWords.filter(w => !matchedVariantWords.includes(w));
+          const keywordRegex = defaultQueryWords.join('|');
           const targetStates = keywordRegex ? await State.find({
             $or: [
               { name: { $regex: keywordRegex, $options: 'i' } },
               { abbreviation: { $regex: keywordRegex, $options: 'i' } },
             ],
           }) : [];
-          let selectionArray: string[] = [];
-          let wordsToIgnore: string[] = [];
-          for (const s of targetStates) {
-            const {name, abbreviation, peakLists} = s;
-            selectionArray = [...selectionArray, ...(peakLists as any as string[])];
-            const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
-            let perfectMatch: string = '';
-            stateKeywords.forEach(k => {
-              const matchingWords = searchWords.filter(w => {
-                if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
-                  perfectMatch = w;
-                }
-                return k.includes(w);
+          let stateIds: string[] = [];
+          const wordsToIgnore: string[][] = [];
+          if (state) {
+            stateIds = [state];
+          } else {
+            for (const s of targetStates) {
+              const {_id, name, abbreviation} = s;
+              let matchingWords: string[] = [];
+              const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
+              stateKeywords.forEach(k => {
+                matchingWords = [...matchingWords, ...searchWords.filter(w => {
+                  return k.includes(w);
+                })];
               });
-              wordsToIgnore = [...wordsToIgnore, ...matchingWords];
-            });
-            if (perfectMatch) {
-              selectionArray = [...(peakLists as any as string[])];
-              wordsToIgnore = [perfectMatch];
-              break;
+              stateIds.push(_id);
+              wordsToIgnore.push([...matchingWords]);
             }
           }
-          const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          const limitSelection = selectionArray && selectionArray.length
+            ? {_id : { $in : selectionArray }} : null;
+          const querysWithoutStateName = wordsToIgnore.map(
+            (words, i) => ({
+              searchString: { $regex: searchWords.filter(w1 => !words.find(w2 => w1 === w2)).join(' '), $options: 'i' },
+              states: stateIds[i],
+              ...variantsFilter,
+              ...limitSelection,
+            }),
+          );
+          // only include the default filter if a state has been specified at the args level
+          // but modify to only search for that state. There are no words to ignore
+          const defaultFilter = state
+            ? [{
+                searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' },
+                ...variantsFilter,
+                ...limitSelection,
+                states: state,
+              }]
+            : [{
+                searchString: { $regex: defaultQueryWords.join(' '), $options: 'i' },
+                ...variantsFilter,
+                ...limitSelection,
+              }];
           return PeakList
             .find({
               $or: [
-                { name: { $regex: queryWithoutStateName, $options: 'i' }, _id : { $in : selectionArray } },
-                { name: { $regex: searchQuery, $options: 'i' } },
+                ...querysWithoutStateName,
+                ...defaultFilter,
               ],
             })
           .limit(nPerPage)
@@ -134,7 +172,8 @@ const RootQuery = new GraphQLObjectType({
       },
       async resolve(parentValue, { searchQuery, pageNumber, nPerPage, state, minElevation, maxElevation}) {
         try {
-          const searchWords: string[] = searchQuery.toLowerCase().split(' ');
+          const trimmedQuery = searchQuery.replace(/\s+/g, ' ').trim();
+          const searchWords: string[] = trimmedQuery.toLowerCase().split(' ');
           const keywordRegex = searchWords.join('|');
           const targetStates = keywordRegex ? await State.find({
             $or: [
@@ -143,43 +182,43 @@ const RootQuery = new GraphQLObjectType({
             ],
           }) : [];
           let stateIds: string[] = [];
-          let wordsToIgnore: string[] = [];
+          const wordsToIgnore: string[][] = [];
           if (state) {
             stateIds = [state];
           } else {
             for (const s of targetStates) {
               const {_id, name, abbreviation} = s;
-              stateIds.push(_id);
+              let matchingWords: string[] = [];
               const stateKeywords = [...name.toLowerCase().split(' '), abbreviation.toLowerCase()];
-              let perfectMatch: string = '';
               stateKeywords.forEach(k => {
-                const matchingWords = searchWords.filter(w => {
-                  if (w === name.toLowerCase() || w === abbreviation.toLowerCase()) {
-                    perfectMatch = w;
-                  }
+                matchingWords = [...matchingWords, ...searchWords.filter(w => {
                   return k.includes(w);
-                });
-                wordsToIgnore = [...wordsToIgnore, ...matchingWords];
+                })];
               });
-              if (perfectMatch) {
-                stateIds = [_id];
-                wordsToIgnore = [perfectMatch];
-                break;
-              }
+              stateIds.push(_id);
+              wordsToIgnore.push([...matchingWords]);
             }
           }
-          const queryWithoutStateName = searchWords.filter(w1 => !wordsToIgnore.find(w2 => w1 === w2)).join(' ');
+          const querysWithoutStateName = wordsToIgnore.map(
+            (words, i) => ({
+              name: { $regex: searchWords.filter(w1 => !words.find(w2 => w1 === w2)).join(' '), $options: 'i' },
+              state: { $in: [stateIds[i]] },
+              ...elevation,
+            }),
+          );
           const minElevationFilter = minElevation ? {$gte: (minElevation as number)} : null;
           const maxElevationFilter = maxElevation ? {$lte: (maxElevation as number)} : null;
           const elevation = minElevation || maxElevation
             ? {elevation: {...minElevationFilter, ...maxElevationFilter}} : null;
-          // don't include the default filter if a state has been specified at the args level
-          const defaultFilter = state ? []
-            : [{ name: { $regex: searchQuery, $options: 'i' }, ...elevation }];
+          // only include the default filter if a state has been specified at the args level
+          // but modify to only search for that state. There are no words to ignore
+          const defaultFilter = state
+            ? [{ name: { $regex: trimmedQuery, $options: 'i' }, state: { $in: [state]}, ...elevation }]
+            : [{ name: { $regex: trimmedQuery, $options: 'i' }, ...elevation }];
           return Mountain
             .find({
               $or: [
-                { name: { $regex: queryWithoutStateName, $options: 'i' }, state: { $in: stateIds }, ...elevation },
+                ...querysWithoutStateName,
                 ...defaultFilter,
               ],
             })

@@ -3,21 +3,6 @@ import {
   getSolsticeAndEquinoxUtility,
 } from './utilities/getSeason';
 
-const localstorageUserAllowsLocationKey = 'localstorageUserAllowsLocationKey';
-export const userAllowsLocation = () => {
-  const value = localStorage.getItem(localstorageUserAllowsLocationKey);
-  if (value === null) {
-    return undefined;
-  } else if (value === 'false') {
-    return false;
-  } else if (value === 'true') {
-    return true;
-  }
-};
-export const setUserAllowsLocation = (val: boolean) => {
-  localStorage.setItem(localstorageUserAllowsLocationKey, val.toString());
-};
-
 // Errors out at compile time if a discriminating `switch` doesn't catch all cases
 // of an enum and at run time if for some reason an invalid enum value is passed.
 // See https://basarat.gitbooks.io/typescript/content/docs/types/discriminated-unions.html
@@ -373,3 +358,21 @@ export const isValidURL = (link: string) => {
   const urlRegex = new RegExp(/^(http|https)(:\/\/)?[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/, 'i');
   return urlRegex.test(link);
 };
+
+export const latLonKey = ({lat, lon}: {lat: number, lon: number}) => lat.toString() + lon.toString();
+
+// https://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
+export function isTouchDevice() {
+  const prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
+  const mq = function(q: string) {
+    return window.matchMedia(q).matches;
+  };
+  if (('ontouchstart' in window) ||
+      ((window as any).DocumentTouch && document instanceof (window as any).DocumentTouch)) {
+    return true;
+  }
+  // include the 'heartz' as a way to have a non matching MQ to help terminate the join
+  // https://git.io/vznFH
+  const query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
+  return mq(query);
+}

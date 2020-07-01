@@ -5,6 +5,8 @@ import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../Utils';
 
+export const secondaryFont = 'DeliciousWeb, sans-serif';
+
 export const baseColor = '#333333'; // dark gray/black color for text
 export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and contextual information
 export const placeholderColor = '#a7a7a7'; // light gray color for placeholder text
@@ -34,6 +36,8 @@ export const coolBlueColor = '#3a29c3';
 export const warmRedColor = '#d92a21';
 
 export const lightBlue = '#d1e2e9';
+
+export const locationColor = '#206ca6';
 
 export interface ColorSet {
   primary: string;
@@ -103,6 +107,10 @@ export const Section = styled.div`
   margin-bottom: 1rem;
 `;
 
+export const Block = styled.div`
+  margin: 2rem 0;
+`;
+
 export const SectionTitle = styled.div`
   padding: 0.5rem 0;
   text-transform: uppercase;
@@ -137,12 +145,15 @@ export const LinkButton = styled.button`
   ${linkStyles}
 `;
 
-export const Card = styled.div`
+export const CardBase = styled.div`
   padding: 0.7rem;
   border: solid 1px ${lightBorderColor};
   box-shadow: 0px 0px 3px -1px #b5b5b5;
-  margin-bottom: 2rem;
   background-color: #fff;
+`;
+
+export const Card = styled(CardBase)`
+  margin-bottom: 2rem;
 
   &:hover {
     cursor: pointer;
@@ -160,18 +171,90 @@ export const CardLinkWrapper = styled(DynamicLink)`
   }
 `;
 
+export const StackableCardSection = styled(Card)`
+  box-shadow: none;
+  border-bottom: none;
+  margin-bottom: 0;
+`;
+
+export const StackableCardFooter = styled(Card)`
+  background-color: ${tertiaryColor};
+  box-shadow: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+`;
+
+const cardFooterLinkStyles = `
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 0.25rem;
+
+  &:not(:last-child) {
+    border-right: solid 1px ${lightBorderColor};
+  }
+`;
+
+interface ColorProps {
+  color: string;
+  $isActive: boolean;
+}
+
+export const CardFooterLink = styled(DynamicLink)<ColorProps>`
+  ${cardFooterLinkStyles}
+  color: ${(p) => p.$isActive ? '#fff' : p.color};
+  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
+  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
+
+  &:hover {
+    color: #fff;
+    background-color: ${({color}) => color};
+    text-decoration: none;
+  }
+`;
+export const CardFooterButton = styled.button<ColorProps>`
+  ${cardFooterLinkStyles}
+  color: ${(p) => p.$isActive ? '#fff' : p.color};
+  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
+  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
+
+  &:hover {
+    color: #fff;
+    background-color: ${({color}) => color};
+    text-decoration: none;
+  }
+`;
+
+export const StackedCardWrapper = styled(CardLinkWrapper)`
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+`;
+
 export const CardTitle = styled.h1`
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   margin-top: 0;
   margin-bottom: 0.4rem;
 `;
 
 export const CardSubtitle = styled.div`
   color: ${lightBaseColor};
+  font-size: 0.95rem;
   margin: 0.4rem 0;
   display: flex;
   justify-content: space-between;
+`;
+export const Seperator = styled.span`
+  color: ${lightBaseColor};
+  opacity: 0.45;
   font-weight: ${semiBoldFontBoldWeight};
+  margin: 0 0.2rem;
 `;
 
 export const InlineTitle = styled.h3`
@@ -262,6 +345,15 @@ export const ButtonSecondary = styled(ButtonBase)`
   }
 `;
 
+export const CompactButtonPrimary = styled(ButtonPrimary)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
+`;
+export const CompactButtonSecondary = styled(ButtonSecondary)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
+`;
+
 export const ButtonTertiary = styled(ButtonBase)`
   color: ${baseColor};
     background-color: ${tertiaryColor};
@@ -323,6 +415,23 @@ export const ButtonSecondaryLink = styled(DynamicLink)`
   }
 `;
 
+export const GhostButtonLink = styled(DynamicLink)`
+  padding: 0.6rem;
+  text-transform: uppercase;
+  color: ${secondaryColor};
+  text-align: center;
+  border-radius: ${borderRadius}px;
+  font-weight: ${semiBoldFontBoldWeight};
+  font-size: 0.8rem;
+  background-color: transparent;
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    color: ${secondaryHoverColor};
+  }
+`;
+
 export const GhostButton = styled(ButtonBase)`
   color: ${secondaryColor};
   background-color: transparent;
@@ -330,6 +439,15 @@ export const GhostButton = styled(ButtonBase)`
   &:hover {
     color: ${secondaryHoverColor};
   }
+`;
+
+export const CompactGhostButton = styled(GhostButton)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
+`;
+export const CompactGhostButtonLink = styled(GhostButtonLink)`
+  font-size: 0.7rem;
+  padding: 0.35rem;
 `;
 
 export const FloatingButtonContainer = styled.div`
@@ -428,10 +546,16 @@ export const PlusIcon = styled.span`
   top: 2px;
 `;
 
-export const BasicIconInText = styled(FontAwesomeIcon)`
+const IconInTextBase = styled(FontAwesomeIcon)`
   position: relative;
   top: -1px;
+`;
+
+export const BasicIconInText = styled(IconInTextBase)`
   margin-right: 0.6rem;
+`;
+export const BasicIconAtEndOfText = styled(IconInTextBase)`
+  margin-left: 0.6rem;
 `;
 
 export const PlaceholderText = styled.div`
@@ -443,13 +567,15 @@ export const PlaceholderText = styled.div`
   text-align: center;
   font-style: italic;
   color: ${placeholderColor};
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: rgb(245, 245, 245);
+  position: relative;
 `;
 
 export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};
   text-align: center;
+  margin-bottom: 1.2rem;
 `;
 
 export const CheckboxRoot = styled.div`
@@ -596,4 +722,21 @@ export const SvgMiniImg = styled.img`
   position: relative;
   margin-right: 0.6rem;
   top: 3px;
+`;
+
+export const SecondaryNavigationContainer = styled.div`
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  width: 100%;
+`;
+export const SecondaryNavigationButton = styled.button`
+  padding: 0.75rem;
+  text-align: center;
+  color: ${secondaryColor};
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  background-color: #fff;
+  border: solid 1px ${lightBorderColor};
+  border-top: none;
 `;

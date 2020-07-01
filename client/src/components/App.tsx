@@ -18,6 +18,10 @@ import {
   AppLocalizationAndBundleContext as FluentText,
 } from '../contextProviders/getFluentLocalizationContext';
 import MapContext, {MapboxMap} from '../contextProviders/mapBoxContext';
+import useUsersLocation, {
+  userAllowsPreciseLocation,
+  UsersLocation,
+} from '../hooks/useUsersLocation';
 import { Routes } from '../routing/routes';
 import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
@@ -76,17 +80,39 @@ const OverlayPortal = styled.div`
 
 export interface IAppContext {
   windowWidth: number;
+  usersLocation: UsersLocation;
 }
 
 const client = new ApolloClient();
 export const UserContext = React.createContext<User | null>(null);
-export const AppContext = React.createContext<IAppContext>({windowWidth: window.innerWidth});
+export const AppContext = React.createContext<IAppContext>({
+  windowWidth: window.innerWidth,
+  usersLocation: {
+    loading: true,
+    error: undefined,
+    data: undefined,
+    isPrecise: false,
+    requestAccurateLocation: undefined,
+  },
+});
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User| null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  const [checkedForAccurateLocationOnLoad, setCheckedForAccurateLocationOnLoad] = useState<boolean>(false);
 
-  const appContext = {windowWidth};
+  const usersLocation = useUsersLocation();
+
+  const appContext = {windowWidth, usersLocation};
+
+  useEffect(() => {
+    if (usersLocation !== undefined && usersLocation.loading === false && checkedForAccurateLocationOnLoad === false) {
+      if (userAllowsPreciseLocation() && usersLocation.requestAccurateLocation) {
+        usersLocation.requestAccurateLocation();
+      }
+      setCheckedForAccurateLocationOnLoad(true);
+    }
+  }, [usersLocation, checkedForAccurateLocationOnLoad, setCheckedForAccurateLocationOnLoad]);
 
   useEffect(() => {
     const fetchUser = async () => {

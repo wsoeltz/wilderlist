@@ -298,7 +298,9 @@ const DateWidget = (props: Props) => {
   return (
     <Root>
       {toggleButtons}
-      <DateInputContainer>
+      <DateInputContainer
+        style={{borderTop: toggleButtons === null ? 'solid 1px ' + lightBorderColor : undefined}}
+      >
         {datePickers}
       </DateInputContainer>
     </Root>
