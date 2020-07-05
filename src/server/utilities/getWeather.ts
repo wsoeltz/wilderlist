@@ -5,23 +5,67 @@ const cache: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
 });
 
-const getWeather = axios.create({
+const getOpenWeather = axios.create({
   adapter: cache.adapter,
 });
 
-const getWeatherData = async (latitude: string, longitude: string) => {
+const getNWSData = async (latitude: string, longitude: string) => {
   try {
-    const res = await getWeather(`https://api.weather.gov/points/${latitude},${longitude}`);
+    const res = await axios(`https://api.weather.gov/points/${latitude},${longitude}`);
     if (res && res.data && res.data.properties && res.data.properties.forecast) {
-      const forecastData = await getWeather(res.data.properties.forecast);
+      const forecastData = await axios(res.data.properties.forecast);
       if (forecastData && forecastData.data && forecastData.data.properties
         && forecastData.data.properties.periods) {
         return forecastData.data.properties.periods;
       } else {
-        return {error: 'There was an error getting the forecast'};
+        return null;
       }
     } else {
-      return {error: 'There was an error getting the location response'};
+      return null;
+    }
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+enum ForecastSource {
+  NWS = 'nws',
+  OpenWeatherMap = 'openweathermap',
+}
+
+const getOpenWeatherData = async (latitude: string, longitude: string) => {
+  try {
+    const res = await getOpenWeather(`https://api.openweathermap.org/data/2.5/onecall?lat=${
+      latitude
+    }&lon=${
+      longitude
+    }&exclude=current,minutely,hourly&units=imperial&appid=${
+      process.env.OPENWEATHERMAP_API_KEY
+    }`);
+    if (res && res.data) {
+      return res;
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+const getWeatherData = async (latitude: string, longitude: string) => {
+  try {
+    const openWeatherData = await getOpenWeatherData(latitude, longitude);
+    if (openWeatherData && openWeatherData.data) {
+      return {source: ForecastSource.OpenWeatherMap, data: openWeatherData.data};
+    } else {
+      const nwsData = await getNWSData(latitude, longitude);
+      if (nwsData) {
+        return {source: ForecastSource.NWS, data: nwsData};
+      } else {
+        return {error: 'There was an error retrieving the weather'};
+      }
     }
   } catch (err) {
     console.error(err);

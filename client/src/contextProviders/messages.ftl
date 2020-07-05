@@ -669,8 +669,21 @@ weather-forecast-high = High
 weather-forecast-low = Low
 weather-forecast-wind = Wind
 weather-forecast-detailed-report = Detailed Report
+weather-forecast-feels-like = Feels like
 weather-forecast-network-error = Weather for this location is not available at this time.
 weather-loading-report = Getting your forecast
+
+weather-forecast-cloud-coverage = Cloud coverage: { $clouds }%
+weather-forecast-dewpoint = Dewpoint: { $dew_point }°F
+weather-forecast-humidity = Relative humidity: { $humidity }%
+weather-forecast-sunrise = Sunrise: { $sunrise }
+weather-forecast-sunset = Sunset: { $sunset }
+weather-forecast-uvi = UV Index: { $uvi }
+weather-forecast-rain-volume = { $rain }mm of rainfall
+weather-forecast-snow-volume = { $snow }mm of snow
+weather-forecast-wind-gust = gusts up to { $wind_gust }mph
+
+
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes
