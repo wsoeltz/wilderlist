@@ -102,7 +102,7 @@ const WeatherDetailNWSModal = (props: Props) => {
           <strong>{hour}</strong>
         </Detail>
         <Detail>
-          {'Temperature'}{' '}{Math.round(report.temp)}°F
+          {getFluentString('weather-forecast-temperature')}:{' '}{Math.round(report.temp)}°F
         </Detail>
         <Detail>
           {getFluentString('weather-forecast-feels-like')}{' '}{Math.round(report.feels_like)}°F
@@ -125,7 +125,7 @@ const WeatherDetailNWSModal = (props: Props) => {
 
   const details = hourly.length ? (
     <>
-      <DetailBoxTitle>Hourly</DetailBoxTitle>
+      <DetailBoxTitle>{getFluentString('weather-forecast-hourly')}</DetailBoxTitle>
       <DetailBoxWithMargin>
         {hourSections}
       </DetailBoxWithMargin>
