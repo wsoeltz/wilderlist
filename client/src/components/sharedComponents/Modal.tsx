@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components/macro';
-import { borderRadius } from '../../styling/styleUtils';
+import { borderRadius, lightBorderColor } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
 import {AppContext} from '../App';
 import BackButton from './BackButton';
@@ -88,6 +88,7 @@ const Actions = styled.div`
   grid-row: 2;
   border-bottom-left-radius: ${borderRadius}px;
   border-bottom-right-radius: ${borderRadius}px;
+  border-top: solid 1px ${lightBorderColor};
 
   @media(max-width: ${mobileWidth}px) {
     z-index: 100;

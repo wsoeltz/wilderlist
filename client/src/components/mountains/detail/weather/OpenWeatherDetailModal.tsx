@@ -4,8 +4,14 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../../contextProviders/getFluentLocalizationContext';
+import {
+  DetailBoxTitle,
+  DetailBoxWithMargin,
+  lightBorderColor,
+
+} from '../../../../styling/styleUtils';
 import Modal from '../../../sharedComponents/Modal';
-import { WeatherReportDatum } from './OpenWeatherForecast';
+import { WeatherDetailDatum, WeatherReportDatum } from './OpenWeatherForecast';
 import {
   ButtonWrapper,
   CancelButton,
@@ -32,15 +38,24 @@ const ForecastImgContainer = styled(ForecastImgContainerBase)`
   width: 80px;
   height: 80px;
   margin-right: 1rem;
+  margin-left: 0;
 `;
 
 const ForecastContent = styled(ForecastContentBase)`
   grid-column: 1 / -1;
+  width: 400px;
+  max-width: 100%;
+`;
+
+const Hr = styled.hr`
+  border-bottom: none;
+  border-top: solid 1px ${lightBorderColor};
 `;
 
 interface Props {
   onCancel: () => void;
   data: WeatherReportDatum;
+  hourly: WeatherDetailDatum[];
 }
 
 const WeatherDetailNWSModal = (props: Props) => {
@@ -48,7 +63,7 @@ const WeatherDetailNWSModal = (props: Props) => {
     dt, temp, weather, wind_deg, wind_speed, feels_like,
     clouds, dew_point, humidity, uvi,
     rain, snow, wind_gust,
-  } } = props;
+  }, hourly } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -70,11 +85,58 @@ const WeatherDetailNWSModal = (props: Props) => {
     </ButtonWrapper>
   );
 
+  const hourSections = hourly.map(report => {
+    const hour = formatAMPM(new Date(report.dt * 1000));
+    const hourlyDescription =
+      report.weather[0].description.charAt(0).toUpperCase() + report.weather[0].description.slice(1);
+
+    const hourlyWindGusts = report.wind_gust !== undefined
+      ? ', ' + getFluentString('weather-forecast-wind-gust', {wind_gust: report.wind_gust}) : null;
+    const hourlyRainVolume = report.rain !== undefined
+      ? ', ' + getFluentString('weather-forecast-rain-volume', {rain: report.rain}) : null;
+    const hourlySnowVolume = report.snow !== undefined
+      ? ', ' + getFluentString('weather-forecast-snow-volume', {snow: report.snow}) : null;
+    return (
+      <React.Fragment key={report.dt}>
+        <Detail>
+          <strong>{hour}</strong>
+        </Detail>
+        <Detail>
+          {'Temperature'}{' '}{Math.round(report.temp)}°F
+        </Detail>
+        <Detail>
+          {getFluentString('weather-forecast-feels-like')}{' '}{Math.round(report.feels_like)}°F
+        </Detail>
+        <Detail>{hourlyDescription}{hourlyRainVolume}{hourlySnowVolume}</Detail>
+        <Detail>
+          {getFluentString('weather-forecast-cloud-coverage', {clouds})}
+        </Detail>
+        <Detail>
+          {getFluentString('weather-forecast-wind')} {Math.round(report.wind_speed)} mph
+          {' '}
+          {degToCompass(report.wind_deg)}
+          {' '}
+          {hourlyWindGusts}
+        </Detail>
+          <Hr />
+      </React.Fragment>
+    );
+  });
+
+  const details = hourly.length ? (
+    <>
+      <DetailBoxTitle>Hourly</DetailBoxTitle>
+      <DetailBoxWithMargin>
+        {hourSections}
+      </DetailBoxWithMargin>
+    </>
+  ) : null;
+
   return (
     <Modal
       onClose={onCancel}
       width={'400px'}
-      height={'auto'}
+      height={'500px'}
       actions={actions}
     >
       <ForecastContainer>
@@ -88,42 +150,48 @@ const WeatherDetailNWSModal = (props: Props) => {
             {getFluentString('global-formatted-text-date', {
               day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear().toString(),
             })}
+            <Temperatures>
+              <TempHigh>{getFluentString('weather-forecast-high')} {Math.round(temp.max)}°F</TempHigh>
+              /
+              <TempLow>{getFluentString('weather-forecast-low')} {Math.round(temp.min)}°F</TempLow>
+            </Temperatures>
+            <Detail>
+              {getFluentString('weather-forecast-feels-like')}
+              {' '}{Math.round(feels_like.day)}°F/{Math.round(feels_like.night)}°F
+            </Detail>
           </div>
         </ForecastHeader>
         <ForecastContent>
-          <Temperatures>
-            <TempHigh>{getFluentString('weather-forecast-high')} {Math.round(temp.max)}°F</TempHigh>
-            /
-            <TempLow>{getFluentString('weather-forecast-low')} {Math.round(temp.min)}°F</TempLow>
-          </Temperatures>
-          <Detail>
-            {getFluentString('weather-forecast-feels-like')}
-            {' '}{Math.round(feels_like.day)}°F/{Math.round(feels_like.night)}°F
-          </Detail>
-          <Detail>{description}{rainVolume}{snowVolume}</Detail>
-          <Detail>
-            {getFluentString('weather-forecast-cloud-coverage', {clouds})}
-          </Detail>
-          <Detail>
-            {getFluentString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
-            {' '}
-            {windGusts}
-          </Detail>
-          <Detail>
-            {getFluentString('weather-forecast-dewpoint', {dew_point})}
-          </Detail>
-          <Detail>
-            {getFluentString('weather-forecast-humidity', {humidity})}
-          </Detail>
-          <Detail>
-            {getFluentString('weather-forecast-sunrise', {sunrise})}
-          </Detail>
-          <Detail>
-            {getFluentString('weather-forecast-sunset', {sunset})}
-          </Detail>
-          <Detail>
-            {getFluentString('weather-forecast-uvi', {uvi})}
-          </Detail>
+          <DetailBoxTitle>Overview</DetailBoxTitle>
+          <DetailBoxWithMargin>
+            <Detail>{description}{rainVolume}{snowVolume}</Detail>
+            <Detail>
+              {getFluentString('weather-forecast-cloud-coverage', {clouds})}
+            </Detail>
+            <Detail>
+              {getFluentString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
+              {' '}
+              {windGusts}
+            </Detail>
+            <Hr />
+            <Detail>
+              {getFluentString('weather-forecast-dewpoint', {dew_point})}
+            </Detail>
+            <Detail>
+              {getFluentString('weather-forecast-humidity', {humidity})}
+            </Detail>
+            <Detail>
+              {getFluentString('weather-forecast-uvi', {uvi})}
+            </Detail>
+            <Hr />
+            <Detail>
+              {getFluentString('weather-forecast-sunrise', {sunrise})}
+            </Detail>
+            <Detail>
+              {getFluentString('weather-forecast-sunset', {sunset})}
+            </Detail>
+          </DetailBoxWithMargin>
+         {details}
         </ForecastContent>
       </ForecastContainer>
     </Modal>

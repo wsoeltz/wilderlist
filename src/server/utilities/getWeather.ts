@@ -40,7 +40,7 @@ const getOpenWeatherData = async (latitude: string, longitude: string) => {
       latitude
     }&lon=${
       longitude
-    }&exclude=current,minutely,hourly&units=imperial&appid=${
+    }&exclude=current,minutely&units=imperial&appid=${
       process.env.OPENWEATHERMAP_API_KEY
     }`);
     if (res && res.data) {

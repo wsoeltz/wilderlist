@@ -1,3 +1,13 @@
+import {
+  faBolt,
+  faCloud,
+  faCloudRain,
+  faCloudShowersHeavy,
+  faCloudSun,
+  faSmog,
+  faSnowflake,
+  faSun,
+} from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components/macro';
 import {
   baseColor,
@@ -31,6 +41,34 @@ export function formatAMPM(date: Date) {
   return strTime;
 }
 
+export const getFaIcon = (id: number) => {
+  if (id >= 200 && id < 300) {
+    return faBolt;
+  }
+  if (id >= 300 && id < 400) {
+    return faCloudRain;
+  }
+  if (id >= 500 && id < 600) {
+    return faCloudShowersHeavy;
+  }
+  if (id >= 600 && id < 700) {
+    return faSnowflake;
+  }
+  if (id >= 700 && id < 800) {
+    return faSmog;
+  }
+  if (id === 800) {
+    return faSun;
+  }
+  if (id === 801 || id === 802) {
+    return faCloudSun;
+  }
+  if (id === 803 || id === 804) {
+    return faCloud;
+  }
+  return faCloudSun;
+};
+
 export const ForecastBlock = styled.div`
   flex-shrink: 0;
   font-size: 0.9rem;
@@ -51,15 +89,17 @@ export const ForecastBlock = styled.div`
 export const Temperatures = styled.div`
   display: flex;
   margin: 0.4rem 0;
-  font-size: 0.8rem;
+  align-items: flex-end;
 `;
 export const TempHigh = styled.div`
   color: ${warmRedColor};
   margin-right: 2px;
+  font-size: 1.1rem;
 `;
 export const TempLow = styled.div`
   color: ${coolBlueColor};
   margin-left: 2px;
+  font-size: 0.8rem;
 `;
 export const WindSpeed = styled.div`
   color: ${lightBaseColor};
@@ -67,8 +107,10 @@ export const WindSpeed = styled.div`
   margin-bottom: 0.4rem;
 `;
 export const ForecastShort = styled.div`
+  margin-top: 0.4rem;
   font-size: 0.8rem;
   font-style: italic;
+  color: ${lightBaseColor};
 `;
 
 export const DetailModalButton = styled(LinkButton)`
@@ -140,7 +182,6 @@ export const DetailTempLow = styled.div`
 
 export const Detail = styled.div`
   font-size: 0.8rem;
-  color: ${lightBaseColor};
   margin: 0.5rem 0;
 `;
 
