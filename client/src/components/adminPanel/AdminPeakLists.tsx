@@ -181,7 +181,7 @@ enum PeakListsToShow {
 
 const AdminPeakLists = () => {
 
-  const [peakListsToShow, setPeakListsToShow] = useState<PeakListsToShow>(PeakListsToShow.all);
+  const [peakListsToShow, setPeakListsToShow] = useState<PeakListsToShow>(PeakListsToShow.pending);
 
   let query;
   if (peakListsToShow === PeakListsToShow.all) {
