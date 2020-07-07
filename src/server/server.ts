@@ -31,6 +31,7 @@ import getRecreationData from './utilities/getRecreationData';
 import getRecreationSiteData from './utilities/getRecreationSiteData';
 import getStateByAbbreviation from './utilities/getStateByAbbreviation';
 import getWeatherData from './utilities/getWeather';
+import mountainsImportUtility from './utilities/mountainsImportUtility';
 
 require('./auth/passport');
 
@@ -105,6 +106,20 @@ app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
 
 // Send invites to ascent added emails
 notificationRoutes(app);
+
+app.get('/api/mountains-import-utility', async (req, res) => {
+  try {
+    const filteredStateAbbr = req.query && req.query.state ? req.query.state : undefined;
+    const showErrors = req.query && req.query.errors_only ? req.query.errors_only : undefined;
+    const showDuplipcates = req.query && req.query.duplicates ? req.query.duplicates : undefined;
+    const showMergedDuplicates = req.query && req.query.merged ? req.query.merged : undefined;
+    const data = await mountainsImportUtility(filteredStateAbbr, showErrors, showDuplipcates, showMergedDuplicates);
+    res.json(data);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
 
 app.get('/api/weather', async (req, res) => {
   try {
