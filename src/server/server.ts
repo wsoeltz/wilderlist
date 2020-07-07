@@ -31,6 +31,7 @@ import getRecreationData from './utilities/getRecreationData';
 import getRecreationSiteData from './utilities/getRecreationSiteData';
 import getStateByAbbreviation from './utilities/getStateByAbbreviation';
 import getWeatherData from './utilities/getWeather';
+import addMountainsToStates from './utilities/addMountainsToStates';
 
 require('./auth/passport');
 
@@ -105,6 +106,21 @@ app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
 
 // Send invites to ascent added emails
 notificationRoutes(app);
+
+app.get('/api/mountains-to-states', async (req, res) => {
+  try {
+    const abbr = req.query && req.query.abbr ? req.query.abbr : undefined;
+    if (abbr) {
+      const data = await addMountainsToStates(abbr);
+      res.json(data);
+    } else {
+      res.send({error: 'No state specified'});
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
 
 app.get('/api/weather', async (req, res) => {
   try {
