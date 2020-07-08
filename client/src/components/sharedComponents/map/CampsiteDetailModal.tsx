@@ -108,7 +108,7 @@ const TrailDetailModal = (props: Props) => {
   const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
   const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
   const directions = directionsData !== undefined && usersLocation !== undefined &&
-    usersLocation.data && usersLocation.data.coordinates
+    usersLocation.data && usersLocation.data.preciseCoordinates
     ? (
       <DirectionsContent>
         <DirectionsText>
@@ -119,8 +119,8 @@ const TrailDetailModal = (props: Props) => {
           <GoogleMapsDirectionsLink
             lat={latitude}
             long={longitude}
-            userLat={usersLocation.data.coordinates.lat}
-            userLong={usersLocation.data.coordinates.lng}
+            userLat={usersLocation.data.preciseCoordinates.lat}
+            userLong={usersLocation.data.preciseCoordinates.lng}
           />
         </GoogleButton>
       </DirectionsContent>

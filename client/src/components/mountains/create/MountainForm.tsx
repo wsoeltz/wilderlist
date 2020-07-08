@@ -167,9 +167,9 @@ const MountainForm = (props: Props) => {
 
   let defaultLatitude: number;
   let defaultLongitude: number;
-  if (usersLocation && usersLocation.data && usersLocation.data.coordinates) {
-    defaultLatitude = usersLocation.data.coordinates.lat;
-    defaultLongitude = usersLocation.data.coordinates.lng;
+  if (usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
+    defaultLatitude = usersLocation.data.localCoordinates.lat;
+    defaultLongitude = usersLocation.data.localCoordinates.lng;
   } else {
     defaultLatitude = 43.20415146;
     defaultLongitude = -71.52769471;

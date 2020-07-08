@@ -319,8 +319,8 @@ const MapPopup = (props: Props) => {
     setDestination({key: id, latitude, longitude});
     if (!yourLocationOn) {
       setYourLocationOn(true);
-      if (usersLocation &&
-          !usersLocation.isPrecise &&
+      if (usersLocation && usersLocation.data &&
+          !usersLocation.data.preciseCoordinates &&
           usersLocation.requestAccurateLocation) {
         usersLocation.requestAccurateLocation();
       }

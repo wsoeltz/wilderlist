@@ -25,8 +25,8 @@ const DirectionsAndLocation = (props: Props) => {
 
   const {usersLocation} = useContext(AppContext);
 
-  const usersCoordinates = usersLocation && usersLocation.data && usersLocation.data.coordinates ?
-    usersLocation.data.coordinates : undefined;
+  const usersCoordinates = usersLocation && usersLocation.data && usersLocation.data.preciseCoordinates ?
+    usersLocation.data.preciseCoordinates : undefined;
 
   const yourLocationLayer = showYourLocation && yourLocationOn && usersCoordinates !== undefined ? (
     <Layer

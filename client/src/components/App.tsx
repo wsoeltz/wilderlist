@@ -91,7 +91,6 @@ export const AppContext = React.createContext<IAppContext>({
     loading: true,
     error: undefined,
     data: undefined,
-    isPrecise: false,
     requestAccurateLocation: undefined,
   },
 });

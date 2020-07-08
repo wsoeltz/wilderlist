@@ -149,8 +149,8 @@ const MountainSearchPage = (props: Props) => {
     }
   };
 
-  const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.coordinates
-    ? {latitude: usersLocation.data.coordinates.lat, longitude: usersLocation.data.coordinates.lng}
+  const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.localCoordinates
+    ? {latitude: usersLocation.data.localCoordinates.lat, longitude: usersLocation.data.localCoordinates.lng}
     : undefined;
 
   const [mapCenter, setMapCenter] = useState<{latitude: number, longitude: number} | undefined>(initialMapCenter);
@@ -183,8 +183,8 @@ const MountainSearchPage = (props: Props) => {
   }, [query, page]);
 
   useEffect(() => {
-    if (mapCenter === undefined && usersLocation && usersLocation.data && usersLocation.data.coordinates) {
-      const {lat, lng} = usersLocation.data.coordinates;
+    if (mapCenter === undefined && usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
+      const {lat, lng} = usersLocation.data.localCoordinates;
       setMapCenter({latitude: lat, longitude: lng});
     }
   }, [usersLocation, mapCenter]);
@@ -217,10 +217,18 @@ const MountainSearchPage = (props: Props) => {
       longDistance: 0.55,
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
-    const centerToYou = usersLocation.data
+    let coordinates: {lat: number, lng: number} | undefined;
+    if (usersLocation.data) {
+      coordinates = usersLocation.data.preciseCoordinates
+        ? usersLocation.data.preciseCoordinates
+        : usersLocation.data.localCoordinates;
+    } else {
+      coordinates = undefined;
+    }
+    const centerToYou = coordinates
       ? getDistanceFromLatLonInMiles({
-        lat1: usersLocation.data.coordinates.lat,
-        lon1: usersLocation.data.coordinates.lng,
+        lat1: coordinates.lat,
+        lon1: coordinates.lng,
         lat2: mapCenter.latitude,
         lon2: mapCenter.longitude,
       }) : null;
@@ -301,7 +309,7 @@ const MountainSearchPage = (props: Props) => {
       list = null;
     } else {
       const rawMountains = dataToUse.mountains;
-      const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.coordinates : undefined;
+      const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.localCoordinates : undefined;
       const extendedMountains: MountainDatumWithDistance[] = rawMountains.map(mtn => {
         const distanceToUser = usersCoords ? getDistanceFromLatLonInMiles({
           lat1: usersCoords.lat, lon1: usersCoords.lng,
