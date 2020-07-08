@@ -67,7 +67,7 @@ interface Props {
   getDirections: () => void;
 }
 
-const TrailDetailModal = (props: Props) => {
+const CampsiteDetailModal = (props: Props) => {
   const {
     onClose, campsiteDatum, directionsData, getDirections,
   } = props;
@@ -328,4 +328,4 @@ const TrailDetailModal = (props: Props) => {
   );
 };
 
-export default TrailDetailModal;
+export default CampsiteDetailModal;
