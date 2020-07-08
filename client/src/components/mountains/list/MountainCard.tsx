@@ -48,7 +48,7 @@ const Details = styled(CollapsedParagraph)`
 `;
 
 const CardFooter = styled(StackableCardFooter)`
-  border-left-width: 0;
+  border-left-width: 1px;
 `;
 
 const OverviewLink = styled(CardFooterLink)`

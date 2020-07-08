@@ -3,6 +3,9 @@ import React, {useContext, useState} from 'react';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../../contextProviders/getFluentLocalizationContext';
+import {
+  BasicIconInText,
+} from '../../../../styling/styleUtils';
 import OpenWeatherDetailModal from './OpenWeatherDetailModal';
 import {
   degToCompass,
@@ -10,6 +13,7 @@ import {
   ForecastBlock,
   ForecastShort,
   getDayAsText,
+  getFaIcon,
   Temperatures,
   TempHigh,
   TempLow,
@@ -52,8 +56,30 @@ export interface WeatherReportDatum {
   snow?: number;
 }
 
+export interface WeatherDetailDatum {
+  clouds: number;
+  dew_point: number;
+  dt: number;
+  feels_like: number;
+  humidity: number;
+  pressure: number;
+  temp: number;
+  weather: Array<{
+    description: string,
+    icon: string,
+    id: number,
+    main: string,
+  }>;
+  wind_deg: number;
+  wind_speed: number;
+  wind_gust?: number;
+  rain?: number;
+  snow?: number;
+}
+
 export interface OpenWeatherForecastDatum {
   daily: WeatherReportDatum[];
+  hourly: WeatherDetailDatum[];
 }
 
 interface Props {
@@ -61,14 +87,18 @@ interface Props {
 }
 
 const OpenWeatherForecast = (props: Props) => {
-  const {forecast: {daily}} = props;
+  const {forecast: {daily, hourly}} = props;
 
   const [weatherDetail, setWeatherDetail] = useState<WeatherReportDatum | null>(null);
 
+  const hourlyDetails = weatherDetail
+    ? hourly.filter((hour) => new Date(hour.dt * 1000 ).getDate() === new Date(weatherDetail.dt * 1000).getDate())
+    : [];
   const weatherDetailModal = weatherDetail === null ? null : (
     <OpenWeatherDetailModal
       onCancel={() => setWeatherDetail(null)}
       data={weatherDetail}
+      hourly={hourlyDetails}
     />
   );
 
@@ -79,19 +109,22 @@ const OpenWeatherForecast = (props: Props) => {
     const { dt, temp, wind_deg, wind_speed, weather } = report;
     const date = new Date(dt * 1000);
     const dateText = getDayAsText(date);
-    const description = weather[0].description.charAt(0).toUpperCase() + weather[0].description.slice(1);
+    const description = weather[0].main.charAt(0).toUpperCase() + weather[0].main.slice(1);
     return (
       <ForecastBlock key={dt}>
         <strong>{dateText}</strong>
+        <ForecastShort>
+          <BasicIconInText icon={getFaIcon(weather[0].id)} />
+          {description}
+        </ForecastShort>
         <Temperatures>
-          <TempHigh>{getFluentString('weather-forecast-high')} {Math.round(temp.max)}°</TempHigh>
+          <TempHigh>{Math.round(temp.max)}°F</TempHigh>
           /
-          <TempLow>{getFluentString('weather-forecast-low')} {Math.round(temp.min)}°</TempLow>
+          <TempLow>{Math.round(temp.min)}°F</TempLow>
         </Temperatures>
         <WindSpeed>
           {getFluentString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
         </WindSpeed>
-        <ForecastShort>{description}</ForecastShort>
         <DetailModalButton
           onClick={() => setWeatherDetail(report)}
         >

@@ -160,7 +160,7 @@ const AdminMountains = () => {
 
   const user = useContext(UserContext);
 
-  const [mountainsToShow, setMountainsToShow] = useState<MountainsToShow>(MountainsToShow.all);
+  const [mountainsToShow, setMountainsToShow] = useState<MountainsToShow>(MountainsToShow.pending);
 
   let query;
   if (mountainsToShow === MountainsToShow.all) {

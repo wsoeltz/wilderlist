@@ -346,8 +346,8 @@ const PeakListPage = (props: Props) => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
-    const { peakLists, user } = data;
-    if (!peakLists) {
+  const { peakLists, user } = data;
+  if (!peakLists) {
       list = (
         <PlaceholderText>
           {getFluentString('global-error-retrieving-data')}

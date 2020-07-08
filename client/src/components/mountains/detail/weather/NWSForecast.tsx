@@ -92,13 +92,13 @@ const NWSForecast = (props: Props) => {
         forecastDays.push(
           <ForecastBlock key={today.name}>
             <strong>{today.name}</strong>
+            <ForecastShort>{today.shortForecast}</ForecastShort>
             <Temperatures>
-              <TempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°F</TempHigh>
+              <TempHigh>{today.temperature}°F</TempHigh>
               /
-              <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°F</TempLow>
+              <TempLow>{tonight.temperature}°F</TempLow>
             </Temperatures>
             <WindSpeed>{getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}</WindSpeed>
-            <ForecastShort>{today.shortForecast}</ForecastShort>
             <DetailModalButton
               onClick={() => setWeatherDetail({today, tonight})}
             >
@@ -110,13 +110,13 @@ const NWSForecast = (props: Props) => {
         forecastDays.push(
           <ForecastBlock key={today.name}>
             <strong>{today.name}</strong>
+            <ForecastShort>{today.shortForecast}</ForecastShort>
             <Temperatures>
-              <TempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°F</TempHigh>
+              <TempHigh>{today.temperature}°F</TempHigh>
               /
-              <TempLow>{getFluentString('weather-forecast-low')} --°F</TempLow>
+              <TempLow>--°F</TempLow>
             </Temperatures>
             <WindSpeed>{getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}</WindSpeed>
-            <ForecastShort>{today.shortForecast}</ForecastShort>
             <DetailModalButton
               onClick={() => setWeatherDetail({today, tonight: null})}
             >

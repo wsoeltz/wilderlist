@@ -201,9 +201,9 @@ const Map = (props: Props) => {
 
   let initialCenter: [number, number];
   if (highlighted && highlighted.length === 1) {
-    initialCenter = [ highlighted[0].latitude, highlighted[0].longitude];
+    initialCenter = [highlighted[0].longitude, highlighted[0].latitude];
   } else if (coordinates.length) {
-    initialCenter = [(maxLat + minLat) / 2, (maxLong + minLong) / 2];
+    initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
   } else if (usersLocation && usersLocation.data) {
     const {lat, lng} = usersLocation.data.coordinates;
     initialCenter = [lat, lng];

@@ -18,6 +18,7 @@
     "sourceMap": true,
     "importHelpers": true,
     "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     // Without this setting, TS will default to 'classic' resolution mode, leading

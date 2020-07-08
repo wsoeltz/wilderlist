@@ -680,6 +680,9 @@ weather-forecast-feels-like = Feels like
 weather-forecast-network-error = Weather for this location is not available at this time.
 weather-loading-report = Getting your forecast
 
+weather-forecast-temperature = Temperature
+weather-forecast-hourly = Hourly
+
 weather-forecast-cloud-coverage = Cloud coverage: { $clouds }%
 weather-forecast-dewpoint = Dewpoint: { $dew_point }°F
 weather-forecast-humidity = Relative humidity: { $humidity }%
