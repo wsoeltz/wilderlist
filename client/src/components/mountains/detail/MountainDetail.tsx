@@ -331,6 +331,17 @@ const MountainDetail = (props: Props) => {
   if (id === null) {
     header = null;
     body = null;
+    mapProps = {
+      ...mapProps,
+      showNearbyTrails: false,
+      showYourLocation: false,
+      showOtherMountains: false,
+      showCampsites: false,
+      defaultLocationOn: false,
+      defaultMajorTrailsOn: false,
+      defaultCampsitesOn: false,
+      defaultOtherMountainsOn: false,
+    };
   } else if (loading === true) {
     header = <LoadingSpinner />;
     body = null;

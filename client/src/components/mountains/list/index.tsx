@@ -15,6 +15,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
+import {UsersLocation} from '../../../hooks/useUsersLocation';
 import { Routes } from '../../../routing/routes';
 import { searchMountainsDetailLink } from '../../../routing/Utils';
 import {
@@ -209,10 +210,27 @@ const MountainSearchPage = (props: Props) => {
   let GQL_QUERY: any;
   let queryText: React.ReactElement<any> | null;
   let noResultsText: string;
-  if (!searchQuery && mapCenter && usersLocation && usersLocation.loading === false) {
+  if (!searchQuery && (
+      (usersLocation && usersLocation.loading === false && usersLocation.data && usersLocation.data.localCoordinates)
+      || mapCenter)
+    ) {
+    let center: {latitude: number, longitude: number};
+    if (mapCenter) {
+      center = mapCenter;
+    } else {
+      // we know the data is not undefined,
+      // as otherwise the if statement would
+      // have failed
+      const verifiedUsersLocation = usersLocation as UsersLocation;
+      const verifiedUsersData = verifiedUsersLocation.data as {localCoordinates: {lat: number, lng: number}};
+      center = {
+        latitude: verifiedUsersData.localCoordinates.lat,
+        longitude: verifiedUsersData.localCoordinates.lng,
+      };
+    }
     variables = {
-      latitude: mapCenter.latitude,
-      longitude: mapCenter.longitude,
+      latitude: center.latitude,
+      longitude: center.longitude,
       latDistance: 0.45,
       longDistance: 0.55,
     };
@@ -229,8 +247,8 @@ const MountainSearchPage = (props: Props) => {
       ? getDistanceFromLatLonInMiles({
         lat1: coordinates.lat,
         lon1: coordinates.lng,
-        lat2: mapCenter.latitude,
-        lon2: mapCenter.longitude,
+        lat2: center.latitude,
+        lon2: center.longitude,
       }) : null;
     const mapCenterText = centerToYou !== null && centerToYou < 5 && usersLocation.data
       ? usersLocation.data.text : 'the map center';
@@ -306,7 +324,11 @@ const MountainSearchPage = (props: Props) => {
     );
   } else if (dataToUse !== undefined && (searchQuery || mapCenter)) {
     if (!dataToUse.mountains) {
-      list = null;
+      const loadingCards: Array<React.ReactElement<any>> = [];
+      for (let i = 0; i < 3; i++) {
+        loadingCards.push(<GhostMountainCard key={i} />);
+      }
+      list = <>{loadingCards}</>;
     } else {
       const rawMountains = dataToUse.mountains;
       const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.localCoordinates : undefined;
@@ -352,7 +374,11 @@ const MountainSearchPage = (props: Props) => {
       );
     }
   } else {
-    list = null;
+    const loadingCards: Array<React.ReactElement<any>> = [];
+    for (let i = 0; i < 3; i++) {
+      loadingCards.push(<GhostMountainCard key={i} />);
+    }
+    list = <>{loadingCards}</>;
   }
 
   const backButton = !Types.ObjectId.isValid(id)
