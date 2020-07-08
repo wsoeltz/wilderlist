@@ -73,8 +73,8 @@ export interface WeatherDetailDatum {
   wind_deg: number;
   wind_speed: number;
   wind_gust?: number;
-  rain?: number;
-  snow?: number;
+  rain?: {'1h': number};
+  snow?: {'1h': number};
 }
 
 export interface OpenWeatherForecastDatum {

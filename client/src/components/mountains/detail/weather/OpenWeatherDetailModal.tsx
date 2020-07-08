@@ -93,9 +93,9 @@ const WeatherDetailNWSModal = (props: Props) => {
     const hourlyWindGusts = report.wind_gust !== undefined
       ? ', ' + getFluentString('weather-forecast-wind-gust', {wind_gust: report.wind_gust}) : null;
     const hourlyRainVolume = report.rain !== undefined
-      ? ', ' + getFluentString('weather-forecast-rain-volume', {rain: report.rain}) : null;
+      ? ', ' + getFluentString('weather-forecast-rain-volume', {rain: report.rain['1h']}) : null;
     const hourlySnowVolume = report.snow !== undefined
-      ? ', ' + getFluentString('weather-forecast-snow-volume', {snow: report.snow}) : null;
+      ? ', ' + getFluentString('weather-forecast-snow-volume', {snow: report.snow['1h']}) : null;
     return (
       <React.Fragment key={report.dt}>
         <Detail>
