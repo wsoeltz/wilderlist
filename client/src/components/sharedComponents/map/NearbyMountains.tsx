@@ -91,7 +91,7 @@ const Map = (props: Props) => {
       } else if (currentZoom && currentZoom < 7.5) {
         newDistance = 1;
       } else {
-        newDistance = 0.4;
+        newDistance = 0.45;
       }
       setCoords({latitude, longitude, distance: newDistance, limit: 1000});
     }
@@ -120,44 +120,48 @@ const Map = (props: Props) => {
     nearbyMountains = [];
   }
 
-  const features = nearbyMountains.map(point => {
-    const onClick = () => onFeatureClick(point);
-    return (
-      <Feature
-        coordinates={[point.longitude, point.latitude]}
-        onClick={onClick}
-        onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
-        onMouseLeave={(event: any) => togglePointer(event.map, '')}
-        properties={{
-          'icon-image': useGenericFunctionality ? legendSymbolScheme.primary : legendSymbolScheme.secondary,
-        }}
-        key={'' + point.latitude + point.longitude}
-      />
-    );
-  });
+  if (nearbyMountains && nearbyMountains.length) {
+    const features = nearbyMountains.map(point => {
+      const onClick = () => onFeatureClick(point);
+      return (
+        <Feature
+          coordinates={[point.longitude, point.latitude]}
+          onClick={onClick}
+          onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
+          onMouseLeave={(event: any) => togglePointer(event.map, '')}
+          properties={{
+            'icon-image': useGenericFunctionality ? legendSymbolScheme.primary : legendSymbolScheme.secondary,
+          }}
+          key={'' + point.latitude + point.longitude}
+        />
+      );
+    });
 
-  return (
-    <Layer
-      type='symbol'
-      id='nearby-mountains-icon'
-      layout={{
-        'icon-image': ['get', 'icon-image'],
-        'icon-size': {
-          base: 0.5,
-          stops: [
-            [1, 0.1],
-            [5, 0.2],
-            [10, 0.5],
-            [12, 0.7],
-            [17, 1],
-          ],
-        },
-        'icon-allow-overlap': true,
-      }}
-    >
-      {features}
-    </Layer>
-  );
+    return (
+      <Layer
+        type='symbol'
+        id='nearby-mountains-icon'
+        layout={{
+          'icon-image': ['get', 'icon-image'],
+          'icon-size': {
+            base: 0.5,
+            stops: [
+              [1, 0.1],
+              [5, 0.2],
+              [10, 0.5],
+              [12, 0.7],
+              [17, 1],
+            ],
+          },
+          'icon-allow-overlap': coords.distance > 4,
+        }}
+      >
+        {features}
+      </Layer>
+    );
+  } else {
+    return <></>;
+  }
 
 };
 
