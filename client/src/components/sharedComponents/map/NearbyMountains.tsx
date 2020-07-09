@@ -8,7 +8,7 @@ import {
 import usePrevious from '../../../hooks/usePrevious';
 import { Mountain } from '../../../types/graphQLTypes';
 import {getDistanceFromLatLonInMiles} from '../../../Utils';
-import {legendColorScheme, legendSymbolScheme} from './colorScaleColors';
+import {legendSymbolScheme} from './colorScaleColors';
 import {CoordinateWithDates} from './types';
 
 const GET_NEARBY_MOUNTAINS = gql`
@@ -129,7 +129,6 @@ const Map = (props: Props) => {
         onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
         properties={{
-          'circle-color': useGenericFunctionality ? legendColorScheme.primary : legendColorScheme.secondary,
           'icon-image': useGenericFunctionality ? legendSymbolScheme.primary : legendSymbolScheme.secondary,
         }}
         key={'' + point.latitude + point.longitude}
@@ -138,44 +137,26 @@ const Map = (props: Props) => {
   });
 
   return (
-    <>
-      <Layer
-        type='circle'
-        id='nearby-mountains-circle'
-        maxZoom={9.85}
-        paint={{
-          'circle-color': ['get', 'circle-color'],
-          'circle-radius': {
-            base: 5,
-            stops: [
-              [1, 4],
-              [10, 10],
-            ],
-          },
-        }}
-      >
-        {features}
-      </Layer>
-      <Layer
-        type='symbol'
-        id='nearby-mountains-icon'
-        minZoom={9.85}
-        layout={{
-          'icon-image': ['get', 'icon-image'],
-          'icon-size': {
-            base: 0.5,
-            stops: [
-              [1, 0.4],
-              [10, 0.7],
-              [20, 1],
-            ],
-          },
-          'icon-allow-overlap': true,
-        }}
-      >
-        {features}
-      </Layer>
-    </>
+    <Layer
+      type='symbol'
+      id='nearby-mountains-icon'
+      layout={{
+        'icon-image': ['get', 'icon-image'],
+        'icon-size': {
+          base: 0.5,
+          stops: [
+            [1, 0.1],
+            [5, 0.2],
+            [10, 0.5],
+            [12, 0.7],
+            [17, 1],
+          ],
+        },
+        'icon-allow-overlap': true,
+      }}
+    >
+      {features}
+    </Layer>
   );
 
 };
