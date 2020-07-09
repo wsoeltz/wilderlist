@@ -219,6 +219,11 @@ const MountainSearchPage = (props: Props) => {
     let center: {latitude: number, longitude: number};
     if (mapCenter) {
       center = mapCenter;
+    } else if (usersLocation.error) {
+      center = {
+        latitude: 43.20415146,
+        longitude: -71.52769471,
+      };
     } else {
       // we know the data is not undefined,
       // as otherwise the if statement would
