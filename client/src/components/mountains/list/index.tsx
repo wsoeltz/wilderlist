@@ -219,11 +219,6 @@ const MountainSearchPage = (props: Props) => {
     let center: {latitude: number, longitude: number};
     if (mapCenter) {
       center = mapCenter;
-    } else if (usersLocation.error) {
-      center = {
-        latitude: 43.20415146,
-        longitude: -71.52769471,
-      };
     } else {
       // we know the data is not undefined,
       // as otherwise the if statement would
@@ -264,7 +259,6 @@ const MountainSearchPage = (props: Props) => {
       <NoResults
         dangerouslySetInnerHTML={{
           __html: getFluentString('mountain-search-map-text', {
-            'distance': 35,
             'map-center-text': mapCenterText,
           }),
         }}
@@ -288,9 +282,45 @@ const MountainSearchPage = (props: Props) => {
       />
     );
     noResultsText = getFluentString('global-text-value-no-results-found');
+  } else if (usersLocation.data && usersLocation.data.preciseCoordinates && !usersLocation.data.localCoordinates) {
+    variables = {
+      latitude: usersLocation.data.preciseCoordinates.lat,
+      longitude: usersLocation.data.preciseCoordinates.lng,
+      latDistance: 0.3,
+      longDistance: 0.4,
+      limit: 500,
+    };
+    GQL_QUERY = GET_NEARBY_MOUNTAINS;
+    noResultsText = windowWidth < mobileSize
+      ? getFluentString('mountain-search-no-results-mobile', {
+        'map-center-text': usersLocation.data.text,
+      })
+      : getFluentString('mountain-search-no-results-map');
+    queryText = (
+      <NoResults
+        dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-search-map-text', {
+            'map-center-text': usersLocation.data.text,
+          }),
+        }}
+      />
+    );
+  } else if (usersLocation.error) {
+    GQL_QUERY = SEARCH_MOUNTAINS;
+    variables = { searchQuery, pageNumber, nPerPage };
+    queryText = (
+      <NoResults
+        dangerouslySetInnerHTML={{
+          __html: getFluentString('mountain-search-query-desc', {
+            'search-query': searchQuery,
+          }),
+        }}
+      />
+    );
+    noResultsText = getFluentString('global-text-value-no-results-found');
   } else {
     GQL_QUERY = SEARCH_MOUNTAINS;
-    variables = { searchQuery, pageNumber, nPerPage: 0 };
+    variables = { searchQuery: 'search-should-return-no-results-', pageNumber, nPerPage: 1 };
     queryText = null;
     noResultsText = '';
   }
@@ -330,7 +360,10 @@ const MountainSearchPage = (props: Props) => {
         {getFluentString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (dataToUse !== undefined && (searchQuery || mapCenter)) {
+  } else if (dataToUse !== undefined && (searchQuery || mapCenter
+      || (usersLocation.error ||
+      (usersLocation.data && usersLocation.data.preciseCoordinates && !usersLocation.data.localCoordinates))
+    )) {
     if (!dataToUse.mountains) {
       const loadingCards: Array<React.ReactElement<any>> = [];
       for (let i = 0; i < 3; i++) {
