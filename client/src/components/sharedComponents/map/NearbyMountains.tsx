@@ -120,44 +120,48 @@ const Map = (props: Props) => {
     nearbyMountains = [];
   }
 
-  const features = nearbyMountains.map(point => {
-    const onClick = () => onFeatureClick(point);
-    return (
-      <Feature
-        coordinates={[point.longitude, point.latitude]}
-        onClick={onClick}
-        onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
-        onMouseLeave={(event: any) => togglePointer(event.map, '')}
-        properties={{
-          'icon-image': useGenericFunctionality ? legendSymbolScheme.primary : legendSymbolScheme.secondary,
-        }}
-        key={'' + point.latitude + point.longitude}
-      />
-    );
-  });
+  if (nearbyMountains && nearbyMountains.length) {
+    const features = nearbyMountains.map(point => {
+      const onClick = () => onFeatureClick(point);
+      return (
+        <Feature
+          coordinates={[point.longitude, point.latitude]}
+          onClick={onClick}
+          onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
+          onMouseLeave={(event: any) => togglePointer(event.map, '')}
+          properties={{
+            'icon-image': useGenericFunctionality ? legendSymbolScheme.primary : legendSymbolScheme.secondary,
+          }}
+          key={'' + point.latitude + point.longitude}
+        />
+      );
+    });
 
-  return (
-    <Layer
-      type='symbol'
-      id='nearby-mountains-icon'
-      layout={{
-        'icon-image': ['get', 'icon-image'],
-        'icon-size': {
-          base: 0.5,
-          stops: [
-            [1, 0.1],
-            [5, 0.2],
-            [10, 0.5],
-            [12, 0.7],
-            [17, 1],
-          ],
-        },
-        'icon-allow-overlap': coords.distance > 4,
-      }}
-    >
-      {features}
-    </Layer>
-  );
+    return (
+      <Layer
+        type='symbol'
+        id='nearby-mountains-icon'
+        layout={{
+          'icon-image': ['get', 'icon-image'],
+          'icon-size': {
+            base: 0.5,
+            stops: [
+              [1, 0.1],
+              [5, 0.2],
+              [10, 0.5],
+              [12, 0.7],
+              [17, 1],
+            ],
+          },
+          'icon-allow-overlap': coords.distance > 4,
+        }}
+      >
+        {features}
+      </Layer>
+    );
+  } else {
+    return <></>;
+  }
 
 };
 
