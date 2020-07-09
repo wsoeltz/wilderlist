@@ -454,7 +454,7 @@ user-notes-tooltip = Your personal notes are private to your account and are not
 mountain-search-no-results-mobile = No mountains found near { $map-center-text }. Use the search above or go to the map view to explore.
 mountain-search-no-results-map = No mountains found here. Try moving the map or using the search above.
 mountain-search-query-desc = Showing mountains for query <strong>{ $search-query }</strong>.
-mountain-search-map-text = Showing mountains within <strong>{ $distance } miles</strong> of { $map-center-text }
+mountain-search-map-text = Showing mountains near { $map-center-text }
 mountain-search-mobile-nav-list = List View
 mountain-search-mobile-nav-map = Map View
 

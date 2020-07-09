@@ -27,7 +27,7 @@ const getTrailsData = async (
   pushToCache: (input: CachedDatum) => void,
 ) => {
   try {
-    const res = await getTrails({params: {lat, lon, maxDistance: 70}});
+    const res = await getTrails({params: {lat, lon, maxDistance: 150}});
     if (res && res.data && res.data.trails) {
       const rawData: TrailsDatum[] = res.data.trails;
       const cleanedTrailData: Trail[] = rawData.map(trailDatum => {

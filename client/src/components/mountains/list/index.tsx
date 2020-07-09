@@ -84,12 +84,13 @@ const SEARCH_MOUNTAINS = gql`
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
-    $latitude: Float!, $longitude: Float!, $latDistance: Float!, $longDistance: Float!) {
+    $latitude: Float!, $longitude: Float!, $latDistance: Float!, $longDistance: Float!, $limit: Int!) {
   mountains: nearbyMountains(
     latitude: $latitude,
     longitude: $longitude,
     latDistance: $latDistance,
     longDistance: $longDistance,
+    limit: $limit,
   ) {
     ${baseQuery}
   }
@@ -110,6 +111,7 @@ interface LocationVariables {
   longitude: number;
   latDistance: number;
   longDistance: number;
+  limit: number;
 }
 type Variables = SearchVariables | LocationVariables;
 
@@ -231,8 +233,9 @@ const MountainSearchPage = (props: Props) => {
     variables = {
       latitude: center.latitude,
       longitude: center.longitude,
-      latDistance: 0.45,
-      longDistance: 0.55,
+      latDistance: 0.3,
+      longDistance: 0.4,
+      limit: 500,
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
     let coordinates: {lat: number, lng: number} | undefined;

@@ -312,6 +312,8 @@ const Map = (props: Props) => {
     }
   }, [mapLegendRef, setMapLegendHeight]);
 
+  const [currentZoom, setCurrentZoom] = useState<number | undefined>(undefined);
+
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
     [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
@@ -353,6 +355,8 @@ const Map = (props: Props) => {
       if (map) {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
         updateCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+        const zoom = map.getZoom();
+        setCurrentZoom(zoom);
       }
     }, 250);
 
@@ -513,6 +517,7 @@ const Map = (props: Props) => {
           showOtherMountains={showOtherMountains}
           otherMountainsOn={otherMountainsOn}
           useGenericFunctionality={useGenericFunctionality}
+          currentZoom={currentZoom}
         />
         <PrimaryMountains
           coordinates={coordinates}

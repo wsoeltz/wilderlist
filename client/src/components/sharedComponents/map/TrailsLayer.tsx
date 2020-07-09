@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Feature,
   Layer,
@@ -7,6 +7,7 @@ import useTrails from '../../../hooks/useTrailData';
 import {
   TrailType,
 } from '../../../utilities/getTrails';
+import {getDistanceFromLatLonInMiles} from '../../../Utils';
 import {
   PopupData,
   PopupDataTypes,
@@ -26,9 +27,25 @@ const TrailsLayer = (props: Props) => {
     majorTrailsOn, togglePointer,
   } = props;
 
+  const [coords, setCoords] = useState<{latitude: number, longitude: number}>({
+    latitude: parseFloat(centerCoords[0]), longitude: parseFloat(centerCoords[1]),
+  });
+
+  useEffect(() => {
+    const distance = getDistanceFromLatLonInMiles({
+      lat1: coords.latitude,
+      lon1: coords.longitude,
+      lat2: parseFloat(centerCoords[0]),
+      lon2: parseFloat(centerCoords[1]),
+    });
+    if (distance > 80) {
+      setCoords({latitude: parseFloat(centerCoords[0]), longitude: parseFloat(centerCoords[1])});
+    }
+  }, [centerCoords, coords]);
+
   const trailData = useTrails({
-    lat: parseFloat(centerCoords[0]),
-    lon: parseFloat(centerCoords[1]),
+    lat: coords.latitude,
+    lon: coords.longitude,
     active: showNearbyTrails === true && majorTrailsOn,
   });
 
