@@ -204,8 +204,8 @@ const Map = (props: Props) => {
     initialCenter = [highlighted[0].longitude, highlighted[0].latitude];
   } else if (coordinates.length) {
     initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
-  } else if (usersLocation && usersLocation.data) {
-    const {lat, lng} = usersLocation.data.coordinates;
+  } else if (usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
+    const {lat, lng} = usersLocation.data.localCoordinates;
     initialCenter = [lat, lng];
   } else {
     initialCenter = [43.20415146, -71.52769471];
@@ -252,7 +252,8 @@ const Map = (props: Props) => {
     }
     if (newValue === true &&
         usersLocation &&
-        !usersLocation.isPrecise &&
+        usersLocation.data &&
+        !usersLocation.data.preciseCoordinates &&
         usersLocation.requestAccurateLocation
       ) {
       usersLocation.requestAccurateLocation();
@@ -281,14 +282,14 @@ const Map = (props: Props) => {
     if (usersLocation &&
         usersLocation.loading === false &&
         usersLocation.data !== undefined &&
-        usersLocation.data.coordinates !== undefined &&
+        usersLocation.data.preciseCoordinates !== undefined &&
         destination !== undefined) {
       const cachedData = directionsCache.find(({key}) => key === destination.key);
       if (cachedData) {
         setDirectionsData(cachedData);
       } else {
         getDrivingDistances(
-          usersLocation.data.coordinates.lat, usersLocation.data.coordinates.lng,
+          usersLocation.data.preciseCoordinates.lat, usersLocation.data.preciseCoordinates.lng,
           destination.latitude, destination.longitude)
         .then(res => {
           if (res) {
@@ -310,6 +311,8 @@ const Map = (props: Props) => {
       setMapLegendHeight(mapLegendRef.current.offsetHeight);
     }
   }, [mapLegendRef, setMapLegendHeight]);
+
+  const [currentZoom, setCurrentZoom] = useState<number | undefined>(undefined);
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
@@ -352,6 +355,8 @@ const Map = (props: Props) => {
       if (map) {
         const {lat, lng}: {lat: number, lng: number} = map.getCenter();
         updateCenterCoords([lat.toFixed(latLngDecimalPoints), lng.toFixed(latLngDecimalPoints)]);
+        const zoom = map.getZoom();
+        setCurrentZoom(zoom);
       }
     }, 250);
 
@@ -392,11 +397,11 @@ const Map = (props: Props) => {
             setFitBounds([[coords.minLong, coords.minLat], [coords.maxLong, coords.maxLat]]);
           }
         } else if (previousUserLocation !== undefined && usersLocation !== undefined) {
-          if (usersLocation.data !== undefined && (
+          if (usersLocation.data !== undefined && usersLocation.data.localCoordinates && (
                previousUserLocation.data === undefined ||
                (previousUserLocation.data.text !== usersLocation.data.text)
              )) {
-            const {lat, lng}: {lat: number, lng: number} = usersLocation.data.coordinates;
+            const {lat, lng}: {lat: number, lng: number} = usersLocation.data.localCoordinates;
             setFitBounds([
               [lng - 0.05, lat + 0.05],
               [lng + 0.05, lat - 0.05],
@@ -512,6 +517,7 @@ const Map = (props: Props) => {
           showOtherMountains={showOtherMountains}
           otherMountainsOn={otherMountainsOn}
           useGenericFunctionality={useGenericFunctionality}
+          currentZoom={currentZoom}
         />
         <PrimaryMountains
           coordinates={coordinates}

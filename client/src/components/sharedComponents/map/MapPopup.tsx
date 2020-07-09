@@ -14,6 +14,7 @@ import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import { userAllowsPreciseLocation } from '../../../hooks/useUsersLocation';
 import {
   friendsProfileWithPeakListWithMountainDetailLink,
   listDetailWithMountainDetailLink,
@@ -316,14 +317,18 @@ const MapPopup = (props: Props) => {
   };
 
   const getDrivingData = ({id, latitude, longitude}: {id: string, latitude: number, longitude: number}) => {
+    const allowsPreciseLocation = userAllowsPreciseLocation();
     setDestination({key: id, latitude, longitude});
-    if (!yourLocationOn) {
+    if (!yourLocationOn || !allowsPreciseLocation) {
       setYourLocationOn(true);
-      if (usersLocation &&
-          !usersLocation.isPrecise &&
+      if (usersLocation && usersLocation.data &&
+          !usersLocation.data.preciseCoordinates &&
           usersLocation.requestAccurateLocation) {
         usersLocation.requestAccurateLocation();
       }
+    }
+    if (!allowsPreciseLocation) {
+      alert('Please enable location services in order to get directions.');
     }
   };
 

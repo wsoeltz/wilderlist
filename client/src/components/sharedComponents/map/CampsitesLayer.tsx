@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Feature,
   Layer,
 } from 'react-mapbox-gl';
 import useCampsites from '../../../hooks/useCampsiteData';
+import {getDistanceFromLatLonInMiles} from '../../../Utils';
 import {
   PopupData,
   PopupDataTypes,
@@ -23,9 +24,25 @@ const CampsiteLayer = (props: Props) => {
     campsitesOn, togglePointer,
   } = props;
 
+  const [coords, setCoords] = useState<{latitude: number, longitude: number}>({
+    latitude: parseFloat(centerCoords[0]), longitude: parseFloat(centerCoords[1]),
+  });
+
+  useEffect(() => {
+    const distance = getDistanceFromLatLonInMiles({
+      lat1: coords.latitude,
+      lon1: coords.longitude,
+      lat2: parseFloat(centerCoords[0]),
+      lon2: parseFloat(centerCoords[1]),
+    });
+    if (distance > 50) {
+      setCoords({latitude: parseFloat(centerCoords[0]), longitude: parseFloat(centerCoords[1])});
+    }
+  }, [centerCoords, coords]);
+
   const campsiteData = useCampsites({
-    lat: parseFloat(centerCoords[0]),
-    lon: parseFloat(centerCoords[1]),
+    lat: coords.latitude,
+    lon: coords.longitude,
     active: showCampsites === true && campsitesOn,
   });
   const campsites: Array<React.ReactElement<any>> = [];

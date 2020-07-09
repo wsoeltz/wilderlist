@@ -15,6 +15,7 @@ import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
+import {UsersLocation} from '../../../hooks/useUsersLocation';
 import { Routes } from '../../../routing/routes';
 import { searchMountainsDetailLink } from '../../../routing/Utils';
 import {
@@ -83,12 +84,13 @@ const SEARCH_MOUNTAINS = gql`
 
 const GET_NEARBY_MOUNTAINS = gql`
   query getNearbyMountains(
-    $latitude: Float!, $longitude: Float!, $latDistance: Float!, $longDistance: Float!) {
+    $latitude: Float!, $longitude: Float!, $latDistance: Float!, $longDistance: Float!, $limit: Int!) {
   mountains: nearbyMountains(
     latitude: $latitude,
     longitude: $longitude,
     latDistance: $latDistance,
     longDistance: $longDistance,
+    limit: $limit,
   ) {
     ${baseQuery}
   }
@@ -109,6 +111,7 @@ interface LocationVariables {
   longitude: number;
   latDistance: number;
   longDistance: number;
+  limit: number;
 }
 type Variables = SearchVariables | LocationVariables;
 
@@ -149,8 +152,8 @@ const MountainSearchPage = (props: Props) => {
     }
   };
 
-  const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.coordinates
-    ? {latitude: usersLocation.data.coordinates.lat, longitude: usersLocation.data.coordinates.lng}
+  const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.localCoordinates
+    ? {latitude: usersLocation.data.localCoordinates.lat, longitude: usersLocation.data.localCoordinates.lng}
     : undefined;
 
   const [mapCenter, setMapCenter] = useState<{latitude: number, longitude: number} | undefined>(initialMapCenter);
@@ -183,8 +186,8 @@ const MountainSearchPage = (props: Props) => {
   }, [query, page]);
 
   useEffect(() => {
-    if (mapCenter === undefined && usersLocation && usersLocation.data && usersLocation.data.coordinates) {
-      const {lat, lng} = usersLocation.data.coordinates;
+    if (mapCenter === undefined && usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
+      const {lat, lng} = usersLocation.data.localCoordinates;
       setMapCenter({latitude: lat, longitude: lng});
     }
   }, [usersLocation, mapCenter]);
@@ -209,20 +212,46 @@ const MountainSearchPage = (props: Props) => {
   let GQL_QUERY: any;
   let queryText: React.ReactElement<any> | null;
   let noResultsText: string;
-  if (!searchQuery && mapCenter && usersLocation && usersLocation.loading === false) {
+  if (!searchQuery && (
+      (usersLocation && usersLocation.loading === false && usersLocation.data && usersLocation.data.localCoordinates)
+      || mapCenter)
+    ) {
+    let center: {latitude: number, longitude: number};
+    if (mapCenter) {
+      center = mapCenter;
+    } else {
+      // we know the data is not undefined,
+      // as otherwise the if statement would
+      // have failed
+      const verifiedUsersLocation = usersLocation as UsersLocation;
+      const verifiedUsersData = verifiedUsersLocation.data as {localCoordinates: {lat: number, lng: number}};
+      center = {
+        latitude: verifiedUsersData.localCoordinates.lat,
+        longitude: verifiedUsersData.localCoordinates.lng,
+      };
+    }
     variables = {
-      latitude: mapCenter.latitude,
-      longitude: mapCenter.longitude,
-      latDistance: 0.45,
-      longDistance: 0.55,
+      latitude: center.latitude,
+      longitude: center.longitude,
+      latDistance: 0.3,
+      longDistance: 0.4,
+      limit: 500,
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
-    const centerToYou = usersLocation.data
+    let coordinates: {lat: number, lng: number} | undefined;
+    if (usersLocation.data) {
+      coordinates = usersLocation.data.preciseCoordinates
+        ? usersLocation.data.preciseCoordinates
+        : usersLocation.data.localCoordinates;
+    } else {
+      coordinates = undefined;
+    }
+    const centerToYou = coordinates
       ? getDistanceFromLatLonInMiles({
-        lat1: usersLocation.data.coordinates.lat,
-        lon1: usersLocation.data.coordinates.lng,
-        lat2: mapCenter.latitude,
-        lon2: mapCenter.longitude,
+        lat1: coordinates.lat,
+        lon1: coordinates.lng,
+        lat2: center.latitude,
+        lon2: center.longitude,
       }) : null;
     const mapCenterText = centerToYou !== null && centerToYou < 5 && usersLocation.data
       ? usersLocation.data.text : 'the map center';
@@ -298,10 +327,14 @@ const MountainSearchPage = (props: Props) => {
     );
   } else if (dataToUse !== undefined && (searchQuery || mapCenter)) {
     if (!dataToUse.mountains) {
-      list = null;
+      const loadingCards: Array<React.ReactElement<any>> = [];
+      for (let i = 0; i < 3; i++) {
+        loadingCards.push(<GhostMountainCard key={i} />);
+      }
+      list = <>{loadingCards}</>;
     } else {
       const rawMountains = dataToUse.mountains;
-      const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.coordinates : undefined;
+      const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.localCoordinates : undefined;
       const extendedMountains: MountainDatumWithDistance[] = rawMountains.map(mtn => {
         const distanceToUser = usersCoords ? getDistanceFromLatLonInMiles({
           lat1: usersCoords.lat, lon1: usersCoords.lng,
@@ -344,7 +377,11 @@ const MountainSearchPage = (props: Props) => {
       );
     }
   } else {
-    list = null;
+    const loadingCards: Array<React.ReactElement<any>> = [];
+    for (let i = 0; i < 3; i++) {
+      loadingCards.push(<GhostMountainCard key={i} />);
+    }
+    list = <>{loadingCards}</>;
   }
 
   const backButton = !Types.ObjectId.isValid(id)

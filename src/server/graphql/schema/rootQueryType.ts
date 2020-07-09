@@ -343,13 +343,16 @@ const RootQuery = new GraphQLObjectType({
         longitude: { type: GraphQLNonNull(GraphQLFloat) },
         latDistance: { type: GraphQLNonNull(GraphQLFloat) },
         longDistance: { type: GraphQLNonNull(GraphQLFloat) },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
       },
-      resolve(parentValue, { latitude, longitude, latDistance, longDistance }:
-        {latitude: number, longitude: number, latDistance: number, longDistance: number}) {
+      resolve(parentValue, { latitude, longitude, latDistance, longDistance, limit }:
+        {latitude: number, longitude: number, latDistance: number, longDistance: number, limit: number}) {
         return Mountain.find({
           latitude: { $gt: latitude - latDistance, $lt: latitude + latDistance },
           longitude: { $gt: longitude - longDistance, $lt: longitude + longDistance },
-        });
+        })
+        .limit(limit);
+
       },
     },
     flaggedMountains: {

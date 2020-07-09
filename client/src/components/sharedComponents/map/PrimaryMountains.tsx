@@ -27,7 +27,7 @@ const PrimaryMountains = (props: Props) => {
 
   const features = coordinates.map(point => {
     const onClick = () => onFeatureClick(point);
-    const {circleColor, iconImage} = getImageAndIcon({
+    const {iconImage} = getImageAndIcon({
       colorScaleColors, point, createOrEditMountain,
       highlighted, colorScaleSymbols, popUpDataType: PopupDataTypes.Coordinate,
     });
@@ -38,7 +38,6 @@ const PrimaryMountains = (props: Props) => {
         onMouseEnter={(event: any) => togglePointer(event.map, 'pointer')}
         onMouseLeave={(event: any) => togglePointer(event.map, '')}
         properties={{
-          'circle-color': circleColor,
           'icon-image': iconImage,
         }}
         key={'' + point.latitude + point.longitude}
@@ -47,44 +46,26 @@ const PrimaryMountains = (props: Props) => {
   });
 
   return (
-    <>
-      <Layer
-          type='circle'
-          id='marker-circle'
-          maxZoom={9.85}
-          paint={{
-            'circle-color': ['get', 'circle-color'],
-            'circle-radius': {
-              base: 5,
-              stops: [
-                [1, 4],
-                [10, 10],
-              ],
-            },
-          }}
-        >
-          {features}
-        </Layer>
-        <Layer
-          type='symbol'
-          id='marker-icon'
-          minZoom={9.85}
-          layout={{
-            'icon-image': ['get', 'icon-image'],
-            'icon-size': {
-              base: 0.5,
-              stops: [
-                [1, 0.4],
-                [10, 0.7],
-                [20, 1],
-              ],
-            },
-            'icon-allow-overlap': true,
-          }}
-        >
-          {features}
-        </Layer>
-    </>
+    <Layer
+      type='symbol'
+      id='marker-icon'
+      layout={{
+        'icon-image': ['get', 'icon-image'],
+        'icon-size': {
+          base: 0.5,
+          stops: [
+            [1, 0.1],
+            [5, 0.2],
+            [10, 0.5],
+            [12, 0.7],
+            [17, 1],
+          ],
+        },
+        'icon-allow-overlap': true,
+      }}
+    >
+      {features}
+    </Layer>
   );
 };
 

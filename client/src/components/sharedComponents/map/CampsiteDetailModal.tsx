@@ -51,6 +51,16 @@ import {
   Seperator,
 } from './styleUtils';
 
+const cleanText = (text: string | null) => {
+  if (!text) {
+    return null;
+  }
+  return text
+            .replace(new RegExp('&amp;', 'g'), '&')
+            .replace(new RegExp('&#39;', 'g'), '\'')
+            .replace(new RegExp('#39;', 'g'), '\'');
+};
+
 const LoadingContainer = styled.div`
   width: 350px;
   height: 350px;
@@ -67,7 +77,7 @@ interface Props {
   getDirections: () => void;
 }
 
-const TrailDetailModal = (props: Props) => {
+const CampsiteDetailModal = (props: Props) => {
   const {
     onClose, campsiteDatum, directionsData, getDirections,
   } = props;
@@ -108,7 +118,7 @@ const TrailDetailModal = (props: Props) => {
   const hours = directionsData !== undefined && directionsData.hours ? directionsData.hours + 'hrs' : '';
   const minutes = directionsData !== undefined && directionsData.minutes ? directionsData.minutes + 'm' : '';
   const directions = directionsData !== undefined && usersLocation !== undefined &&
-    usersLocation.data && usersLocation.data.coordinates
+    usersLocation.data && usersLocation.data.preciseCoordinates
     ? (
       <DirectionsContent>
         <DirectionsText>
@@ -119,8 +129,8 @@ const TrailDetailModal = (props: Props) => {
           <GoogleMapsDirectionsLink
             lat={latitude}
             long={longitude}
-            userLat={usersLocation.data.coordinates.lat}
-            userLong={usersLocation.data.coordinates.lng}
+            userLat={usersLocation.data.preciseCoordinates.lat}
+            userLong={usersLocation.data.preciseCoordinates.lng}
           />
         </GoogleButton>
       </DirectionsContent>
@@ -165,16 +175,17 @@ const TrailDetailModal = (props: Props) => {
     } else {
       descriptionText = null;
     }
+    const cleanedDescriptionText = cleanText(descriptionText);
     const sourceText = source === Sources.ReserveAmerica ? 'ReserveAmerica.com' : 'Recreation.gov';
 
-    const description = descriptionText ? (
+    const description = cleanedDescriptionText ? (
       <Section>
         <DetailBoxTitle>
           <BasicIconInText icon={faAlignLeft} />
           {getFluentString('global-text-value-description')} via {sourceText}
         </DetailBoxTitle>
         <DetailBox>
-          <div dangerouslySetInnerHTML={{__html: descriptionText}} />
+          <div dangerouslySetInnerHTML={{__html: cleanedDescriptionText}} />
         </DetailBox>
       </Section>
     ) : null;
@@ -328,4 +339,4 @@ const TrailDetailModal = (props: Props) => {
   );
 };
 
-export default TrailDetailModal;
+export default CampsiteDetailModal;

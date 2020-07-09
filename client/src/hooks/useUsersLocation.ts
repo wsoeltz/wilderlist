@@ -38,7 +38,7 @@ const getStateData = async (abbr: string) => {
         `/api/state-by-abbreviation?abbr=${abbr}`,
       );
       if (res && res.data && res.data[0]) {
-        return res.data[0]._id;
+        return {id: res.data[0]._id, name: res.data[0]._id};
       }
     }
     return null;
@@ -49,8 +49,8 @@ const getStateData = async (abbr: string) => {
 };
 
 interface GeoPluginDatum {
-  geoplugin_areaCode: string;
-  geoplugin_city: string;
+  geoplugin_areaCode: string | '';
+  geoplugin_city: string | '';
   geoplugin_continentCode: string;
   geoplugin_continentName: string;
   geoplugin_countryCode: string;
@@ -79,13 +79,13 @@ interface LocationResponse {
   loading: boolean;
   error: undefined | {message: string};
   data: undefined | {
-    coordinates: {lat: number, lng: number};
+    localCoordinates: {lat: number, lng: number} | undefined;
+    preciseCoordinates: {lat: number, lng: number} | undefined;
     text: string;
     city: string | null;
     stateAbbreviation: string | null;
     stateId: string | null;
   };
-  isPrecise: boolean;
 }
 
 export interface UsersLocation extends LocationResponse {
@@ -95,22 +95,28 @@ export interface UsersLocation extends LocationResponse {
 export default (): UsersLocation => {
   const [mounted, setMounted] = useState<boolean>(false);
   const [output, setOuput] = useState<LocationResponse>({
-    loading: true, error: undefined, data: undefined, isPrecise: false,
+    loading: true, error: undefined, data: undefined,
   });
 
   const requestAccurateLocation = () => {
     const currentData = output && output.data ? {...output.data} : undefined;
     const onSuccess = ({coords: {latitude, longitude}}: Position) => {
       const text = 'your location';
-      const coordinates = {lat: latitude, lng: longitude};
+      const preciseCoordinates = {lat: latitude, lng: longitude};
       const city = currentData && currentData.city ? currentData.city : null;
       const stateAbbreviation = currentData && currentData.city ? currentData.city : null;
       const stateId = currentData && currentData.city ? currentData.city : null;
       setOuput({
         loading: false,
         error: undefined,
-        data: { text, coordinates, city, stateAbbreviation, stateId },
-        isPrecise: true,
+        data: {
+          text,
+          localCoordinates: currentData && currentData.localCoordinates ? currentData.localCoordinates : undefined,
+          preciseCoordinates,
+          city,
+          stateAbbreviation,
+          stateId,
+        },
       });
       setUserAllowsPreciseLocation(true);
     };
@@ -119,7 +125,6 @@ export default (): UsersLocation => {
         data: currentData,
         error: {message: 'You must enable location services for directions'},
         loading: false,
-        isPrecise: false,
       });
       setUserAllowsPreciseLocation(false);
     };
@@ -128,10 +133,9 @@ export default (): UsersLocation => {
         data: currentData,
         error: {message: 'Geolocation is not supported by your browser'},
         loading: false,
-        isPrecise: false,
       });
     } else {
-      setOuput({loading: true, error: undefined, data: output.data, isPrecise: false});
+      setOuput({loading: true, error: undefined, data: output.data});
       navigator.geolocation.getCurrentPosition(onSuccess, onError);
     }
   };
@@ -147,29 +151,43 @@ export default (): UsersLocation => {
           const {
             geoplugin_latitude, geoplugin_longitude,
             geoplugin_city, geoplugin_regionCode,
+            geoplugin_region, geoplugin_regionName,
           } = res.data;
-          const stateId = await getStateData(geoplugin_regionCode);
+          const stateDatum = await getStateData(geoplugin_regionCode);
+          let stateName: string;
+          if (stateDatum) {
+            stateName = stateDatum.name;
+          } else if (geoplugin_region) {
+            stateName = geoplugin_region;
+          } else if (geoplugin_regionName) {
+            stateName = geoplugin_regionName;
+          } else if (geoplugin_regionCode) {
+            stateName = geoplugin_regionCode;
+          } else {
+            stateName = parseFloat(geoplugin_latitude).toFixed(3) + ', ' + parseFloat(geoplugin_longitude).toFixed(3);
+          }
+          const text = geoplugin_city && geoplugin_city.length
+            ? geoplugin_city + ', ' + geoplugin_regionCode : stateName;
           setOuput({
             loading: false,
             error: undefined,
             data: {
-              coordinates: {
+              localCoordinates: {
                 lat: parseFloat(geoplugin_latitude),
                 lng: parseFloat(geoplugin_longitude),
               },
-              text: geoplugin_city + ', ' + geoplugin_regionCode,
+              preciseCoordinates: undefined,
+              text,
               stateAbbreviation: geoplugin_regionCode,
               city: geoplugin_city,
-              stateId,
+              stateId: stateDatum ? stateDatum.id : null,
             },
-            isPrecise: false,
           });
         } else {
           setOuput({
             loading: false,
             error: {message: 'Unable to get users location'},
             data: undefined,
-            isPrecise: false,
           });
         }
       } catch (e) {
@@ -178,7 +196,6 @@ export default (): UsersLocation => {
           loading: false,
           error: {message: e},
           data: undefined,
-          isPrecise: false,
         });
       }
     };
