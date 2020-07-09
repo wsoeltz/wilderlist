@@ -51,6 +51,16 @@ import {
   Seperator,
 } from './styleUtils';
 
+const cleanText = (text: string | null) => {
+  if (!text) {
+    return null;
+  }
+  return text
+            .replace(new RegExp('&amp;', 'g'), '&')
+            .replace(new RegExp('&#39;', 'g'), '\'')
+            .replace(new RegExp('#39;', 'g'), '\'');
+};
+
 const LoadingContainer = styled.div`
   width: 350px;
   height: 350px;
@@ -165,16 +175,17 @@ const CampsiteDetailModal = (props: Props) => {
     } else {
       descriptionText = null;
     }
+    const cleanedDescriptionText = cleanText(descriptionText);
     const sourceText = source === Sources.ReserveAmerica ? 'ReserveAmerica.com' : 'Recreation.gov';
 
-    const description = descriptionText ? (
+    const description = cleanedDescriptionText ? (
       <Section>
         <DetailBoxTitle>
           <BasicIconInText icon={faAlignLeft} />
           {getFluentString('global-text-value-description')} via {sourceText}
         </DetailBoxTitle>
         <DetailBox>
-          <div dangerouslySetInnerHTML={{__html: descriptionText}} />
+          <div dangerouslySetInnerHTML={{__html: cleanedDescriptionText}} />
         </DetailBox>
       </Section>
     ) : null;
