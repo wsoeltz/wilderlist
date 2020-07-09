@@ -91,7 +91,7 @@ const Map = (props: Props) => {
       } else if (currentZoom && currentZoom < 7.5) {
         newDistance = 1;
       } else {
-        newDistance = 0.4;
+        newDistance = 0.45;
       }
       setCoords({latitude, longitude, distance: newDistance, limit: 1000});
     }
@@ -152,7 +152,7 @@ const Map = (props: Props) => {
             [17, 1],
           ],
         },
-        'icon-allow-overlap': true,
+        'icon-allow-overlap': coords.distance > 4,
       }}
     >
       {features}
