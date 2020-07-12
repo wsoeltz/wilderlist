@@ -166,18 +166,18 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
               const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
               if (exclusiveRegions && exclusiveRegions[0]) {
                 return exclusiveRegions[0].name;
-              }
-            } else if (inclusiveRegions.length === 0) {
-              // if there are no inclusive regions
-              if (nonNullRegions.length === 2) {
-                // if only 2 regions, show them both
-                return nonNullRegions[0].name + ' & ' + nonNullRegions[1].name;
-              } else if (nonNullRegions.length === 3) {
-                // if only 3 regions, show them all
-                return nonNullRegions[0].name + ', ' + nonNullRegions[1].name + ' & ' + nonNullRegions[2].name;
-              } else {
-                // otherwise just say Across the US
-                return 'Across the US';
+              } else if (inclusiveRegions.length === 0) {
+                // if there are no inclusive regions
+                if (nonNullRegions.length === 2) {
+                  // if only 2 regions, show them both
+                  return nonNullRegions[0].name + ' & ' + nonNullRegions[1].name;
+                } else if (nonNullRegions.length === 3) {
+                  // if only 3 regions, show them all
+                  return nonNullRegions[0].name + ', ' + nonNullRegions[1].name + ' & ' + nonNullRegions[2].name;
+                } else {
+                  // otherwise just say Across the US
+                  return 'Across the US';
+                }
               }
             }
           }
