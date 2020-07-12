@@ -103,8 +103,8 @@ const Dashboard = (props: Props) => {
 
   const { windowWidth, usersLocation } = useContext(AppContext);
 
-  const usersState = usersLocation && usersLocation.data && usersLocation.data.stateAbbreviation
-    ? usersLocation.data.stateAbbreviation : undefined;
+  const usersState = usersLocation.data
+    ? usersLocation.data : undefined;
 
   const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
 
@@ -129,7 +129,7 @@ const Dashboard = (props: Props) => {
     const { user } = listsData;
     const { peakLists } = user;
     const suggestedLists = peakLists.length < 3 && usersState !== undefined
-      ? <SuggestedLists userId={userId} usersState={usersState} /> : null;
+      ? <SuggestedLists userId={userId} usersLocationData={usersState} /> : null;
     if (peakLists.length === 0) {
       peakListsList = (
         <div>

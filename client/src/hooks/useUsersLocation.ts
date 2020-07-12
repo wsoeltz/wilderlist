@@ -75,17 +75,19 @@ interface GeoPluginDatum {
   geoplugin_timezone: string;
 }
 
+export interface LocationDatum {
+  localCoordinates: {lat: number, lng: number} | undefined;
+  preciseCoordinates: {lat: number, lng: number} | undefined;
+  text: string;
+  city: string | null;
+  stateAbbreviation: string | null;
+  stateId: string | null;
+}
+
 interface LocationResponse {
   loading: boolean;
   error: undefined | {message: string};
-  data: undefined | {
-    localCoordinates: {lat: number, lng: number} | undefined;
-    preciseCoordinates: {lat: number, lng: number} | undefined;
-    text: string;
-    city: string | null;
-    stateAbbreviation: string | null;
-    stateId: string | null;
-  };
+  data: undefined | LocationDatum;
 }
 
 export interface UsersLocation extends LocationResponse {
@@ -104,8 +106,8 @@ export default (): UsersLocation => {
       const text = 'your location';
       const preciseCoordinates = {lat: latitude, lng: longitude};
       const city = currentData && currentData.city ? currentData.city : null;
-      const stateAbbreviation = currentData && currentData.city ? currentData.city : null;
-      const stateId = currentData && currentData.city ? currentData.city : null;
+      const stateAbbreviation = currentData && currentData.stateAbbreviation ? currentData.stateAbbreviation : null;
+      const stateId = currentData && currentData.stateId ? currentData.stateId : null;
       setOuput({
         loading: false,
         error: undefined,
