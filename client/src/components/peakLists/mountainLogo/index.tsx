@@ -133,7 +133,9 @@ const MountainLogo = (props: Props) => {
   const { id, title, shortName, variant, active, completed } = props;
   const titleId = 'mountainLogoTitle-' + id;
   const colorSet = active === true || active === null ? getColorSetFromVariant(variant) : colorSetGray;
-  const shortNameSize = shortName.length > 7 ? '0.7rem' : '1rem';
+  const numberOfWs = shortName.split('').filter(char => char.toLowerCase() === 'w').length;
+  const wMultiplier = 1 - (numberOfWs * 0.02);
+  const shortNameSize = shortName.length > 7 ? 0.7 * wMultiplier : 1 * wMultiplier;
   const shortNameStroke = shortName.length > 7 ? '0.4' : '0.7';
   const variantColor = (completed === false || active === false) ? colorSet.primary : '#fff';
   const variantStroke = (completed === false || active === false) ? 'none' : colorSet.primary;
@@ -193,7 +195,7 @@ const MountainLogo = (props: Props) => {
             colorSet={colorSet}
             viewBox='0 0 56 18'
             textAnchor='middle'
-            shortNameSize={shortNameSize}
+            shortNameSize={shortNameSize + 'rem'}
             shortNameStroke={shortNameStroke}
           >
             <text x='50%' y='70%'>
