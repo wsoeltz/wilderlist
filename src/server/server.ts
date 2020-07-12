@@ -25,7 +25,7 @@ import {
   getType,
   Routes,
 } from './routing';
-import getSitemap from './routing/getSitemap';
+import getSitemap, {getSiteMapIndex, SitemapType} from './routing/getSitemap';
 import getGridApplication from './utilities/getGridApplication/index';
 import getRecreationData from './utilities/getRecreationData';
 import getRecreationSiteData from './utilities/getRecreationSiteData';
@@ -168,9 +168,33 @@ if (process.env.NODE_ENV === 'production') {
 
   const path = require('path');
 
-  app.get('/sitemap.xml', async (req, res) => {
+  app.get('/sitemap/index.xml', async (req, res) => {
     try {
-      const result = await getSitemap();
+      const result = await getSiteMapIndex();
+      res.type('application/xml');
+      res.send(result);
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
+  });
+
+  app.get('/sitemap/general-sitemap.xml', async (req, res) => {
+    try {
+      const result = await getSitemap(SitemapType.General);
+      res.type('application/xml');
+      res.send(result);
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
+  });
+
+  app.get('/sitemap/:stateId/:sitemaptype/sitemap.xml', async (req, res) => {
+    try {
+      const stateId = req.params.stateId;
+      const sitemapType = req.params.sitemaptype;
+      const result = await getSitemap(sitemapType, stateId);
       res.type('application/xml');
       res.send(result);
     } catch (err) {
