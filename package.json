@@ -73,7 +73,7 @@
     "express-http-to-https": "^1.1.4",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "mapbox-gl": "^1.6.0",
     "mongoose": "^5.7.5",
     "nodemailer": "^6.3.1",
