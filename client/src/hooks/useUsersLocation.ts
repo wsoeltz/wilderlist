@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import {useEffect, useState} from 'react';
+import getRandomLocation from './randomDefaultLocations';
 
 const localstorageUserAllowsLocationKey = 'localstorageUserAllowsLocationKey';
 export const userAllowsPreciseLocation = () => {
@@ -110,7 +111,7 @@ export default (): UsersLocation => {
       const stateId = currentData && currentData.stateId ? currentData.stateId : null;
       setOuput({
         loading: false,
-        error: undefined,
+        error: output.error,
         data: {
           text,
           localCoordinates: currentData && currentData.localCoordinates ? currentData.localCoordinates : undefined,
@@ -137,7 +138,7 @@ export default (): UsersLocation => {
         loading: false,
       });
     } else {
-      setOuput({loading: true, error: undefined, data: output.data});
+      setOuput({loading: true, error: output.error, data: output.data});
       navigator.geolocation.getCurrentPosition(onSuccess, onError);
     }
   };
@@ -156,51 +157,85 @@ export default (): UsersLocation => {
           const {
             geoplugin_latitude, geoplugin_longitude,
             geoplugin_city, geoplugin_regionCode,
-            geoplugin_region, geoplugin_regionName,
           } = res.data;
           const stateDatum = await getStateData(geoplugin_regionCode);
-          let stateName: string;
-          if (stateDatum) {
-            stateName = stateDatum.name;
-          } else if (geoplugin_region) {
-            stateName = geoplugin_region;
-          } else if (geoplugin_regionName) {
-            stateName = geoplugin_regionName;
-          } else if (geoplugin_regionCode) {
-            stateName = geoplugin_regionCode;
+          let localCoordinates: {lat: number, lng: number};
+          let stateAbbreviation: string;
+          let text: string;
+          let city: string;
+          let stateId: string;
+          let error: {message: string} | undefined;
+          if (stateDatum && geoplugin_city && geoplugin_city.length &&
+              geoplugin_latitude && geoplugin_longitude
+           ) {
+            stateAbbreviation = geoplugin_regionCode;
+            text = geoplugin_city + ', ' + geoplugin_regionCode;
+            city = geoplugin_city;
+            stateId = stateDatum.id;
+            localCoordinates = {
+              lat: parseFloat(geoplugin_latitude),
+              lng: parseFloat(geoplugin_longitude),
+            };
+            error = undefined;
           } else {
-            stateName = parseFloat(geoplugin_latitude).toFixed(3) + ', ' + parseFloat(geoplugin_longitude).toFixed(3);
+            const randomStateData = getRandomLocation();
+            stateAbbreviation = randomStateData.stateAbbreviation;
+            text = randomStateData.text;
+            city = randomStateData.city;
+            stateId = randomStateData.stateId;
+            localCoordinates = {
+              lat: randomStateData.localCoordinates.lat,
+              lng: randomStateData.localCoordinates.lng,
+            };
+            error = {message: 'Unable to get IP location.'};
           }
-          const text = geoplugin_city && geoplugin_city.length
-            ? geoplugin_city + ', ' + geoplugin_regionCode : stateName;
           setOuput({
             loading: false,
-            error: undefined,
+            error,
             data: {
-              localCoordinates: {
-                lat: parseFloat(geoplugin_latitude),
-                lng: parseFloat(geoplugin_longitude),
-              },
+              localCoordinates,
               preciseCoordinates: undefined,
               text,
-              stateAbbreviation: geoplugin_regionCode,
-              city: geoplugin_city,
-              stateId: stateDatum ? stateDatum.id : null,
+              stateAbbreviation,
+              city,
+              stateId,
             },
           });
         } else {
+          const randomStateData = getRandomLocation();
           setOuput({
             loading: false,
             error: {message: 'Unable to get users location'},
-            data: undefined,
+            data: {
+              preciseCoordinates: undefined,
+              stateAbbreviation: randomStateData.stateAbbreviation,
+              text: randomStateData.text,
+              city: randomStateData.city,
+              stateId: randomStateData.stateId,
+              localCoordinates: {
+                lat: randomStateData.localCoordinates.lat,
+                lng: randomStateData.localCoordinates.lng,
+              },
+            },
           });
         }
       } catch (e) {
         console.error(e);
+        const randomStateData = getRandomLocation();
         setOuput({
           loading: false,
           error: {message: e},
-          data: undefined,
+          data: {
+            preciseCoordinates: undefined,
+            stateAbbreviation: randomStateData.stateAbbreviation,
+            text: randomStateData.text,
+            city: randomStateData.city,
+            stateId: randomStateData.stateId,
+            localCoordinates: {
+              lat: randomStateData.localCoordinates.lat,
+              lng: randomStateData.localCoordinates.lng,
+            },
+          },
         });
       }
     };
