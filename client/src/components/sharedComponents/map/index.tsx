@@ -206,13 +206,13 @@ const Map = (props: Props) => {
     initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
   } else if (usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
     const {lat, lng} = usersLocation.data.localCoordinates;
-    initialCenter = [lat, lng];
+    initialCenter = [lng, lat];
   } else {
-    initialCenter = [43.20415146, -71.52769471];
+    initialCenter = [-71.52769471, 43.20415146];
   }
   const initialBounds: [[number, number], [number, number]] = coordinates.length
     ? [[minLong, minLat], [maxLong, maxLat]]
-    : [[initialCenter[1] + 1, initialCenter[0] - 1], [initialCenter[1] - 1, initialCenter[0] + 1]];
+    : [[initialCenter[0] + 1, initialCenter[1] - 1], [initialCenter[0] - 1, initialCenter[1] + 1]];
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
   const [popupInfo, setPopupInfo] = useState<PopupData | null>(null);
@@ -316,7 +316,7 @@ const Map = (props: Props) => {
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
-    [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
+    [initialCenter[1].toFixed(latLngDecimalPoints), initialCenter[0].toFixed(latLngDecimalPoints)]);
   const updateCenterCoords = useCallback((coords: [string, string]) => {
       setCenterCoords([coords[0], coords[1]]);
       if (centerCoordsCallback !== undefined) {
@@ -358,7 +358,7 @@ const Map = (props: Props) => {
         const zoom = map.getZoom();
         setCurrentZoom(zoom);
       }
-    }, 250);
+    }, 800);
 
     if (map && (showOtherMountains || showNearbyTrails || showCenterCrosshairs)) {
       map.on('dragend', getPreciseCenterCoords);

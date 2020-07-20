@@ -146,8 +146,11 @@ export default (): UsersLocation => {
     const getUsersIpLocation = async () => {
       try {
         const key = process.env.REACT_APP_GEO_PLUGIN_API_KEY;
+        // const res: undefined | {data: GeoPluginDatum} = await getUsersIAndpLocation.get(
+        //     `https://ssl.geoplugin.net/extras/location.gp?lat=37.7744195&lon=-97.911791&format=json&k=${key}`);
         const res: undefined | {data: GeoPluginDatum} = await getUsersIAndpLocation.get(
           `https://ssl.geoplugin.net/json.gp?k=${key}`,
+          // `https://FAILINGTEST${key}`,
         );
         if (res && res.data) {
           const {
