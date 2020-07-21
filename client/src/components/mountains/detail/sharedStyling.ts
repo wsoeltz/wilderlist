@@ -85,6 +85,7 @@ export const ReportContainer = styled(BasicListItem)`
 
   &:hover {
     background-color: ${lightBorderColor};
+    cursor: pointer;
 
     .read-full-report-button {
       visibility: visible;
