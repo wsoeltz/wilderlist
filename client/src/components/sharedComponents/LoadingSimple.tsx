@@ -42,7 +42,7 @@ const ThirdChild = styled(ChildBase)`
 
 interface Props {
   color?: string;
-  size?: number;
+  size?: number; // in px
 }
 
 const Loading = (props: Props) => {

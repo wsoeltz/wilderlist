@@ -32,6 +32,7 @@ import {
   nPerPage,
 } from '../../../mountains/detail/TripReports';
 import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
+import LoadingDisablePage from '../../../sharedComponents/LoadingDisablePage';
 import Modal, {mobileWidth as modalMobileWidth} from '../../../sharedComponents/Modal';
 import {
   CLEAR_ASCENT_NOTIFICATION,
@@ -179,6 +180,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [emailList, setEmailList] = useState<string[]>([]);
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [mountainList, setMountainList] = useState<MountainDatum[]>(initialMountainList);
+  const [saving, setSaving] = useState<boolean>(false);
 
   const [isAreYouSureModalOpen, setIsAreYouSureModalOpen] = useState<boolean>(false);
 
@@ -220,6 +222,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
   const validateAndAddMountainCompletion = async () => {
+    setSaving(true);
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     const initialCompletionDate =
       initialCompletionDay !== null && initialCompletionMonth !== null && initialCompletionYear !== null
@@ -238,7 +241,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
         ? tripLinkEl.current.value.substring(0, 1000) : null;
 
-      closeEditMountainModalModal();
+      // closeEditMountainModalModal();
 
       const mountainIds = [...mountainList.map(mtn => mtn.id)];
       const initialMountainIds = initialMountainList.map(mtn => mtn.id);
@@ -378,6 +381,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         }
         sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
       }
+      closeEditMountainModalModal();
     }
     localStorage.setItem(preferredDateFormatLocalStorageVariable, dateType);
   };
@@ -503,6 +507,8 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     </ButtonWrapper>
   );
 
+  const saveOverlay = saving ? <LoadingDisablePage /> : null;
+
   return (
     <>
       <Modal
@@ -544,6 +550,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         {textNote}
       </Modal>
       {areYouSureModal}
+      {saveOverlay}
     </>
   );
 };
