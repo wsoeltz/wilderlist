@@ -152,9 +152,20 @@ const MountainSearchPage = (props: Props) => {
     }
   };
 
-  const initialMapCenter = usersLocation && usersLocation.data && usersLocation.data.localCoordinates
-    ? {latitude: usersLocation.data.localCoordinates.lat, longitude: usersLocation.data.localCoordinates.lng}
-    : undefined;
+  let usersCoords: {lat: number, lng: number} | undefined;
+  if (usersLocation.data) {
+    if (usersLocation.error && usersLocation.data.preciseCoordinates) {
+      usersCoords = usersLocation.data.preciseCoordinates;
+    } else if (!usersLocation.error && usersLocation.data.localCoordinates) {
+      usersCoords = usersLocation.data.localCoordinates;
+    } else {
+      usersCoords = undefined;
+    }
+  } else {
+    usersCoords = undefined;
+  }
+
+  const initialMapCenter = usersCoords ? {latitude: usersCoords.lat, longitude: usersCoords.lng} : undefined;
 
   const [mapCenter, setMapCenter] = useState<{latitude: number, longitude: number} | undefined>(initialMapCenter);
 
@@ -239,12 +250,12 @@ const MountainSearchPage = (props: Props) => {
     };
     GQL_QUERY = GET_NEARBY_MOUNTAINS;
     let coordinates: {lat: number, lng: number} | undefined;
-    if (usersLocation.data) {
-      coordinates = usersLocation.data.preciseCoordinates
-        ? usersLocation.data.preciseCoordinates
-        : usersLocation.data.localCoordinates;
+    if (usersCoords) {
+      coordinates = usersCoords;
+    } else if (usersLocation.data && usersLocation.data.localCoordinates && usersLocation.error) {
+      coordinates = usersLocation.data.localCoordinates;
     } else {
-      coordinates = undefined;
+      usersCoords = undefined;
     }
     const centerToYou = coordinates
       ? getDistanceFromLatLonInMiles({
@@ -372,7 +383,6 @@ const MountainSearchPage = (props: Props) => {
       list = <>{loadingCards}</>;
     } else {
       const rawMountains = dataToUse.mountains;
-      const usersCoords = usersLocation && usersLocation.data ? usersLocation.data.localCoordinates : undefined;
       const extendedMountains: MountainDatumWithDistance[] = rawMountains.map(mtn => {
         const distanceToUser = usersCoords ? getDistanceFromLatLonInMiles({
           lat1: usersCoords.lat, lon1: usersCoords.lng,

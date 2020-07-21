@@ -33,6 +33,7 @@ import getDrivingDistances, {DrivingData} from '../../../utilities/getDrivingDis
 import {AppContext} from '../../App';
 import CampsitesLayer from './CampsitesLayer';
 import DirectionsAndLocation from './DirectionsAndLocation';
+import ErrorBoundary from './ErrorBoundary';
 import MapLegend from './MapLegend';
 import MapPopup from './MapPopup';
 import NearbyMountains from './NearbyMountains';
@@ -206,13 +207,13 @@ const Map = (props: Props) => {
     initialCenter = [(maxLong + minLong) / 2, (maxLat + minLat) / 2];
   } else if (usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
     const {lat, lng} = usersLocation.data.localCoordinates;
-    initialCenter = [lat, lng];
+    initialCenter = [lng, lat];
   } else {
-    initialCenter = [43.20415146, -71.52769471];
+    initialCenter = [-71.52769471, 43.20415146];
   }
   const initialBounds: [[number, number], [number, number]] = coordinates.length
     ? [[minLong, minLat], [maxLong, maxLat]]
-    : [[initialCenter[1] + 1, initialCenter[0] - 1], [initialCenter[1] - 1, initialCenter[0] + 1]];
+    : [[initialCenter[0] + 1, initialCenter[1] - 1], [initialCenter[0] - 1, initialCenter[1] + 1]];
   const [mapReloadCount, setMapReloadCount] = useState<number>(0);
   const incReload = () => setMapReloadCount(mapReloadCount + 1);
   const [popupInfo, setPopupInfo] = useState<PopupData | null>(null);
@@ -316,7 +317,7 @@ const Map = (props: Props) => {
 
   const latLngDecimalPoints = 8;
   const [centerCoords, setCenterCoords] = useState<[string, string]>(
-    [initialCenter[0].toFixed(latLngDecimalPoints), initialCenter[1].toFixed(latLngDecimalPoints)]);
+    [initialCenter[1].toFixed(latLngDecimalPoints), initialCenter[0].toFixed(latLngDecimalPoints)]);
   const updateCenterCoords = useCallback((coords: [string, string]) => {
       setCenterCoords([coords[0], coords[1]]);
       if (centerCoordsCallback !== undefined) {
@@ -358,7 +359,7 @@ const Map = (props: Props) => {
         const zoom = map.getZoom();
         setCurrentZoom(zoom);
       }
-    }, 250);
+    }, 800);
 
     if (map && (showOtherMountains || showNearbyTrails || showCenterCrosshairs)) {
       map.on('dragend', getPreciseCenterCoords);
@@ -469,96 +470,98 @@ const Map = (props: Props) => {
         pointerEvents: !map ? 'none' : undefined,
       }}
     >
-      <Mapbox
-        // eslint-disable-next-line
-        style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
-        containerStyle={{
-          height: fillSpace === true ? `100%` : '500px',
-          //height: fillSpace === true ? `calc(100% - ${mapLegendHeight}px)` : '500px',
-          width: '100%',
-        }}
-        center={center}
-        onClick={() => setPopupInfo(null)}
-        fitBounds={fitBounds}
-        fitBoundsOptions={{padding: 50, linear: true}}
-        movingMethod={movingMethod ? movingMethod : 'flyTo'}
-        key={`mapkey-${mapLegendHeight}-${mapReloadCount}`}
-        onWebGlContextLost={incReload}
-      >
-        <ZoomControl />
-        <RotationControl style={{ top: 80 }} />
-        <DirectionsAndLocation
-          destination={destination}
-          directionsData={directionsData}
-          yourLocationOn={yourLocationOn}
-          showYourLocation={showYourLocation}
-          togglePointer={togglePointer}
-        />
-        <TrailsLayer
-          showNearbyTrails={showNearbyTrails}
-          centerCoords={centerCoords}
-          setPopupInfo={setPopupInfo}
-          majorTrailsOn={majorTrailsOn}
-          togglePointer={togglePointer}
-        />
-        <CampsitesLayer
-          showCampsites={showCampsites}
-          centerCoords={centerCoords}
-          setPopupInfo={setPopupInfo}
-          campsitesOn={campsitesOn}
-          togglePointer={togglePointer}
-        />
-        <NearbyMountains
-          latitude={parseFloat(centerCoords[0])}
-          longitude={parseFloat(centerCoords[1])}
-          mountainsToIgnore={coordinates.map(mtn => mtn.id)}
-          onFeatureClick={onFeatureClick(PopupDataTypes.OtherMountain)}
-          togglePointer={togglePointer}
-          showOtherMountains={showOtherMountains}
-          otherMountainsOn={otherMountainsOn}
-          useGenericFunctionality={useGenericFunctionality}
-          currentZoom={currentZoom}
-        />
-        <PrimaryMountains
-          coordinates={coordinates}
-          onFeatureClick={onFeatureClick(PopupDataTypes.Coordinate)}
-          colorScaleColors={colorScaleColors}
-          colorScaleSymbols={colorScaleSymbols}
-          createOrEditMountain={createOrEditMountain}
-          highlighted={highlighted}
-          togglePointer={togglePointer}
-        />
-        <MapPopup
-          popupInfo={popupInfo}
-          completedAscents={completedAscents}
-          peakListId={peakListId}
-          mountainId={mountainId}
-          userId={userId}
-          isOtherUser={isOtherUser}
-          otherUserId={otherUserId}
-          destination={destination}
-          setDestination={setDestination}
-          directionsData={directionsData}
-          closePopup={() => setPopupInfo(null)}
-          yourLocationOn={yourLocationOn}
-          showYourLocation={showYourLocation}
-          setYourLocationOn={updateYourLocationOn}
-          colorScaleColors={colorScaleColors}
-          colorScaleSymbols={colorScaleSymbols}
-          createOrEditMountain={createOrEditMountain}
-          highlighted={highlighted}
-          addRemoveMountains={addRemoveMountains}
-          useGenericFunctionality={useGenericFunctionality}
-        />
-        {crosshairs}
-        <ReloadMapContainer
-          onClick={incReload}
+      <ErrorBoundary>
+        <Mapbox
+          // eslint-disable-next-line
+          style={'mapbox://styles/wsoeltz/ck41nop7o0t7d1cqdtokuavwk'}
+          containerStyle={{
+            height: fillSpace === true ? `100%` : '500px',
+            //height: fillSpace === true ? `calc(100% - ${mapLegendHeight}px)` : '500px',
+            width: '100%',
+          }}
+          center={center}
+          onClick={() => setPopupInfo(null)}
+          fitBounds={fitBounds}
+          fitBoundsOptions={{padding: 50, linear: true}}
+          movingMethod={movingMethod ? movingMethod : 'flyTo'}
+          key={`mapkey-${mapLegendHeight}-${mapReloadCount}`}
+          onWebGlContextLost={incReload}
         >
-          <BasicIconInText icon={faSync} />
-          {getFluentString('map-refresh-map')}
-        </ReloadMapContainer>
-        <MapContext.Consumer children={mapRenderProps} />
-      </Mapbox>
+          <ZoomControl />
+          <RotationControl style={{ top: 80 }} />
+          <DirectionsAndLocation
+            destination={destination}
+            directionsData={directionsData}
+            yourLocationOn={yourLocationOn}
+            showYourLocation={showYourLocation}
+            togglePointer={togglePointer}
+          />
+          <TrailsLayer
+            showNearbyTrails={showNearbyTrails}
+            centerCoords={centerCoords}
+            setPopupInfo={setPopupInfo}
+            majorTrailsOn={majorTrailsOn}
+            togglePointer={togglePointer}
+          />
+          <CampsitesLayer
+            showCampsites={showCampsites}
+            centerCoords={centerCoords}
+            setPopupInfo={setPopupInfo}
+            campsitesOn={campsitesOn}
+            togglePointer={togglePointer}
+          />
+          <NearbyMountains
+            latitude={parseFloat(centerCoords[0])}
+            longitude={parseFloat(centerCoords[1])}
+            mountainsToIgnore={coordinates.map(mtn => mtn.id)}
+            onFeatureClick={onFeatureClick(PopupDataTypes.OtherMountain)}
+            togglePointer={togglePointer}
+            showOtherMountains={showOtherMountains}
+            otherMountainsOn={otherMountainsOn}
+            useGenericFunctionality={useGenericFunctionality}
+            currentZoom={currentZoom}
+          />
+          <PrimaryMountains
+            coordinates={coordinates}
+            onFeatureClick={onFeatureClick(PopupDataTypes.Coordinate)}
+            colorScaleColors={colorScaleColors}
+            colorScaleSymbols={colorScaleSymbols}
+            createOrEditMountain={createOrEditMountain}
+            highlighted={highlighted}
+            togglePointer={togglePointer}
+          />
+          <MapPopup
+            popupInfo={popupInfo}
+            completedAscents={completedAscents}
+            peakListId={peakListId}
+            mountainId={mountainId}
+            userId={userId}
+            isOtherUser={isOtherUser}
+            otherUserId={otherUserId}
+            destination={destination}
+            setDestination={setDestination}
+            directionsData={directionsData}
+            closePopup={() => setPopupInfo(null)}
+            yourLocationOn={yourLocationOn}
+            showYourLocation={showYourLocation}
+            setYourLocationOn={updateYourLocationOn}
+            colorScaleColors={colorScaleColors}
+            colorScaleSymbols={colorScaleSymbols}
+            createOrEditMountain={createOrEditMountain}
+            highlighted={highlighted}
+            addRemoveMountains={addRemoveMountains}
+            useGenericFunctionality={useGenericFunctionality}
+          />
+          {crosshairs}
+          <ReloadMapContainer
+            onClick={incReload}
+          >
+            <BasicIconInText icon={faSync} />
+            {getFluentString('map-refresh-map')}
+          </ReloadMapContainer>
+          <MapContext.Consumer children={mapRenderProps} />
+        </Mapbox>
+      </ErrorBoundary>
       <div>
         <MapLegend
           centerCoords={centerCoords}

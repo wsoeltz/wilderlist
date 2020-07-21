@@ -21,9 +21,6 @@ export default (input: Input) => {
   const [output, setOutput] = useState<Output>({
     loading: true, error: undefined, data: undefined,
   });
-  // const [loading, setLoading] = useState<boolean>(true);
-  // const [error, setError] = useState<string | undefined>(undefined);
-  // const [data, setData] = useState<Output['data']>(undefined);
 
   useEffect(() => {
     const getLocationData = async () => {
