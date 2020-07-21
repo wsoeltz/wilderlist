@@ -25,6 +25,7 @@ import {
   faDownload,
   faEdit,
   faEnvelope,
+  faExclamationTriangle,
   faFileCsv,
   faFileExcel,
   faFileImport,
@@ -73,7 +74,7 @@ library.add(
   faCloudSun, faEdit, faFileImport, faDownload, faAlignLeft,
   faAddressBook, faAt, faPhone, faLink, faTrophy, faCompass,
   faLeaf, faSnowflake, faTh, faMapMarkedAlt, faCrow,
-  faArrowRight,
+  faArrowRight, faExclamationTriangle,
 );
 
 const GlobalStyles = createGlobalStyle`
