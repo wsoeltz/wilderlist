@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { faCloudSun, faEdit, faFlag, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import {
@@ -35,6 +35,7 @@ import {
   State,
   User,
 } from '../../../types/graphQLTypes';
+import checkForMountainDataIssues from '../../../utilities/checkForMountainDataIssues';
 import { convertDMS } from '../../../Utils';
 import {
   isValidURL,
@@ -298,6 +299,12 @@ const MountainDetail = (props: Props) => {
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
   });
+
+  useEffect(() => {
+    if (data && data.mountain) {
+      checkForMountainDataIssues(data.mountain);
+    }
+  }, [data]);
 
   const prevData = usePrevious(data);
 
