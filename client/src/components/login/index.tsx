@@ -195,7 +195,6 @@ const LoginPage = () => {
           <ListItem>{getFluentString('login-page-track-your-adventure-li-3')}</ListItem>
           <ListItem>{getFluentString('login-page-track-your-adventure-li-4')}</ListItem>
           <ListItem>{getFluentString('login-page-track-your-adventure-li-5')}</ListItem>
-          <ListItem>{getFluentString('login-page-track-your-adventure-li-6')}</ListItem>
         </TextList>
         <SignUpButton onClick={() => setSignUpModalOpen(true)}>
           {getFluentString('login-page-sign-up-for-free')}
