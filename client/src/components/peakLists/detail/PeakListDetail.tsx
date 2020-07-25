@@ -659,7 +659,7 @@ const PeakListDetail = (props: Props) => {
           />
           <DetailBoxTitle>
             <BasicIconInText icon={faMapMarkedAlt} />
-            {getFluentString('map-list-title', {'short-name': peakList.shortName})}
+            {getFluentString('map-list-title', {'short-name': peakList.name})}
             <MapZoomScrollText />
           </DetailBoxTitle>
           <MountainColorScale
