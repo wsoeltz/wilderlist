@@ -15,13 +15,11 @@ import {
   DetailBoxTitle,
   DetailBoxWithMargin,
   GhostButton,
-  InputBase,
   Label,
   LabelContainer,
   RequiredNote,
   SelectBox,
   SmallTextNoteWithMargin,
-  TextareaBase,
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
@@ -34,6 +32,8 @@ import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
 import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
+import DelayedInput from '../../sharedComponents/DelayedInput';
+import DelayedTextarea from '../../sharedComponents/DelayedTextarea';
 import {
   ActionButtons,
   ButtonWrapper,
@@ -319,14 +319,14 @@ const MountainForm = (props: Props) => {
     );
   });
 
-  const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleExternalResourceChange = (value: string) =>
     (field: keyof ExternalResource, index: number) =>
       setExternalResources(
         externalResources.map((resource, _index) => {
-          if (resource[field] === e.target.value || index !== _index) {
+          if (resource[field] === value || index !== _index) {
             return resource;
           } else {
-            return {...resource, [field]: e.target.value};
+            return {...resource, [field]: value};
           }
         },
       ),
@@ -339,17 +339,15 @@ const MountainForm = (props: Props) => {
 
   const resourceInputs = externalResources.map((resource, i) => (
     <ResourceContainer key={i}>
-      <InputBase
-        value={resource.title}
-        onChange={e => handleExternalResourceChange(e)('title', i)}
+      <DelayedInput
+        initialValue={resource.title}
+        setInputValue={val => handleExternalResourceChange(val)('title', i)}
         placeholder={getFluentString('global-text-value-resource-title')}
-        autoComplete={'off'}
       />
-      <InputBase
-        value={resource.url}
-        onChange={e => handleExternalResourceChange(e)('url', i)}
+      <DelayedInput
+        initialValue={resource.url}
+        setInputValue={val => handleExternalResourceChange(val)('url', i)}
         placeholder={getFluentString('global-text-value-resource-url')}
-        autoComplete={'off'}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
         ×
@@ -421,14 +419,12 @@ const MountainForm = (props: Props) => {
           {getFluentString('create-mountain-name-title')}
         </DetailBoxTitle>
         <DetailBoxWithMargin>
-          <InputBase
+          <DelayedInput
             id={'create-mountain-name'}
-            type={'text'}
-            value={name}
-            onChange={e => setName(e.target.value)}
+            initialValue={name}
+            setInputValue={value => setName(value)}
             placeholder={getFluentString('create-mountain-mountain-name-placeholder')}
             /* autoComplete='off' is ignored in Chrome, but other strings aren't */
-            autoComplete={'off'}
             maxLength={1000}
           />
         </DetailBoxWithMargin>
@@ -451,15 +447,14 @@ const MountainForm = (props: Props) => {
                   <small>({getFluentString('create-mountain-latlong-note')})</small>
                 </Label>
               </LabelContainer>
-              <InputBase
+              <DelayedInput
                 id={'create-mountain-latitude'}
                 type={'number'}
                 min={latitudeMin}
                 max={latitudeMax}
-                value={stringLat}
-                onChange={e => setStringLat(e.target.value)}
+                initialValue={stringLat}
+                setInputValue={value => setStringLat(value)}
                 placeholder={'e.g. 40.000'}
-                autoComplete={'off'}
               />
             </div>
             <div>
@@ -470,15 +465,14 @@ const MountainForm = (props: Props) => {
                   <small>({getFluentString('create-mountain-latlong-note')})</small>
                 </Label>
               </LabelContainer>
-              <InputBase
+              <DelayedInput
                 id={'create-mountain-longitude'}
                 type={'number'}
                 min={longitudeMin}
                 max={longitudeMax}
-                value={stringLong}
-                onChange={e => setStringLong(e.target.value)}
+                initialValue={stringLong}
+                setInputValue={value => setStringLong(value)}
                 placeholder={'e.g. -72.000'}
-                autoComplete={'off'}
               />
             </div>
             <div>
@@ -505,15 +499,14 @@ const MountainForm = (props: Props) => {
                   <small>({getFluentString('global-text-value-feet')})</small>
                 </Label>
               </LabelContainer>
-              <InputBase
+              <DelayedInput
                 id={'create-mountain-elevation'}
                 type={'number'}
                 min={elevationMin}
                 max={elevationMax}
-                value={stringElevation}
-                onChange={e => setStringElevation(e.target.value)}
+                initialValue={stringElevation}
+                setInputValue={value => setStringElevation(value)}
                 placeholder={'e.g. 1000ft'}
-                autoComplete={'off'}
               />
             </div>
           </Grid>
@@ -528,21 +521,19 @@ const MountainForm = (props: Props) => {
           }
           defaultHidden={true}
         >
-          <div>
+          <div style={{marginBottom: '1rem'}}>
             <LabelContainer htmlFor={'create-peak-list-description'}>
               <Label>
                 {getFluentString('create-peak-list-peak-list-description-label')}
               </Label>
             </LabelContainer>
-            <TextareaBase
+            <DelayedTextarea
               id={'create-peak-list-description'}
               rows={6}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
+              initialValue={description}
+              setInputValue={value => setDescription(value)}
               placeholder={getFluentString('create-mountain-optional-description')}
-              autoComplete={'off'}
               maxLength={5000}
-              style={{marginBottom: '1rem'}}
             />
           </div>
           <div>
