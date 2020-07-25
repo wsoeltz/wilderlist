@@ -8,6 +8,7 @@ meta-data-settings-default-title = Settings - Wilderlist
 meta-data-dashboard-default-title = Dashboard - Wilderlist
 meta-data-your-stats-default-title = Your Stats - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
+meta-data-about-title = About - Wilderlist
 meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
 meta-data-detail-default-title = { $title }{
   $type ->
@@ -271,6 +272,7 @@ header-text-menu-item-lists = Hiking Lists
 header-text-menu-item-lists-short = Lists
 header-text-menu-item-mountains = Mountains
 header-text-menu-item-your-stats = Your Stats
+header-text-menu-item-about = About
 header-text-menu-item-your-stats-short = Stats
 header-text-menu-item-friends = Friends
 header-text-menu-item-admin-panel = Admin Panel

@@ -36,6 +36,7 @@ import Header from './sharedComponents/Header';
 import LoadingSuspense from './sharedComponents/LoadingSuspense';
 
 const PrivacyPolicy = React.lazy(() => import('./privacyPolicy'));
+const About = React.lazy(() => import('./about'));
 const TermsOfUse = React.lazy(() => import('./termsOfUse'));
 const Dashboard = React.lazy(() => import('./dashboard'));
 const LoginPage = React.lazy(() => import('./login'));
@@ -257,6 +258,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.YourStats}
           render={(props: any) => <YourStats {...props} userId={user._id} />}
         />
+        <TrackedRoute exact path={Routes.About} component={About} />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
         {adminRoutes}
@@ -292,6 +294,7 @@ const App: React.FC = () => {
         <TrackedRoute exact path={Routes.MountainDetail}
           render={(props: any) => <MountainDetailPage {...props} userId={null} />}
         />
+        <TrackedRoute exact path={Routes.About} component={About} />
         <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
         <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
         {/* Routes that may be shared while a user that is logged in

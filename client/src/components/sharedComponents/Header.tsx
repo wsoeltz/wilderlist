@@ -2,6 +2,7 @@ import {
   faChartLine,
   faHiking,
   faHome,
+  faInfoCircle,
   faMountain,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
@@ -71,7 +72,7 @@ const LogoContainer = styled(Link)`
       width: 200%;
     }
 
-    @media(max-width: 790px) {
+    @media(max-width: 850px) {
       transform: scale(0.55);
     }
     @media(max-width: 720px) {
@@ -95,7 +96,7 @@ const NavLink = styled(Link)`
   padding: 0 0.75rem;
   white-space: nowrap;
 
-  @media(max-width: 790px) {
+  @media(max-width: 850px) {
     padding: 0 0.5rem;
     font-size: 0.9rem;
   }
@@ -161,6 +162,8 @@ const Header = (props: RouteComponentProps) => {
     let normalizedPathname: string;
     if (pathname.includes('dashboard')) {
       normalizedPathname = '/';
+    } else if  (pathname === Routes.About) {
+      normalizedPathname = Routes.About;
     } else if  (pathname.includes('your-stats')) {
       normalizedPathname = Routes.YourStats;
     } else if (pathname.includes('user') && !pathname.includes('settings')) {
@@ -208,6 +211,7 @@ const Header = (props: RouteComponentProps) => {
               {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
               {createLink(Routes.YourStats, yourStatsText, faChartLine)}
               {createLink(usersPath, getFluentString('header-text-menu-item-friends'), faUserFriends)}
+              {createLink(Routes.About, getFluentString('header-text-menu-item-about'), faInfoCircle)}
             </MainNav>
             <UserMenu
               userMenuOpen={userMenuOpen}
