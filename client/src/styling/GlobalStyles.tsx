@@ -58,6 +58,7 @@ import {
   baseColor,
   lightBaseColor,
   linkStyles,
+  primaryFont,
   semiBoldFontBoldWeight,
 } from './styleUtils';
 
@@ -91,7 +92,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   body {
-    font-family: RobotoWeb;
+    font-family: ${primaryFont};
     color: ${baseColor};
   }
 

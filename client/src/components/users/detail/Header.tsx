@@ -21,7 +21,7 @@ import {
   placeholderColor,
 } from '../../../styling/styleUtils';
 import { FriendStatus } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
+import { failIfValidOrNonExhaustive, mediumSize, mobileSize } from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import {
   ACCEPT_FRIEND_REQUEST,
@@ -32,7 +32,7 @@ import {
 } from '../list/UserCard';
 import { UserDatum } from './UserProfile';
 
-const contactLinkMobileSize = 780;
+const contactLinkMobileSize = 950;
 
 const Root = styled.div`
   display: grid;
@@ -77,6 +77,12 @@ const ProfilePictureContainer = styled.div`
   grid-row: 2;
   grid-column: 1;
   padding-right: 2rem;
+  display: flex;
+  align-items: center;
+
+  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
+    padding-right: 1rem;
+  }
 
   @media(max-width: ${contactLinkMobileSize}px) {
     font-size: 0.9rem;
@@ -86,6 +92,10 @@ const ProfilePictureContainer = styled.div`
 const ProfilePicture = styled.img`
   max-width: 10rem;
   border-radius: 4000px;
+
+  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
+    max-width: 3rem;
+  }
 
   @media(max-width: 550px) {
     max-width: 6rem;
@@ -128,7 +138,7 @@ const ActionButtonContainer = styled.div`
 `;
 
 const SmallGhostButton = styled(GhostButton)`
-  font-size: 0.6rem;
+  font-size: 0.7rem;
 `;
 
 const DeclineButton = styled(GhostButton)`

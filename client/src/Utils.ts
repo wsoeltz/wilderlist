@@ -25,7 +25,8 @@ export async function asyncForEach(array: any[], callback: any) {
   }
 }
 
-export const mobileSize = 1150; // in px
+export const mediumSize = 1150; // in px
+export const mobileSize = 810; // in px
 
 export const overlayPortalContainerId = 'overlayPortalContainerId';
 

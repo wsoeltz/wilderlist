@@ -1,7 +1,7 @@
 /* tslint:disable:max-line-length */
 import React from 'react';
 import styled from 'styled-components/macro';
-import { ColorSet, colorSetGray, getColorSetFromVariant } from '../../../styling/styleUtils';
+import { ColorSet, colorSetGray, getColorSetFromVariant, secondaryFont } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   roundPercentToSingleDecimal,
@@ -21,7 +21,7 @@ const Percentage = styled.div<{colorSet: ColorSet}>`
   justify-content: flex-end;
   align-items: center;
   z-index: 100;
-  font-family: DeliciousWeb;
+  font-family: ${secondaryFont};
   padding: 2px;
   font-size: 2rem;
   color: ${({colorSet}) => colorSet.secondary};
