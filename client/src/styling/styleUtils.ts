@@ -352,8 +352,10 @@ export const CompactButtonSecondary = styled(ButtonSecondary)`
 `;
 
 export const ButtonTertiary = styled(ButtonBase)`
-  color: ${baseColor};
-    background-color: ${tertiaryColor};
+  color: ${secondaryColor};
+  background-color: ${tertiaryColor};
+  border: solid 1px ${lightBorderColor};
+
 
   &:hover {
     background-color: ${lightBorderColor};

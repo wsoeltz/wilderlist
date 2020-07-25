@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks';
 import {
+  faFilter,
   faList,
   faMapMarkedAlt,
 } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +12,7 @@ import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
+import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -29,6 +31,7 @@ import {
 } from '../../../styling/Grid';
 import {
   BasicIconInText,
+  ButtonTertiary,
   FloatingButton,
   FloatingButtonContainer,
   Next,
@@ -47,12 +50,24 @@ import BackButton from '../../sharedComponents/BackButton';
 import {CoordinateWithDates} from '../../sharedComponents/map/types';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import MountainDetail from '../detail/MountainDetail';
+import AdvancedFilter from './AdvancedFilter';
 import GeneralMap from './GeneralMap';
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, {
   MountainDatum,
   MountainDatumWithDistance,
 } from './ListMountains';
+
+const AdvancedSearchContainer = styled(SearchContainer)`
+  display: grid;
+  grid-template-columns: 1fr auto;
+`;
+
+const FilterButton = styled(ButtonTertiary)`
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+`;
 
 const baseQuery = `
   id
@@ -71,11 +86,17 @@ const SEARCH_MOUNTAINS = gql`
     $searchQuery: String!,
     $pageNumber: Int!,
     $nPerPage: Int!,
+    $state: ID,
+    $minElevation: Float,
+    $maxElevation: Float,
   ) {
     mountains: mountainSearch(
       searchQuery: $searchQuery,
       pageNumber: $pageNumber,
       nPerPage: $nPerPage,
+      state: $state,
+      minElevation: $minElevation,
+      maxElevation: $maxElevation,
     ) {
       ${baseQuery}
     }
@@ -105,6 +126,9 @@ interface SearchVariables {
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
+  state: string | null;
+  minElevation: number | null;
+  maxElevation: number | null;
 }
 interface LocationVariables {
   latitude: number;
@@ -135,6 +159,12 @@ const MountainSearchPage = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
+
+  const [stateId, setStateId] = useState<string>('');
+  const [minElevation, setMinElevation] = useState<string>('');
+  const [maxElevation, setMaxElevation] = useState<string>('');
 
   const [mobileView, setMobileView] = useState<View>(View.List);
 
@@ -223,7 +253,7 @@ const MountainSearchPage = (props: Props) => {
   let GQL_QUERY: any;
   let queryText: React.ReactElement<any> | null;
   let noResultsText: string;
-  if (!searchQuery && (
+  if (!searchQuery && !stateId && !minElevation && !maxElevation && (
       (usersLocation && usersLocation.loading === false && usersLocation.data && usersLocation.data.localCoordinates)
       || mapCenter)
     ) {
@@ -280,15 +310,22 @@ const MountainSearchPage = (props: Props) => {
         'map-center-text': mapCenterText,
       })
       : getFluentString('mountain-search-no-results-map');
-  } else if (searchQuery) {
-    variables = { searchQuery, pageNumber, nPerPage };
+  } else if (searchQuery || stateId || minElevation || maxElevation ) {
+    variables = {
+      searchQuery,
+      pageNumber,
+      nPerPage,
+      state: stateId && stateId.length ? stateId : null,
+      minElevation: minElevation.length ? parseFloat(minElevation) : null,
+      maxElevation: maxElevation.length ? parseFloat(maxElevation) : null,
+    };
     GQL_QUERY = SEARCH_MOUNTAINS;
     queryText = (
       <NoResults
         dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-search-query-desc', {
+          __html: searchQuery ? getFluentString('mountain-search-query-desc', {
             'search-query': searchQuery,
-          }),
+          }) : getFluentString('mountain-search-generic-desc'),
         }}
       />
     );
@@ -318,20 +355,34 @@ const MountainSearchPage = (props: Props) => {
     );
   } else if (usersLocation.error) {
     GQL_QUERY = SEARCH_MOUNTAINS;
-    variables = { searchQuery, pageNumber, nPerPage };
+    variables = {
+      searchQuery,
+      pageNumber,
+      nPerPage,
+      state: stateId && stateId.length ? stateId : null,
+      minElevation: minElevation.length ? parseFloat(minElevation) : null,
+      maxElevation: maxElevation.length ? parseFloat(maxElevation) : null,
+    };
     queryText = (
       <NoResults
         dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-search-query-desc', {
+          __html: searchQuery ? getFluentString('mountain-search-query-desc', {
             'search-query': searchQuery,
-          }),
+          }) : getFluentString('mountain-search-generic-desc'),
         }}
       />
     );
     noResultsText = getFluentString('global-text-value-no-results-found');
   } else {
     GQL_QUERY = SEARCH_MOUNTAINS;
-    variables = { searchQuery: 'search-should-return-no-results-', pageNumber, nPerPage: 1 };
+    variables = {
+      searchQuery: 'search-should-return-no-results-',
+      pageNumber,
+      nPerPage: 1,
+      state: null,
+      minElevation: null,
+      maxElevation: null,
+    };
     queryText = null;
     noResultsText = '';
   }
@@ -522,14 +573,32 @@ const MountainSearchPage = (props: Props) => {
       </Helmet>
       {mapSearchToggleBar}
       <ContentLeftSmall style={mobileSearchStyles}>
-        <SearchContainer>
+        <AdvancedSearchContainer>
           <StandardSearch
             placeholder={getFluentString('global-text-value-search-mountains')}
             setSearchQuery={searchMountains}
             focusOnMount={true}
             initialQuery={initialSearchQuery}
           />
-        </SearchContainer>
+          <FilterButton
+            onClick={() => setFilterOpen(!filterOpen)}
+            style={{
+              borderBottomRightRadius: filterOpen ? 0 : undefined,
+            }}
+          >
+            <BasicIconInText icon={faFilter} />
+            Filter
+          </FilterButton>
+          <AdvancedFilter
+            visible={filterOpen}
+            minElevation={minElevation}
+            setMinElevation={setMinElevation}
+            maxElevation={maxElevation}
+            setMaxElevation={setMaxElevation}
+            stateId={stateId}
+            setStateId={setStateId}
+          />
+        </AdvancedSearchContainer>
         <ContentBody ref={listContainerElm} style={{paddingTop: 0}}>
           {list}
           {addMountainButton}
