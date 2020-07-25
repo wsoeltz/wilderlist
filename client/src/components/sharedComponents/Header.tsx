@@ -63,10 +63,11 @@ const LogoContainer = styled(Link)`
     display: block;
     width: 100%;
     padding: 0.6rem;
+    transform-origin: top left;
+    transform: scale(0.73);
 
     @media(max-width: ${smallHeaderBreakpoint}px) {
       transform: scale(0.6);
-      transform-origin: top left;
       width: 200%;
     }
 
@@ -131,7 +132,7 @@ const ActiveNavLink = styled(NavLink)`
 `;
 
 const IconContainerBase = styled.div`
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.1rem;
   font-size: 0.9rem;
 `;
 
