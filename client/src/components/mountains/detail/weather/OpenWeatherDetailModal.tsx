@@ -142,7 +142,7 @@ const WeatherDetailNWSModal = (props: Props) => {
       <ForecastContainer>
         <ForecastHeader>
           <ForecastImgContainer>
-            <ForecastImg src={`http://openweathermap.org/img/wn/${weather[0].icon}@4x.png`} />
+            <ForecastImg src={`https://openweathermap.org/img/wn/${weather[0].icon}@4x.png`} />
           </ForecastImgContainer>
           <div>
             {getDayAsText(date)},

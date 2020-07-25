@@ -22,13 +22,11 @@ import {
   DetailBoxTitle,
   DetailBoxWithMargin,
   GhostButton,
-  InputBase,
   Label,
   LabelContainer,
   Section,
   SelectBox,
   SmallTextNote,
-  TextareaBase,
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
@@ -42,6 +40,8 @@ import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
 import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
+import DelayedInput from '../../sharedComponents/DelayedInput';
+import DelayedTextarea from '../../sharedComponents/DelayedTextarea';
 import {
   ActionButtons,
   ButtonWrapper,
@@ -352,14 +352,14 @@ const PeakListForm = (props: Props) => {
     );
   }
 
-  const handleExternalResourceChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleExternalResourceChange = (value: string) =>
     (field: keyof ExternalResource, index: number) =>
       setExternalResources(
         externalResources.map((resource, _index) => {
-          if (resource[field] === e.target.value || index !== _index) {
+          if (resource[field] === value || index !== _index) {
             return resource;
           } else {
-            return {...resource, [field]: e.target.value};
+            return {...resource, [field]: value};
           }
         },
       ),
@@ -372,17 +372,15 @@ const PeakListForm = (props: Props) => {
 
   const resourceInputs = externalResources.map((resource, i) => (
     <ResourceContainer key={i}>
-      <InputBase
-        value={resource.title}
-        onChange={e => handleExternalResourceChange(e)('title', i)}
+      <DelayedInput
+        initialValue={resource.title}
+        setInputValue={value => handleExternalResourceChange(value)('title', i)}
         placeholder={getFluentString('global-text-value-resource-title')}
-        autoComplete={'off'}
       />
-      <InputBase
-        value={resource.url}
-        onChange={e => handleExternalResourceChange(e)('url', i)}
+      <DelayedInput
+        initialValue={resource.url}
+        setInputValue={value => handleExternalResourceChange(value)('url', i)}
         placeholder={getFluentString('global-text-value-resource-url')}
-        autoComplete={'off'}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
         ×
@@ -427,14 +425,13 @@ const PeakListForm = (props: Props) => {
                 {getFluentString('global-text-value-name')}
               </Label>
             </LabelContainer>
-            <InputBase
+            <DelayedInput
               id={'create-peak-list-name'}
               type={'text'}
-              value={name}
-              onChange={e => setName(e.target.value)}
+              initialValue={name}
+              setInputValue={value => setName(value)}
               placeholder={getFluentString('create-peak-list-peak-list-name-placeholder')}
               /* autoComplete='off' is ignored in Chrome, but other strings aren't */
-              autoComplete={'nope'}
               maxLength={1000}
             />
           </Section>
@@ -447,13 +444,12 @@ const PeakListForm = (props: Props) => {
                   <Sublabel>({getFluentString('create-peak-list-peak-list-short-name-note')})</Sublabel>
                 </Label>
               </LabelContainer>
-              <InputBase
+              <DelayedInput
                 id={'create-peak-list-short-name'}
                 type={'text'}
-                value={shortName}
-                onChange={e => setShortName(e.target.value)}
+                initialValue={shortName}
+                setInputValue={value => setShortName(value)}
                 placeholder={getFluentString('create-peak-list-peak-list-short-name-placeholder')}
-                autoComplete={'off'}
                 maxLength={8}
               />
             </div>
@@ -534,21 +530,19 @@ const PeakListForm = (props: Props) => {
           }
           defaultHidden={true}
         >
-          <div>
+          <div style={{marginBottom: '1rem'}}>
             <LabelContainer htmlFor={'create-peak-list-description'}>
               <Label>
                 {getFluentString('create-peak-list-peak-list-description-label')}
               </Label>
             </LabelContainer>
-            <TextareaBase
+            <DelayedTextarea
               id={'create-peak-list-description'}
               rows={6}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
+              initialValue={description}
+              setInputValue={value => setDescription(value)}
               placeholder={getFluentString('create-peak-list-peak-description')}
-              autoComplete={'off'}
               maxLength={5000}
-              style={{marginBottom: '1rem'}}
             />
           </div>
           <div>
@@ -588,13 +582,12 @@ const PeakListForm = (props: Props) => {
                 {getFluentString('create-peak-list-peak-list-optional-description-label')}
               </Label>
             </LabelContainer>
-            <TextareaBase
+            <DelayedTextarea
               id={'create-peak-list-optional-description'}
               rows={6}
-              value={optionalPeaksDescription}
-              onChange={e => setOptionalPeaksDescription(e.target.value)}
+              initialValue={optionalPeaksDescription}
+              setInputValue={value => setOptionalPeaksDescription(value)}
               placeholder={getFluentString('create-peak-list-peak-optional-description')}
-              autoComplete={'off'}
               maxLength={5000}
             />
           </Section>

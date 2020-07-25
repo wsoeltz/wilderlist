@@ -25,6 +25,7 @@ import {
   ButtonSecondary,
   linkStyles,
   placeholderColor,
+  primaryFont,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
 import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
@@ -65,6 +66,10 @@ import {
 interface ColorProps {
   color: string;
 }
+
+const StyledPopup = styled(Popup)`
+  font-family: ${primaryFont};
+`;
 
 const PopupHeader = styled.div`
   display: flex;
@@ -429,7 +434,7 @@ const MapPopup = (props: Props) => {
 
     if (circleColor && iconImage) {
       popup = (
-        <Popup
+        <StyledPopup
           coordinates={[popupData.longitude, popupData.latitude]}
         >
           <PopupHeader>
@@ -454,7 +459,7 @@ const MapPopup = (props: Props) => {
           {drivingContent}
           {actionButton}
           <ClosePopup onClick={closePopup}>×</ClosePopup>
-        </Popup>
+        </StyledPopup>
       );
     } else {
       popup = <></>;

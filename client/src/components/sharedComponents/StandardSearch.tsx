@@ -57,11 +57,12 @@ interface Props {
   setSearchQuery: (value: string) => void;
   initialQuery: string;
   focusOnMount: boolean;
+  type?: string;
   noSearchIcon?: boolean;
 }
 
 const StandardSearch = (props: Props) => {
-  const { placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon } = props;
+  const { placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon, type } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
   const clearEl = useRef<HTMLButtonElement | null>(null);
@@ -108,7 +109,7 @@ const StandardSearch = (props: Props) => {
       {searchIcon}
       <SearchBar
         ref={searchEl}
-        type='text'
+        type={type ? type : 'text'}
         placeholder={placeholder}
         onChange={onChange}
         autoComplete={'off'}
@@ -116,7 +117,10 @@ const StandardSearch = (props: Props) => {
       />
       <ClearButton
         ref={clearEl}
-        style={{display: 'none'}}
+        style={{
+          display: 'none',
+          marginRight: type === 'number' ? '1rem' : undefined,
+        }}
         onClick={clearSearch}
       >
         ×

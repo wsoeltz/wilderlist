@@ -1,5 +1,8 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faList,
+  faMapMarkedAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import { Types } from 'mongoose';
@@ -18,10 +21,11 @@ import {
   ContentHeader,
   ContentLeftSmall,
   ContentRightLarge,
+  PreContentHeaderFull,
   SearchContainer,
 } from '../../../styling/Grid';
 import {
-  ButtonTertiary,
+  BasicIconInText,
   FloatingButton,
   FloatingButtonContainer,
   LinkButton,
@@ -31,8 +35,13 @@ import {
   PlaceholderText,
   PlusIcon,
   Prev,
+  secondaryColor,
+  SecondaryNavigationButton,
+  SecondaryNavigationContainer,
 } from '../../../styling/styleUtils';
 import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
+import {mobileSize} from '../../../Utils';
+import {AppContext} from '../../App';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import BackButton from '../../sharedComponents/BackButton';
 import StandardSearch from '../../sharedComponents/StandardSearch';
@@ -44,35 +53,6 @@ export const SearchAndFilterContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
 `;
-
-export const SelectButton = styled(ButtonTertiary)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
-  padding-right: 0;
-`;
-
-export const LocationText = styled.div`
-  margin-left: 0.4rem;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-export const MapIcon = styled(FontAwesomeIcon)`
-  font-size: 1rem;
-  opacity: 0.5;
-`;
-
 const ClearButton = styled(LinkButton)`
   margin-left: 0.5rem;
   font-style: italic;
@@ -240,6 +220,11 @@ export enum ViewMode {
 
 const compactViewNPerPage = 50;
 
+enum View {
+  Map,
+  List,
+}
+
 interface Props extends RouteComponentProps {
   userId: string | null;
   peakListPermissions: number | null;
@@ -249,11 +234,20 @@ const PeakListPage = (props: Props) => {
   const { userId, peakListPermissions, match, location, history } = props;
   const { id }: any = match.params;
   const { query, page } = queryString.parse(location.search);
+  const {windowWidth} = useContext(AppContext);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [selectedState, setSelectedState] = useState<{id: string, name: string} | null>(null);
+  const [mobileView, setMobileView] = useState<View>(View.List);
+
+  const updateSelectedState = (value: {id: string, name: string} | null) => {
+    setSelectedState(value);
+    if (windowWidth < mobileSize) {
+      setMobileView(View.List);
+    }
+  };
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -283,6 +277,9 @@ const PeakListPage = (props: Props) => {
   const searchPeakLists = (value: string) => {
     setSearchQuery(value);
     setPageNumber(1);
+    if (windowWidth < mobileSize) {
+      setMobileView(View.List);
+    }
     const url = searchListDetailLink(id) + '?query=' + value + '&page=' + 1;
     history.push(url);
   };
@@ -325,7 +322,7 @@ const PeakListPage = (props: Props) => {
           }),
         }}
       />
-      <ClearButton onClick={() => setSelectedState(null)}>
+      <ClearButton onClick={() => updateSelectedState(null)}>
         {getFluentString('global-text-value-clear')}
       </ClearButton>
     </NoResults>
@@ -346,51 +343,60 @@ const PeakListPage = (props: Props) => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
-  const { peakLists, user } = data;
-  if (!peakLists) {
+    if (mobileView === View.Map && windowWidth < mobileSize) {
       list = (
-        <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
-        </PlaceholderText>
-      );
-    } else {
-      const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
-      const nextBtn = peakLists.length === compactViewNPerPage ? (
-        <Next onClick={incrementPageNumber}>
-          {getFluentString('global-text-value-navigation-next')}
-        </Next> ) : null;
-      const prevBtn = pageNumber > 1 ? (
-        <Prev onClick={decrementPageNumber}>
-          {getFluentString('global-text-value-navigation-prev')}
-        </Prev> ) : null;
-      const noResultsText = searchQuery ? getFluentString('global-text-value-no-results-found-for-term', {
-        term: searchQuery,
-      }) : getFluentString('global-text-value-no-results-found');
-      let listElm: React.ReactElement<any> | null;
-      const {peakLists: peakListData} = data as CompactSuccessResponse;
-      listElm = (
-        <ListPeakLists
-          viewMode={ViewMode.Compact}
-          peakListData={peakListData}
-          userListData={usersLists}
-          listAction={beginList}
-          actionText={getFluentString('peak-list-detail-text-begin-list')}
-          profileId={undefined}
-          noResultsText={noResultsText}
-          showTrophies={false}
-          queryRefetchArray={[{query: SEARCH_PEAK_LISTS_COMPACT, variables}]}
+        <MapSelect
+          selectedState={selectedState}
+          setSelectedState={updateSelectedState}
         />
       );
-      list = (
-        <>
-          {queryText}
-          {listElm}
-          <PaginationContainer>
-            {prevBtn}
-            {nextBtn}
-          </PaginationContainer>
-        </>
-      );
+    } else {
+      const { peakLists, user } = data;
+      if (!peakLists) {
+        list = (
+          <PlaceholderText>
+            {getFluentString('global-error-retrieving-data')}
+          </PlaceholderText>
+        );
+      } else {
+        const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
+        const nextBtn = peakLists.length === compactViewNPerPage ? (
+          <Next onClick={incrementPageNumber}>
+            {getFluentString('global-text-value-navigation-next')}
+          </Next> ) : null;
+        const prevBtn = pageNumber > 1 ? (
+          <Prev onClick={decrementPageNumber}>
+            {getFluentString('global-text-value-navigation-prev')}
+          </Prev> ) : null;
+        const noResultsText = searchQuery ? getFluentString('global-text-value-no-results-found-for-term', {
+          term: searchQuery,
+        }) : getFluentString('global-text-value-no-results-found');
+        let listElm: React.ReactElement<any> | null;
+        const {peakLists: peakListData} = data as CompactSuccessResponse;
+        listElm = (
+          <ListPeakLists
+            viewMode={ViewMode.Compact}
+            peakListData={peakListData}
+            userListData={usersLists}
+            listAction={beginList}
+            actionText={getFluentString('peak-list-detail-text-begin-list')}
+            profileId={undefined}
+            noResultsText={noResultsText}
+            showTrophies={false}
+            queryRefetchArray={[{query: SEARCH_PEAK_LISTS_COMPACT, variables}]}
+          />
+        );
+        list = (
+          <>
+            {queryText}
+            {listElm}
+            <PaginationContainer>
+              {prevBtn}
+              {nextBtn}
+            </PaginationContainer>
+          </>
+        );
+      }
     }
   } else {
     list =  (
@@ -404,7 +410,7 @@ const PeakListPage = (props: Props) => {
     ? (
         <MapSelect
           selectedState={selectedState}
-          setSelectedState={setSelectedState}
+          setSelectedState={updateSelectedState}
         />
       )
     : (
@@ -440,6 +446,35 @@ const PeakListPage = (props: Props) => {
     </FloatingButtonContainer>
   ) : null;
 
+  const mapSearchToggleBar = windowWidth < mobileSize
+    ? (
+      <PreContentHeaderFull>
+        <SecondaryNavigationContainer>
+          <SecondaryNavigationButton
+            style={{
+              color: mobileView === View.List ? '#fff' : undefined,
+              backgroundColor: mobileView === View.List ? secondaryColor : undefined,
+            }}
+            onClick={() => setMobileView(View.List)}
+          >
+            <BasicIconInText icon={faList} />
+            {getFluentString('mountain-search-mobile-nav-list')}
+          </SecondaryNavigationButton>
+          <SecondaryNavigationButton
+            onClick={() => setMobileView(View.Map)}
+            style={{
+              color: mobileView === View.Map ? '#fff' : undefined,
+              backgroundColor: mobileView === View.Map ? secondaryColor : undefined,
+            }}
+          >
+            <BasicIconInText icon={faMapMarkedAlt} />
+            {getFluentString('mountain-search-mobile-nav-map')}
+          </SecondaryNavigationButton>
+        </SecondaryNavigationContainer>
+      </PreContentHeaderFull>
+      )
+    : null;
+
   const metaDescription = getFluentString('meta-data-peak-list-search-description');
 
   return (
@@ -457,6 +492,7 @@ const PeakListPage = (props: Props) => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchListDetailLink('search')} />
       </Helmet>
+      {mapSearchToggleBar}
       <ContentLeftSmall>
         <SearchContainer>
           <SearchAndFilterContainer>

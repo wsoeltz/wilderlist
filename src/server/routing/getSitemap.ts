@@ -107,6 +107,11 @@ export default async (type: SitemapType , stateId?: string) => {
         '<url>' +
           `<loc>${baseUrl}terms-of-use</loc>` +
         '</url>';
+      // About
+      data +=
+        '<url>' +
+          `<loc>${baseUrl}about</loc>` +
+        '</url>';
     }
     return header + data + footer;
   } catch (err) {

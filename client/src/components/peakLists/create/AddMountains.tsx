@@ -66,6 +66,7 @@ const AdditionalMountains = (props: Props) => {
   const selectedMountainsTable = selectedMountains.length ? (
     <div style={{backgroundColor: '#fff'}}>
       <MountainTable
+        key={'mountain-table-' + selectedMountains.length}
         mountains={selectedMountains.map(mtn => ({...mtn, completionDates: null}))}
         user={null}
         type={PeakListVariants.standard}

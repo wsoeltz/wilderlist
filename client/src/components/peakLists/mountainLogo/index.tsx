@@ -1,7 +1,7 @@
 /* tslint:disable:max-line-length */
 import React from 'react';
 import styled from 'styled-components/macro';
-import { ColorSet, colorSetGray, getColorSetFromVariant } from '../../../styling/styleUtils';
+import { ColorSet, colorSetGray, getColorSetFromVariant, secondaryFont } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import Badge from './Badge';
 import Ribbon from './Ribbon';
@@ -50,7 +50,7 @@ const SVG = styled.svg<StyleProps>`
 
   .${classNames.mountainLogoTitleText} {
     transition: all 0.2s ease-in-out;
-    font-family: DeliciousWeb;
+    font-family: ${secondaryFont};
     font-size: 73px;
     text-align: center;
     fill: ${({colorSet}) => colorSet.primary};
@@ -87,7 +87,7 @@ const ShortName = styled.svg<ShortNameProps>`
 
   text {
     transition: all 0.2s ease-in-out;
-    font-family: DeliciousWeb;
+    font-family: ${secondaryFont};
     font-size: ${({shortNameSize}) => shortNameSize};
     fill: #fff;
     stroke: ${({colorSet}) => colorSet.primary};
@@ -104,7 +104,7 @@ const VariantName = styled.svg`
   text {
     transition: all 0.2s ease-in-out;
     font-size: 0.45rem;
-    font-family: DeliciousWeb;
+    font-family: ${secondaryFont};
     text-transform: uppercase;
     stroke-width: 0.5px;
   }

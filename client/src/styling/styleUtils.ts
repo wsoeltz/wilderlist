@@ -3,8 +3,9 @@ import { darken } from 'polished';
 import styled from 'styled-components/macro';
 import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../Utils';
+import { failIfValidOrNonExhaustive, mediumSize, mobileSize } from '../Utils';
 
+export const primaryFont = '"Source Sans Pro", sans-serif';
 export const secondaryFont = 'DeliciousWeb, sans-serif';
 
 export const baseColor = '#333333'; // dark gray/black color for text
@@ -89,10 +90,6 @@ export const getColorSetFromVariant = (variant: PeakListVariants) => {
     return colorSetGray;
   }
 };
-
-export const primaryFont = `
-  font-family: 'RobotoWeb';
-`;
 
 export const lightFontWeight = 200;
 export const regularFontWeight = 400;
@@ -355,8 +352,10 @@ export const CompactButtonSecondary = styled(ButtonSecondary)`
 `;
 
 export const ButtonTertiary = styled(ButtonBase)`
-  color: ${baseColor};
-    background-color: ${tertiaryColor};
+  color: ${secondaryColor};
+  background-color: ${tertiaryColor};
+  border: solid 1px ${lightBorderColor};
+
 
   &:hover {
     background-color: ${lightBorderColor};
@@ -710,6 +709,10 @@ export const Required = styled.span`
 export const SvgImg = styled.img`
   height: 3rem;
   margin-right: 1rem;
+
+  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
+    height: 2rem;
+  }
 `;
 
 export const SvgSmallImg = styled.img`

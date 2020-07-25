@@ -32,4 +32,5 @@ export enum Routes {
   PrivacyPolicy = '/privacy-policy',
   TermsOfUse = '/terms-of-use',
   YourStats = '/your-stats',
+  About = '/about',
 }

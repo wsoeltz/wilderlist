@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { mobileSize } from '../Utils';
+import { mediumSize, mobileSize } from '../Utils';
 import { standardContainerPadding } from './styleUtils';
 
 export const gridLines = {
@@ -31,7 +31,7 @@ export const gridLines = {
   pageRight: 'wilderListGlobalGridPageRight',
 };
 
-const headerHeight = 5; // in rem
+const headerHeight = 3.5; // in rem
 const smallHeaderHeight = 3; // in rem
 
 export const smallHeaderBreakpoint = 1000;
@@ -131,17 +131,17 @@ export const ContentBody = styled.div`
   }
 `;
 
-const mediumColumnBreakpoint = 1400;
+// const mediumColumnBreakpoint = 1400;
 
 export const ContentLeftLarge = styled(BaseContentElement)`
   grid-column: ${gridLines.pageLeft} / ${gridLines.pageRight};
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
 
-  @media(min-width: ${mediumColumnBreakpoint}px) {
+  @media(min-width: ${mobileSize}px) {
     grid-column: ${gridLines.pageLeft} / ${gridLines.column6};
   }
 
-  @media(min-width: ${mobileSize}px) {
+  @media(min-width: ${mediumSize}px) {
     grid-column: ${gridLines.pageLeft} / ${gridLines.column7};
   }
 `;
@@ -151,13 +151,13 @@ export const ContentRightSmall = styled(BaseContentElement)`
   width: 0;
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
 
-  @media(min-width: ${mediumColumnBreakpoint}px) {
-    grid-column: ${gridLines.column6} / ${gridLines.pageRight};
-  }
-
   @media(min-width: ${mobileSize}px) {
     height: auto;
     width: auto;
+    grid-column: ${gridLines.column6} / ${gridLines.pageRight};
+  }
+
+  @media(min-width: ${mediumSize}px) {
     grid-column: ${gridLines.column7} / ${gridLines.pageRight};
   }
 `;
@@ -166,7 +166,12 @@ export const ContentLeftSmall = styled(BaseContentElement)`
   grid-column: ${gridLines.pageLeft} / ${gridLines.pageRight};
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
 
+
   @media(min-width: ${mobileSize}px) {
+    grid-column: ${gridLines.pageLeft} / ${gridLines.column6};
+  }
+
+  @media(min-width: ${mediumSize}px) {
     grid-column: ${gridLines.pageLeft} / ${gridLines.column5};
   }
 `;
@@ -179,6 +184,10 @@ export const ContentRightLarge = styled(BaseContentElement)`
   @media(min-width: ${mobileSize}px) {
     height: auto;
     width: auto;
+    grid-column: ${gridLines.column6} / ${gridLines.pageRight};
+  }
+
+  @media(min-width: ${mediumSize}px) {
     grid-column: ${gridLines.column5} / ${gridLines.pageRight};
   }
 `;

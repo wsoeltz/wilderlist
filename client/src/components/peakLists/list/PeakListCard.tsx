@@ -18,6 +18,7 @@ import {
   CompactButtonPrimary,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
+import {mediumSize, mobileSize} from '../../../Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import ImportAscentNotification from '../import/ImportAscentsNotification';
 import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
@@ -44,6 +45,10 @@ export const Root = styled(Card)`
   grid-column-gap: 1rem;
   grid-template-rows: auto auto;
   position: relative;
+
+  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
+    grid-template-columns: 6.875rem 1fr;
+  }
 
   @media(max-width: ${smallCardBreakpoint}px) {
     grid-template-columns: 8rem 1fr;

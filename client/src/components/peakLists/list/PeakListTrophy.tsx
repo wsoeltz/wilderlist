@@ -7,6 +7,7 @@ import {
   otherUserPeakListLink,
   searchListDetailLink,
 } from '../../../routing/Utils';
+import {mediumSize, mobileSize} from '../../../Utils';
 import DynamicLink from '../../sharedComponents/DynamicLink';
 import MountainLogo from '../mountainLogo';
 import { CardPeakListDatum } from './ListPeakLists';
@@ -36,6 +37,11 @@ const Root = styled.div`
 
   &:hover {
     transform: scale(1);
+  }
+
+  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
+    width: ${dimensionsSmall}rem;
+    height: ${dimensionsSmall}rem;
   }
 
   @media(max-width: 500px) {
