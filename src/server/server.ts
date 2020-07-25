@@ -405,16 +405,16 @@ if (process.env.NODE_ENV === 'production') {
           if (mtnData !== null) {
             const stateData = mtnData.state !== null ?
               await getStateData(mtnData.state as unknown as string) : null;
-            const state = stateData && stateData.abbreviation
-              ? ` (${stateData.abbreviation})` : '';
+            const state = stateData && stateData.name
+              ? `, ${stateData.name}` : '';
             // replace the special strings with server generated strings
-            data = data.replace(/\$OG_TITLE/g,
-              `${mtnData.name + state} - Wilderlist`,
-            );
+            const title = `${mtnData.name + state} - Wilderlist`;
+            data = data.replace(/\$OG_TITLE/g, title);
             data = data.replace(/\$CANONICAL_URL/g,
               `https://www.wilderlist.app/mountain/${req.params.id}`,
             );
-            const result  = data.replace(/\$OG_DESCRIPTION/g, getMtnDescription(mtnData, stateData));
+            const description = await getMtnDescription(mtnData, stateData);
+            const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
             throw new Error('Incorrect List ID ' + req.params.id);

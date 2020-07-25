@@ -59,6 +59,29 @@ export const getListData = async (id: string) => {
   }
 };
 
+const getMostPopularListsData = async (mtn: IMountain) => {
+  try {
+    const listIds = mtn.lists.map(val => (val as any).toString());
+    const listRes: any = await PeakList.find({_id: {$in: listIds}})
+                      .limit(1)
+                      .sort({ numUsers: -1, name: 1 });
+
+    if (listRes) {
+      const mtnIds = listRes[0].mountains.map((val: any) => (val as any).toString());
+      const mtnRes: any = await Mountain.find({_id: {$in: mtnIds}})
+                      .sort({ elevation: -1, name: 1 });
+      if (mtnRes) {
+        return {name: listRes[0].name, mountains: mtnRes};
+      }
+    }
+
+    return null;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getMountainData = async (id: string) => {
   try {
     const res = await Mountain.findById(id);
@@ -94,31 +117,56 @@ export const getType = (type: PeakListVariants) => {
   }
 };
 
-function toDegreesMinutesAndSeconds(coordinate: number) {
-    const absolute = Math.abs(coordinate);
-    const degrees = Math.floor(absolute);
-    const minutesNotTruncated = (absolute - degrees) * 60;
-    const minutes = Math.floor(minutesNotTruncated);
-    const seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-
-    return `${degrees}° ${minutes}&apos; ${seconds}&quot;`;
-}
-
-const convertDMS = (lat: number, lng: number) => {
-    const latitude = toDegreesMinutesAndSeconds(lat);
-    const latitudeCardinal = lat >= 0 ? 'N' : 'S';
-
-    const longitude = toDegreesMinutesAndSeconds(lng);
-    const longitudeCardinal = lng >= 0 ? 'E' : 'W';
-
-    return { lat: `${latitude} ${latitudeCardinal}`, long: `${longitude} ${longitudeCardinal}`};
+const ordinalSuffix = ([input]: [number]): string => {
+  const j = input % 10, k = input % 100;
+  if (j === 1 && k !== 11) {
+      return 'st';
+  }
+  if (j === 2 && k !== 12) {
+      return 'nd';
+  }
+  if (j === 3 && k !== 13) {
+      return 'rd';
+  }
+  return 'th';
+};
+const ordinalNumber = ([input]: [number]): string => {
+  return input + ordinalSuffix([input]);
 };
 
-export const getMtnDescription = (mtn: IMountain, state: IState | null) => {
-  const {lat, long} = convertDMS(mtn.latitude, mtn.longitude);
-  const stateText = state && state.name
-    ? ` in the state of ${state.name}` : '';
-  return `${mtn.name} stands at an elevation of ${mtn.elevation}ft and is located at ${lat}, ${long}${stateText}. Look up trail maps, current weather, and trip reports for ${mtn.name}.`;
+export const getMtnDescription = async (mtn: IMountain, state: IState | null) => {
+  let listData: any | null;
+  if (mtn.lists && mtn.lists.length) {
+    listData = await getMostPopularListsData(mtn);
+  } else {
+    listData = null;
+  }
+  let mountainsList: any[];
+  let placeText: string;
+  if (listData) {
+    mountainsList = listData.mountains;
+    placeText = `on the ${listData.name}`;
+  } else {
+    mountainsList = [];
+    placeText = '';
+  }
+  const allStringIds: string[] = mountainsList.map((v: any) => v._id.toString());
+  const position = allStringIds.indexOf((mtn as any)._id.toString());
+  const percent = position / mountainsList.length;
+  let positionText: string;
+  if (position === 0) {
+    positionText = 'largest';
+  } else if (position + 1 === mountainsList.length) {
+    positionText = 'smallest';
+  } else if (percent > 0.7) {
+    positionText = ordinalNumber([mountainsList.length - position]) + ' smallest';
+  } else {
+    positionText = ordinalNumber([position + 1]) + ' largest';
+  }
+  const additionalText = positionText && placeText ? ` and is the ${positionText} point ${placeText}` : '';
+  const stateText = state && state.abbreviation
+    ? `, ${state.abbreviation}` : '';
+  return `${mtn.name}${stateText} stands at ${mtn.elevation}ft high${additionalText}. Look up nearby trails, camping, driving directions, weather forecasts, and trip reports for ${mtn.name}.`;
 };
 
 export const getListDescription = (list: IPeakList) => {
