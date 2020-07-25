@@ -522,7 +522,7 @@ const MapPopup = (props: Props) => {
       });
     };
     popup = (
-      <Popup
+      <StyledPopup
         coordinates={[popupData.longitude, popupData.latitude]}
       >
         <PopupHeader>
@@ -548,7 +548,7 @@ const MapPopup = (props: Props) => {
        </PopupHeader>
        {drivingContent}
         <ClosePopup onClick={closePopup}>×</ClosePopup>
-      </Popup>
+      </StyledPopup>
     );
   } else if (popupInfo.type === PopupDataTypes.Campsite) {
     const {data: popupData} = popupInfo;
@@ -606,7 +606,7 @@ const MapPopup = (props: Props) => {
       });
     };
     popup = (
-      <Popup
+      <StyledPopup
         coordinates={[popupData.longitude, popupData.latitude]}
       >
         <PopupHeader>
@@ -628,7 +628,7 @@ const MapPopup = (props: Props) => {
        </PopupHeader>
        {drivingContent}
         <ClosePopup onClick={closePopup}>×</ClosePopup>
-      </Popup>
+      </StyledPopup>
     );
   } else {
     popup = <></>;
