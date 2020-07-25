@@ -283,14 +283,13 @@ header-text-menu-terms-of-use = Terms of Use
 notification-bar-ascent-marked = marked you as hiking
 
 login-page-plan-your-trip-title = Plan your trip
-login-page-plan-your-trip-desc = ● Maps ● Trails ● Weather ● Trip Reports ● Driving Distances
+login-page-plan-your-trip-desc = ● Maps ● Trails ● Camping ● Weather Forecasts ● Trip Reports ● Driving Directions
 login-page-track-your-adventure-title = Track your adventure
-login-page-track-your-adventure-li-1 = ● Track your hikes in one place, across all your hiking lists
-login-page-track-your-adventure-li-2 = ● Import existing hikes from any spreadsheet
-login-page-track-your-adventure-li-3 = ● Visualize your data and lifetime stats
-login-page-track-your-adventure-li-4 = ● Share and compare with friends and fellow hikers
-login-page-track-your-adventure-li-5 = ● Export and download your hiking data
-login-page-track-your-adventure-li-6 = ● Create and share your own lists
+login-page-track-your-adventure-li-1 = ● Plan your trip with up-to-date weather forecasts, trail conditions, and mountain elevation
+login-page-track-your-adventure-li-2 = ● Find the best trails and nearby campsites with the easy to use interactive map 
+login-page-track-your-adventure-li-3 = ● Update your recent hiking trips for your recording keep and share your activity with friends
+login-page-track-your-adventure-li-4 = ● Easily upload your existing hiking lists and download recent activity
+login-page-track-your-adventure-li-5 = ● Create and share your own lists
 login-page-sign-up-for-free = Sign Up For Free
 
 

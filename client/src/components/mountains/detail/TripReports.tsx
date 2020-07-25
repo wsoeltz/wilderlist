@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { userProfileLink } from '../../../routing/Utils';
+import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
   CollapsedParagraph,
@@ -20,6 +20,7 @@ import {
 import { Conditions, TripReport } from '../../../types/graphQLTypes';
 import {
   isValidURL,
+  notEmpty,
 } from '../../../Utils';
 import {
   formatStringDate,
@@ -265,6 +266,59 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
           notes = null;
         }
 
+        const filteredMountains = report.mountains.filter(notEmpty);
+
+        let mountainList: React.ReactElement<any> | null;
+        if (filteredMountains.length === 0) {
+          mountainList = null;
+        } else if (filteredMountains.length === 1) {
+          mountainList = (
+            <Section>
+              <SectionTitle>{getFluentString('global-text-value-mountain')}: </SectionTitle>
+              <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
+            </Section>
+          );
+        } else if (filteredMountains.length === 2) {
+          mountainList = (
+            <Section>
+              <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
+              <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
+              {' and '}
+              <BoldLink to={mountainDetailLink(filteredMountains[1].id)}>{filteredMountains[1].name}</BoldLink>
+            </Section>
+          );
+        } else {
+          const mountainsText: Array<React.ReactElement<any>> = [];
+          filteredMountains.forEach((mountain, index) => {
+            if (index === filteredMountains.length - 2) {
+              mountainsText.push(
+                <React.Fragment  key={mountain.id + report.id}>
+                  <BoldLink to={mountainDetailLink(mountain.id)}>{mountain.name}</BoldLink>
+                  {' and '}
+                </React.Fragment>,
+              );
+            } else if (index === filteredMountains.length - 1) {
+              mountainsText.push(
+                <BoldLink to={mountainDetailLink(mountain.id)} key={mountain.id + report.id}>
+                  {mountain.name}
+                </BoldLink>,
+              );
+            } else {
+              mountainsText.push(
+                <BoldLink to={mountainDetailLink(mountain.id)} key={mountain.id + report.id}>
+                  {mountain.name + ', '}
+                </BoldLink>,
+              );
+            }
+          });
+          mountainList = (
+            <Section>
+              <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
+              {mountainsText}
+            </Section>
+          );
+        }
+
         const link = report.link && isValidURL(report.link) ? (
           <Section>
             <SectionTitle>
@@ -285,7 +339,11 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
           ) : <span>{authorName}</span>;
 
         return (
-          <ReportContainer key={report.id} id={`trip-report-${report.date}`}>
+          <ReportContainer
+            key={report.id}
+            id={`trip-report-${report.date}`}
+            onClick={() => setFullReport(report)}
+          >
             <ReportHeader>
               <SemiBold>
                 {'On '}
@@ -305,6 +363,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
             <ReportBody>
               {conditionsList}
               {notes}
+              {mountainList}
               {link}
             </ReportBody>
           </ReportContainer>

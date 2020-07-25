@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.0.0",
+    "@sentry/node": "^5.20.0",
     "@types/body-parser": "^1.17.0",
     "@types/cookie-session": "^2.0.37",
     "@types/cors": "^2.8.5",

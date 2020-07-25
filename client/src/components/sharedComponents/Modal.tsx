@@ -120,12 +120,24 @@ const Modal = (props: Props) => {
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
   const [isModalRendered, setIsModalRendered] = useState<boolean>(false);
   useEffect(() => {
+    window.history.pushState('forward', '', '');
     const node = document.querySelector<HTMLElement>(`#${overlayPortalContainerId}`);
     if (node !== null) {
       overlayPortalContainerNodeRef.current = node;
       setIsModalRendered(true);
     }
   }, []);
+
+  useEffect(() => {
+    const closeModalOnBackClick = (e: Event) => {
+      e.preventDefault();
+      onClose();
+    };
+    window.addEventListener('popstate', closeModalOnBackClick);
+    return () => {
+      window.removeEventListener('popstate', closeModalOnBackClick);
+    };
+  }, [onClose]);
 
   const { windowWidth } = useContext(AppContext);
 
