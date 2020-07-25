@@ -243,7 +243,7 @@ const MountainForm = (props: Props) => {
   ) : null;
 
   const coordinate: CoordinateWithDates = {
-    id: '',
+    id: initialData.id,
     latitude, longitude,
     name: name ? name : `[${getFluentString('create-mountain-mountain-name-placeholder')}]`,
     elevation,
