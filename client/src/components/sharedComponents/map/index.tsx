@@ -1,9 +1,12 @@
 import {
   faSync,
 } from '@fortawesome/free-solid-svg-icons';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { GetString } from 'fluent-react/compat';
 import debounce from 'lodash/debounce';
 import sortBy from 'lodash/sortBy';
+import mapboxgl from 'mapbox-gl';
 import React, {
   useCallback,
   useContext,
@@ -279,6 +282,8 @@ const Map = (props: Props) => {
   const [directionsCache, setDirectionsCache] = useState<Array<DrivingData & {key: string}>>([]);
   const [directionsData, setDirectionsData] = useState<DrivingData | undefined>(undefined);
 
+  const [hasGeoCoder, setHasGeoCoder] = useState<boolean>(false);
+
   useEffect(() => {
     if (usersLocation &&
         usersLocation.loading === false &&
@@ -384,6 +389,35 @@ const Map = (props: Props) => {
       map.resize();
     }
   }, [map, toggleVisibility]);
+
+  useEffect(() => {
+    if (map && !hasGeoCoder) {
+      map.addControl(
+        new MapboxGeocoder({
+          accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
+          mapboxgl,
+          placeholder: 'Find a location',
+          countries: 'us',
+          marker: false,
+          flyTo: {
+            bearing: 1,
+            // These options control the flight curve, making it move
+            // slowly and zoom out almost completely before starting
+            // to pan.
+            speed: 4, // make the flying slow
+            curve: 1, // change the speed at which it zooms out
+            // This can be any easing function: it takes a number between
+            // 0 and 1 and returns another number between 0 and 1.
+            easing(t: any) {
+              return t;
+            },
+          },
+        }),
+        'top-left',
+      );
+      setHasGeoCoder(true);
+    }
+  }, [map, hasGeoCoder, useGenericFunctionality]);
 
   const previousUserLocation = usePrevious(usersLocation);
   useEffect(() => {
