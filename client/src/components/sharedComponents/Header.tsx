@@ -234,6 +234,7 @@ const Header = (props: RouteComponentProps) => {
             <MainNav>
               {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'), faHiking)}
               {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
+              {createLink(Routes.About, getFluentString('header-text-menu-item-about'), faInfoCircle)}
             </MainNav>
             <UserMenu
               user={user}
