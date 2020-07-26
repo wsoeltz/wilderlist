@@ -129,6 +129,7 @@ const MountainForm = (props: Props) => {
   const [stringLong, setStringLong] = useState<string>(initialData.longitude);
 
   const [stringElevation, setStringElevation] = useState<string>(initialData.elevation);
+  const [autoElevation, setAutoElevation] = useState<string>(initialData.elevation);
   const [selectedState, setSelectedState] = useState<State['id'] | null>(
     initialData.state === null ? null : initialData.state.id,
   );
@@ -144,6 +145,7 @@ const MountainForm = (props: Props) => {
     if (loadingLocationData === true) {
         setSelectedState(null);
         setStringElevation('');
+        setAutoElevation('');
     } else {
       if (locationData && locationData.state !== null) {
         const targetState = states.find(
@@ -155,6 +157,7 @@ const MountainForm = (props: Props) => {
       if (locationData && locationData.elevation !== null) {
         const newElevation = locationData.elevation.toString();
         setStringElevation(curVal => newElevation !== curVal ? newElevation : curVal);
+        setAutoElevation(curVal => newElevation !== curVal ? newElevation : curVal);
       }
     }
   }, [locationData, loadingLocationData, states]);
@@ -501,6 +504,7 @@ const MountainForm = (props: Props) => {
               </LabelContainer>
               <DelayedInput
                 id={'create-mountain-elevation'}
+                key={'elevation-' + autoElevation}
                 type={'number'}
                 min={elevationMin}
                 max={elevationMax}
