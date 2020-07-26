@@ -85,11 +85,9 @@ const Map = (props: Props) => {
     if (distance > 25) {
       let newDistance: number;
       if (currentZoom && currentZoom < 4) {
-        newDistance = 20;
-      } else if (currentZoom && currentZoom < 4) {
-        newDistance = 5;
+        newDistance = 2;
       } else if (currentZoom && currentZoom < 7.5) {
-        newDistance = 1;
+        newDistance = 0.9;
       } else {
         newDistance = 0.45;
       }
