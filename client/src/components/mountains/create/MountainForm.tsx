@@ -126,7 +126,9 @@ const MountainForm = (props: Props) => {
   const [name, setName] = useState<string>(initialData.name);
 
   const [stringLat, setStringLat] = useState<string>(initialData.latitude);
+  const [autoLat, setAutoLat] = useState<string>(initialData.latitude);
   const [stringLong, setStringLong] = useState<string>(initialData.longitude);
+  const [autoLong, setAutoLong] = useState<string>(initialData.longitude);
 
   const [stringElevation, setStringElevation] = useState<string>(initialData.elevation);
   const [autoElevation, setAutoElevation] = useState<string>(initialData.elevation);
@@ -255,6 +257,8 @@ const MountainForm = (props: Props) => {
   const setLatLongFromMap = (lat: string | number, long: string | number) => {
     setStringLat('' + lat);
     setStringLong('' + long);
+    setAutoLat('' + lat);
+    setAutoLong('' + long);
   };
 
   let map: React.ReactElement<any> | null;
@@ -451,6 +455,7 @@ const MountainForm = (props: Props) => {
                 </Label>
               </LabelContainer>
               <DelayedInput
+                key={'latitude-' + autoLat}
                 id={'create-mountain-latitude'}
                 type={'number'}
                 min={latitudeMin}
@@ -469,6 +474,7 @@ const MountainForm = (props: Props) => {
                 </Label>
               </LabelContainer>
               <DelayedInput
+                key={'longitude-' + autoLong}
                 id={'create-mountain-longitude'}
                 type={'number'}
                 min={longitudeMin}
