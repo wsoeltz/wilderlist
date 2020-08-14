@@ -36,8 +36,8 @@ import {
   User,
 } from '../../../types/graphQLTypes';
 import checkForMountainDataIssues from '../../../utilities/checkForMountainDataIssues';
-import { convertDMS } from '../../../Utils';
 import {
+  convertDMS,
   isValidURL,
 } from '../../../Utils';
 import {UserContext} from '../../App';
@@ -499,7 +499,8 @@ const MountainDetail = (props: Props) => {
       }
 
       const metaDescription = getFluentString('meta-data-mountain-detail-description', {
-        name, lat, long, elevation, state: state && state.name ? state && state.name : 'none',
+        name, elevation, state: state && state.abbreviation ? ', ' + state.abbreviation : '',
+        additionaltext: '',
       });
 
       const metaData = setOwnMetaData === true ? (
@@ -644,9 +645,9 @@ const MountainDetail = (props: Props) => {
           />
           <IncludedLists
             getFluentString={getFluentString}
-            mountainId={id}
-            mountainName={name}
+            mountainDatum={mountain}
             numLists={lists.length}
+            setMetaDescription={setOwnMetaData === true ? true : false}
           />
           {flagModal}
         </>

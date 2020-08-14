@@ -166,15 +166,15 @@ export const getMtnDescription = async (mtn: IMountain, state: IState | null) =>
   const additionalText = positionText && placeText ? ` and is the ${positionText} point ${placeText}` : '';
   const stateText = state && state.abbreviation
     ? `, ${state.abbreviation}` : '';
-  return `${mtn.name}${stateText} stands at ${mtn.elevation}ft high${additionalText}. Look up nearby trails, camping, driving directions, weather forecasts, and trip reports for ${mtn.name}.`;
+  return `${mtn.name}${stateText} stands at ${mtn.elevation}ft high${additionalText}. View trails, camping, directions, weather, and trip reports for ${mtn.name}.`;
 };
 
 export const getListDescription = (list: IPeakList) => {
   const { type } = list;
   if (type === PeakListVariants.standard) {
-    return `Look up maps, current weather, and trip reports for all ${list.mountains.length} mountains in the ${list.name} (${list.shortName}).`;
+    return `Plan and track your ascents of ${list.name} (${list.shortName}) with maps, weather, trip reports and directions for all ${list.mountains.length} mountains.`;
   } else if (type === PeakListVariants.winter) {
-    return `Look up maps, current weather, and trip reports for the ${list.name} (${list.shortName}) in the Winter.`;
+    return `Plan and track your ascents of ${list.name} (${list.shortName}) in the winter with maps, weather, trip reports and directions for all ${list.mountains.length} mountains.`;
   } else if (type === PeakListVariants.fourSeason) {
     return `Plan and track your 4-Season ascents on the mountains of the ${list.name} (${list.shortName}) with trail maps, weather and trip reports, and robust tracking tools.`;
   } else if (type === PeakListVariants.grid) {

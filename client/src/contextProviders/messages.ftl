@@ -26,18 +26,15 @@ meta-data-compare-peak-list-title = Comparing { $title }{
   } with { $user } - Wilderlist
 meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
 
-meta-data-mountain-detail-description = { $name } stands at an elevation of { $elevation }ft and is located at { $lat }, { $long }{
-  $state ->
-  [none] {""}
-  *[other] {" "} in the state of { $state }
-}. Look up trail maps, current weather, and trip reports for { $name }.
+meta-data-mountain-detail-description = { $name }{ $state } stands at { $elevation }ft high{ $additionaltext }. View trails, camping, directions, weather, and trip reports for { $name }.
+
 meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
 meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
 
 meta-data-peak-list-detail-description = {
   $type ->
-  *[standard] Look up maps, current weather, and trip reports for all { $num-mountains } mountains in the { $list-name } ({ $list-short-name }).
-  [winter] Look up maps, current weather, and trip reports for the { $list-name } ({ $list-short-name }) in the Winter.
+  *[standard] Plan and track your ascents of { $list-name } ({ $list-short-name }) with maps, weather, trip reports and directions for all { $num-mountains } mountains.
+  [winter] Plan and track your ascents of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions for all { $num-mountains } mountains.
   [fourSeason] Plan and track your 4-Season ascents on the mountains of the { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
   [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and robust tracking tools.
 }
