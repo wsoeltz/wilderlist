@@ -29,7 +29,7 @@ import {
 } from './routing';
 import getSitemap, {getSiteMapIndex, SitemapType} from './routing/getSitemap';
 import getGridApplication from './utilities/getGridApplication/index';
-import getOgImage from './utilities/getOgImage';
+import getOgImage, {getDefaultOgImage} from './utilities/getOgImage';
 import getRecreationData from './utilities/getRecreationData';
 import getRecreationSiteData from './utilities/getRecreationSiteData';
 import getStateByAbbreviation from './utilities/getStateByAbbreviation';
@@ -163,7 +163,9 @@ app.get('/api/state-by-abbreviation', async (req, res) => {
   }
 });
 
-app.get('/og-image/mountain/:mountainId/image.jpg', async (req, res) => {
+const mountainOgImageUrl = '/og-image/mountain/:mountainId/image.jpg';
+const setMountainOgImageUrl = (id: string) => mountainOgImageUrl.replace(':mountainId', id);
+app.get(mountainOgImageUrl, async (req, res) => {
   try {
     const mtnData = await getMountainData(req.params.mountainId);
     const name = mtnData && mtnData.name ? mtnData.name : '';
@@ -182,7 +184,9 @@ app.get('/og-image/mountain/:mountainId/image.jpg', async (req, res) => {
   }
 });
 
-app.get('/og-image/peaklist/:peakListId/image.jpg', async (req, res) => {
+const peakListOgImageUrl = '/og-image/peaklist/:peakListId/image.jpg';
+const setPeakListOgImageUrl = (id: string) => peakListOgImageUrl.replace(':peakListId', id);
+app.get(peakListOgImageUrl, async (req, res) => {
   try {
     let peakListData = await getListData(req.params.peakListId);
     peakListData = peakListData && peakListData.parent ?
@@ -209,8 +213,20 @@ if (process.env.NODE_ENV === 'production') {
   const baseUrl = 'https://www.wilderlist.app';
   const defaultTitle = 'Wilderlist';
   const defaultDescription = 'Track, plan and share your hiking and mountaineering adventures.';
+  const defaultOgImageUrl = '/og-image/default/image.jpg';
 
   const path = require('path');
+
+  app.get(defaultOgImageUrl, async (req, res) => {
+    try {
+      const result = await getDefaultOgImage();
+      res.type('image/jpeg');
+      res.send(result);
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
+  });
 
   app.get('/sitemap/index.xml', async (req, res) => {
     try {
@@ -281,6 +297,7 @@ if (process.env.NODE_ENV === 'production') {
       // replace the special strings with server generated strings
       data = data.replace(/\$OG_TITLE/g, defaultTitle);
       data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+      data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
       const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
       res.send(result);
     });
@@ -307,6 +324,7 @@ if (process.env.NODE_ENV === 'production') {
       data = data.replace(/\$CANONICAL_URL/g,
         `https://www.wilderlist.app/list/${Routes.PrivacyPolicy}`,
       );
+      data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
       const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Privacy Policy.");
       res.send(result);
     });
@@ -326,6 +344,7 @@ if (process.env.NODE_ENV === 'production') {
       data = data.replace(/\$CANONICAL_URL/g,
         `https://www.wilderlist.app/list/${Routes.TermsOfUse}`,
       );
+      data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
       const result  = data.replace(/\$OG_DESCRIPTION/g, "Read Wilderlist's Terms of Use.");
       res.send(result);
     });
@@ -345,6 +364,7 @@ if (process.env.NODE_ENV === 'production') {
       if (req.params.id === 'search') {
         data = data.replace(/\$OG_TITLE/g, 'Search Hiking Lists - Wilderlist');
         data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/list/search`);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
         const result  =
           data.replace(/\$OG_DESCRIPTION/g,
             /* tslint:disable */
@@ -362,6 +382,7 @@ if (process.env.NODE_ENV === 'production') {
             data = data.replace(/\$CANONICAL_URL/g,
               `https://www.wilderlist.app/list/${req.params.id}`,
             );
+            data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
             const result  = data.replace(/\$OG_DESCRIPTION/g, getListDescription(listData));
             res.send(result);
           } else {
@@ -375,6 +396,7 @@ if (process.env.NODE_ENV === 'production') {
           const canonicalUrl = baseUrl + req.path;
           data = data.replace(/\$OG_TITLE/g, defaultTitle);
           data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
           const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
           res.send(result);
 
@@ -405,6 +427,7 @@ if (process.env.NODE_ENV === 'production') {
           data = data.replace(/\$CANONICAL_URL/g,
             `https://www.wilderlist.app/list/${req.params.id}`,
           );
+          data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
           const result  = data.replace(/\$OG_DESCRIPTION/g, getListDescription(listData));
           res.send(result);
         } else {
@@ -418,6 +441,7 @@ if (process.env.NODE_ENV === 'production') {
         const canonicalUrl = baseUrl + req.path;
         data = data.replace(/\$OG_TITLE/g, defaultTitle);
         data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
         const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
         res.send(result);
 
@@ -440,6 +464,7 @@ if (process.env.NODE_ENV === 'production') {
       if (req.params.id === 'search') {
         data = data.replace(/\$OG_TITLE/g, 'Search Mountains - Wilderlist');
         data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/mountains/search`);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
         const result  =
           data.replace(/\$OG_DESCRIPTION/g, 'Search for mountains and find maps, trails, weather and trip reports.');
         res.send(result);
@@ -457,6 +482,7 @@ if (process.env.NODE_ENV === 'production') {
             data = data.replace(/\$CANONICAL_URL/g,
               `https://www.wilderlist.app/mountain/${req.params.id}`,
             );
+            data = data.replace(/\$OG_IMAGE/g, setMountainOgImageUrl(req.params.id));
             const description = await getMtnDescription(mtnData, stateData);
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
@@ -471,6 +497,7 @@ if (process.env.NODE_ENV === 'production') {
           const canonicalUrl = baseUrl + req.path;
           data = data.replace(/\$OG_TITLE/g, defaultTitle);
           data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
           const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
           res.send(result);
 
@@ -498,6 +525,7 @@ if (process.env.NODE_ENV === 'production') {
       // replace the special strings with server generated strings
       data = data.replace(/\$OG_TITLE/g, defaultTitle);
       data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+      data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
       const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
       res.send(result);
     });

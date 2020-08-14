@@ -1,6 +1,22 @@
 import { createCanvas, loadImage } from 'canvas';
 const path = require('path');
 
+export const getDefaultOgImage = async () => {
+  const width = 1200;
+  const height = 630;
+
+  const canvas = createCanvas(width, height);
+  const context = canvas.getContext('2d');
+
+  const background = await loadImage(
+    path.join(__dirname, '../../../../src/server/utilities/getOgImage/og_image.jpg'),
+  );
+  context.drawImage(background, 0, 0, 1200, 630);
+
+  const buffer = canvas.toBuffer('image/jpeg');
+  return buffer;
+};
+
 export default async ({text, subtext}: {text: string, subtext: string}) => {
   const width = 1200;
   const height = 630;
