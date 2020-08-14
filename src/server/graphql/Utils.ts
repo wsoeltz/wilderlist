@@ -1,7 +1,8 @@
 /* tslint:disable:await-promise */
 import sortBy from 'lodash/sortBy';
 import mongoose from 'mongoose';
-import { PeakListVariants, Region, State } from './graphQLTypes';
+import { PeakListVariants, Region as IRegion, State } from './graphQLTypes';
+import {Region} from './schema/queryTypes/regionType';
 
 export async function asyncForEach(array: any[], callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -114,7 +115,7 @@ export const formatStringDate = (date: string) => {
 export interface RawStateDatum {
   _id: State['id'];
   name: State['name'];
-  regions: Array<Region['id']>;
+  regions: Array<IRegion['id']>;
 }
 
 export interface RawRegionDatum {
@@ -134,7 +135,7 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
   } else if (sortedStates.length === 3) {
     return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
   } else if (sortedStates.length > 2) {
-    const regionsArray: Array<Region['id']> = [];
+    const regionsArray: Array<IRegion['id']> = [];
     sortedStates.forEach(({regions}) =>
       regions.forEach(
         r1 => {
@@ -145,8 +146,9 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
     );
     if (regionsArray.length) {
       try {
-        const regionsData: Array<RawRegionDatum | null | undefined> | undefined
-          = await regionLoader.loadMany(regionsArray);
+        const regionsData: Array<RawRegionDatum | null | undefined> | undefined = regionLoader
+          ? await regionLoader.loadMany(regionsArray)
+          : await Region.find({_id: {$in: regionsArray}});
         if (regionsData) {
           const nonNullRegions
             = regionsData.filter(region => region !== null && region !== undefined) as RawRegionDatum[];

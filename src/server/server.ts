@@ -14,6 +14,8 @@ import googleAuth from './auth/google';
 import redditAuth from './auth/reddit';
 import buildDataloaders from './dataloaders';
 import schema from './graphql/schema';
+import {State} from './graphql/schema/queryTypes/stateType';
+import {getStatesOrRegion} from './graphql/Utils';
 import requireLogin from './middleware/requireLogin';
 import notificationRoutes from './notifications';
 import {
@@ -171,6 +173,28 @@ app.get('/og-image/mountain/:mountainId/image.jpg', async (req, res) => {
     const state = stateData && stateData.name
       ? stateData.name + ' | ' : '';
     const subtext = state + elevation;
+    const result = await getOgImage({text: name, subtext});
+    res.type('image/jpeg');
+    res.send(result);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.get('/og-image/peaklist/:peakListId/image.jpg', async (req, res) => {
+  try {
+    let peakListData = await getListData(req.params.peakListId);
+    peakListData = peakListData && peakListData.parent ?
+      await getListData(peakListData.parent as any as string) : peakListData;
+    const id = peakListData && peakListData.id ? peakListData.id : '';
+    const name = peakListData && peakListData.name ? peakListData.name : '';
+    const numMountains = peakListData && peakListData.mountains ? peakListData.mountains.length : 0;
+    const stateIds = peakListData && peakListData.states ? peakListData.states : [];
+    /* tslint:disable:await-promise */
+    const stateData = await State.find({_id: {$in: stateIds}});
+    const stateOrRegionText = await getStatesOrRegion(stateData as any, undefined, id);
+    const subtext = numMountains + ' peaks | ' + stateOrRegionText;
     const result = await getOgImage({text: name, subtext});
     res.type('image/jpeg');
     res.send(result);

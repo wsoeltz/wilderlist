@@ -13,15 +13,12 @@ export default async ({text, subtext}: {text: string, subtext: string}) => {
   );
   context.drawImage(background, 0, 0, 1200, 630);
 
-  const name = 'Bald Hill';
-  let fontSize: number = 24 / name.length * 70;
+  let fontSize: number = 24 / text.length * 70;
   fontSize = fontSize > 90 ? 90 : fontSize;
 
   context.font = `regular ${fontSize}px Courier`;
   context.textAlign = 'center';
   context.textBaseline = 'bottom';
-
-  // const text = name;
 
   const top = 265;
 
@@ -31,7 +28,6 @@ export default async ({text, subtext}: {text: string, subtext: string}) => {
   const subtextFontSize = fontSize < 32 ? fontSize - 4 : 32;
 
   context.font = `regular ${subtextFontSize}px Courier`;
-  // const subtext = 'New Hampshire | 6398ft';
   context.fillStyle = '#fff';
   context.fillText(subtext, 600, (top - 10) + subtextFontSize * 1.75);
 
