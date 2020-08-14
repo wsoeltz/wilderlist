@@ -70,6 +70,10 @@ const SubtleText = styled.small`
   font-size: 0.75rem;
 `;
 
+const Capitalize = styled.span`
+  text-transform: capitalize;
+`;
+
 interface Props {
   peakList: CompactPeakListDatum;
   active: boolean | null;
@@ -162,7 +166,9 @@ const PeakListCard = (props: Props) => {
               <CollapsedParagraph>
                 {numMountains} Peaks
                 <Seperator>|</Seperator>
+                <Capitalize>
                 {stateOrRegionString}
+                </Capitalize>
               </CollapsedParagraph>
             </CardSubtitle>
           </div>

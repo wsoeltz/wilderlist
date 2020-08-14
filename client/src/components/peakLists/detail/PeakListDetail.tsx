@@ -12,6 +12,7 @@ import {
   FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
+import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -599,11 +600,21 @@ const PeakListDetail = (props: Props) => {
         title = peakList.name;
       }
 
+      let areaText: string;
+      if (stateOrRegionString === 'Across the US') {
+        areaText = ' across the US';
+      } else if (stateOrRegionString) {
+        areaText = ' throughout ' + stateOrRegionString;
+      } else {
+        areaText = '';
+      }
+
       const metaDescription = getFluentString('meta-data-peak-list-detail-description', {
         'list-name': peakList && peakList.name ? peakList.name : '',
         'type': peakList.type,
         'num-mountains': peakList && peakList.mountains ? peakList.mountains.length : 0,
         'list-short-name': peakList && peakList.shortName ? peakList.shortName : '',
+        'state-or-region-string': areaText,
       });
 
       const metaData = setOwnMetaData === true ? (
@@ -621,6 +632,7 @@ const PeakListDetail = (props: Props) => {
             content={metaDescription}
           />
           <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink(id)} />
+          <meta property='og:image' content={setPeakListOgImageUrl(id)} />
         </Helmet>
       ) : null;
 

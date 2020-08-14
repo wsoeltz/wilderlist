@@ -10,6 +10,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
+import { setMountainOgImageUrl } from '../../../routing/routes';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -518,6 +519,7 @@ const MountainDetail = (props: Props) => {
             content={metaDescription}
           />
           <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink(id)} />
+          <meta property='og:image' content={setMountainOgImageUrl(id)} />
         </Helmet>
       ) : null;
 

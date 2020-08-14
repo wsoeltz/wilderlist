@@ -1,7 +1,8 @@
 /* tslint:disable:await-promise */
 import sortBy from 'lodash/sortBy';
 import mongoose from 'mongoose';
-import { PeakListVariants, Region, State } from './graphQLTypes';
+import { PeakListVariants, Region as IRegion, State } from './graphQLTypes';
+import {Region} from './schema/queryTypes/regionType';
 
 export async function asyncForEach(array: any[], callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -114,7 +115,7 @@ export const formatStringDate = (date: string) => {
 export interface RawStateDatum {
   _id: State['id'];
   name: State['name'];
-  regions: Array<Region['id']>;
+  regions: Array<IRegion['id']>;
 }
 
 export interface RawRegionDatum {
@@ -134,7 +135,7 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
   } else if (sortedStates.length === 3) {
     return sortedStates[0].name + ', ' + sortedStates[1].name + ' & ' + sortedStates[2].name;
   } else if (sortedStates.length > 2) {
-    const regionsArray: Array<Region['id']> = [];
+    const regionsArray: Array<IRegion['id']> = [];
     sortedStates.forEach(({regions}) =>
       regions.forEach(
         r1 => {
@@ -145,8 +146,10 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
     );
     if (regionsArray.length) {
       try {
-        const regionsData: Array<RawRegionDatum | null | undefined> | undefined
-          = await regionLoader.loadMany(regionsArray);
+        const regionsData: Array<RawRegionDatum | null | undefined> | undefined = regionLoader
+          ? await regionLoader.loadMany(regionsArray)
+          : await Region.find({_id: {$in: regionsArray}});
+        let output: string = '';
         if (regionsData) {
           const nonNullRegions
             = regionsData.filter(region => region !== null && region !== undefined) as RawRegionDatum[];
@@ -154,33 +157,39 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
           if (nonNullRegions.length === 0) {
             return null;
           } else if (nonNullRegions.length === 1) {
-            return nonNullRegions[0].name;
+            output = nonNullRegions[0].name;
           } else {
             const inclusiveRegions = nonNullRegions.filter(
               (region) => sortedStates.every(
                 ({regions}) => regions.find(_region => _region && region._id.toString() === _region.toString())));
             if (inclusiveRegions.length === 1) {
-              return inclusiveRegions[0].name;
+              output = inclusiveRegions[0].name;
             } else if (nonNullRegions.length > 1) {
               // If they all belong to more than one region, show the more exclusive one
               const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
               if (exclusiveRegions && exclusiveRegions[0]) {
-                return exclusiveRegions[0].name;
+                output = exclusiveRegions[0].name;
               } else if (inclusiveRegions.length === 0) {
                 // if there are no inclusive regions
                 if (nonNullRegions.length === 2) {
                   // if only 2 regions, show them both
-                  return nonNullRegions[0].name + ' & ' + nonNullRegions[1].name;
+                  output = nonNullRegions[0].name + ' & ' + nonNullRegions[1].name;
                 } else if (nonNullRegions.length === 3) {
                   // if only 3 regions, show them all
-                  return nonNullRegions[0].name + ', ' + nonNullRegions[1].name + ' & ' + nonNullRegions[2].name;
+                  output = nonNullRegions[0].name + ', ' + nonNullRegions[1].name + ' & ' + nonNullRegions[2].name;
                 } else {
                   // otherwise just say Across the US
-                  return 'Across the US';
+                  output = 'Across the US';
                 }
               }
             }
           }
+        }
+        if (output.length) {
+          const the = output.startsWith('New England') || output.startsWith('Across') ? '' : 'the ';
+          return the + output;
+        } else {
+          return null;
         }
       } catch (e) {
         console.error(e);
@@ -188,6 +197,5 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
       }
     }
   }
-  // Else list all the regions
   return null;
 };

@@ -34,3 +34,11 @@ export enum Routes {
   YourStats = '/your-stats',
   About = '/about',
 }
+
+export const defaultOgImageUrl = '/og-image/default/image.jpg';
+
+const mountainOgImageUrl = '/og-image/mountain/:mountainId/image.jpg';
+export const setMountainOgImageUrl = (id: string) => mountainOgImageUrl.replace(':mountainId', id);
+
+const peakListOgImageUrl = '/og-image/peaklist/:peakListId/image.jpg';
+export const setPeakListOgImageUrl = (id: string) => peakListOgImageUrl.replace(':peakListId', id);
