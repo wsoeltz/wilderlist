@@ -1,7 +1,7 @@
 import { createCanvas, loadImage } from 'canvas';
 const path = require('path');
 
-export default async () => {
+export default async ({text, subtext}: {text: string, subtext: string}) => {
   const width = 1200;
   const height = 630;
 
@@ -21,7 +21,7 @@ export default async () => {
   context.textAlign = 'center';
   context.textBaseline = 'bottom';
 
-  const text = name;
+  // const text = name;
 
   const top = 265;
 
@@ -31,7 +31,7 @@ export default async () => {
   const subtextFontSize = fontSize < 32 ? fontSize - 4 : 32;
 
   context.font = `regular ${subtextFontSize}px Courier`;
-  const subtext = 'New Hampshire | 6398ft';
+  // const subtext = 'New Hampshire | 6398ft';
   context.fillStyle = '#fff';
   context.fillText(subtext, 600, (top - 10) + subtextFontSize * 1.75);
 

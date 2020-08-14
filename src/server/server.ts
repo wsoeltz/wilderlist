@@ -161,9 +161,17 @@ app.get('/api/state-by-abbreviation', async (req, res) => {
   }
 });
 
-app.get('/og-image/image.jpg', async (req, res) => {
+app.get('/og-image/mountain/:mountainId/image.jpg', async (req, res) => {
   try {
-    const result = await getOgImage();
+    const mtnData = await getMountainData(req.params.mountainId);
+    const name = mtnData && mtnData.name ? mtnData.name : '';
+    const elevation = mtnData && mtnData.elevation ? mtnData.elevation + 'ft' : '';
+    const stateData = mtnData && mtnData.state !== null ?
+      await getStateData(mtnData.state as unknown as string) : null;
+    const state = stateData && stateData.name
+      ? stateData.name + ' | ' : '';
+    const subtext = state + elevation;
+    const result = await getOgImage({text: name, subtext});
     res.type('image/jpeg');
     res.send(result);
   } catch (err) {
