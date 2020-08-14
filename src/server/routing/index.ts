@@ -9,7 +9,10 @@ import {
 import { Mountain } from '../graphql/schema/queryTypes/mountainType';
 import { PeakList } from '../graphql/schema/queryTypes/peakListType';
 import { State } from '../graphql/schema/queryTypes/stateType';
-import { failIfValidOrNonExhaustive } from '../graphql/Utils';
+import {
+  failIfValidOrNonExhaustive,
+  getStatesOrRegion,
+} from '../graphql/Utils';
 
 // This should always reflect the routes found in
 // cient/src/routing/routes.ts
@@ -169,14 +172,24 @@ export const getMtnDescription = async (mtn: IMountain, state: IState | null) =>
   return `${mtn.name}${stateText} stands at ${mtn.elevation}ft high${additionalText}. View trails, camping, directions, weather, and trip reports for ${mtn.name}.`;
 };
 
-export const getListDescription = (list: IPeakList) => {
-  const { type } = list;
+export const getListDescription = async (list: IPeakList) => {
+  const { id, type, states } = list;
+  const stateData = await State.find({_id: {$in: states}});
+  const stateOrRegionText = await getStatesOrRegion(stateData as any, undefined, id);
+  let areaText: string;
+  if (stateOrRegionText === 'Across the US') {
+    areaText = ' across the US';
+  } else if (stateOrRegionText) {
+    areaText = ' throughout ' + stateOrRegionText;
+  } else {
+    areaText = '';
+  }
   if (type === PeakListVariants.standard) {
-    return `Plan and track your ascents of ${list.name} (${list.shortName}) with maps, weather, trip reports and directions for all ${list.mountains.length} mountains.`;
+    return `Plan and track your ascents of the ${list.name} (${list.shortName}) with maps, weather, trip reports and directions for all ${list.mountains.length} peaks${areaText}.`;
   } else if (type === PeakListVariants.winter) {
-    return `Plan and track your ascents of ${list.name} (${list.shortName}) in the winter with maps, weather, trip reports and directions for all ${list.mountains.length} mountains.`;
+    return `Plan and track your ascents of ${list.name} (${list.shortName}) in the winter with maps, weather, trip reports and directions for all ${list.mountains.length} peaks.`;
   } else if (type === PeakListVariants.fourSeason) {
-    return `Plan and track your 4-Season ascents on the mountains of the ${list.name} (${list.shortName}) with trail maps, weather and trip reports, and robust tracking tools.`;
+    return `Plan and track your 4-Season ascents on the peaks of the ${list.name} (${list.shortName}) with trail maps, weather and trip reports, and robust tracking tools.`;
   } else if (type === PeakListVariants.grid) {
     return `The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the ${list.name} Grid with trail maps, weather and trip reports, and robust tracking tools.`;
   } else {

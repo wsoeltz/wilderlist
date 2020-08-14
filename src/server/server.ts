@@ -383,7 +383,8 @@ if (process.env.NODE_ENV === 'production') {
               `https://www.wilderlist.app/list/${req.params.id}`,
             );
             data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
-            const result  = data.replace(/\$OG_DESCRIPTION/g, getListDescription(listData));
+            const description = await getListDescription(listData);
+            const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
             throw new Error('Incorrect List ID ' + req.params.id);
@@ -428,7 +429,8 @@ if (process.env.NODE_ENV === 'production') {
             `https://www.wilderlist.app/list/${req.params.id}`,
           );
           data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
-          const result  = data.replace(/\$OG_DESCRIPTION/g, getListDescription(listData));
+          const description = await getListDescription(listData);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
           res.send(result);
         } else {
           throw new Error('Incorrect List ID ' + req.params.id);

@@ -96,6 +96,7 @@ export const ListInfo = styled.h3`
   margin: 0.25rem 0;
   font-size: 0.9rem;
   font-weight: 400;
+  text-transform: capitalize;
 
   @media(max-width: ${smallCardBreakpoint}px) {
     flex-direction: column-reverse;

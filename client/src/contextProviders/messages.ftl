@@ -33,9 +33,9 @@ meta-data-peak-list-search-description = Search for hiking lists like the New Ha
 
 meta-data-peak-list-detail-description = {
   $type ->
-  *[standard] Plan and track your ascents of { $list-name } ({ $list-short-name }) with maps, weather, trip reports and directions for all { $num-mountains } mountains.
-  [winter] Plan and track your ascents of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions for all { $num-mountains } mountains.
-  [fourSeason] Plan and track your 4-Season ascents on the mountains of the { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
+  *[standard] Plan and track your ascents of { $list-name } ({ $list-short-name }) with maps, weather, trip reports and directions for all { $num-mountains } peaks{ $state-or-region-string }.
+  [winter] Plan and track your ascents of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions for all { $num-mountains } peaks.
+  [fourSeason] Plan and track your 4-Season ascents on the peaks of the { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
   [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and robust tracking tools.
 }
 
