@@ -27,6 +27,7 @@ import {
 } from './routing';
 import getSitemap, {getSiteMapIndex, SitemapType} from './routing/getSitemap';
 import getGridApplication from './utilities/getGridApplication/index';
+import getOgImage from './utilities/getOgImage';
 import getRecreationData from './utilities/getRecreationData';
 import getRecreationSiteData from './utilities/getRecreationSiteData';
 import getStateByAbbreviation from './utilities/getStateByAbbreviation';
@@ -154,6 +155,17 @@ app.get('/api/state-by-abbreviation', async (req, res) => {
       res.status(500);
       res.send({message: 'Missing abbreviation'});
     }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.get('/og-image/image.jpg', async (req, res) => {
+  try {
+    const result = await getOgImage();
+    res.type('image/jpeg');
+    res.send(result);
   } catch (err) {
     res.status(500);
     res.send(err);
