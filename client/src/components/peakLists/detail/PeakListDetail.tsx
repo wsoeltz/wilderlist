@@ -12,6 +12,7 @@ import {
   FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
+import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -621,6 +622,7 @@ const PeakListDetail = (props: Props) => {
             content={metaDescription}
           />
           <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink(id)} />
+          <meta property='og:image' content={setPeakListOgImageUrl(id)} />
         </Helmet>
       ) : null;
 

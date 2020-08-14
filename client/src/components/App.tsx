@@ -22,7 +22,7 @@ import useUsersLocation, {
   userAllowsPreciseLocation,
   UsersLocation,
 } from '../hooks/useUsersLocation';
-import { Routes } from '../routing/routes';
+import { defaultOgImageUrl, Routes } from '../routing/routes';
 import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
 import { Root } from '../styling/Grid';
@@ -345,6 +345,7 @@ const App: React.FC = () => {
                 property='og:description'
                 content='Track, plan and share your hiking and mountaineering adventures.'
               />
+              <meta property='og:image' content={defaultOgImageUrl} />
               <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + window.location.pathname} />
             </Helmet>
             <GlobalStyles />
