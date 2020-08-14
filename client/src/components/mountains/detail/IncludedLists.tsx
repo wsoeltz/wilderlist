@@ -1,8 +1,9 @@
 import { useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
-import sortBy from 'lodash/sortBy';
+import orderBy from 'lodash/orderBy';
 import React from 'react';
+import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
@@ -31,6 +32,7 @@ const GET_MOUNTAINS_INCLUDE_LISTS = gql`
       lists {
         id
         name
+        numUsers
         mountains {
           id
           elevation
@@ -58,6 +60,7 @@ interface QuerySuccessResponse {
     lists: Array<{
       id: PeakList['id'];
       name: PeakList['name'];
+      numUsers: PeakList['numUsers'];
       mountains: MountainDatum[];
       parent: {
         id: PeakList['id'];
@@ -72,17 +75,22 @@ interface QueryVariables {
 }
 
 interface Props {
-  mountainId: string;
-  mountainName: string;
+  mountainDatum: {
+    id: string,
+    name: string,
+    state: {abbreviation: string},
+    elevation: number,
+  };
   getFluentString: GetString;
   numLists: number;
+  setMetaDescription: boolean;
 }
 
 const IncludedLists = (props: Props) => {
-  const { mountainId, getFluentString, numLists, mountainName } = props;
+  const { getFluentString, mountainDatum, numLists, setMetaDescription } = props;
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAINS_INCLUDE_LISTS, {
-    variables: { id: mountainId },
+    variables: { id: mountainDatum.id },
   });
 
   if (numLists === 0) {
@@ -90,8 +98,8 @@ const IncludedLists = (props: Props) => {
   }
 
   const getRank = (mountains: MountainDatum[], key: keyof MountainDatum) => {
-    const sorted = sortBy(mountains, [key]).reverse();
-    return sorted.map(({id}) => id).indexOf(mountainId) + 1;
+    const sorted = orderBy(mountains, [key], ['desc']);
+    return sorted.map(({id}) => id).indexOf(mountainDatum.id) + 1;
   };
 
   if (loading === true) {
@@ -109,7 +117,11 @@ const IncludedLists = (props: Props) => {
     return null;
   } else if (data !== undefined) {
     const { mountain: {lists} } = data;
-    const listsText = lists.map((list) => {
+    let positionText: string | undefined;
+    let placeText: string | undefined;
+    let additionaltext: string | undefined;
+    const sortedLists = orderBy(lists, ['numUsers'], ['desc']);
+    const listsText = sortedLists.map((list, i) => {
       const { parent } = list;
       let mountains: MountainDatum[];
       if (parent !== null && parent.mountains !== null) {
@@ -120,10 +132,26 @@ const IncludedLists = (props: Props) => {
         mountains = [];
       }
       const elevationRank = getRank(mountains, 'elevation');
+      const percent = elevationRank / mountains.length;
+      if (i === 0) {
+        placeText = list.name;
+        if (elevationRank === 1) {
+          positionText = 'largest';
+        } else if (elevationRank === mountains.length) {
+          positionText = 'smallest';
+        } else if (percent > 0.7) {
+          positionText = ORDINAL_NUMBER([mountains.length - elevationRank]) + ' smallest';
+        } else {
+          positionText = ORDINAL_NUMBER([elevationRank]) + ' largest';
+        }
+        additionaltext = additionaltext === undefined && positionText && placeText
+          ? ` and is the ${positionText} point on the ${placeText}` : undefined;
+      }
+
       return (
         <BasicUnorderedListItem key={list.id}>
           <Link
-            to={listDetailWithMountainDetailLink(list.id, mountainId)}
+            to={listDetailWithMountainDetailLink(list.id, mountainDatum.id)}
           >
             {list.name}
           </Link>
@@ -139,7 +167,7 @@ const IncludedLists = (props: Props) => {
         <VerticalContentItem>
           <ItemTitle>
             {getFluentString('mountain-detail-lists-mountain-appears-on', {
-              'mountain-name': mountainName,
+              'mountain-name': mountainDatum.name,
             })}
           </ItemTitle>
           <BasicUnorderedListContainer>
@@ -148,8 +176,29 @@ const IncludedLists = (props: Props) => {
         </VerticalContentItem>
       );
 
+    const metaDescription = getFluentString('meta-data-mountain-detail-description', {
+      name: mountainDatum.name,
+      elevation: mountainDatum.elevation,
+      state: mountainDatum.state && mountainDatum.state.abbreviation ? ', ' + mountainDatum.state.abbreviation : '',
+      additionaltext,
+    });
+
+    const header = setMetaDescription ? (
+      <Helmet>
+        <meta
+          name='description'
+          content={metaDescription}
+        />
+        <meta
+          property='og:description'
+          content={metaDescription}
+        />
+      </Helmet>
+    ) : null;
+
     return (
       <>
+        {header}
         {listsContent}
       </>
     );

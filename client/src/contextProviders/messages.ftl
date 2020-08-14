@@ -26,11 +26,8 @@ meta-data-compare-peak-list-title = Comparing { $title }{
   } with { $user } - Wilderlist
 meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
 
-meta-data-mountain-detail-description = { $name } stands at an elevation of { $elevation }ft and is located at { $lat }, { $long }{
-  $state ->
-  [none] {""}
-  *[other] {" "} in the state of { $state }
-}. Look up trail maps, current weather, and trip reports for { $name }.
+meta-data-mountain-detail-description = { $name }{ $state } stands at { $elevation }ft high{ $additionaltext }. View trails, camping, directions, weather, and trip reports for { $name }.
+
 meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
 meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
 
