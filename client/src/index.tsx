@@ -14,7 +14,6 @@ const {browser, version} = getBrowser();
 if ( browser === 'IE'                       ||
     (browser === 'Edge' && version < 16)    ||
     (browser === 'Firefox' && version < 54) ||
-    (browser === 'Chrome' && version < 58)  ||
     (browser === 'Opera' && version < 44)   ||
     (browser === 'Safari' && version < 11)  ) {
   ReactDOM.render(<NoApp browser={browser} version={version} />, document.getElementById('root'));
