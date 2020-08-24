@@ -109,7 +109,7 @@ const OpenWeatherForecast = (props: Props) => {
     const { dt, temp, wind_deg, wind_speed, weather } = report;
     const date = new Date(dt * 1000);
     const dateText = getDayAsText(date);
-    const description = weather[0].main.charAt(0).toUpperCase() + weather[0].main.slice(1);
+    const description = weather[0].description.charAt(0).toUpperCase() + weather[0].description.slice(1);
     return (
       <ForecastBlock key={dt}>
         <strong>{dateText}</strong>
