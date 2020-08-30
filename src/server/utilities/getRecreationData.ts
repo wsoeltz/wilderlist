@@ -188,39 +188,44 @@ const getRecreationData = async (latitude: string, longitude: string, filter: Fi
     }
     const allIds: string[] = [];
     const returnData: ReturnDatum[] = [];
-    combinedData.forEach(datum => {
-      const {
-        FacilityID, FacilityName,
-        FacilityDescription, FacilityTypeDescription,
-        FacilityUseFeeDescription, FacilityDirections,
-        FacilityPhone, FacilityEmail,
-        FacilityReservationURL, FacilityMapURL,
-        FacilityLongitude, FacilityLatitude,
-      } = datum;
-      const shouldSkip = filterDatum([
-        FacilityName, FacilityDescription, FacilityTypeDescription,
-      ], filter);
-      if (!allIds.includes(FacilityID) && !shouldSkip) {
-        allIds.push(FacilityID);
-        returnData.push({
-          id: FacilityID,
-          source: Sources.RecrationGov,
-          contractCode: null,
-          name: FacilityName,
-          description: FacilityDescription && FacilityDescription.length ? FacilityDescription : null,
-          directions: FacilityDirections && FacilityDirections.length ? FacilityDirections : null,
-          fee: FacilityUseFeeDescription && FacilityUseFeeDescription.length ? FacilityUseFeeDescription : null,
-          contact: {
-            phone: FacilityPhone && FacilityPhone.length ? FacilityPhone : null,
-            email: FacilityEmail && FacilityEmail.length ? FacilityEmail : null,
-            reservationUrl: FacilityReservationURL && FacilityReservationURL.length ? FacilityReservationURL : null,
-            mapUrl: FacilityMapURL && FacilityMapURL.length ? FacilityMapURL : null,
-          },
-          latitude: FacilityLatitude,
-          longitude: FacilityLongitude,
-        });
-      }
-    });
+
+    if (combinedData && combinedData.length) {
+      combinedData.forEach(datum => {
+        if (datum) {
+          const {
+            FacilityID, FacilityName,
+            FacilityDescription, FacilityTypeDescription,
+            FacilityUseFeeDescription, FacilityDirections,
+            FacilityPhone, FacilityEmail,
+            FacilityReservationURL, FacilityMapURL,
+            FacilityLongitude, FacilityLatitude,
+          } = datum;
+          const shouldSkip = filterDatum([
+            FacilityName, FacilityDescription, FacilityTypeDescription,
+          ], filter);
+          if (!allIds.includes(FacilityID) && !shouldSkip) {
+            allIds.push(FacilityID);
+            returnData.push({
+              id: FacilityID,
+              source: Sources.RecrationGov,
+              contractCode: null,
+              name: FacilityName,
+              description: FacilityDescription && FacilityDescription.length ? FacilityDescription : null,
+              directions: FacilityDirections && FacilityDirections.length ? FacilityDirections : null,
+              fee: FacilityUseFeeDescription && FacilityUseFeeDescription.length ? FacilityUseFeeDescription : null,
+              contact: {
+                phone: FacilityPhone && FacilityPhone.length ? FacilityPhone : null,
+                email: FacilityEmail && FacilityEmail.length ? FacilityEmail : null,
+                reservationUrl: FacilityReservationURL && FacilityReservationURL.length ? FacilityReservationURL : null,
+                mapUrl: FacilityMapURL && FacilityMapURL.length ? FacilityMapURL : null,
+              },
+              latitude: FacilityLatitude,
+              longitude: FacilityLongitude,
+            });
+          }
+        }
+      });
+    }
     if (returnData.length < 50) {
       const altData = await getActiveRecreation(backupBaseUrl, {
         params: {

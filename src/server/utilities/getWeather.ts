@@ -36,13 +36,14 @@ enum ForecastSource {
 
 const getOpenWeatherData = async (latitude: string, longitude: string) => {
   try {
-    const res = await getOpenWeather(`https://api.openweathermap.org/data/2.5/onecall?lat=${
+    const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${
       latitude
     }&lon=${
       longitude
     }&exclude=current,minutely&units=imperial&appid=${
       process.env.OPENWEATHERMAP_API_KEY
-    }`);
+    }`;
+    const res = await getOpenWeather(url);
     if (res && res.data) {
       return res;
     } else {
