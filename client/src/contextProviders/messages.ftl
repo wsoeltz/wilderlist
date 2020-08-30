@@ -674,6 +674,7 @@ weather-forecast-weather = Weather
 weather-forecast-high = High
 weather-forecast-low = Low
 weather-forecast-wind = Wind
+weather-forecast-chance-precip = chance of precipitation
 weather-forecast-detailed-report = Detailed Report
 weather-forecast-feels-like = Feels like
 weather-forecast-network-error = Weather for this location is not available at this time.

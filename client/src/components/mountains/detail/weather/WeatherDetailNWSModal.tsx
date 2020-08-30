@@ -8,9 +8,9 @@ import { NWSForecastDatum } from './NWSForecast';
 import {
   ButtonWrapper,
   CancelButton,
+  DetailPrecip,
   DetailTempHigh,
   DetailTempLow,
-  DetailWindSpeed,
   ForecastContainer,
   ForecastContent,
   ForecastImg,
@@ -31,6 +31,12 @@ const WeatherDetailNWSModal = (props: Props) => {
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
 
+  const todayPrecip = today !== null && today.precipitation ? (
+    <DetailPrecip>
+      {today.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+    </DetailPrecip>
+  ) : null;
+
   const todayContent = today === null ? null : (
     <ForecastContainer>
       <ForecastTitle>{today.name}</ForecastTitle>
@@ -39,13 +45,17 @@ const WeatherDetailNWSModal = (props: Props) => {
       </ForecastImgContainer>
       <ForecastContent>
         <DetailTempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°F</DetailTempHigh>
-        <DetailWindSpeed>
-          {getFluentString('weather-forecast-wind')} {today.windSpeed} {today.windDirection}
-        </DetailWindSpeed>
+        {todayPrecip}
         <ForecastText>{today.detailedForecast}</ForecastText>
       </ForecastContent>
     </ForecastContainer>
   );
+
+  const tonightPrecip = tonight !== null && tonight.precipitation ? (
+    <DetailPrecip>
+      {tonight.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+    </DetailPrecip>
+  ) : null;
 
   const tonightContent = tonight === null ? null : (
     <ForecastContainer>
@@ -55,9 +65,7 @@ const WeatherDetailNWSModal = (props: Props) => {
       </ForecastImgContainer>
       <ForecastContent>
         <DetailTempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°F</DetailTempLow>
-        <DetailWindSpeed>
-          {getFluentString('weather-forecast-wind')} {tonight.windSpeed} {tonight.windDirection}
-        </DetailWindSpeed>
+        {tonightPrecip}
         <ForecastText>{tonight.detailedForecast}</ForecastText>
       </ForecastContent>
     </ForecastContainer>

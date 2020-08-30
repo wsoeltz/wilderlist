@@ -8,6 +8,7 @@ import {
 } from '../../../../styling/styleUtils';
 import OpenWeatherDetailModal from './OpenWeatherDetailModal';
 import {
+  AdditionalInfo,
   degToCompass,
   DetailModalButton,
   ForecastBlock,
@@ -17,7 +18,6 @@ import {
   Temperatures,
   TempHigh,
   TempLow,
-  WindSpeed,
 } from './Utils';
 
 export interface WeatherReportDatum {
@@ -122,9 +122,9 @@ const OpenWeatherForecast = (props: Props) => {
           /
           <TempLow>{Math.round(temp.min)}°F</TempLow>
         </Temperatures>
-        <WindSpeed>
+        <AdditionalInfo>
           {getFluentString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
-        </WindSpeed>
+        </AdditionalInfo>
         <DetailModalButton
           onClick={() => setWeatherDetail(report)}
         >
