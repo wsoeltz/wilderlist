@@ -101,7 +101,7 @@ export const TempLow = styled.div`
   margin-left: 2px;
   font-size: 0.8rem;
 `;
-export const WindSpeed = styled.div`
+export const AdditionalInfo = styled.div`
   color: ${lightBaseColor};
   font-size: 0.8rem;
   margin-bottom: 0.4rem;
@@ -185,7 +185,7 @@ export const Detail = styled.div`
   margin: 0.5rem 0;
 `;
 
-export const DetailWindSpeed = styled.div`
+export const DetailPrecip = styled.div`
   font-size: 0.8rem;
   color: ${lightBaseColor};
 `;

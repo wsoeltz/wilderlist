@@ -184,7 +184,7 @@ const MountainSearchPage = (props: Props) => {
 
   let usersCoords: {lat: number, lng: number} | undefined;
   if (usersLocation.data) {
-    if (usersLocation.error && usersLocation.data.preciseCoordinates) {
+    if (usersLocation.data.preciseCoordinates) {
       usersCoords = usersLocation.data.preciseCoordinates;
     } else if (!usersLocation.error && usersLocation.data.localCoordinates) {
       usersCoords = usersLocation.data.localCoordinates;
