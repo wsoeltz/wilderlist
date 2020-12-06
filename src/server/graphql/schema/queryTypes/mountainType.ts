@@ -48,6 +48,7 @@ const MountainSchema = new Schema({
     title: { type: String },
     url: { type: String },
   }],
+  location: [{type: Number}],
 });
 
 MountainSchema.statics.findState = function(id: string) {
@@ -168,6 +169,7 @@ const MountainType: any = new GraphQLObjectType({
     flag: { type: MountainFlag },
     description: { type: GraphQLString },
     resources: { type: new GraphQLList(ExternalResourcesType) },
+    location: { type: new GraphQLList(GraphQLFloat) },
   }),
 });
 

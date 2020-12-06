@@ -159,6 +159,7 @@ const UserProfile = (props: Props) => {
               user={user}
               currentUserId={userId}
               friendStatus={friendStatus}
+              key={user.id}
             />
             <ListContainer>
               <ListPeakLists

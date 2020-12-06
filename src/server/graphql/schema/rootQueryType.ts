@@ -9,6 +9,10 @@ import {
   GraphQLString,
 } from 'graphql';
 import { CreatedItemStatus } from '../graphQLTypes';
+import {
+  buildNearSphereQuery,
+  GeoSphereInput,
+} from './geospatial/utils';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
@@ -377,6 +381,28 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(PeakListType),
       resolve() {
         return PeakList.find({ status: { $eq: CreatedItemStatus.pending } });
+      },
+    },
+    geoSphereMountains: {
+      type: new GraphQLList(MountainType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        minDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+        searchText: {type: GraphQLString},
+      },
+      resolve(parentValue, { latitude, longitude, maxDistance, minDistance, limit, searchText }: GeoSphereInput) {
+        const query = buildNearSphereQuery({
+          field: 'location',
+          longitude,
+          latitude,
+          maxDistance,
+          minDistance,
+          searchText,
+        });
+        return Mountain.find(query).limit(limit);
       },
     },
   }),
