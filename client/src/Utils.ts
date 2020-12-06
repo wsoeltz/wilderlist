@@ -164,9 +164,9 @@ export enum Months {
 
 export enum Seasons {
   summer = 'summer',
-  spring = 'spring',
-  winter = 'winter',
   fall = 'fall',
+  winter = 'winter',
+  spring = 'spring',
 }
 
 export const getSeason = (year: number, month: number, day: number): Seasons | undefined => {

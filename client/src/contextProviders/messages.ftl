@@ -525,7 +525,7 @@ mountain-detail-driving-error-direction = There was probelm getting directions.
 mountain-detail-driving-distance-title = Driving Distance
 mountain-detail-pending-approval = This mountain is pending confirmation
 
-mountain-detail-weather-and-reports = Weather & Trip Reports
+mountain-detail-weather-and-reports = Summit Weather & Trip Reports
 mountain-detail-notes-and-ascents = Notes & Ascents
 
 
