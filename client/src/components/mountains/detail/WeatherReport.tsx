@@ -1,6 +1,5 @@
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useEffect, useState} from 'react';
-import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
@@ -8,32 +7,10 @@ import getWeather from '../../../utilities/getWeather';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import NWSForecast, {NWSForecastDatum} from './weather/NWSForecast';
 import OpenWeatherForecast, {OpenWeatherForecastDatum} from './weather/OpenWeatherForecast';
-
-const ForecastContainer = styled.div`
-  display: flex;
-  width: 100%;
-  min-height: 129px;
-  overflow: auto;
-  padding: 0 0 1rem;
-  box-sizing: border-box;
-
-  ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    height: 12px;
-  }
-  ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, .3);
-  }
-  ::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, .1);
-  }
-`;
-
-const LoadingContainer = styled.div`
-  height: 5rem;
-  width: 100%;
-`;
+import {
+  ForecastRootContainer,
+  LoadingContainer,
+} from './weather/Utils';
 
 enum ForecastSource {
   NWS = 'nws',
@@ -116,9 +93,9 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
 
   return (
     <>
-      <ForecastContainer>
+      <ForecastRootContainer>
         {output}
-      </ForecastContainer>
+      </ForecastRootContainer>
     </>
   );
 };

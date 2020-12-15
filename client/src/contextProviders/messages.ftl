@@ -122,6 +122,7 @@ global-text-value-ascent-dates = Your Ascents
 global-text-value-done = Hiked
 global-text-value-not-done = Not Hiked
 global-text-value-today = Today
+global-text-value-yesterday = Yesterday
 global-text-value-summer = Summer
 global-text-value-fall = Fall
 global-text-value-winter = Winter
@@ -154,6 +155,22 @@ global-formatted-text-date = {
   [11] November
   [12] December
 } { $day }, { $year }
+
+global-formatted-text-date-day-month = {
+  $month ->
+  *[1] January
+  [2] February
+  [3] March
+  [4] April
+  [5] May
+  [6] June
+  [7] July
+  [8] August
+  [9] September
+  [10] October
+  [11] November
+  [12] December
+} { $day }
 
 global-formatted-text-month-year = {
   $month ->
@@ -526,6 +543,7 @@ mountain-detail-driving-distance-title = Driving Distance
 mountain-detail-pending-approval = This mountain is pending confirmation
 
 mountain-detail-weather-and-reports = Summit Weather & Trip Reports
+mountain-detail-snow-depth = Last 7-Day Snowfall & Snow Depth
 mountain-detail-notes-and-ascents = Notes & Ascents
 
 
@@ -693,7 +711,12 @@ weather-forecast-rain-volume = { $rain }mm of rainfall
 weather-forecast-snow-volume = { $snow }mm of snow
 weather-forecast-wind-gust = gusts up to { $wind_gust }mph
 
-
+snow-report-network-error = Unable to get snow report for this location at this time.
+snow-report-loading = Getting your snow report
+snow-report-snowfall-attr = Snowfall is for { $station } Station, { $county } County, { $state }
+snow-report-snowdepth-attr = Snow depth is for { $station } Station, { $county } County, { $state }
+snow-report-full-attr = Snow report is for { $station } Station, { $county } County, { $state }
+snow-report-location-details = { $distance }mi away, elevation of { $elevation }ft
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes
