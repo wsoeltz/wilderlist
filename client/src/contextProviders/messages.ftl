@@ -717,6 +717,8 @@ snow-report-snowfall-attr = Snowfall is for { $station } Station, { $county } Co
 snow-report-snowdepth-attr = Snow depth is for { $station } Station, { $county } County, { $state }
 snow-report-full-attr = Snow report is for { $station } Station, { $county } County, { $state }
 snow-report-location-details = { $distance }mi away, elevation of { $elevation }ft
+snow-report-new-snow = New snow
+snow-report-current-depth = Current depth
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes
