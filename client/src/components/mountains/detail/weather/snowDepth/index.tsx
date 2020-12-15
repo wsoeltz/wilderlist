@@ -121,21 +121,29 @@ const SnowDepth = (input: Input) => {
         </div>
       </>
     );
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
     const reportDays = snowfall.values.map((report, i) => {
       const { date, value } = report;
       const dateAsText = getFluentString('global-formatted-text-date-day-month', {
         day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear().toString(),
       });
-      const title = i === 0 ? getFluentString('global-text-value-yesterday') + ', ' + dateAsText : dateAsText;
+
+      const yesterdayText = date.getDate() === yesterday.getDate()
+        ? getFluentString('global-text-value-yesterday') + ', ' : '';
+
       const snowfallVal = typeof value === 'number' ? value + '"' : <small>{value}</small>;
       const snowdepthVal = typeof snowdepth.values[i].value === 'number'
         ? snowdepth.values[i].value + '"' : <small>{snowdepth.values[i].value}</small>;
       return (
         <ForecastBlock key={dateAsText}>
-          <Title>{title}</Title>
+          <Title>{yesterdayText} {dateAsText}</Title>
           <SnowItem>
-            <span>New Snow:</span> <Value>{snowfallVal}</Value>
-            <span>Current depth:</span> <Value>{snowdepthVal}</Value>
+            <span>{getFluentString('snow-report-new-snow')}:</span> <Value>{snowfallVal}</Value>
+            <span>{(getFluentString('snow-report-current-depth'))}:</span> <Value>{snowdepthVal}</Value>
           </SnowItem>
         </ForecastBlock>
       );

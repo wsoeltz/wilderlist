@@ -86,7 +86,7 @@ export default (input: Input) => {
         }
         const stringMonth = month < 10 ? `0${month}` : month.toString();
         const snowfallRes = await getSnowFall(
-          `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${stateAbbr}-7d-snowfall-${year}${stringMonth}.json`);
+          `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${stateAbbr}-snowfall-${year}${stringMonth}.json`);
         const snowdepthRes = await getSnowDepth(
           `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${stateAbbr}-snow-depth-${year}${stringMonth}.json`);
         const sortedSnowFallStations = orderBy<RawSnowDatum>(snowfallRes.data.data, (d: RawSnowDatum) => {
@@ -116,7 +116,7 @@ export default (input: Input) => {
             const stringPrevMonth = month - 1 < 10 ? `0${month - 1}` : (month - 1).toString();
             const prevSnowFall = await getSnowFall(
               `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${
-                stateAbbr}-7d-snowfall-${year}${stringPrevMonth}.json`,
+                stateAbbr}-snowfall-${year}${stringPrevMonth}.json`,
             );
             const prevSnowDepth = await getSnowDepth(
             `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${
@@ -130,22 +130,25 @@ export default (input: Input) => {
             let snowdepthValue: number | AltValues | undefined;
             let date: Date | undefined;
             if (i > 0) {
-
               date = new Date(`${year}-${month}-${i} 00:00`);
               if (sortedSnowFallStations[0].values[i] === 'M') {
                 snowfallValue = AltValues.NoData;
               } else if (sortedSnowFallStations[0].values[i] === 'T') {
                 snowfallValue = AltValues.Trace;
-              } else {
+              } else if (!isNaN(parseFloat(sortedSnowFallStations[0].values[i]))) {
                 snowfallValue = parseFloat(sortedSnowFallStations[0].values[i]);
+              } else if (!sortedSnowFallStations[0].values[i] !== undefined) {
+                snowfallValue = AltValues.NoData;
               }
 
               if (sortedSnowDepthStations[0].values[i] === 'M') {
                 snowdepthValue = AltValues.NoData;
               } else if (sortedSnowDepthStations[0].values[i] === 'T') {
                 snowdepthValue = AltValues.Trace;
-              } else {
+              } else if (!isNaN(parseFloat(sortedSnowDepthStations[0].values[i]))) {
                 snowdepthValue = parseFloat(sortedSnowDepthStations[0].values[i]);
+              } else if (sortedSnowDepthStations[0].values[i] !== undefined) {
+                snowdepthValue = AltValues.NoData;
               }
 
             } else if (snowfallPrevMonth && snowdepthPrevMonth && prevMonthMaxDay) {
@@ -155,16 +158,20 @@ export default (input: Input) => {
                 snowfallValue = AltValues.NoData;
               } else if (snowfallPrevMonth.values[prevDay] === 'T') {
                 snowfallValue = AltValues.Trace;
-              } else {
-                snowfallValue = parseFloat(snowfallPrevMonth.values[prevDay]);
+              } else if (!isNaN(parseFloat(snowfallPrevMonth.values[i]))) {
+                snowfallValue = parseFloat(snowfallPrevMonth.values[i]);
+              } else if (snowfallPrevMonth.values[i] !== undefined) {
+                snowfallValue = AltValues.NoData;
               }
 
               if (snowdepthPrevMonth.values[prevDay] === 'M') {
                 snowdepthValue = AltValues.NoData;
               } else if (snowdepthPrevMonth.values[prevDay] === 'T') {
                 snowdepthValue = AltValues.Trace;
-              } else {
-                snowdepthValue = parseFloat(snowdepthPrevMonth.values[prevDay]);
+              } else if (!isNaN(parseFloat(snowdepthPrevMonth.values[i]))) {
+                snowdepthValue = parseFloat(snowdepthPrevMonth.values[i]);
+              } else if (snowdepthPrevMonth.values[i] !== undefined) {
+                snowdepthValue = AltValues.NoData;
               }
             } else {
               snowfallValue = undefined;
