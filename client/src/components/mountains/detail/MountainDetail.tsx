@@ -65,6 +65,7 @@ import {
   VerticalContentItem,
 } from './sharedStyling';
 import TripReports from './TripReports';
+import SnowDepth from './weather/snowDepth';
 import WeatherReport from './WeatherReport';
 
 const mountainDetailMapKey = 'mountainDetailMapKey';
@@ -602,6 +603,13 @@ const MountainDetail = (props: Props) => {
               <WeatherReport
                 latitude={latitude}
                 longitude={longitude}
+              />
+            </InlineSectionContainer>
+            <InlineSectionContainer>
+              <SnowDepth
+                latitude={latitude}
+                longitude={longitude}
+                stateAbbr={state.abbreviation}
               />
             </InlineSectionContainer>
             <TripReports
