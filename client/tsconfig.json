@@ -36,6 +36,7 @@
   "exclude": [
     "build",
     "node_modules",
-    "src/setupProxy.js"
+    "src/setupProxy.js",
+    "archived"
   ]
 }
