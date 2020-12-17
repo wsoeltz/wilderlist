@@ -51,6 +51,8 @@ const MountainSchema = new Schema({
   location: [{type: Number}],
 });
 
+MountainSchema.index({ location: '2dsphere' });
+
 MountainSchema.statics.findState = function(id: string) {
   return this.findById(id)
     .populate('state')
