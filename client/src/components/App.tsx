@@ -4,6 +4,6 @@ const App = () => {
   return (
     <h1>Wilderlist 3!</h1>
   );
-}
+};
 
 export default App;
