@@ -1,5 +1,6 @@
 import { GetString } from 'fluent-react/compat';
 import React, {useContext} from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -12,7 +13,6 @@ import {
   successColor,
 } from '../../../styling/styleUtils';
 import { Mountain } from '../../../types/graphQLTypes';
-import {Link} from 'react-router-dom';
 import {
   NameCell,
   TableCellBase,

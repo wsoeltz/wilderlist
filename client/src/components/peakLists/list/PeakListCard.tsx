@@ -1,5 +1,6 @@
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
@@ -16,7 +17,6 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import {mediumSize, mobileSize} from '../../../Utils';
-import {Link} from 'react-router-dom';
 import ImportAscentNotification from '../import/ImportAscentsNotification';
 import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import MountainLogo from '../mountainLogo';

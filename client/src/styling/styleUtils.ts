@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { darken } from 'polished';
-import styled from 'styled-components/macro';
 import {Link} from 'react-router-dom';
+import styled from 'styled-components/macro';
 import { PeakListVariants } from '../types/graphQLTypes';
 import { mediumSize, mobileSize } from '../Utils';
 

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GetString } from 'fluent-react/compat';
 import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
 import {
@@ -26,7 +27,6 @@ import {
   getDates,
   getType,
 } from '../../peakLists/Utils';
-import {Link} from 'react-router-dom';
 import { UserDatum } from './ListUsers';
 
 const GET_PEAK_LIST_DATA_FOR_USER = gql`

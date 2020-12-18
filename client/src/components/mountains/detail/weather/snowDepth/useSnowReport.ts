@@ -236,4 +236,4 @@ const useSnowReport = (input: Input) => {
   return output;
 };
 
-export default useSnowReport
+export default useSnowReport;
