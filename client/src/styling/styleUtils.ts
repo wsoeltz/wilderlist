@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { darken } from 'polished';
 import styled from 'styled-components/macro';
-import DynamicLink from '../components/sharedComponents/DynamicLink';
+import {Link} from 'react-router-dom';
 import { PeakListVariants } from '../types/graphQLTypes';
-import { failIfValidOrNonExhaustive, mediumSize, mobileSize } from '../Utils';
+import { mediumSize, mobileSize } from '../Utils';
 
 export const primaryFont = '"Source Sans Pro", sans-serif';
 export const secondaryFont = 'DeliciousWeb, sans-serif';
@@ -86,7 +86,7 @@ export const getColorSetFromVariant = (variant: PeakListVariants) => {
   } else if (variant === PeakListVariants.grid) {
     return colorSetBlack;
   } else {
-    failIfValidOrNonExhaustive(variant, 'Invalid variant ' + variant);
+    console.error(variant, 'Invalid variant ' + variant);
     return colorSetGray;
   }
 };
@@ -158,7 +158,7 @@ export const Card = styled(CardBase)`
   }
 `;
 
-export const CardLinkWrapper = styled(DynamicLink)`
+export const CardLinkWrapper = styled(Link)`
   display: block;
   color: inherit;
   text-decoration: inherit;
@@ -205,7 +205,7 @@ interface ColorProps {
   $isActive: boolean;
 }
 
-export const CardFooterLink = styled(DynamicLink)<ColorProps>`
+export const CardFooterLink = styled(Link)<ColorProps>`
   ${cardFooterLinkStyles}
   color: ${(p) => p.$isActive ? '#fff' : p.color};
   background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
@@ -379,7 +379,7 @@ export const ButtonWarningLow = styled(ButtonBase)`
   }
 `;
 
-export const ButtonPrimaryLink = styled(DynamicLink)`
+export const ButtonPrimaryLink = styled(Link)`
   padding: 0.6rem;
   text-transform: uppercase;
   color: #fff;
@@ -396,7 +396,7 @@ export const ButtonPrimaryLink = styled(DynamicLink)`
     background-color: ${primaryHoverColor};
   }
 `;
-export const ButtonSecondaryLink = styled(DynamicLink)`
+export const ButtonSecondaryLink = styled(Link)`
   padding: 0.6rem;
   text-transform: uppercase;
   color: #fff;
@@ -414,7 +414,7 @@ export const ButtonSecondaryLink = styled(DynamicLink)`
   }
 `;
 
-export const GhostButtonLink = styled(DynamicLink)`
+export const GhostButtonLink = styled(Link)`
   padding: 0.6rem;
   text-transform: uppercase;
   color: ${secondaryColor};

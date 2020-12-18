@@ -6,12 +6,9 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import usePrevious from '../../../hooks/usePrevious';
 import {
-  dashboardWithListDetailLink,
   listDetailWithMountainDetailLink,
   otherUserPeakListDetailLink,
-  otherUserPeakListLink,
   preventNavigation,
-  searchListDetailLink,
 } from '../../../routing/Utils';
 import {
   Card,
@@ -19,7 +16,7 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import {mediumSize, mobileSize} from '../../../Utils';
-import DynamicLink from '../../sharedComponents/DynamicLink';
+import {Link} from 'react-router-dom';
 import ImportAscentNotification from '../import/ImportAscentsNotification';
 import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import MountainLogo from '../mountainLogo';
@@ -27,7 +24,7 @@ import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
 import PeakProgressBar from './PeakProgressBar';
 
-const LinkWrapper = styled(DynamicLink)`
+const LinkWrapper = styled(Link)`
   display: block;
   color: inherit;
   text-decoration: inherit;
@@ -137,7 +134,6 @@ interface Props {
   numCompletedAscents: number;
   totalRequiredAscents: number;
   latestDate: string | null;
-  dashboardView: boolean;
   profileId?: string;
   setActionDisabled?: (peakListId: string) => boolean;
 }
@@ -146,7 +142,7 @@ const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, shortName, type, parent, stateOrRegionString},
     active, listAction, actionText, numCompletedAscents,
-    totalRequiredAscents, profileId, dashboardView,
+    totalRequiredAscents, profileId,
     latestDate, setActionDisabled,
   } = props;
 
@@ -235,18 +231,10 @@ const PeakListCard = (props: Props) => {
   }
   const mountainLogoId = parent === null ? id : parent.id;
 
-  let desktopURL: string;
-  if (profileId !== undefined) {
-    desktopURL = otherUserPeakListLink(profileId, id);
-  } else if (dashboardView === true) {
-    desktopURL = dashboardWithListDetailLink(id);
-  } else {
-    desktopURL = searchListDetailLink(id) + window.location.search;
-  }
-  const mobileURL = profileId !== undefined
+  const url = profileId !== undefined
     ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
   return (
-    <LinkWrapper mobileURL={mobileURL} desktopURL={desktopURL}>
+    <LinkWrapper to={url}>
       <Root>
         <LogoContainer>
           <MountainLogo

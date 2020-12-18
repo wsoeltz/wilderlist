@@ -2,8 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components/macro';
 import {
-  friendsProfileWithPeakListWithMountainDetailLink,
-  listDetailWithMountainDetailLink,
   mountainDetailLink,
 } from '../../../routing/Utils';
 import {
@@ -21,7 +19,7 @@ import {
   mobileSize,
 } from '../../../Utils';
 import { Months, Seasons } from '../../../Utils';
-import DynamicLink from '../../sharedComponents/DynamicLink';
+import {Link} from 'react-router-dom';
 import {
   formatDate,
   formatGridDate,
@@ -161,9 +159,7 @@ interface Props {
   mountain: MountainDatumWithDate;
   type: PeakListVariants;
   setEditMountainId: (mountainToEdit: MountainToEdit) => void;
-  peakListId: string | null;
   isOtherUser: boolean;
-  userId: string | null;
   disableLinks: undefined | boolean;
   showCount: undefined | boolean;
   customAction: undefined | ((mountain: MountainDatum) => void);
@@ -172,8 +168,8 @@ interface Props {
 
 const MountainRow = (props: Props) => {
   const {
-    index, mountain, type, setEditMountainId, peakListId, isOtherUser,
-    userId, disableLinks, showCount, customAction, customActionText,
+    index, mountain, type, setEditMountainId, isOtherUser,
+    disableLinks, showCount, customAction, customActionText,
   } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
@@ -512,28 +508,16 @@ const MountainRow = (props: Props) => {
   const NameContainer = type === PeakListVariants.grid || type === PeakListVariants.fourSeason
     ? GridNameCell : NameCell;
 
-  let desktopURL: string;
-  if (peakListId !== null) {
-    if (isOtherUser && userId) {
-      desktopURL = friendsProfileWithPeakListWithMountainDetailLink(userId, peakListId, mountain.id);
-    } else {
-      desktopURL = listDetailWithMountainDetailLink(peakListId, mountain.id);
-    }
-  } else {
-    desktopURL = mountainDetailLink(mountain.id);
-  }
-
   const count = showCount ? (
     <TableCell style={{backgroundColor}}>{index + 1}</TableCell>
   ) : null;
 
   const name = disableLinks ? <>{mountain.name}</> : (
-    <DynamicLink
+    <Link
       mobileURL={mountainDetailLink(mountain.id)}
-      desktopURL={desktopURL}
     >
       <SemiBold>{mountain.name}</SemiBold>
-    </DynamicLink>
+    </Link>
   );
 
   return (

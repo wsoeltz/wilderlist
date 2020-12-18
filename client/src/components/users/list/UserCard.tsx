@@ -7,7 +7,7 @@ import BackupImage from '../../../assets/images/default-user-image.jpg';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { comparePeakListLink, friendsWithUserProfileLink, preventNavigation } from '../../../routing/Utils';
+import { comparePeakListLink, preventNavigation } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   Card,
@@ -26,7 +26,7 @@ import {
   getDates,
   getType,
 } from '../../peakLists/Utils';
-import DynamicLink from '../../sharedComponents/DynamicLink';
+import {Link} from 'react-router-dom';
 import { UserDatum } from './ListUsers';
 
 const GET_PEAK_LIST_DATA_FOR_USER = gql`
@@ -150,7 +150,7 @@ export interface FriendRequestSuccessResponse {
   }>;
 }
 
-const LinkWrapper = styled(DynamicLink)`
+const LinkWrapper = styled(Link)`
   display: block;
   color: inherit;
   text-decoration: inherit;
@@ -226,8 +226,8 @@ const getListsInProgress =
       } else if (type === PeakListVariants.grid) {
         totalRequiredAscents = numMountains * 12;
       } else {
-        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
         totalRequiredAscents = 0;
+        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
       }
 
       if (totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {// list complete
@@ -248,11 +248,10 @@ interface Props {
   user: UserDatum;
   friendStatus: FriendStatus | null;
   currentUserId: string;
-  openInSidebar: boolean;
 }
 
 const UserCard = (props: Props) => {
-  const { user, friendStatus, currentUserId, openInSidebar} = props;
+  const { user, friendStatus, currentUserId} = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
   const getFluentString: GetString = (...args) => localization.getString(...args);
@@ -483,8 +482,8 @@ const UserCard = (props: Props) => {
       </>
     );
   } else {
-    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
     cardContent = null;
+    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
   }
 
   const opacity = friendStatus === FriendStatus.friends ? 1 : 0.2;
@@ -495,14 +494,9 @@ const UserCard = (props: Props) => {
     }
   };
 
-  const desktopURL = openInSidebar === true
-    ? friendsWithUserProfileLink(user.id) + window.location.search
-    : comparePeakListLink(user.id, 'none');
-
   return (
     <LinkWrapper
-      mobileURL={comparePeakListLink(user.id, 'none')}
-      desktopURL={desktopURL}
+      to={comparePeakListLink(user.id, 'none')}
     >
       <Root>
         <ProfilePicture
