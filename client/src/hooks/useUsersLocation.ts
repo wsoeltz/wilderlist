@@ -95,7 +95,7 @@ export interface UsersLocation extends LocationResponse {
   requestAccurateLocation: undefined | (() => void);
 }
 
-export default (): UsersLocation => {
+const useUsersLocation = (): UsersLocation => {
   const [mounted, setMounted] = useState<boolean>(false);
   const [output, setOuput] = useState<LocationResponse>({
     loading: true, error: undefined, data: undefined,
@@ -244,3 +244,5 @@ export default (): UsersLocation => {
 
   return {...output, requestAccurateLocation};
 };
+
+export default useUsersLocation;

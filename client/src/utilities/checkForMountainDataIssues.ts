@@ -20,7 +20,7 @@ const removeCommonWords = (word: string) => {
   ].indexOf(word) === -1;
 };
 
-export default async ({name, id, latitude, longitude, elevation}: MountainDatum) => {
+const checkMountainForDataIssues = async ({name, id, latitude, longitude, elevation}: MountainDatum) => {
   try {
     const nearbyMountains: any = await axios({
       url: '/graphql',
@@ -130,3 +130,5 @@ export default async ({name, id, latitude, longitude, elevation}: MountainDatum)
     captureMessage(err);
   }
 };
+
+export default checkMountainForDataIssues;

@@ -15,7 +15,7 @@ interface Output {
   };
 }
 
-export default (input: Input) => {
+const usePointLocationData = (input: Input) => {
   const {latitude, longitude} = input;
 
   const [output, setOutput] = useState<Output>({
@@ -64,3 +64,5 @@ export default (input: Input) => {
 
   return output;
 };
+
+export default usePointLocationData;

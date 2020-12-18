@@ -58,4 +58,6 @@ const randomLocations: RandomLocationDatum[] = [
   },
 ];
 
-export default () => randomLocations[Math.floor(Math.random() * randomLocations.length)];
+const randomDefaultLocation = () => randomLocations[Math.floor(Math.random() * randomLocations.length)];
+
+export default randomDefaultLocation;

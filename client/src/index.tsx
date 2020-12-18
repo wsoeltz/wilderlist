@@ -4,28 +4,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'regenerator-runtime/runtime';
 import App from './components/App';
-import {
-  appLocalizationAndBundle as fluentValue,
-  AppLocalizationAndBundleContext as FluentText,
-} from './contextProviders/fluent/getFluentLocalizationContext';
-import {
-  BrowserRouter,
-} from 'react-router-dom';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import NoApp from './components/NoApp';
+import { getBrowser } from './Utils';
 
 Sentry.init({dsn: 'https://6f07b454e1a84442b2f2ec02bc0996a4@o425164.ingest.sentry.io/5357955'});
 
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_API_URL,
-  cache: new InMemoryCache(),
-});
+const {browser, version} = getBrowser();
 
-ReactDOM.render((
-  <ApolloProvider client={client}>
-    <FluentText.Provider value={fluentValue}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </FluentText.Provider>
-  </ApolloProvider>
-), document.getElementById('root'));
+if ( browser === 'IE'                       ||
+    (browser === 'Edge' && version < 16)    ||
+    (browser === 'Firefox' && version < 54) ||
+    (browser === 'Opera' && version < 44)   ||
+    (browser === 'Safari' && version < 11)  ) {
+  ReactDOM.render(<NoApp browser={browser} version={version} />, document.getElementById('root'));
+} else {
+  ReactDOM.render(<App />, document.getElementById('root'));
+}
