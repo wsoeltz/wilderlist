@@ -150,17 +150,13 @@ const VariantLinks = (props: Props) => {
         color = variant === PeakListVariants.grid
           ? getColorSetFromVariant(variant).primary :  getColorSetFromVariant(variant).tertiary;
       }
-      const desktopURL = currentListId === null
-        ? searchListDetailLink(target.id) + window.location.search
-        : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
-      const mobileURL = currentListId === null
+      const url = currentListId === null
         ? listDetailWithMountainDetailLink(target.id, 'none')
         : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
       return (
         <VariantLink
           key={name + type + variant}
-          mobileURL={mobileURL}
-          desktopURL={desktopURL}
+          to={url}
           $isActive={currentListId === target.id}
           color={color}
         >

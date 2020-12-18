@@ -93,7 +93,6 @@ interface BaseProps {
   noResultsText: string;
   showTrophies: boolean;
   viewMode: ViewMode;
-  dashboardView?: boolean;
   setActionDisabled?: (peakListId: string) => boolean;
   queryRefetchArray: Array<{query: any, variables: any}>;
 }
@@ -112,8 +111,7 @@ const ListPeakLists = (props: Props) => {
   const {
     listAction, actionText,
     noResultsText, showTrophies,
-    profileId, dashboardView,
-    setActionDisabled, queryRefetchArray,
+    profileId, setActionDisabled, queryRefetchArray,
   } = props;
 
   const {localization} = useContext(AppLocalizationAndBundleContext);
@@ -157,7 +155,6 @@ const ListPeakLists = (props: Props) => {
           latestDate={latestAscent}
           numCompletedAscents={numCompletedAscents}
           totalRequiredAscents={totalRequiredAscents}
-          dashboardView={dashboardView === true ? true : false}
           setActionDisabled={setActionDisabled}
         />
       );
@@ -180,7 +177,6 @@ const ListPeakLists = (props: Props) => {
         <PeakListTrophy
           peakList={peakList}
           profileId={profileId}
-          dashboardView={dashboardView === true ? true : false}
           key={peakList.id}
         />
       );

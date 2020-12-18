@@ -13,7 +13,7 @@ const Logo = () => {
       <svg xmlns='http://www.w3.org/2000/svg'>
          <defs>
           <pattern id='logBackgroundPattern' patternUnits='userSpaceOnUse' width='100%' height='100%'>
-            <image href={require('./header-bg-texture.jpg')} width='351' height='124' x='0' y='0'/>
+            <image href={require('./header-bg-texture.jpg').default} width='351' height='124' x='0' y='0'/>
           </pattern>
         </defs>
         <g fill='url(#logBackgroundPattern)'>

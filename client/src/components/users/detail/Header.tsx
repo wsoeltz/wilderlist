@@ -11,7 +11,7 @@ import BackupImage from '../../../assets/images/default-user-image.jpg';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { comparePeakListIsolatedLink, comparePeakListLink, preventNavigation } from '../../../routing/Utils';
+import { comparePeakListIsolatedLink, preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
@@ -257,15 +257,14 @@ const Header = (props: Props) => {
       </>
     );
   } else {
-    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
     actionButtons = null;
+    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
   }
 
   const compareAllAscentsBtn = user.id === currentUserId ? null : (
     <div>
       <ButtonPrimaryLink
-        desktopURL={comparePeakListLink(user.id, 'all')}
-        mobileURL={comparePeakListIsolatedLink(user.id, 'all')}
+        to={comparePeakListIsolatedLink(user.id, 'all')}
       >
         {getFluentString('user-profile-compare-all-ascents')}
       </ButtonPrimaryLink>

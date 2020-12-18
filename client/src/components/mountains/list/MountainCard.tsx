@@ -10,7 +10,7 @@ import styled from 'styled-components/macro';
 import {
   AppLocalizationAndBundleContext,
 } from '../../../contextProviders/getFluentLocalizationContext';
-import { mountainDetailLink, searchMountainsDetailLink } from '../../../routing/Utils';
+import { mountainDetailLink } from '../../../routing/Utils';
 import {
   BasicIconAtEndOfText,
   BasicIconInText,
@@ -104,8 +104,7 @@ const MountainCard = ({ mountain }: Props) => {
 <>
     <Root>
       <LinkWrapper
-        mobileURL={mountainDetailLink(mountain.id)}
-        desktopURL={searchMountainsDetailLink(mountain.id) + window.location.search}
+        to={mountainDetailLink(mountain.id)}
       >
         <StackableCardSection>
           <CardTitle>{name}</CardTitle>
@@ -123,8 +122,7 @@ const MountainCard = ({ mountain }: Props) => {
       </LinkWrapper>
       <CardFooter>
         <OverviewLink
-          mobileURL={mountainDetailLink(mountain.id)}
-          desktopURL={searchMountainsDetailLink(mountain.id) + window.location.search}
+          to={mountainDetailLink(mountain.id)}
           color={secondaryColor}
           $isActive={false}
         >

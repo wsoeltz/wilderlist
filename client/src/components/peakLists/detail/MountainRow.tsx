@@ -514,7 +514,7 @@ const MountainRow = (props: Props) => {
 
   const name = disableLinks ? <>{mountain.name}</> : (
     <Link
-      mobileURL={mountainDetailLink(mountain.id)}
+      to={mountainDetailLink(mountain.id)}
     >
       <SemiBold>{mountain.name}</SemiBold>
     </Link>

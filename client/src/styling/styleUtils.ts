@@ -396,23 +396,6 @@ export const ButtonPrimaryLink = styled(Link)`
     background-color: ${primaryHoverColor};
   }
 `;
-export const ButtonSecondaryLink = styled(Link)`
-  padding: 0.6rem;
-  text-transform: uppercase;
-  color: #fff;
-  text-align: center;
-  border-radius: ${borderRadius}px;
-  font-weight: ${semiBoldFontBoldWeight};
-  font-size: 0.8rem;
-  background-color: ${secondaryColor};
-  display: inline-block;
-  text-decoration: none;
-
-  &:hover {
-    color: #fff;
-    background-color: ${secondaryHoverColor};
-  }
-`;
 
 export const GhostButtonLink = styled(Link)`
   padding: 0.6rem;

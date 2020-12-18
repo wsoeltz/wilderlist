@@ -35,7 +35,7 @@ const PlaceholderBackground = styled.div`
   ${videoStyles}
   position: fixed;
   z-index: -2;
-  background-image: url("${require('../../assets/video/landing-video-placeholder.jpg')}");
+  background-image: url("${require('../../assets/video/landing-video-placeholder.jpg').default}");
   background-size: cover;
   background-repeat: no-repeat;
 `;
@@ -217,7 +217,7 @@ const LoginPage = () => {
         muted={true}
         autoPlay={true}
       >
-        <source src={require('../../assets/video/login-video.mp4')} />
+        <source src={require('../../assets/video/login-video.mp4').default} />
       </VideoBackground>
       {signUpModal}
     </Root>

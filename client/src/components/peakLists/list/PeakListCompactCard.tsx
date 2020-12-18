@@ -8,7 +8,6 @@ import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
   preventNavigation,
-  searchListDetailLink,
 } from '../../../routing/Utils';
 import {
   CardSubtitle,
@@ -154,8 +153,7 @@ const PeakListCard = (props: Props) => {
       onMouseLeave={() => setHovered(false)}
     >
       <LinkWrapper
-        mobileURL={listDetailWithMountainDetailLink(id, 'none')}
-        desktopURL={searchListDetailLink(id) + window.location.search}
+        to={listDetailWithMountainDetailLink(id, 'none')}
       >
         <Card>
           <div>

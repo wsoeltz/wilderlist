@@ -125,7 +125,7 @@ const InactiveNavLink = styled(NavLink)`
 const ActiveNavLink = styled(NavLink)`
   color: #fff;
   font-weight: ${regularFontWeight};
-  background-image: url('${require('../../assets/logo/header-bg-texture.jpg')}');
+  background-image: url('${require('../../assets/logo/header-bg-texture.jpg').default}');
 
   &:hover {
     color: #fff;
