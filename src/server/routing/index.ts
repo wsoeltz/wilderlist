@@ -1,4 +1,5 @@
 /* tslint:disable:await-promise */
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import {
   Mountain as IMountain,

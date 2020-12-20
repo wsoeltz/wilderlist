@@ -38,10 +38,11 @@ interface QuerySuccessResponse {
 export interface Props {
   onSuccess: (mountain: MountainDatum) => void;
   onCancel: () => void;
+  extraProp: string;
 }
 
 const CreateMountainModal = (props: Props) => {
-  const { onCancel, onSuccess } = props;
+  const { onCancel, onSuccess, extraProp } = props;
   const user = useContext(UserContext);
 
   const getString = useFluent();

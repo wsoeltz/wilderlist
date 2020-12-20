@@ -197,7 +197,7 @@ export const formatGridDate = (date: DateObject) => {
     if (isNaN(year) && isNaN(month) && isNaN(day)) {
     return 'unknown date';
   }
-    return day + `, '` + year.toString().slice(-2);
+    return day + ', \'' + year.toString().slice(-2);
 };
 
 export const completedPeaks = (

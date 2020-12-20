@@ -39,9 +39,7 @@ export const POSSESSIVE = ([word]: [string]): string => {
   }
 };
 
-export const SENTENCE_CASE = ([phrase]: [string]): string => {
-  return phrase.charAt(0).toUpperCase() + phrase.substr(1);
-};
+export const SENTENCE_CASE = ([phrase]: [string]) => phrase.charAt(0).toUpperCase() + phrase.substr(1);
 
 // Taken from https://stackoverflow.com/a/13627586
 export const ORDINAL_SUFFIX = ([input]: [number]): string => {
@@ -57,9 +55,8 @@ export const ORDINAL_SUFFIX = ([input]: [number]): string => {
   }
   return 'th';
 };
-export const ORDINAL_NUMBER = ([input]: [number]): string => {
-  return input + ORDINAL_SUFFIX([input]);
-};
+
+export const ORDINAL_NUMBER = ([input]: [number]) => input + ORDINAL_SUFFIX([input]);
 
 const getLocalizationInfo = (messages: string) => {
   const bundle = new FluentBundle(['en-US']);

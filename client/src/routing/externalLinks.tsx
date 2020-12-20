@@ -75,7 +75,7 @@ export const CaltopoLink = ({lat, long}: {lat: number, long: number}) => {
 export const AllTrailsLink = ({lat, long, text}: {lat: number, long: number, text: string | undefined}) => {
   const latDistance = 0.1;
   const longDistance = 0.2;
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   const allTrailsUrl = `https://www.alltrails.com/explore?b_tl_lat=${lat - latDistance}&b_tl_lng=${long - longDistance}&b_br_lat=${lat + latDistance}&b_br_lng=${long + longDistance}`;
   const additionalText = text && text.length ? <TextContainer>{text}</TextContainer> : null;
   return (
@@ -201,11 +201,9 @@ export const generateHikingProjectLink = (state: string | null) => {
   }
 };
 
-export const HikingProjectTrailLink = ({url}: {url: string}) => {
-  return (
+export const HikingProjectTrailLink = ({url}: {url: string}) => (
     <ExternalLinkButton href={url} target='_blank' rel='noopener' title="REI's Hiking Project">
       <span>View Trail At The</span>
       <HikingProjectLogo src={HikingProjectLogoImageUrl} />
     </ExternalLinkButton>
   );
-};

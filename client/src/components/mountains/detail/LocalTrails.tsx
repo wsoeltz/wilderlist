@@ -89,8 +89,8 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
       });
       if (
         trail.type !== 'Connector' && distance <= 5 && (
-          (mtnNameSafe.some(function(v) { return v.length > 1 && trail.name.toLowerCase().indexOf(v) >= 0; }) ||
-            mtnNameSafe.some(function(v) { return v.length > 1 && trail.summary.toLowerCase().indexOf(v) >= 0; }))
+          (mtnNameSafe.some(v => v.length > 1 && trail.name.toLowerCase().indexOf(v) >= 0) ||
+            mtnNameSafe.some(v => v.length > 1 && trail.summary.toLowerCase().indexOf(v) >= 0))
           || filteredTrails.length < 5
           )
           ) {
@@ -98,8 +98,7 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
       }
     });
     const sortedTrails = sortBy(filteredTrails, ['length', 'ascent']).reverse();
-    const trailElements: Array<React.ReactElement<any>> = sortedTrails.map(trail => {
-      return (
+    const trailElements: Array<React.ReactElement<any>> = sortedTrails.map(trail => (
         <BasicUnorderedListItem key={trail.id}>
           <a href={trail.url} target='_blank' rel='noopener noreferrer'>{trail.name}</a>
           {' - '}
@@ -108,8 +107,8 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
             elevation: trail.ascent.toString(),
           })}
         </BasicUnorderedListItem>
-      );
-    });
+      ),
+    );
     if (trailElements.length === 0) {
       output = (
         <BasicUnorderedListItem>

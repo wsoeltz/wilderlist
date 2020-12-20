@@ -329,9 +329,7 @@ const ImportAscentsModal = (props: Props) => {
         });
         return matches;
       });
-      const topChoices = matchPercentages.map((matches) => {
-        return maxValIndicies(matches);
-      });
+      const topChoices = matchPercentages.map((matches) => maxValIndicies(matches));
       const usedPeak: string[] = [];
       const cleanPeaknames = topChoices.map(([a1, b1], i) => {
         const firstChoice = mountains[a1];

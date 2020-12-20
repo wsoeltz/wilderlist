@@ -128,6 +128,8 @@ const SEARCH_PEAK_LISTS_COMPACT = gql`
   }
 `;
 
+const compactViewNPerPage = 50;
+
 export const getRefetchSearchQueries = (userId: string) => [
   {query: SEARCH_PEAK_LISTS, variables: {
     searchQuery: '',
@@ -213,8 +215,6 @@ export enum ViewMode {
   Card = 'Card',
   Compact = 'Compact',
 }
-
-const compactViewNPerPage = 50;
 
 enum View {
   Map,
@@ -366,9 +366,8 @@ const PeakListPage = (props: Props) => {
         const noResultsText = searchQuery ? getString('global-text-value-no-results-found-for-term', {
           term: searchQuery,
         }) : getString('global-text-value-no-results-found');
-        let listElm: React.ReactElement<any> | null;
         const {peakLists: peakListData} = data as CompactSuccessResponse;
-        listElm = (
+        const listElm = (
           <ListPeakLists
             viewMode={ViewMode.Compact}
             peakListData={peakListData}

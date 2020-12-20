@@ -238,13 +238,12 @@ const MountainForm = (props: Props) => {
   ) : null;
 
   const sortedStates = sortBy(states, ['name']);
-  const stateOptions = sortedStates.map(state => {
-    return (
+  const stateOptions = sortedStates.map(state => (
       <option key={state.id} value={state.id}>
         {state.name} ({state.abbreviation})
       </option>
-    );
-  });
+    ),
+  );
 
   const handleExternalResourceChange = (value: string) =>
     (field: keyof ExternalResource, index: number) =>

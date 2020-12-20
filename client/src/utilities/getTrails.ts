@@ -47,7 +47,8 @@ const cache: any = setupCache({
 });
 
 const getTrails = axios.create({
-  /* tslint:disable:max-line-length */
+  /* eslint-disable max-len */
+/* tslint:disable:max-line-length */
   baseURL: `https://www.hikingproject.com/data/get-trails?key=${process.env.REACT_APP_HIKING_PROJECT_KEY}&sort=distance&maxResults=500`,
   adapter: cache.adapter,
 });

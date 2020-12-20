@@ -385,7 +385,7 @@ const UserCard = (props: Props) => {
 
       ascentText = getString('user-profile-latest-ascents', {
         'mountain-name': mountain.name,
-        'preposition': preposition,
+        preposition,
         'date': formatDate(date),
       });
     } else {

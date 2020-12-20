@@ -1,18 +1,17 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import React from 'react';
 import { classNames } from './index';
 
 const clipPathId = 'mountain-logo-circle-clip-path-';
 
-const DefaultClipPath = ({id}: {id: string}) => {
-  return (
-    <defs>
-      <clipPath id={`${clipPathId}${id}`}>
-        <circle cx='410.16' cy='410.17' r='284.17'/>
-      </clipPath>
-    </defs>
-  );
-};
+const DefaultClipPath = ({id}: {id: string}) => (
+  <defs>
+    <clipPath id={`${clipPathId}${id}`}>
+      <circle cx='410.16' cy='410.17' r='284.17'/>
+    </clipPath>
+  </defs>
+);
 
 enum EvenOrOdd {
   even,

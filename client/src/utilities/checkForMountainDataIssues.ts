@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import { captureMessage } from '@sentry/react';
 import axios from 'axios';
@@ -11,14 +12,12 @@ interface MountainDatum {
   elevation: Mountain['elevation'];
 }
 
-const removeCommonWords = (word: string) => {
-  return [
+const removeCommonWords = (word: string) => [
     'hill',
     'mountain',
     'peak',
     'mount',
   ].indexOf(word) === -1;
-};
 
 const checkMountainForDataIssues = async ({name, id, latitude, longitude, elevation}: MountainDatum) => {
   try {

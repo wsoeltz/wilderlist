@@ -57,6 +57,7 @@ export const RightColumn = styled.div`
   }
 `;
 
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 export const SelectBoxBase = styled.select`
   -moz-appearance: none;

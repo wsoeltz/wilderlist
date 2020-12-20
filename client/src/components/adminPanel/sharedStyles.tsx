@@ -207,6 +207,7 @@ export const SelectedItemsContainer = styled.div`
   border: 1px solid #ccc;
 `;
 
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 export const SelectBox = styled.select`
   -moz-appearance: none;

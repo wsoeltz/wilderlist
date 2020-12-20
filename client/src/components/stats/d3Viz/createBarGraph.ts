@@ -53,21 +53,19 @@ const createBarGraph = (input: Input) => {
           'translate(' + margin.left + ',' + margin.top + ')');
 
   // format the data
-  data.forEach(function(d) {
-    d.value = +d.value;
-  });
+  data.forEach(d => d.value = +d.value);
 
   // Scale the range of the data in the domains
-  const maxXValue = max(data, function(d) { return d.value; });
+  const maxXValue = max(data, d => d.value);
   const definedMaxXValue = maxXValue !== undefined ? maxXValue : 0;
   x.domain([0,  definedMaxXValue]);
-  y.domain(data.map(function(d) { return d.label; }));
+  y.domain(data.map(d => d.label));
 
   // append the rectangles for the bar chart
   svg.selectAll()
       .data(data)
     .enter().append('rect')
-      .attr('width', function(d) {return x(d.value); } )
+      .attr('width', (d) => x(d.value))
       .attr('transform', 'translate(' + margin.left + ', ' + 0 + ')')
       .attr('y', function(d) {
         const val = y(d.label);
@@ -92,7 +90,7 @@ const createBarGraph = (input: Input) => {
   svg.selectAll()
       .data(data)
     .enter().append('text')
-      .attr('width', function(d) {return x(d.value); } )
+      .attr('width', d => x(d.value))
       .attr('transform', 'translate(' + (margin.left + 10) + ', ' + (y.bandwidth() * .7) + ')')
       .attr('y', function(d) {
         const val = y(d.label);

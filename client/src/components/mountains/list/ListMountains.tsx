@@ -35,14 +35,12 @@ const ListMountains = (props: Props) => {
   if (mountainData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
-  const mountains = mountainData.map(mountain => {
-    return (
-      <MountainCard
-        key={mountain.id}
-        mountain={mountain}
-      />
-    );
-  });
+  const mountains = mountainData.map(mountain => (
+    <MountainCard
+      key={mountain.id}
+      mountain={mountain}
+    />
+  ));
 
   return (
     <>

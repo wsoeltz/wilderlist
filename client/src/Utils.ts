@@ -223,9 +223,7 @@ interface SeasonStartDates {
   firstDayOfSpring: string;
 }
 
-export const getSolsticeAndEquinox = (year: number) => {
-  return getSolsticeAndEquinoxUtility(year) as SeasonStartDates;
-};
+export const getSolsticeAndEquinox = (year: number) => getSolsticeAndEquinoxUtility(year) as SeasonStartDates;
 
 function toDegreesMinutesAndSeconds(coordinate: number) {
     const absolute = Math.abs(coordinate);
@@ -264,7 +262,9 @@ export const getBrowser = () => {
 
   M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
   tem = userAgent.match(/version\/(\d+)/i);
-  if ( tem !== null) { M.splice(1, 1, tem[1]); }
+  if ( tem !== null) {
+    M.splice(1, 1, tem[1]);
+  }
   return { browser: M[0], version: parseFloat(M[1]) };
 };
 
@@ -321,9 +321,8 @@ export const states = [
   'wyoming',
 ];
 
-export const roundPercentToSingleDecimal = (numerator: number, denominator: number) => {
-  return Math.round((100 * (numerator / denominator)) * 10) / 10;
-};
+export const roundPercentToSingleDecimal = (numerator: number, denominator: number) =>
+  Math.round((100 * (numerator / denominator)) * 10) / 10;
 
 /* distance formula from
 https://stackoverflow.com/

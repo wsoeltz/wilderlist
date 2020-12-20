@@ -18,13 +18,10 @@ const Root = styled.div`
   cursor: progress;
 `;
 
-const LoadingSuspense = () => {
-
-  return (
-    <Root>
-      <LoadingSimple size={60} />
-    </Root>
-  );
-};
+const LoadingSuspense = () => (
+  <Root>
+    <LoadingSimple size={60} />
+  </Root>
+);
 
 export default LoadingSuspense;

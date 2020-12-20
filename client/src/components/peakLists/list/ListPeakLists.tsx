@@ -168,15 +168,13 @@ const ListPeakLists = (props: Props) => {
     const sortedTrophies =
       sortBy(trophiesDatum, ({latestAscent}) => latestAscent ? new Date(latestAscent) : 0).reverse();
 
-    const trophies = sortedTrophies.map((peakList) => {
-      return (
-        <PeakListTrophy
-          peakList={peakList}
-          profileId={profileId}
-          key={peakList.id}
-        />
-      );
-    });
+    const trophies = sortedTrophies.map((peakList) => (
+      <PeakListTrophy
+        peakList={peakList}
+        profileId={profileId}
+        key={peakList.id}
+      />
+    ));
 
     const trophyContent = showTrophies === true && trophies.length > 0 ? (
       <>

@@ -203,16 +203,15 @@ const MountainSelector = (props: Props) => {
   let searchResults: React.ReactElement<any> | null;
   const targetMountain = selectedMountains.length && selectedMountains[0]
     ? selectedMountains[0] : null;
-  const selectedMountainList = selectedMountains.map(mtn => {
-    return (
-      <MountainItemRemove
-        onClick={() => removeMountainFromList(mtn)}
-        key={mtn.id}
-      >
-        {mtn.name}
-      </MountainItemRemove>
-    );
-  });
+  const selectedMountainList = selectedMountains.map(mtn => (
+    <MountainItemRemove
+      onClick={() => removeMountainFromList(mtn)}
+      badProp={false}
+      key={mtn.id}
+    >
+      {mtn.name}
+    </MountainItemRemove>
+  ));
 
   if (dataToUse !== undefined ) {
     const { mountains } = dataToUse;

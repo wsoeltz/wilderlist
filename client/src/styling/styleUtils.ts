@@ -301,7 +301,7 @@ export const SmallTextNoteWithMargin = styled(SmallTextNote)`
 
 export const borderRadius = 6; // in px
 
-export const ButtonBase = styled.button<{mobileExtend?: boolean; }>`
+export const ButtonBase = styled.button<{mobileExtend?: boolean}>`
   padding: 0.4rem;
   text-transform: uppercase;
   color: #fff;
@@ -616,6 +616,7 @@ export const RemoveIcon = styled.div`
   margin-left: auto;
 `;
 
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 export const SelectBox = styled.select`
   -moz-appearance: none;

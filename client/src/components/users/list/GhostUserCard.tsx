@@ -33,17 +33,15 @@ const ProfilePicture = styled(PlaceholderBase)`
   border-radius: 4000px;
 `;
 
-const GhostPeakListCard = () => {
-  return (
-    <PlaceholderRoot>
-      <TextContainer>
-        <PlaceholderTitle />
-        <PlaceholderText style={{width: '68%'}} />
-        <PlaceholderText style={{width: '40%'}} />
-      </TextContainer>
-      <ProfilePicture />
-    </PlaceholderRoot>
-  );
-};
+const GhostPeakListCard = () => (
+  <PlaceholderRoot>
+    <TextContainer>
+      <PlaceholderTitle />
+      <PlaceholderText style={{width: '68%'}} />
+      <PlaceholderText style={{width: '40%'}} />
+    </TextContainer>
+    <ProfilePicture />
+  </PlaceholderRoot>
+);
 
 export default GhostPeakListCard;

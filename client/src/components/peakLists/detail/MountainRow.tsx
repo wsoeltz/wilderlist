@@ -143,14 +143,12 @@ const NotAvailable = styled.div`
   font-size: 0.8rem;
 `;
 
-const CompletedDate = ({date}: {date: string}) => {
-  return (
-    <CompletedDateText>
-      <CheckMark icon='check' />
-      {date}
-    </CompletedDateText>
-  );
-};
+const CompletedDate = ({date}: {date: string}) => (
+  <CompletedDateText>
+    <CheckMark icon='check' />
+    {date}
+  </CompletedDateText>
+);
 
 export type MountainDatumWithDate = MountainDatum & {completionDates: VariableDate | null};
 
@@ -174,13 +172,12 @@ const MountainRow = (props: Props) => {
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
   const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
-  const completeButton = (target: Months | Seasons | null) => {
-      return isOtherUser ? (<EmptyDate>{'—'}</EmptyDate>) : (
+  const completeButton = (target: Months | Seasons | null) => isOtherUser
+    ? (<EmptyDate>{'—'}</EmptyDate>) : (
       <MarkDoneButton onClick={() => setEditMountainId({...mountain, target})}>
         <CalendarButton icon='calendar-alt' /> {completeButtonText}
       </MarkDoneButton>
     );
-  };
 
   let peakCompletedContent: React.ReactElement<any> | null = completeButton(null);
   const { completionDates } = mountain;

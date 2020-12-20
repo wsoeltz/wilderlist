@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import React from 'react';
 import styled from 'styled-components/macro';

@@ -78,8 +78,7 @@ const SmallLabel = styled.div`
 `;
 
 export const LargeStyledNumber = (
-  {value, label, svg}: {value: number, label: string, svg: string}) => {
-  return (
+  {value, label, svg}: {value: number, label: string, svg: string}) => (
     <CardRoot>
       <BigNumber>
         <SvgImg src={svg} alt={label} />
@@ -90,7 +89,6 @@ export const LargeStyledNumber = (
       </Label>
     </CardRoot>
   );
-};
 
 const ContributionsRoot = styled.div`
   display: grid;

@@ -89,22 +89,22 @@ const useSnowReport = (input: Input) => {
           `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${stateAbbr}-snowfall-${year}${stringMonth}.json`);
         const snowdepthRes = await getSnowDepth(
           `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${stateAbbr}-snow-depth-${year}${stringMonth}.json`);
-        const sortedSnowFallStations = orderBy<RawSnowDatum>(snowfallRes.data.data, (d: RawSnowDatum) => {
-          return getDistanceFromLatLonInMiles({
+        const sortedSnowFallStations = orderBy<RawSnowDatum>(snowfallRes.data.data, (d: RawSnowDatum) =>
+          getDistanceFromLatLonInMiles({
             lat1: latitude,
             lon1: longitude,
             lat2: parseFloat(d.lat),
             lon2: parseFloat(d.lon),
-          });
-        });
-        const sortedSnowDepthStations = orderBy<RawSnowDatum>(snowdepthRes.data.data, (d: RawSnowDatum) => {
-          return getDistanceFromLatLonInMiles({
+          }),
+        );
+        const sortedSnowDepthStations = orderBy<RawSnowDatum>(snowdepthRes.data.data, (d: RawSnowDatum) =>
+          getDistanceFromLatLonInMiles({
             lat1: latitude,
             lon1: longitude,
             lat2: parseFloat(d.lat),
             lon2: parseFloat(d.lon),
-          });
-        });
+          }),
+        );
         if (sortedSnowFallStations && sortedSnowFallStations[0] &&
             sortedSnowDepthStations && sortedSnowDepthStations[0]) {
           const snowfallValues: SnowValue[] = [];

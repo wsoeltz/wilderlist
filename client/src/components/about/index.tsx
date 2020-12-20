@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { Octokit } from '@octokit/core';

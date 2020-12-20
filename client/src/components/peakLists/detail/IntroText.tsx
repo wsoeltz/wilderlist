@@ -55,7 +55,7 @@ export const getSentences = (input: {getString: GetString } & Input) => {
       'highest-mountain-elevation': '' + highestMountain.elevation,
       'smallest-mountain-name': smallestMountain.name,
       'smallest-mountain-elevation': '' + smallestMountain.elevation,
-      'type': type,
+      type,
     });
     secondParagraph = getString('peak-list-detail-list-standard-para-2', {
       'list-name': listName,

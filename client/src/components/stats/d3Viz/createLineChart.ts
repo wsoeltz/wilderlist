@@ -60,8 +60,8 @@ const createLineChart = (input: Input) => {
 
   // define the line
   const valueline: any = line()
-    .x(function(d: any) { return x(d.date); })
-    .y(function(d: any) { return y(d.value); });
+    .x((d: any) => x(d.date))
+    .y((d: any) => y(d.value));
 
   // append the svg obgect to the body of the page
   // appends a 'group' element to 'svg'

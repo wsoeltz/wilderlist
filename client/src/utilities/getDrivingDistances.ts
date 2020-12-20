@@ -53,7 +53,8 @@ const openStreetMapDirections = async (lat1: number, long1: number, lat2: number
 const mapBoxDirections = async (lat1: number, long1: number, lat2: number, long2: number) => {
   try {
     const response = await fetchMapBoxData(
-      /* tslint:disable:max-line-length */
+      /* eslint-disable max-len */
+/* tslint:disable:max-line-length */
       `https://api.mapbox.com/directions/v5/mapbox/driving/${long1},${lat1};${long2},${lat2}?access_token=${
         process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
       }&geometries=geojson&overview=full`,

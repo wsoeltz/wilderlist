@@ -95,14 +95,14 @@ const ListMountains = (props: Props) => {
       }});
       if (author.email !== null) {
         const subject = newPermission > 5
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           ? 'You now have full permissions to add mountains'
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           : mountainName + ' has been approved';
         const content = newPermission > 5
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           ? '<p>Thank you for your accurate contributions to the Wilderlist database! As a result of multiple, accurate additions, you have been granted full permissions to add mountains. Your submissions will no longer appear as "pending" when you add them. Happy hiking!</p>'
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           : '<p>Thank you for your submission to Wilderlist. Your mountain has now been approved.</p>';
         sendGenericEmail({
           emailList: [author.email],

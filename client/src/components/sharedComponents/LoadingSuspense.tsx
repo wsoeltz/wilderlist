@@ -5,17 +5,12 @@ import {
 } from '../../styling/Grid';
 import LoadingSpinner from './LoadingSpinner';
 
-const LoadingSuspense = () => {
-
-  return (
-    <>
-      <ContentFull>
-        <ContentBody>
-          <LoadingSpinner />
-        </ContentBody>
-      </ContentFull>
-    </>
-  );
-};
+const LoadingSuspense = () => (
+  <ContentFull>
+    <ContentBody>
+      <LoadingSpinner />
+    </ContentBody>
+  </ContentFull>
+);
 
 export default LoadingSuspense;

@@ -29,7 +29,8 @@ const cache: any = setupCache({
 });
 
 const getCampsites = axios.create({
-  /* tslint:disable:max-line-length */
+  /* eslint-disable max-len */
+/* tslint:disable:max-line-length */
   baseURL: '/api/recreationgov?filter=campsites',
   adapter: cache.adapter,
 });
