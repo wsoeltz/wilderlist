@@ -1,9 +1,8 @@
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import {
   scaleLinear,
 } from 'd3-scale';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import max from 'lodash/max';
 import {darken} from 'polished';
 import React, {

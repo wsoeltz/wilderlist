@@ -1,5 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useQuery } from '@apollo/client';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
 import { Region } from '../../../types/graphQLTypes';

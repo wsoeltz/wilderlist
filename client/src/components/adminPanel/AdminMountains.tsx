@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import React, { useContext, useState } from 'react';
 import { withRouter } from 'react-router';
@@ -170,9 +170,9 @@ const AdminMountains = () => {
   } else if (mountainsToShow === MountainsToShow.pending) {
     query = GET_PENDING_MOUNTAINS;
   } else {
+    query = GET_MOUNTAINS;
     failIfValidOrNonExhaustive(mountainsToShow,
       'Invalid type for mountainsToShow ' + mountainsToShow);
-    query = GET_MOUNTAINS;
   }
 
   const {loading, error, data} = useQuery<SuccessResponse>(query);
@@ -249,8 +249,8 @@ const AdminMountains = () => {
       editPanel = null;
     }
   } else {
-    failIfValidOrNonExhaustive(editMountainPanel, 'Invalid value for editMountainPanel ' + editMountainPanel);
     editPanel = null;
+    failIfValidOrNonExhaustive(editMountainPanel, 'Invalid value for editMountainPanel ' + editMountainPanel);
   }
 
   const editMountain = (id: string) => {

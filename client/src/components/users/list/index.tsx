@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';

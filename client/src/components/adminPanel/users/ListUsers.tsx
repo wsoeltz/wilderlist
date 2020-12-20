@@ -1,5 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
-import { ApolloError } from 'apollo-boost';
+import { ApolloError, useMutation } from '@apollo/client';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import { LinkButton } from '../../../styling/styleUtils';

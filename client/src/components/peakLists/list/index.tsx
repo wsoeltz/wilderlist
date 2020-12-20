@@ -1,10 +1,9 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import {
   faList,
   faMapMarkedAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';

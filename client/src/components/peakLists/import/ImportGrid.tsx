@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import axios from 'axios';
 import csv from 'csvtojson';
 import { GetString } from 'fluent-react/compat';

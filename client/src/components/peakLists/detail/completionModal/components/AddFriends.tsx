@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';

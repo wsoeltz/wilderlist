@@ -1,7 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
 import Helmet from 'react-helmet';

@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
 import {

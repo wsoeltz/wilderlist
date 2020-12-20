@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import React, {useContext} from 'react';
 import {
   AppLocalizationAndBundleContext,

@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 import {
   faCheck,
   faEdit,
@@ -7,7 +7,6 @@ import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import React, {useContext, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {

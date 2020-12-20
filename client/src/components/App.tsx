@@ -1,5 +1,3 @@
-import { ApolloProvider } from '@apollo/react-hooks';
-import ApolloClient from 'apollo-boost';
 import axios from 'axios';
 import 'cross-fetch/polyfill';
 import debounce from 'lodash/debounce';
@@ -83,7 +81,6 @@ export interface IAppContext {
   usersLocation: UsersLocation;
 }
 
-const client = new ApolloClient();
 export const UserContext = React.createContext<User | null>(null);
 export const AppContext = React.createContext<IAppContext>({
   windowWidth: window.innerWidth,
@@ -330,35 +327,33 @@ const App: React.FC = () => {
   return (
     <UserContext.Provider value={user}>
       <AppContext.Provider value={appContext}>
-        <ApolloProvider client={client}>
-          <FluentText.Provider value={fluentValue}>
-            <Helmet>
-              {/* Set default meta data values */}
-              <title>{'Wilderlist'}</title>
-              <meta
-                name='description'
-                content='Track, plan and share your hiking and mountaineering adventures.'
-              />
-              <meta property='og:title' content='Wilderlist' />
-              <meta
-                property='og:description'
-                content='Track, plan and share your hiking and mountaineering adventures.'
-              />
-              <meta property='og:image' content={defaultOgImageUrl} />
-              <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + window.location.pathname} />
-            </Helmet>
-            <GlobalStyles />
-            <Router>
-              <Root>
-                <Header />
-                <Suspense fallback={<LoadingSuspense />}>
-                  {userRoutes}
-                </Suspense>
-                <OverlayPortal id={overlayPortalContainerId} />
-              </Root>
-            </Router>
-          </FluentText.Provider>
-        </ApolloProvider>
+        <FluentText.Provider value={fluentValue}>
+          <Helmet>
+            {/* Set default meta data values */}
+            <title>{'Wilderlist'}</title>
+            <meta
+              name='description'
+              content='Track, plan and share your hiking and mountaineering adventures.'
+            />
+            <meta property='og:title' content='Wilderlist' />
+            <meta
+              property='og:description'
+              content='Track, plan and share your hiking and mountaineering adventures.'
+            />
+            <meta property='og:image' content={defaultOgImageUrl} />
+            <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + window.location.pathname} />
+          </Helmet>
+          <GlobalStyles />
+          <Router>
+            <Root>
+              <Header />
+              <Suspense fallback={<LoadingSuspense />}>
+                {userRoutes}
+              </Suspense>
+              <OverlayPortal id={overlayPortalContainerId} />
+            </Root>
+          </Router>
+        </FluentText.Provider>
       </AppContext.Provider>
     </UserContext.Provider>
   );

@@ -1,5 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { withRouter } from 'react-router';
 import {

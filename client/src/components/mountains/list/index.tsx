@@ -1,11 +1,10 @@
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import {
   faFilter,
   faList,
   faMapMarkedAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import { Types } from 'mongoose';
 import queryString from 'query-string';

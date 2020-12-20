@@ -1,5 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useQuery } from '@apollo/client';
 import React, { useContext, useEffect, useState } from 'react';
 import { Mountain, PermissionTypes, State } from '../../../types/graphQLTypes';
 import { UserContext } from '../../App';

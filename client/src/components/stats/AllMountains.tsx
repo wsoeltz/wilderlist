@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import noop from 'lodash/noop';
 import React, {useContext, useState} from 'react';
 import styled from 'styled-components';

@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import Helmet from 'react-helmet';

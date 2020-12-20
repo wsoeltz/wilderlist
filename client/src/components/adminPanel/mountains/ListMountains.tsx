@@ -1,6 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
-import { ApolloError } from 'apollo-boost';
-import gql from 'graphql-tag';
+import { ApolloError, gql, useMutation } from '@apollo/client';
 import React, {useState} from 'react';
 import {
   LinkButton,

@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 import { faLeaf, faMountain, faSnowflake, faTh } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import React, {useContext, useEffect, useState} from 'react';
 import {useRouteMatch} from 'react-router';
 import styled from 'styled-components/macro';

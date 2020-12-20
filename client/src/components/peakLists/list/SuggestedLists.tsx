@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import { GetString } from 'fluent-react/compat';
 import React, {useContext} from 'react';
 import styled from 'styled-components';

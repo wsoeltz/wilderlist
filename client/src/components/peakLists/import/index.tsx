@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { GetString } from 'fluent-react/compat';
 import {intersection, sortBy} from 'lodash';
 import React, {useContext, useState} from 'react';

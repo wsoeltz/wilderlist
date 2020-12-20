@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faReddit,

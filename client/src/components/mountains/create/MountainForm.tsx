@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useEffect, useState} from 'react';
 import {
