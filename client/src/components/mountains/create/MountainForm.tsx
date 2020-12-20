@@ -1,11 +1,8 @@
 import { gql, useMutation } from '@apollo/client';
 import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import usePointLocationData from '../../../hooks/usePointLocationData';
 import {
   BasicIconInText,
@@ -113,8 +110,8 @@ interface Props {
 
 const MountainForm = (props: Props) => {
   const { states, initialData, onSubmit, onSubmitAndAddAnother, mapContainer, onCancel } = props;
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const getString = useFluent();
 
   const {windowWidth, usersLocation} = useContext(AppContext);
 
@@ -197,21 +194,21 @@ const MountainForm = (props: Props) => {
   const areYouSureProps: AreYouSureModalProps = initialData.flag === MountainFlag.deleteRequest ? {
     onConfirm: () => clearFlag(initialData.id),
     onCancel: closeAreYouSureModal,
-    title: getFluentString('global-text-value-cancel-delete-request'),
-    text: getFluentString('global-text-value-modal-cancel-request-text', {
+    title: getString('global-text-value-cancel-delete-request'),
+    text: getString('global-text-value-modal-cancel-request-text', {
       name: initialData.name,
     }),
-    confirmText: getFluentString('global-text-value-modal-confirm'),
-    cancelText: getFluentString('global-text-value-modal-cancel'),
+    confirmText: getString('global-text-value-modal-confirm'),
+    cancelText: getString('global-text-value-modal-cancel'),
   } : {
     onConfirm: () => flagForDeletion(initialData.id),
     onCancel: closeAreYouSureModal,
-    title: getFluentString('global-text-value-modal-request-delete-title'),
-    text: getFluentString('global-text-value-modal-request-delete-text', {
+    title: getString('global-text-value-modal-request-delete-title'),
+    text: getString('global-text-value-modal-request-delete-text', {
       name: initialData.name,
     }),
-    confirmText: getFluentString('global-text-value-modal-confirm'),
-    cancelText: getFluentString('global-text-value-modal-cancel'),
+    confirmText: getString('global-text-value-modal-confirm'),
+    cancelText: getString('global-text-value-modal-cancel'),
   };
 
   const areYouSureModal = deleteModalOpen === false ? null : (
@@ -221,12 +218,12 @@ const MountainForm = (props: Props) => {
   const locationInformationTitle = !loadingLocationData ? (
     <>
       <BasicIconInText icon={faCompass} />
-      {getFluentString('create-mountain-location-title')}
+      {getString('create-mountain-location-title')}
     </>
   ) : (
     <>
       <Loading size={16} color={'#666'} />
-      {getFluentString('create-mountain-location-loading')}
+      {getString('create-mountain-location-loading')}
     </>
   );
 
@@ -234,7 +231,7 @@ const MountainForm = (props: Props) => {
     <SmallTextNoteWithMargin>
       <RequiredNote>
         <span className={'red-text'}>
-          {getFluentString('create-mountain-location-error')}
+          {getString('create-mountain-location-error')}
         </span>
       </RequiredNote>
     </SmallTextNoteWithMargin>
@@ -272,12 +269,12 @@ const MountainForm = (props: Props) => {
       <DelayedInput
         initialValue={resource.title}
         setInputValue={val => handleExternalResourceChange(val)('title', i)}
-        placeholder={getFluentString('global-text-value-resource-title')}
+        placeholder={getString('global-text-value-resource-title')}
       />
       <DelayedInput
         initialValue={resource.url}
         setInputValue={val => handleExternalResourceChange(val)('url', i)}
-        placeholder={getFluentString('global-text-value-resource-url')}
+        placeholder={getString('global-text-value-resource-url')}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
         ×
@@ -310,11 +307,11 @@ const MountainForm = (props: Props) => {
   };
 
   const saveButtonText = loadingSubmit === true
-    ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
+    ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
 
   const deleteButtonText = initialData.flag !== MountainFlag.deleteRequest
-    ? getFluentString('global-text-value-delete')
-    : getFluentString('global-text-value-cancel-delete-request');
+    ? getString('global-text-value-delete')
+    : getString('global-text-value-cancel-delete-request');
 
   const deleteButton = !initialData.id ? null : (
     <DeleteButton
@@ -327,7 +324,7 @@ const MountainForm = (props: Props) => {
   );
 
   const createAnotherText = loadingSubmit === true
-    ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save-and-add');
+    ? getString('global-text-value-saving') + '...' : getString('global-text-value-save-and-add');
 
   const CreateAnotherButton = windowWidth > mobileWidth ? SaveButton : ButtonSecondary;
   const createAnother = !initialData.id && onSubmitAndAddAnother !== null ? (
@@ -346,14 +343,14 @@ const MountainForm = (props: Props) => {
       <Wrapper>
         <DetailBoxTitle>
           <BasicIconInText icon={faMountain} />
-          {getFluentString('create-mountain-name-title')}
+          {getString('create-mountain-name-title')}
         </DetailBoxTitle>
         <DetailBoxWithMargin>
           <DelayedInput
             id={'create-mountain-name'}
             initialValue={name}
             setInputValue={value => setName(value)}
-            placeholder={getFluentString('create-mountain-mountain-name-placeholder')}
+            placeholder={getString('create-mountain-mountain-name-placeholder')}
             /* autoComplete='off' is ignored in Chrome, but other strings aren't */
             maxLength={1000}
           />
@@ -364,7 +361,7 @@ const MountainForm = (props: Props) => {
         <DetailBoxWithMargin>
           {locationError}
           <SmallTextNoteWithMargin>
-            {getFluentString('create-mountain-location-note', {
+            {getString('create-mountain-location-note', {
               position: mapContainer !== null ? 'right' : 'bottom',
             })}
           </SmallTextNoteWithMargin>
@@ -372,13 +369,13 @@ const MountainForm = (props: Props) => {
             <div>
               <LabelContainer htmlFor={'create-mountain-latitude'}>
                 <Label>
-                  {getFluentString('global-text-value-latitude')}
+                  {getString('global-text-value-latitude')}
                   {' '}
-                  <small>({getFluentString('create-mountain-latlong-note')})</small>
+                  <small>({getString('create-mountain-latlong-note')})</small>
                 </Label>
               </LabelContainer>
               <DelayedInput
-                key={'latitude-' + autoLat}
+                key={'latitude-' + stringLat}
                 id={'create-mountain-latitude'}
                 type={'number'}
                 min={latitudeMin}
@@ -391,13 +388,13 @@ const MountainForm = (props: Props) => {
             <div>
               <LabelContainer htmlFor={'create-mountain-longitude'}>
                 <Label>
-                  {getFluentString('global-text-value-longitude')}
+                  {getString('global-text-value-longitude')}
                   {' '}
-                  <small>({getFluentString('create-mountain-latlong-note')})</small>
+                  <small>({getString('create-mountain-latlong-note')})</small>
                 </Label>
               </LabelContainer>
               <DelayedInput
-                key={'longitude-' + autoLong}
+                key={'longitude-' + stringLong}
                 id={'create-mountain-longitude'}
                 type={'number'}
                 min={longitudeMin}
@@ -410,14 +407,14 @@ const MountainForm = (props: Props) => {
             <div>
               <LabelContainer htmlFor={'create-mountain-select-a-state'}>
                 <Label>
-                  {getFluentString('global-text-value-state')}
+                  {getString('global-text-value-state')}
                 </Label>
               </LabelContainer>
               <SelectBox
                 id={'create-mountain-select-a-state'}
                 value={`${selectedState || ''}`}
                 onChange={e => setSelectedState(e.target.value)}
-                placeholder={getFluentString('create-mountain-select-a-state')}
+                placeholder={getString('create-mountain-select-a-state')}
               >
                 <option value='' key='empty-option-to-select'></option>
                 {stateOptions}
@@ -426,9 +423,9 @@ const MountainForm = (props: Props) => {
             <div>
               <LabelContainer htmlFor={'create-mountain-elevation'}>
                 <Label>
-                  {getFluentString('global-text-value-elevation')}
+                  {getString('global-text-value-elevation')}
                   {' '}
-                  <small>({getFluentString('global-text-value-feet')})</small>
+                  <small>({getString('global-text-value-feet')})</small>
                 </Label>
               </LabelContainer>
               <DelayedInput
@@ -448,7 +445,7 @@ const MountainForm = (props: Props) => {
           title={
             <>
               <BasicIconInText icon={faEdit} />
-              {getFluentString('create-mountain-optional-title')}
+              {getString('create-mountain-optional-title')}
             </>
           }
           defaultHidden={true}
@@ -456,7 +453,7 @@ const MountainForm = (props: Props) => {
           <div style={{marginBottom: '1rem'}}>
             <LabelContainer htmlFor={'create-peak-list-description'}>
               <Label>
-                {getFluentString('create-peak-list-peak-list-description-label')}
+                {getString('create-peak-list-peak-list-description-label')}
               </Label>
             </LabelContainer>
             <DelayedTextarea
@@ -464,14 +461,14 @@ const MountainForm = (props: Props) => {
               rows={6}
               initialValue={description}
               setInputValue={value => setDescription(value)}
-              placeholder={getFluentString('create-mountain-optional-description')}
+              placeholder={getString('create-mountain-optional-description')}
               maxLength={5000}
             />
           </div>
           <div>
             <LabelContainer>
               <Label>
-                {getFluentString('global-text-value-external-resources')}
+                {getString('global-text-value-external-resources')}
               </Label>
             </LabelContainer>
             {resourceInputs}
@@ -480,7 +477,7 @@ const MountainForm = (props: Props) => {
                 e.preventDefault();
                 setExternalResources([...externalResources, {title: '', url: ''}]);
               }}>
-                {getFluentString('global-text-value-add-external-resources')}
+                {getString('global-text-value-add-external-resources')}
               </ButtonSecondary>
             </div>
           </div>
@@ -493,7 +490,7 @@ const MountainForm = (props: Props) => {
             mobileExtend={true}
             onClick={onCancel}
           >
-            {getFluentString('global-text-value-modal-cancel')}
+            {getString('global-text-value-modal-cancel')}
           </GhostButton>
           {createAnother}
           <SaveButton

@@ -1,8 +1,5 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import React, {useState} from 'react';
+import useFluent from '../../../../hooks/useFluent';
 import {
   BasicIconInText,
 } from '../../../../styling/styleUtils';
@@ -102,8 +99,7 @@ const OpenWeatherForecast = (props: Props) => {
     />
   );
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const forecastDays = daily.map(report => {
     const { dt, temp, wind_deg, wind_speed, weather } = report;
@@ -123,12 +119,12 @@ const OpenWeatherForecast = (props: Props) => {
           <TempLow>{Math.round(temp.min)}°F</TempLow>
         </Temperatures>
         <AdditionalInfo>
-          {getFluentString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
+          {getString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
         </AdditionalInfo>
         <DetailModalButton
           onClick={() => setWeatherDetail(report)}
         >
-          {getFluentString('weather-forecast-detailed-report')}
+          {getString('weather-forecast-detailed-report')}
         </DetailModalButton>
       </ForecastBlock>
     );

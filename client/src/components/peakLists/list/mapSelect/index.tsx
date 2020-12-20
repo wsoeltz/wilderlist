@@ -2,18 +2,14 @@ import { gql, useQuery } from '@apollo/client';
 import {
   scaleLinear,
 } from 'd3-scale';
-import { GetString } from 'fluent-react/compat';
 import max from 'lodash/max';
 import {darken} from 'polished';
 import React, {
-  useContext,
   useEffect,
   useState,
 } from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../hooks/useFluent';
 import {
   baseColor,
   BasicIconInText,
@@ -228,8 +224,7 @@ const ListMapSelect = (props: Props) => {
     setSelectedState, selectedState,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {data} = useQuery<SuccessResponse>(GET_STATES);
 
@@ -319,7 +314,7 @@ const ListMapSelect = (props: Props) => {
         onClick={() => setSelectedState(null)}
       >
         <BasicIconInText icon={'chevron-left'} />
-        {getFluentString('map-search-back-to-map')}
+        {getString('map-search-back-to-map')}
       </ReturnButton>
       <SelectedState>
         {selectedState.name}
@@ -327,7 +322,7 @@ const ListMapSelect = (props: Props) => {
     </>
   ) : (
     <Title>
-      {getFluentString('map-search-states-title')}
+      {getString('map-search-states-title')}
     </Title>
   );
 
@@ -351,7 +346,7 @@ const ListMapSelect = (props: Props) => {
         </ScaleValues>
         <Scale />
         <ScaleTitle>
-          {getFluentString('map-search-color-scale-text')}
+          {getString('map-search-color-scale-text')}
         </ScaleTitle>
       </ScaleContainer>
       {tooltip}

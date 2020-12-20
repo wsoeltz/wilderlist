@@ -11,10 +11,6 @@ import {
   Switch,
 } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import {
-  appLocalizationAndBundle as fluentValue,
-  AppLocalizationAndBundleContext as FluentText,
-} from '../contextProviders/getFluentLocalizationContext';
 import useUsersLocation, {
   userAllowsPreciseLocation,
   UsersLocation,
@@ -327,7 +323,6 @@ const App: React.FC = () => {
   return (
     <UserContext.Provider value={user}>
       <AppContext.Provider value={appContext}>
-        <FluentText.Provider value={fluentValue}>
           <Helmet>
             {/* Set default meta data values */}
             <title>{'Wilderlist'}</title>
@@ -353,7 +348,6 @@ const App: React.FC = () => {
               <OverlayPortal id={overlayPortalContainerId} />
             </Root>
           </Router>
-        </FluentText.Provider>
       </AppContext.Provider>
     </UserContext.Provider>
   );

@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
 import { Types } from 'mongoose';
-import React, {useContext} from 'react';
+import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ContentBody,
   ContentHeader,
@@ -25,14 +22,12 @@ const UserProfilePage = (props: Props) => {
   const { id, peakListId, mountainId }: any = match.params;
 
   const profileId = id;
-
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const mountainDetail = !Types.ObjectId.isValid(mountainId)
     ? (
         <PlaceholderText>
-          {getFluentString('peak-list-detail-select-mountain')}
+          {getString('peak-list-detail-select-mountain')}
         </PlaceholderText>
       )
     : (

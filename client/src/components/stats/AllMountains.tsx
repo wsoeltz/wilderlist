@@ -1,11 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import noop from 'lodash/noop';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   PlaceholderText,
   SelectBox,
@@ -75,8 +72,7 @@ interface Props {
 const AllMountains = (props: Props) => {
   const {userId} = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [type, setType] = useState<PeakListVariants>(PeakListVariants.standard);
 
@@ -106,7 +102,7 @@ const AllMountains = (props: Props) => {
     console.error(error);
     return  (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -114,7 +110,7 @@ const AllMountains = (props: Props) => {
     if (!allInProgressMountains) {
       return (
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
@@ -132,7 +128,7 @@ const AllMountains = (props: Props) => {
       const toggleType = allMountainsWithDates.length > 0 ? (
         <SelectBoxContiner>
           <label htmlFor={'select-box-for-peak-list-type-all-mtn-stats'}>
-            {getFluentString('stats-showing-ascents-for')}
+            {getString('stats-showing-ascents-for')}
           </label>
           <SelectBox
             value={`${type}`}
@@ -140,22 +136,22 @@ const AllMountains = (props: Props) => {
             id={'select-box-for-peak-list-type-all-mtn-stats'}
           >
             <option value={PeakListVariants.standard}>
-            {getFluentString('global-text-value-list-type-description', {
+            {getString('global-text-value-list-type-description', {
               type: PeakListVariants.standard,
             })}
             </option>
             <option value={PeakListVariants.winter}>
-            {getFluentString('global-text-value-list-type-description', {
+            {getString('global-text-value-list-type-description', {
               type: PeakListVariants.winter,
             })}
             </option>
             <option value={PeakListVariants.fourSeason}>
-            {getFluentString('global-text-value-list-type-description', {
+            {getString('global-text-value-list-type-description', {
               type: PeakListVariants.fourSeason,
             })}
             </option>
             <option value={PeakListVariants.grid}>
-            {getFluentString('global-text-value-list-type-description', {
+            {getString('global-text-value-list-type-description', {
               type: PeakListVariants.grid,
             })}
             </option>
@@ -163,8 +159,8 @@ const AllMountains = (props: Props) => {
         </SelectBoxContiner>
       ) : (
         <>
-          <p>{getFluentString('stats-mountain-panel-no-mountains-para-1')}</p>
-          <p>{getFluentString('stats-mountain-panel-no-mountains-para-2')}</p>
+          <p>{getString('stats-mountain-panel-no-mountains-para-1')}</p>
+          <p>{getString('stats-mountain-panel-no-mountains-para-2')}</p>
         </>
       );
 
@@ -199,7 +195,7 @@ const AllMountains = (props: Props) => {
   } else {
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }

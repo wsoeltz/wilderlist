@@ -1,10 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -110,8 +107,7 @@ interface Props {
 const CompareAllMountains = (props: Props) => {
   const { userId, id } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { userId, friendId: id },
@@ -122,7 +118,7 @@ const CompareAllMountains = (props: Props) => {
     console.error(error);
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -165,7 +161,7 @@ const CompareAllMountains = (props: Props) => {
     return (
       <>
         <Helmet>
-          <title>{getFluentString('meta-data-compare-all-title', {
+          <title>{getString('meta-data-compare-all-title', {
             user: user.name,
           })}</title>
         </Helmet>
@@ -174,7 +170,6 @@ const CompareAllMountains = (props: Props) => {
           user={user}
           me={me}
           mountains={allMountains}
-          peakListId={'all'}
         />
       </>
     );

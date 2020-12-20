@@ -1,12 +1,9 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faCloudSun, faEdit, faFlag, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { setMountainOgImageUrl } from '../../../routing/routes';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
@@ -257,8 +254,7 @@ interface Props {
 const MountainDetail = (props: Props) => {
   const { userId, id, setOwnMetaData} = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
@@ -288,7 +284,7 @@ const MountainDetail = (props: Props) => {
     console.error(error);
     header =  (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
     body = null;
@@ -297,7 +293,7 @@ const MountainDetail = (props: Props) => {
     if (!mountain) {
       return (
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
@@ -309,7 +305,7 @@ const MountainDetail = (props: Props) => {
       const title = status === CreatedItemStatus.pending ? (
         <div>
           <Title style={{marginBottom: 0}}>{name}</Title>
-          <Subtitle>{getFluentString('mountain-detail-pending-approval')}</Subtitle>
+          <Subtitle>{getString('mountain-detail-pending-approval')}</Subtitle>
         </div>
       ) : (
         <Title>{name}</Title>
@@ -323,7 +319,7 @@ const MountainDetail = (props: Props) => {
 
       const mountainNote = user && user.mountainNote ? user.mountainNote : null;
       const defaultNoteText = mountainNote && mountainNote.text ? mountainNote.text : '';
-      const notesPlaceholderText = getFluentString('user-notes-placeholder', {name: mountain.name});
+      const notesPlaceholderText = getString('user-notes-placeholder', {name: mountain.name});
 
       const saveNote = (text: string) => {
         if (user && mountain) {
@@ -342,12 +338,12 @@ const MountainDetail = (props: Props) => {
         actionButton = (author && author.id && author.id === userId
                   && user.mountainPermissions !== -1) || user.permissions === PermissionTypes.admin ? (
           <CompactGhostButtonLink to={editMountainLink(mountain.id)}>
-            {getFluentString('global-text-value-edit')}
+            {getString('global-text-value-edit')}
           </CompactGhostButtonLink>
         ) : (
           <CompactGhostButton onClick={() => setIsFlagModalOpen(true)}>
             <BasicIconInText icon={faFlag} />
-            {getFluentString('global-text-value-flag')}
+            {getString('global-text-value-flag')}
           </CompactGhostButton>
         );
       }
@@ -384,7 +380,7 @@ const MountainDetail = (props: Props) => {
           <>
             <VerticalContentItem>
               <NotesTitle>
-                {getFluentString('global-text-value-external-resources')}
+                {getString('global-text-value-external-resources')}
               </NotesTitle>
               <ResourceList>
                 {resourcesArray}
@@ -396,14 +392,14 @@ const MountainDetail = (props: Props) => {
         resourcesList = null;
       }
 
-      const metaDescription = getFluentString('meta-data-mountain-detail-description', {
+      const metaDescription = getString('meta-data-mountain-detail-description', {
         name, elevation, state: state && state.abbreviation ? ', ' + state.abbreviation : '',
         additionaltext: '',
       });
 
       const metaData = setOwnMetaData === true ? (
         <Helmet>
-          <title>{getFluentString('meta-data-detail-default-title', {
+          <title>{getString('meta-data-detail-default-title', {
             title: `${name}, ${state.name}`,
           })}</title>
           <meta
@@ -435,7 +431,7 @@ const MountainDetail = (props: Props) => {
           </Details>
           <DetailBoxTitle>
             <BasicIconInText icon={faMapMarkedAlt} />
-            {getFluentString('map-mountain-title')}
+            {getString('map-mountain-title')}
           </DetailBoxTitle>
         </>
       );
@@ -444,7 +440,7 @@ const MountainDetail = (props: Props) => {
         <>
           <LocationBox>
             <LatLong>
-              {getFluentString('global-text-value-location')}:{' '}
+              {getString('global-text-value-location')}:{' '}
               <strong>{lat}</strong>, <strong>{long}</strong>
             </LatLong>
             <ExternalMapsButtons>
@@ -456,7 +452,7 @@ const MountainDetail = (props: Props) => {
           {description}
           <DetailBoxTitle>
             <BasicIconInText icon={faCloudSun} />
-            {getFluentString('mountain-detail-weather-and-reports')}
+            {getString('mountain-detail-weather-and-reports')}
           </DetailBoxTitle>
           <DetailBox>
             <InlineSectionContainer>
@@ -480,15 +476,15 @@ const MountainDetail = (props: Props) => {
           </DetailBox>
           <DetailBoxTitle>
             <BasicIconInText icon={faEdit} />
-            {getFluentString('mountain-detail-notes-and-ascents')}
+            {getString('mountain-detail-notes-and-ascents')}
           </DetailBoxTitle>
           <DetailBox>
             <InlineSectionContainer>
               <NotesTitle>
-                {getFluentString('user-notes-title')}
-                <small style={{marginLeft: '0.4rem'}}>({getFluentString('global-text-value-private')})</small>
+                {getString('user-notes-title')}
+                <small style={{marginLeft: '0.4rem'}}>({getString('global-text-value-private')})</small>
                 <Tooltip
-                  explanation={getFluentString('user-notes-tooltip')}
+                  explanation={getString('user-notes-tooltip')}
                 />
               </NotesTitle>
               <UserNote
@@ -502,10 +498,10 @@ const MountainDetail = (props: Props) => {
               completedDates={completedDates}
               userId={userId}
               mountain={mountain}
-              getFluentString={getFluentString}
+              getString={getString}
             />
           </DetailBox>
-          <InlineTitle>{getFluentString('global-text-value-additional-resources')}</InlineTitle>
+          <InlineTitle>{getString('global-text-value-additional-resources')}</InlineTitle>
           {resourcesList}
           <LocalTrails
             mountainName={mountain.name}
@@ -514,7 +510,7 @@ const MountainDetail = (props: Props) => {
             state={state.name}
           />
           <IncludedLists
-            getFluentString={getFluentString}
+            getString={getString}
             mountainDatum={mountain}
             numLists={lists.length}
             setMetaDescription={setOwnMetaData === true ? true : false}
@@ -526,7 +522,7 @@ const MountainDetail = (props: Props) => {
   } else {
     header = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
     body = null;

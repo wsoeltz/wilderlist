@@ -1,10 +1,7 @@
 import {faSnowflake} from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   BasicIconInText,
   lightBaseColor,
@@ -50,8 +47,8 @@ const Value = styled.strong`
 `;
 
 const SnowDepth = (input: Input) => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
+
   const {loading, error, data} = useSnowReport(input);
 
   let output: React.ReactElement<any> | null;
@@ -63,10 +60,10 @@ const SnowDepth = (input: Input) => {
         <LoadingContainer>
           <LoadingSpinner
             message={{
-              basic: getFluentString('snow-report-loading'),
-              medium: getFluentString('snow-report-loading'),
-              long: getFluentString('snow-report-loading'),
-              extraLong: getFluentString('snow-report-loading'),
+              basic: getString('snow-report-loading'),
+              medium: getString('snow-report-loading'),
+              long: getString('snow-report-loading'),
+              extraLong: getString('snow-report-loading'),
             }}
           />
         </LoadingContainer>
@@ -77,13 +74,13 @@ const SnowDepth = (input: Input) => {
     const attributions = snowfall.stationName === snowdepth.stationName ? (
       <div>
         <Attribution>
-          {getFluentString('snow-report-full-attr', {
+          {getString('snow-report-full-attr', {
             station: snowfall.stationName,
             county: snowfall.county,
             state: input.stateAbbr,
           })}
           <br />
-          {getFluentString('snow-report-location-details', {
+          {getString('snow-report-location-details', {
             distance: parseFloat(snowfall.distance.toFixed(2)),
             elevation: snowfall.elevation,
           })}
@@ -93,13 +90,13 @@ const SnowDepth = (input: Input) => {
       <>
         <div>
           <Attribution>
-            {getFluentString('snow-report-snowfall-attr', {
+            {getString('snow-report-snowfall-attr', {
               station: snowfall.stationName,
               county: snowfall.county,
               state: input.stateAbbr,
             })}
             <br />
-            {getFluentString('snow-report-location-details', {
+            {getString('snow-report-location-details', {
               distance: parseFloat(snowfall.distance.toFixed(2)),
               elevation: snowfall.elevation,
             })}
@@ -107,13 +104,13 @@ const SnowDepth = (input: Input) => {
         </div>
         <div>
           <Attribution>
-            {getFluentString('snow-report-snowdepth-attr', {
+            {getString('snow-report-snowdepth-attr', {
               station: snowdepth.stationName,
               county: snowdepth.county,
               state: input.stateAbbr,
             })}
             <br />
-            {getFluentString('snow-report-location-details', {
+            {getString('snow-report-location-details', {
               distance: parseFloat(snowdepth.distance.toFixed(2)),
               elevation: snowdepth.elevation,
             })}
@@ -128,12 +125,12 @@ const SnowDepth = (input: Input) => {
 
     const reportDays = snowfall.values.map((report, i) => {
       const { date, value } = report;
-      const dateAsText = getFluentString('global-formatted-text-date-day-month', {
+      const dateAsText = getString('global-formatted-text-date-day-month', {
         day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear().toString(),
       });
 
       const yesterdayText = date.getDate() === yesterday.getDate()
-        ? getFluentString('global-text-value-yesterday') + ', ' : '';
+        ? getString('global-text-value-yesterday') + ', ' : '';
 
       const snowfallVal = typeof value === 'number' ? value + '"' : <small>{value}</small>;
       const snowdepthVal = typeof snowdepth.values[i].value === 'number'
@@ -142,8 +139,8 @@ const SnowDepth = (input: Input) => {
         <ForecastBlock key={dateAsText}>
           <Title>{yesterdayText} {dateAsText}</Title>
           <SnowItem>
-            <span>{getFluentString('snow-report-new-snow')}:</span> <Value>{snowfallVal}</Value>
-            <span>{(getFluentString('snow-report-current-depth'))}:</span> <Value>{snowdepthVal}</Value>
+            <span>{getString('snow-report-new-snow')}:</span> <Value>{snowfallVal}</Value>
+            <span>{(getString('snow-report-current-depth'))}:</span> <Value>{snowdepthVal}</Value>
           </SnowItem>
         </ForecastBlock>
       );
@@ -163,7 +160,7 @@ const SnowDepth = (input: Input) => {
   return (
     <>
       <ItemTitle>
-        <BasicIconInText icon={faSnowflake} />{getFluentString('mountain-detail-snow-depth')}
+        <BasicIconInText icon={faSnowflake} />{getString('mountain-detail-snow-depth')}
       </ItemTitle>
       {output}
     </>

@@ -4,13 +4,10 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { comparePeakListIsolatedLink, preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
@@ -157,8 +154,7 @@ const Header = (props: Props) => {
     currentUserId, friendStatus,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [removeFriendModalOpen, setRemoveFriendModalOpen] = useState<boolean>(false);
 
@@ -206,12 +202,12 @@ const Header = (props: Props) => {
     <AreYouSureModal
       onConfirm={confirmRemove}
       onCancel={closeAreYouSureModal}
-      title={getFluentString('global-text-value-are-you-sure-modal')}
-      text={getFluentString('user-profile-remove-friend-modal', {
+      title={getString('global-text-value-are-you-sure-modal')}
+      text={getString('user-profile-remove-friend-modal', {
         name: user.name,
       })}
-      confirmText={getFluentString('global-text-value-modal-confirm')}
-      cancelText={getFluentString('global-text-value-modal-cancel')}
+      confirmText={getString('global-text-value-modal-confirm')}
+      cancelText={getString('global-text-value-modal-cancel')}
     />
   );
 
@@ -220,23 +216,23 @@ const Header = (props: Props) => {
   } else if (friendStatus === null) {
     actionButtons = (
       <ButtonPrimary onClick={sendFriendRequest}>
-        {getFluentString('user-profile-requests-add-friend')}
+        {getString('user-profile-requests-add-friend')}
       </ButtonPrimary>
     );
   } else if (friendStatus === FriendStatus.friends) {
     actionButtons = (
       <SmallGhostButton onClick={removeFriend}>
-        {getFluentString('user-profile-requests-remove-friend')}
+        {getString('user-profile-requests-remove-friend')}
       </SmallGhostButton>
     );
   } else if (friendStatus === FriendStatus.sent) {
     actionButtons = (
       <>
         <SmallText>
-          {getFluentString('user-profile-requests-pending-request')}
+          {getString('user-profile-requests-pending-request')}
         </SmallText>
         <SmallGhostButton onClick={cancelOrDeclineRequest}>
-          {getFluentString('user-profile-requests-cancel-request')}
+          {getString('user-profile-requests-cancel-request')}
         </SmallGhostButton>
       </>
     );
@@ -244,15 +240,15 @@ const Header = (props: Props) => {
     actionButtons = (
       <>
         <SmallText>
-          {getFluentString('user-profile-sent-you-a-friend-request', {
+          {getString('user-profile-sent-you-a-friend-request', {
             name: user.name,
           })}
         </SmallText>
         <DeclineButton onClick={cancelOrDeclineRequest}>
-          {getFluentString('user-profile-requests-decline-request')}
+          {getString('user-profile-requests-decline-request')}
         </DeclineButton>
         <ButtonPrimary onClick={acceptFriendRequest}>
-          {getFluentString('user-profile-requests-accept-request')}
+          {getString('user-profile-requests-accept-request')}
         </ButtonPrimary>
       </>
     );
@@ -266,7 +262,7 @@ const Header = (props: Props) => {
       <ButtonPrimaryLink
         to={comparePeakListIsolatedLink(user.id, 'all')}
       >
-        {getFluentString('user-profile-compare-all-ascents')}
+        {getString('user-profile-compare-all-ascents')}
       </ButtonPrimaryLink>
     </div>
   );
@@ -278,7 +274,7 @@ const Header = (props: Props) => {
     emailOutput = !user.email ? (
       <ListInfo>
         <ContactLabel>
-          {getFluentString('global-text-value-modal-reddit')}:
+          {getString('global-text-value-modal-reddit')}:
         </ContactLabel>
         <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
           <EmailIcon icon={faReddit as IconDefinition} />
@@ -289,7 +285,7 @@ const Header = (props: Props) => {
       <>
         <ListInfo>
           <ContactLabel>
-            {getFluentString('global-text-value-modal-email')}:
+            {getString('global-text-value-modal-email')}:
           </ContactLabel>
           <BoldLink href={`mailto:${email}`}>
             <EmailIcon icon='envelope' />
@@ -298,7 +294,7 @@ const Header = (props: Props) => {
         </ListInfo>
         <ListInfo>
           <ContactLabel>
-            {getFluentString('global-text-value-modal-reddit')}:
+            {getString('global-text-value-modal-reddit')}:
           </ContactLabel>
           <BoldLink href={`https://www.reddit.com/user/${name}`} target='_blank'>
             <EmailIcon icon={faReddit as IconDefinition} />
@@ -311,7 +307,7 @@ const Header = (props: Props) => {
     emailOutput = (
       <ListInfo>
         <ContactLabel>
-          {getFluentString('global-text-value-modal-email')}:
+          {getString('global-text-value-modal-email')}:
         </ContactLabel>
         <BoldLink href={`mailto:${email}`}>
           <EmailIcon icon='envelope' />

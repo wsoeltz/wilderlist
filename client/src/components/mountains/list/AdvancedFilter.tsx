@@ -1,11 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   Label,
   LabelContainer,
@@ -74,8 +71,7 @@ const AdvancedFilter = (props: Props) => {
     stateId, setStateId, visible,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<SuccessResponse, never>(GET_STATES_LIST);
 
@@ -109,7 +105,7 @@ const AdvancedFilter = (props: Props) => {
           id={'create-peak-list-mountain-filter-by-state'}
           value={stateId || ''}
           onChange={e => setStateId(e.target.value)}
-          placeholder={getFluentString('global-text-value-tier')}
+          placeholder={getString('global-text-value-tier')}
         >
           <option value=''>All</option>
           {stateFilterOptions}

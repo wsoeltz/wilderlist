@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
@@ -66,13 +63,12 @@ const AreYouSureModal = (props: Props) => {
 
   const { author } = tripReport;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const allConditionsArray: string[] = [];
   Object.keys(tripReport).forEach(function(key: keyof TripReport) {
     if (isCondition(key) && tripReport[key]) {
-      allConditionsArray.push(getFluentString('trip-report-condition-name', {key}));
+      allConditionsArray.push(getString('trip-report-condition-name', {key}));
     }
   });
   let conditionsList: React.ReactElement<any> | null;
@@ -81,14 +77,14 @@ const AreYouSureModal = (props: Props) => {
   } else if (allConditionsArray.length === 1) {
     conditionsList = (
       <Section>
-        <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
+        <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
         <Condition>{allConditionsArray[0]}</Condition>
       </Section>
     );
   } else if (allConditionsArray.length === 2) {
     conditionsList = (
       <Section>
-        <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
+        <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
         <Condition>{allConditionsArray[0]}</Condition>
         {' and '}
         <Condition>{allConditionsArray[1]}</Condition>
@@ -117,7 +113,7 @@ const AreYouSureModal = (props: Props) => {
     });
     conditionsList = (
       <Section>
-        <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
+        <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
         {conditionsText}
       </Section>
     );
@@ -131,14 +127,14 @@ const AreYouSureModal = (props: Props) => {
   } else if (filteredMountains.length === 1) {
     mountainList = (
       <Section>
-        <SectionTitle>{getFluentString('global-text-value-mountain')}: </SectionTitle>
+        <SectionTitle>{getString('global-text-value-mountain')}: </SectionTitle>
         <Link to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</Link>
       </Section>
     );
   } else if (filteredMountains.length === 2) {
     mountainList = (
       <Section>
-        <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
+        <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
         <Link to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</Link>
         {' and '}
         <Link to={mountainDetailLink(filteredMountains[1].id)}>{filteredMountains[1].name}</Link>
@@ -170,7 +166,7 @@ const AreYouSureModal = (props: Props) => {
     });
     mountainList = (
       <Section>
-        <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
+        <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
         {mountainsText}
       </Section>
     );
@@ -184,7 +180,7 @@ const AreYouSureModal = (props: Props) => {
   } else if (filteredUsers.length === 1) {
     userList = (
       <Section>
-        <SectionTitle>{getFluentString('trip-report-hiked-with')}: </SectionTitle>
+        <SectionTitle>{getString('trip-report-hiked-with')}: </SectionTitle>
         <Link to={userProfileLink(filteredUsers[0].id)}>
           {filteredUsers[0].name}
         </Link>
@@ -193,7 +189,7 @@ const AreYouSureModal = (props: Props) => {
   } else if (filteredUsers.length === 2) {
     userList = (
       <Section>
-        <SectionTitle>{getFluentString('trip-report-hiked-with')}: </SectionTitle>
+        <SectionTitle>{getString('trip-report-hiked-with')}: </SectionTitle>
         <Link to={userProfileLink(filteredUsers[0].id)}>
           {filteredUsers[0].name}
         </Link>
@@ -236,7 +232,7 @@ const AreYouSureModal = (props: Props) => {
     });
     userList = (
       <Section>
-        <SectionTitle>{getFluentString('trip-report-hiked-with')}: </SectionTitle>
+        <SectionTitle>{getString('trip-report-hiked-with')}: </SectionTitle>
         {usersText}
       </Section>
     );
@@ -247,7 +243,7 @@ const AreYouSureModal = (props: Props) => {
     notes = (
       <Section>
         <SectionTitle>
-          {getFluentString('trip-report-notes-title')}
+          {getString('trip-report-notes-title')}
         </SectionTitle>
         <Text>
           {tripReport.notes}
@@ -261,7 +257,7 @@ const AreYouSureModal = (props: Props) => {
   const link = tripReport.link && isValidURL(tripReport.link) ? (
     <Section>
       <SectionTitle>
-        {getFluentString('trip-report-external-link-title')}
+        {getString('trip-report-external-link-title')}
       </SectionTitle>
       <ExternalLink href={tripReport.link} rel='noopener noreferrer' target='_blank'>{tripReport.link}</ExternalLink>
     </Section>
@@ -270,13 +266,13 @@ const AreYouSureModal = (props: Props) => {
   const actions = (
     <ButtonWrapper>
       <CancelButton onClick={onClose} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>
   );
 
   const authorName = author !== null && author.hideProfileInSearch !== true
-    ? author.name : getFluentString('global-text-value-generic-user');
+    ? author.name : getString('global-text-value-generic-user');
 
   const authorLink = userId !== null && author !== null && author.hideProfileInSearch !== true
     ? (

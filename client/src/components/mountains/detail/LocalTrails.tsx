@@ -1,11 +1,8 @@
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
 import HikingProjectSvgLogo from '../../../assets/images/hiking-project-logo.svg';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { AllTrailsLink, generateHikingProjectLink } from '../../../routing/externalLinks';
 import { CollapsedParagraph } from '../../../styling/styleUtils';
 import getTrails, {TrailsDatum} from '../../../utilities/getTrails';
@@ -52,8 +49,7 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
   const [trails, setTrails] = useState<TrailsDatum[] | null>(null);
   const [error, setError] = useState<any | null>(null);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   useEffect(() => {
     const getTrailsData = async () => {
@@ -75,14 +71,14 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
   let output: React.ReactElement<any> | null;
   if (error !== null) {
     output = (
-      <BasicUnorderedListItem>{getFluentString('local-trails-hiking-project-network-error')}</BasicUnorderedListItem>
+      <BasicUnorderedListItem>{getString('local-trails-hiking-project-network-error')}</BasicUnorderedListItem>
     );
   } else if (trails === null) {
     output = <LoadingSpinner />;
   } else if (trails.length === 0) {
     output = (
       <BasicUnorderedListItem>
-        {getFluentString('local-trails-hiking-project-no-trails', {'mountain-name': mountainName})}
+        {getString('local-trails-hiking-project-no-trails', {'mountain-name': mountainName})}
       </BasicUnorderedListItem>);
   } else if (trails) {
     const mtnNameSafe = mountainName.toLowerCase().trim().split(/\W+/).filter(w => !genericWords.includes(w));
@@ -107,7 +103,7 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
         <BasicUnorderedListItem key={trail.id}>
           <a href={trail.url} target='_blank' rel='noopener noreferrer'>{trail.name}</a>
           {' - '}
-          {getFluentString('local-trails-hiking-project-feet-elevation', {
+          {getString('local-trails-hiking-project-feet-elevation', {
             miles: trail.length,
             elevation: trail.ascent.toString(),
           })}
@@ -117,7 +113,7 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
     if (trailElements.length === 0) {
       output = (
         <BasicUnorderedListItem>
-          {getFluentString('local-trails-hiking-project-no-trails', {'mountain-name': mountainName})}
+          {getString('local-trails-hiking-project-no-trails', {'mountain-name': mountainName})}
         </BasicUnorderedListItem>);
     } else {
       output = (
@@ -134,23 +130,23 @@ const LocalTrails = ({mountainName, latitude, longitude, state}: Props) => {
     <>
       <VerticalContentItem>
         <ItemTitle>
-          {getFluentString('local-trails-nearby-trails-title')}
+          {getString('local-trails-nearby-trails-title')}
         </ItemTitle>
         <BasicListItem>
           <CollapsedParagraph>
             <AllTrailsLink
               lat={latitude}
               long={longitude}
-              text={getFluentString('local-trails-all-trails-link-text', {'mountain-name': mountainName})}
+              text={getString('local-trails-all-trails-link-text', {'mountain-name': mountainName})}
             />
           </CollapsedParagraph>
         </BasicListItem>
       </VerticalContentItem>
       <VerticalContentItem>
         <ItemTitle>
-          {getFluentString('local-trails-hiking-project-nearby-route')}
+          {getString('local-trails-hiking-project-nearby-route')}
           <HikingProjectContainer>
-            {getFluentString('local-trails-hiking-project-via-the')}
+            {getString('local-trails-hiking-project-via-the')}
             <HikingProjectLogo href={generateHikingProjectLink(state)} target='_blank' rel='noopener noreferrer'>
               <img src={HikingProjectSvgLogo} alt='The Hiking Project' />
             </HikingProjectLogo>

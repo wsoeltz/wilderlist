@@ -1,5 +1,6 @@
 import { GetString } from 'fluent-react/compat';
 import React from 'react';
+import useFluent from '../../../hooks/useFluent';
 import {
   PeakListVariants,
 } from '../../../types/graphQLTypes';
@@ -18,7 +19,6 @@ const getElevationToLowest500 = (elevation: number) => {
 interface Input {
   type: PeakListVariants;
   parent: {name: string} | null;
-  getFluentString: GetString;
   listName: string;
   shortName: string;
   numberOfPeaks: number;
@@ -28,9 +28,9 @@ interface Input {
   smallestMountain: {name: string, elevation: number};
 }
 
-export const getSentences = (input: Input) => {
+export const getSentences = (input: {getString: GetString } & Input) => {
   const {
-    type, parent, getFluentString,
+    type, parent, getString,
     listName, numberOfPeaks, isStateOrRegion, stateRegionName, highestMountain, smallestMountain,
     shortName,
   } = input;
@@ -46,7 +46,7 @@ export const getSentences = (input: Input) => {
   let secondParagraph: string = '';
   let thirdParagraph: string = '';
   if (type === PeakListVariants.standard || !parent) {
-    firstParagraph = getFluentString('peak-list-detail-list-standard-para-1', {
+    firstParagraph = getString('peak-list-detail-list-standard-para-1', {
       'list-name': listName,
       'number-of-peaks': '' + numberOfPeaks,
       'state-or-region': isStateOrRegion.toString(),
@@ -57,13 +57,13 @@ export const getSentences = (input: Input) => {
       'smallest-mountain-elevation': '' + smallestMountain.elevation,
       'type': type,
     });
-    secondParagraph = getFluentString('peak-list-detail-list-standard-para-2', {
+    secondParagraph = getString('peak-list-detail-list-standard-para-2', {
       'list-name': listName,
     });
     thirdParagraph = '';
   }
   if (type === PeakListVariants.winter) {
-    firstParagraph = !parent ? firstParagraph : getFluentString('peak-list-detail-list-winter-has-parent-para-1', {
+    firstParagraph = !parent ? firstParagraph : getString('peak-list-detail-list-winter-has-parent-para-1', {
       'list-name': listName,
       'short-name': shortName,
       'parent-list-name': parent.name,
@@ -76,18 +76,18 @@ export const getSentences = (input: Input) => {
       'min-elevation-rounded': getElevationToLowest500(smallestMountain.elevation).toString(),
     });
     const winterIsOver = month > 2;
-    secondParagraph = getFluentString('peak-list-detail-list-winter-para-2', {
+    secondParagraph = getString('peak-list-detail-list-winter-para-2', {
       'list-name': listName,
       'short-name': shortName,
       'current-or-upcoming': winterIsOver ? 'upcoming' : 'current',
       'solstice': winterIsOver || month === 11 ? thisYearsSeasons.firstDayOfWinter : lastYearsSeasons.firstDayOfWinter,
       'equinox': winterIsOver || month === 11 ? nextYearsSeasons.firstDayOfSpring : thisYearsSeasons.firstDayOfSpring,
     });
-    thirdParagraph = getFluentString('peak-list-detail-list-winter-para-3', {
+    thirdParagraph = getString('peak-list-detail-list-winter-para-3', {
       'list-name': listName,
     });
   } else if (type === PeakListVariants.fourSeason) {
-    firstParagraph = !parent ? firstParagraph : getFluentString('peak-list-detail-list-4-season-has-parent-para-1', {
+    firstParagraph = !parent ? firstParagraph : getString('peak-list-detail-list-4-season-has-parent-para-1', {
       'list-name': listName,
       'short-name': shortName,
       'parent-list-name': parent.name,
@@ -99,7 +99,7 @@ export const getSentences = (input: Input) => {
       'smallest-mountain-elevation': '' + smallestMountain.elevation,
       'min-elevation-rounded': getElevationToLowest500(smallestMountain.elevation).toString(),
     });
-    secondParagraph = getFluentString('peak-list-detail-list-4-season-para-2', {
+    secondParagraph = getString('peak-list-detail-list-4-season-para-2', {
       'list-name': listName,
       'short-name': shortName,
       'current-year': currentYear.toString(),
@@ -108,11 +108,11 @@ export const getSentences = (input: Input) => {
       'first-day-of-fall': thisYearsSeasons.firstDayOfFall,
       'first-day-of-winter': thisYearsSeasons.firstDayOfWinter,
     });
-    thirdParagraph = getFluentString('peak-list-detail-list-4-season-para-3', {
+    thirdParagraph = getString('peak-list-detail-list-4-season-para-3', {
       'list-name': listName,
     });
   } else if (type === PeakListVariants.grid) {
-    firstParagraph = !parent ? firstParagraph : getFluentString('peak-list-detail-list-grid-has-parent-para-1', {
+    firstParagraph = !parent ? firstParagraph : getString('peak-list-detail-list-grid-has-parent-para-1', {
       'list-name': listName,
       'short-name': shortName,
       'parent-list-name': parent.name,
@@ -121,10 +121,10 @@ export const getSentences = (input: Input) => {
       'state-region-name': stateRegionName,
       'min-elevation-rounded': getElevationToLowest500(smallestMountain.elevation).toString(),
     });
-    secondParagraph = getFluentString('peak-list-detail-list-grid-para-2', {
+    secondParagraph = getString('peak-list-detail-list-grid-para-2', {
       'list-name': listName,
     });
-    thirdParagraph = getFluentString('peak-list-detail-list-grid-para-3', {
+    thirdParagraph = getString('peak-list-detail-list-grid-para-3', {
       'list-name': listName,
     });
   }
@@ -132,7 +132,8 @@ export const getSentences = (input: Input) => {
 };
 
 const IntroText = (props: Input) => {
-  const {firstParagraph, secondParagraph, thirdParagraph} = getSentences({...props});
+  const getString = useFluent();
+  const {firstParagraph, secondParagraph, thirdParagraph} = getSentences({...props, getString});
   return (
     <>
       <p>{firstParagraph}</p>

@@ -1,11 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled, {keyframes} from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import { mountainDetailLink, userProfileLink } from '../../routing/Utils';
 import { PreContentHeaderFull } from '../../styling/Grid';
 import {
@@ -158,8 +155,7 @@ interface Props {
 const NotificationBar = (props: Props) => {
   const { userId } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
 
@@ -206,13 +202,13 @@ const NotificationBar = (props: Props) => {
             <div>
               <Link to={userProfileLink(friendId)}><SemiBold>{name}</SemiBold></Link>
               {' '}
-              {getFluentString('user-profile-sent-you-a-friend-request', {name: ''})}
+              {getString('user-profile-sent-you-a-friend-request', {name: ''})}
             </div>
             <ConfirmButton onClick={onConfirm}>
-              {getFluentString('user-profile-requests-accept-request')}
+              {getString('user-profile-requests-accept-request')}
             </ConfirmButton>
             <DismissButton onClick={dismissNotification}>
-              {getFluentString('user-profile-requests-decline-request')}
+              {getString('user-profile-requests-decline-request')}
             </DismissButton>
           </Root>
         );
@@ -253,22 +249,22 @@ const NotificationBar = (props: Props) => {
             <div>
               <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
               {' '}
-              {getFluentString('notification-bar-ascent-marked')}
+              {getString('notification-bar-ascent-marked')}
               {' '}
               <Link to={mountainDetailLink(mountainId)}><SemiBold>{mountain.name}</SemiBold></Link>
               {' '}
-              {getFluentString('global-text-value-on')}
+              {getString('global-text-value-on')}
               {' '}
               <SemiBold>{formatStringDate(date)}</SemiBold>
             </div>
             <ConfirmButton onClick={onConfirm}>
-              {getFluentString('global-text-value-modal-confirm')}
+              {getString('global-text-value-modal-confirm')}
             </ConfirmButton>
             <TripReportButton onClick={() => setIsAscentReportModalOpen(true)}>
-              {getFluentString('global-text-value-modal-create-trip-report')}
+              {getString('global-text-value-modal-create-trip-report')}
             </TripReportButton>
             <DismissButton onClick={dismissNotification}>
-              {getFluentString('global-text-value-modal-dismiss')}
+              {getString('global-text-value-modal-dismiss')}
             </DismissButton>
             {ascentReportModal}
           </Root>

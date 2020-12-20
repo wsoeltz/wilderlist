@@ -1,8 +1,5 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import React, {useState} from 'react';
+import useFluent from '../../../../hooks/useFluent';
 import {
   AdditionalInfo,
   DetailModalButton,
@@ -41,8 +38,7 @@ const NWSForecast = (props: Props) => {
   } = props;
   const [weatherDetail, setWeatherDetail] = useState<DetailForecastState | null>(null);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const closeWeatherDetailModal = () => {
     setWeatherDetail(null);
@@ -64,7 +60,7 @@ const NWSForecast = (props: Props) => {
       const tonight = forecast[i + 1];
       const tonightPrecip = tonight.precipitation ? (
       <AdditionalInfo>
-          {tonight.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+          {tonight.precipitation}% {getString('weather-forecast-chance-precip')}
       </AdditionalInfo>
       ) : null;
       forecastDays.push(
@@ -72,15 +68,15 @@ const NWSForecast = (props: Props) => {
           <strong>{tonight.name}</strong>
           <ForecastShort>{tonight.shortForecast}</ForecastShort>
           <Temperatures>
-            <TempHigh>{getFluentString('weather-forecast-high')} --°F</TempHigh>
+            <TempHigh>{getString('weather-forecast-high')} --°F</TempHigh>
             /
-            <TempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°F</TempLow>
+            <TempLow>{getString('weather-forecast-low')} {tonight.temperature}°F</TempLow>
           </Temperatures>
           {tonightPrecip}
           <DetailModalButton
             onClick={() => setWeatherDetail({today: null, tonight})}
           >
-            {getFluentString('weather-forecast-detailed-report')}
+            {getString('weather-forecast-detailed-report')}
           </DetailModalButton>
         </ForecastBlock>,
       );
@@ -90,7 +86,7 @@ const NWSForecast = (props: Props) => {
       if (today && tonight) {
         const todayPrecip = today.precipitation ? (
           <AdditionalInfo>
-            {today.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+            {today.precipitation}% {getString('weather-forecast-chance-precip')}
           </AdditionalInfo>
         ) : null;
         forecastDays.push(
@@ -106,14 +102,14 @@ const NWSForecast = (props: Props) => {
             <DetailModalButton
               onClick={() => setWeatherDetail({today, tonight})}
             >
-              {getFluentString('weather-forecast-detailed-report')}
+              {getString('weather-forecast-detailed-report')}
             </DetailModalButton>
           </ForecastBlock>,
         );
       } else if (today) {
         const todayPrecip = today.precipitation ? (
           <AdditionalInfo>
-            {today.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+            {today.precipitation}% {getString('weather-forecast-chance-precip')}
           </AdditionalInfo>
         ) : null;
         forecastDays.push(
@@ -129,7 +125,7 @@ const NWSForecast = (props: Props) => {
             <DetailModalButton
               onClick={() => setWeatherDetail({today, tonight: null})}
             >
-              {getFluentString('weather-forecast-detailed-report')}
+              {getString('weather-forecast-detailed-report')}
             </DetailModalButton>
           </ForecastBlock>,
         );

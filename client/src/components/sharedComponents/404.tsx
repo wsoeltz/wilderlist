@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Image404Url from '../../assets/images/404.gif';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
 import {ContentFull} from '../../styling/Grid';
 import { ButtonPrimaryLink } from '../../styling/styleUtils';
@@ -34,29 +31,28 @@ const Image = styled.img`
 `;
 
 const PageNotFound = () => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   return (
     <Root>
       <Image src={Image404Url} />
       <h1>
-        {getFluentString('page-not-found-404-title')}
+        {getString('page-not-found-404-title')}
       </h1>
       <p>
-        {getFluentString('page-not-found-404-desc')}
+        {getString('page-not-found-404-desc')}
       </p>
       <ButtonContainer>
         <Button to={searchListDetailLink('search')}>
-          {getFluentString('global-text-value-search-hiking-lists')}
+          {getString('global-text-value-search-hiking-lists')}
         </Button>
         <Button to={searchMountainsDetailLink('search')}>
-          {getFluentString('global-text-value-search-mountains')}
+          {getString('global-text-value-search-mountains')}
         </Button>
       </ButtonContainer>
       <p>
         <small
-          dangerouslySetInnerHTML={{__html: getFluentString('page-not-found-404-contact')}}
+          dangerouslySetInnerHTML={{__html: getString('page-not-found-404-contact')}}
         />
       </p>
     </Root>

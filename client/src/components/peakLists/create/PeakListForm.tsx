@@ -6,12 +6,9 @@ import {
   faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -113,8 +110,7 @@ interface Props extends RouteComponentProps {
 const PeakListForm = (props: Props) => {
   const { initialData, onSubmit, history, states } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
@@ -154,21 +150,21 @@ const PeakListForm = (props: Props) => {
     initialData.flag === PeakListFlag.deleteRequest ? {
     onConfirm: () => clearFlag(initialData.id),
     onCancel: closeAreYouSureModal,
-    title: getFluentString('global-text-value-cancel-delete-request'),
-    text: getFluentString('global-text-value-modal-cancel-request-text', {
+    title: getString('global-text-value-cancel-delete-request'),
+    text: getString('global-text-value-modal-cancel-request-text', {
       name: initialData.name,
     }),
-    confirmText: getFluentString('global-text-value-modal-confirm'),
-    cancelText: getFluentString('global-text-value-modal-cancel'),
+    confirmText: getString('global-text-value-modal-confirm'),
+    cancelText: getString('global-text-value-modal-cancel'),
   } : {
     onConfirm: () => flagForDeletion(initialData.id),
     onCancel: closeAreYouSureModal,
-    title: getFluentString('global-text-value-modal-request-delete-title'),
-    text: getFluentString('global-text-value-modal-request-delete-text', {
+    title: getString('global-text-value-modal-request-delete-title'),
+    text: getString('global-text-value-modal-request-delete-text', {
       name: initialData.name,
     }),
-    confirmText: getFluentString('global-text-value-modal-confirm'),
-    cancelText: getFluentString('global-text-value-modal-cancel'),
+    confirmText: getString('global-text-value-modal-confirm'),
+    cancelText: getString('global-text-value-modal-cancel'),
   };
 
   const areYouSureModal = deleteModalOpen === false ? null : (
@@ -225,11 +221,11 @@ const PeakListForm = (props: Props) => {
   };
 
   const saveButtonText = loadingSubmit === true
-    ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
+    ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
 
   const deleteButtonText = initialData.flag !== PeakListFlag.deleteRequest
-    ? getFluentString('global-text-value-delete')
-    : getFluentString('global-text-value-cancel-delete-request');
+    ? getString('global-text-value-delete')
+    : getString('global-text-value-cancel-delete-request');
 
   const deleteButton = !initialData.id ? null : (
     <DeleteButton
@@ -264,12 +260,12 @@ const PeakListForm = (props: Props) => {
       <DelayedInput
         initialValue={resource.title}
         setInputValue={value => handleExternalResourceChange(value)('title', i)}
-        placeholder={getFluentString('global-text-value-resource-title')}
+        placeholder={getString('global-text-value-resource-title')}
       />
       <DelayedInput
         initialValue={resource.url}
         setInputValue={value => handleExternalResourceChange(value)('url', i)}
-        placeholder={getFluentString('global-text-value-resource-url')}
+        placeholder={getString('global-text-value-resource-url')}
       />
       <GhostButton onClick={e => deleteResource(e)(i)}>
         ×
@@ -305,13 +301,13 @@ const PeakListForm = (props: Props) => {
       <Wrapper>
         <DetailBoxTitle>
           <BasicIconInText icon={faHiking} />
-          {getFluentString('create-peak-list-peak-list-name-label')}
+          {getString('create-peak-list-peak-list-name-label')}
         </DetailBoxTitle>
         <DetailBoxWithMargin>
           <Section>
             <LabelContainer htmlFor={'create-peak-list-name'}>
               <Label>
-                {getFluentString('global-text-value-name')}
+                {getString('global-text-value-name')}
               </Label>
             </LabelContainer>
             <DelayedInput
@@ -319,7 +315,7 @@ const PeakListForm = (props: Props) => {
               type={'text'}
               initialValue={name}
               setInputValue={value => setName(value)}
-              placeholder={getFluentString('create-peak-list-peak-list-name-placeholder')}
+              placeholder={getString('create-peak-list-peak-list-name-placeholder')}
               /* autoComplete='off' is ignored in Chrome, but other strings aren't */
               maxLength={1000}
             />
@@ -328,9 +324,9 @@ const PeakListForm = (props: Props) => {
             <div>
               <LabelContainer htmlFor={'create-peak-list-short-name'}>
                 <Label>
-                  {getFluentString('create-peak-list-peak-list-short-name-label')}
+                  {getString('create-peak-list-peak-list-short-name-label')}
                   {' '}
-                  <Sublabel>({getFluentString('create-peak-list-peak-list-short-name-note')})</Sublabel>
+                  <Sublabel>({getString('create-peak-list-peak-list-short-name-note')})</Sublabel>
                 </Label>
               </LabelContainer>
               <DelayedInput
@@ -338,18 +334,18 @@ const PeakListForm = (props: Props) => {
                 type={'text'}
                 initialValue={shortName}
                 setInputValue={value => setShortName(value)}
-                placeholder={getFluentString('create-peak-list-peak-list-short-name-placeholder')}
+                placeholder={getString('create-peak-list-peak-list-short-name-placeholder')}
                 maxLength={8}
               />
             </div>
             <div>
               <LabelContainer htmlFor={'create-peak-list-select-tier'}>
                 <Label>
-                  {getFluentString('global-text-value-difficulty')}
+                  {getString('global-text-value-difficulty')}
                 </Label>
                 <Tooltip
                   explanation={
-                    <div dangerouslySetInnerHTML={{__html: getFluentString('global-text-value-list-tier-desc')}} />
+                    <div dangerouslySetInnerHTML={{__html: getString('global-text-value-list-tier-desc')}} />
                   }
                 />
               </LabelContainer>
@@ -357,26 +353,26 @@ const PeakListForm = (props: Props) => {
                 id={'create-peak-list-select-tier'}
                 value={tier || ''}
                 onChange={e => setStringToPeakListTier(e.target.value)}
-                placeholder={getFluentString('global-text-value-tier')}
+                placeholder={getString('global-text-value-tier')}
               >
                 <option value=''></option>
                 <option value={PeakListTier.casual}>
-                  {getFluentString('global-text-value-list-tier', {
+                  {getString('global-text-value-list-tier', {
                     tier: PeakListTier.casual,
                   })}
                 </option>
                 <option value={PeakListTier.advanced}>
-                  {getFluentString('global-text-value-list-tier', {
+                  {getString('global-text-value-list-tier', {
                     tier: PeakListTier.advanced,
                   })}
                 </option>
                 <option value={PeakListTier.expert}>
-                  {getFluentString('global-text-value-list-tier', {
+                  {getString('global-text-value-list-tier', {
                     tier: PeakListTier.expert,
                   })}
                 </option>
                 <option value={PeakListTier.mountaineer}>
-                  {getFluentString('global-text-value-list-tier', {
+                  {getString('global-text-value-list-tier', {
                     tier: PeakListTier.mountaineer,
                   })}
                 </option>
@@ -388,14 +384,14 @@ const PeakListForm = (props: Props) => {
           title={
             <>
               <BasicIconInText icon={faMountain} />
-              {getFluentString('global-text-value-mountains')}
+              {getString('global-text-value-mountains')}
               {' '}({mountains.length})
             </>
           }
         >
           <Section>
             <SmallTextNote>
-              {getFluentString('create-peak-list-peak-list-mountains-note', {
+              {getString('create-peak-list-peak-list-mountains-note', {
                 'number-mountains': mountains.length,
               })}
             </SmallTextNote>
@@ -413,7 +409,7 @@ const PeakListForm = (props: Props) => {
           title={
             <>
               <BasicIconInText icon={faEdit} />
-              {getFluentString('create-mountain-optional-title')}
+              {getString('create-mountain-optional-title')}
             </>
           }
           defaultHidden={true}
@@ -421,7 +417,7 @@ const PeakListForm = (props: Props) => {
           <div style={{marginBottom: '1rem'}}>
             <LabelContainer htmlFor={'create-peak-list-description'}>
               <Label>
-                {getFluentString('create-peak-list-peak-list-description-label')}
+                {getString('create-peak-list-peak-list-description-label')}
               </Label>
             </LabelContainer>
             <DelayedTextarea
@@ -429,14 +425,14 @@ const PeakListForm = (props: Props) => {
               rows={6}
               initialValue={description}
               setInputValue={value => setDescription(value)}
-              placeholder={getFluentString('create-peak-list-peak-description')}
+              placeholder={getString('create-peak-list-peak-description')}
               maxLength={5000}
             />
           </div>
           <div>
             <LabelContainer>
               <Label>
-                {getFluentString('global-text-value-external-resources')}
+                {getString('global-text-value-external-resources')}
               </Label>
             </LabelContainer>
             {resourceInputs}
@@ -445,7 +441,7 @@ const PeakListForm = (props: Props) => {
                 e.preventDefault();
                 setExternalResources([...externalResources, {title: '', url: ''}]);
               }}>
-                {getFluentString('global-text-value-add-external-resources')}
+                {getString('global-text-value-add-external-resources')}
               </ButtonSecondary>
             </div>
           </div>
@@ -455,19 +451,19 @@ const PeakListForm = (props: Props) => {
           title={
             <>
               <BasicIconInText icon={faMountain} style={{opacity: 0.5}}/>
-              {getFluentString('create-peak-list-peak-list-optional-mountains')}
+              {getString('create-peak-list-peak-list-optional-mountains')}
               {' '}({optionalMountains.length})
             </>
           }
           defaultHidden={true}
         >
           <Section>
-            <SmallTextNote>{getFluentString('create-peak-list-peak-list-optional-mountains-note')}</SmallTextNote>
+            <SmallTextNote>{getString('create-peak-list-peak-list-optional-mountains-note')}</SmallTextNote>
           </Section>
           <Section>
             <LabelContainer htmlFor={'create-peak-list-optional-description'}>
               <Label>
-                {getFluentString('create-peak-list-peak-list-optional-description-label')}
+                {getString('create-peak-list-peak-list-optional-description-label')}
               </Label>
             </LabelContainer>
             <DelayedTextarea
@@ -475,14 +471,14 @@ const PeakListForm = (props: Props) => {
               rows={6}
               initialValue={optionalPeaksDescription}
               setInputValue={value => setOptionalPeaksDescription(value)}
-              placeholder={getFluentString('create-peak-list-peak-optional-description')}
+              placeholder={getString('create-peak-list-peak-optional-description')}
               maxLength={5000}
             />
           </Section>
           <div>
             <LabelContainer>
               <Label>
-                {getFluentString('peak-list-detail-text-optional-mountains')}
+                {getString('peak-list-detail-text-optional-mountains')}
               </Label>
             </LabelContainer>
             <AddMountains
@@ -501,7 +497,7 @@ const PeakListForm = (props: Props) => {
             onClick={history.goBack}
             mobileExtend={true}
           >
-            {getFluentString('global-text-value-modal-cancel')}
+            {getString('global-text-value-modal-cancel')}
           </GhostButton>
           <SaveButton
             disabled={!verify()}

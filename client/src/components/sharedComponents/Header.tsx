@@ -7,15 +7,12 @@ import {
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
 import React, { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Logo from '../../assets/logo/Logo';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import { Routes } from '../../routing/routes';
 import {
   friendsWithUserProfileLink,
@@ -150,9 +147,8 @@ const Header = (props: RouteComponentProps) => {
 
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
   const { windowWidth } = useContext(AppContext);
+  const getString = useFluent();
 
   const peakListsPath = searchListDetailLink('search');
   const usersPath = friendsWithUserProfileLink('search');
@@ -190,34 +186,33 @@ const Header = (props: RouteComponentProps) => {
 
   const renderProp = (user: User | null) => {
     const hikingListsText = windowWidth > 530
-      ? getFluentString('header-text-menu-item-lists')
-      : getFluentString('header-text-menu-item-lists-short');
+      ? getString('header-text-menu-item-lists')
+      : getString('header-text-menu-item-lists-short');
     const yourStatsText = windowWidth > 530
-      ? getFluentString('header-text-menu-item-your-stats')
-      : getFluentString('header-text-menu-item-your-stats-short');
+      ? getString('header-text-menu-item-your-stats')
+      : getString('header-text-menu-item-your-stats-short');
     if (user) {
       return (
         <>
           <HeaderContainer>
             <SemanticLogoContainer>
               <LogoContainer to={Routes.Dashboard}>
-                {getFluentString('global-text-value-wilderlist-name')}
+                {getString('global-text-value-wilderlist-name')}
                 <Logo />
               </LogoContainer>
             </SemanticLogoContainer>
             <MainNav>
-              {createLink(Routes.Dashboard, getFluentString('header-text-menu-item-dashboard'), faHome)}
+              {createLink(Routes.Dashboard, getString('header-text-menu-item-dashboard'), faHome)}
               {createLink(peakListsPath, hikingListsText, faHiking)}
-              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
+              {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
               {createLink(Routes.YourStats, yourStatsText, faChartLine)}
-              {createLink(usersPath, getFluentString('header-text-menu-item-friends'), faUserFriends)}
-              {createLink(Routes.About, getFluentString('header-text-menu-item-about'), faInfoCircle)}
+              {createLink(usersPath, getString('header-text-menu-item-friends'), faUserFriends)}
+              {createLink(Routes.About, getString('header-text-menu-item-about'), faInfoCircle)}
             </MainNav>
             <UserMenu
               userMenuOpen={userMenuOpen}
               setUserMenuOpen={setUserMenuOpen}
               user={user}
-              getFluentString={getFluentString}
             />
           </HeaderContainer>
           <NotificationBar userId={user._id} />
@@ -228,19 +223,18 @@ const Header = (props: RouteComponentProps) => {
         <>
           <HeaderContainer>
             <LogoContainer to={Routes.Dashboard}>
-              {getFluentString('global-text-value-wilderlist-name')}
+              {getString('global-text-value-wilderlist-name')}
               <Logo />
             </LogoContainer>
             <MainNav>
-              {createLink(peakListsPath, getFluentString('header-text-menu-item-lists'), faHiking)}
-              {createLink(mountainPath, getFluentString('header-text-menu-item-mountains'), faMountain)}
-              {createLink(Routes.About, getFluentString('header-text-menu-item-about'), faInfoCircle)}
+              {createLink(peakListsPath, getString('header-text-menu-item-lists'), faHiking)}
+              {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
+              {createLink(Routes.About, getString('header-text-menu-item-about'), faInfoCircle)}
             </MainNav>
             <UserMenu
               user={user}
               userMenuOpen={userMenuOpen}
               setUserMenuOpen={setUserMenuOpen}
-              getFluentString={getFluentString}
             />
           </HeaderContainer>
         </>

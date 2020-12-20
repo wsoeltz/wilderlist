@@ -1,6 +1,6 @@
-import { GetString } from 'fluent-react/compat';
 import React from 'react';
 import styled from 'styled-components';
+import useFluent from '../../hooks/useFluent';
 import {
   Card,
   lightBaseColor,
@@ -122,9 +122,10 @@ const TotalNumber = styled(BigNumber)`
 `;
 
 export const ContributionsCard = (
-  {tripReports, mountains, lists, getFluentString}:
-  {tripReports: number, mountains: number, lists: number, getFluentString: GetString}) => {
+  {tripReports, mountains, lists}:
+  {tripReports: number, mountains: number, lists: number}) => {
   const total = tripReports + mountains + lists;
+  const getString = useFluent();
   return (
     <CardRoot>
       <ContributionsRoot>
@@ -132,39 +133,39 @@ export const ContributionsCard = (
           <TotalNumber>
             <SvgImg
               src={StarSVG}
-              alt={getFluentString('stats-total-wilderlist-contributions')}
+              alt={getString('stats-total-wilderlist-contributions')}
             />
             {total}
           </TotalNumber>
           <Label>
-            {getFluentString('stats-total-wilderlist-contributions')}
+            {getString('stats-total-wilderlist-contributions')}
           </Label>
         </TotalRoot>
         <Segment>
           <SmallNumber>
-            <SvgSmallImg src={TripReportSVG} alt={getFluentString('stats-trip-reports-written')} />
+            <SvgSmallImg src={TripReportSVG} alt={getString('stats-trip-reports-written')} />
             {tripReports}
           </SmallNumber>
           <SmallLabel>
-            {getFluentString('stats-trip-reports-written')}
+            {getString('stats-trip-reports-written')}
           </SmallLabel>
         </Segment>
         <Segment>
           <SmallNumber>
-            <SvgSmallImg src={AddMountainSVG} alt={getFluentString('stats-mountains-added')} />
+            <SvgSmallImg src={AddMountainSVG} alt={getString('stats-mountains-added')} />
             {mountains}
           </SmallNumber>
           <SmallLabel>
-            {getFluentString('stats-mountains-added')}
+            {getString('stats-mountains-added')}
           </SmallLabel>
         </Segment>
         <Segment>
           <SmallNumber>
-            <SvgSmallImg src={AddHikingListSVG} alt={getFluentString('stats-hiking-lists-created')} />
+            <SvgSmallImg src={AddHikingListSVG} alt={getString('stats-hiking-lists-created')} />
             {lists}
           </SmallNumber>
           <SmallLabel>
-            {getFluentString('stats-hiking-lists-created')}
+            {getString('stats-hiking-lists-created')}
           </SmallLabel>
         </Segment>
       </ContributionsRoot>
@@ -187,13 +188,14 @@ export const ContextNote = styled.small`
 `;
 
 export const AverageTimeCard = (
-  {avgTime, startDate, getFluentString}:
-  {avgTime: number | undefined, startDate: string | undefined, getFluentString: GetString}) => {
+  {avgTime, startDate}:
+  {avgTime: number | undefined, startDate: string | undefined}) => {
+  const getString = useFluent();
   if (!startDate || !avgTime) {
     return (
       <CardRoot>
         <Label>
-          {getFluentString('stats-no-average-time')}
+          {getString('stats-no-average-time')}
         </Label>
       </CardRoot>
     );
@@ -209,7 +211,7 @@ export const AverageTimeCard = (
     const weeksText = weeks > 1 ? 'global-text-value-weeks' : 'global-text-value-week';
     calcTime.push(
       <React.Fragment key={weeks + 'weeks'}>
-        {weeks}<TimeLabel>{getFluentString(weeksText)}</TimeLabel>
+        {weeks}<TimeLabel>{getString(weeksText)}</TimeLabel>
         {' '}
       </React.Fragment>,
     );
@@ -218,7 +220,7 @@ export const AverageTimeCard = (
     const daysText = days > 1 ? 'global-text-value-days' : 'global-text-value-day';
     calcTime.push(
       <React.Fragment key={days + 'days'}>
-        {days}<TimeLabel>{getFluentString(daysText)}</TimeLabel>
+        {days}<TimeLabel>{getString(daysText)}</TimeLabel>
         {' '}
       </React.Fragment>,
     );
@@ -227,7 +229,7 @@ export const AverageTimeCard = (
     const hoursText = hours > 1 ? 'global-text-value-hours' : 'global-text-value-hour';
     calcTime.push(
       <React.Fragment key={hours + 'hours'}>
-        {hours}<TimeLabel>{getFluentString(hoursText)}</TimeLabel>
+        {hours}<TimeLabel>{getString(hoursText)}</TimeLabel>
       </React.Fragment>,
     );
   }
@@ -235,7 +237,7 @@ export const AverageTimeCard = (
     <CardRoot>
       <BigNumber>{calcTime}</BigNumber>
       <Label>
-        {getFluentString('stats-average-time-since-start', {'start-date': startDate})}
+        {getString('stats-average-time-since-start', {'start-date': startDate})}
       </Label>
     </CardRoot>
   );
@@ -260,13 +262,13 @@ const CountLabel = styled.small`
 `;
 
 export const TopFourValuesList = (
-  {val1, val2, val3, val4, getFluentString}:
+  {val1, val2, val3, val4}:
   { val1: {label: string, count: number} | undefined,
     val2: {label: string, count: number} | undefined,
     val3: {label: string, count: number} | undefined,
-    val4: {label: string, count: number} | undefined,
-    getFluentString: GetString}) => {
-  const ascentsText = getFluentString('global-text-value-ascents');
+    val4: {label: string, count: number} | undefined}) => {
+  const getString = useFluent();
+  const ascentsText = getString('global-text-value-ascents');
   const label1 = val1 ? (
     <ValueListLabel>
       <ValueLabel>

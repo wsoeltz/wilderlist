@@ -1,9 +1,6 @@
 import { useMutation } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, { useContext, useState } from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import React, { useState } from 'react';
+import useFluent from '../../../hooks/useFluent';
 import { ButtonPrimary, Label, SelectBox } from '../../../styling/styleUtils';
 import { PeakListFlag } from '../../../types/graphQLTypes';
 import {
@@ -26,8 +23,7 @@ interface Props {
 const FlagModal = (props: Props) => {
   const { onClose, peakListId, peakListName } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
 
@@ -44,48 +40,48 @@ const FlagModal = (props: Props) => {
   const actions = flagSubmitted === false ? (
     <ButtonWrapper>
       <CancelButton onClick={onClose} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
       <ButtonPrimary onClick={onSubmit} mobileExtend={true}>
-        {getFluentString('global-text-value-submit')}
+        {getString('global-text-value-submit')}
       </ButtonPrimary>
     </ButtonWrapper>
   ) : (
     <ButtonWrapper>
       <CancelButton onClick={onClose} mobileExtend={true} style={{gridColumn: '1 / -1'}}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>
   );
 
   const text = flagSubmitted === false
-    ? getFluentString('flag-peak-list-text') : getFluentString('flag-mountain-thanks');
+    ? getString('flag-peak-list-text') : getString('flag-mountain-thanks');
 
   const flagOptions = flagSubmitted === false ? (
     <>
-      <Label>{getFluentString('flag-mountain-select-issue')}</Label>
+      <Label>{getString('flag-mountain-select-issue')}</Label>
       <SelectBox
         value={flag}
         onChange={(e) => setFlag(e.target.value as PeakListFlag | '')}
       >
         <option value={''} key='empty-option-to-select'></option>
         <option value={PeakListFlag.duplicate} key='duplicate'>
-          {getFluentString('flag-peak-list-select-issue-description', {
+          {getString('flag-peak-list-select-issue-description', {
             issue: PeakListFlag.duplicate,
           })}
         </option>
         <option value={PeakListFlag.data} key='data'>
-          {getFluentString('flag-peak-list-select-issue-description', {
+          {getString('flag-peak-list-select-issue-description', {
             issue: PeakListFlag.data,
           })}
         </option>
         <option value={PeakListFlag.abuse} key='abuse'>
-          {getFluentString('flag-peak-list-select-issue-description', {
+          {getString('flag-peak-list-select-issue-description', {
             issue: PeakListFlag.abuse,
           })}
         </option>
         <option value={PeakListFlag.other} key='other'>
-          {getFluentString('flag-peak-list-select-issue-description', {
+          {getString('flag-peak-list-select-issue-description', {
             issue: PeakListFlag.other,
           })}
         </option>
@@ -100,7 +96,7 @@ const FlagModal = (props: Props) => {
       width={'600px'}
       height={'auto'}
     >
-      <h3>{getFluentString('flag-mountain-title', {name: peakListName})}</h3>
+      <h3>{getString('flag-mountain-title', {name: peakListName})}</h3>
       <p>{text}</p>
       {flagOptions}
 

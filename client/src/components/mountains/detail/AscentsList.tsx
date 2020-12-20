@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
 import {
   ButtonPrimary,
   GhostButton,
@@ -35,11 +35,12 @@ interface Props {
   completedDates: CompletedMountain | undefined;
   userId: string | null;
   mountain: MountainDatum;
-  getFluentString: GetString;
 }
 
 const AscentsList = (props: Props) => {
-  const { completedDates, userId, getFluentString, mountain } = props;
+  const { completedDates, userId, mountain } = props;
+
+  const getString = useFluent();
 
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
@@ -56,7 +57,7 @@ const AscentsList = (props: Props) => {
     if (!userId) {
       ascentModal = (
         <SignUpModal
-          text={getFluentString('global-text-value-modal-sign-up-today-ascents-list', {
+          text={getString('global-text-value-modal-sign-up-today-ascents-list', {
             'mountain-name': mountain.name,
           })}
           onCancel={closeAscentModalModal}
@@ -93,11 +94,11 @@ const AscentsList = (props: Props) => {
       let textDate: string;
       if (!isNaN(month) && !isNaN(year)) {
         if (!isNaN(day)) {
-          textDate = getFluentString('global-formatted-text-date', {
+          textDate = getString('global-formatted-text-date', {
             day, month, year: year.toString(),
           });
         } else {
-          textDate = getFluentString('global-formatted-text-month-year', {
+          textDate = getString('global-formatted-text-month-year', {
             month, year: year.toString(),
           });
         }
@@ -111,7 +112,7 @@ const AscentsList = (props: Props) => {
         >
           <strong>{textDate}</strong>
           <GhostButton>
-            {getFluentString('trip-reports-view-edit-button')}
+            {getString('trip-reports-view-edit-button')}
           </GhostButton>
         </AscentListItem>
       );
@@ -121,7 +122,7 @@ const AscentsList = (props: Props) => {
         {completionListItems}
         <AddAscentButton onClick={() => setEditMountainId(mountain.id)}>
           <CalendarButton icon='calendar-alt' />
-          {getFluentString('mountain-detail-add-another-ascent')}
+          {getString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
         {editAscentModal}
       </>
@@ -129,19 +130,19 @@ const AscentsList = (props: Props) => {
   } else {
     output = (
       <>
-        <BasicListItem>{getFluentString('mountain-detail-no-ascents-text', {
+        <BasicListItem>{getString('mountain-detail-no-ascents-text', {
           'mountain-name': mountain.name,
         })}</BasicListItem>
         <AddAscentButton onClick={() => setEditMountainId(mountain.id)}>
           <CalendarButton icon='calendar-alt' />
-          {getFluentString('mountain-detail-add-ascent-date')}
+          {getString('mountain-detail-add-ascent-date')}
         </AddAscentButton>
       </>
     );
   }
   return (
     <>
-      <ItemTitle>{getFluentString('global-text-value-ascent-dates')}:</ItemTitle>
+      <ItemTitle>{getString('global-text-value-ascent-dates')}:</ItemTitle>
       {output}
       {ascentModal}
     </>

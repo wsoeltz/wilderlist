@@ -1,10 +1,7 @@
 import { faAt, faUserFriends } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -57,8 +54,7 @@ const FriendSelector = (props: Props) => {
     closeAndAddFriends, friends, initialUserList, initialEmails,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [emails, setEmails] = useState<string[]>(
@@ -102,7 +98,7 @@ const FriendSelector = (props: Props) => {
       friendsList = (
         <NoDateText>
           <small>
-            {getFluentString('mountain-completion-modal-text-no-friends-yet')}
+            {getString('mountain-completion-modal-text-no-friends-yet')}
           </small>
         </NoDateText>
       );
@@ -111,7 +107,7 @@ const FriendSelector = (props: Props) => {
     friendsList = (
       <NoDateText>
         <small>
-          {getFluentString('mountain-completion-modal-text-no-friends-yet')}
+          {getString('mountain-completion-modal-text-no-friends-yet')}
         </small>
       </NoDateText>
     );
@@ -178,7 +174,7 @@ const FriendSelector = (props: Props) => {
         <div>
           <DetailBoxTitle>
             <BasicIconInText icon={faUserFriends} />
-            {getFluentString('mountain-completion-modal-text-add-wilderlist-friends')}
+            {getString('mountain-completion-modal-text-add-wilderlist-friends')}
           </DetailBoxTitle>
           <DetailBox>
             {friendsList}
@@ -187,12 +183,12 @@ const FriendSelector = (props: Props) => {
         <div>
           <DetailBoxTitle>
             <BasicIconInText icon={faAt} />
-            {getFluentString('mountain-completion-modal-text-add-other-friends')}
+            {getString('mountain-completion-modal-text-add-other-friends')}
           </DetailBoxTitle>
           <DetailBox>
             {emailInputs}
             <ButtonSecondary onClick={() => setEmails([...emails, ''])}>
-              {getFluentString('mountain-completion-modal-text-add-email-button')}
+              {getString('mountain-completion-modal-text-add-email-button')}
             </ButtonSecondary>
           </DetailBox>
         </div>

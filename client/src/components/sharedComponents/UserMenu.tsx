@@ -5,10 +5,10 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useFluent from '../../hooks/useFluent';
 import { Routes } from '../../routing/routes';
 import { comparePeakListLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
@@ -177,12 +177,12 @@ interface UserMenuListProps {
   user: User | null;
   adminPanel: React.ReactElement<any> | null;
   closeUserMenu: () => void;
-  getFluentString: GetString;
 }
 
-const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMenuListProps) => {
+const UserMenuList = ({user, adminPanel, closeUserMenu}: UserMenuListProps) => {
   const node = useRef<HTMLDivElement | null>(null);
   const userId = user !== null ? user._id : 'none';
+  const getString = useFluent();
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const element = e.target as HTMLElement;
@@ -199,20 +199,20 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
     return (
       <UserMenuListContainer ref={node} onClick={closeUserMenu}>
         <UserMenuLink to={comparePeakListLink(userId, 'none')}>
-          {getFluentString('header-text-menu-my-profile')}
+          {getString('header-text-menu-my-profile')}
         </UserMenuLink>
         <UserMenuLink to={Routes.UserSettings}>
-          {getFluentString('header-text-menu-settings')}
+          {getString('header-text-menu-settings')}
         </UserMenuLink>
         <UserMenuLink to={Routes.PrivacyPolicy}>
-          {getFluentString('header-text-menu-privacy-policy')}
+          {getString('header-text-menu-privacy-policy')}
         </UserMenuLink>
         <UserMenuLink to={Routes.TermsOfUse}>
-          {getFluentString('header-text-menu-terms-of-use')}
+          {getString('header-text-menu-terms-of-use')}
         </UserMenuLink>
         {adminPanel}
         <UserMenuAnchor href='/api/logout'>
-          {getFluentString('header-text-menu-item-logout')}
+          {getString('header-text-menu-item-logout')}
         </UserMenuAnchor>
       </UserMenuListContainer>
     );
@@ -225,7 +225,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
             style={{color: googleBlue}}
           />
           <LoginText>
-            {getFluentString('header-text-login-with-google')}
+            {getString('header-text-login-with-google')}
           </LoginText>
         </LoginButtonListItem>
         <LoginButtonListItem href='/auth/facebook'>
@@ -234,7 +234,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
             style={{color: facebookBlue}}
           />
           <LoginText>
-            {getFluentString('header-text-login-with-facebook')}
+            {getString('header-text-login-with-facebook')}
           </LoginText>
         </LoginButtonListItem>
         <LoginButtonListItem href='/auth/reddit'>
@@ -243,7 +243,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu, getFluentString}: UserMe
             style={{color: redditRed}}
           />
           <LoginText>
-            {getFluentString('header-text-login-with-reddit')}
+            {getString('header-text-login-with-reddit')}
           </LoginText>
         </LoginButtonListItem>
       </UserMenuListContainer>
@@ -255,12 +255,12 @@ interface Props {
   userMenuOpen: boolean;
   setUserMenuOpen: (value: boolean) => void;
   user: User | null;
-  getFluentString: GetString;
 }
 
 const UserMenuComponent = (props: Props) => {
   const userMenuButtonEl = useRef<HTMLDivElement | null>(null);
   const { windowWidth } = useContext(AppContext);
+  const getString = useFluent();
   useEffect(() => {
     if (userMenuButtonEl.current !== null) {
       const el = userMenuButtonEl.current;
@@ -275,13 +275,13 @@ const UserMenuComponent = (props: Props) => {
   let output: React.ReactElement<any>;
   if (props.user) {
     const {
-      userMenuOpen, setUserMenuOpen, user, getFluentString,
+      userMenuOpen, setUserMenuOpen, user,
     } = props;
 
     const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
       ? (
           <UserMenuLink to={Routes.Admin}>
-            {getFluentString('header-text-menu-item-admin-panel')}
+            {getString('header-text-menu-item-admin-panel')}
           </UserMenuLink>
         )
       : null;
@@ -291,7 +291,7 @@ const UserMenuComponent = (props: Props) => {
             user={user}
             adminPanel={adminPanel}
             closeUserMenu={() => setUserMenuOpen(false)}
-            getFluentString={getFluentString} />
+           />
           )
       : null;
 
@@ -320,7 +320,7 @@ const UserMenuComponent = (props: Props) => {
               style={{color: googleBlue}}
             />
             <LoginText>
-              {props.getFluentString('header-text-login-with-google')}
+              {getString('header-text-login-with-google')}
             </LoginText>
           </LoginButton>
           <LoginButton href='/auth/facebook'>
@@ -329,7 +329,7 @@ const UserMenuComponent = (props: Props) => {
               style={{color: facebookBlue}}
             />
             <LoginText>
-              {props.getFluentString('header-text-login-with-facebook')}
+              {getString('header-text-login-with-facebook')}
             </LoginText>
           </LoginButton>
           <LoginButton href='/auth/reddit'>
@@ -338,14 +338,14 @@ const UserMenuComponent = (props: Props) => {
               style={{color: redditRed}}
             />
             <LoginText>
-              {props.getFluentString('header-text-login-with-reddit')}
+              {getString('header-text-login-with-reddit')}
             </LoginText>
           </LoginButton>
         </UserMenu>
       );
     } else {
       const {
-        userMenuOpen, setUserMenuOpen, getFluentString,
+        userMenuOpen, setUserMenuOpen,
       } = props;
 
       const userMenuList = userMenuOpen === true
@@ -354,7 +354,7 @@ const UserMenuComponent = (props: Props) => {
               user={null}
               adminPanel={null}
               closeUserMenu={() => setUserMenuOpen(false)}
-              getFluentString={getFluentString} />
+             />
             )
         : null;
 

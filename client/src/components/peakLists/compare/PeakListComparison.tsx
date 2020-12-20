@@ -1,10 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -120,8 +117,7 @@ interface Props {
 const ComparePeakListPage = (props: Props) => {
   const { userId, friendId, peakListId } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id: peakListId, userId, friendId },
@@ -132,7 +128,7 @@ const ComparePeakListPage = (props: Props) => {
     console.error(error);
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -140,7 +136,7 @@ const ComparePeakListPage = (props: Props) => {
     if (!peakList || !user || !me) {
       return (
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
@@ -151,7 +147,7 @@ const ComparePeakListPage = (props: Props) => {
       return (
         <>
           <Helmet>
-            <title>{getFluentString('meta-data-compare-peak-list-title', {
+            <title>{getString('meta-data-compare-peak-list-title', {
               title: peakList.name,
               type: peakList.type,
               user: user.name,
@@ -177,7 +173,7 @@ const ComparePeakListPage = (props: Props) => {
   } else {
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }

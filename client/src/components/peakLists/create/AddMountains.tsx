@@ -1,9 +1,6 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -31,19 +28,18 @@ const AdditionalMountains = (props: Props) => {
     selectedMountains, setSelectedMountains, openParentModal, states,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [mountainSelectionModalOpen, setMountainSelectionModalOpen] = useState<boolean>(false);
 
   const total = selectedMountains && selectedMountains.length ? selectedMountains.length : 0;
 
   const addRemoveMountainsButtonText = !total
-    ? getFluentString('trip-report-add-mtns-btn')
-    : getFluentString('trip-report-add-remove-mtns-btn');
+    ? getString('trip-report-add-mtns-btn')
+    : getString('trip-report-add-remove-mtns-btn');
   const openParentModalButton = openParentModal !== undefined ? (
     <ButtonSecondary onClick={openParentModal}>
-      {getFluentString('create-peak-list-select-parent-modal-button')}
+      {getString('create-peak-list-select-parent-modal-button')}
     </ButtonSecondary>
   ) : null;
   const closeAndSetMountains = (mountains: MountainDatum[]) => {
@@ -75,7 +71,7 @@ const AdditionalMountains = (props: Props) => {
         disableLinks={true}
         showCount={true}
         customAction={removeMountainFromList}
-        customActionTitle={getFluentString('global-text-value-remove')}
+        customActionTitle={getString('global-text-value-remove')}
         customActionText={<GhostButton>×</GhostButton>}
       />
     </div>

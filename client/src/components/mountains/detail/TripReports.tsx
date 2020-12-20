@@ -1,10 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
@@ -154,8 +151,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
 
   const loadMoreReports = () => setPageNumber(pageNumber + 1);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const tripReportModal = fullReport === null ? null : (
     <TripReportModal
@@ -176,7 +172,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
     console.error(error);
     output = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -191,7 +187,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
         const allConditionsArray: string[] = [];
         Object.keys(report).forEach(function(key: keyof TripReport) {
           if (isCondition(key) && report[key]) {
-            allConditionsArray.push(getFluentString('trip-report-condition-name', {key}));
+            allConditionsArray.push(getString('trip-report-condition-name', {key}));
           }
         });
         let conditionsList: React.ReactElement<any> | null;
@@ -200,14 +196,14 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
         } else if (allConditionsArray.length === 1) {
           conditionsList = (
             <Section>
-              <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
+              <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
               <Condition>{allConditionsArray[0]}</Condition>
             </Section>
           );
         } else if (allConditionsArray.length === 2) {
           conditionsList = (
             <Section>
-              <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
+              <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
               <Condition>{allConditionsArray[0]}</Condition>
               {' and '}
               <Condition>{allConditionsArray[1]}</Condition>
@@ -236,7 +232,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
           });
           conditionsList = (
             <Section>
-              <SectionTitle>{getFluentString('trip-report-conditions-title')}: </SectionTitle>
+              <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
               <CollapsedParagraph>{conditionsText}</CollapsedParagraph>
             </Section>
           );
@@ -254,7 +250,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
           notes = (
             <Section>
               <SectionTitle>
-                {getFluentString('trip-report-notes-title')}
+                {getString('trip-report-notes-title')}
               </SectionTitle>
               <Text>
                 {text}{readMoreText}
@@ -273,14 +269,14 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
         } else if (filteredMountains.length === 1) {
           mountainList = (
             <Section>
-              <SectionTitle>{getFluentString('global-text-value-mountain')}: </SectionTitle>
+              <SectionTitle>{getString('global-text-value-mountain')}: </SectionTitle>
               <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
             </Section>
           );
         } else if (filteredMountains.length === 2) {
           mountainList = (
             <Section>
-              <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
+              <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
               <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
               {' and '}
               <BoldLink to={mountainDetailLink(filteredMountains[1].id)}>{filteredMountains[1].name}</BoldLink>
@@ -312,7 +308,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
           });
           mountainList = (
             <Section>
-              <SectionTitle>{getFluentString('global-text-value-mountains')}: </SectionTitle>
+              <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
               {mountainsText}
             </Section>
           );
@@ -321,14 +317,14 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
         const link = report.link && isValidURL(report.link) ? (
           <Section>
             <SectionTitle>
-              {getFluentString('trip-report-external-link-title')}
+              {getString('trip-report-external-link-title')}
             </SectionTitle>
             <ExternalLink href={report.link} rel='noopener noreferrer' target='_blank'>{report.link}</ExternalLink>
           </Section>
         ) : null;
 
         const authorName = report.author !== null && report.author.hideProfileInSearch !== true
-          ? report.author.name : getFluentString('global-text-value-generic-user');
+          ? report.author.name : getString('global-text-value-generic-user');
 
         const authorLink = userId !== null && report.author !== null && report.author.hideProfileInSearch !== true
           ? (
@@ -356,7 +352,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
                 className='read-full-report-button'
                 onClick={() => setFullReport(report)}
               >
-                {getFluentString('trip-report-read-full-report')}
+                {getString('trip-report-read-full-report')}
               </ReadFullReportButton>
             </ReportHeader>
             <ReportBody>
@@ -371,7 +367,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
 
       const loadMoreButton = tripReports.length === nPerPage * pageNumber ? (
         <GhostButton onClick={loadMoreReports}>
-          {getFluentString('trip-reports-load-more-button')}
+          {getString('trip-reports-load-more-button')}
         </GhostButton>
       ) : null;
 
@@ -384,7 +380,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
     } else {
       output = (
         <BasicListItem>
-          {getFluentString('trip-report-no-reports', {
+          {getString('trip-report-no-reports', {
             'mountain-name': mountainName,
           })}
         </BasicListItem>
@@ -396,7 +392,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
   return (
     <div id={'trip-reports'}>
       <ItemTitle>
-        {getFluentString('trip-reports-title')}
+        {getString('trip-reports-title')}
       </ItemTitle>
       {output}
       {tripReportModal}

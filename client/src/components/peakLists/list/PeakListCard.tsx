@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
@@ -146,8 +143,7 @@ const PeakListCard = (props: Props) => {
     latestDate, setActionDisabled,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
 
@@ -196,7 +192,7 @@ const PeakListCard = (props: Props) => {
 
     let latestDateText: React.ReactElement<any>;
     if (latestDate !== null) {
-      const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
+      const latestAscentText = getString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
         'has-full-date': 'true',
       });
@@ -206,14 +202,14 @@ const PeakListCard = (props: Props) => {
         </>
       );
     } else {
-      latestDateText = <>{getFluentString('peak-list-text-no-completed-ascent')}</>;
+      latestDateText = <>{getString('peak-list-text-no-completed-ascent')}</>;
     }
     listInfoContent = (
       <>
         <span>
           {numCompletedAscents}/{totalRequiredAscents}
           {' '}
-          {getFluentString('peak-list-text-completed-ascent')}
+          {getString('peak-list-text-completed-ascent')}
         </span>
         <TextRight>{latestDateText}</TextRight>
       </>
@@ -224,7 +220,7 @@ const PeakListCard = (props: Props) => {
         <span>
           {totalRequiredAscents}
           {' '}
-          {getFluentString('peak-list-text-total-ascents')}
+          {getString('peak-list-text-total-ascents')}
         </span>
       </>
     );

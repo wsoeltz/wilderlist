@@ -1,30 +1,26 @@
 /* tslint:disable:max-line-length */
-import { GetString } from 'fluent-react/compat';
-import React, { useContext } from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
   ContentFull,
 } from '../../styling/Grid';
 
 const PrivacyPolicy = () => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
-  const metaDescription = getFluentString('meta-data-terms-of-use-description');
+  const metaDescription = getString('meta-data-terms-of-use-description');
 
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-terms-of-use-default-title')}</title>
+        <title>{getString('meta-data-terms-of-use-default-title')}</title>
         <meta
           name='description'
           content={metaDescription}
         />
-        <meta property='og:title' content={getFluentString('meta-data-terms-of-use-default-title')} />
+        <meta property='og:title' content={getString('meta-data-terms-of-use-default-title')} />
         <meta
           property='og:description'
           content={metaDescription}

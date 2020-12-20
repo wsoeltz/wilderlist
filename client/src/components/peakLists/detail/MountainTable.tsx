@@ -1,12 +1,9 @@
 import { faDownload, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
 import { sortBy } from 'lodash';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -277,8 +274,7 @@ const MountainTable = (props: Props) => {
     customActionText,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [mountainToEdit, setMountainToEdit] = useState<MountainToEdit | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
@@ -336,7 +332,7 @@ const MountainTable = (props: Props) => {
     if (!user) {
       editMountainModal = (
         <SignUpModal
-          text={getFluentString('global-text-value-modal-sign-up-today', {
+          text={getString('global-text-value-modal-sign-up-today', {
             'list-short-name': peakListShortNameWithType,
           })}
           onCancel={closeEditMountainModalModal}
@@ -345,7 +341,7 @@ const MountainTable = (props: Props) => {
     } else {
       if (type === PeakListVariants.standard) {
         const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-completion-modal-text-note-standard'),
+          __html: getString('mountain-completion-modal-text-note-standard'),
         }} />;
         editMountainModal = (
           <NewAscentReport
@@ -359,7 +355,7 @@ const MountainTable = (props: Props) => {
         );
       } else if (type === PeakListVariants.winter) {
         const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-completion-modal-text-note-winter'),
+          __html: getString('mountain-completion-modal-text-note-winter'),
         }} />;
         editMountainModal = (
           <NewAscentReport
@@ -373,7 +369,7 @@ const MountainTable = (props: Props) => {
         );
       } else if (type === PeakListVariants.fourSeason) {
         const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-completion-modal-text-note-four-season'),
+          __html: getString('mountain-completion-modal-text-note-four-season'),
         }} />;
         const season = mountainToEdit.target as Seasons;
         editMountainModal = (
@@ -389,7 +385,7 @@ const MountainTable = (props: Props) => {
         );
       } else if (type === PeakListVariants.grid) {
         const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-completion-modal-text-note-grid'),
+          __html: getString('mountain-completion-modal-text-note-grid'),
         }} />;
         const month = mountainToEdit.target as Months;
         editMountainModal = (
@@ -433,7 +429,7 @@ const MountainTable = (props: Props) => {
   } else if (isImportModalOpen === true) {
     importAscentsModal = (
         <SignUpModal
-          text={getFluentString('global-text-value-modal-sign-up-today-import', {
+          text={getString('global-text-value-modal-sign-up-today-import', {
             'list-short-name': peakListShortNameWithType,
           })}
           onCancel={() => setIsImportModalOpen(false)}
@@ -540,7 +536,7 @@ const MountainTable = (props: Props) => {
         onClick={() => setSorting(SortingCategories.name)}
         key={'mountain table title column ' + peakListId + 'name'}
       >
-        {getFluentString('global-text-value-mountain')}
+        {getString('global-text-value-mountain')}
         <SortIconContainer>
           <SortIcon
             icon={sortingBy === SortingCategories.name
@@ -560,7 +556,7 @@ const MountainTable = (props: Props) => {
         onClick={() => setSorting(SortingCategories.elevation)}
         key={'mountain table title column ' + peakListId + 'elevation'}
       >
-        {getFluentString('global-text-value-elevation')}
+        {getString('global-text-value-elevation')}
         <SortIconContainer>
           <SortIcon
             icon={sortingBy === SortingCategories.elevation
@@ -578,7 +574,7 @@ const MountainTable = (props: Props) => {
         onClick={() => setSorting(SortingCategories.state)}
         key={'mountain table title column ' + peakListId + 'state'}
       >
-        {getFluentString('global-text-value-state')}
+        {getString('global-text-value-state')}
         <SortIconContainer>
           <SortIcon
             icon={sortingBy === SortingCategories.state
@@ -607,7 +603,7 @@ const MountainTable = (props: Props) => {
           onClick={() => setSorting(SortingCategories.date)}
           key={'mountain table title column ' + peakListId + 'date'}
         >
-          {getFluentString('global-text-value-done')}
+          {getString('global-text-value-done')}
           <SortIconContainer>
             <SortIcon
               icon={sortingBy === SortingCategories.date
@@ -630,7 +626,7 @@ const MountainTable = (props: Props) => {
             onClick={() => setSorting(season)}
             key={'title column mountain table season ' + peakListId + season}
           >
-            {getFluentString('global-text-value-' + season)}
+            {getString('global-text-value-' + season)}
             <SortIconContainer>
               <SortIcon
                 icon={sortingBy === season
@@ -655,7 +651,7 @@ const MountainTable = (props: Props) => {
             key={'title column mountain table grid ' + peakListId + month}
           >
             <CompressedCellText>
-              {getFluentString('global-text-value-month-short-' + month.substring(0, 3).toLowerCase())}
+              {getString('global-text-value-month-short-' + month.substring(0, 3).toLowerCase())}
             </CompressedCellText>
             <GridSortIconContainer>
               <SortIcon
@@ -696,7 +692,7 @@ const MountainTable = (props: Props) => {
   } else if (isExportModalOpen === true && setIsExportModalOpen) {
     exportAscentsModal = (
         <SignUpModal
-          text={getFluentString('global-text-value-modal-sign-up-today-export', {
+          text={getString('global-text-value-modal-sign-up-today-export', {
             'list-short-name': peakListShortNameWithType,
           })}
           onCancel={() => setIsExportModalOpen(false)}
@@ -708,7 +704,7 @@ const MountainTable = (props: Props) => {
 
   const gridNote = type === PeakListVariants.grid
     ? (<Note dangerouslySetInnerHTML={{
-          __html: getFluentString('mountain-table-grid-date-note-text'),
+          __html: getString('mountain-table-grid-date-note-text'),
         }} />)
     : null;
 
@@ -721,7 +717,7 @@ const MountainTable = (props: Props) => {
           onClick={() => setIsImportModalOpen(true)}
         >
           <BasicIconInText icon={faFileImport} />
-          {getFluentString('mountain-table-import-button')}
+          {getString('mountain-table-import-button')}
         </ButtonPrimary>
     ) : null;
 
@@ -734,7 +730,7 @@ const MountainTable = (props: Props) => {
       onClick={() => setIsExportModalOpen(true)}
     >
       <BasicIconInText icon={faDownload} />
-      {getFluentString('mountain-table-export-button')}
+      {getString('mountain-table-export-button')}
     </ExportButton>
   ) : null;
 
@@ -751,7 +747,7 @@ const MountainTable = (props: Props) => {
       {importExportButtons}
       <FilterBar>
         <StandardSearch
-          placeholder={getFluentString('peak-list-detail-filter-mountains')}
+          placeholder={getString('peak-list-detail-filter-mountains')}
           setSearchQuery={filterMountains}
           focusOnMount={false}
           initialQuery={searchQuery}

@@ -1,15 +1,12 @@
 import { useMutation } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import {intersection, sortBy} from 'lodash';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
 import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-dates.png';
 import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';
 import SelectMountainsStaticUrl from '../../../assets/images/import-gifs/select-mountains.png';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -212,8 +209,7 @@ const maxValIndicies = (array: number[]) => {
 const ImportAscentsModal = (props: Props) => {
   const { onCancel, mountains, userId } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [pastedMountains, setPastedMountains] = useState<string[]>([]);
   const [cleanedMountains, setCleanedMountains] = useState<MountainDatum[] | null>([]);
@@ -478,7 +474,6 @@ const ImportAscentsModal = (props: Props) => {
         date={cleanedDates[i]}
         dateInput={pastedDates[i]}
         index={i}
-        getFluentString={getFluentString}
         key={mtn.id + i}
       />
     );
@@ -490,16 +485,16 @@ const ImportAscentsModal = (props: Props) => {
       const mountainNames = mountains.map((mtn, i) => <li key={mtn.id + i}>{mtn.name}</li>);
       errorMessage = (
         <WarningBox>
-          <p dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-error-message-your-list-too-long')}}/>
+          <p dangerouslySetInnerHTML={{__html: getString('import-ascents-error-message-your-list-too-long')}}/>
           <OutputContainer>
             <div>
-              <h4>{getFluentString('import-ascents-your-input')}</h4>
+              <h4>{getString('import-ascents-your-input')}</h4>
               <ol>
                 {pastedOutMountains}
               </ol>
             </div>
             <div>
-              <h4>{getFluentString('import-ascents-mountains-on-list')}</h4>
+              <h4>{getString('import-ascents-mountains-on-list')}</h4>
               <ol>
                 {mountainNames}
               </ol>
@@ -516,7 +511,7 @@ const ImportAscentsModal = (props: Props) => {
     // ask to paste in the dates
     errorMessage = (
       <WarningBox
-        dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-error-message-please-paste-dates')}}
+        dangerouslySetInnerHTML={{__html: getString('import-ascents-error-message-please-paste-dates')}}
       />
     );
   } else if ((cleanedMountains === null || cleanedMountains.length === 0)  &&
@@ -525,7 +520,7 @@ const ImportAscentsModal = (props: Props) => {
     // ask to paste in the dates
     errorMessage = (
       <WarningBox
-        dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-error-message-please-paste-mountains')}}
+        dangerouslySetInnerHTML={{__html: getString('import-ascents-error-message-please-paste-mountains')}}
       />
     );
   } else if (cleanedDates !== null && cleanedMountains !== null
@@ -538,19 +533,19 @@ const ImportAscentsModal = (props: Props) => {
     const pastedOutDates = pastedDates.map((date, i) => <li key={date + i}>{date}</li>);
     errorMessage = (
       <WarningBox>
-        <p>{getFluentString('import-ascents-error-message-list-is-bigger-than-other', {
+        <p>{getString('import-ascents-error-message-list-is-bigger-than-other', {
           'bigger-list': biggerList,
           'smaller-list': smallerList,
         })}</p>
         <OutputContainer>
           <div>
-            <h4>{getFluentString('global-text-value-mountains')}</h4>
+            <h4>{getString('global-text-value-mountains')}</h4>
             <ol>
               {pastedOutMountains}
             </ol>
           </div>
           <div>
-            <h4>{getFluentString('global-text-value-dates')}</h4>
+            <h4>{getString('global-text-value-dates')}</h4>
             <ol>
               {pastedOutDates}
             </ol>
@@ -570,21 +565,21 @@ const ImportAscentsModal = (props: Props) => {
   const table = allDataAvailable
     ? (
       <Table>
-        <UserInput>{getFluentString('import-ascents-your-name-input')}</UserInput>
-        <ExpectedName>{getFluentString('import-ascents-name-output')}</ExpectedName>
-        <UserDate>{getFluentString('import-ascents-your-date-input')}</UserDate>
-        <ExpectedDate>{getFluentString('import-ascents-date-output')}</ExpectedDate>
+        <UserInput>{getString('import-ascents-your-name-input')}</UserInput>
+        <ExpectedName>{getString('import-ascents-name-output')}</ExpectedName>
+        <UserDate>{getString('import-ascents-your-date-input')}</UserDate>
+        <ExpectedDate>{getString('import-ascents-date-output')}</ExpectedDate>
         {mountainList}
       </Table>
     ) : null;
 
   const successMessage = allDataAvailable
-      ? <SuccessBox dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-success-message')}} />
+      ? <SuccessBox dangerouslySetInnerHTML={{__html: getString('import-ascents-success-message')}} />
       : null;
 
   const submitBtnText: string = isLoading === false
-    ? getFluentString('global-text-value-submit')
-    : getFluentString('global-text-value-saving') + ` - (${percent}%)`;
+    ? getString('global-text-value-submit')
+    : getString('global-text-value-saving') + ` - (${percent}%)`;
 
   const submitBtn = allDataAvailable
       ? <SubmitButton onClick={onConfirm} mobileExtend={true}>{submitBtnText}</SubmitButton>
@@ -598,7 +593,7 @@ const ImportAscentsModal = (props: Props) => {
   const actions = (
     <ButtonWrapper style={style}>
       <CancelButton onClick={onCancel} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-cancel')}
+        {getString('global-text-value-modal-cancel')}
       </CancelButton>
       {submitBtn}
     </ButtonWrapper>
@@ -611,46 +606,46 @@ const ImportAscentsModal = (props: Props) => {
       height={'auto'}
       actions={actions}
     >
-      <h2>{getFluentString('import-ascents-title')}</h2>
-      <p>{getFluentString('import-ascents-para-1')}</p>
+      <h2>{getString('import-ascents-title')}</h2>
+      <p>{getString('import-ascents-para-1')}</p>
       <p>
         <em
-          dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-date-note')}}
+          dangerouslySetInnerHTML={{__html: getString('import-ascents-date-note')}}
         />
       </p>
       <PasteContainer>
         <HelpTextContainer>
           <BigNumber>1</BigNumber>
           <HelpText
-            dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-step-1')}}
+            dangerouslySetInnerHTML={{__html: getString('import-ascents-step-1')}}
           />
           <HelpGifContainer>
             <img
               src={selectMountainsGif}
               onClick={toggleMountainGif}
-              alt={getFluentString('import-ascents-gif-help-alt-text')}
+              alt={getString('import-ascents-gif-help-alt-text')}
             />
           </HelpGifContainer>
         </HelpTextContainer>
         <HelpTextContainer>
           <BigNumber>2</BigNumber>
           <HelpText
-            dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-step-2')}}
+            dangerouslySetInnerHTML={{__html: getString('import-ascents-step-2')}}
           />
           <HelpGifContainer>
             <img
               src={selectDatesGif}
               onClick={toggleDatesGif}
-              alt={getFluentString('import-ascents-gif-help-alt-text')}
+              alt={getString('import-ascents-gif-help-alt-text')}
             />
           </HelpGifContainer>
         </HelpTextContainer>
         <PasteArea
-          placeholder={getFluentString('import-ascents-paste-mountains-here')}
+          placeholder={getString('import-ascents-paste-mountains-here')}
           onChange={onMountainNamesPaste}
         />
         <PasteArea
-          placeholder={getFluentString('import-ascents-paste-dates-here')}
+          placeholder={getString('import-ascents-paste-dates-here')}
           onChange={onMountainDatesPaste}
         />
       </PasteContainer>

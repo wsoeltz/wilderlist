@@ -4,7 +4,6 @@ import {
   faList,
   faMapMarkedAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
@@ -12,9 +11,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import { Routes } from '../../../routing/routes';
 import { searchMountainsDetailLink } from '../../../routing/Utils';
@@ -183,8 +180,7 @@ const MountainSearchPage = (props: Props) => {
     history.push(url);
   };
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   let variables: Variables;
   let GQL_QUERY: any;
@@ -203,13 +199,13 @@ const MountainSearchPage = (props: Props) => {
     queryText = (
       <NoResults
         dangerouslySetInnerHTML={{
-          __html: searchQuery ? getFluentString('mountain-search-query-desc', {
+          __html: searchQuery ? getString('mountain-search-query-desc', {
             'search-query': searchQuery,
-          }) : getFluentString('mountain-search-generic-desc'),
+          }) : getString('mountain-search-generic-desc'),
         }}
       />
     );
-    noResultsText = getFluentString('global-text-value-no-results-found');
+    noResultsText = getString('global-text-value-no-results-found');
   } else {
     GQL_QUERY = SEARCH_MOUNTAINS;
     variables = {
@@ -256,7 +252,7 @@ const MountainSearchPage = (props: Props) => {
     console.error(error);
     list =  (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (dataToUse !== undefined && (searchQuery || (usersLocation.error ||
@@ -284,11 +280,11 @@ const MountainSearchPage = (props: Props) => {
       }
       const nextBtn = mountains.length === nPerPage ? (
         <Next onClick={incrementPageNumber}>
-          {getFluentString('global-text-value-navigation-next')}
+          {getString('global-text-value-navigation-next')}
         </Next> ) : null;
       const prevBtn = pageNumber > 1 ? (
         <Prev onClick={decrementPageNumber}>
-          {getFluentString('global-text-value-navigation-prev')}
+          {getString('global-text-value-navigation-prev')}
         </Prev> ) : null;
       list = (
         <>
@@ -317,7 +313,7 @@ const MountainSearchPage = (props: Props) => {
     : (
       <ContentHeader>
         <BackButton
-          text={getFluentString('map-search-back-to-map')}
+          text={getString('map-search-back-to-map')}
         />
       </ContentHeader>
     );
@@ -338,7 +334,7 @@ const MountainSearchPage = (props: Props) => {
             onClick={() => setMobileView(View.List)}
           >
             <BasicIconInText icon={faList} />
-            {getFluentString('mountain-search-mobile-nav-list')}
+            {getString('mountain-search-mobile-nav-list')}
           </SecondaryNavigationButton>
           <SecondaryNavigationButton
             onClick={() => setMobileView(View.Map)}
@@ -348,7 +344,7 @@ const MountainSearchPage = (props: Props) => {
             }}
           >
             <BasicIconInText icon={faMapMarkedAlt} />
-            {getFluentString('mountain-search-mobile-nav-map')}
+            {getString('mountain-search-mobile-nav-map')}
           </SecondaryNavigationButton>
         </SecondaryNavigationContainer>
       </PreContentHeaderFull>
@@ -373,22 +369,22 @@ const MountainSearchPage = (props: Props) => {
   const addMountainButton = userId && mountainPermissions !== -1 ? (
     <FloatingButtonContainer>
       <FloatingButton to={Routes.CreateMountain}>
-        <PlusIcon>+</PlusIcon> {getFluentString('create-mountain-title-create')}
+        <PlusIcon>+</PlusIcon> {getString('create-mountain-title-create')}
       </FloatingButton>
     </FloatingButtonContainer>
   ) : null;
 
-  const metaDescription = getFluentString('meta-data-mountain-search-description');
+  const metaDescription = getString('meta-data-mountain-search-description');
 
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-mtn-search-default-title')}</title>
+        <title>{getString('meta-data-mtn-search-default-title')}</title>
         <meta
           name='description'
           content={metaDescription}
         />
-        <meta property='og:title' content={getFluentString('meta-data-mtn-search-default-title')} />
+        <meta property='og:title' content={getString('meta-data-mtn-search-default-title')} />
         <meta
           property='og:description'
           content={metaDescription}
@@ -399,7 +395,7 @@ const MountainSearchPage = (props: Props) => {
       <ContentLeftSmall style={mobileSearchStyles}>
         <AdvancedSearchContainer>
           <StandardSearch
-            placeholder={getFluentString('global-text-value-search-mountains')}
+            placeholder={getString('global-text-value-search-mountains')}
             setSearchQuery={searchMountains}
             focusOnMount={true}
             initialQuery={initialSearchQuery}

@@ -6,6 +6,10 @@ import ReactDOM from 'react-dom';
 import 'regenerator-runtime/runtime';
 import App from './components/App';
 import NoApp from './components/NoApp';
+import {
+  appLocalizationAndBundle as fluentValue,
+  AppLocalizationAndBundleContext as FluentText,
+} from './contextProviders/getFluentLocalizationContext';
 import { getBrowser } from './Utils';
 
 const client = new ApolloClient({
@@ -26,7 +30,9 @@ if ( browser === 'IE'                       ||
 } else {
   ReactDOM.render((
     <ApolloProvider client={client}>
-      <App />
+      <FluentText.Provider value={fluentValue}>
+        <App />
+      </FluentText.Provider>
     </ApolloProvider>
   ), document.getElementById('root'));
 }

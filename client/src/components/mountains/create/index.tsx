@@ -1,11 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import queryString from 'query-string';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
 import {
@@ -167,8 +164,7 @@ const MountainCreatePage = (props: Props) => {
 
   const userId = user._id;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
   const { windowWidth } = useContext(AppContext);
@@ -195,7 +191,7 @@ const MountainCreatePage = (props: Props) => {
   if (mountainPermissions === -1) {
     mountainForm = (
       <PlaceholderText>
-        {getFluentString('global-text-value-no-permission')}
+        {getString('global-text-value-no-permission')}
       </PlaceholderText>
     );
   } else if (loading === true) {
@@ -204,7 +200,7 @@ const MountainCreatePage = (props: Props) => {
     console.error(error);
     mountainForm = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -285,7 +281,7 @@ const MountainCreatePage = (props: Props) => {
     } else if (data.mountain) {
         mountainForm = (
         <PlaceholderText>
-          {getFluentString('global-text-value-no-permission')}
+          {getString('global-text-value-no-permission')}
         </PlaceholderText>
       );
     } else {
@@ -324,11 +320,11 @@ const MountainCreatePage = (props: Props) => {
       height={'auto'}
       actions={(
         <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
-          {getFluentString('global-text-value-modal-close')}
+          {getString('global-text-value-modal-close')}
         </ButtonSecondary>
         )}
     >
-      <p>{getFluentString('global-error-saving-data')}</p>
+      <p>{getString('global-error-saving-data')}</p>
     </Modal>
   );
 

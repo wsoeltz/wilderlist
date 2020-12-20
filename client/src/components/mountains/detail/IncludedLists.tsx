@@ -1,11 +1,11 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
 import {
   lightBorderColor,
@@ -80,13 +80,14 @@ interface Props {
     state: {abbreviation: string},
     elevation: number,
   };
-  getFluentString: GetString;
   numLists: number;
   setMetaDescription: boolean;
 }
 
 const IncludedLists = (props: Props) => {
-  const { getFluentString, mountainDatum, numLists, setMetaDescription } = props;
+  const { mountainDatum, numLists, setMetaDescription } = props;
+
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAINS_INCLUDE_LISTS, {
     variables: { id: mountainDatum.id },
@@ -155,7 +156,7 @@ const IncludedLists = (props: Props) => {
             {list.name}
           </Link>
           {' '}
-          {getFluentString('mountain-detail-lists-mountain-appears-on-ranks', {
+          {getString('mountain-detail-lists-mountain-appears-on-ranks', {
             'elevation-rank': ORDINAL_NUMBER([elevationRank]),
           })}
         </BasicUnorderedListItem>
@@ -165,7 +166,7 @@ const IncludedLists = (props: Props) => {
     const listsContent = listsText.length < 1 ? null : (
         <VerticalContentItem>
           <ItemTitle>
-            {getFluentString('mountain-detail-lists-mountain-appears-on', {
+            {getString('mountain-detail-lists-mountain-appears-on', {
               'mountain-name': mountainDatum.name,
             })}
           </ItemTitle>
@@ -175,7 +176,7 @@ const IncludedLists = (props: Props) => {
         </VerticalContentItem>
       );
 
-    const metaDescription = getFluentString('meta-data-mountain-detail-description', {
+    const metaDescription = getString('meta-data-mountain-detail-description', {
       name: mountainDatum.name,
       elevation: mountainDatum.elevation,
       state: mountainDatum.state && mountainDatum.state.abbreviation ? ', ' + mountainDatum.state.abbreviation : '',

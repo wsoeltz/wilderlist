@@ -1,10 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   CompactButtonPrimary,
   CompactGhostButton,
@@ -79,9 +76,7 @@ const ImportAscentsNotification = (props: Props) => {
   } = props;
 
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
-
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const user = useContext(UserContext);
 
@@ -120,10 +115,10 @@ const ImportAscentsNotification = (props: Props) => {
   return (
     <Root>
       <Content>
-        <small>{getFluentString('import-ascents-notification-text')}</small>
+        <small>{getString('import-ascents-notification-text')}</small>
         <div>
           <CompactButtonPrimary onClick={() => setIsImportModalOpen(true)}>
-            {getFluentString('import-ascents-title')}
+            {getString('import-ascents-title')}
           </CompactButtonPrimary>
           <CompactGhostButton onClick={closeNotification}>Dismiss</CompactGhostButton>
         </div>

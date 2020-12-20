@@ -1,9 +1,6 @@
 import { useMutation } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, { useContext, useState } from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import React, {useState} from 'react';
+import useFluent from '../../../hooks/useFluent';
 import { ButtonPrimary, Label, SelectBox } from '../../../styling/styleUtils';
 import { MountainFlag } from '../../../types/graphQLTypes';
 import {
@@ -26,8 +23,7 @@ interface Props {
 const FlagModal = (props: Props) => {
   const { onClose, mountainId, mountainName } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
 
@@ -44,63 +40,63 @@ const FlagModal = (props: Props) => {
   const actions = flagSubmitted === false ? (
     <ButtonWrapper>
       <CancelButton onClick={onClose} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
       <ButtonPrimary onClick={onSubmit} mobileExtend={true}>
-        {getFluentString('global-text-value-submit')}
+        {getString('global-text-value-submit')}
       </ButtonPrimary>
     </ButtonWrapper>
   ) : (
     <ButtonWrapper>
       <CancelButton onClick={onClose} mobileExtend={true} style={{gridColumn: '1 / -1'}}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>
   );
 
   const text = flagSubmitted === false
-    ? getFluentString('flag-mountain-text') : getFluentString('flag-mountain-thanks');
+    ? getString('flag-mountain-text') : getString('flag-mountain-thanks');
 
   const flagOptions = flagSubmitted === false ? (
     <>
-      <Label>{getFluentString('flag-mountain-select-issue')}</Label>
+      <Label>{getString('flag-mountain-select-issue')}</Label>
       <SelectBox
         value={flag}
         onChange={(e) => setFlag(e.target.value as MountainFlag | '')}
       >
         <option value={''} key='empty-option-to-select'></option>
         <option value={MountainFlag.location} key='location'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.location,
           })}
         </option>
         <option value={MountainFlag.elevation} key='elevation'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.elevation,
           })}
         </option>
         <option value={MountainFlag.state} key='state'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.state,
           })}
         </option>
         <option value={MountainFlag.duplicate} key='duplicate'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.duplicate,
           })}
         </option>
         <option value={MountainFlag.data} key='data'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.data,
           })}
         </option>
         <option value={MountainFlag.abuse} key='abuse'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.abuse,
           })}
         </option>
         <option value={MountainFlag.other} key='other'>
-          {getFluentString('flag-mountain-select-issue-description', {
+          {getString('flag-mountain-select-issue-description', {
             issue: MountainFlag.other,
           })}
         </option>
@@ -115,7 +111,7 @@ const FlagModal = (props: Props) => {
       width={'600px'}
       height={'auto'}
     >
-      <h3>{getFluentString('flag-mountain-title', {name: mountainName})}</h3>
+      <h3>{getString('flag-mountain-title', {name: mountainName})}</h3>
       <p>{text}</p>
       {flagOptions}
 

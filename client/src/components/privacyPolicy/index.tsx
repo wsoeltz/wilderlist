@@ -1,30 +1,26 @@
 /* tslint:disable:max-line-length */
-import { GetString } from 'fluent-react/compat';
-import React, { useContext } from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
   ContentFull,
 } from '../../styling/Grid';
 
 const PrivacyPolicy = () => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
-  const metaDescription = getFluentString('meta-data-privacy-policy-description');
+  const metaDescription = getString('meta-data-privacy-policy-description');
 
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-privacy-default-title')}</title>
+        <title>{getString('meta-data-privacy-default-title')}</title>
         <meta
           name='description'
           content={metaDescription}
         />
-        <meta property='og:title' content={getFluentString('meta-data-privacy-default-title')} />
+        <meta property='og:title' content={getString('meta-data-privacy-default-title')} />
         <meta
           property='og:description'
           content={metaDescription}
@@ -32,7 +28,7 @@ const PrivacyPolicy = () => {
       </Helmet>
       <ContentFull>
         <ContentBody>
-          <h1>{getFluentString('header-text-menu-privacy-policy')}</h1>
+          <h1>{getString('header-text-menu-privacy-policy')}</h1>
           <div>
           <p><small>Last Update: March 6, 2020</small></p>
 

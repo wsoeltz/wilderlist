@@ -4,12 +4,9 @@ import {
   faMapMarkerAlt,
   faMountain,
 } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import React, {useContext} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
   BasicIconAtEndOfText,
@@ -76,8 +73,7 @@ interface Props {
 const MountainCard = ({ mountain }: Props) => {
   const { name, elevation, state, distanceToUser } = mountain;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {usersLocation} = useContext(AppContext);
 
@@ -92,7 +88,7 @@ const MountainCard = ({ mountain }: Props) => {
     ? (
         <span>
           <Tooltip
-            explanation={getFluentString('mountain-card-crow-flies-tooltip')}
+            explanation={getString('mountain-card-crow-flies-tooltip')}
           >
             <BasicIconInText icon={faCrow} />
           </Tooltip>
@@ -126,14 +122,14 @@ const MountainCard = ({ mountain }: Props) => {
           color={secondaryColor}
           $isActive={false}
         >
-          {getFluentString('mountain-card-view-details')}
+          {getString('mountain-card-view-details')}
           <BasicIconAtEndOfText icon={faArrowRight} />
         </OverviewLink>
         <MapButton
           color={locationColor}
           $isActive={false}
         >
-          {getFluentString('mountain-card-show-on-map')}
+          {getString('mountain-card-show-on-map')}
           <BasicIconAtEndOfText icon={faMapMarkerAlt} />
         </MapButton>
       </CardFooter>

@@ -1,8 +1,5 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import React from 'react';
+import useFluent from '../../../../hooks/useFluent';
 import Modal from '../../../sharedComponents/Modal';
 import { NWSForecastDatum } from './NWSForecast';
 import {
@@ -28,12 +25,11 @@ interface Props {
 const WeatherDetailNWSModal = (props: Props) => {
   const { onCancel, today, tonight } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const todayPrecip = today !== null && today.precipitation ? (
     <DetailPrecip>
-      {today.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+      {today.precipitation}% {getString('weather-forecast-chance-precip')}
     </DetailPrecip>
   ) : null;
 
@@ -44,7 +40,7 @@ const WeatherDetailNWSModal = (props: Props) => {
         <ForecastImg src={today.icon} />
       </ForecastImgContainer>
       <ForecastContent>
-        <DetailTempHigh>{getFluentString('weather-forecast-high')} {today.temperature}°F</DetailTempHigh>
+        <DetailTempHigh>{getString('weather-forecast-high')} {today.temperature}°F</DetailTempHigh>
         {todayPrecip}
         <ForecastText>{today.detailedForecast}</ForecastText>
       </ForecastContent>
@@ -53,7 +49,7 @@ const WeatherDetailNWSModal = (props: Props) => {
 
   const tonightPrecip = tonight !== null && tonight.precipitation ? (
     <DetailPrecip>
-      {tonight.precipitation}% {getFluentString('weather-forecast-chance-precip')}
+      {tonight.precipitation}% {getString('weather-forecast-chance-precip')}
     </DetailPrecip>
   ) : null;
 
@@ -64,7 +60,7 @@ const WeatherDetailNWSModal = (props: Props) => {
         <ForecastImg src={tonight.icon} />
       </ForecastImgContainer>
       <ForecastContent>
-        <DetailTempLow>{getFluentString('weather-forecast-low')} {tonight.temperature}°F</DetailTempLow>
+        <DetailTempLow>{getString('weather-forecast-low')} {tonight.temperature}°F</DetailTempLow>
         {tonightPrecip}
         <ForecastText>{tonight.detailedForecast}</ForecastText>
       </ForecastContent>
@@ -74,7 +70,7 @@ const WeatherDetailNWSModal = (props: Props) => {
   const actions = (
     <ButtonWrapper>
       <CancelButton onClick={onCancel} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>
   );

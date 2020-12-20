@@ -1,13 +1,10 @@
 import { gql , useQuery} from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import countBy from 'lodash/countBy';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-import React, {useContext} from 'react';
+import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {mountainDetailLink} from '../../routing/Utils';
 import {
   PlaceholderText,
@@ -109,8 +106,7 @@ interface Props extends RouteComponentProps {
 const Stats = (props: Props) => {
   const { userId, history } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const { loading, error, data } = useQuery<SuccessResponse, Variables>(GET_DATA_FOR_STATS, {
     variables: { userId },
@@ -123,7 +119,7 @@ const Stats = (props: Props) => {
     console.error(error);
     output = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>);
   } else if (data !== undefined) {
     const {
@@ -277,7 +273,7 @@ const Stats = (props: Props) => {
     const avgTimeBetweenHikes = totalTimesBetween > 0 && sortedDates.length > 0
       ? totalTimesBetween / sortedDates.length : 0;
     const startDate = sortedDates[0] && !isNaN(sortedDates[0].day) ? (
-      getFluentString('global-formatted-text-date', {
+      getString('global-formatted-text-date', {
         month: sortedDates[0].month,
         day: sortedDates[0].day,
         year: sortedDates[0].year.toString(),
@@ -357,18 +353,18 @@ const Stats = (props: Props) => {
         <TwoColumns>
           <LargeStyledNumber
             value={totalAscents}
-            label={getFluentString('stats-total-overall-ascents')}
+            label={getString('stats-total-overall-ascents')}
             svg={MountainDoubleSVG}
           />
           <LargeStyledNumber
             value={uniqueMountains}
-            label={getFluentString('stats-total-unique-mountains-ascended')}
+            label={getString('stats-total-unique-mountains-ascended')}
             svg={MountainSingleSVG}
           />
         </TwoColumns>
         <TwoColumns>
           <div>
-            <SectionTitle>{getFluentString('stats-most-hiked-mountains')}</SectionTitle>
+            <SectionTitle>{getString('stats-most-hiked-mountains')}</SectionTitle>
             <CardRoot>
               <DataViz
                 id='top-12-peaks-hiked'
@@ -378,7 +374,7 @@ const Stats = (props: Props) => {
             </CardRoot>
           </div>
           <div>
-            <SectionTitle>{getFluentString('stats-most-hiked-months')}</SectionTitle>
+            <SectionTitle>{getString('stats-most-hiked-months')}</SectionTitle>
             <CardRoot>
               <DataViz
                 id='top-months-hiked'
@@ -389,27 +385,27 @@ const Stats = (props: Props) => {
           </div>
         </TwoColumns>
         <SingleColumn>
-          <SectionTitle>{getFluentString('stats-your-wilderlist-contributions')}</SectionTitle>
+          <SectionTitle>{getString('stats-your-wilderlist-contributions')}</SectionTitle>
           <ContributionsCard
             tripReports={totalAuthoredTripReports}
             mountains={totalAuthoredMountains}
             lists={totalAuthoredPeakLists}
-            getFluentString={getFluentString}
+            getString={getString}
           />
         </SingleColumn>
         <SingleColumn>
-          <SectionTitle>{getFluentString('stats-time-between-hikes')}</SectionTitle>
+          <SectionTitle>{getString('stats-time-between-hikes')}</SectionTitle>
           <AverageTimeCard
             avgTime={avgTimeBetweenHikes}
             startDate={startDate}
-            getFluentString={getFluentString}
+            getString={getString}
           />
           <ContextNote
-            dangerouslySetInnerHTML={{__html: getFluentString('stats-average-time-context-note-html')}}
+            dangerouslySetInnerHTML={{__html: getString('stats-average-time-context-note-html')}}
           />
         </SingleColumn>
         <SingleColumn>
-          <SectionTitle>{getFluentString('stats-top-hiked-states')}</SectionTitle>
+          <SectionTitle>{getString('stats-top-hiked-states')}</SectionTitle>
           <CardRoot>
             <DataViz
               id='top-states-hiked'
@@ -420,28 +416,28 @@ const Stats = (props: Props) => {
         </SingleColumn>
         <TwoColumns>
           <div>
-            <SectionTitle>{getFluentString('stats-top-hiked-years')}</SectionTitle>
+            <SectionTitle>{getString('stats-top-hiked-years')}</SectionTitle>
             <TopFourValuesList
               val1={sortedYears[0]}
               val2={sortedYears[1]}
               val3={sortedYears[2]}
               val4={sortedYears[3]}
-              getFluentString={getFluentString}
+              getString={getString}
             />
           </div>
           <div>
-            <SectionTitle>{getFluentString('stats-top-hiked-seasons')}</SectionTitle>
+            <SectionTitle>{getString('stats-top-hiked-seasons')}</SectionTitle>
             <TopFourValuesList
               val1={sortedSeasons[0]}
               val2={sortedSeasons[1]}
               val3={sortedSeasons[2]}
               val4={sortedSeasons[3]}
-              getFluentString={getFluentString}
+              getString={getString}
             />
           </div>
         </TwoColumns>
         <SingleColumn>
-          <SectionTitle>{getFluentString('stats-total-lifetime-elevation')}</SectionTitle>
+          <SectionTitle>{getString('stats-total-lifetime-elevation')}</SectionTitle>
           <CardRoot>
             <DataViz
               id='total-elevation-reached'
@@ -450,23 +446,23 @@ const Stats = (props: Props) => {
             />
           </CardRoot>
           <ContextNote>
-            {getFluentString('stats-total-lifetime-context-note')}
+            {getString('stats-total-lifetime-context-note')}
           </ContextNote>
         </SingleColumn>
-        <SectionTitle>{getFluentString('stats-your-lists')}</SectionTitle>
+        <SectionTitle>{getString('stats-your-lists')}</SectionTitle>
         <TwoColumns>
           <LargeStyledNumber
             value={peakLists.length}
-            label={getFluentString('stats-your-lists-pursued')}
+            label={getString('stats-your-lists-pursued')}
             svg={HikingListProgressSVG}
           />
           <LargeStyledNumber
             value={numFinishedList}
-            label={getFluentString('stats-your-lists-complete')}
+            label={getString('stats-your-lists-complete')}
             svg={HikingListCompleteSVG}
           />
         </TwoColumns>
-        <SectionTitle>{getFluentString('stats-your-lists-percent')}</SectionTitle>
+        <SectionTitle>{getString('stats-your-lists-percent')}</SectionTitle>
         <SingleColumn>
           <CardRoot>
             <PeakProgressBar
@@ -482,7 +478,7 @@ const Stats = (props: Props) => {
   } else {
     output = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }

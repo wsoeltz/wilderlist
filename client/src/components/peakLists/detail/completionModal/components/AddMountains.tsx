@@ -1,9 +1,6 @@
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import React, {useState} from 'react';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -42,8 +39,7 @@ const AdditionalMountains = (props: Props) => {
     selectedMountains, setSelectedMountains,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [isMountainSelectorOpen, setMountainSelectorOpen] = useState<boolean>(false);
 
@@ -77,17 +73,17 @@ const AdditionalMountains = (props: Props) => {
   ) : null;
 
   const addBtnText = selectedMountains.length
-    ? getFluentString('trip-report-add-remove-mtns-btn') : getFluentString('trip-report-add-mtns-btn');
+    ? getString('trip-report-add-remove-mtns-btn') : getString('trip-report-add-mtns-btn');
 
   return (
     <>
       <DetailBoxTitle>
         <BasicIconInText icon={faMountain} />
-        {getFluentString('trip-report-add-additional-mtns-title')}
+        {getString('trip-report-add-additional-mtns-title')}
       </DetailBoxTitle>
       <DetailBoxWithMargin>
         <SmallTextNote style={{marginBottom: '0.45rem'}}>
-          {getFluentString('trip-report-add-additional-mtns-desc')}
+          {getString('trip-report-add-additional-mtns-desc')}
         </SmallTextNote>
         <div>
           {selectedMountainList}

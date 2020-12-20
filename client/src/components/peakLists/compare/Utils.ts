@@ -1,8 +1,5 @@
-import { GetString } from 'fluent-react/compat';
-import {
-  startCase,
-  // toUpper,
-} from 'lodash';
+import {GetString} from 'fluent-react/compat';
+import startCase from 'lodash/startCase';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   formatDate,

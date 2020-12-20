@@ -1,9 +1,6 @@
-import { GetString } from 'fluent-react/compat';
-import React, { useContext } from 'react';
+import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ContentBody,
   ContentHeader,
@@ -26,8 +23,8 @@ const ComparePeakListPage = (props: Props) => {
   const { userId, match } = props;
   const { id: profileId, peakListId, mountainId }: any = match.params;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
+
   let comparison: React.ReactElement<any> | null;
   if (!peakListId) {
     comparison = null;
@@ -47,7 +44,7 @@ const ComparePeakListPage = (props: Props) => {
   const mountainDetail = mountainId === undefined
     ? (
         <PlaceholderText>
-          {getFluentString('list-detail-mountain-detail-placeholder')}
+          {getString('list-detail-mountain-detail-placeholder')}
         </PlaceholderText>
       )
     : (

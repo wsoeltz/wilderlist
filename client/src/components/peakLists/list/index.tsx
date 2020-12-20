@@ -3,16 +3,13 @@ import {
   faList,
   faMapMarkedAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { Routes } from '../../../routing/routes';
 import { searchListDetailLink } from '../../../routing/Utils';
 import {
@@ -283,8 +280,7 @@ const PeakListPage = (props: Props) => {
     history.push(url);
   };
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const variables = {
     searchQuery,
@@ -316,13 +312,13 @@ const PeakListPage = (props: Props) => {
   const queryText = selectedState ? (
     <NoResults>
       <span dangerouslySetInnerHTML={{
-          __html: getFluentString('peak-list-search-state', {
+          __html: getString('peak-list-search-state', {
             'state-name': selectedState.name,
           }),
         }}
       />
       <ClearButton onClick={() => updateSelectedState(null)}>
-        {getFluentString('global-text-value-clear')}
+        {getString('global-text-value-clear')}
       </ClearButton>
     </NoResults>
   ) : null;
@@ -338,7 +334,7 @@ const PeakListPage = (props: Props) => {
     console.error(error);
     list =  (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -354,22 +350,22 @@ const PeakListPage = (props: Props) => {
       if (!peakLists) {
         list = (
           <PlaceholderText>
-            {getFluentString('global-error-retrieving-data')}
+            {getString('global-error-retrieving-data')}
           </PlaceholderText>
         );
       } else {
         const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
         const nextBtn = peakLists.length === compactViewNPerPage ? (
           <Next onClick={incrementPageNumber}>
-            {getFluentString('global-text-value-navigation-next')}
+            {getString('global-text-value-navigation-next')}
           </Next> ) : null;
         const prevBtn = pageNumber > 1 ? (
           <Prev onClick={decrementPageNumber}>
-            {getFluentString('global-text-value-navigation-prev')}
+            {getString('global-text-value-navigation-prev')}
           </Prev> ) : null;
-        const noResultsText = searchQuery ? getFluentString('global-text-value-no-results-found-for-term', {
+        const noResultsText = searchQuery ? getString('global-text-value-no-results-found-for-term', {
           term: searchQuery,
-        }) : getFluentString('global-text-value-no-results-found');
+        }) : getString('global-text-value-no-results-found');
         let listElm: React.ReactElement<any> | null;
         const {peakLists: peakListData} = data as CompactSuccessResponse;
         listElm = (
@@ -378,7 +374,7 @@ const PeakListPage = (props: Props) => {
             peakListData={peakListData}
             userListData={usersLists}
             listAction={beginList}
-            actionText={getFluentString('peak-list-detail-text-begin-list')}
+            actionText={getString('peak-list-detail-text-begin-list')}
             profileId={undefined}
             noResultsText={noResultsText}
             showTrophies={false}
@@ -400,7 +396,7 @@ const PeakListPage = (props: Props) => {
   } else {
     list =  (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }
@@ -432,7 +428,7 @@ const PeakListPage = (props: Props) => {
       <ContentHeader>
         <BackButton
           onClick={returnToMap}
-          text={getFluentString('map-search-back-to-map')}
+          text={getString('map-search-back-to-map')}
         />
       </ContentHeader>
     );
@@ -440,7 +436,7 @@ const PeakListPage = (props: Props) => {
   const addMountainButton = userId && peakListPermissions !== -1 ? (
     <FloatingButtonContainer>
       <FloatingButton to={Routes.CreateList}>
-        <PlusIcon>+</PlusIcon> {getFluentString('create-peak-list-title-create')}
+        <PlusIcon>+</PlusIcon> {getString('create-peak-list-title-create')}
       </FloatingButton>
     </FloatingButtonContainer>
   ) : null;
@@ -457,7 +453,7 @@ const PeakListPage = (props: Props) => {
             onClick={() => setMobileView(View.List)}
           >
             <BasicIconInText icon={faList} />
-            {getFluentString('mountain-search-mobile-nav-list')}
+            {getString('mountain-search-mobile-nav-list')}
           </SecondaryNavigationButton>
           <SecondaryNavigationButton
             onClick={() => setMobileView(View.Map)}
@@ -467,24 +463,24 @@ const PeakListPage = (props: Props) => {
             }}
           >
             <BasicIconInText icon={faMapMarkedAlt} />
-            {getFluentString('mountain-search-mobile-nav-map')}
+            {getString('mountain-search-mobile-nav-map')}
           </SecondaryNavigationButton>
         </SecondaryNavigationContainer>
       </PreContentHeaderFull>
       )
     : null;
 
-  const metaDescription = getFluentString('meta-data-peak-list-search-description');
+  const metaDescription = getString('meta-data-peak-list-search-description');
 
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-list-search-default-title')}</title>
+        <title>{getString('meta-data-list-search-default-title')}</title>
         <meta
           name='description'
           content={metaDescription}
         />
-        <meta property='og:title' content={getFluentString('meta-data-list-search-default-title')} />
+        <meta property='og:title' content={getString('meta-data-list-search-default-title')} />
         <meta
           property='og:description'
           content={metaDescription}
@@ -496,7 +492,7 @@ const PeakListPage = (props: Props) => {
         <SearchContainer>
           <SearchAndFilterContainer>
             <StandardSearch
-              placeholder={getFluentString('global-text-value-search-hiking-lists')}
+              placeholder={getString('global-text-value-search-hiking-lists')}
               setSearchQuery={searchPeakLists}
               focusOnMount={true}
               initialQuery={initialSearchQuery}

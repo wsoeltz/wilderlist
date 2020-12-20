@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
   baseColor,
@@ -44,16 +41,15 @@ const ComparisonRow = (props: Props) => {
     mountain, index, myMountains, userMountains,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
 
   const userCompletedDates = userMountains.find(({mountainId}) => mountainId === mountain.id);
   const myCompletedDates = myMountains.find(({mountainId}) => mountainId === mountain.id);
 
-  const userGoalText = getGoalText(userCompletedDates, getFluentString);
-  const myGoalText = getGoalText(myCompletedDates, getFluentString);
+  const userGoalText = getGoalText(userCompletedDates, getString);
+  const myGoalText = getGoalText(myCompletedDates, getString);
   const userText = userGoalText.text;
   const myText = myGoalText.text;
 

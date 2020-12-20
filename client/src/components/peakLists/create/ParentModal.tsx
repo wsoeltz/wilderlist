@@ -1,10 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -118,8 +115,7 @@ interface Props {
 const AreYouSureModal = (props: Props) => {
   const { copyMountains, onCancel } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedList, setSelectedList] = useState<PeakListDatum | null>(null);
@@ -141,7 +137,7 @@ const AreYouSureModal = (props: Props) => {
     console.error(error);
     peakListList = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -155,7 +151,7 @@ const AreYouSureModal = (props: Props) => {
           >
             {list.name} ({list.shortName})
             <Subtitle>
-              {list.mountains.length} {getFluentString('global-text-value-mountains')}
+              {list.mountains.length} {getString('global-text-value-mountains')}
             </Subtitle>
           </PeakListItem>
         );
@@ -172,10 +168,10 @@ const AreYouSureModal = (props: Props) => {
 
   const selected = selectedList === null || selectedList.mountains === null ? null : (
     <SelectedItem>
-      <strong>{getFluentString('global-text-value-selected')}</strong>
+      <strong>{getString('global-text-value-selected')}</strong>
       {' '}{selectedList.name} ({selectedList.shortName})
       <Subtitle>
-        {selectedList.mountains.length} {getFluentString('global-text-value-mountains')}
+        {selectedList.mountains.length} {getString('global-text-value-mountains')}
       </Subtitle>
     </SelectedItem>
   );
@@ -195,10 +191,10 @@ const AreYouSureModal = (props: Props) => {
   const actions = (
     <ButtonWrapper>
       <CancelButton onClick={onCancel}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
       <ButtonPrimary onClick={handleCopyMountains}>
-        {getFluentString('create-peak-list-copy-mountains-button')}
+        {getString('create-peak-list-copy-mountains-button')}
       </ButtonPrimary>
     </ButtonWrapper>
   );
@@ -210,10 +206,10 @@ const AreYouSureModal = (props: Props) => {
       height={'auto'}
       actions={actions}
     >
-      <h3>{getFluentString('create-peak-list-select-parent-modal-button')}</h3>
+      <h3>{getString('create-peak-list-select-parent-modal-button')}</h3>
       {selected}
       <StandardSearch
-        placeholder={getFluentString('global-text-value-search-hiking-lists')}
+        placeholder={getString('global-text-value-search-hiking-lists')}
         setSearchQuery={setSearchQuery}
         focusOnMount={true}
         initialQuery={searchQuery}

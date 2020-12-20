@@ -1,12 +1,9 @@
 import { gql, useMutation } from '@apollo/client';
 import { faLeaf, faMountain, faSnowflake, faTh } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import React, {useContext, useEffect, useState} from 'react';
 import {useRouteMatch} from 'react-router';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
@@ -104,8 +101,7 @@ const VariantLinks = (props: Props) => {
 
   const {windowWidth} = useContext(AppContext);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const match = useRouteMatch<{peakListId: string | undefined, id: string | undefined}>();
   let currentListId: string | null;
@@ -159,12 +155,12 @@ const VariantLinks = (props: Props) => {
           $isActive={currentListId === target.id}
           color={color}
         >
-          <Tooltip explanation={getFluentString('global-text-value-list-type-tooltip', {
+          <Tooltip explanation={getString('global-text-value-list-type-tooltip', {
             'type': variant, 'list-name': name,
           })}>
             <BasicIconInText icon={variantsIconMapping[i]} />
           </Tooltip>
-          {getFluentString('global-text-value-list-type', {type: variant})}
+          {getString('global-text-value-list-type', {type: variant})}
         </VariantLink>
       );
     } else {
@@ -201,12 +197,12 @@ const VariantLinks = (props: Props) => {
           $isActive={false}
           color={color}
         >
-          <Tooltip explanation={getFluentString('global-text-value-list-type-tooltip', {
+          <Tooltip explanation={getString('global-text-value-list-type-tooltip', {
             'type': variant, 'list-name': name,
           })}>
             <BasicIconInText icon={variantsIconMapping[i]} />
           </Tooltip>
-          {getFluentString('global-text-value-list-type', {type: variant})}
+          {getString('global-text-value-list-type', {type: variant})}
         </VariantButton>
       );
     }

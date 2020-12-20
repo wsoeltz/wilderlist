@@ -1,13 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { friendsWithUserProfileLink } from '../../../routing/Utils';
 import {
   ContentBody,
@@ -84,8 +81,7 @@ const UserList = (props: Props) => {
   const { id }: any = match.params;
   const { query, page } = queryString.parse(location.search);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
@@ -148,7 +144,7 @@ const UserList = (props: Props) => {
     console.error(error);
     list = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -166,16 +162,16 @@ const UserList = (props: Props) => {
     }
     const nextBtn = searchQuery !== '' && userData && userData.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
-        {getFluentString('global-text-value-navigation-next')}
+        {getString('global-text-value-navigation-next')}
       </Next> ) : null;
     const prevBtn = pageNumber > 1 ? (
       <Prev onClick={decrementPageNumber}>
-        {getFluentString('global-text-value-navigation-prev')}
+        {getString('global-text-value-navigation-prev')}
       </Prev> ) : null;
-    const noResultsText = getFluentString('global-text-value-no-users-found-for-term', {
+    const noResultsText = getString('global-text-value-no-users-found-for-term', {
       term: searchQuery,
     });
-    const noFriendsText = getFluentString('dashboard-empty-state-no-friends-text');
+    const noFriendsText = getString('dashboard-empty-state-no-friends-text');
     list = (
       <>
         <ListUsers
@@ -200,7 +196,7 @@ const UserList = (props: Props) => {
   const userProfile = !Types.ObjectId.isValid(id)
   ? (
       <PlaceholderText>
-        {getFluentString('user-list-no-user-selected-text')}
+        {getString('user-list-no-user-selected-text')}
       </PlaceholderText>
     )
   : (
@@ -209,7 +205,7 @@ const UserList = (props: Props) => {
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-friend-search-default-title')}</title>
+        <title>{getString('meta-data-friend-search-default-title')}</title>
       </Helmet>
       <ContentLeftSmall>
         <SearchContainer>

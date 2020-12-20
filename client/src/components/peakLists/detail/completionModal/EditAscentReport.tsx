@@ -1,9 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../hooks/useFluent';
 import { PlaceholderText } from '../../../../styling/styleUtils';
 import { TripReport } from '../../../../types/graphQLTypes';
 import {
@@ -91,8 +87,7 @@ type Props = BaseProps & {
 const EditAscentReport = (props: Props) => {
   const {userId, date, initialMountainList} = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const baseRefetchSearchQueries = getRefetchSearchQueries(props.userId);
 
@@ -121,7 +116,7 @@ const EditAscentReport = (props: Props) => {
   const actions = (
     <ButtonWrapper>
       <CancelButton onClick={props.closeEditMountainModalModal} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-cancel')}
+        {getString('global-text-value-modal-cancel')}
       </CancelButton>
     </ButtonWrapper>
   );
@@ -137,7 +132,7 @@ const EditAscentReport = (props: Props) => {
         actions={actions}
       >
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       </Modal>
     );

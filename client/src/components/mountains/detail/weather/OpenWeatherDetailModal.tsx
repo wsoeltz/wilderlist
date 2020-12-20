@@ -1,9 +1,6 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../hooks/useFluent';
 import {
   DetailBoxTitle,
   DetailBoxWithMargin,
@@ -65,14 +62,13 @@ const WeatherDetailNWSModal = (props: Props) => {
     rain, snow, wind_gust,
   }, hourly } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const date = new Date(dt * 1000);
   const description = weather[0].description.charAt(0).toUpperCase() + weather[0].description.slice(1);
-  const windGusts = wind_gust !== undefined ? ', ' + getFluentString('weather-forecast-wind-gust', {wind_gust}) : null;
-  const rainVolume = rain !== undefined ? ', ' + getFluentString('weather-forecast-rain-volume', {rain}) : null;
-  const snowVolume = snow !== undefined ? ', ' + getFluentString('weather-forecast-snow-volume', {snow}) : null;
+  const windGusts = wind_gust !== undefined ? ', ' + getString('weather-forecast-wind-gust', {wind_gust}) : null;
+  const rainVolume = rain !== undefined ? ', ' + getString('weather-forecast-rain-volume', {rain}) : null;
+  const snowVolume = snow !== undefined ? ', ' + getString('weather-forecast-snow-volume', {snow}) : null;
 
   const sunrise = formatAMPM(new Date(props.data.sunrise * 1000));
   const sunset = formatAMPM(new Date(props.data.sunset * 1000));
@@ -80,7 +76,7 @@ const WeatherDetailNWSModal = (props: Props) => {
   const actions = (
     <ButtonWrapper>
       <CancelButton onClick={onCancel} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </CancelButton>
     </ButtonWrapper>
   );
@@ -91,28 +87,28 @@ const WeatherDetailNWSModal = (props: Props) => {
       report.weather[0].description.charAt(0).toUpperCase() + report.weather[0].description.slice(1);
 
     const hourlyWindGusts = report.wind_gust !== undefined
-      ? ', ' + getFluentString('weather-forecast-wind-gust', {wind_gust: report.wind_gust}) : null;
+      ? ', ' + getString('weather-forecast-wind-gust', {wind_gust: report.wind_gust}) : null;
     const hourlyRainVolume = report.rain !== undefined
-      ? ', ' + getFluentString('weather-forecast-rain-volume', {rain: report.rain['1h']}) : null;
+      ? ', ' + getString('weather-forecast-rain-volume', {rain: report.rain['1h']}) : null;
     const hourlySnowVolume = report.snow !== undefined
-      ? ', ' + getFluentString('weather-forecast-snow-volume', {snow: report.snow['1h']}) : null;
+      ? ', ' + getString('weather-forecast-snow-volume', {snow: report.snow['1h']}) : null;
     return (
       <React.Fragment key={report.dt}>
         <Detail>
           <strong>{hour}</strong>
         </Detail>
         <Detail>
-          {getFluentString('weather-forecast-temperature')}:{' '}{Math.round(report.temp)}°F
+          {getString('weather-forecast-temperature')}:{' '}{Math.round(report.temp)}°F
         </Detail>
         <Detail>
-          {getFluentString('weather-forecast-feels-like')}{' '}{Math.round(report.feels_like)}°F
+          {getString('weather-forecast-feels-like')}{' '}{Math.round(report.feels_like)}°F
         </Detail>
         <Detail>{hourlyDescription}{hourlyRainVolume}{hourlySnowVolume}</Detail>
         <Detail>
-          {getFluentString('weather-forecast-cloud-coverage', {clouds})}
+          {getString('weather-forecast-cloud-coverage', {clouds})}
         </Detail>
         <Detail>
-          {getFluentString('weather-forecast-wind')} {Math.round(report.wind_speed)} mph
+          {getString('weather-forecast-wind')} {Math.round(report.wind_speed)} mph
           {' '}
           {degToCompass(report.wind_deg)}
           {' '}
@@ -125,7 +121,7 @@ const WeatherDetailNWSModal = (props: Props) => {
 
   const details = hourly.length ? (
     <>
-      <DetailBoxTitle>{getFluentString('weather-forecast-hourly')}</DetailBoxTitle>
+      <DetailBoxTitle>{getString('weather-forecast-hourly')}</DetailBoxTitle>
       <DetailBoxWithMargin>
         {hourSections}
       </DetailBoxWithMargin>
@@ -147,16 +143,16 @@ const WeatherDetailNWSModal = (props: Props) => {
           <div>
             {getDayAsText(date)},
             {' '}
-            {getFluentString('global-formatted-text-date', {
+            {getString('global-formatted-text-date', {
               day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear().toString(),
             })}
             <Temperatures>
-              <TempHigh>{getFluentString('weather-forecast-high')} {Math.round(temp.max)}°F</TempHigh>
+              <TempHigh>{getString('weather-forecast-high')} {Math.round(temp.max)}°F</TempHigh>
               /
-              <TempLow>{getFluentString('weather-forecast-low')} {Math.round(temp.min)}°F</TempLow>
+              <TempLow>{getString('weather-forecast-low')} {Math.round(temp.min)}°F</TempLow>
             </Temperatures>
             <Detail>
-              {getFluentString('weather-forecast-feels-like')}
+              {getString('weather-forecast-feels-like')}
               {' '}{Math.round(feels_like.day)}°F/{Math.round(feels_like.night)}°F
             </Detail>
           </div>
@@ -166,29 +162,29 @@ const WeatherDetailNWSModal = (props: Props) => {
           <DetailBoxWithMargin>
             <Detail>{description}{rainVolume}{snowVolume}</Detail>
             <Detail>
-              {getFluentString('weather-forecast-cloud-coverage', {clouds})}
+              {getString('weather-forecast-cloud-coverage', {clouds})}
             </Detail>
             <Detail>
-              {getFluentString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
+              {getString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
               {' '}
               {windGusts}
             </Detail>
             <Hr />
             <Detail>
-              {getFluentString('weather-forecast-dewpoint', {dew_point})}
+              {getString('weather-forecast-dewpoint', {dew_point})}
             </Detail>
             <Detail>
-              {getFluentString('weather-forecast-humidity', {humidity})}
+              {getString('weather-forecast-humidity', {humidity})}
             </Detail>
             <Detail>
-              {getFluentString('weather-forecast-uvi', {uvi})}
+              {getString('weather-forecast-uvi', {uvi})}
             </Detail>
             <Hr />
             <Detail>
-              {getFluentString('weather-forecast-sunrise', {sunrise})}
+              {getString('weather-forecast-sunrise', {sunrise})}
             </Detail>
             <Detail>
-              {getFluentString('weather-forecast-sunset', {sunset})}
+              {getString('weather-forecast-sunset', {sunset})}
             </Detail>
           </DetailBoxWithMargin>
          {details}

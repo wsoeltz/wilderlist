@@ -1,10 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {listDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
@@ -240,8 +237,7 @@ const PeakListCreatePage = (props: Props) => {
 
   const userId = user._id;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<SuccessResponse, {id: string | null}>(GET_PEAK_LIST,
     {variables: { id: id ? id : null },
@@ -268,7 +264,7 @@ const PeakListCreatePage = (props: Props) => {
   if (peakListPermissions === -1 && user.permissions !== PermissionTypes.admin) {
     peakListForm = (
       <PlaceholderText>
-        {getFluentString('global-text-value-no-permission')}
+        {getString('global-text-value-no-permission')}
       </PlaceholderText>
     );
   } else if (loading === true) {
@@ -277,7 +273,7 @@ const PeakListCreatePage = (props: Props) => {
     console.error(error);
     peakListForm = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -370,7 +366,7 @@ const PeakListCreatePage = (props: Props) => {
     } else if (data.peakList) {
         peakListForm = (
         <PlaceholderText>
-          {getFluentString('global-text-value-no-permission')}
+          {getString('global-text-value-no-permission')}
         </PlaceholderText>
       );
     } else {
@@ -410,11 +406,11 @@ const PeakListCreatePage = (props: Props) => {
       height={'auto'}
       actions={(
         <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
-          {getFluentString('global-text-value-modal-close')}
+          {getString('global-text-value-modal-close')}
         </ButtonSecondary>
         )}
     >
-      <p>{getFluentString('global-error-saving-data')}</p>
+      <p>{getString('global-error-saving-data')}</p>
     </Modal>
   );
 

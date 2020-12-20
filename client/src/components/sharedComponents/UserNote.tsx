@@ -4,13 +4,10 @@ import {
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import {rgba} from 'polished';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   ButtonWarningLow,
   lightBorderColor,
@@ -99,8 +96,7 @@ const UserNote = (props: Props) => {
 
   const user = useContext(UserContext);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
@@ -114,12 +110,12 @@ const UserNote = (props: Props) => {
   } else if (defaultValue === value) {
     buttonText = (
       <small>
-        <em>{getFluentString('global-text-value-all-changes-saved')}</em>
+        <em>{getString('global-text-value-all-changes-saved')}</em>
       </small>
     );
   } else {
     const innerText = isLoading
-      ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save-changes');
+      ? getString('global-text-value-saving') + '...' : getString('global-text-value-save-changes');
     const onClick = () => {
       onSave(value.substring(0, charLimit));
       setIsLoading(true);
@@ -143,7 +139,7 @@ const UserNote = (props: Props) => {
           style={{color: googleBlue}}
         />
         <LoginText>
-          {getFluentString('header-text-login-with-google')}
+          {getString('header-text-login-with-google')}
         </LoginText>
       </LoginButton>
       <LoginButton href='/auth/facebook'>
@@ -152,7 +148,7 @@ const UserNote = (props: Props) => {
           style={{color: facebookBlue}}
         />
         <LoginText>
-          {getFluentString('header-text-login-with-facebook')}
+          {getString('header-text-login-with-facebook')}
         </LoginText>
       </LoginButton>
       <LoginButton href='/auth/reddit'>
@@ -161,7 +157,7 @@ const UserNote = (props: Props) => {
           style={{color: redditRed}}
         />
         <LoginText>
-          {getFluentString('header-text-login-with-reddit')}
+          {getString('header-text-login-with-reddit')}
         </LoginText>
       </LoginButton>
     </ButtonContainer>

@@ -1,11 +1,8 @@
 import { gql, useMutation } from '@apollo/client';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { editPeakListLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -183,8 +180,7 @@ const Header = (props: Props) => {
     completedAscents, comparisonUser, comparisonAscents, isOtherUser,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const queryRefetchArray = props.queryRefetchArray && props.queryRefetchArray.length && user ? [
       ...props.queryRefetchArray,
@@ -226,7 +222,7 @@ const Header = (props: Props) => {
 
   const signUpModal = isSignUpModal === false ? null : (
     <SignUpModal
-      text={getFluentString('global-text-value-modal-sign-up-today', {
+      text={getString('global-text-value-modal-sign-up-today', {
         'list-short-name': shortName,
       })}
       onCancel={closeSignUpModal}
@@ -237,12 +233,12 @@ const Header = (props: Props) => {
     <AreYouSureModal
       onConfirm={confirmRemove}
       onCancel={closeAreYouSureModal}
-      title={getFluentString('global-text-value-are-you-sure-modal')}
-      text={getFluentString('peak-list-detail-text-modal-remove-confirm', {
+      title={getString('global-text-value-are-you-sure-modal')}
+      text={getString('peak-list-detail-text-modal-remove-confirm', {
         'peak-list-name': name + getType(type),
       })}
-      confirmText={getFluentString('global-text-value-modal-confirm')}
-      cancelText={getFluentString('global-text-value-modal-cancel')}
+      confirmText={getString('global-text-value-modal-confirm')}
+      cancelText={getString('global-text-value-modal-cancel')}
     />
   );
 
@@ -259,11 +255,11 @@ const Header = (props: Props) => {
 
   const beginRemoveButton = active === false || !user ? (
     <CompactButtonPrimary onClick={beginList}>
-      {getFluentString('peak-list-detail-text-begin-list')}
+      {getString('peak-list-detail-text-begin-list')}
     </CompactButtonPrimary>
    ) : (
     <CompactButtonSecondary onClick={() => setIsRemoveListModalOpen(true)}>
-      {getFluentString('peak-list-detail-text-remove-list')}
+      {getString('peak-list-detail-text-remove-list')}
     </CompactButtonSecondary>
    ) ;
 
@@ -275,12 +271,12 @@ const Header = (props: Props) => {
           && user.peakListPermissions !== -1)
       || (user && user.permissions === PermissionTypes.admin) ? (
       <CompactGhostButtonLink to={editPeakListLink(peakList.id)}>
-        {getFluentString('global-text-value-edit')}
+        {getString('global-text-value-edit')}
       </CompactGhostButtonLink>
     ) : (
       <CompactGhostButton onClick={() => setIsFlagModalOpen(true)}>
         <BasicIconInText icon={faFlag} />
-        {getFluentString('global-text-value-flag')}
+        {getString('global-text-value-flag')}
       </CompactGhostButton>
     );
   }
@@ -328,14 +324,14 @@ const Header = (props: Props) => {
         <div>
           <strong>{numFriendsCompletedAscents}/{totalRequiredAscents}</strong>
           {' '}
-          {getFluentString('user-profile-compare-completed-by', {
+          {getString('user-profile-compare-completed-by', {
             'user-name': comparisonUser.name,
           })}
         </div>
         <TextRight>
           <strong>{numCompletedAscents}/{totalRequiredAscents}</strong>
           {' '}
-          {getFluentString('user-profile-compare-completed-by', {
+          {getString('user-profile-compare-completed-by', {
             'user-name': user.name,
           })}
         </TextRight>
@@ -343,7 +339,7 @@ const Header = (props: Props) => {
     );
     listCount = (
       <ListInfo>
-        {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
+        {totalRequiredAscents} {getString('peak-list-text-total-ascents')}
       </ListInfo>
     );
   } else if (active === true) {
@@ -351,7 +347,7 @@ const Header = (props: Props) => {
 
     let latestDateText: React.ReactElement<any>;
     if (latestDate !== undefined) {
-      const latestAscentText = getFluentString('peak-list-text-latest-ascent', {
+      const latestAscentText = getString('peak-list-text-latest-ascent', {
         'completed': (numCompletedAscents === totalRequiredAscents).toString(),
         'has-full-date': ( !(isNaN(latestDate.day) || isNaN(latestDate.month)) // incomplete date is false
           || (isNaN(latestDate.day) && isNaN(latestDate.month) && isNaN(latestDate.year)) // NO date is true
@@ -363,7 +359,7 @@ const Header = (props: Props) => {
         </>
       );
     } else {
-      latestDateText = <>{getFluentString('peak-list-text-no-completed-ascent')}</>;
+      latestDateText = <>{getString('peak-list-text-no-completed-ascent')}</>;
     }
     listInfoContent = (
       <>
@@ -381,7 +377,7 @@ const Header = (props: Props) => {
     listCount = (
       <>
         <ListInfo>
-          {`${numCompletedAscents}/${totalRequiredAscents}`} {getFluentString('peak-list-text-total-ascents')}
+          {`${numCompletedAscents}/${totalRequiredAscents}`} {getString('peak-list-text-total-ascents')}
         </ListInfo>
         <ListInfo>
           {latestDateText}
@@ -392,7 +388,7 @@ const Header = (props: Props) => {
     listInfoContent = null;
     listCount = (
       <ListInfo>
-        {totalRequiredAscents} {getFluentString('peak-list-text-total-ascents')}
+        {totalRequiredAscents} {getString('peak-list-text-total-ascents')}
       </ListInfo>
     );
   }

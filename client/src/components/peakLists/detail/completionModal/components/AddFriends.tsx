@@ -1,10 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import React, {useState} from 'react';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -36,8 +33,7 @@ const AddFriends = (props: Props) => {
     userId,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
     variables: { userId },
@@ -105,14 +101,14 @@ const AddFriends = (props: Props) => {
     </div>
   ) : <>{friendsList}</>;
   const addBtnText = emailList.length || userList.length
-    ? getFluentString('mountain-completion-modal-add-remove-people')
-    : getFluentString('mountain-completion-modal-add-people');
+    ? getString('mountain-completion-modal-add-remove-people')
+    : getString('mountain-completion-modal-add-people');
 
   return (
     <>
       <DetailBoxTitle>
         <BasicIconInText icon={faUserFriends} />
-        {getFluentString('mountain-completion-modal-text-people-hiked-with')}
+        {getString('mountain-completion-modal-text-people-hiked-with')}
       </DetailBoxTitle>
       <DetailBoxWithMargin>
       {friendAndEmailList}

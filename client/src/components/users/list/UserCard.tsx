@@ -1,12 +1,9 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { comparePeakListLink, preventNavigation } from '../../../routing/Utils';
 import {
   ButtonPrimary,
@@ -252,8 +249,7 @@ interface Props {
 const UserCard = (props: Props) => {
   const { user, friendStatus, currentUserId} = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} =
     useQuery<PeakListsForUserResponse, PeakListsForUserVariables>(GET_PEAK_LIST_DATA_FOR_USER, {
@@ -323,13 +319,13 @@ const UserCard = (props: Props) => {
           listShortNames =
             listShortNames + ' & ' +
             (completedLists.length - numListsToShow) + ' ' +
-            getFluentString('global-text-value-more');
+            getString('global-text-value-more');
         }
       }
       completedListsElement = (
         <SubtitleSmall>
           <TextTitle>
-            {getFluentString('user-card-completed')}: </TextTitle>
+            {getString('user-card-completed')}: </TextTitle>
           {listShortNames}
         </SubtitleSmall>
       );
@@ -337,8 +333,8 @@ const UserCard = (props: Props) => {
     if (listsInProgress.length === 0) {
       listsInProgressElement = (
         <SubtitleSmall>
-          <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
-          {getFluentString('user-card-not-currently-working-on')}
+          <TextTitle>{getString('user-card-working-on')}: </TextTitle>
+          {getString('user-card-not-currently-working-on')}
         </SubtitleSmall>
       );
     } else {
@@ -362,12 +358,12 @@ const UserCard = (props: Props) => {
           listShortNames =
             listShortNames + ' & ' +
             (listsInProgress.length - numListsToShow) + ' ' +
-            getFluentString('global-text-value-more');
+            getString('global-text-value-more');
         }
       }
       listsInProgressElement = (
         <SubtitleSmall>
-          <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
+          <TextTitle>{getString('user-card-working-on')}: </TextTitle>
           {listShortNames}
         </SubtitleSmall>
       );
@@ -387,13 +383,13 @@ const UserCard = (props: Props) => {
         preposition = Preposition.on;
       }
 
-      ascentText = getFluentString('user-profile-latest-ascents', {
+      ascentText = getString('user-profile-latest-ascents', {
         'mountain-name': mountain.name,
         'preposition': preposition,
         'date': formatDate(date),
       });
     } else {
-      ascentText = getFluentString('user-profile-no-recent-ascents');
+      ascentText = getString('user-profile-no-recent-ascents');
     }
 
   } else {
@@ -415,7 +411,7 @@ const UserCard = (props: Props) => {
         </TextContainer>
         <ButtonContainer>
           <ButtonPrimary onClick={sendFriendRequest}>
-            {getFluentString('user-profile-requests-add-friend')}
+            {getString('user-profile-requests-add-friend')}
           </ButtonPrimary>
         </ButtonContainer>
       </>
@@ -443,14 +439,14 @@ const UserCard = (props: Props) => {
             {user.name}
           </Title>
           <Subtitle>
-            {getFluentString('user-profile-requests-pending-request')}
+            {getString('user-profile-requests-pending-request')}
           </Subtitle>
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
         <ButtonContainer>
           <GhostButton onClick={removeFriend}>
-            {getFluentString('user-profile-requests-cancel-request')}
+            {getString('user-profile-requests-cancel-request')}
           </GhostButton>
         </ButtonContainer>
       </>
@@ -463,7 +459,7 @@ const UserCard = (props: Props) => {
             {user.name}
           </Title>
           <Subtitle>
-            {getFluentString('user-profile-sent-you-a-friend-request', {
+            {getString('user-profile-sent-you-a-friend-request', {
               name: user.name,
             })}
           </Subtitle>
@@ -472,10 +468,10 @@ const UserCard = (props: Props) => {
         </TextContainer>
         <ButtonContainer>
           <DeclineButton onClick={removeFriend}>
-            {getFluentString('user-profile-requests-decline-request')}
+            {getString('user-profile-requests-decline-request')}
           </DeclineButton>
           <ButtonPrimary onClick={acceptFriendRequest}>
-            {getFluentString('user-profile-requests-accept-request')}
+            {getString('user-profile-requests-accept-request')}
           </ButtonPrimary>
         </ButtonContainer>
       </>

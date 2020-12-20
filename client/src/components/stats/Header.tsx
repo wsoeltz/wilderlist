@@ -1,10 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   ButtonSecondary,
   SectionTitleH3,
@@ -37,8 +34,7 @@ const Header = (props: Props) => {
 
   const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const addAscentModal =  ascentModalOpen ? (
     <NewAscentReport
@@ -53,16 +49,16 @@ const Header = (props: Props) => {
   return (
     <Root>
       <SectionTitleH3>
-        {getFluentString('stats-mountain-panel')}
+        {getString('stats-mountain-panel')}
         <Subtitle>
-          {getFluentString('stats-total-mountains', {
+          {getString('stats-total-mountains', {
             total: mountainCount,
           })}
         </Subtitle>
       </SectionTitleH3>
       <div>
         <ButtonSecondary onClick={() => setAscentModalOpen(true)}>
-          <FontAwesomeIcon icon='calendar-alt' /> {getFluentString('map-add-ascent')}
+          <FontAwesomeIcon icon='calendar-alt' /> {getString('map-add-ascent')}
         </ButtonSecondary>
       </div>
       {addAscentModal}

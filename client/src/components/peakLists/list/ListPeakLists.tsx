@@ -1,11 +1,8 @@
 import {faTrophy} from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { NoResults } from '../../../styling/styleUtils';
 import {
   BasicIconInText,
@@ -114,8 +111,7 @@ const ListPeakLists = (props: Props) => {
     profileId, setActionDisabled, queryRefetchArray,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   if (props.peakListData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
@@ -186,7 +182,7 @@ const ListPeakLists = (props: Props) => {
       <>
         <TrophyTitle>
           <BasicIconInText icon={faTrophy} />
-          {getFluentString('user-profile-lists-completed')} ({trophies.length})
+          {getString('user-profile-lists-completed')} ({trophies.length})
         </TrophyTitle>
         <TrophyContainer>
           {trophies}
@@ -197,7 +193,7 @@ const ListPeakLists = (props: Props) => {
     const inProgressTitle = showTrophies === true ? (
       <>
         <SectionTitleH3>
-          {getFluentString('user-profile-lists-in-progress')}
+          {getString('user-profile-lists-in-progress')}
         </SectionTitleH3>
       </>
     ) : null;

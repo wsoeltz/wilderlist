@@ -1,8 +1,5 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useEffect, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import React, {useEffect, useState} from 'react';
+import useFluent from '../../../hooks/useFluent';
 import getWeather from '../../../utilities/getWeather';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import NWSForecast, {NWSForecastDatum} from './weather/NWSForecast';
@@ -35,8 +32,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   const [forecast, setForecast] = useState<Forecast | null>(null);
   const [error, setError] = useState<any | null>(null);
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   useEffect(() => {
     const getWeatherData = async () => {
@@ -57,16 +53,16 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
 
   let output: React.ReactElement<any> | null;
   if (error !== null) {
-    output = <>{getFluentString('weather-forecast-network-error')}</>;
+    output = <>{getString('weather-forecast-network-error')}</>;
   } else if (forecast === null) {
     output = (
       <LoadingContainer>
         <LoadingSpinner
           message={{
-            basic: getFluentString('weather-loading-report'),
-            medium: getFluentString('weather-loading-report'),
-            long: getFluentString('weather-loading-report'),
-            extraLong: getFluentString('weather-loading-report'),
+            basic: getString('weather-loading-report'),
+            medium: getString('weather-loading-report'),
+            long: getString('weather-loading-report'),
+            extraLong: getString('weather-loading-report'),
           }}
         />
       </LoadingContainer>
@@ -85,7 +81,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
         />
       );
     } else {
-      output = <>{getFluentString('weather-forecast-network-error')}</>;
+      output = <>{getString('weather-forecast-network-error')}</>;
     }
   } else {
     output = null;

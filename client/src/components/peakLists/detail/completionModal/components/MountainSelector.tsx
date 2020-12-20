@@ -1,11 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../../hooks/useFluent';
 import usePrevious from '../../../../../hooks/usePrevious';
 import {
   BasicIconInText,
@@ -169,8 +166,7 @@ const MountainSelector = (props: Props) => {
     initialSelectedMountains, closeAndAddMountains,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [selectedMountains, setSelectedMountains] = useState<MountainDatum[]>(initialSelectedMountains);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -257,7 +253,7 @@ const MountainSelector = (props: Props) => {
           <p style={{textAlign: 'center'}}>
             <small
               dangerouslySetInnerHTML={{
-                __html: getFluentString('global-text-value-no-results-found-for-term', {term: searchQuery}),
+                __html: getString('global-text-value-no-results-found-for-term', {term: searchQuery}),
               }} />
           </p>
         );
@@ -297,7 +293,7 @@ const MountainSelector = (props: Props) => {
         <SelectedMountainsRoot>
           <DetailBoxTitle>
             <BasicIconInText icon={faMountain} />
-            {getFluentString('trip-report-add-additional-mtns-title')}
+            {getString('trip-report-add-additional-mtns-title')}
           </DetailBoxTitle>
           <SelectedMountainsDetails>
             {selectedMountainList}
@@ -305,7 +301,7 @@ const MountainSelector = (props: Props) => {
         </SelectedMountainsRoot>
         <SearchPanel>
           <StandardSearch
-            placeholder={getFluentString('global-text-value-search-mountains')}
+            placeholder={getString('global-text-value-search-mountains')}
             setSearchQuery={setSearchQuery}
             focusOnMount={false}
             initialQuery={searchQuery}

@@ -1,13 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
 import React, {useContext, useState} from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import { Routes } from '../../routing/routes';
 import { searchListDetailLink } from '../../routing/Utils';
 import {
@@ -97,8 +94,7 @@ const Dashboard = (props: Props) => {
     history.push(url);
   };
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const { windowWidth, usersLocation } = useContext(AppContext);
 
@@ -122,7 +118,7 @@ const Dashboard = (props: Props) => {
     console.error(listsError);
     peakListsList = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>);
   } else if (listsData !== undefined) {
     const { user } = listsData;
@@ -133,16 +129,16 @@ const Dashboard = (props: Props) => {
       peakListsList = (
         <div>
           <SectionTitleH3>{
-            getFluentString('user-profile-lists-in-progress')}
+            getString('user-profile-lists-in-progress')}
           </SectionTitleH3>
           <p>
-            {getFluentString('dashboard-empty-state-no-active-lists-text')}
+            {getString('dashboard-empty-state-no-active-lists-text')}
           </p>
           <p style={{textAlign: 'center'}}>
             <PlaceholderButton
               to={searchListDetailLink('search')}
             >
-              {getFluentString('dashboard-empty-state-no-active-lists-button')}
+              {getString('dashboard-empty-state-no-active-lists-button')}
             </PlaceholderButton>
           </p>
           {suggestedLists}
@@ -161,7 +157,6 @@ const Dashboard = (props: Props) => {
             profileId={undefined}
             noResultsText={''}
             showTrophies={true}
-            dashboardView={true}
             queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
           />
           {suggestedLists}
@@ -171,7 +166,7 @@ const Dashboard = (props: Props) => {
   } else {
     peakListsList = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }
@@ -179,7 +174,7 @@ const Dashboard = (props: Props) => {
   const addAscentButton = windowWidth < mobileSize ? (
     <AscentButtonRoot>
       <ButtonSecondary onClick={() => setAscentModalOpen(true)}>
-        <FontAwesomeIcon icon='calendar-alt' /> {getFluentString('map-add-ascent')}
+        <FontAwesomeIcon icon='calendar-alt' /> {getString('map-add-ascent')}
       </ButtonSecondary>
     </AscentButtonRoot>
   ) : null;
@@ -213,7 +208,7 @@ const Dashboard = (props: Props) => {
       <ContentHeader>
         <BackButton
           onClick={() => history.push(Routes.Dashboard)}
-          text={getFluentString('dashboard-back-to-dashboard')}
+          text={getString('dashboard-back-to-dashboard')}
         />
       </ContentHeader>
     ) : null;
@@ -221,12 +216,12 @@ const Dashboard = (props: Props) => {
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-dashboard-default-title')}</title>
+        <title>{getString('meta-data-dashboard-default-title')}</title>
       </Helmet>
       <ContentLeftLarge>
         <SearchRoot>
           <StandardSearch
-            placeholder={getFluentString('global-text-value-search-hiking-lists')}
+            placeholder={getString('global-text-value-search-hiking-lists')}
             setSearchQuery={searchPeakLists}
             focusOnMount={false}
             initialQuery={''}

@@ -1,11 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ContentBody,
   ContentFull,
@@ -173,8 +170,7 @@ interface Props {
 }
 
 const Settings = ({userId}: Props) => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [emailValue, setEmailValue] = useState<string>('');
   const [editEmail, setEditEmail] = useState<boolean>(false);
@@ -244,7 +240,7 @@ const Settings = ({userId}: Props) => {
           <InputButton
             onClick={onInputClick}
           >
-            {getFluentString(buttonText)}
+            {getString(buttonText)}
           </InputButton>
         </EditInputContainer>
       );
@@ -267,19 +263,19 @@ const Settings = ({userId}: Props) => {
       <>
         <SettingsContainer>
           <div>
-            <InputTitle>{getFluentString('global-text-value-profile-picture')}</InputTitle>
+            <InputTitle>{getString('global-text-value-profile-picture')}</InputTitle>
             <ProfileImg src={profilePictureUrl} />
           </div>
           <div>
             <Section>
-              <InputTitle>{getFluentString('global-text-value-name')}</InputTitle>
+              <InputTitle>{getString('global-text-value-name')}</InputTitle>
               <DisabledInput value={name} readOnly={true} />
-              <InputTitle>{getFluentString('global-text-value-modal-email')}</InputTitle>
+              <InputTitle>{getString('global-text-value-modal-email')}</InputTitle>
               {email}
-              <p dangerouslySetInnerHTML={{__html: getFluentString(helpTextFluentString)}} />
+              <p dangerouslySetInnerHTML={{__html: getString(helpTextFluentString)}} />
             </Section>
             <Section>
-              <h3>{getFluentString('settings-page-privacy-settings')}</h3>
+              <h3>{getString('settings-page-privacy-settings')}</h3>
               <PrivacyToggleItem>
                 <PrivacyToggleBox
                   type='checkbox'
@@ -290,7 +286,7 @@ const Settings = ({userId}: Props) => {
                 <PrivacyToggleLabel
                   htmlFor={'display-user-email-privacy'}
                 >
-                  {getFluentString('settings-page-display-email')}
+                  {getString('settings-page-display-email')}
                 </PrivacyToggleLabel>
               </PrivacyToggleItem>
               <PrivacyToggleItem>
@@ -303,7 +299,7 @@ const Settings = ({userId}: Props) => {
                 <PrivacyToggleLabel
                   htmlFor={'display-user-profile-picture-privacy'}
                 >
-                  {getFluentString('settings-page-display-profile-picture')}
+                  {getString('settings-page-display-profile-picture')}
                 </PrivacyToggleLabel>
               </PrivacyToggleItem>
               <PrivacyToggleItem>
@@ -320,12 +316,12 @@ const Settings = ({userId}: Props) => {
                 <PrivacyToggleLabel
                   htmlFor={'display-user-profile-in-search'}
                 >
-                  {getFluentString('settings-page-display-profile-in-search')}
+                  {getString('settings-page-display-profile-in-search')}
                 </PrivacyToggleLabel>
               </PrivacyToggleItem>
             </Section>
             <Section>
-              <h3>{getFluentString('settings-page-notification-settings')}</h3>
+              <h3>{getString('settings-page-notification-settings')}</h3>
               <PrivacyToggleItem>
                 <PrivacyToggleBox
                   type='checkbox'
@@ -340,13 +336,13 @@ const Settings = ({userId}: Props) => {
                 <PrivacyToggleLabel
                   htmlFor={'disable-email-notifications'}
                 >
-                  {getFluentString('settings-page-notification-settings-email')}
+                  {getString('settings-page-notification-settings-email')}
                 </PrivacyToggleLabel>
               </PrivacyToggleItem>
             </Section>
             <Section>
-              <h3>{getFluentString('settings-page-delete-account')}</h3>
-              <p dangerouslySetInnerHTML={{__html: getFluentString('settings-page-delete-account-text')}} />
+              <h3>{getString('settings-page-delete-account')}</h3>
+              <p dangerouslySetInnerHTML={{__html: getString('settings-page-delete-account-text')}} />
             </Section>
           </div>
         </SettingsContainer>
@@ -358,11 +354,11 @@ const Settings = ({userId}: Props) => {
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-settings-default-title')}</title>
+        <title>{getString('meta-data-settings-default-title')}</title>
       </Helmet>
       <ContentFull>
         <ContentBody>
-          <h1>{getFluentString('header-text-menu-settings')}</h1>
+          <h1>{getString('header-text-menu-settings')}</h1>
           {output}
         </ContentBody>
       </ContentFull>

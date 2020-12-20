@@ -1,13 +1,10 @@
 import { useMutation } from '@apollo/client';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import uniq from 'lodash/uniq';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -218,8 +215,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     setCompletionDay('');
   };
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const validateAndAddMountainCompletion = async () => {
     setSaving(true);
@@ -488,13 +484,13 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const saveButtonText =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
-      ? getFluentString('global-text-value-save')
-      : getFluentString('global-text-value-modal-mark-complete');
+      ? getString('global-text-value-save')
+      : getString('global-text-value-modal-mark-complete');
   const actions = (
     <ButtonWrapper>
       {deleteAscentButton}
       <CancelButton onClick={closeEditMountainModalModal} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-cancel')}
+        {getString('global-text-value-modal-cancel')}
       </CancelButton>
       <ButtonPrimary
         onClick={() => validateAndAddMountainCompletion()}

@@ -1,10 +1,7 @@
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React, {forwardRef, RefObject, useContext} from 'react';
+import React, {forwardRef, RefObject} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   BasicIconInText,
   CheckboxListCheckbox,
@@ -84,8 +81,7 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
 
   const {tripNotesEl, tripLinkEl} = ref as any as MultipleRefs;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const updateCondition = (key: keyof Conditions) => setConditions({...conditions, [key]: !conditions[key]});
 
@@ -103,37 +99,37 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
           checked={conditions[key] ? true : false}
           onChange={() => updateCondition(key)}
         />
-        {getFluentString('trip-report-condition-name', {key})}
+        {getString('trip-report-condition-name', {key})}
       </CheckboxListItem>
     );
   });
 
   const conditionsList = dateType === DateType.full ? (
     <>
-      <SectionTitle>{getFluentString('trip-report-conditions-title')}</SectionTitle>
+      <SectionTitle>{getString('trip-report-conditions-title')}</SectionTitle>
       <CheckboxList style={{maxHeight: '100%'}}>
         {conditionsListItems}
       </CheckboxList>
     </>
   ) : (
     <small>
-      {getFluentString('trip-report-invalid-date-format')}
+      {getString('trip-report-invalid-date-format')}
     </small>
   );
 
   const reportContent = dateType === DateType.full ? (
     <ReportContent>
-      <SectionTitle>{getFluentString('trip-report-notes-title')}</SectionTitle>
+      <SectionTitle>{getString('trip-report-notes-title')}</SectionTitle>
       <ReportTextarea
-        placeholder={getFluentString('trip-report-notes-placeholder')}
+        placeholder={getString('trip-report-notes-placeholder')}
         defaultValue={initialTripNotes}
         ref={tripNotesEl}
         maxLength={charLimit}
       />
-      <SectionTitle>{getFluentString('trip-report-link-title')}</SectionTitle>
+      <SectionTitle>{getString('trip-report-link-title')}</SectionTitle>
       <Input
         type='text'
-        placeholder={getFluentString('trip-report-link-placeholder')}
+        placeholder={getString('trip-report-link-placeholder')}
         defaultValue={initialLink}
         ref={tripLinkEl}
         maxLength={1000}
@@ -146,9 +142,9 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
     <>
       <DetailBoxTitle>
         <BasicIconInText icon={faEdit} />
-        {getFluentString('trip-report-title')}
+        {getString('trip-report-title')}
         <Tooltip
-          explanation={getFluentString('trip-report-tooltip')}
+          explanation={getString('trip-report-tooltip')}
         />
       </DetailBoxTitle>
       <DetailBoxWithMargin>

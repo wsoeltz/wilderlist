@@ -1,11 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import { CSVLink } from 'react-csv';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {
   ButtonSecondary,
 } from '../../../styling/styleUtils';
@@ -69,13 +66,12 @@ interface Props {
 const ExportAscentsModal = (props: Props) => {
   const { onCancel, mountains, listShortName, type, specialExport } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const actions = (
     <ButtonWrapper>
       <ButtonSecondary onClick={onCancel} mobileExtend={true}>
-        {getFluentString('global-text-value-modal-close')}
+        {getString('global-text-value-modal-close')}
       </ButtonSecondary>
     </ButtonWrapper>
   );
@@ -209,7 +205,7 @@ const ExportAscentsModal = (props: Props) => {
   const specialExportButton = specialExport === SpecialExport.nh48grid ? (
     <DownloadLink href='/download/grid-application.xlsx'>
       <DownloadIcon icon={'file-excel'} />
-      {getFluentString('download-official-grid-xlsx-button')}
+      {getString('download-official-grid-xlsx-button')}
     </DownloadLink>
   ) : null;
 
@@ -220,7 +216,7 @@ const ExportAscentsModal = (props: Props) => {
       height={'auto'}
       actions={actions}
     >
-      <h2 style={{textAlign: 'center'}}>{getFluentString('mountain-table-export-button')}</h2>
+      <h2 style={{textAlign: 'center'}}>{getString('mountain-table-export-button')}</h2>
       <DownloadButtonsWrapper>
         <DownloadCSVLink
           headers={csvHeaders}
@@ -228,7 +224,7 @@ const ExportAscentsModal = (props: Props) => {
           filename={fileName}
         >
           <DownloadIcon icon={'file-csv'} />
-          {getFluentString('download-csv-button')}
+          {getString('download-csv-button')}
         </DownloadCSVLink>
         {specialExportButton}
       </DownloadButtonsWrapper>

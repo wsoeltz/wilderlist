@@ -1,8 +1,5 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import React, {useState} from 'react';
+import useFluent from '../../../hooks/useFluent';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   FilterBar,
@@ -23,14 +20,12 @@ interface Props {
   user: UserDatum;
   me: UserDatum;
   mountains: MountainDatumLite[];
-  peakListId: string;
 }
 
 const ComparisonTable = (props: Props) => {
-  const { user, me, mountains, peakListId } = props;
+  const { user, me, mountains } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -48,8 +43,6 @@ const ComparisonTable = (props: Props) => {
       userMountains={userAscentGoals}
       myMountains={myAscentGoals}
       mountain={mountain}
-      peakListId={peakListId}
-      friendId={user.id}
       index={index}
     />
   ));
@@ -71,7 +64,7 @@ const ComparisonTable = (props: Props) => {
       <div style={{minHeight: mountains.length * 32}}>
         <Root>
           <MountainColumnTitleName>
-            {getFluentString('global-text-value-mountain')}
+            {getString('global-text-value-mountain')}
           </MountainColumnTitleName>
           <TitleCell style={{gridColumn: gridColumns.friendColumn}}>{user.name}</TitleCell>
           <TitleCell style={{gridColumn: gridColumns.meColumn}}>{me.name}</TitleCell>

@@ -1,9 +1,6 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
@@ -90,8 +87,7 @@ const PeakListCard = (props: Props) => {
     numCompletedAscents, queryRefetchArray,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
 
@@ -132,7 +128,7 @@ const PeakListCard = (props: Props) => {
           {percentComplete}%
         </Value>
         <SubtleText style={{color: percentComplete === 100 ? color : undefined}}>
-          {getFluentString('global-text-value-complete')}
+          {getString('global-text-value-complete')}
         </SubtleText>
       </CompletedValue>
     );

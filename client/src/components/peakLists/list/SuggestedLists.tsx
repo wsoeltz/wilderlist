@@ -1,10 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import {LocationDatum} from '../../../hooks/useUsersLocation';
 import {
   SectionTitleH3,
@@ -71,8 +68,7 @@ interface Props {
 const SuggestedLists = (props: Props) => {
   const {userId, usersLocationData} = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const selectionArray = getSelectionArray(usersLocationData.stateId);
 
@@ -127,18 +123,17 @@ const SuggestedLists = (props: Props) => {
       } else {
         list = (
           <Background>
-            <SectionTitleH3>{getFluentString('dashboard-suggested-lists')}</SectionTitleH3>
+            <SectionTitleH3>{getString('dashboard-suggested-lists')}</SectionTitleH3>
             <ListPeakLists
               viewMode={ViewMode.Card}
               peakListData={peakListData}
               userListData={[]}
               listAction={beginList}
-              actionText={getFluentString('peak-list-detail-text-begin-list')}
+              actionText={getString('peak-list-detail-text-begin-list')}
               profileId={undefined}
               noResultsText={''}
               showTrophies={false}
               queryRefetchArray={[{query: SEARCH_PEAK_LISTS, variables}]}
-              dashboardView={true}
             />
           </Background>
         );

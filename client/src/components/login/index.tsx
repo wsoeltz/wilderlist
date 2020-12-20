@@ -1,11 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import { Routes } from '../../routing/routes';
 import {
   searchListDetailLink,
@@ -156,12 +153,12 @@ const CopyrightText = styled.div`
 
 const LoginPage = () => {
   const [isSignUpModalOpen, setSignUpModalOpen] = useState<boolean>(false);
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const getString = useFluent();
 
   const signUpModal = isSignUpModalOpen === false ? null : (
     <SignUpModal
-      text={getFluentString('global-text-value-modal-sign-up-today', {
+      text={getString('global-text-value-modal-sign-up-today', {
         'list-short-name': 'Wilderlist',
       })}
       onCancel={() => setSignUpModalOpen(false)}
@@ -172,32 +169,32 @@ const LoginPage = () => {
     <Root>
       <ContentRoot>
         <TitleContainer>
-          {getFluentString('login-page-plan-your-trip-title')}
+          {getString('login-page-plan-your-trip-title')}
         </TitleContainer>
         <TextContainer>
-          {getFluentString('login-page-plan-your-trip-desc')}
+          {getString('login-page-plan-your-trip-desc')}
         </TextContainer>
         <NavContainer>
           <NavButton to={searchListDetailLink('search')}>
-            {getFluentString('global-text-value-search-hiking-lists')}
+            {getString('global-text-value-search-hiking-lists')}
           </NavButton>
           <NavButton to={searchMountainsDetailLink('search')}>
-            {getFluentString('global-text-value-search-mountains')}
+            {getString('global-text-value-search-mountains')}
           </NavButton>
         </NavContainer>
         <TrailSign icon='map-signs' />
         <TitleContainer>
-          {getFluentString('login-page-track-your-adventure-title')}
+          {getString('login-page-track-your-adventure-title')}
         </TitleContainer>
         <TextList>
-          <ListItem>{getFluentString('login-page-track-your-adventure-li-1')}</ListItem>
-          <ListItem>{getFluentString('login-page-track-your-adventure-li-2')}</ListItem>
-          <ListItem>{getFluentString('login-page-track-your-adventure-li-3')}</ListItem>
-          <ListItem>{getFluentString('login-page-track-your-adventure-li-4')}</ListItem>
-          <ListItem>{getFluentString('login-page-track-your-adventure-li-5')}</ListItem>
+          <ListItem>{getString('login-page-track-your-adventure-li-1')}</ListItem>
+          <ListItem>{getString('login-page-track-your-adventure-li-2')}</ListItem>
+          <ListItem>{getString('login-page-track-your-adventure-li-3')}</ListItem>
+          <ListItem>{getString('login-page-track-your-adventure-li-4')}</ListItem>
+          <ListItem>{getString('login-page-track-your-adventure-li-5')}</ListItem>
         </TextList>
         <SignUpButton onClick={() => setSignUpModalOpen(true)}>
-          {getFluentString('login-page-sign-up-for-free')}
+          {getString('login-page-sign-up-for-free')}
         </SignUpButton>
       </ContentRoot>
       <DisclaimerLinks>
@@ -205,10 +202,10 @@ const LoginPage = () => {
           Copyright © Wilderlist {new Date().getFullYear()}
         </CopyrightText>
         <WhiteLink to={Routes.TermsOfUse}>
-          {getFluentString('header-text-menu-terms-of-use')}
+          {getString('header-text-menu-terms-of-use')}
         </WhiteLink>
         <WhiteLink to={Routes.PrivacyPolicy}>
-          {getFluentString('header-text-menu-privacy-policy')}
+          {getString('header-text-menu-privacy-policy')}
         </WhiteLink>
       </DisclaimerLinks>
       <PlaceholderBackground />

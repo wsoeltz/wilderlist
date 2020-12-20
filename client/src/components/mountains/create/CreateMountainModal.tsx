@@ -1,9 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import React, {useContext} from 'react';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
 import { UserContext } from '../../App';
@@ -46,8 +43,8 @@ export interface Props {
 const CreateMountainModal = (props: Props) => {
   const { onCancel, onSuccess } = props;
   const user = useContext(UserContext);
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse>(GET_STATES);
   const [addMountain] = useMutation<MountainSuccessResponse, AddMountainVariables>(ADD_MOUNTAIN);
@@ -56,13 +53,13 @@ const CreateMountainModal = (props: Props) => {
   if (!user) {
     modalContent = (
       <PlaceholderText>
-        {getFluentString('global-text-value-no-permission')}
+        {getString('global-text-value-no-permission')}
       </PlaceholderText>
     );
   } else if (user.mountainPermissions === -1) {
     modalContent = (
       <PlaceholderText>
-        {getFluentString('global-text-value-no-permission')}
+        {getString('global-text-value-no-permission')}
       </PlaceholderText>
     );
   } else if (loading === true) {
@@ -71,7 +68,7 @@ const CreateMountainModal = (props: Props) => {
     console.error(error);
     modalContent = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {

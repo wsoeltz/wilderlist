@@ -1,15 +1,14 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
 import React, {useContext, useState} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
-  AppLocalizationAndBundleContext,
   FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
@@ -270,8 +269,7 @@ interface Props {
 const PeakListDetail = (props: Props) => {
   const { userId, id, mountainId, queryRefetchArray, setOwnMetaData } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const me = useContext(UserContext);
   const isOtherUser = (me && userId) && (me._id !== userId) ? true : false;
@@ -294,7 +292,7 @@ const PeakListDetail = (props: Props) => {
     console.error(error);
     header =  (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
     body = null;
@@ -303,7 +301,7 @@ const PeakListDetail = (props: Props) => {
     if (!peakList) {
       return (
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
@@ -322,7 +320,7 @@ const PeakListDetail = (props: Props) => {
         const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
         paragraphText = (
           <IntroText
-            getFluentString={getFluentString}
+            getString={getString}
             listName={peakList.name}
             numberOfPeaks={requiredMountains.length}
             isStateOrRegion={isStateOrRegion}
@@ -337,7 +335,7 @@ const PeakListDetail = (props: Props) => {
       } else {
         paragraphText = (
           <p>
-            {getFluentString('peak-list-detail-list-overview-empty', {'list-name': peakList.name})}
+            {getString('peak-list-detail-list-overview-empty', {'list-name': peakList.name})}
           </p>
         );
       }
@@ -360,14 +358,14 @@ const PeakListDetail = (props: Props) => {
               key={'grid-trigger-modal-for-exports'}
               onClick={() => setIsExportModalOpen(true)}
             >
-              <LinkButton>{getFluentString('peak-list-export-grid-special-link')}</LinkButton>
+              <LinkButton>{getString('peak-list-export-grid-special-link')}</LinkButton>
             </ResourceItem>,
           );
         }
         resourcesList = resourcesArray.length ? (
           <>
             <SectionTitle>
-              {getFluentString('global-text-value-external-resources')}
+              {getString('global-text-value-external-resources')}
             </SectionTitle>
             <ResourceList>
               {resourcesArray}
@@ -397,19 +395,19 @@ const PeakListDetail = (props: Props) => {
       const friendHeader = isOtherUser === true && user !== null ? (
          <FriendHeader>
           <Text>
-            {getFluentString('peak-list-detail-friend-viewing-list')}
+            {getString('peak-list-detail-friend-viewing-list')}
             {' '}
             <Link to={userProfileLink(user.id)}>{user.name}</Link>
           </Text>
           <ButtonPrimaryLinkSmall to={listDetailLink(peakList.id)}>
-            {getFluentString('peak-list-detail-friend-view-your-progress-button')}
+            {getString('peak-list-detail-friend-view-your-progress-button')}
           </ButtonPrimaryLinkSmall>
          </FriendHeader>
        ) : null;
 
       const peakListNote = user && user.peakListNote ? user.peakListNote : null;
       const defaultNoteText = peakListNote && peakListNote.text ? peakListNote.text : '';
-      const notesPlaceholderText = getFluentString('user-notes-placeholder', {
+      const notesPlaceholderText = getString('user-notes-placeholder', {
         name: peakList.name + getType(type),
       });
 
@@ -424,11 +422,11 @@ const PeakListDetail = (props: Props) => {
       };
 
       const optionalMountainsText = optionalPeaksDescription && optionalPeaksDescription.length
-        ? optionalPeaksDescription : getFluentString('peak-list-detail-text-optional-mountains-desc');
+        ? optionalPeaksDescription : getString('peak-list-detail-text-optional-mountains-desc');
 
       const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
         <>
-          <h2>{getFluentString('peak-list-detail-text-optional-mountains')}</h2>
+          <h2>{getString('peak-list-detail-text-optional-mountains')}</h2>
           <PreFormattedParagraph>{optionalMountainsText}</PreFormattedParagraph>
           <MountainTable
             user={user}
@@ -462,7 +460,7 @@ const PeakListDetail = (props: Props) => {
         areaText = '';
       }
 
-      const metaDescription = getFluentString('meta-data-peak-list-detail-description', {
+      const metaDescription = getString('meta-data-peak-list-detail-description', {
         'list-name': peakList && peakList.name ? peakList.name : '',
         'type': peakList.type,
         'num-mountains': peakList && peakList.mountains ? peakList.mountains.length : 0,
@@ -472,7 +470,7 @@ const PeakListDetail = (props: Props) => {
 
       const metaData = setOwnMetaData === true ? (
         <Helmet>
-          <title>{getFluentString('meta-data-detail-default-title', {
+          <title>{getString('meta-data-detail-default-title', {
             title, type: peakList.type,
           })}</title>
           <meta
@@ -503,7 +501,7 @@ const PeakListDetail = (props: Props) => {
           />
           <DetailBoxTitle>
             <BasicIconInText icon={faMapMarkedAlt} />
-            {getFluentString('map-list-title', {'short-name': peakList.name})}
+            {getString('map-list-title', {'short-name': peakList.name})}
           </DetailBoxTitle>
         </>
       );
@@ -513,7 +511,7 @@ const PeakListDetail = (props: Props) => {
           <Block>
             <DetailBoxTitle>
               <BasicIconInText icon={faAlignLeft} />
-              {getFluentString('global-text-value-description')}
+              {getString('global-text-value-description')}
             </DetailBoxTitle>
             <DetailBox>
               <PreFormattedDiv>
@@ -524,10 +522,10 @@ const PeakListDetail = (props: Props) => {
           </Block>
           <DetailBoxTitle>
             <BasicIconInText icon={faEdit} />
-            {getFluentString('user-notes-title')}
-            <small style={{marginLeft: '0.4rem'}}>({getFluentString('global-text-value-private')})</small>
+            {getString('user-notes-title')}
+            <small style={{marginLeft: '0.4rem'}}>({getString('global-text-value-private')})</small>
             <Tooltip
-              explanation={getFluentString('user-notes-tooltip')}
+              explanation={getString('user-notes-tooltip')}
             />
           </DetailBoxTitle>
           <DetailBox>
@@ -557,7 +555,7 @@ const PeakListDetail = (props: Props) => {
   } else {
     header = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
     body = null;

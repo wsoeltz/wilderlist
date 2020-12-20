@@ -1,9 +1,6 @@
-import { GetString } from 'fluent-react/compat';
 import React, {useContext} from 'react';
 import Helmet from 'react-helmet';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -24,8 +21,7 @@ interface Props {
 const YourStats = (props: Props) => {
   const { userId } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const { windowWidth } = useContext(AppContext);
 
@@ -36,7 +32,7 @@ const YourStats = (props: Props) => {
         <ContentLeftLarge>
           <ContentBody>
             <SectionTitleH3>
-              {getFluentString('your-stats-title')}
+              {getString('your-stats-title')}
             </SectionTitleH3>
             <Stats
               userId={userId}
@@ -54,7 +50,7 @@ const YourStats = (props: Props) => {
         <ContentLeftLarge>
           <ContentBody>
             <SectionTitleH3>
-              {getFluentString('your-stats-title')}
+              {getString('your-stats-title')}
             </SectionTitleH3>
             <Stats
               userId={userId}
@@ -75,7 +71,7 @@ const YourStats = (props: Props) => {
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-your-stats-default-title')}</title>
+        <title>{getString('meta-data-your-stats-default-title')}</title>
       </Helmet>
       {content}
     </>

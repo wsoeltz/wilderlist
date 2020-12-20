@@ -1,12 +1,9 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import { History } from 'history';
-import React, {useContext} from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { comparePeakListIsolatedLink } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
@@ -93,8 +90,7 @@ interface Props {
 const UserProfile = (props: Props) => {
   const { id, history, userId, setActionDisabled } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
     variables: { profileId: id, userId },
@@ -105,7 +101,7 @@ const UserProfile = (props: Props) => {
     console.error(error);
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
@@ -113,7 +109,7 @@ const UserProfile = (props: Props) => {
     if (!me || !user) {
       return (
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
@@ -136,14 +132,14 @@ const UserProfile = (props: Props) => {
       const compareAscents = user.id === userId ? null : (peakListId: string) =>
         history.push(comparePeakListIsolatedLink(user.id, peakListId));
 
-      const noResultsText = getFluentString('user-profile-no-lists', {
+      const noResultsText = getString('user-profile-no-lists', {
         'user-name': user.name,
       });
 
       return (
         <>
           <Helmet>
-            <title>{getFluentString('meta-data-detail-default-title', {
+            <title>{getString('meta-data-detail-default-title', {
               title: `${user.name}`,
             })}</title>
           </Helmet>
@@ -159,7 +155,7 @@ const UserProfile = (props: Props) => {
               peakListData={peakLists}
               userListData={userListData}
               listAction={compareAscents}
-              actionText={getFluentString('user-profile-compare-ascents')}
+              actionText={getString('user-profile-compare-ascents')}
               profileId={user.id}
               noResultsText={noResultsText}
               showTrophies={true}
@@ -173,7 +169,7 @@ const UserProfile = (props: Props) => {
   } else {
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }

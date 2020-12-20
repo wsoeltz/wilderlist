@@ -1,14 +1,11 @@
 /* tslint:disable:max-line-length */
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { Octokit } from '@octokit/core';
-import { GetString } from 'fluent-react/compat';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import AboutImg from '../../assets/logo/about-profile.jpg';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
   ContentFull,
@@ -42,8 +39,7 @@ interface Release {
 }
 
 const About = () => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
   const [releases, setReleases] = useState<Release[] | null>(null);
 
   useEffect(() => {
@@ -110,12 +106,12 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-about-title')}</title>
-        <meta property='og:title' content={getFluentString('meta-data-about-title')} />
+        <title>{getString('meta-data-about-title')}</title>
+        <meta property='og:title' content={getString('meta-data-about-title')} />
       </Helmet>
       <ContentFull>
         <ContentBody>
-          <h1>{getFluentString('header-text-menu-item-about')}</h1>
+          <h1>{getString('header-text-menu-item-about')}</h1>
           <Container>
             <AboutImage
               src={AboutImg}

@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
 import { Types } from 'mongoose';
-import React, {useContext} from 'react';
+import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import { Routes } from '../../../routing/routes';
 import {
   ContentBody,
@@ -29,13 +26,12 @@ const UserProfilePage = (props: Props) => {
 
   const profileId = id === userId ? userId : id;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   let peakListPanel: React.ReactElement<any> | null;
   if (id === userId) {
     if (!Types.ObjectId.isValid(peakListId)) {
-      peakListPanel = <PlaceholderText>{getFluentString('list-search-list-detail-placeholder')}</PlaceholderText>;
+      peakListPanel = <PlaceholderText>{getString('list-search-list-detail-placeholder')}</PlaceholderText>;
     } else {
       peakListPanel = <PeakListDetail userId={userId} id={peakListId} mountainId={undefined} />;
     }
@@ -45,7 +41,7 @@ const UserProfilePage = (props: Props) => {
         peakListPanel = <CompareAllMountains userId={userId} id={profileId} />;
       } else if (!Types.ObjectId.isValid(peakListId)) {
         peakListPanel = (
-          <PlaceholderText>{getFluentString('user-profile-compare-ascents-placeholder')}</PlaceholderText>
+          <PlaceholderText>{getString('user-profile-compare-ascents-placeholder')}</PlaceholderText>
         );
       } else {
         peakListPanel = (

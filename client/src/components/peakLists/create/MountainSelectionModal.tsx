@@ -1,11 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
-import { GetString } from 'fluent-react/compat';
 import sortBy from 'lodash/sortBy';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import {
   ButtonPrimary,
@@ -190,8 +187,7 @@ const MountainSelectionModal = (props: Props) => {
   const [maxElevation, setMaxElevation] = useState<string>('');
   const [searchSelectedQuery, setSearchSelectedQuery] = useState<string>('');
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const pageNumber = 1;
   const nPerPage = 30;
@@ -328,9 +324,9 @@ const MountainSelectionModal = (props: Props) => {
     >
       <TwoColumnRoot>
         <div style={{gridRow: 1, gridColumn: 1}}>
-          <h3>{getFluentString('create-peak-list-search-mountain-to-add')}</h3>
+          <h3>{getString('create-peak-list-search-mountain-to-add')}</h3>
           <StandardSearch
-            placeholder={getFluentString('global-text-value-search-mountains')}
+            placeholder={getString('global-text-value-search-mountains')}
             setSearchQuery={setSearchQuery}
             focusOnMount={false}
             initialQuery={searchQuery}
@@ -347,7 +343,7 @@ const MountainSelectionModal = (props: Props) => {
               id={'create-peak-list-mountain-filter-by-state'}
               value={state || ''}
               onChange={e => setState(e.target.value)}
-              placeholder={getFluentString('global-text-value-tier')}
+              placeholder={getString('global-text-value-tier')}
             >
               <option value=''>All</option>
               {stateFilterOptions}
@@ -383,11 +379,11 @@ const MountainSelectionModal = (props: Props) => {
         </SearchResultsContainer>
         <div style={{gridRow: 1, gridColumn: 2}}>
           <h3>
-            {getFluentString('create-peak-list-selected-mountain-count', {total: selectedMountains.length})}
+            {getString('create-peak-list-selected-mountain-count', {total: selectedMountains.length})}
           </h3>
           <StandardSearch
             placeholder={
-              getFluentString('global-text-value-search-mountains', {total: selectedMountains.length})
+              getString('global-text-value-search-mountains', {total: selectedMountains.length})
             }
             setSearchQuery={setSearchSelectedQuery}
             focusOnMount={false}

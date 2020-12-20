@@ -1,10 +1,7 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import DatePicker from 'react-datepicker';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   GhostButton,
   lightBlue,
@@ -123,9 +120,7 @@ const DateWidget = (props: Props) => {
     startDate, initialStartDate, completionYear,
   } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
-
+  const getString = useFluent();
   const yearOutOfBounds = (year: number) => year > today.getFullYear();
 
   let filterDate: (date: Date) => boolean;
@@ -150,7 +145,7 @@ const DateWidget = (props: Props) => {
           }}
           className={dateType === DateType.full ? 'active' : ''}
         >
-          {getFluentString('mountain-completion-modal-toggle-btn-full-date')}
+          {getString('mountain-completion-modal-toggle-btn-full-date')}
         </ToggleTypeButton>
         <ToggleTypeButton
           onClick={() => {
@@ -159,7 +154,7 @@ const DateWidget = (props: Props) => {
           }}
           className={dateType === DateType.monthYear ? 'active' : ''}
         >
-          {getFluentString('mountain-completion-modal-toggle-btn-month-year')}
+          {getString('mountain-completion-modal-toggle-btn-month-year')}
         </ToggleTypeButton>
         <ToggleTypeButton
           onClick={() => {
@@ -169,7 +164,7 @@ const DateWidget = (props: Props) => {
           }}
           className={dateType === DateType.yearOnly ? 'active' : ''}
         >
-          {getFluentString('mountain-completion-modal-toggle-btn-year-only')}
+          {getString('mountain-completion-modal-toggle-btn-year-only')}
         </ToggleTypeButton>
         <ToggleTypeButton
           onClick={() => {
@@ -178,7 +173,7 @@ const DateWidget = (props: Props) => {
           }}
           className={dateType === DateType.none ? 'active' : ''}
         >
-          {getFluentString('mountain-completion-modal-toggle-btn-no-date')}
+          {getString('mountain-completion-modal-toggle-btn-no-date')}
         </ToggleTypeButton>
       </ToggleTypeButtonContainer>
     );
@@ -260,7 +255,7 @@ const DateWidget = (props: Props) => {
           onChange={date => setDates(date)}
           filterDate={filterDate}
           inline={true}
-          todayButton={getFluentString('global-text-value-today')}
+          todayButton={getString('global-text-value-today')}
           showMonthDropdown={true}
           showYearDropdown={true}
           dropdownMode={'select'}
@@ -288,7 +283,7 @@ const DateWidget = (props: Props) => {
   } else if (dateType === DateType.none) {
     datePickers = (
       <NoDateText>
-        {getFluentString('mountain-completion-modal-no-date')}
+        {getString('mountain-completion-modal-no-date')}
       </NoDateText>
     );
   } else {
