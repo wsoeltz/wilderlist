@@ -8,6 +8,7 @@ import {
   BrowserRouter as Router,
 } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import {useQueryLoggedInUser, UserContext} from '../contextProviders/userContext';
 import useUsersLocation, {
   userAllowsPreciseLocation,
   UsersLocation,
@@ -19,7 +20,6 @@ import { Root } from '../styling/Grid';
 import { overlayPortalContainerId } from '../Utils';
 import Header from './sharedComponents/Header';
 import MainContent from './template/MainContent';
-import {UserContext, useQueryLoggedInUser} from '../contextProviders/userContext';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});
@@ -65,7 +65,6 @@ const App: React.FC = () => {
       setCheckedForAccurateLocationOnLoad(true);
     }
   }, [usersLocation, checkedForAccurateLocationOnLoad, setCheckedForAccurateLocationOnLoad]);
-
 
   useEffect(() => {
     const updateWindowWidth = debounce(() => {

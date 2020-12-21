@@ -114,7 +114,6 @@ const UserProfile = (props: Props) => {
       );
     } else {
       const { peakLists } = user;
-      const userListData = peakLists.map(peak => peak.id);
       const friendsList = me.friends;
       let friendStatus: FriendStatus | null;
       if (friendsList !== null && friendsList.length !== 0) {
@@ -153,7 +152,6 @@ const UserProfile = (props: Props) => {
             <ListPeakLists
               viewMode={ViewMode.Card}
               peakListData={peakLists}
-              userListData={userListData}
               listAction={compareAscents}
               actionText={getString('user-profile-compare-ascents')}
               profileId={user.id}

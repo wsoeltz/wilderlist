@@ -127,7 +127,6 @@ const SuggestedLists = (props: Props) => {
             <ListPeakLists
               viewMode={ViewMode.Card}
               peakListData={peakListData}
-              userListData={[]}
               listAction={beginList}
               actionText={getString('peak-list-detail-text-begin-list')}
               profileId={undefined}

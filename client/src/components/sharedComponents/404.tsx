@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Image404Url from '../../assets/images/404.gif';
 import useFluent from '../../hooks/useFluent';
-import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
+import { listDetailLink, mountainDetailLink } from '../../routing/Utils';
 import {ContentFull} from '../../styling/Grid';
 import { ButtonPrimaryLink } from '../../styling/styleUtils';
 
@@ -43,10 +43,10 @@ const PageNotFound = () => {
         {getString('page-not-found-404-desc')}
       </p>
       <ButtonContainer>
-        <Button to={searchListDetailLink('search')}>
+        <Button to={listDetailLink('search')}>
           {getString('global-text-value-search-hiking-lists')}
         </Button>
-        <Button to={searchMountainsDetailLink('search')}>
+        <Button to={mountainDetailLink('search')}>
           {getString('global-text-value-search-mountains')}
         </Button>
       </ButtonContainer>

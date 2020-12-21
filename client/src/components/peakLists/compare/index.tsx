@@ -1,4 +1,6 @@
 import React from 'react';
+import {useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
   ContentHeader,
@@ -7,8 +9,6 @@ import {
 import BackButton from '../../sharedComponents/BackButton';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
-import {useParams} from 'react-router-dom';
-import useCurrentUser from '../../../hooks/useCurrentUser';
 
 const ComparePeakListPage = () => {
   const user = useCurrentUser();

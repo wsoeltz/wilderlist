@@ -3,8 +3,8 @@ import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
-  listDetailWithMountainDetailLink,
-  otherUserPeakListDetailLink,
+  listDetailLink,
+  otherUserPeakListLink,
   preventNavigation,
 } from '../../../routing/Utils';
 import {
@@ -207,7 +207,7 @@ const PeakListCard = (props: Props) => {
   const mountainLogoId = parent === null ? id : parent.id;
 
   const url = profileId !== undefined
-    ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
+    ? otherUserPeakListLink(profileId, id) : listDetailLink(id);
   return (
     <LinkWrapper to={url}>
       <Root>

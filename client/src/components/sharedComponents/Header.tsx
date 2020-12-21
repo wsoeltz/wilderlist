@@ -11,12 +11,13 @@ import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Logo from '../../assets/logo/Logo';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
 import { Routes } from '../../routing/routes';
 import {
-  friendsWithUserProfileLink,
-  searchListDetailLink,
-  searchMountainsDetailLink,
+  listDetailLink,
+  mountainDetailLink,
+  userProfileLink,
 } from '../../routing/Utils';
 import { HeaderContainer as HeaderContainerBase, smallHeaderBreakpoint } from '../../styling/Grid';
 import {
@@ -26,7 +27,6 @@ import {
   regularFontWeight,
   tertiaryColor,
 } from '../../styling/styleUtils';
-import useCurrentUser from '../../hooks/useCurrentUser';
 import { AppContext } from '../App';
 import NotificationBar from './NotificationBar';
 import UserMenu from './UserMenu';
@@ -149,14 +149,14 @@ const Header = () => {
   const { windowWidth } = useContext(AppContext);
   const getString = useFluent();
 
-  const peakListsPath = searchListDetailLink('search');
-  const usersPath = friendsWithUserProfileLink('search');
-  const mountainPath = searchMountainsDetailLink('search');
+  const peakListsPath = listDetailLink('search');
+  const usersPath = userProfileLink('search');
+  const mountainPath = mountainDetailLink('search');
 
   const createLink = (route: string, label: string, icon: FaProps['icon']) => {
     let normalizedPathname: string;
     if (pathname.includes('dashboard')) {
-      normalizedPathname = '/';
+      normalizedPathname = '/dashboard';
     } else if  (pathname === Routes.About) {
       normalizedPathname = Routes.About;
     } else if  (pathname.includes('your-stats')) {
@@ -194,7 +194,7 @@ const Header = () => {
       <>
         <HeaderContainer>
           <SemanticLogoContainer>
-            <LogoContainer to={Routes.Dashboard}>
+            <LogoContainer to={Routes.Landing}>
               {getString('global-text-value-wilderlist-name')}
               <Logo />
             </LogoContainer>
@@ -220,7 +220,7 @@ const Header = () => {
     return (
       <>
         <HeaderContainer>
-          <LogoContainer to={Routes.Dashboard}>
+          <LogoContainer to={Routes.Landing}>
             {getString('global-text-value-wilderlist-name')}
             <Logo />
           </LogoContainer>

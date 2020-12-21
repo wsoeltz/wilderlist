@@ -6,8 +6,7 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import {
-  listDetailWithMountainDetailLink,
-  searchListDetailLink,
+  listDetailLink,
 } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -146,7 +145,7 @@ const VariantLinks = (props: Props) => {
           ? getColorSetFromVariant(variant).primary :  getColorSetFromVariant(variant).tertiary;
       }
       const url = currentListId === null
-        ? listDetailWithMountainDetailLink(target.id, 'none')
+        ? listDetailLink(target.id)
         : replaceCurrentPageId(match.url, currentListId, target.id) + window.location.search;
       return (
         <VariantLink
@@ -179,11 +178,11 @@ const VariantLinks = (props: Props) => {
           }}).then(res => {
             if (res && res.data && res.data.peakList) {
               const desktopURL = currentListId === null
-                ? searchListDetailLink(res.data.peakList.id) + window.location.search
-                : replaceCurrentPageId(match.url, currentListId, res.data.peakList.id) + window.location.search;
+                ? listDetailLink(res.data.peakList.id)
+                : replaceCurrentPageId(match.url, currentListId, res.data.peakList.id);
               const url = windowWidth >= mobileSize
                 ? desktopURL
-                : listDetailWithMountainDetailLink(res.data.peakList.id, 'none');
+                : listDetailLink(res.data.peakList.id);
               window.location.href = url;
             }
           }).catch(e => console.error(e));

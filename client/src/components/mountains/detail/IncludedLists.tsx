@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
 import useFluent from '../../../hooks/useFluent';
-import { listDetailWithMountainDetailLink } from '../../../routing/Utils';
+import { listDetailLink } from '../../../routing/Utils';
 import {
   lightBorderColor,
 } from '../../../styling/styleUtils';
@@ -151,7 +151,7 @@ const IncludedLists = (props: Props) => {
       return (
         <BasicUnorderedListItem key={list.id}>
           <Link
-            to={listDetailWithMountainDetailLink(list.id, mountainDatum.id)}
+            to={listDetailLink(list.id)}
           >
             {list.name}
           </Link>

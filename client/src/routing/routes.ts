@@ -2,33 +2,25 @@
 // src/routing/index.ts
 
 export enum Routes {
-  Login = '/',
-  Dashboard = '/',
-  DashboardWithPeakListDetail = '/dashboard/list/:peakListId',
-  ListsWithDetail = '/lists/:id',
+  Landing = '/',
+
+  Dashboard = '/dashboard',
+
   ListDetail = '/list/:id',
-  ListDetailWithMountainDetail = '/list/:id/mountain/:mountainId',
-  MountainSearchWithDetail = '/mountains/:id',
   MountainDetail = '/mountain/:id',
+
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',
+
   CreateList = '/create-list',
   EditList = '/edit-list/:id',
-  FriendsWithProfile = '/users/:id',
+
   UserProfile = '/user/:id',
-  UserSettings = '/user-settings',
   OtherUserPeakList = '/user/:id/list/:peakListId',
-  OtherUserPeakListMountains = '/user/:id/list/:peakListId/mountain/:mountainId',
-  OtherUserPeakListDetail = '/detail/user/:friendId/list/:peakListId',
-  OtherUserPeakListCompare = '/user/:id/compare/:peakListId',
-  ComparePeakListWithMountainDetail = '/compare/user/:id/list/:peakListId/mountain/:mountainId',
   ComparePeakListIsolated = '/compare/user/:id/list/:peakListId',
-  Admin = '/admin',
-  AdminRegions = '/admin/regions',
-  AdminStates = '/admin/states',
-  AdminMountains = '/admin/mountains',
-  AdminPeakLists = '/admin/lists',
-  AdminUsers = '/admin/users',
+
+  UserSettings = '/user-settings',
+
   PrivacyPolicy = '/privacy-policy',
   TermsOfUse = '/terms-of-use',
   YourStats = '/your-stats',

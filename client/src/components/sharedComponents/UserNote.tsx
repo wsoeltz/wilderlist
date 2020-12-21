@@ -7,6 +7,7 @@ import {
 import {rgba} from 'polished';
 import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
 import {
   ButtonWarningLow,
@@ -15,7 +16,6 @@ import {
   lowWarningColor,
   placeholderColor,
 } from '../../styling/styleUtils';
-import useCurrentUser from '../../hooks/useCurrentUser';
 import {
   BrandIcon,
   facebookBlue,

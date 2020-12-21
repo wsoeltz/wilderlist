@@ -1,9 +1,9 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import React from 'react';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
-import useCurrentUser from '../../../hooks/useCurrentUser';
 import { MountainDatum } from '../../peakLists/create/MountainSelectionModal';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import { Routes } from '../../routing/routes';
-import { comparePeakListLink } from '../../routing/Utils';
+import { userProfileLink } from '../../routing/Utils';
 import { smallHeaderBreakpoint } from '../../styling/Grid';
 import {
   baseColor,
@@ -18,7 +18,7 @@ import {
   lightFontWeight,
   tertiaryColor,
 } from '../../styling/styleUtils';
-import { PermissionTypes, User } from '../../types/graphQLTypes';
+import { User } from '../../types/graphQLTypes';
 import { AppContext } from '../App';
 import {
   BrandIcon as BrandIconBase,
@@ -175,11 +175,10 @@ const Caret = styled(FontAwesomeIcon)`
 
 interface UserMenuListProps {
   user: User | null;
-  adminPanel: React.ReactElement<any> | null;
   closeUserMenu: () => void;
 }
 
-const UserMenuList = ({user, adminPanel, closeUserMenu}: UserMenuListProps) => {
+const UserMenuList = ({user, closeUserMenu}: UserMenuListProps) => {
   const node = useRef<HTMLDivElement | null>(null);
   const userId = user !== null ? user._id : 'none';
   const getString = useFluent();
@@ -198,7 +197,7 @@ const UserMenuList = ({user, adminPanel, closeUserMenu}: UserMenuListProps) => {
   if (user) {
     return (
       <UserMenuListContainer ref={node} onClick={closeUserMenu}>
-        <UserMenuLink to={comparePeakListLink(userId, 'none')}>
+        <UserMenuLink to={userProfileLink(userId)}>
           {getString('header-text-menu-my-profile')}
         </UserMenuLink>
         <UserMenuLink to={Routes.UserSettings}>
@@ -210,7 +209,6 @@ const UserMenuList = ({user, adminPanel, closeUserMenu}: UserMenuListProps) => {
         <UserMenuLink to={Routes.TermsOfUse}>
           {getString('header-text-menu-terms-of-use')}
         </UserMenuLink>
-        {adminPanel}
         <UserMenuAnchor href='/api/logout'>
           {getString('header-text-menu-item-logout')}
         </UserMenuAnchor>
@@ -281,22 +279,13 @@ const UserMenuComponent = (props: Props) => {
 
   let output: React.ReactElement<any>;
   if (user) {
-    const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
-      ? (
-          <UserMenuLink to={Routes.Admin}>
-            {getString('header-text-menu-item-admin-panel')}
-          </UserMenuLink>
-        )
-      : null;
     const userMenuList = userMenuOpen === true
       ? (
-          <UserMenuList
-            user={user}
-            adminPanel={adminPanel}
-            closeUserMenu={closeUserMenu}
-           />
-          )
-      : null;
+        <UserMenuList
+          user={user}
+          closeUserMenu={closeUserMenu}
+         />
+      ) : null;
 
     output = (
       <UserMenu>
@@ -349,19 +338,16 @@ const UserMenuComponent = (props: Props) => {
     } else {
       const userMenuList = userMenuOpen === true
         ? (
-            <UserMenuList
-              user={null}
-              adminPanel={null}
-              closeUserMenu={() => setUserMenuOpen(false)}
-             />
-            )
-        : null;
+          <UserMenuList
+            user={null}
+            closeUserMenu={() => setUserMenuOpen(false)}
+           />
+        ) : null;
 
       output = (
         <UserMenu>
           <UserButton
-
-            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            onClick={toggleUserMenu}
           >
             <div>
               Login

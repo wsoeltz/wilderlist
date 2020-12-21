@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { withRouter } from 'react-router';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import {
   ContentBody,
   ContentHeader,
@@ -11,7 +12,6 @@ import {
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Mountain, PermissionTypes } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
-import useCurrentUser from '../../hooks/useCurrentUser';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';

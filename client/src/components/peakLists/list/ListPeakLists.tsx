@@ -84,7 +84,6 @@ export interface CompactPeakListDatum {
 }
 
 interface BaseProps {
-  userListData: Array<PeakList['id']> | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
   noResultsText: string;

@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
-import { searchListDetailLink } from '../../routing/Utils';
+import { listDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
   ContentLeftLarge,
@@ -84,7 +84,7 @@ const SavedLists = ({userId}: Props) => {
   const history = useHistory();
 
   const searchPeakLists = (value: string) => {
-    const url = searchListDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
+    const url = listDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
     history.push(url);
   };
 
@@ -132,7 +132,7 @@ const SavedLists = ({userId}: Props) => {
           </p>
           <p style={{textAlign: 'center'}}>
             <PlaceholderButton
-              to={searchListDetailLink('search')}
+              to={listDetailLink('search')}
             >
               {getString('dashboard-empty-state-no-active-lists-button')}
             </PlaceholderButton>
@@ -141,13 +141,11 @@ const SavedLists = ({userId}: Props) => {
         </div>
       );
     } else {
-      const usersLists = peakLists.map(peakList => peakList.id);
       peakListsList = (
         <>
           <ListPeakLists
             viewMode={ViewMode.Card}
             peakListData={peakLists}
-            userListData={usersLists}
             listAction={null}
             actionText={''}
             profileId={undefined}

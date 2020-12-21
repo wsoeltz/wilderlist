@@ -1,6 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import {useHistory, useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {listDetailLink} from '../../../routing/Utils';
 import {
@@ -17,7 +18,6 @@ import {
   PeakListVariants,
   PermissionTypes,
   State,
-  User,
 } from '../../../types/graphQLTypes';
 import { mobileSize } from '../../../Utils';
 import { AppContext } from '../../App';
@@ -226,11 +226,6 @@ interface SuccessResponse {
   }>;
 }
 
-interface Props extends RouteComponentProps {
-  user: User;
-  peakListPermissions: null | number;
-}
-
 const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
   const getString = useFluent();
   return (
@@ -242,11 +237,12 @@ const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
 
 const MemoizedActions = React.memo(ModalActions);
 
-const PeakListCreatePage = (props: Props) => {
-  const { user, peakListPermissions, match, history } = props;
-  const { id }: any = match.params;
+const PeakListCreatePage = () => {
+  const user = useCurrentUser();
+  const history = useHistory();
+  const { id }: any = useParams();
 
-  const userId = user._id;
+  const userId = user ? user._id : null;
 
   const getString = useFluent();
 
@@ -272,7 +268,9 @@ const PeakListCreatePage = (props: Props) => {
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
   let peakListForm: React.ReactElement<any> | null;
-  if (peakListPermissions === -1 && user.permissions !== PermissionTypes.admin) {
+  if (!user) {
+    return null;
+  } else if (user && user.peakListPermissions === -1 && user.permissions !== PermissionTypes.admin) {
     peakListForm = (
       <PlaceholderText>
         {getString('global-text-value-no-permission')}
@@ -287,7 +285,7 @@ const PeakListCreatePage = (props: Props) => {
         {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (data !== undefined) {
+  } else if (user && data !== undefined) {
     const {states} = data;
     const onSubmit = async (input: FormInput) => {
       try {
@@ -440,4 +438,4 @@ const PeakListCreatePage = (props: Props) => {
   );
 };
 
-export default withRouter(PeakListCreatePage);
+export default PeakListCreatePage;

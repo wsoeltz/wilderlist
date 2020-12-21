@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import {
   FORMAT_STATE_REGION_FOR_TEXT,
 } from '../../../contextProviders/getFluentLocalizationContext';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
@@ -35,7 +36,6 @@ import {
 import {
   isValidURL,
 } from '../../../Utils';
-import useCurrentUser from '../../../hooks/useCurrentUser';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';

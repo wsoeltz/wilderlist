@@ -1,13 +1,14 @@
 import React from 'react';
+import {useHistory, useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
+import ListUsers from '../list';
 import UserProfile from './UserProfile';
-import useCurrentUser from '../../../hooks/useCurrentUser';
-import {useParams, useHistory} from 'react-router-dom';
 
 const UserProfilePage = () => {
   const user = useCurrentUser();
@@ -17,7 +18,9 @@ const UserProfilePage = () => {
 
   const profileId = id === userId ? userId : id;
 
-  if (userId) {
+  if (profileId === 'search') {
+    return <ListUsers />;
+  } else if (userId) {
     return (
       <>
         <ContentLeftLarge>

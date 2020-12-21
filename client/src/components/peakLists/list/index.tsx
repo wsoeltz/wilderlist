@@ -4,8 +4,9 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import Helmet from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
-import { searchListDetailLink } from '../../../routing/Utils';
+import { listDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftSmall,
@@ -24,7 +25,6 @@ import {AppContext} from '../../App';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
 import MapSelect from './mapSelect';
-import useCurrentUser from '../../../hooks/useCurrentUser';
 
 export const SearchAndFilterContainer = styled.div`
   display: grid;
@@ -130,22 +130,10 @@ export const getRefetchSearchQueries = (userId: string) => [
 
 export interface CardSuccessResponse {
   peakLists: CardPeakListDatum[];
-  user: null | {
-    id: User['id'];
-    peakLists: Array<{
-      id: PeakList['id'];
-    }>
-  };
 }
 
 interface CompactSuccessResponse {
   peakLists: CompactPeakListDatum[];
-  user: null | {
-    id: User['id'];
-    peakLists: Array<{
-      id: PeakList['id'];
-    }>
-  };
 }
 
 type SuccessResponse = CardSuccessResponse | CompactSuccessResponse;
@@ -227,13 +215,13 @@ const PeakListPage = () => {
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
-    const url = searchListDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = listDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
   const decrementPageNumber = () => {
     const newPageNumber = pageNumber - 1;
     setPageNumber(newPageNumber);
-    const url = searchListDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = listDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
 
@@ -315,7 +303,7 @@ const PeakListPage = () => {
         />
       );
     } else {
-      const { peakLists, user } = data;
+      const { peakLists } = data;
       if (!peakLists) {
         list = (
           <PlaceholderText>
@@ -323,7 +311,6 @@ const PeakListPage = () => {
           </PlaceholderText>
         );
       } else {
-        const usersLists = user ? user.peakLists.map(peakList => peakList.id) : null;
         const nextBtn = peakLists.length === compactViewNPerPage ? (
           <Next onClick={incrementPageNumber}>
             {getString('global-text-value-navigation-next')}
@@ -340,7 +327,6 @@ const PeakListPage = () => {
           <ListPeakLists
             viewMode={ViewMode.Compact}
             peakListData={peakListData}
-            userListData={usersLists}
             listAction={beginList}
             actionText={getString('peak-list-detail-text-begin-list')}
             profileId={undefined}
@@ -384,7 +370,7 @@ const PeakListPage = () => {
           property='og:description'
           content={metaDescription}
         />
-        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchListDetailLink('search')} />
+        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink('search')} />
       </Helmet>
       <ContentLeftSmall>
         <ContentBody ref={listContainerElm} style={{paddingTop: queryText ? 0 : undefined}}>

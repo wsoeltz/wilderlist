@@ -2,8 +2,8 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
-  listDetailWithMountainDetailLink,
-  otherUserPeakListDetailLink,
+  listDetailLink,
+  otherUserPeakListLink,
 } from '../../../routing/Utils';
 import {mediumSize, mobileSize} from '../../../Utils';
 import MountainLogo from '../mountainLogo';
@@ -57,7 +57,7 @@ const PeakListCard = ({peakList, profileId}: Props) => {
 
   const mountainLogoId = parent === null ? id : parent.id;
   const mobileURL = profileId !== undefined
-    ? otherUserPeakListDetailLink(profileId, id) : listDetailWithMountainDetailLink(id, 'none');
+    ? otherUserPeakListLink(profileId, id) : listDetailLink(id);
   return (
     <LinkWrapper to={mobileURL}>
       <Root>

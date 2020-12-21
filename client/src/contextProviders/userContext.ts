@@ -1,6 +1,6 @@
+import axios from 'axios';
 import {createContext, useEffect, useState} from 'react';
 import { User } from '../types/graphQLTypes';
-import axios from 'axios';
 
 export const UserContext = createContext<User | null>(null);
 
@@ -20,4 +20,4 @@ export const useQueryLoggedInUser = () => {
   }, []);
 
   return user;
-}
+};

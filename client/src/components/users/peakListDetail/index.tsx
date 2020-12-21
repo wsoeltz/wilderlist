@@ -1,4 +1,6 @@
 import React from 'react';
+import {useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
   ContentHeader,
@@ -6,12 +8,12 @@ import {
 } from '../../../styling/Grid';
 import PeakListDetail from '../../peakLists/detail/PeakListDetail';
 import BackButton from '../../sharedComponents/BackButton';
-import {useParams} from 'react-router-dom';
 
 const UserProfilePage = () => {
+  const user = useCurrentUser();
   const { id, peakListId }: any = useParams();
 
-  const profileId = id;
+  const profileId = user ? id : null;
 
   return (
     <>

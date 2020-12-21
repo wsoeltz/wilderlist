@@ -3,8 +3,10 @@ import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
+import {useHistory, useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
-import { friendsWithUserProfileLink } from '../../../routing/Utils';
+import { userProfileLink } from '../../../routing/Utils';
 import {
   ContentBody,
   ContentLeftSmall,
@@ -23,8 +25,6 @@ import UserProfile from '../detail/UserProfile';
 import GhostUserCard from './GhostUserCard';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
-import useCurrentUser from '../../../hooks/useCurrentUser';
-import {useParams, useHistory} from 'react-router-dom';
 
 const SEARCH_USERS = gql`
   query searchUsers(
@@ -88,13 +88,13 @@ const UserList = () => {
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
-    const url = friendsWithUserProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = userProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
   const decrementPageNumber = () => {
     const newPageNumber = pageNumber - 1;
     setPageNumber(newPageNumber);
-    const url = friendsWithUserProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = userProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
   const nPerPage = 15;
@@ -115,7 +115,7 @@ const UserList = () => {
   const searchUsers = (value: string) => {
     setSearchQuery(value);
     setPageNumber(1);
-    const url = friendsWithUserProfileLink(id) + '?query=' + value + '&page=' + 1;
+    const url = userProfileLink(id) + '?query=' + value + '&page=' + 1;
     history.push(url);
   };
 
@@ -150,7 +150,7 @@ const UserList = () => {
     const { users, me: {friends} } = data;
     let userData: UserDatum[] | null;
     if (searchQuery === '') {
-      const friendsData = friends.map(({user}) => user);
+      const friendsData = friends.map(f => f.user);
       if (friendsData && friendsData.length) {
         userData = friendsData;
       } else {
@@ -197,7 +197,7 @@ const UserList = () => {
       <PlaceholderText>
         {getString('user-list-no-user-selected-text')}
       </PlaceholderText>
-    )
+    );
   } else if (userId !== null) {
     userProfile = (
       <UserProfile userId={userId} id={id} history={history} />

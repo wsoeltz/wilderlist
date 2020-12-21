@@ -1,4 +1,5 @@
 import React from 'react';
+import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
@@ -6,8 +7,8 @@ import {
   ContentHeader,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
+import MountainList from '../list';
 import MountainDetail from './MountainDetail';
-import {useParams} from 'react-router-dom';
 
 const MountainDetailPage = () => {
   const user = useCurrentUser();
@@ -15,18 +16,22 @@ const MountainDetailPage = () => {
   const { id, mountainId: possibleMountainId }: any = useParams();
   const mountainId = possibleMountainId ? possibleMountainId : id;
 
-  return (
-    <>
-      <ContentFull>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody>
-          <MountainDetail userId={userId} id={mountainId} setOwnMetaData={true} />
-        </ContentBody>
-      </ContentFull>
-    </>
-  );
+  if (mountainId === 'search') {
+    return <MountainList />;
+  } else {
+    return (
+      <>
+        <ContentFull>
+          <ContentHeader>
+            <BackButton />
+          </ContentHeader>
+          <ContentBody>
+            <MountainDetail userId={userId} id={mountainId} setOwnMetaData={true} />
+          </ContentBody>
+        </ContentFull>
+      </>
+    );
+  }
 };
 
 export default MountainDetailPage;

@@ -1,6 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import queryString from 'query-string';
 import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import {useHistory, useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
@@ -18,8 +20,6 @@ import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
-import useCurrentUser from '../../../hooks/useCurrentUser';
-import {useParams, useHistory} from 'react-router-dom';
 
 const mountainQuery = `
       id

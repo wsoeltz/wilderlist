@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import {
-  listDetailWithMountainDetailLink,
+  listDetailLink,
   preventNavigation,
 } from '../../../routing/Utils';
 import {
@@ -152,7 +152,7 @@ const PeakListCard = (props: Props) => {
       onMouseLeave={setHoveredFalse}
     >
       <LinkWrapper
-        to={listDetailWithMountainDetailLink(id, 'none')}
+        to={listDetailLink(id)}
       >
         <Card>
           <div>

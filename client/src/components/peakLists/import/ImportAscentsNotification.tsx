@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {
   CompactButtonPrimary,
@@ -8,7 +9,6 @@ import {
   lowWarningColorLight,
 } from '../../../styling/styleUtils';
 import {PeakList, PeakListVariants} from '../../../types/graphQLTypes';
-import useCurrentUser from '../../../hooks/useCurrentUser';
 import ImportAscentsModal, {MountainDatum} from '../import';
 import ImportGridModal, {NH48_GRID_OBJECT_ID} from '../import/ImportGrid';
 

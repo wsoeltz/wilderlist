@@ -3,7 +3,6 @@ import Helmet from 'react-helmet';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import { Routes } from '../../routing/routes';
 import { PreContentHeaderFull } from '../../styling/Grid';
 import { standardContainerPadding } from '../../styling/styleUtils';
 
@@ -27,11 +26,11 @@ const AdminPanel = () => {
       </Helmet>
       <h2>Admin Panel</h2>
       <AdminNav>
-        <NavItem to={Routes.AdminRegions}>Regions</NavItem>
-        <NavItem to={Routes.AdminStates}>States</NavItem>
-        <NavItem to={Routes.AdminMountains}>Mountains</NavItem>
-        <NavItem to={Routes.AdminPeakLists}>Peak Lists</NavItem>
-        <NavItem to={Routes.AdminUsers}>Users</NavItem>
+        <NavItem to={'/admin-regions'}>Regions</NavItem>
+        <NavItem to={'/admin-states'}>States</NavItem>
+        <NavItem to={'/admin-mountains'}>Mountains</NavItem>
+        <NavItem to={'/admin-lists'}>Peak Lists</NavItem>
+        <NavItem to={'/admin-users'}>Users</NavItem>
       </AdminNav>
     </Root>
   );

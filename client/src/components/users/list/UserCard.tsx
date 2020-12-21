@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
 import useFluent from '../../../hooks/useFluent';
-import { comparePeakListLink, preventNavigation } from '../../../routing/Utils';
+import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
   Card,
@@ -491,7 +491,7 @@ const UserCard = (props: Props) => {
 
   return (
     <LinkWrapper
-      to={comparePeakListLink(user.id, 'none')}
+      to={userProfileLink(user.id)}
     >
       <Root>
         <ProfilePicture
