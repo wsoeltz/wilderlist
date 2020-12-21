@@ -1,9 +1,9 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import React, {useContext} from 'react';
+import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { State } from '../../../types/graphQLTypes';
-import { UserContext } from '../../App';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import { MountainDatum } from '../../peakLists/create/MountainSelectionModal';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
@@ -42,7 +42,7 @@ export interface Props {
 
 const CreateMountainModal = (props: Props) => {
   const { onCancel, onSuccess } = props;
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
 
   const getString = useFluent();
 

@@ -1,36 +1,26 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
-import useFluent from '../../../hooks/useFluent';
 import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
-  ContentRightSmall,
 } from '../../../styling/Grid';
-import {
-  PlaceholderText,
-} from '../../../styling/styleUtils';
-import MountainDetail from '../../mountains/detail/MountainDetail';
 import BackButton from '../../sharedComponents/BackButton';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
+import {useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 
-interface Props extends RouteComponentProps {
-  userId: string;
-}
-
-const ComparePeakListPage = (props: Props) => {
-  const { userId, match } = props;
-  const { id: profileId, peakListId, mountainId }: any = match.params;
-
-  const getString = useFluent();
+const ComparePeakListPage = () => {
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const { id: profileId, peakListId }: any = useParams();
 
   let comparison: React.ReactElement<any> | null;
   if (!peakListId) {
     comparison = null;
-  } else if (peakListId === 'all') {
+  } else if (peakListId === 'all' && userId !== null) {
     comparison = <CompareAllMountains userId={userId} id={profileId} />;
-  } else {
+  } else if (userId !== null) {
     comparison = (
       <PeakListComparison
         key={peakListId}
@@ -39,17 +29,9 @@ const ComparePeakListPage = (props: Props) => {
         peakListId={peakListId}
       />
     );
+  } else {
+    comparison = null;
   }
-
-  const mountainDetail = mountainId === undefined
-    ? (
-        <PlaceholderText>
-          {getString('list-detail-mountain-detail-placeholder')}
-        </PlaceholderText>
-      )
-    : (
-        <MountainDetail userId={userId} id={mountainId} />
-      );
 
   return (
     <>
@@ -61,13 +43,8 @@ const ComparePeakListPage = (props: Props) => {
           {comparison}
         </ContentBody>
       </ContentLeftLarge>
-      <ContentRightSmall>
-        <ContentBody>
-          {mountainDetail}
-        </ContentBody>
-      </ContentRightSmall>
     </>
   );
 };
 
-export default withRouter(ComparePeakListPage);
+export default ComparePeakListPage;

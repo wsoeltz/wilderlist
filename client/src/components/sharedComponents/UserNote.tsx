@@ -5,7 +5,7 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import {rgba} from 'polished';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import useFluent from '../../hooks/useFluent';
 import {
@@ -15,7 +15,7 @@ import {
   lowWarningColor,
   placeholderColor,
 } from '../../styling/styleUtils';
-import { UserContext } from '../App';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import {
   BrandIcon,
   facebookBlue,
@@ -94,7 +94,7 @@ const UserNote = (props: Props) => {
     setIsLoading(false);
   }, [textAreaRef, defaultValue]);
 
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
 
   const getString = useFluent();
 

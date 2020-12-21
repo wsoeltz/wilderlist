@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { withRouter } from 'react-router';
 import {
   ContentBody,
@@ -11,7 +11,7 @@ import {
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Mountain, PermissionTypes } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
-import { UserContext } from '../App';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import StandardSearch from '../sharedComponents/StandardSearch';
 import { GET_PEAK_LISTS } from './AdminPeakLists';
 import AddMountain from './mountains/AddMountain';
@@ -158,7 +158,7 @@ enum MountainsToShow {
 
 const AdminMountains = () => {
 
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
 
   const [mountainsToShow, setMountainsToShow] = useState<MountainsToShow>(MountainsToShow.pending);
 

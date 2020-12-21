@@ -1,95 +1,43 @@
-import { Types } from 'mongoose';
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
-import useFluent from '../../../hooks/useFluent';
-import { Routes } from '../../../routing/routes';
 import {
   ContentBody,
   ContentHeader,
   ContentLeftLarge,
-  ContentRightSmall,
 } from '../../../styling/Grid';
-import { PlaceholderText } from '../../../styling/styleUtils';
-import CompareAllMountains from '../../peakLists/compare/CompareAllMountains';
-import PeakListComparison from '../../peakLists/compare/PeakListComparison';
-import PeakListDetail from '../../peakLists/detail/PeakListDetail';
 import BackButton from '../../sharedComponents/BackButton';
 import UserProfile from './UserProfile';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import {useParams, useHistory} from 'react-router-dom';
 
-interface Props extends RouteComponentProps {
-  userId: string;
-}
-
-const UserProfilePage = (props: Props) => {
-  const { match, history, userId } = props;
-  const { id, peakListId }: any = match.params;
+const UserProfilePage = () => {
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const history = useHistory();
+  const { id }: any = useParams();
 
   const profileId = id === userId ? userId : id;
 
-  const getString = useFluent();
-
-  let peakListPanel: React.ReactElement<any> | null;
-  if (id === userId) {
-    if (!Types.ObjectId.isValid(peakListId)) {
-      peakListPanel = <PlaceholderText>{getString('list-search-list-detail-placeholder')}</PlaceholderText>;
-    } else {
-      peakListPanel = <PeakListDetail userId={userId} id={peakListId} mountainId={undefined} />;
-    }
+  if (userId) {
+    return (
+      <>
+        <ContentLeftLarge>
+          <ContentHeader>
+            <BackButton />
+          </ContentHeader>
+          <ContentBody>
+            <UserProfile
+              userId={userId}
+              id={profileId}
+              history={history}
+            />
+          </ContentBody>
+        </ContentLeftLarge>
+      </>
+    );
   } else {
-    if (match.path === Routes.OtherUserPeakListCompare) {
-      if (peakListId === 'all') {
-        peakListPanel = <CompareAllMountains userId={userId} id={profileId} />;
-      } else if (!Types.ObjectId.isValid(peakListId)) {
-        peakListPanel = (
-          <PlaceholderText>{getString('user-profile-compare-ascents-placeholder')}</PlaceholderText>
-        );
-      } else {
-        peakListPanel = (
-          <PeakListComparison
-            userId={userId}
-            friendId={profileId}
-            peakListId={peakListId}
-          />
-        );
-      }
-    } else if (match.path === Routes.OtherUserPeakList) {
-      peakListPanel = (
-        <PeakListDetail
-          userId={profileId}
-          id={peakListId}
-          mountainId={undefined}
-        />
-      );
-    } else {
-      peakListPanel = null;
-    }
+    return null;
   }
 
-  const setActionDisabled = (_peakListId: string) =>
-    match.path === Routes.OtherUserPeakListCompare && _peakListId === peakListId;
-
-  return (
-    <>
-      <ContentLeftLarge>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody>
-          <UserProfile
-            userId={userId}
-            id={profileId}
-            history={history}
-            setActionDisabled={setActionDisabled}
-          />
-        </ContentBody>
-      </ContentLeftLarge>
-      <ContentRightSmall>
-        <ContentBody>
-          {peakListPanel}
-        </ContentBody>
-      </ContentRightSmall>
-    </>
-  );
 };
 
-export default withRouter(UserProfilePage);
+export default UserProfilePage;

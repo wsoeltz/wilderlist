@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { State } from '../../../types/graphQLTypes';
-import { UserContext } from '../../App';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import { AddMountainVariables } from '../AdminMountains';
 import {
   CreateButton,
@@ -35,7 +35,7 @@ interface Props {
 const AddMountain = (props: Props) => {
   const { addMountain, cancel } = props;
 
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
 
   const [name, setName] = useState<string>('');
   const [latitude, setLatitude] = useState<number | null>(null);

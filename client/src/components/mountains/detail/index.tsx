@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
   ContentFull,
@@ -7,14 +7,12 @@ import {
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
 import MountainDetail from './MountainDetail';
+import {useParams} from 'react-router-dom';
 
-interface Props extends RouteComponentProps {
-  userId: string | null;
-}
-
-const MountainDetailPage = (props: Props) => {
-  const { userId, match } = props;
-  const { id, mountainId: possibleMountainId }: any = match.params;
+const MountainDetailPage = () => {
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const { id, mountainId: possibleMountainId }: any = useParams();
   const mountainId = possibleMountainId ? possibleMountainId : id;
 
   return (
@@ -31,4 +29,4 @@ const MountainDetailPage = (props: Props) => {
   );
 };
 
-export default withRouter(MountainDetailPage);
+export default MountainDetailPage;

@@ -26,7 +26,7 @@ import {
   regularFontWeight,
   tertiaryColor,
 } from '../../styling/styleUtils';
-import { UserContext } from '../App';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import { AppContext } from '../App';
 import NotificationBar from './NotificationBar';
 import UserMenu from './UserMenu';
@@ -141,7 +141,7 @@ const InactiveIconContainer = styled(IconContainerBase)`
 `;
 
 const Header = () => {
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
   const { pathname } = useLocation();
 
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);

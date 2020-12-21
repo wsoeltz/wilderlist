@@ -20,7 +20,7 @@ import {
   PermissionTypes,
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
-import { GET_USERS_PEAK_LISTS } from '../../dashboard';
+import { GET_USERS_PEAK_LISTS } from '../../dashboard/SavedLists';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import {

@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
@@ -8,7 +8,7 @@ import {
   lowWarningColorLight,
 } from '../../../styling/styleUtils';
 import {PeakList, PeakListVariants} from '../../../types/graphQLTypes';
-import { UserContext } from '../../App';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import ImportAscentsModal, {MountainDatum} from '../import';
 import ImportGridModal, {NH48_GRID_OBJECT_ID} from '../import/ImportGrid';
 
@@ -80,7 +80,7 @@ const ImportAscentsNotification = (props: Props) => {
   const closeImportModal = useCallback(() => setIsImportModalOpen(false), []);
   const getString = useFluent();
 
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
 
   const {loading, error, data} = useQuery<SuccessResponse, {id: string}>(GET_PEAK_LIST, {
     variables: { id: peakListId },

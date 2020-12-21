@@ -1,49 +1,30 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import {
-  faList,
-  faMapMarkedAlt,
-} from '@fortawesome/free-solid-svg-icons';
-import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import { Routes } from '../../../routing/routes';
 import { searchListDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
-  ContentHeader,
   ContentLeftSmall,
-  ContentRightLarge,
-  PreContentHeaderFull,
-  SearchContainer,
 } from '../../../styling/Grid';
 import {
-  BasicIconInText,
-  FloatingButton,
-  FloatingButtonContainer,
   LinkButton,
   Next,
   NoResults,
   PaginationContainer,
   PlaceholderText,
-  PlusIcon,
   Prev,
-  secondaryColor,
-  SecondaryNavigationButton,
-  SecondaryNavigationContainer,
 } from '../../../styling/styleUtils';
 import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
 import {mobileSize} from '../../../Utils';
 import {AppContext} from '../../App';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
-import BackButton from '../../sharedComponents/BackButton';
-import StandardSearch from '../../sharedComponents/StandardSearch';
-import PeakListDetail from '../detail/PeakListDetail';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
 import MapSelect from './mapSelect';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 
 export const SearchAndFilterContainer = styled.div`
   display: grid;
@@ -221,19 +202,15 @@ enum View {
   List,
 }
 
-interface Props extends RouteComponentProps {
-  userId: string | null;
-  peakListPermissions: number | null;
-}
+const PeakListPage = () => {
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const history = useHistory();
 
-const PeakListPage = (props: Props) => {
-  const { userId, peakListPermissions, match, location, history } = props;
-  const { id }: any = match.params;
-  const { query, page } = queryString.parse(location.search);
+  const { query, page } = queryString.parse(history.location.search);
   const {windowWidth} = useContext(AppContext);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [selectedState, setSelectedState] = useState<{id: string, name: string} | null>(null);
   const [mobileView, setMobileView] = useState<View>(View.List);
@@ -246,25 +223,22 @@ const PeakListPage = (props: Props) => {
   }, [windowWidth]);
 
   const clearSelectedState = useCallback(() => updateSelectedState(null), [updateSelectedState]);
-  const viewAsList = useCallback(() => setMobileView(View.List), [setMobileView]);
-  const viewAsMap = useCallback(() => setMobileView(View.Map), [setMobileView]);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
-    const url = searchListDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = searchListDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
   const decrementPageNumber = () => {
     const newPageNumber = pageNumber - 1;
     setPageNumber(newPageNumber);
-    const url = searchListDetailLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = searchListDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
 
   useEffect(() => {
     if (typeof query === 'string') {
-      setInitialSearchQuery(query);
       setSearchQuery(query);
     }
     if (typeof page === 'string') {
@@ -274,15 +248,6 @@ const PeakListPage = (props: Props) => {
       }
     }
   }, [query, page]);
-  const searchPeakLists = (value: string) => {
-    setSearchQuery(value);
-    setPageNumber(1);
-    if (windowWidth < mobileSize) {
-      setMobileView(View.List);
-    }
-    const url = searchListDetailLink(id) + '?query=' + value + '&page=' + 1;
-    history.push(url);
-  };
 
   const getString = useFluent();
 
@@ -404,75 +369,6 @@ const PeakListPage = (props: Props) => {
     );
   }
 
-  const listDetail = !Types.ObjectId.isValid(id)
-    ? (
-        <MapSelect
-          selectedState={selectedState}
-          setSelectedState={updateSelectedState}
-        />
-      )
-    : (
-        <PeakListDetail
-          userId={userId}
-          id={id}
-          mountainId={undefined}
-          queryRefetchArray={[{query: SEARCH_PEAK_LISTS_COMPACT, variables}]}
-          setOwnMetaData={true}
-        />
-      );
-
-  const returnToMap = () => {
-    history.push(searchListDetailLink('search') + '?query=' + searchQuery + '&page=' + pageNumber);
-  };
-
-  const backButton = !Types.ObjectId.isValid(id)
-    ? null
-    : (
-      <ContentHeader>
-        <BackButton
-          onClick={returnToMap}
-          text={getString('map-search-back-to-map')}
-        />
-      </ContentHeader>
-    );
-
-  const addMountainButton = userId && peakListPermissions !== -1 ? (
-    <FloatingButtonContainer>
-      <FloatingButton to={Routes.CreateList}>
-        <PlusIcon>+</PlusIcon> {getString('create-peak-list-title-create')}
-      </FloatingButton>
-    </FloatingButtonContainer>
-  ) : null;
-
-  const mapSearchToggleBar = windowWidth < mobileSize
-    ? (
-      <PreContentHeaderFull>
-        <SecondaryNavigationContainer>
-          <SecondaryNavigationButton
-            style={{
-              color: mobileView === View.List ? '#fff' : undefined,
-              backgroundColor: mobileView === View.List ? secondaryColor : undefined,
-            }}
-            onClick={viewAsList}
-          >
-            <BasicIconInText icon={faList} />
-            {getString('mountain-search-mobile-nav-list')}
-          </SecondaryNavigationButton>
-          <SecondaryNavigationButton
-            onClick={viewAsMap}
-            style={{
-              color: mobileView === View.Map ? '#fff' : undefined,
-              backgroundColor: mobileView === View.Map ? secondaryColor : undefined,
-            }}
-          >
-            <BasicIconInText icon={faMapMarkedAlt} />
-            {getString('mountain-search-mobile-nav-map')}
-          </SecondaryNavigationButton>
-        </SecondaryNavigationContainer>
-      </PreContentHeaderFull>
-      )
-    : null;
-
   const metaDescription = getString('meta-data-peak-list-search-description');
 
   return (
@@ -490,31 +386,13 @@ const PeakListPage = (props: Props) => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + searchListDetailLink('search')} />
       </Helmet>
-      {mapSearchToggleBar}
       <ContentLeftSmall>
-        <SearchContainer>
-          <SearchAndFilterContainer>
-            <StandardSearch
-              placeholder={getString('global-text-value-search-hiking-lists')}
-              setSearchQuery={searchPeakLists}
-              focusOnMount={true}
-              initialQuery={initialSearchQuery}
-            />
-          </SearchAndFilterContainer>
-        </SearchContainer>
         <ContentBody ref={listContainerElm} style={{paddingTop: queryText ? 0 : undefined}}>
           {list}
-          {addMountainButton}
         </ContentBody>
       </ContentLeftSmall>
-      <ContentRightLarge>
-        {backButton}
-        <ContentBody>
-          {listDetail}
-        </ContentBody>
-      </ContentRightLarge>
     </>
   );
 };
 
-export default withRouter(PeakListPage);
+export default PeakListPage;

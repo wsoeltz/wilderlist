@@ -3,7 +3,7 @@ import countBy from 'lodash/countBy';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import {useHistory} from 'react-router-dom';
 import useFluent from '../../hooks/useFluent';
 import {mountainDetailLink} from '../../routing/Utils';
 import {
@@ -99,12 +99,8 @@ interface CompletedMountainWithDateObject {
   dates: DateObject[];
 }
 
-interface Props extends RouteComponentProps {
-  userId: string;
-}
-
-const Stats = (props: Props) => {
-  const { userId, history } = props;
+const Stats = ({userId}: {userId: string}) => {
+  const history = useHistory();
 
   const getString = useFluent();
 
@@ -486,4 +482,4 @@ const Stats = (props: Props) => {
   );
 };
 
-export default withRouter(Stats);
+export default Stats;

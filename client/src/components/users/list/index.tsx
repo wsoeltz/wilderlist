@@ -3,7 +3,6 @@ import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
-import { RouteComponentProps, withRouter } from 'react-router';
 import useFluent from '../../../hooks/useFluent';
 import { friendsWithUserProfileLink } from '../../../routing/Utils';
 import {
@@ -24,6 +23,8 @@ import UserProfile from '../detail/UserProfile';
 import GhostUserCard from './GhostUserCard';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import {useParams, useHistory} from 'react-router-dom';
 
 const SEARCH_USERS = gql`
   query searchUsers(
@@ -66,20 +67,18 @@ interface QuerySuccessResponse {
 }
 
 interface QueryVariables {
-  id: string;
+  id: string | null;
   searchQuery: string;
   pageNumber: number;
   nPerPage: number;
 }
-
-interface Props extends RouteComponentProps {
-  userId: string;
-}
-
-const UserList = (props: Props) => {
-  const { userId, match, history, location } = props;
-  const { id }: any = match.params;
-  const { query, page } = queryString.parse(location.search);
+const UserList = () => {
+  // const { userId, match, history, location } = props;
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const history = useHistory();
+  const { id }: any = useParams();
+  const { query, page } = queryString.parse(history.location.search);
 
   const getString = useFluent();
 
@@ -147,7 +146,7 @@ const UserList = (props: Props) => {
         {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (data !== undefined) {
+  } else if (data !== undefined && userId !== null) {
     const { users, me: {friends} } = data;
     let userData: UserDatum[] | null;
     if (searchQuery === '') {
@@ -192,15 +191,20 @@ const UserList = (props: Props) => {
   } else {
     list = null;
   }
-  const userProfile = !Types.ObjectId.isValid(id)
-  ? (
+  let userProfile: React.ReactElement<any> | null;
+  if (!Types.ObjectId.isValid(id)) {
+    userProfile = (
       <PlaceholderText>
         {getString('user-list-no-user-selected-text')}
       </PlaceholderText>
     )
-  : (
-    <UserProfile userId={userId} id={id} history={history} />
+  } else if (userId !== null) {
+    userProfile = (
+      <UserProfile userId={userId} id={id} history={history} />
     );
+  } else {
+    userProfile = null;
+  }
   return (
     <>
       <Helmet>
@@ -228,4 +232,4 @@ const UserList = (props: Props) => {
   );
 };
 
-export default withRouter(UserList);
+export default UserList;

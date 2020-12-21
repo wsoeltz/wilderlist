@@ -1,7 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import queryString from 'query-string';
 import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
 import useFluent from '../../../hooks/useFluent';
 import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
@@ -19,6 +18,8 @@ import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import {useParams, useHistory} from 'react-router-dom';
 
 const mountainQuery = `
       id
@@ -152,11 +153,6 @@ interface QueryVariables {
   lng?: string;
 }
 
-interface Props extends RouteComponentProps {
-  user: User;
-  mountainPermissions: null | number;
-}
-
 const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
   const getString = useFluent();
   return (
@@ -168,12 +164,11 @@ const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
 
 const MemoedActions = React.memo(ModalActions);
 
-const MountainCreatePage = (props: Props) => {
-  const { user, mountainPermissions, match, history, location } = props;
-  const { id }: any = match.params;
-  const {lat, lng}: QueryVariables = queryString.parse(location.search);
-
-  const userId = user._id;
+const MountainCreatePage = () => {
+  const user = useCurrentUser();
+  const { id }: any = useParams();
+  const history = useHistory();
+  const {lat, lng}: QueryVariables = queryString.parse(history.location.search);
 
   const getString = useFluent();
 
@@ -200,7 +195,9 @@ const MountainCreatePage = (props: Props) => {
   const [editMountain] = useMutation<MountainSuccessResponse, EditMountainVariables>(EDIT_MOUNTAIN);
 
   let mountainForm: React.ReactElement<any> | null;
-  if (mountainPermissions === -1) {
+  if (!user) {
+    mountainForm = null;
+  } else if (user.mountainPermissions === -1) {
     mountainForm = (
       <PlaceholderText>
         {getString('global-text-value-no-permission')}
@@ -217,6 +214,7 @@ const MountainCreatePage = (props: Props) => {
     );
   } else if (data !== undefined) {
     const states = data.states ? data.states : [];
+    const userId = user ? user._id : null;
 
     const submitMountainForm = (addAnother: boolean) => async (input: BaseMountainVariables) => {
       try {
@@ -354,4 +352,4 @@ const MountainCreatePage = (props: Props) => {
   );
 };
 
-export default withRouter(MountainCreatePage);
+export default MountainCreatePage;

@@ -1,7 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -35,7 +35,7 @@ import {
 import {
   isValidURL,
 } from '../../../Utils';
-import { UserContext } from '../../App';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
@@ -261,17 +261,16 @@ interface PeakListNoteVariables {
 interface Props {
   userId: string | null;
   id: string;
-  mountainId: string | undefined;
   queryRefetchArray?: Array<{query: any, variables: any}>;
   setOwnMetaData?: boolean;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id, mountainId, queryRefetchArray, setOwnMetaData } = props;
+  const { userId, id, queryRefetchArray, setOwnMetaData } = props;
 
   const getString = useFluent();
 
-  const me = useContext(UserContext);
+  const me = useCurrentUser();
   const isOtherUser = (me && userId) && (me._id !== userId) ? true : false;
 
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
@@ -388,10 +387,6 @@ const PeakListDetail = (props: Props) => {
         return {...mountain, completionDates};
       });
 
-      const allMountainsWithDates = [...requiredMountainsWithDates, ...optionalMountainsWithDates];
-
-      const activeMountain = allMountainsWithDates.find(mtn => mtn.id === mountainId);
-
       const friendHeader = isOtherUser === true && user !== null ? (
          <FriendHeader>
           <Text>
@@ -445,8 +440,6 @@ const PeakListDetail = (props: Props) => {
       let title: string;
       if (isOtherUser === true && user !== null) {
         title = user.name + ' | ' + peakList.name;
-      } else if (activeMountain !== undefined) {
-        title = peakList.name + ' | ' + activeMountain.name;
       } else {
         title = peakList.name;
       }
