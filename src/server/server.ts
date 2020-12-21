@@ -284,7 +284,7 @@ if (process.env.NODE_ENV === 'production') {
     }
   });
 
-  app.get(Routes.Login, (req, res) => {
+  app.get(Routes.Landing, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
     const canonicalUrl = baseUrl + req.path;
 
@@ -351,9 +351,7 @@ if (process.env.NODE_ENV === 'production') {
 
   });
 
-  app.get([
-    Routes.ListDetail, Routes.ListsWithDetail,
-    ], (req, res) => {
+  app.get(Routes.ListDetail, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
 
     // read in the index.html file
@@ -408,54 +406,20 @@ if (process.env.NODE_ENV === 'production') {
 
   });
 
-  app.get(Routes.ListDetailWithMountainDetail, (req, res) => {
-    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
-
-    // read in the index.html file
-    fs.readFile(filePath, 'utf8', async (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
-      try {
-        const listData = await getListData(req.params.id);
-        if (listData !== null) {
-          const mtnData = await getMountainData(req.params.mountainId);
-          const mtnName = mtnData && mtnData.name ? '/' + mtnData.name : '';
-          // replace the special strings with server generated strings
-          data = data.replace(/\$OG_TITLE/g,
-            `${listData.name + getType(listData.type) + mtnName} - Wilderlist`,
-          );
-          data = data.replace(/\$CANONICAL_URL/g,
-            `https://www.wilderlist.app/list/${req.params.id}`,
-          );
-          data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
-          const description = await getListDescription(listData);
-          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
-          res.send(result);
-        } else {
-          throw new Error('Incorrect List ID ' + req.params.id);
-        }
-
-      } catch (err) {
-
-        console.error(err);
-        // replace the special strings with the default generated strings
-        const canonicalUrl = baseUrl + req.path;
-        data = data.replace(/\$OG_TITLE/g, defaultTitle);
-        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
-        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
-        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
-        res.send(result);
-
-      }
-
-    });
-
+  app.get([
+    Routes.DEPRECATED_ListsWithDetail,
+    Routes.DEPRECATED_ListDetailWithMountainDetail,
+  ], (req, res) => {
+    res.redirect(Routes.ListDetail.replace(':id', req.params.id));
   });
 
   app.get([
-    Routes.MountainSearchWithDetail, Routes.MountainDetail,
-    ], (req, res) => {
+    Routes.DEPRECATED_MountainSearchWithDetail,
+  ], (req, res) => {
+    res.redirect(Routes.MountainDetail.replace(':id', req.params.id));
+  });
+
+  app.get(Routes.MountainDetail, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
 
     // read in the index.html file

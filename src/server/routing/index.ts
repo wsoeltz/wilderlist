@@ -23,34 +23,15 @@ import {
 // be found on Google or shared on social
 
 export enum Routes {
-  Login = '/',
-  // Dashboard = '/',
-  // DashboardWithPeakListDetail = '/dashboard/list/:peakListId',
-  ListsWithDetail = '/lists/:id',
+  Landing = '/',
   ListDetail = '/list/:id',
-  ListDetailWithMountainDetail = '/list/:id/mountain/:mountainId',
-  MountainSearchWithDetail = '/mountains/:id',
   MountainDetail = '/mountain/:id',
-  // CreateMountain = '/create-mountain',
-  // EditMountain = '/edit-mountain/:id',
-  // CreateList = '/create-list',
-  // EditList = '/edit-list/:id',
-  // FriendsWithProfile = '/users/:id',
-  // UserProfile = '/user/:id',
-  // UserSettings = '/user-settings',
-  // OtherUserPeakList = '/user/:id/list/:peakListId',
-  // OtherUserPeakListDetail = '/detail/user/:friendId/list/:peakListId',
-  // OtherUserPeakListCompare = '/user/:id/compare/:peakListId',
-  // ComparePeakListWithMountainDetail = 'compare/user/:id/list/:peakListId/mountain/:mountainId',
-  // ComparePeakListIsolated = '/compare/user/:id/list/:peakListId',
-  // Admin = '/admin',
-  // AdminRegions = '/admin/regions',
-  // AdminStates = '/admin/states',
-  // AdminMountains = '/admin/mountains',
-  // AdminPeakLists = '/admin/lists',
-  // AdminUsers = '/admin/users',
   PrivacyPolicy = '/privacy-policy',
   TermsOfUse = '/terms-of-use',
+
+  DEPRECATED_ListsWithDetail = '/lists/:id',
+  DEPRECATED_ListDetailWithMountainDetail = '/list/:id/mountain/:mountainId',
+  DEPRECATED_MountainSearchWithDetail = '/mountains/:id',
 }
 
 export const getListData = async (id: string) => {
