@@ -153,8 +153,8 @@ const AdminStates = () => {
       editPanel = null;
     }
   } else {
-    failIfValidOrNonExhaustive(editStatePanel, 'Invalid value for editStatePanel ' + editStatePanel);
     editPanel = null;
+    failIfValidOrNonExhaustive(editStatePanel, 'Invalid value for editStatePanel ' + editStatePanel);
   }
 
   const editState = (id: string) => {

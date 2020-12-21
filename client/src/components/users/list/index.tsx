@@ -181,7 +181,6 @@ const UserList = (props: Props) => {
           friendsList={friends}
           noResultsText={noResultsText}
           noFriendsText={noFriendsText}
-          openInSidebar={true}
           sortByStatus={false}
         />
         <PaginationContainer>

@@ -7,7 +7,7 @@ import {
   // @ts-expect-error d3 typing is inaccurate, event is in fact exported from this module
   event,
   select,
-  Selection
+  Selection,
 } from 'd3-selection';
 import {
   lightBorderColor,

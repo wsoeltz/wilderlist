@@ -269,8 +269,8 @@ const AdminPeakLists = () => {
       editPanel = null;
     }
   } else {
-    failIfValidOrNonExhaustive(editPeakListPanel, 'Invalid value for editPeakListPanel ' + editPeakListPanel);
     editPanel = null;
+    failIfValidOrNonExhaustive(editPeakListPanel, 'Invalid value for editPeakListPanel ' + editPeakListPanel);
   }
 
   const editPeakList = (id: string) => {

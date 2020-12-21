@@ -31,7 +31,6 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "jsdoc/require-jsdoc": "off",
-        "@typescript-eslint/no-unused-vars": "off",
         "max-len": ["error", 200, 2, {
           "ignoreUrls": true,
           "ignoreComments": true,

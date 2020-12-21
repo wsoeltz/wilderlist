@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   ContentBody,
   ContentFull,
@@ -16,7 +16,6 @@ const MountainDetailPage = (props: Props) => {
   const { userId, match } = props;
   const { id, mountainId: possibleMountainId }: any = match.params;
   const mountainId = possibleMountainId ? possibleMountainId : id;
-  const peakListId = possibleMountainId ? id : null;
 
   return (
     <>

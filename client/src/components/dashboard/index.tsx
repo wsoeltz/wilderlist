@@ -1,17 +1,14 @@
 import { gql, useQuery } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import Helmet from 'react-helmet';
-import { RouteComponentProps, withRouter } from 'react-router';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
-import { Routes } from '../../routing/routes';
 import { searchListDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
-  ContentHeader,
   ContentLeftLarge,
-  ContentRightSmall,
   SearchContainer,
 } from '../../styling/Grid';
 import {
@@ -24,14 +21,11 @@ import { PeakListVariants, User } from '../../types/graphQLTypes';
 import { mobileSize } from '../../Utils';
 import { AppContext } from '../App';
 import NewAscentReport from '../peakLists/detail/completionModal/NewAscentReport';
-import PeakListDetail from '../peakLists/detail/PeakListDetail';
 import { ViewMode } from '../peakLists/list';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
 import SuggestedLists from '../peakLists/list/SuggestedLists';
-import BackButton from '../sharedComponents/BackButton';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 import StandardSearch from '../sharedComponents/StandardSearch';
-import AllMountains from '../stats/AllMountains';
 
 const SearchRoot = styled(SearchContainer)`
   display: grid;
@@ -81,13 +75,14 @@ interface Variables {
   userId: string;
 }
 
-interface Props extends RouteComponentProps {
+interface Props {
   userId: string;
 }
 
 const Dashboard = (props: Props) => {
-  const { userId, history, match } = props;
-  const { peakListId }: any = match.params;
+  const { userId } = props;
+
+  const history = useHistory();
 
   const searchPeakLists = (value: string) => {
     const url = searchListDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
@@ -102,6 +97,8 @@ const Dashboard = (props: Props) => {
     ? usersLocation.data : undefined;
 
   const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
+  const openAscentModal = useCallback(() => setAscentModalOpen(true), []);
+  const closeAscentModal = useCallback(() => setAscentModalOpen(false), []);
 
   const {
     loading: listLoading,
@@ -173,7 +170,7 @@ const Dashboard = (props: Props) => {
 
   const addAscentButton = windowWidth < mobileSize ? (
     <AscentButtonRoot>
-      <ButtonSecondary onClick={() => setAscentModalOpen(true)}>
+      <ButtonSecondary onClick={openAscentModal}>
         <FontAwesomeIcon icon='calendar-alt' /> {getString('map-add-ascent')}
       </ButtonSecondary>
     </AscentButtonRoot>
@@ -182,36 +179,12 @@ const Dashboard = (props: Props) => {
   const addAscentModal = ascentModalOpen ? (
     <NewAscentReport
       initialMountainList={[]}
-      closeEditMountainModalModal={() => setAscentModalOpen(false)}
+      closeEditMountainModalModal={closeAscentModal}
       userId={userId}
       variant={PeakListVariants.standard}
       queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
     />
   ) : null;
-
-  let rightSideContent: React.ReactElement<any> | null;
-  if (windowWidth < mobileSize) {
-    rightSideContent = null;
-  } else if (peakListId !== undefined) {
-    rightSideContent = (
-      <PeakListDetail userId={userId} id={peakListId} mountainId={undefined}/>
-    );
-  }  else {
-    rightSideContent = (
-      <AllMountains
-        userId={userId}
-      />
-    );
-  }
-
-  const rightSideUtility = peakListId !== undefined ? (
-      <ContentHeader>
-        <BackButton
-          onClick={() => history.push(Routes.Dashboard)}
-          text={getString('dashboard-back-to-dashboard')}
-        />
-      </ContentHeader>
-    ) : null;
 
   return (
     <>
@@ -232,15 +205,9 @@ const Dashboard = (props: Props) => {
           {peakListsList}
         </ContentBody>
       </ContentLeftLarge>
-      <ContentRightSmall>
-        {rightSideUtility}
-        <ContentBody>
-          {rightSideContent}
-        </ContentBody>
-      </ContentRightSmall>
       {addAscentModal}
     </>
   );
 };
 
-export default withRouter(Dashboard);
+export default Dashboard;

@@ -61,10 +61,10 @@ export const ORDINAL_NUMBER = ([input]: [number]) => input + ORDINAL_SUFFIX([inp
 const getLocalizationInfo = (messages: string) => {
   const bundle = new FluentBundle(['en-US']);
   bundle.addMessages(messages);
-  function* generateBundles(_locales: string[]) {
+  function* generateBundles(/*_locales: string[]*/) {
     yield bundle;
   }
-  const localization = new ReactLocalization(generateBundles(['en-US']));
+  const localization = new ReactLocalization(generateBundles(/*['en-US']*/));
   const localizationAndBundle = {localization, bundle};
   const LocalizationAndBundleContext = createContext(localizationAndBundle);
   return {

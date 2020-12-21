@@ -140,8 +140,8 @@ const AdminRegions = () => {
       editPanel = null;
     }
   } else {
-    failIfValidOrNonExhaustive(editRegionPanel, 'Invalid value for editRegionPanel ' + editRegionPanel);
     editPanel = null;
+    failIfValidOrNonExhaustive(editRegionPanel, 'Invalid value for editRegionPanel ' + editRegionPanel);
   }
 
   const editRegion = (id: string) => {

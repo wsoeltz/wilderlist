@@ -1,5 +1,5 @@
-import React from 'react';
 import { gql, useQuery } from '@apollo/client';
+import React from 'react';
 import useFluent from '../../../../hooks/useFluent';
 import { PlaceholderText } from '../../../../styling/styleUtils';
 import { TripReport } from '../../../../types/graphQLTypes';
@@ -180,12 +180,14 @@ const EditAscentReport = (props: Props) => {
     } else {
       const {
         id, users, mountains, notes, link,
-        date: __unusedDate, author: __unusedAuthor,
-        ...conditions
+        mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
+        iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,
+        snowIceMonorailUnstable, snowIcePostholes, snowMinor, snowPackedPowder,
+        snowUnpackedPowder, snowDrifts, snowSticky, snowSlush, obstaclesBlowdown, obstaclesOther,
       } = tripReport;
 
-      const filteredMountains = tripReport.mountains.filter(notEmpty);
-      const filteredUsers = tripReport.users.filter(notEmpty);
+      const filteredMountains = mountains.filter(notEmpty);
+      const filteredUsers = users.filter(notEmpty);
 
       const userList = filteredUsers.map(user => user.id);
       return (
@@ -200,7 +202,12 @@ const EditAscentReport = (props: Props) => {
           initialDateType={getDateType(date)}
           initialUserList={userList}
           initialMountainList={filteredMountains}
-          initialConditions={conditions}
+          initialConditions={{
+            mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
+            iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,
+            snowIceMonorailUnstable, snowIcePostholes, snowMinor, snowPackedPowder,
+            snowUnpackedPowder, snowDrifts, snowSticky, snowSlush, obstaclesBlowdown, obstaclesOther,
+          }}
           initialTripNotes={notes ? notes : ''}
           initialLink={link ? link : ''}
         />

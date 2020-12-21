@@ -22,14 +22,13 @@ interface Props {
   showCurrentUser: boolean;
   noResultsText: string;
   noFriendsText: string;
-  openInSidebar: boolean;
   sortByStatus: boolean;
 }
 
 const ListUsers = (props: Props) => {
   const {
     userData, currentUserId, showCurrentUser, friendsList, noResultsText,
-    openInSidebar, sortByStatus, noFriendsText,
+    sortByStatus, noFriendsText,
   } = props;
 
   if (userData === null) {

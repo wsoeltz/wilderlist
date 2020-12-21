@@ -306,7 +306,6 @@ export const completedPeaks = (
     return numAscents;
   } else {
     failIfValidOrNonExhaustive(variant, 'Invalid list type ' + variant);
-    return 0;
   }
 };
 
@@ -431,6 +430,5 @@ export const getType = (type: PeakListVariants) => {
     return ' - Grid';
   } else {
     failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
-    return '';
   }
 };
