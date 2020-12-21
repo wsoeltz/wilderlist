@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components/macro';
 import {
   DetailBox,
@@ -53,6 +53,7 @@ const CollapsibleDetailBox = (props: Props) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
   const [hidden, setHidden] = useState<boolean>(!!defaultHidden);
+  const toggleHidden = useCallback(() => setHidden(curr => !curr), [setHidden]);
   const [contentsHeight, setContentsHeight] = useState<number>(0);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ const CollapsibleDetailBox = (props: Props) => {
 
   return (
     <Root>
-      <Title onClick={() => setHidden(!hidden)}>
+      <Title onClick={toggleHidden}>
         <div>
           {title}
         </div>

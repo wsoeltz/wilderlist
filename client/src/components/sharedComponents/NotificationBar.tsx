@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled, {keyframes} from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
@@ -158,6 +158,12 @@ const NotificationBar = (props: Props) => {
   const getString = useFluent();
 
   const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
+  const closeEditMountainModalModal = useCallback(
+    () => setIsAscentReportModalOpen(false),
+  [setIsAscentReportModalOpen]);
+  const openEditMountainModalModal = useCallback(
+    () => setIsAscentReportModalOpen(true),
+  [setIsAscentReportModalOpen]);
 
   const {loading, error, data} = useQuery<SuccessResponse, {userId: string}>(GET_NOTIFICATIONS, {
     variables: { userId },
@@ -235,7 +241,7 @@ const NotificationBar = (props: Props) => {
         const ascentReportModal = isAscentReportModalOpen === false ? null : (
           <AscentReportFromNotification
             initialMountainList={[mountain]}
-            closeEditMountainModalModal={() => setIsAscentReportModalOpen(false)}
+            closeEditMountainModalModal={closeEditMountainModalModal}
             userId={user.id}
             textNote={null}
             variant={PeakListVariants.standard}
@@ -260,7 +266,7 @@ const NotificationBar = (props: Props) => {
             <ConfirmButton onClick={onConfirm}>
               {getString('global-text-value-modal-confirm')}
             </ConfirmButton>
-            <TripReportButton onClick={() => setIsAscentReportModalOpen(true)}>
+            <TripReportButton onClick={openEditMountainModalModal}>
               {getString('global-text-value-modal-create-trip-report')}
             </TripReportButton>
             <DismissButton onClick={dismissNotification}>

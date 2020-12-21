@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components';
 import useFluent from '../../hooks/useFluent';
 import {
@@ -33,13 +33,15 @@ const Header = (props: Props) => {
   const {userId, queryRefetchArray, mountainCount} = props;
 
   const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
+  const closeEditMountainModalModal = useCallback(() => setAscentModalOpen(false), [setAscentModalOpen]);
+  const openEditMountainModalModal = useCallback(() => setAscentModalOpen(true), [setAscentModalOpen]);
 
   const getString = useFluent();
 
   const addAscentModal =  ascentModalOpen ? (
     <NewAscentReport
       initialMountainList={[]}
-      closeEditMountainModalModal={() => setAscentModalOpen(false)}
+      closeEditMountainModalModal={closeEditMountainModalModal}
       userId={userId}
       variant={PeakListVariants.standard}
       queryRefetchArray={queryRefetchArray}
@@ -57,7 +59,7 @@ const Header = (props: Props) => {
         </Subtitle>
       </SectionTitleH3>
       <div>
-        <ButtonSecondary onClick={() => setAscentModalOpen(true)}>
+        <ButtonSecondary onClick={openEditMountainModalModal}>
           <FontAwesomeIcon icon='calendar-alt' /> {getString('map-add-ascent')}
         </ButtonSecondary>
       </div>

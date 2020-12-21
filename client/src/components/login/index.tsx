@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
@@ -155,13 +155,15 @@ const LoginPage = () => {
   const [isSignUpModalOpen, setSignUpModalOpen] = useState<boolean>(false);
 
   const getString = useFluent();
+  const openSignUpModal = useCallback(() => setSignUpModalOpen(true), []);
+  const closeSignUpModal = useCallback(() => setSignUpModalOpen(false), []);
 
   const signUpModal = isSignUpModalOpen === false ? null : (
     <SignUpModal
       text={getString('global-text-value-modal-sign-up-today', {
         'list-short-name': 'Wilderlist',
       })}
-      onCancel={() => setSignUpModalOpen(false)}
+      onCancel={closeSignUpModal}
     />
   );
 
@@ -193,7 +195,7 @@ const LoginPage = () => {
           <ListItem>{getString('login-page-track-your-adventure-li-4')}</ListItem>
           <ListItem>{getString('login-page-track-your-adventure-li-5')}</ListItem>
         </TextList>
-        <SignUpButton onClick={() => setSignUpModalOpen(true)}>
+        <SignUpButton onClick={openSignUpModal}>
           {getString('login-page-sign-up-for-free')}
         </SignUpButton>
       </ContentRoot>

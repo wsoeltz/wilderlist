@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components';
 import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
@@ -147,15 +147,16 @@ interface Props {
 const TripReports = ({mountainId, mountainName, userId}: Props) => {
 
   const [fullReport, setFullReport] = useState<TripReport | null>(null);
+  const closeFullReport = useCallback(() => setFullReport(null), []);
   const [pageNumber, setPageNumber] = useState<number>(1);
 
-  const loadMoreReports = () => setPageNumber(pageNumber + 1);
+  const loadMoreReports = useCallback(() => setPageNumber(curr => curr + 1), []);
 
   const getString = useFluent();
 
   const tripReportModal = fullReport === null ? null : (
     <TripReportModal
-      onClose={() => setFullReport(null)}
+      onClose={closeFullReport}
       tripReport={fullReport}
       userId={userId}
     />
@@ -185,6 +186,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
       const maxCharactersDefault = 250;
       const reportList = tripReports.map((report, i) => {
         const allConditionsArray: string[] = [];
+        const openReport = () => setFullReport(report);
         Object.keys(report).forEach(function(key: string) {
           if (isCondition(key) && report[key as keyof TripReport]) {
             allConditionsArray.push(getString('trip-report-condition-name', {key}));
@@ -244,7 +246,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
           const readMoreText = report.notes.length > maxCharacters ? (
             <>
               ...
-              [<LinkButton onClick={() => setFullReport(report)}>Read More</LinkButton>]
+              [<LinkButton onClick={openReport}>Read More</LinkButton>]
             </>
           ) : null;
           notes = (
@@ -332,17 +334,16 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
               {authorName}
             </BoldLink>
           ) : <span>{authorName}</span>;
-
         return (
           <ReportContainer
             key={report.id}
             id={`trip-report-${report.date}`}
-            onClick={() => setFullReport(report)}
+            onClick={openReport}
           >
             <ReportHeader>
               <SemiBold>
                 {'On '}
-                <LinkButton onClick={() => setFullReport(report)}>
+                <LinkButton onClick={openReport}>
                   {formatStringDate(report.date)}
                 </LinkButton>
                 {' by '}
@@ -350,7 +351,7 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
               </SemiBold>
               <ReadFullReportButton
                 className='read-full-report-button'
-                onClick={() => setFullReport(report)}
+                onClick={openReport}
               >
                 {getString('trip-report-read-full-report')}
               </ReadFullReportButton>

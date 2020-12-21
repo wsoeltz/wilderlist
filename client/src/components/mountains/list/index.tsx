@@ -7,7 +7,7 @@ import {
 import sortBy from 'lodash/sortBy';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
@@ -139,12 +139,15 @@ const MountainSearchPage = (props: Props) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
 
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const toggleFilter = useCallback(() => setFilterOpen(curr => !curr), []);
 
   const [stateId, setStateId] = useState<string>('');
   const [minElevation, setMinElevation] = useState<string>('');
   const [maxElevation, setMaxElevation] = useState<string>('');
 
   const [mobileView, setMobileView] = useState<View>(View.List);
+  const setToListView = useCallback(() => setMobileView(View.List), []);
+  const setToMapView = useCallback(() => setMobileView(View.Map), []);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -331,13 +334,13 @@ const MountainSearchPage = (props: Props) => {
               color: mobileView === View.List ? '#fff' : undefined,
               backgroundColor: mobileView === View.List ? secondaryColor : undefined,
             }}
-            onClick={() => setMobileView(View.List)}
+            onClick={setToListView}
           >
             <BasicIconInText icon={faList} />
             {getString('mountain-search-mobile-nav-list')}
           </SecondaryNavigationButton>
           <SecondaryNavigationButton
-            onClick={() => setMobileView(View.Map)}
+            onClick={setToMapView}
             style={{
               color: mobileView === View.Map ? '#fff' : undefined,
               backgroundColor: mobileView === View.Map ? secondaryColor : undefined,
@@ -401,7 +404,7 @@ const MountainSearchPage = (props: Props) => {
             initialQuery={initialSearchQuery}
           />
           <FilterButton
-            onClick={() => setFilterOpen(!filterOpen)}
+            onClick={toggleFilter}
             style={{
               borderBottomRightRadius: filterOpen ? 0 : undefined,
             }}

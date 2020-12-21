@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client';
 import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import useFluent from '../../../hooks/useFluent';
 import usePointLocationData from '../../../hooks/usePointLocationData';
 import {
@@ -174,9 +174,10 @@ const MountainForm = (props: Props) => {
   const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const closeAreYouSureModal = () => {
+  const closeAreYouSureModal = useCallback(() => {
     setDeleteModalOpen(false);
-  };
+  }, []);
+  const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
   const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
   const flagForDeletion = (id: string) => {
     if (id) {
@@ -314,7 +315,7 @@ const MountainForm = (props: Props) => {
 
   const deleteButton = !initialData.id ? null : (
     <DeleteButton
-      onClick={() => setDeleteModalOpen(true)}
+      onClick={openDeleteModal}
       mobileExtend={true}
     >
       <BasicIconInText icon={faTrash} />

@@ -6,7 +6,7 @@ import {
   faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import useFluent from '../../../hooks/useFluent';
 import {
@@ -128,9 +128,11 @@ const PeakListForm = (props: Props) => {
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const closeAreYouSureModal = () => {
-    setDeleteModalOpen(false);
-  };
+  const closeAreYouSureModal = useCallback(() => setDeleteModalOpen(false), []);
+  const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
+  const openParentModal = useCallback(() => setParentModalOpen(true), []);
+  const closeParentModal = useCallback(() => setParentModalOpen(false), []);
+  const closeCreateMountainModal = useCallback(() => setCreateMountainModalOpen(false), []);
 
   const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
   const flagForDeletion = (id: string | undefined) => {
@@ -229,7 +231,7 @@ const PeakListForm = (props: Props) => {
 
   const deleteButton = !initialData.id ? null : (
     <DeleteButton
-      onClick={() => setDeleteModalOpen(true)}
+      onClick={openDeleteModal}
       mobileExtend={true}
     >
       <BasicIconInText icon={faTrash} />
@@ -284,14 +286,14 @@ const PeakListForm = (props: Props) => {
   const parentModal = parentModalOpen === false ? null : (
     <ParentModal
       copyMountains={copyMountains}
-      onCancel={() => setParentModalOpen(false)}
+      onCancel={closeParentModal}
     />
   );
 
   const onNewMountainCreate = (mtn: MountainDatum) => setMountains([...mountains, mtn]);
   const createMountainModal = createMountainModalOpen === false ? null : (
     <CreateMountainModal
-      onCancel={() => setCreateMountainModalOpen(false)}
+      onCancel={closeCreateMountainModal}
       onSuccess={onNewMountainCreate}
     />
   );
@@ -400,7 +402,7 @@ const PeakListForm = (props: Props) => {
             <AddMountains
               selectedMountains={mountains}
               setSelectedMountains={setMountains}
-              openParentModal={() => setParentModalOpen(true)}
+              openParentModal={openParentModal}
               states={states}
             />
           </div>

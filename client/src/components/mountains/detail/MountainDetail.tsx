@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faCloudSun, faEdit, faFlag, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
@@ -268,7 +268,8 @@ const MountainDetail = (props: Props) => {
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
 
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
-  const closeFlagModal = () => setIsFlagModalOpen(false);
+  const openFlagModal = useCallback(() => setIsFlagModalOpen(true), []);
+  const closeFlagModal = useCallback(() => setIsFlagModalOpen(false), []);
 
   let header: React.ReactElement<any> | null;
   let body: React.ReactElement<any> | null;
@@ -339,7 +340,7 @@ const MountainDetail = (props: Props) => {
             {getString('global-text-value-edit')}
           </CompactGhostButtonLink>
         ) : (
-          <CompactGhostButton onClick={() => setIsFlagModalOpen(true)}>
+          <CompactGhostButton onClick={openFlagModal}>
             <BasicIconInText icon={faFlag} />
             {getString('global-text-value-flag')}
           </CompactGhostButton>

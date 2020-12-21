@@ -1,7 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -279,6 +279,7 @@ const PeakListDetail = (props: Props) => {
   });
 
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const openExportModal = useCallback(() => setIsExportModalOpen(true), []);
 
   const [addPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(ADD_PEAKLIST_NOTE);
   const [editPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(EDIT_PEAKLIST_NOTE);
@@ -355,7 +356,7 @@ const PeakListDetail = (props: Props) => {
           resourcesArray.push(
             <ResourceItem
               key={'grid-trigger-modal-for-exports'}
-              onClick={() => setIsExportModalOpen(true)}
+              onClick={openExportModal}
             >
               <LinkButton>{getString('peak-list-export-grid-special-link')}</LinkButton>
             </ResourceItem>,

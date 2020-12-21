@@ -1,7 +1,7 @@
 import { faDownload, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { sortBy } from 'lodash';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
@@ -278,6 +278,8 @@ const MountainTable = (props: Props) => {
 
   const [mountainToEdit, setMountainToEdit] = useState<MountainToEdit | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const closeImportModal = useCallback(() => setIsImportModalOpen(false), []);
+  const openImportModal = useCallback(() => setIsImportModalOpen(true), []);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const localSortCategory = localStorage.getItem(localStorageSortingCategoryVariable);
@@ -292,27 +294,40 @@ const MountainTable = (props: Props) => {
   const sortIcon = sortingDirection === SortingDirection.ascending
     ? DirectionIcon.sortUp : DirectionIcon.sortDown;
 
-  const toggleSortDirection = () => {
-    const newDirection = sortingDirection === SortingDirection.ascending
-    ? SortingDirection.descending : SortingDirection.ascending;
-    localStorage.setItem(localStorageSortingDirectionVariable, newDirection);
-    setSortingDirection(newDirection);
-  };
-
-  const setSorting = (sortValue: SortingBy) => {
+  const setSorting = useCallback((sortValue: SortingBy) => {
     if (sortValue === sortingBy) {
-      toggleSortDirection();
+      const newDirection = sortingDirection === SortingDirection.ascending
+      ? SortingDirection.descending : SortingDirection.ascending;
+      localStorage.setItem(localStorageSortingDirectionVariable, newDirection);
+      setSortingDirection(newDirection);
     } else {
       localStorage.setItem(localStorageSortingCategoryVariable, sortValue);
       setSortingBy(sortValue);
     }
-  };
+  }, [sortingBy, sortingDirection, setSortingDirection]);
+
+  const setSortToNames = () => setSorting(SortingCategories.name);
+  const setSortToElevation = () => setSorting(SortingCategories.elevation);
+  const setSortToState = () => setSorting(SortingCategories.state);
+  const setSortToDate = () => setSorting(SortingCategories.date);
 
   const top = isOtherUser === true ? (friendHeaderHeight + topOfPageBuffer) + 'rem' : topOfPageBuffer + 'rem';
 
-  const closeEditMountainModalModal = () => {
+  const closeEditMountainModalModal = useCallback(() => {
     setMountainToEdit(null);
-  };
+  }, []);
+
+  const openExportModal = useCallback(() => {
+    if (setIsExportModalOpen) {
+      setIsExportModalOpen(true);
+    }
+  }, [setIsExportModalOpen]);
+
+  const closeExportModal = useCallback(() => {
+    if (setIsExportModalOpen) {
+      setIsExportModalOpen(false);
+    }
+  }, [setIsExportModalOpen]);
 
   let peakListShortNameWithType: string;
   if (type === PeakListVariants.standard) {
@@ -413,14 +428,14 @@ const MountainTable = (props: Props) => {
         <ImportAscentsModal
           userId={user.id}
           mountains={mountains}
-          onCancel={() => setIsImportModalOpen(false)}
+          onCancel={closeImportModal}
         />
      ) ;
     } else if (type === PeakListVariants.grid) {
       importAscentsModal = (
           <ImportGridModal
             userId={user.id}
-            onCancel={() => setIsImportModalOpen(false)}
+            onCancel={closeImportModal}
           />
       );
     } else {
@@ -432,7 +447,7 @@ const MountainTable = (props: Props) => {
           text={getString('global-text-value-modal-sign-up-today-import', {
             'list-short-name': peakListShortNameWithType,
           })}
-          onCancel={() => setIsImportModalOpen(false)}
+          onCancel={closeImportModal}
         />
     );
   } else {
@@ -531,7 +546,7 @@ const MountainTable = (props: Props) => {
     (
       <MountainColumnTitleName
         style={{top}}
-        onClick={() => setSorting(SortingCategories.name)}
+        onClick={setSortToNames}
         key={'mountain table title column ' + peakListId + 'name'}
       >
         {getString('global-text-value-mountain')}
@@ -551,7 +566,7 @@ const MountainTable = (props: Props) => {
     titleColumns.push(
       <TitleCell
         style={{top}}
-        onClick={() => setSorting(SortingCategories.elevation)}
+        onClick={setSortToElevation}
         key={'mountain table title column ' + peakListId + 'elevation'}
       >
         {getString('global-text-value-elevation')}
@@ -569,7 +584,7 @@ const MountainTable = (props: Props) => {
     titleColumns.push(
       <TitleCell
         style={{top}}
-        onClick={() => setSorting(SortingCategories.state)}
+        onClick={setSortToState}
         key={'mountain table title column ' + peakListId + 'state'}
       >
         {getString('global-text-value-state')}
@@ -598,7 +613,7 @@ const MountainTable = (props: Props) => {
       titleColumns.push(
         <MountainColumnTitleButton
           style={{top}}
-          onClick={() => setSorting(SortingCategories.date)}
+          onClick={setSortToDate}
           key={'mountain table title column ' + peakListId + 'date'}
         >
           {getString('global-text-value-done')}
@@ -618,10 +633,11 @@ const MountainTable = (props: Props) => {
     for (const key in Seasons) {
       if (Seasons.hasOwnProperty(key)) {
         const season: Seasons = key as Seasons;
+        const onClick = () => setSorting(season);
         titleColumns.push(
           <FourSeasonTitle
             style={{top}}
-            onClick={() => setSorting(season)}
+            onClick={onClick}
             key={'title column mountain table season ' + peakListId + season}
           >
             {getString('global-text-value-' + season)}
@@ -642,10 +658,11 @@ const MountainTable = (props: Props) => {
     for (const key in Months) {
       if (Months.hasOwnProperty(key)) {
         const month: Months = key as Months;
+        const onClick = () => setSorting(month);
         titleColumns.push(
           <GridTitle
             style={{top}}
-            onClick={() => setSorting(month)}
+            onClick={onClick}
             key={'title column mountain table grid ' + peakListId + month}
           >
             <CompressedCellText>
@@ -683,7 +700,7 @@ const MountainTable = (props: Props) => {
         listShortName={peakListShortName}
         type={type}
         mountains={sortedMountains}
-        onCancel={() => setIsExportModalOpen(false)}
+        onCancel={closeExportModal}
         specialExport={peakListId === NH48_GRID_OBJECT_ID ? SpecialExport.nh48grid : null}
       />
      );
@@ -693,7 +710,7 @@ const MountainTable = (props: Props) => {
           text={getString('global-text-value-modal-sign-up-today-export', {
             'list-short-name': peakListShortNameWithType,
           })}
-          onCancel={() => setIsExportModalOpen(false)}
+          onCancel={closeExportModal}
         />
     );
   } else {
@@ -712,7 +729,7 @@ const MountainTable = (props: Props) => {
     peakListId === NH48_GRID_OBJECT_ID )
     ? (
         <ButtonPrimary
-          onClick={() => setIsImportModalOpen(true)}
+          onClick={openImportModal}
         >
           <BasicIconInText icon={faFileImport} />
           {getString('mountain-table-import-button')}
@@ -725,7 +742,7 @@ const MountainTable = (props: Props) => {
 
   const exportButton = disallowExports !== true && setIsExportModalOpen ? (
     <ExportButton
-      onClick={() => setIsExportModalOpen(true)}
+      onClick={openExportModal}
     >
       <BasicIconInText icon={faDownload} />
       {getString('mountain-table-export-button')}

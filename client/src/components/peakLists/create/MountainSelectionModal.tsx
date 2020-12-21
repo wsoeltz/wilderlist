@@ -231,9 +231,10 @@ const MountainSelectionModal = (props: Props) => {
       const mountainList: Array<React.ReactElement<any>> = [];
       mountains.forEach(mtn => {
         if (!selectedMountains.find(m => m.id === mtn.id)) {
+          const onClick = () => addMountainToList(mtn);
           mountainList.push(
             <MountainItemAdd
-              onClick={() => addMountainToList(mtn)}
+              onClick={onClick}
               key={mtn.id}
             >
               {mtn.name}
@@ -269,9 +270,10 @@ const MountainSelectionModal = (props: Props) => {
   const sortedSelectedMountains = sortBy(selectedMountains, ['name']);
   const selectedMountainList = sortedSelectedMountains.map(mtn => {
     if (searchSelectedQuery === '' || mtn.name.toLowerCase().includes(searchSelectedQuery.toLowerCase())) {
+      const onClick = () => removeMountainFromList(mtn);
       return (
         <MountainItemRemove
-          onClick={() => removeMountainFromList(mtn)}
+          onClick={onClick}
           key={mtn.id}
         >
           {mtn.name}

@@ -144,10 +144,11 @@ const AreYouSureModal = (props: Props) => {
     const { peakLists } = data;
     const peakListElms = !peakLists ? null : peakLists.map(list => {
       if (list && list.parent === null && list.mountains) {
+        const onClick = () => setSelectedList(list);
         return (
           <PeakListItem
             key={list.id}
-            onClick={() => setSelectedList(list)}
+            onClick={onClick}
           >
             {list.name} ({list.shortName})
             <Subtitle>

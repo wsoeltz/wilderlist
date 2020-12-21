@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import useFluent from '../../../hooks/useFluent';
 import { ButtonPrimary, Label, SelectBox } from '../../../styling/styleUtils';
 import { PeakListFlag } from '../../../types/graphQLTypes';
@@ -28,6 +28,8 @@ const FlagModal = (props: Props) => {
   const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
 
   const [flag, setFlag] = useState<PeakListFlag | ''>('');
+  const updateFlagValue = useCallback((e: React.ChangeEvent<HTMLSelectElement>) =>
+    setFlag(e.target.value as PeakListFlag | ''), []);
   const [flagSubmitted, setFlagSubmitted] = useState<boolean>(false);
 
   const onSubmit = () => {
@@ -62,7 +64,7 @@ const FlagModal = (props: Props) => {
       <Label>{getString('flag-mountain-select-issue')}</Label>
       <SelectBox
         value={flag}
-        onChange={(e) => setFlag(e.target.value as PeakListFlag | '')}
+        onChange={updateFlagValue}
       >
         <option value={''} key='empty-option-to-select'></option>
         <option value={PeakListFlag.duplicate} key='duplicate'>

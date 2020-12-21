@@ -16,6 +16,7 @@ module.exports = {
         "eslint-plugin-prefer-arrow",
         "eslint-plugin-import",
         "eslint-plugin-react",
+        "eslint-plugin-react-hooks",
         "@typescript-eslint",
         "@typescript-eslint/tslint"
     ],
@@ -23,6 +24,7 @@ module.exports = {
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
       "plugin:react/recommended",
+      "plugin:react-hooks/recommended"
       ],
     "rules": {
         "@typescript-eslint/no-inferrable-types": "off",

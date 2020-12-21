@@ -150,6 +150,8 @@ const CompletedDate = ({date}: {date: string}) => (
   </CompletedDateText>
 );
 
+const MemoizedDate = React.memo(CompletedDate);
+
 export type MountainDatumWithDate = MountainDatum & {completionDates: VariableDate | null};
 
 interface Props {
@@ -170,7 +172,7 @@ const MountainRow = (props: Props) => {
     disableLinks, showCount, customAction, customActionText,
   } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
-  const borderColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : '#fff';
+  const borderColor: React.CSSProperties['borderColor'] = (index % 2 === 0) ? undefined : '#fff';
   const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
   const completeButton = (target: Months | Seasons | null) => isOtherUser
     ? (<EmptyDate>{'—'}</EmptyDate>) : (
@@ -185,26 +187,26 @@ const MountainRow = (props: Props) => {
     if (completionDates.type === PeakListVariants.standard) {
       if (completionDates.standard !== null && completionDates.standard !== undefined) {
         const formattedDate = formatDate(completionDates.standard);
-        peakCompletedContent = <CompletedDate date={formattedDate} />;
+        peakCompletedContent = <MemoizedDate date={formattedDate} />;
       }
     } else if (completionDates.type === PeakListVariants.winter) {
       if (completionDates.winter !== null && completionDates.winter !== undefined) {
         const formattedDate = formatDate(completionDates.winter);
-        peakCompletedContent = <CompletedDate date={formattedDate} />;
+        peakCompletedContent = <MemoizedDate date={formattedDate} />;
       }
     } else if (completionDates.type === PeakListVariants.fourSeason) {
       const {summer, fall, spring, winter} = completionDates;
       const summerDate = summer !== undefined
-        ? <CompletedDate date={formatDate(summer)} />
+        ? <MemoizedDate date={formatDate(summer)} />
         : completeButton(Seasons.summer);
       const fallDate = fall !== undefined
-        ? <CompletedDate date={formatDate(fall)} />
+        ? <MemoizedDate date={formatDate(fall)} />
         : completeButton(Seasons.fall);
       const springDate = spring !== undefined
-        ? <CompletedDate date={formatDate(spring)} />
+        ? <MemoizedDate date={formatDate(spring)} />
         : completeButton(Seasons.spring);
       const winterDate = winter !== undefined
-        ? <CompletedDate date={formatDate(winter)} />
+        ? <MemoizedDate date={formatDate(winter)} />
         : completeButton(Seasons.winter);
       peakCompletedContent = (
         <>
@@ -552,4 +554,4 @@ const MountainRow = (props: Props) => {
   );
 };
 
-export default MountainRow;
+export default React.memo(MountainRow);

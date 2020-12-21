@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import usePrevious from '../../../hooks/usePrevious';
 import {
   listDetailWithMountainDetailLink,
   otherUserPeakListDetailLink,
@@ -12,10 +11,7 @@ import {
   Card,
   CompactButtonPrimary,
 } from '../../../styling/styleUtils';
-import { PeakListVariants } from '../../../types/graphQLTypes';
 import {mediumSize, mobileSize} from '../../../Utils';
-import ImportAscentNotification from '../import/ImportAscentsNotification';
-import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import MountainLogo from '../mountainLogo';
 import { getType } from '../Utils';
 import { CardPeakListDatum } from './ListPeakLists';
@@ -145,23 +141,6 @@ const PeakListCard = (props: Props) => {
 
   const getString = useFluent();
 
-  const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
-
-  const prevActive = usePrevious(active);
-  useEffect(() => {
-    if (prevActive === false && active === true && showImportNotification === false) {
-      setShowImportNotification(true);
-    }
-  }, [prevActive, active, showImportNotification, setShowImportNotification]);
-  const importAscentsNotification = showImportNotification &&
-    (type === PeakListVariants.standard || type === PeakListVariants.winter || id === NH48_GRID_OBJECT_ID) ? (
-    <ImportAscentNotification
-      closeNotification={() => setShowImportNotification(false)}
-      type={type}
-      peakListId={id}
-    />
-  ) : null;
-
   const actionButtonOnClick = (e: React.SyntheticEvent) => {
     preventNavigation(e);
     if (listAction !== null) {
@@ -264,7 +243,6 @@ const PeakListCard = (props: Props) => {
             />
           </ProgressBarContainer>
         </ProgressBarRow>
-        {importAscentsNotification}
       </Root>
     </LinkWrapper>
   );

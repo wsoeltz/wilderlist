@@ -5,6 +5,7 @@ import {
 import max from 'lodash/max';
 import {darken} from 'polished';
 import React, {
+  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -230,6 +231,8 @@ const ListMapSelect = (props: Props) => {
 
   const [boundingBox, setBoundingBox] = useState<BoundingBox>(defaultBoundingBox);
   const [hoveredState, setHoveredState] = useState<TooltipDatum | undefined>(undefined);
+  const clearHoveredState = useCallback(() => setHoveredState(undefined), [setHoveredState]);
+  const clearSelectedState = useCallback(() => setSelectedState(null), [setSelectedState]);
 
   useEffect(() => {
     if (selectedState === null &&
@@ -279,7 +282,7 @@ const ListMapSelect = (props: Props) => {
         d={state.path}
         fill={fill}
         onMouseMove={onMouseMove}
-        onMouseLeave={() => setHoveredState(undefined)}
+        onMouseLeave={clearHoveredState}
         onClick={onClick}
         className={isSelected ? 'selected-state' : undefined}
       />
@@ -311,7 +314,7 @@ const ListMapSelect = (props: Props) => {
   const mapDetails = selectedState ? (
     <>
       <ReturnButton
-        onClick={() => setSelectedState(null)}
+        onClick={clearSelectedState}
       >
         <BasicIconInText icon={'chevron-left'} />
         {getString('map-search-back-to-map')}

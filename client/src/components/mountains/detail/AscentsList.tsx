@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
@@ -45,6 +45,7 @@ const AscentsList = (props: Props) => {
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
   const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
+  const openEditMountainModal = useCallback(() => setEditMountainId(mountain.id), [mountain.id]);
   const closeAscentModalModal = () => {
     setEditMountainId(null);
     setDateToEdit(null);
@@ -105,10 +106,11 @@ const AscentsList = (props: Props) => {
       } else {
         textDate = formatDate(date);
       }
+      const onClick = () => setDateToEdit(date);
       return (
         <AscentListItem
           key={date.dateAsNumber + index.toString()}
-          onClick={() => setDateToEdit(date)}
+          onClick={onClick}
         >
           <strong>{textDate}</strong>
           <GhostButton>
@@ -120,7 +122,7 @@ const AscentsList = (props: Props) => {
     output = (
       <>
         {completionListItems}
-        <AddAscentButton onClick={() => setEditMountainId(mountain.id)}>
+        <AddAscentButton onClick={openEditMountainModal}>
           <CalendarButton icon='calendar-alt' />
           {getString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
@@ -133,7 +135,7 @@ const AscentsList = (props: Props) => {
         <BasicListItem>{getString('mountain-detail-no-ascents-text', {
           'mountain-name': mountain.name,
         })}</BasicListItem>
-        <AddAscentButton onClick={() => setEditMountainId(mountain.id)}>
+        <AddAscentButton onClick={openEditMountainModal}>
           <CalendarButton icon='calendar-alt' />
           {getString('mountain-detail-add-ascent-date')}
         </AddAscentButton>

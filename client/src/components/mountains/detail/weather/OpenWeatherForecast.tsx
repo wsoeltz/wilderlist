@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import useFluent from '../../../../hooks/useFluent';
 import {
   BasicIconInText,
@@ -87,13 +87,14 @@ const OpenWeatherForecast = (props: Props) => {
   const {forecast: {daily, hourly}} = props;
 
   const [weatherDetail, setWeatherDetail] = useState<WeatherReportDatum | null>(null);
+  const closeWeatherDetail = useCallback(() => setWeatherDetail(null), []);
 
   const hourlyDetails = weatherDetail
     ? hourly.filter((hour) => new Date(hour.dt * 1000 ).getDate() === new Date(weatherDetail.dt * 1000).getDate())
     : [];
   const weatherDetailModal = weatherDetail === null ? null : (
     <OpenWeatherDetailModal
-      onCancel={() => setWeatherDetail(null)}
+      onCancel={closeWeatherDetail}
       data={weatherDetail}
       hourly={hourlyDetails}
     />
@@ -106,6 +107,7 @@ const OpenWeatherForecast = (props: Props) => {
     const date = new Date(dt * 1000);
     const dateText = getDayAsText(date);
     const description = weather[0].description.charAt(0).toUpperCase() + weather[0].description.slice(1);
+    const onClick = () => setWeatherDetail(report);
     return (
       <ForecastBlock key={dt}>
         <strong>{dateText}</strong>
@@ -122,7 +124,7 @@ const OpenWeatherForecast = (props: Props) => {
           {getString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
         </AdditionalInfo>
         <DetailModalButton
-          onClick={() => setWeatherDetail(report)}
+          onClick={onClick}
         >
           {getString('weather-forecast-detailed-report')}
         </DetailModalButton>

@@ -57,6 +57,7 @@ const NWSForecast = (props: Props) => {
   while (i < forecast.length) {
     if (i === -1) {
       const tonight = forecast[i + 1];
+      const onClick = () => setWeatherDetail({today: null, tonight});
       const tonightPrecip = tonight.precipitation ? (
       <AdditionalInfo>
           {tonight.precipitation}% {getString('weather-forecast-chance-precip')}
@@ -73,7 +74,7 @@ const NWSForecast = (props: Props) => {
           </Temperatures>
           {tonightPrecip}
           <DetailModalButton
-            onClick={() => setWeatherDetail({today: null, tonight})}
+            onClick={onClick}
           >
             {getString('weather-forecast-detailed-report')}
           </DetailModalButton>
@@ -83,6 +84,7 @@ const NWSForecast = (props: Props) => {
       const today = forecast[i];
       const tonight = forecast[i + 1];
       if (today && tonight) {
+        const onClick = () => setWeatherDetail({today, tonight});
         const todayPrecip = today.precipitation ? (
           <AdditionalInfo>
             {today.precipitation}% {getString('weather-forecast-chance-precip')}
@@ -99,13 +101,14 @@ const NWSForecast = (props: Props) => {
             </Temperatures>
             {todayPrecip}
             <DetailModalButton
-              onClick={() => setWeatherDetail({today, tonight})}
+              onClick={onClick}
             >
               {getString('weather-forecast-detailed-report')}
             </DetailModalButton>
           </ForecastBlock>,
         );
       } else if (today) {
+        const onClick = () => setWeatherDetail({today, tonight: null});
         const todayPrecip = today.precipitation ? (
           <AdditionalInfo>
             {today.precipitation}% {getString('weather-forecast-chance-precip')}
@@ -122,7 +125,7 @@ const NWSForecast = (props: Props) => {
             </Temperatures>
             {todayPrecip}
             <DetailModalButton
-              onClick={() => setWeatherDetail({today, tonight: null})}
+              onClick={onClick}
             >
               {getString('weather-forecast-detailed-report')}
             </DetailModalButton>

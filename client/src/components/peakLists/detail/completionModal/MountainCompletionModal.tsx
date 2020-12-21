@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import uniq from 'lodash/uniq';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
@@ -180,6 +180,8 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const [saving, setSaving] = useState<boolean>(false);
 
   const [isAreYouSureModalOpen, setIsAreYouSureModalOpen] = useState<boolean>(false);
+  const openAreYouSureModal = useCallback(() => setIsAreYouSureModalOpen(true), []);
+  const closeAreYouSureModal = useCallback(() => setIsAreYouSureModalOpen(false), []);
 
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
 
@@ -410,7 +412,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   const areYouSureModal = isAreYouSureModalOpen === false ? null : (
     <AreYouSureModal
       onConfirm={deleteAscent}
-      onCancel={() => setIsAreYouSureModalOpen(false)}
+      onCancel={closeAreYouSureModal}
       title={'Confirm delete'}
       text={'Are your sure you want to delete your ascent on '
         + formatStringDate(getDateToDelete()) +
@@ -476,7 +478,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
 
   const deleteAscentButton =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
-      <DeleteButton onClick={() => setIsAreYouSureModalOpen(true)} mobileExtend={true}>
+      <DeleteButton onClick={openAreYouSureModal} mobileExtend={true}>
         <BasicIconInText icon={faTrash} />
         Delete Ascent
       </DeleteButton>
@@ -493,7 +495,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
         {getString('global-text-value-modal-cancel')}
       </CancelButton>
       <ButtonPrimary
-        onClick={() => validateAndAddMountainCompletion()}
+        onClick={validateAndAddMountainCompletion}
         disabled={isConfirmDisabled()}
          mobileExtend={true}
       >

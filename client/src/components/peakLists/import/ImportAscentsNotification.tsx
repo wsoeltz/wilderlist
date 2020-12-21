@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
@@ -76,6 +76,8 @@ const ImportAscentsNotification = (props: Props) => {
   } = props;
 
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
+  const openImportModal = useCallback(() => setIsImportModalOpen(true), []);
+  const closeImportModal = useCallback(() => setIsImportModalOpen(false), []);
   const getString = useFluent();
 
   const user = useContext(UserContext);
@@ -93,14 +95,14 @@ const ImportAscentsNotification = (props: Props) => {
           <ImportAscentsModal
             userId={user._id}
             mountains={mountains}
-            onCancel={() => setIsImportModalOpen(false)}
+            onCancel={closeImportModal}
           />
        ) ;
       } else if (type === PeakListVariants.grid && data.peakList.id === NH48_GRID_OBJECT_ID) {
         importAscentsModal = (
             <ImportGridModal
               userId={user._id}
-              onCancel={() => setIsImportModalOpen(false)}
+              onCancel={closeImportModal}
             />
         );
       } else {
@@ -117,7 +119,7 @@ const ImportAscentsNotification = (props: Props) => {
       <Content>
         <small>{getString('import-ascents-notification-text')}</small>
         <div>
-          <CompactButtonPrimary onClick={() => setIsImportModalOpen(true)}>
+          <CompactButtonPrimary onClick={openImportModal}>
             {getString('import-ascents-title')}
           </CompactButtonPrimary>
           <CompactGhostButton onClick={closeNotification}>Dismiss</CompactGhostButton>

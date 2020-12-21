@@ -5,7 +5,7 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
@@ -253,11 +253,15 @@ const UserMenuList = ({user, adminPanel, closeUserMenu}: UserMenuListProps) => {
 
 interface Props {
   userMenuOpen: boolean;
-  setUserMenuOpen: (value: boolean) => void;
+  setUserMenuOpen: (value: boolean | ((curr: boolean) => boolean)) => void;
   user: User | null;
 }
 
 const UserMenuComponent = (props: Props) => {
+  const {
+    userMenuOpen, setUserMenuOpen, user,
+  } = props;
+
   const userMenuButtonEl = useRef<HTMLDivElement | null>(null);
   const { windowWidth } = useContext(AppContext);
   const getString = useFluent();
@@ -272,12 +276,11 @@ const UserMenuComponent = (props: Props) => {
     }
   }, [userMenuButtonEl]);
 
-  let output: React.ReactElement<any>;
-  if (props.user) {
-    const {
-      userMenuOpen, setUserMenuOpen, user,
-    } = props;
+  const closeUserMenu = useCallback(() => setUserMenuOpen(false), [setUserMenuOpen]);
+  const toggleUserMenu = useCallback(() => setUserMenuOpen(curr => !curr), [setUserMenuOpen]);
 
+  let output: React.ReactElement<any>;
+  if (user) {
     const adminPanel: React.ReactElement<any> | null = user.permissions === PermissionTypes.admin
       ? (
           <UserMenuLink to={Routes.Admin}>
@@ -290,7 +293,7 @@ const UserMenuComponent = (props: Props) => {
           <UserMenuList
             user={user}
             adminPanel={adminPanel}
-            closeUserMenu={() => setUserMenuOpen(false)}
+            closeUserMenu={closeUserMenu}
            />
           )
       : null;
@@ -299,7 +302,7 @@ const UserMenuComponent = (props: Props) => {
       <UserMenu>
         <UserButton
 
-          onClick={() => setUserMenuOpen(!userMenuOpen)}
+          onClick={toggleUserMenu}
         >
           <UserImage src={user.profilePictureUrl} />
           <UserName>
@@ -344,10 +347,6 @@ const UserMenuComponent = (props: Props) => {
         </UserMenu>
       );
     } else {
-      const {
-        userMenuOpen, setUserMenuOpen,
-      } = props;
-
       const userMenuList = userMenuOpen === true
         ? (
             <UserMenuList

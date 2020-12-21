@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
@@ -31,6 +31,7 @@ const AdditionalMountains = (props: Props) => {
   const getString = useFluent();
 
   const [mountainSelectionModalOpen, setMountainSelectionModalOpen] = useState<boolean>(false);
+  const openMountainSelectionModal = useCallback(() => setMountainSelectionModalOpen(true), []);
 
   const total = selectedMountains && selectedMountains.length ? selectedMountains.length : 0;
 
@@ -79,7 +80,7 @@ const AdditionalMountains = (props: Props) => {
   return (
     <>
       <AddButtonsContainer>
-        <ButtonPrimary onClick={() => setMountainSelectionModalOpen(true)}>
+        <ButtonPrimary onClick={openMountainSelectionModal}>
           {addRemoveMountainsButtonText}
         </ButtonPrimary>
         {openParentModalButton}

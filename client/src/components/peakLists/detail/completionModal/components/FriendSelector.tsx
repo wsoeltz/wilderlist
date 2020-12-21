@@ -1,5 +1,5 @@
 import { faAt, faUserFriends } from '@fortawesome/free-solid-svg-icons';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../../hooks/useFluent';
 import {
@@ -59,6 +59,8 @@ const FriendSelector = (props: Props) => {
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [emails, setEmails] = useState<string[]>(
     initialEmails.length ? initialEmails : ['']);
+
+  const incrementEmailList = useCallback(() => setEmails(curr => [...curr, '']), []);
 
   const toggleUserList = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -187,7 +189,7 @@ const FriendSelector = (props: Props) => {
           </DetailBoxTitle>
           <DetailBox>
             {emailInputs}
-            <ButtonSecondary onClick={() => setEmails([...emails, ''])}>
+            <ButtonSecondary onClick={incrementEmailList}>
               {getString('mountain-completion-modal-text-add-email-button')}
             </ButtonSecondary>
           </DetailBox>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import DatePicker from 'react-datepicker';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../../hooks/useFluent';
@@ -121,6 +121,25 @@ const DateWidget = (props: Props) => {
   } = props;
 
   const getString = useFluent();
+
+  const setDateToFull = useCallback(() => {
+    setDates(null);
+    setDateType(DateType.full);
+  }, [setDates, setDateType]);
+  const setDateToMonthYear = useCallback(() => {
+    setDates(null);
+    setDateType(DateType.monthYear);
+  }, [setDates, setDateType]);
+  const setDateToYearOnly = useCallback(() => {
+    setDates(null);
+    setYearOnly(new Date().getFullYear().toString());
+    setDateType(DateType.yearOnly);
+  }, [setDates, setDateType, setYearOnly]);
+  const setDateToNone = useCallback(() => {
+    setDates(null);
+    setDateType(DateType.none);
+  }, [setDates, setDateType]);
+
   const yearOutOfBounds = (year: number) => year > today.getFullYear();
 
   let filterDate: (date: Date) => boolean;
@@ -139,38 +158,25 @@ const DateWidget = (props: Props) => {
     toggleButtons = (
       <ToggleTypeButtonContainer>
         <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setDateType(DateType.full);
-          }}
+          onClick={setDateToFull}
           className={dateType === DateType.full ? 'active' : ''}
         >
           {getString('mountain-completion-modal-toggle-btn-full-date')}
         </ToggleTypeButton>
         <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setDateType(DateType.monthYear);
-          }}
+          onClick={setDateToMonthYear}
           className={dateType === DateType.monthYear ? 'active' : ''}
         >
           {getString('mountain-completion-modal-toggle-btn-month-year')}
         </ToggleTypeButton>
         <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setYearOnly(new Date().getFullYear().toString());
-            setDateType(DateType.yearOnly);
-          }}
+          onClick={setDateToYearOnly}
           className={dateType === DateType.yearOnly ? 'active' : ''}
         >
           {getString('mountain-completion-modal-toggle-btn-year-only')}
         </ToggleTypeButton>
         <ToggleTypeButton
-          onClick={() => {
-            setDates(null);
-            setDateType(DateType.none);
-          }}
+          onClick={setDateToNone}
           className={dateType === DateType.none ? 'active' : ''}
         >
           {getString('mountain-completion-modal-toggle-btn-no-date')}

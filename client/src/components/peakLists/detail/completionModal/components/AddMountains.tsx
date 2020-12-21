@@ -1,5 +1,5 @@
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import useFluent from '../../../../../hooks/useFluent';
 import {
   BasicIconInText,
@@ -42,6 +42,7 @@ const AdditionalMountains = (props: Props) => {
   const getString = useFluent();
 
   const [isMountainSelectorOpen, setMountainSelectorOpen] = useState<boolean>(false);
+  const openMountainSelector = useCallback(() => setMountainSelectorOpen(true), []);
 
   const targetMountain = selectedMountains.length ? selectedMountains[0] : null;
 
@@ -89,7 +90,7 @@ const AdditionalMountains = (props: Props) => {
           {selectedMountainList}
         </div>
         <ButtonWrapper>
-          <ButtonPrimary onClick={() => setMountainSelectorOpen(true)}>
+          <ButtonPrimary onClick={openMountainSelector}>
             {addBtnText}
           </ButtonPrimary>
         </ButtonWrapper>

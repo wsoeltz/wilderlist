@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
@@ -90,6 +90,7 @@ const PeakListCard = (props: Props) => {
   const getString = useFluent();
 
   const [showImportNotification, setShowImportNotification] = useState<boolean>(false);
+  const closeNotification = useCallback(() => setShowImportNotification(false), [setShowImportNotification]);
 
   const prevActive = usePrevious(active);
   useEffect(() => {
@@ -100,13 +101,15 @@ const PeakListCard = (props: Props) => {
   const importAscentsNotification = showImportNotification &&
     (type === PeakListVariants.standard || type === PeakListVariants.winter || id === NH48_GRID_OBJECT_ID) ? (
     <ImportAscentNotification
-      closeNotification={() => setShowImportNotification(false)}
+      closeNotification={closeNotification}
       type={type}
       peakListId={id}
     />
   ) : null;
 
   const [hovered, setHovered] = useState<boolean>(false);
+  const setHoveredTrue = useCallback(() => setHovered(true), [setHovered]);
+  const setHoveredFalse = useCallback(() => setHovered(false), [setHovered]);
 
   const color = type === PeakListVariants.grid
         ? getColorSetFromVariant(type).primary :  getColorSetFromVariant(type).tertiary;
@@ -145,8 +148,8 @@ const PeakListCard = (props: Props) => {
   return (
     <Root
       style={{borderLeftColor: color}}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={setHoveredTrue}
+      onMouseLeave={setHoveredFalse}
     >
       <LinkWrapper
         to={listDetailWithMountainDetailLink(id, 'none')}

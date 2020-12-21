@@ -231,6 +231,17 @@ interface Props extends RouteComponentProps {
   peakListPermissions: null | number;
 }
 
+const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
+  const getString = useFluent();
+  return (
+    <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
+      {getString('global-text-value-modal-close')}
+    </ButtonSecondary>
+  );
+};
+
+const MemoizedActions = React.memo(ModalActions);
+
 const PeakListCreatePage = (props: Props) => {
   const { user, peakListPermissions, match, history } = props;
   const { id }: any = match.params;
@@ -404,11 +415,7 @@ const PeakListCreatePage = (props: Props) => {
       onClose={closeErrorModal}
       width={'600px'}
       height={'auto'}
-      actions={(
-        <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
-          {getString('global-text-value-modal-close')}
-        </ButtonSecondary>
-        )}
+      actions={MemoizedActions}
     >
       <p>{getString('global-error-saving-data')}</p>
     </Modal>

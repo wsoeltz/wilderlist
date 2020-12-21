@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import queryString from 'query-string';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import useFluent from '../../../hooks/useFluent';
 import {Routes} from '../../../routing/routes';
@@ -157,6 +157,17 @@ interface Props extends RouteComponentProps {
   mountainPermissions: null | number;
 }
 
+const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
+  const getString = useFluent();
+  return (
+    <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
+      {getString('global-text-value-modal-close')}
+    </ButtonSecondary>
+  );
+};
+
+const MemoedActions = React.memo(ModalActions);
+
 const MountainCreatePage = (props: Props) => {
   const { user, mountainPermissions, match, history, location } = props;
   const { id }: any = match.params;
@@ -179,6 +190,7 @@ const MountainCreatePage = (props: Props) => {
   }, [windowWidth]);
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
+  const closeErrorModal = useCallback(() => setIsErrorModalVisible(false), []);
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, {id: string | null}>(GET_MOUNTAIN_AND_STATES,
     {variables: { id: id ? id : null },
@@ -312,17 +324,12 @@ const MountainCreatePage = (props: Props) => {
   } else {
     mountainForm = null;
   }
-  const closeErrorModal = () => setIsErrorModalVisible(false);
   const errorModal = isErrorModalVisible === false ? null : (
     <Modal
       onClose={closeErrorModal}
       width={'600px'}
       height={'auto'}
-      actions={(
-        <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
-          {getString('global-text-value-modal-close')}
-        </ButtonSecondary>
-        )}
+      actions={MemoedActions}
     >
       <p>{getString('global-error-saving-data')}</p>
     </Modal>

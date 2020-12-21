@@ -89,6 +89,7 @@ const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
   // interface Conditions, whereas the prop conditions could recieve unknown
   // keys from the database (such as __typename)
   const conditionsListItems = Object.keys(nullConditions).map(function(key: string) {
+    const onChange = () => updateCondition(key as keyof Conditions);
     return (
       <CheckboxListItem
         htmlFor={`${key}-condition-checkbox`}
@@ -97,7 +98,7 @@ const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
         <CheckboxListCheckbox
           id={`${key}-condition-checkbox`} type='checkbox'
           checked={conditions[key as keyof Conditions] ? true : false}
-          onChange={() => updateCondition(key as keyof Conditions)}
+          onChange={onChange}
         />
         {getString('trip-report-condition-name', {key})}
       </CheckboxListItem>

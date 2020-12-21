@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { editPeakListLink } from '../../../routing/Utils';
@@ -203,6 +203,10 @@ const Header = (props: Props) => {
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
 
+  const openRemoveListModal = useCallback(() => setIsRemoveListModalOpen(true), []);
+  const openFlagModal = useCallback(() => setIsFlagModalOpen(true), []);
+  const closeFlagModal = useCallback(() => setIsFlagModalOpen(false), []);
+
   const openSignUpModal = () => {
     setIsSignUpModal(true);
   };
@@ -258,7 +262,7 @@ const Header = (props: Props) => {
       {getString('peak-list-detail-text-begin-list')}
     </CompactButtonPrimary>
    ) : (
-    <CompactButtonSecondary onClick={() => setIsRemoveListModalOpen(true)}>
+    <CompactButtonSecondary onClick={openRemoveListModal}>
       {getString('peak-list-detail-text-remove-list')}
     </CompactButtonSecondary>
    ) ;
@@ -274,7 +278,7 @@ const Header = (props: Props) => {
         {getString('global-text-value-edit')}
       </CompactGhostButtonLink>
     ) : (
-      <CompactGhostButton onClick={() => setIsFlagModalOpen(true)}>
+      <CompactGhostButton onClick={openFlagModal}>
         <BasicIconInText icon={faFlag} />
         {getString('global-text-value-flag')}
       </CompactGhostButton>
@@ -294,7 +298,7 @@ const Header = (props: Props) => {
 
   const flagModal = isFlagModalOpen === false ? null : (
     <FlagModal
-      onClose={() => setIsFlagModalOpen(false)}
+      onClose={closeFlagModal}
       peakListId={peakList.id}
       peakListName={peakList.name}
     />

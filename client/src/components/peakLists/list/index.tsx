@@ -5,7 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Types } from 'mongoose';
 import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
@@ -238,12 +238,16 @@ const PeakListPage = (props: Props) => {
   const [selectedState, setSelectedState] = useState<{id: string, name: string} | null>(null);
   const [mobileView, setMobileView] = useState<View>(View.List);
 
-  const updateSelectedState = (value: {id: string, name: string} | null) => {
+  const updateSelectedState = useCallback((value: {id: string, name: string} | null) => {
     setSelectedState(value);
     if (windowWidth < mobileSize) {
       setMobileView(View.List);
     }
-  };
+  }, [windowWidth]);
+
+  const clearSelectedState = useCallback(() => updateSelectedState(null), [updateSelectedState]);
+  const viewAsList = useCallback(() => setMobileView(View.List), [setMobileView]);
+  const viewAsMap = useCallback(() => setMobileView(View.Map), [setMobileView]);
 
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
@@ -317,7 +321,7 @@ const PeakListPage = (props: Props) => {
           }),
         }}
       />
-      <ClearButton onClick={() => updateSelectedState(null)}>
+      <ClearButton onClick={clearSelectedState}>
         {getString('global-text-value-clear')}
       </ClearButton>
     </NoResults>
@@ -449,13 +453,13 @@ const PeakListPage = (props: Props) => {
               color: mobileView === View.List ? '#fff' : undefined,
               backgroundColor: mobileView === View.List ? secondaryColor : undefined,
             }}
-            onClick={() => setMobileView(View.List)}
+            onClick={viewAsList}
           >
             <BasicIconInText icon={faList} />
             {getString('mountain-search-mobile-nav-list')}
           </SecondaryNavigationButton>
           <SecondaryNavigationButton
-            onClick={() => setMobileView(View.Map)}
+            onClick={viewAsMap}
             style={{
               color: mobileView === View.Map ? '#fff' : undefined,
               backgroundColor: mobileView === View.Map ? secondaryColor : undefined,
