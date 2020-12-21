@@ -1,3 +1,4 @@
+import React from 'react';
 import { gql, useQuery } from '@apollo/client';
 import useFluent from '../../../../hooks/useFluent';
 import { PlaceholderText } from '../../../../styling/styleUtils';

@@ -132,8 +132,15 @@ export const getSentences = (input: {getString: GetString } & Input) => {
 };
 
 const IntroText = (props: Input) => {
+  const {
+    type, parent, listName, shortName, numberOfPeaks, isStateOrRegion,
+    stateRegionName, highestMountain, smallestMountain,
+  } = props;
   const getString = useFluent();
-  const {firstParagraph, secondParagraph, thirdParagraph} = getSentences({...props, getString});
+  const {firstParagraph, secondParagraph, thirdParagraph} = getSentences({
+    getString, type, parent, listName, shortName, numberOfPeaks, isStateOrRegion,
+    stateRegionName, highestMountain, smallestMountain,
+  });
   return (
     <>
       <p>{firstParagraph}</p>

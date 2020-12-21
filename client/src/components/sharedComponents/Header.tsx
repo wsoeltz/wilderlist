@@ -8,8 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
 import React, { useContext, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Logo from '../../assets/logo/Logo';
 import useFluent from '../../hooks/useFluent';
@@ -27,7 +26,6 @@ import {
   regularFontWeight,
   tertiaryColor,
 } from '../../styling/styleUtils';
-import { User } from '../../types/graphQLTypes';
 import { UserContext } from '../App';
 import { AppContext } from '../App';
 import NotificationBar from './NotificationBar';
@@ -142,8 +140,9 @@ const InactiveIconContainer = styled(IconContainerBase)`
   color: ${lightBaseColor};
 `;
 
-const Header = (props: RouteComponentProps) => {
-  const {location: { pathname }} = props;
+const Header = () => {
+  const user = useContext(UserContext);
+  const { pathname } = useLocation();
 
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 
@@ -184,70 +183,61 @@ const Header = (props: RouteComponentProps) => {
     );
   };
 
-  const renderProp = (user: User | null) => {
-    const hikingListsText = windowWidth > 530
-      ? getString('header-text-menu-item-lists')
-      : getString('header-text-menu-item-lists-short');
-    const yourStatsText = windowWidth > 530
-      ? getString('header-text-menu-item-your-stats')
-      : getString('header-text-menu-item-your-stats-short');
-    if (user) {
-      return (
-        <>
-          <HeaderContainer>
-            <SemanticLogoContainer>
-              <LogoContainer to={Routes.Dashboard}>
-                {getString('global-text-value-wilderlist-name')}
-                <Logo />
-              </LogoContainer>
-            </SemanticLogoContainer>
-            <MainNav>
-              {createLink(Routes.Dashboard, getString('header-text-menu-item-dashboard'), faHome)}
-              {createLink(peakListsPath, hikingListsText, faHiking)}
-              {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
-              {createLink(Routes.YourStats, yourStatsText, faChartLine)}
-              {createLink(usersPath, getString('header-text-menu-item-friends'), faUserFriends)}
-              {createLink(Routes.About, getString('header-text-menu-item-about'), faInfoCircle)}
-            </MainNav>
-            <UserMenu
-              userMenuOpen={userMenuOpen}
-              setUserMenuOpen={setUserMenuOpen}
-              user={user}
-            />
-          </HeaderContainer>
-          <NotificationBar userId={user._id} />
-        </>
-      );
-    } else {
-      return (
-        <>
-          <HeaderContainer>
+  const hikingListsText = windowWidth > 530
+    ? getString('header-text-menu-item-lists')
+    : getString('header-text-menu-item-lists-short');
+  const yourStatsText = windowWidth > 530
+    ? getString('header-text-menu-item-your-stats')
+    : getString('header-text-menu-item-your-stats-short');
+  if (user) {
+    return (
+      <>
+        <HeaderContainer>
+          <SemanticLogoContainer>
             <LogoContainer to={Routes.Dashboard}>
               {getString('global-text-value-wilderlist-name')}
               <Logo />
             </LogoContainer>
-            <MainNav>
-              {createLink(peakListsPath, getString('header-text-menu-item-lists'), faHiking)}
-              {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
-              {createLink(Routes.About, getString('header-text-menu-item-about'), faInfoCircle)}
-            </MainNav>
-            <UserMenu
-              user={user}
-              userMenuOpen={userMenuOpen}
-              setUserMenuOpen={setUserMenuOpen}
-            />
-          </HeaderContainer>
-        </>
-      );
-    }
-  };
-  return (
-    <>
-      <UserContext.Consumer
-        children={renderProp}
-      />
-    </>
-  );
+          </SemanticLogoContainer>
+          <MainNav>
+            {createLink(Routes.Dashboard, getString('header-text-menu-item-dashboard'), faHome)}
+            {createLink(peakListsPath, hikingListsText, faHiking)}
+            {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
+            {createLink(Routes.YourStats, yourStatsText, faChartLine)}
+            {createLink(usersPath, getString('header-text-menu-item-friends'), faUserFriends)}
+            {createLink(Routes.About, getString('header-text-menu-item-about'), faInfoCircle)}
+          </MainNav>
+          <UserMenu
+            userMenuOpen={userMenuOpen}
+            setUserMenuOpen={setUserMenuOpen}
+            user={user}
+          />
+        </HeaderContainer>
+        <NotificationBar userId={user._id} />
+      </>
+    );
+  } else {
+    return (
+      <>
+        <HeaderContainer>
+          <LogoContainer to={Routes.Dashboard}>
+            {getString('global-text-value-wilderlist-name')}
+            <Logo />
+          </LogoContainer>
+          <MainNav>
+            {createLink(peakListsPath, getString('header-text-menu-item-lists'), faHiking)}
+            {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
+            {createLink(Routes.About, getString('header-text-menu-item-about'), faInfoCircle)}
+          </MainNav>
+          <UserMenu
+            user={user}
+            userMenuOpen={userMenuOpen}
+            setUserMenuOpen={setUserMenuOpen}
+          />
+        </HeaderContainer>
+      </>
+    );
+  }
 };
 
-export default withRouter(Header);
+export default Header;

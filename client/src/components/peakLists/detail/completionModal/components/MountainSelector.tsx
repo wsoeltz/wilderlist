@@ -206,7 +206,6 @@ const MountainSelector = (props: Props) => {
   const selectedMountainList = selectedMountains.map(mtn => (
     <MountainItemRemove
       onClick={() => removeMountainFromList(mtn)}
-      badProp={false}
       key={mtn.id}
     >
       {mtn.name}

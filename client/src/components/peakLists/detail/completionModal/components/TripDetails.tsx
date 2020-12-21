@@ -1,5 +1,5 @@
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import React, {forwardRef, RefObject} from 'react';
+import React, {forwardRef, Ref} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../../hooks/useFluent';
 import {
@@ -70,11 +70,11 @@ interface Props {
 }
 
 interface MultipleRefs {
-  tripNotesEl: RefObject<HTMLTextAreaElement>;
-  tripLinkEl: RefObject<HTMLInputElement>;
+  tripNotesEl: Ref<HTMLTextAreaElement>;
+  tripLinkEl: Ref<HTMLInputElement>;
 }
 
-const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
+const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
   const {
     conditions, setConditions, dateType, initialTripNotes, initialLink,
   } = props;
@@ -88,7 +88,7 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
   // use nullConditions keys as it is defined to always be the same as the
   // interface Conditions, whereas the prop conditions could recieve unknown
   // keys from the database (such as __typename)
-  const conditionsListItems = Object.keys(nullConditions).map(function(key: keyof Conditions) {
+  const conditionsListItems = Object.keys(nullConditions).map(function(key: string) {
     return (
       <CheckboxListItem
         htmlFor={`${key}-condition-checkbox`}
@@ -96,8 +96,8 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
       >
         <CheckboxListCheckbox
           id={`${key}-condition-checkbox`} type='checkbox'
-          checked={conditions[key] ? true : false}
-          onChange={() => updateCondition(key)}
+          checked={conditions[key as keyof Conditions] ? true : false}
+          onChange={() => updateCondition(key as keyof Conditions)}
         />
         {getString('trip-report-condition-name', {key})}
       </CheckboxListItem>
@@ -153,6 +153,6 @@ const TripDetails = forwardRef((props: Props, ref: RefObject<MultipleRefs>) => {
       </DetailBoxWithMargin>
     </>
   );
-});
+};
 
-export default TripDetails;
+export default forwardRef(TripDetails);

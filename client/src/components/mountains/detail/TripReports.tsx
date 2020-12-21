@@ -185,8 +185,8 @@ const TripReports = ({mountainId, mountainName, userId}: Props) => {
       const maxCharactersDefault = 250;
       const reportList = tripReports.map((report, i) => {
         const allConditionsArray: string[] = [];
-        Object.keys(report).forEach(function(key: keyof TripReport) {
-          if (isCondition(key) && report[key]) {
+        Object.keys(report).forEach(function(key: string) {
+          if (isCondition(key) && report[key as keyof TripReport]) {
             allConditionsArray.push(getString('trip-report-condition-name', {key}));
           }
         });

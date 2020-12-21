@@ -25,7 +25,7 @@ const MountainDetailPage = (props: Props) => {
           <BackButton />
         </ContentHeader>
         <ContentBody>
-          <MountainDetail userId={userId} id={mountainId} peakListId={peakListId} setOwnMetaData={true} />
+          <MountainDetail userId={userId} id={mountainId} setOwnMetaData={true} />
         </ContentBody>
       </ContentFull>
     </>

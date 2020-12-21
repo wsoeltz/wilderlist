@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import { Trail } from '../components/sharedComponents/map/types';
 import getTrails, {
   TrailsDatum,
 } from '../utilities/getTrails';
@@ -14,23 +13,23 @@ interface Input {
 
 interface CachedDatum {
   key: string;
-  trails: Trail[];
+  trails: any[];
 }
 
 interface Output {
-  trails: Trail[] | undefined;
+  trails: any[] | undefined;
 }
 
 const getTrailsData = async (
   lat: number, lon: number,
-  setTrailData: (input: Trail[]) => void,
+  setTrailData: (input: any[]) => void,
   pushToCache: (input: CachedDatum) => void,
 ) => {
   try {
     const res = await getTrails({params: {lat, lon, maxDistance: 150}});
     if (res && res.data && res.data.trails) {
       const rawData: TrailsDatum[] = res.data.trails;
-      const cleanedTrailData: Trail[] = rawData.map(trailDatum => {
+      const cleanedTrailData: any[] = rawData.map(trailDatum => {
         return {
           id: trailDatum.id.toString(),
           latitude: trailDatum.latitude,
@@ -65,7 +64,7 @@ const getTrailsData = async (
 };
 
 export default (input: Input): Output => {
-  const [trailData, setTrailData] = useState<Trail[] | undefined>(undefined);
+  const [trailData, setTrailData] = useState<any[] | undefined>(undefined);
   const [cache, setCache] = useState<CachedDatum[]>([]);
 
   const prevInput = usePrevious(input);

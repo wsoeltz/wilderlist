@@ -11,7 +11,7 @@ import {
 } from './Utils';
 import WeatherDetailNWSModal from './WeatherDetailNWSModal';
 
-interface NWSForecastDatum {
+export interface NWSForecastDatum {
   detailedForecast: string;
   icon: string;
   isDaytime: boolean;

@@ -427,7 +427,7 @@ const MountainSearchPage = (props: Props) => {
       <ContentRightLarge style={mobileMapStyles}>
         {backButton}
         <ContentBody>
-          <MountainDetail userId={userId} id={mountainId} peakListId={null} setOwnMetaData={true} />
+          <MountainDetail userId={userId} id={mountainId} setOwnMetaData={true} />
         </ContentBody>
       </ContentRightLarge>
     </>

@@ -160,7 +160,7 @@ interface Props {
   isOtherUser: boolean;
   disableLinks: undefined | boolean;
   showCount: undefined | boolean;
-  customAction: undefined | ((mountain: MountainDatum) => void);
+  customAction: undefined | ((mountain: MountainDatum) => void) | ((mountain: MountainDatumWithDate) => void);
   customActionText: undefined | React.ReactNode;
 }
 
@@ -210,20 +210,24 @@ const MountainRow = (props: Props) => {
         <>
           <TableCell
             style={{backgroundColor}}
-            children={summerDate}
-          />
+          >
+            {summerDate}
+          </TableCell>
           <TableCell
             style={{backgroundColor}}
-            children={fallDate}
-          />
+          >
+            {fallDate}
+          </TableCell>
           <TableCell
             style={{backgroundColor}}
-            children={winterDate}
-          />
+          >
+            {winterDate}
+          </TableCell>
           <TableCell
             style={{backgroundColor}}
-            children={springDate}
-          />
+          >
+            {springDate}
+          </TableCell>
         </>
       );
     } else if (completionDates.type === PeakListVariants.grid) {
@@ -233,40 +237,40 @@ const MountainRow = (props: Props) => {
         october, november, december,
       } = completionDates;
       const januaryDate = january !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(january)}</>} />
+        ? <CompletedDateText>{formatGridDate(january)}</CompletedDateText>
         : completeButton(Months.january);
       const februaryDate = february !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(february)}</>} />
+        ? <CompletedDateText>{formatGridDate(february)}</CompletedDateText>
         : completeButton(Months.february);
       const marchDate = march !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(march)}</>} />
+        ? <CompletedDateText>{formatGridDate(march)}</CompletedDateText>
         : completeButton(Months.march);
       const aprilDate = april !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(april)}</>} />
+        ? <CompletedDateText>{formatGridDate(april)}</CompletedDateText>
         : completeButton(Months.april);
       const mayDate = may !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(may)}</>} />
+        ? <CompletedDateText>{formatGridDate(may)}</CompletedDateText>
         : completeButton(Months.may);
       const juneDate = june !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(june)}</>} />
+        ? <CompletedDateText>{formatGridDate(june)}</CompletedDateText>
         : completeButton(Months.june);
       const julyDate = july !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(july)}</>} />
+        ? <CompletedDateText>{formatGridDate(july)}</CompletedDateText>
         : completeButton(Months.july);
       const augustDate = august !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(august)}</>} />
+        ? <CompletedDateText>{formatGridDate(august)}</CompletedDateText>
         : completeButton(Months.august);
       const septemberDate = september !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(september)}</>} />
+        ? <CompletedDateText>{formatGridDate(september)}</CompletedDateText>
         : completeButton(Months.september);
       const octoberDate = october !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(october)}</>} />
+        ? <CompletedDateText>{formatGridDate(october)}</CompletedDateText>
         : completeButton(Months.october);
       const novemberDate = november !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(november)}</>} />
+        ? <CompletedDateText>{formatGridDate(november)}</CompletedDateText>
         : completeButton(Months.november);
       const decemberDate = december !== undefined
-        ? <CompletedDateText children={<>{formatGridDate(december)}</>} />
+        ? <CompletedDateText>{formatGridDate(december)}</CompletedDateText>
         : completeButton(Months.december);
       peakCompletedContent = (
         <>
@@ -275,85 +279,97 @@ const MountainRow = (props: Props) => {
               backgroundColor,
               borderColor,
             }}
-            children={januaryDate}
-          />
+          >
+            {januaryDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={februaryDate}
-          />
+          >
+            {februaryDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={marchDate}
-          />
+          >
+            {marchDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={aprilDate}
-          />
+          >
+            {aprilDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={mayDate}
-          />
+          >
+            {mayDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={juneDate}
-          />
+          >
+            {juneDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={julyDate}
-          />
+          >
+            {julyDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={augustDate}
-          />
+          >
+            {augustDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={septemberDate}
-          />
+          >
+            {septemberDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={octoberDate}
-          />
+          >
+            {octoberDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={novemberDate}
-          />
+          >
+            {novemberDate}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={decemberDate}
-          />
+          >
+            {decemberDate}
+          </GridCell>
         </>
       );
     }
@@ -361,22 +377,18 @@ const MountainRow = (props: Props) => {
     if (type === PeakListVariants.fourSeason) {
       peakCompletedContent = (
         <>
-          <TableCell
-            style={{backgroundColor}}
-            children={completeButton(Seasons.summer)}
-          />
-          <TableCell
-            style={{backgroundColor}}
-            children={completeButton(Seasons.fall)}
-          />
-          <TableCell
-            style={{backgroundColor}}
-            children={completeButton(Seasons.winter)}
-          />
-          <TableCell
-            style={{backgroundColor}}
-            children={completeButton(Seasons.spring)}
-          />
+          <TableCell style={{backgroundColor}}>
+            {completeButton(Seasons.summer)}
+          </TableCell>
+          <TableCell style={{backgroundColor}}>
+            {completeButton(Seasons.fall)}
+          </TableCell>
+          <TableCell style={{backgroundColor}}>
+            {completeButton(Seasons.winter)}
+          </TableCell>
+          <TableCell style={{backgroundColor}}>
+            {completeButton(Seasons.spring)}
+          </TableCell>
         </>
       );
     } else if (type === PeakListVariants.grid) {
@@ -387,85 +399,97 @@ const MountainRow = (props: Props) => {
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.january)}
-          />
+          >
+            {completeButton(Months.january)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.february)}
-          />
+          >
+            {completeButton(Months.february)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.march)}
-          />
+          >
+            {completeButton(Months.march)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.april)}
-          />
+          >
+            {completeButton(Months.april)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.may)}
-          />
+          >
+            {completeButton(Months.may)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.june)}
-          />
+          >
+            {completeButton(Months.june)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.july)}
-          />
+          >
+            {completeButton(Months.july)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.august)}
-          />
+          >
+            {completeButton(Months.august)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.september)}
-          />
+          >
+            {completeButton(Months.september)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.october)}
-          />
+          >
+            {completeButton(Months.october)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.november)}
-          />
+          >
+            {completeButton(Months.november)}
+          </GridCell>
           <GridCell
             style={{
               backgroundColor,
               borderColor,
             }}
-            children={completeButton(Months.december)}
-          />
+          >
+            {completeButton(Months.december)}
+          </GridCell>
         </>
       );
     }

@@ -58,7 +58,7 @@ export const getType = (type: PeakListVariants) => {
   } else if (type === PeakListVariants.grid) {
     return ' - Grid';
   } else {
-    failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
+    console.error(type, 'Invalid PeakListVariants ' + type);
     return '';
   }
 };

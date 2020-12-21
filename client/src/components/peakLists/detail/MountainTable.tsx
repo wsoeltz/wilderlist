@@ -518,13 +518,11 @@ const MountainTable = (props: Props) => {
         mountain={mountain}
         type={type}
         setEditMountainId={setMountainToEdit}
-        peakListId={peakListId}
         isOtherUser={isOtherUser !== undefined ? isOtherUser : false}
         disableLinks={disableLinks}
         showCount={showCount}
         customAction={customAction}
         customActionText={customActionText}
-        userId={user ? user.id : null}
       />
     ),
   );

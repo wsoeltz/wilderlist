@@ -117,7 +117,6 @@ export const getType = (type: PeakListVariants) => {
     return ', Grid';
   } else {
     failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
-    return '';
   }
 };
 
@@ -195,6 +194,5 @@ export const getListDescription = async (list: IPeakList) => {
     return `The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the ${list.name} Grid with trail maps, weather and trip reports, and robust tracking tools.`;
   } else {
     failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
-    return '';
   }
 };

@@ -3,7 +3,12 @@ import {
   pack,
   stratify,
 } from 'd3-hierarchy';
-import { event, select, Selection } from 'd3-selection';
+import {
+  // @ts-expect-error d3 typing is inaccurate, event is in fact exported from this module
+  event,
+  select,
+  Selection
+} from 'd3-selection';
 import {
   lightBorderColor,
   primaryColor,

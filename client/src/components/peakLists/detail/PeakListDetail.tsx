@@ -320,7 +320,6 @@ const PeakListDetail = (props: Props) => {
         const mountainsSortedByElevation = sortBy(requiredMountains, ['elevation']).reverse();
         paragraphText = (
           <IntroText
-            getString={getString}
             listName={peakList.name}
             numberOfPeaks={requiredMountains.length}
             isStateOrRegion={isStateOrRegion}

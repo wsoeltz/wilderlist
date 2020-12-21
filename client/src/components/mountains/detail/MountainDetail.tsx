@@ -247,8 +247,6 @@ interface Props {
   userId: string | null;
   id: string | null;
   setOwnMetaData?: boolean;
-  peakListId: string | null;
-  otherUserId?: string;
 }
 
 const MountainDetail = (props: Props) => {
@@ -498,7 +496,6 @@ const MountainDetail = (props: Props) => {
               completedDates={completedDates}
               userId={userId}
               mountain={mountain}
-              getString={getString}
             />
           </DetailBox>
           <InlineTitle>{getString('global-text-value-additional-resources')}</InlineTitle>
@@ -510,7 +507,6 @@ const MountainDetail = (props: Props) => {
             state={state.name}
           />
           <IncludedLists
-            getString={getString}
             mountainDatum={mountain}
             numLists={lists.length}
             setMetaDescription={setOwnMetaData === true ? true : false}

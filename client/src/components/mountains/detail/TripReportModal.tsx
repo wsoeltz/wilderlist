@@ -66,8 +66,8 @@ const AreYouSureModal = (props: Props) => {
   const getString = useFluent();
 
   const allConditionsArray: string[] = [];
-  Object.keys(tripReport).forEach(function(key: keyof TripReport) {
-    if (isCondition(key) && tripReport[key]) {
+  Object.keys(tripReport).forEach(function(key: string) {
+    if (isCondition(key) && tripReport[key as keyof TripReport]) {
       allConditionsArray.push(getString('trip-report-condition-name', {key}));
     }
   });

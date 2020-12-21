@@ -34,7 +34,7 @@ const PeakListDetailPage = (props: Props) => {
         </PlaceholderText>
       )
     : (
-        <MountainDetail userId={userId} id={mountainId} peakListId={listId} />
+        <MountainDetail userId={userId} id={mountainId} />
       );
 
   return (

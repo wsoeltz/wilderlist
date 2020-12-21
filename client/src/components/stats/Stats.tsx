@@ -390,7 +390,6 @@ const Stats = (props: Props) => {
             tripReports={totalAuthoredTripReports}
             mountains={totalAuthoredMountains}
             lists={totalAuthoredPeakLists}
-            getString={getString}
           />
         </SingleColumn>
         <SingleColumn>
@@ -398,7 +397,6 @@ const Stats = (props: Props) => {
           <AverageTimeCard
             avgTime={avgTimeBetweenHikes}
             startDate={startDate}
-            getString={getString}
           />
           <ContextNote
             dangerouslySetInnerHTML={{__html: getString('stats-average-time-context-note-html')}}
@@ -422,7 +420,6 @@ const Stats = (props: Props) => {
               val2={sortedYears[1]}
               val3={sortedYears[2]}
               val4={sortedYears[3]}
-              getString={getString}
             />
           </div>
           <div>
@@ -432,7 +429,6 @@ const Stats = (props: Props) => {
               val2={sortedSeasons[1]}
               val3={sortedSeasons[2]}
               val4={sortedSeasons[3]}
-              getString={getString}
             />
           </div>
         </TwoColumns>

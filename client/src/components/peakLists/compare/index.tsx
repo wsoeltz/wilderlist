@@ -48,7 +48,7 @@ const ComparePeakListPage = (props: Props) => {
         </PlaceholderText>
       )
     : (
-        <MountainDetail userId={userId} id={mountainId} peakListId={peakListId} />
+        <MountainDetail userId={userId} id={mountainId} />
       );
 
   return (

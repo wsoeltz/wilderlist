@@ -6,6 +6,13 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.3.6",
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-brands-svg-icons": "^5.15.1",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/react-fontawesome": "^0.1.13",
+    "@mapbox/mapbox-gl-geocoder": "^4.7.0",
+    "@octokit/core": "^3.2.4",
+    "@sentry/react": "^5.29.2",
     "cross-fetch": "^3.0.4",
     "csvtojson": "^2.0.10",
     "d3": "^5.15.0",
@@ -23,7 +30,8 @@
     "react-helmet": "^5.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.1",
+    "typescript": "^4.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -50,13 +58,6 @@
     ]
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.21",
-    "@fortawesome/free-brands-svg-icons": "^5.10.1",
-    "@fortawesome/free-solid-svg-icons": "^5.10.1",
-    "@fortawesome/react-fontawesome": "^0.1.4",
-    "@mapbox/mapbox-gl-geocoder": "^4.6.0",
-    "@octokit/core": "^3.1.1",
-    "@sentry/react": "^5.20.1",
     "@types/d3": "^5.7.2",
     "@types/fluent": "^0.11.3",
     "@types/fluent-react": "^0.8.1",
@@ -68,14 +69,13 @@
     "@types/react-datepicker": "^2.9.2",
     "@types/react-dom": "16.8.4",
     "@types/react-helmet": "^5.0.15",
-    "@types/react-router-dom": "^4.3.5",
+    "@types/react-router-dom": "^5.1.6",
     "@types/styled-components": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/eslint-plugin-tslint": "^4.10.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-prefer-arrow": "^1.2.2",
-    "tslint": "^5.18.0",
-    "typescript": "3.5.3"
+    "tslint": "^5.18.0"
   }
 }

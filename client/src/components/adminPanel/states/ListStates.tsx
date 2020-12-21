@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-boost';
+import { ApolloError } from '@apollo/client';
 import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';

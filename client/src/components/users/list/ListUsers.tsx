@@ -61,7 +61,6 @@ const ListUsers = (props: Props) => {
           user={user}
           friendStatus={friendStatus}
           currentUserId={currentUserId}
-          openInSidebar={openInSidebar}
           key={user.id}
         />
       );

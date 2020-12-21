@@ -105,7 +105,7 @@ const createLineChart = (input: Input) => {
 
   // Add the y Axis
   g.append('g')
-      .call(axisLeft(y).tickFormat(formatNumber))
+      .call(axisLeft(y).tickFormat(formatNumber as any))
       .attr('transform', 'translate(' + margin.left + ', 0)');
 
   g.style('transform', 'scale(0.95) translateY(' + margin.top + 'px)')
