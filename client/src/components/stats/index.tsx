@@ -4,7 +4,7 @@ import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
-  ContentLeftLarge,
+  ContentContainer,
 } from '../../styling/Grid';
 import {
   SectionTitleH3,
@@ -21,7 +21,7 @@ const YourStats = () => {
         <Helmet>
           <title>{getString('meta-data-your-stats-default-title')}</title>
         </Helmet>
-        <ContentLeftLarge>
+        <ContentContainer>
           <ContentBody>
             <SectionTitleH3>
               {getString('your-stats-title')}
@@ -30,7 +30,7 @@ const YourStats = () => {
               userId={user._id}
             />
           </ContentBody>
-        </ContentLeftLarge>
+        </ContentContainer>
       </>
     );
   } else {

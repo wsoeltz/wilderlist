@@ -3,8 +3,8 @@ import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
+  ContentContainer,
   ContentHeader,
-  ContentLeftLarge,
 } from '../../../styling/Grid';
 import PeakListDetail from '../../peakLists/detail/PeakListDetail';
 import BackButton from '../../sharedComponents/BackButton';
@@ -17,7 +17,7 @@ const UserProfilePage = () => {
 
   return (
     <>
-      <ContentLeftLarge>
+      <ContentContainer>
         <ContentHeader>
           <BackButton />
         </ContentHeader>
@@ -27,7 +27,7 @@ const UserProfilePage = () => {
             id={peakListId}
           />
         </ContentBody>
-      </ContentLeftLarge>
+      </ContentContainer>
     </>
   );
 };

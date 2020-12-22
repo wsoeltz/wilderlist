@@ -103,7 +103,6 @@ export interface FormInput {
 interface Props extends RouteComponentProps {
   initialData: InitialPeakListDatum;
   onSubmit: (input: FormInput) => void;
-  mapContainer: HTMLDivElement | null;
   states: Array<{id: string, abbreviation: string}>;
 }
 

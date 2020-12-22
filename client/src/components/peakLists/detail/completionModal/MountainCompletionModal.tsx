@@ -35,7 +35,7 @@ import {
   CLEAR_ASCENT_NOTIFICATION,
   ClearNotificationVariables,
   SuccessResponse as ClearNotificationsSuccess,
-} from '../../../sharedComponents/NotificationBar';
+} from '../../../template/navigation/NotificationBar';
 import { DateType, formatStringDate } from '../../Utils';
 import AddFriends from './components/AddFriends';
 import AddMountains, {MountainDatum} from './components/AddMountains';

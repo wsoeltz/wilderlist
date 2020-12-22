@@ -80,7 +80,7 @@ library.add(
 
 const GlobalStyles = createGlobalStyle`
 
-  @media(max-width: 600px) {
+  @media(max-width: 900px) {
     html {
       font-size: 14px;
     }

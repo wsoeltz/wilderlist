@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import Image404Url from '../../assets/images/404.gif';
 import useFluent from '../../hooks/useFluent';
 import { listDetailLink, mountainDetailLink } from '../../routing/Utils';
-import {ContentFull} from '../../styling/Grid';
+import {ContentContainer} from '../../styling/Grid';
 import { ButtonPrimaryLink } from '../../styling/styleUtils';
 
-const Root = styled(ContentFull)`
+const Root = styled(ContentContainer)`
   display: flex;
   flex-direction: column;
   justify-content: center;

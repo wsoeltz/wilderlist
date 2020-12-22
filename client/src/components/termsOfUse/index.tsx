@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
-  ContentFull,
+  ContentContainer,
 } from '../../styling/Grid';
 
 const PrivacyPolicy = () => {
@@ -27,7 +27,7 @@ const PrivacyPolicy = () => {
           content={metaDescription}
         />
       </Helmet>
-      <ContentFull>
+      <ContentContainer>
         <ContentBody>
           <h1>Terms of Use</h1>
           <div>
@@ -223,7 +223,7 @@ const PrivacyPolicy = () => {
             </p>
             </div>
         </ContentBody>
-      </ContentFull>
+      </ContentContainer>
     </>
   );
 };

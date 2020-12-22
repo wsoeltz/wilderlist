@@ -16,7 +16,7 @@ import {
   CardSubtitle,
   CardTitle,
   CollapsedParagraph,
-  locationColor,
+  primaryBlue,
   secondaryColor,
   Seperator,
   StackableCardFooter,
@@ -126,7 +126,7 @@ const MountainCard = ({ mountain }: Props) => {
           <BasicIconAtEndOfText icon={faArrowRight} />
         </OverviewLink>
         <MapButton
-          color={locationColor}
+          color={primaryBlue}
           $isActive={false}
         >
           {getString('mountain-card-show-on-map')}

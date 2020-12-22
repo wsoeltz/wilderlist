@@ -5,7 +5,7 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
   ContentBody,
-  ContentFull,
+  ContentContainer,
 } from '../../../styling/Grid';
 import {
   ButtonPrimary,
@@ -356,12 +356,12 @@ const SettingsPanel = ({userId}: Props) => {
       <Helmet>
         <title>{getString('meta-data-settings-default-title')}</title>
       </Helmet>
-      <ContentFull>
+      <ContentContainer>
         <ContentBody>
           <h1>{getString('header-text-menu-settings')}</h1>
           {output}
         </ContentBody>
-      </ContentFull>
+      </ContentContainer>
     </>
   );
 };

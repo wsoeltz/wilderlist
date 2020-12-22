@@ -3,8 +3,8 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import {
   ContentBody,
+  ContentContainer as UserListColumn,
   ContentHeader,
-  ContentLeftLarge as UserListColumn,
 } from '../../styling/Grid';
 import { User } from '../../types/graphQLTypes';
 import { asyncForEach } from '../../Utils';

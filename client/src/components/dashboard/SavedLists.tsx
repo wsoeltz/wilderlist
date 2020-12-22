@@ -1,42 +1,24 @@
 import { gql, useQuery } from '@apollo/client';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import Helmet from 'react-helmet';
-import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import { listDetailLink } from '../../routing/Utils';
 import {
   ContentBody,
-  ContentLeftLarge,
-  SearchContainer,
+  ContentContainer,
 } from '../../styling/Grid';
 import {
   ButtonPrimaryLink,
-  ButtonSecondary,
   PlaceholderText,
   SectionTitleH3,
 } from '../../styling/styleUtils';
-import { PeakListVariants, User } from '../../types/graphQLTypes';
-import { mobileSize } from '../../Utils';
+import { User } from '../../types/graphQLTypes';
 import { AppContext } from '../App';
-import NewAscentReport from '../peakLists/detail/completionModal/NewAscentReport';
 import { ViewMode } from '../peakLists/list';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
 import SuggestedLists from '../peakLists/list/SuggestedLists';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
-import StandardSearch from '../sharedComponents/StandardSearch';
-
-const SearchRoot = styled(SearchContainer)`
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-gap: 1rem;
-`;
-
-const AscentButtonRoot = styled.div`
-  display: flex;
-  align-items: center;
-`;
 
 const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
@@ -80,24 +62,12 @@ interface Props {
 }
 
 const SavedLists = ({userId}: Props) => {
-
-  const history = useHistory();
-
-  const searchPeakLists = (value: string) => {
-    const url = listDetailLink('search') + '?query=' + value + '&page=1&origin=dashboard';
-    history.push(url);
-  };
-
   const getString = useFluent();
 
-  const { windowWidth, usersLocation } = useContext(AppContext);
+  const { usersLocation } = useContext(AppContext);
 
   const usersState = usersLocation.data
     ? usersLocation.data : undefined;
-
-  const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
-  const openAscentModal = useCallback(() => setAscentModalOpen(true), []);
-  const closeAscentModal = useCallback(() => setAscentModalOpen(false), []);
 
   const {
     loading: listLoading,
@@ -165,44 +135,16 @@ const SavedLists = ({userId}: Props) => {
     );
   }
 
-  const addAscentButton = windowWidth < mobileSize ? (
-    <AscentButtonRoot>
-      <ButtonSecondary onClick={openAscentModal}>
-        <FontAwesomeIcon icon='calendar-alt' /> {getString('map-add-ascent')}
-      </ButtonSecondary>
-    </AscentButtonRoot>
-  ) : null;
-
-  const addAscentModal = ascentModalOpen ? (
-    <NewAscentReport
-      initialMountainList={[]}
-      closeEditMountainModalModal={closeAscentModal}
-      userId={userId}
-      variant={PeakListVariants.standard}
-      queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
-    />
-  ) : null;
-
   return (
     <>
       <Helmet>
         <title>{getString('meta-data-dashboard-default-title')}</title>
       </Helmet>
-      <ContentLeftLarge>
-        <SearchRoot>
-          <StandardSearch
-            placeholder={getString('global-text-value-search-hiking-lists')}
-            setSearchQuery={searchPeakLists}
-            focusOnMount={false}
-            initialQuery={''}
-          />
-          {addAscentButton}
-        </SearchRoot>
+      <ContentContainer>
         <ContentBody>
           {peakListsList}
         </ContentBody>
-      </ContentLeftLarge>
-      {addAscentModal}
+      </ContentContainer>
     </>
   );
 };

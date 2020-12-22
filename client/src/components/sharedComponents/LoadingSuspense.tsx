@@ -1,16 +1,16 @@
 import React from 'react';
 import {
   ContentBody,
-  ContentFull,
+  ContentContainer,
 } from '../../styling/Grid';
 import LoadingSpinner from './LoadingSpinner';
 
 const LoadingSuspense = () => (
-  <ContentFull>
+  <ContentContainer>
     <ContentBody>
       <LoadingSpinner />
     </ContentBody>
-  </ContentFull>
+  </ContentContainer>
 );
 
 export default LoadingSuspense;

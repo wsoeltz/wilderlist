@@ -8,7 +8,7 @@ import usePrevious from '../../../hooks/usePrevious';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
-  ContentLeftSmall,
+  ContentContainer,
 } from '../../../styling/Grid';
 import {
   PlaceholderText,
@@ -142,11 +142,11 @@ const MountainSearchPage = () => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink('search')} />
       </Helmet>
-      <ContentLeftSmall>
+      <ContentContainer>
         <ContentBody>
           {list}
         </ContentBody>
-      </ContentLeftSmall>
+      </ContentContainer>
     </>
   );
 };

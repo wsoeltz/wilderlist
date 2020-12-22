@@ -4,8 +4,8 @@ import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
+  ContentContainer,
   ContentHeader,
-  ContentLeftLarge,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
 import ListOfLists from '../list';
@@ -25,14 +25,14 @@ const PeakListDetailPage = () => {
   } else {
     return (
       <>
-        <ContentLeftLarge>
+        <ContentContainer>
           <ContentHeader>
             <BackButton />
           </ContentHeader>
           <ContentBody>
             <PeakListDetail userId={peakListUser} id={listId} setOwnMetaData={true} />
           </ContentBody>
-        </ContentLeftLarge>
+        </ContentContainer>
       </>
     );
   }

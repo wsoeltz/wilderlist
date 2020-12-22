@@ -9,7 +9,7 @@ import AboutImg from '../../assets/logo/about-profile.jpg';
 import useFluent from '../../hooks/useFluent';
 import {
   ContentBody,
-  ContentFull,
+  ContentContainer,
 } from '../../styling/Grid';
 import {
   BasicIconInText,
@@ -110,7 +110,7 @@ const About = () => {
         <title>{getString('meta-data-about-title')}</title>
         <meta property='og:title' content={getString('meta-data-about-title')} />
       </Helmet>
-      <ContentFull>
+      <ContentContainer>
         <ContentBody>
           <h1>{getString('header-text-menu-item-about')}</h1>
           <Container>
@@ -135,7 +135,7 @@ const About = () => {
             </DetailBoxWithMargin>
           </Container>
         </ContentBody>
-      </ContentFull>
+      </ContentContainer>
     </>
   );
 };

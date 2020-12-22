@@ -18,8 +18,8 @@ import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
 import { Root } from '../styling/Grid';
 import { overlayPortalContainerId } from '../Utils';
-import Header from './sharedComponents/Header';
 import MainContent from './template/MainContent';
+import Header from './template/navigation/Header';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});

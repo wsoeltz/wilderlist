@@ -3,8 +3,8 @@ import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
+  ContentContainer,
   ContentHeader,
-  ContentLeftLarge,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
 import CompareAllMountains from './CompareAllMountains';
@@ -35,14 +35,14 @@ const ComparePeakListPage = () => {
 
   return (
     <>
-      <ContentLeftLarge>
+      <ContentContainer>
         <ContentHeader>
           <BackButton />
         </ContentHeader>
         <ContentBody>
           {comparison}
         </ContentBody>
-      </ContentLeftLarge>
+      </ContentContainer>
     </>
   );
 };

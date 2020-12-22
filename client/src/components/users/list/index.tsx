@@ -1,5 +1,4 @@
 import { gql, useQuery } from '@apollo/client';
-import { Types } from 'mongoose';
 import queryString from 'query-string';
 import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
@@ -9,8 +8,7 @@ import useFluent from '../../../hooks/useFluent';
 import { userProfileLink } from '../../../routing/Utils';
 import {
   ContentBody,
-  ContentLeftSmall,
-  ContentRightLarge,
+  ContentContainer,
   SearchContainer,
 } from '../../../styling/Grid';
 import {
@@ -21,7 +19,6 @@ import {
 } from '../../../styling/styleUtils';
 import { User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import UserProfile from '../detail/UserProfile';
 import GhostUserCard from './GhostUserCard';
 import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
@@ -191,26 +188,12 @@ const UserList = () => {
   } else {
     list = null;
   }
-  let userProfile: React.ReactElement<any> | null;
-  if (!Types.ObjectId.isValid(id)) {
-    userProfile = (
-      <PlaceholderText>
-        {getString('user-list-no-user-selected-text')}
-      </PlaceholderText>
-    );
-  } else if (userId !== null) {
-    userProfile = (
-      <UserProfile userId={userId} id={id} history={history} />
-    );
-  } else {
-    userProfile = null;
-  }
   return (
     <>
       <Helmet>
         <title>{getString('meta-data-friend-search-default-title')}</title>
       </Helmet>
-      <ContentLeftSmall>
+      <ContentContainer>
         <SearchContainer>
           <StandardSearch
             placeholder='Search users'
@@ -222,12 +205,7 @@ const UserList = () => {
         <ContentBody ref={userListContainerElm}>
           {list}
         </ContentBody>
-      </ContentLeftSmall>
-      <ContentRightLarge>
-        <ContentBody>
-          {userProfile}
-        </ContentBody>
-      </ContentRightLarge>
+      </ContentContainer>
     </>
   );
 };

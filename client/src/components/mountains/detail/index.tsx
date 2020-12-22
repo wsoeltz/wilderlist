@@ -3,10 +3,8 @@ import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
-  ContentFull,
-  ContentHeader,
+  ContentContainer,
 } from '../../../styling/Grid';
-import BackButton from '../../sharedComponents/BackButton';
 import MountainList from '../list';
 import MountainDetail from './MountainDetail';
 
@@ -21,14 +19,11 @@ const MountainDetailPage = () => {
   } else {
     return (
       <>
-        <ContentFull>
-          <ContentHeader>
-            <BackButton />
-          </ContentHeader>
+        <ContentContainer>
           <ContentBody>
             <MountainDetail userId={userId} id={mountainId} setOwnMetaData={true} />
           </ContentBody>
-        </ContentFull>
+        </ContentContainer>
       </>
     );
   }

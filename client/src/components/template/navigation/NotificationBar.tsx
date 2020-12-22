@@ -2,29 +2,29 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled, {keyframes} from 'styled-components/macro';
-import useFluent from '../../hooks/useFluent';
-import { mountainDetailLink, userProfileLink } from '../../routing/Utils';
-import { PreContentHeaderFull } from '../../styling/Grid';
+import useFluent from '../../../hooks/useFluent';
+import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
+import { PreContentHeaderFull } from '../../../styling/Grid';
 import {
   ButtonPrimary,
   GhostButton,
   lowWarningColorLight,
   SemiBold,
-} from '../../styling/styleUtils';
-import { PeakListVariants, User } from '../../types/graphQLTypes';
-import AscentReportFromNotification from '../peakLists/detail/completionModal/AscentReportFromNotification';
+} from '../../../styling/styleUtils';
+import { PeakListVariants, User } from '../../../types/graphQLTypes';
+import AscentReportFromNotification from '../../peakLists/detail/completionModal/AscentReportFromNotification';
 import {
   ADD_MOUNTAIN_COMPLETION,
   MountainCompletionSuccessResponse,
   MountainCompletionVariables,
-} from '../peakLists/detail/completionModal/queries';
-import { formatStringDate } from '../peakLists/Utils';
+} from '../../peakLists/detail/completionModal/queries';
+import { formatStringDate } from '../../peakLists/Utils';
 import {
   ACCEPT_FRIEND_REQUEST,
   FriendRequestSuccessResponse,
   FriendRequestVariables,
   REMOVE_FRIEND,
-} from '../users/list/UserCard';
+} from '../../users/list/UserCard';
 
 const GET_NOTIFICATIONS = gql`
   query notifications($userId: ID) {

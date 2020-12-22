@@ -104,7 +104,6 @@ const CreateMountainModal = (props: Props) => {
         states={states}
         initialData={initialMountain}
         onSubmit={onSubmit}
-        mapContainer={null}
         onCancel={onCancel}
         onSubmitAndAddAnother={null}
       />

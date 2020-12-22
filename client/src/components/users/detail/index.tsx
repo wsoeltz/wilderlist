@@ -3,8 +3,8 @@ import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import {
   ContentBody,
+  ContentContainer,
   ContentHeader,
-  ContentLeftLarge,
 } from '../../../styling/Grid';
 import BackButton from '../../sharedComponents/BackButton';
 import ListUsers from '../list';
@@ -23,7 +23,7 @@ const UserProfilePage = () => {
   } else if (userId) {
     return (
       <>
-        <ContentLeftLarge>
+        <ContentContainer>
           <ContentHeader>
             <BackButton />
           </ContentHeader>
@@ -34,7 +34,7 @@ const UserProfilePage = () => {
               history={history}
             />
           </ContentBody>
-        </ContentLeftLarge>
+        </ContentContainer>
       </>
     );
   } else {

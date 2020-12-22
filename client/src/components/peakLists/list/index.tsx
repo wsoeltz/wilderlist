@@ -9,7 +9,7 @@ import useFluent from '../../../hooks/useFluent';
 import { listDetailLink } from '../../../routing/Utils';
 import {
   ContentBody,
-  ContentLeftSmall,
+  ContentContainer,
 } from '../../../styling/Grid';
 import {
   LinkButton,
@@ -372,11 +372,11 @@ const PeakListPage = () => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink('search')} />
       </Helmet>
-      <ContentLeftSmall>
+      <ContentContainer>
         <ContentBody ref={listContainerElm} style={{paddingTop: queryText ? 0 : undefined}}>
           {list}
         </ContentBody>
-      </ContentLeftSmall>
+      </ContentContainer>
     </>
   );
 };

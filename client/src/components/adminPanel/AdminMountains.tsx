@@ -5,9 +5,8 @@ import { withRouter } from 'react-router';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import {
   ContentBody,
+  ContentContainer as MountainListColumn,
   ContentHeader,
-  ContentLeftLarge as MountainListColumn,
-  ContentRightSmall as MountainEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Mountain, PermissionTypes } from '../../types/graphQLTypes';
@@ -315,11 +314,11 @@ const AdminMountains = () => {
           />
         </ContentBody>
       </MountainListColumn>
-      <MountainEditColumn>
+      <div>
         <ContentBody>
         {editPanel}
         </ContentBody>
-      </MountainEditColumn>
+      </div>
     </>
   );
 };

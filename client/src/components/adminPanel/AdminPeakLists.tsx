@@ -4,9 +4,8 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router';
 import {
   ContentBody,
+  ContentContainer as PeakListListColumn,
   ContentHeader,
-  ContentLeftLarge as PeakListListColumn,
-  ContentRightSmall as PeakListEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { ExternalResource, PeakList, PeakListVariants, State } from '../../types/graphQLTypes';
@@ -327,11 +326,11 @@ const AdminPeakLists = () => {
           />
         </ContentBody>
       </PeakListListColumn>
-      <PeakListEditColumn>
+      <div>
         <ContentBody>
         {editPanel}
         </ContentBody>
-      </PeakListEditColumn>
+      </div>
     </>
   );
 };

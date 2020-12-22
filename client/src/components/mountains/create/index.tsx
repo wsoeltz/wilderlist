@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import queryString from 'query-string';
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
@@ -8,14 +8,11 @@ import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
+  ContentContainer,
   ContentHeader,
-  ContentLeftSmall,
-  ContentRightLarge,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import { ExternalResource, Mountain, PermissionTypes, User } from '../../../types/graphQLTypes';
-import { mobileSize } from '../../../Utils';
-import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
@@ -172,18 +169,6 @@ const MountainCreatePage = () => {
 
   const getString = useFluent();
 
-  const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
-  const { windowWidth } = useContext(AppContext);
-  const mapContainerNodeRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (windowWidth >= mobileSize && mapContainerNodeRef.current !== null) {
-      setMapContainer(mapContainerNodeRef.current);
-    } else {
-      setMapContainer(null);
-    }
-  }, [windowWidth]);
-
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
   const closeErrorModal = useCallback(() => setIsErrorModalVisible(false), []);
 
@@ -284,7 +269,6 @@ const MountainCreatePage = () => {
           initialData={initialMountain}
           onSubmit={submitMountainForm(false)}
           onSubmitAndAddAnother={null}
-          mapContainer={mapContainer}
           onCancel={history.goBack}
         />
       );
@@ -314,7 +298,6 @@ const MountainCreatePage = () => {
           initialData={initialMountain}
           onSubmit={submitMountainForm(false)}
           onSubmitAndAddAnother={submitMountainForm(true)}
-          mapContainer={mapContainer}
           onCancel={history.goBack}
         />
       );
@@ -335,7 +318,7 @@ const MountainCreatePage = () => {
 
   return (
     <>
-      <ContentLeftSmall>
+      <ContentContainer>
         <ContentHeader>
           <BackButton />
         </ContentHeader>
@@ -343,11 +326,7 @@ const MountainCreatePage = () => {
           {mountainForm}
         </ContentBody>
         {errorModal}
-      </ContentLeftSmall>
-      <ContentRightLarge>
-        <ContentBody ref={mapContainerNodeRef}>
-        </ContentBody>
-      </ContentRightLarge>
+      </ContentContainer>
     </>
   );
 };

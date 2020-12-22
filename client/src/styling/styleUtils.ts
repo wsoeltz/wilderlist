@@ -38,7 +38,8 @@ export const warmRedColor = '#d92a21';
 
 export const lightBlue = '#d1e2e9';
 
-export const locationColor = '#206ca6';
+export const primaryBlue = '#206ca6';
+export const primaryBlueHoverColor = '#0580ca';
 
 export interface ColorSet {
   primary: string;
@@ -303,12 +304,12 @@ export const borderRadius = 6; // in px
 
 export const ButtonBase = styled.button<{mobileExtend?: boolean}>`
   padding: 0.4rem;
-  text-transform: uppercase;
   color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
   font-weight: ${semiBoldFontBoldWeight};
   font-size: 0.8rem;
+  letter-spacing: 0.01rem;
 
   &:disabled {
     cursor: not-allowed;
@@ -339,6 +340,14 @@ export const ButtonSecondary = styled(ButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
+  }
+`;
+
+export const ButtonPrimaryBlue = styled(ButtonBase)`
+  background-color: ${primaryBlue};
+
+  &:hover {
+    background-color: ${primaryBlueHoverColor};
   }
 `;
 

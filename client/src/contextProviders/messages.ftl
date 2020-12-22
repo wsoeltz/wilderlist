@@ -277,14 +277,19 @@ global-text-value-list-tier-desc =
   </p>
 
 
+global-add-trip-report = Add Trip Report
+
 header-text-login-with-google = Login With Google
 header-text-login-with-reddit = Login With Reddit
 header-text-login-with-facebook = Login With Facebook
+header-text-login-or-sign-up = Login or Sign up
 
 header-text-menu-item-dashboard = Dashboard
 header-text-menu-item-lists = Hiking Lists
 header-text-menu-item-lists-short = Lists
 header-text-menu-item-mountains = Mountains
+header-text-menu-item-trails = Trails
+header-text-menu-item-camping = Camping
 header-text-menu-item-your-stats = Your Stats
 header-text-menu-item-about = About
 header-text-menu-item-your-stats-short = Stats

@@ -1,14 +1,13 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {listDetailLink} from '../../../routing/Utils';
 import {
   ContentBody,
+  ContentContainer,
   ContentHeader,
-  ContentLeftLarge,
-  ContentRightSmall,
 } from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import {
@@ -19,8 +18,6 @@ import {
   PermissionTypes,
   State,
 } from '../../../types/graphQLTypes';
-import { mobileSize } from '../../../Utils';
-import { AppContext } from '../../App';
 import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
@@ -253,18 +250,6 @@ const PeakListCreatePage = () => {
   const [addPeakList] = useMutation<SuccessResponse, BaseVariables>(ADD_PEAK_LIST);
   const [editPeakList] = useMutation<SuccessResponse, EditVariables>(EDIT_PEAK_LIST);
 
-  const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
-  const { windowWidth } = useContext(AppContext);
-  const mapContainerNodeRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (windowWidth >= mobileSize && mapContainerNodeRef.current !== null) {
-      setMapContainer(mapContainerNodeRef.current);
-    } else {
-      setMapContainer(null);
-    }
-  }, [windowWidth]);
-
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
   let peakListForm: React.ReactElement<any> | null;
@@ -368,7 +353,6 @@ const PeakListCreatePage = () => {
         <PeakListForm
           initialData={initialData}
           onSubmit={onSubmit}
-          mapContainer={mapContainer}
           states={states}
         />
       );
@@ -397,7 +381,6 @@ const PeakListCreatePage = () => {
         <PeakListForm
           initialData={initialData}
           onSubmit={onSubmit}
-          mapContainer={mapContainer}
           states={states}
         />
       );
@@ -421,7 +404,7 @@ const PeakListCreatePage = () => {
 
   return (
     <>
-      <ContentLeftLarge>
+      <ContentContainer>
         <ContentHeader>
           <BackButton />
         </ContentHeader>
@@ -429,11 +412,7 @@ const PeakListCreatePage = () => {
           {peakListForm}
         </ContentBody>
         {errorModal}
-      </ContentLeftLarge>
-      <ContentRightSmall>
-        <ContentBody ref={mapContainerNodeRef}>
-        </ContentBody>
-      </ContentRightSmall>
+      </ContentContainer>
     </>
   );
 };

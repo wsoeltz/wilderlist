@@ -104,12 +104,11 @@ interface Props {
   initialData: InitialMountainDatum;
   onSubmit: (input: BaseMountainVariables) => void;
   onSubmitAndAddAnother: null | ((input: BaseMountainVariables) => void);
-  mapContainer: HTMLDivElement | null;
   onCancel: () => void;
 }
 
 const MountainForm = (props: Props) => {
-  const { states, initialData, onSubmit, onSubmitAndAddAnother, mapContainer, onCancel } = props;
+  const { states, initialData, onSubmit, onSubmitAndAddAnother, onCancel } = props;
 
   const getString = useFluent();
 
@@ -360,11 +359,6 @@ const MountainForm = (props: Props) => {
         </DetailBoxTitle>
         <DetailBoxWithMargin>
           {locationError}
-          <SmallTextNoteWithMargin>
-            {getString('create-mountain-location-note', {
-              position: mapContainer !== null ? 'right' : 'bottom',
-            })}
-          </SmallTextNoteWithMargin>
           <Grid>
             <div>
               <LabelContainer htmlFor={'create-mountain-latitude'}>

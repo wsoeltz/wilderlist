@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router';
 import {
   ContentBody,
+  ContentContainer as RegionListColumn,
   ContentHeader,
-  ContentLeftLarge as RegionListColumn,
-  ContentRightSmall as RegionEditColumn,
 } from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Region, State } from '../../types/graphQLTypes';
@@ -181,11 +180,11 @@ const AdminRegions = () => {
           />
         </ContentBody>
       </RegionListColumn>
-      <RegionEditColumn>
+      <div>
         <ContentBody>
         {editPanel}
         </ContentBody>
-      </RegionEditColumn>
+      </div>
     </>
   );
 };
