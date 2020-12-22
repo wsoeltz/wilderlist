@@ -16,13 +16,15 @@ import LoadingSimple from '../../../sharedComponents/LoadingSimple';
 const magnifyingGlassSize = 1.5; // in rem
 const magnifyingGlassSpacing = 0.5; // in rem
 
+const noResultsFoundClassName = 'react-autosuggest__no_results_found';
+
 const Root = styled.div`
   div.react-autosuggest__container {
     width: 100%;
     position: relative;
   }
 
-  input {
+  input.react-autosuggest__input {
     width: 100%;
     padding: 8px 8px 8px ${magnifyingGlassSize + (magnifyingGlassSpacing * 2)}rem;
     box-sizing: border-box;
@@ -33,6 +35,12 @@ const Root = styled.div`
 
     &::placeholder {
       color: ${placeholderColor};
+    }
+
+    &.react-autosuggest__input--focused
+    + .react-autosuggest__suggestions-container
+    .${noResultsFoundClassName} {
+      display: block;
     }
   }
 
@@ -55,6 +63,17 @@ const Root = styled.div`
       background-color: ${tertiaryColor};
       cursor: pointer;
     }
+  }
+  .${noResultsFoundClassName} {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: solid 1px ${lightBorderColor};
+    box-shadow: 0px 0px 3px -1px #b5b5b5;
+    padding: 0.7rem 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 100;
   }
 `;
 
@@ -178,6 +197,13 @@ function renderSuggestion(suggestion: any) {
     <>{suggestion.name}</>
   );
 }
+function onSuggestionSelected() {//_event: any, {suggestion}: any) {
+  const activeElement = document.activeElement;
+  if (activeElement) {
+    (activeElement as HTMLElement).blur();
+  }
+  // console.log(suggestion)
+}
 
 const Search = () => {
   const [state, updateState] = useState<SearchState>({value: '', suggestions: [], loading: false});
@@ -191,7 +217,7 @@ const Search = () => {
           suggestions: getMatchingLanguages(value),
         }));
       }, 200);
-  }, 350), [updateState]);
+  }, 300), [updateState]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
     updateState(curr => ({...curr, value: newValue}));
@@ -208,13 +234,33 @@ const Search = () => {
     updateState(curr => ({...curr, suggestions: []}));
   }, [updateState]);
 
-  const clearSearch = () => updateState(curr => ({...curr, suggestions: [], value: ''}));
+  const clearSearch = useCallback(
+    () => updateState(curr => ({...curr, suggestions: [], value: ''})),
+    [updateState],
+  );
 
-  const inputProps = {
+  const renderSuggestionsContainer = useCallback(({ containerProps, children, query }: any) => {
+    let noResults: React.ReactElement<any> | null;
+    if (query.length > 2 && children === null && state.loading === false) {
+      noResults = (
+        <div className={noResultsFoundClassName}>No results found for <strong>{query}</strong></div>
+      );
+    } else {
+      noResults = null;
+    }
+    return (
+      <div {...containerProps}>
+        {children}
+        {noResults}
+      </div>
+    );
+  }, [state.loading]);
+
+  const inputProps = useMemo( () => ({
     placeholder: 'Search Wilderlist',
     value: state.value,
     onChange,
-  };
+  }), [state, onChange]);
 
   const clearContent = state.loading ? (
     <LoadingContainer>
@@ -242,6 +288,8 @@ const Search = () => {
         inputProps={inputProps}
         highlightFirstSuggestion={true}
         focusInputOnSuggestionClick={false}
+        onSuggestionSelected={onSuggestionSelected}
+        renderSuggestionsContainer={renderSuggestionsContainer}
       />
       {clearContent}
       <SearchIcon icon='search' />
