@@ -4,11 +4,6 @@ import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {listDetailLink} from '../../../routing/Utils';
-import {
-  ContentBody,
-  ContentContainer,
-  ContentHeader,
-} from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import {
   ExternalResource,
@@ -18,7 +13,6 @@ import {
   PermissionTypes,
   State,
 } from '../../../types/graphQLTypes';
-import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import PeakListForm, {FormInput, InitialPeakListDatum} from './PeakListForm';
@@ -404,15 +398,8 @@ const PeakListCreatePage = () => {
 
   return (
     <>
-      <ContentContainer>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody style={{paddingBottom: 0}}>
-          {peakListForm}
-        </ContentBody>
-        {errorModal}
-      </ContentContainer>
+      {peakListForm}
+      {errorModal}
     </>
   );
 };

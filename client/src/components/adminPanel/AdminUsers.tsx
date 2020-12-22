@@ -1,11 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import React from 'react';
 import { withRouter } from 'react-router';
-import {
-  ContentBody,
-  ContentContainer as UserListColumn,
-  ContentHeader,
-} from '../../styling/Grid';
 import { User } from '../../types/graphQLTypes';
 import { asyncForEach } from '../../Utils';
 import { notEmpty } from '../../Utils';
@@ -106,19 +101,19 @@ const AdminUsers = () => {
   };
   return (
     <>
-      <UserListColumn>
-        <ContentHeader>
+      <div>
+        <div>
           <h2>Users</h2>
-        </ContentHeader>
-        <ContentBody>
+        </div>
+        <div>
           <ListUsers
             loading={loading}
             error={error}
             data={data}
             deleteUser={deleteUser}
           />
-        </ContentBody>
-      </UserListColumn>
+        </div>
+      </div>
     </>
   );
 };

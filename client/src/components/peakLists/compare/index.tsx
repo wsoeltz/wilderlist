@@ -1,12 +1,6 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
-import {
-  ContentBody,
-  ContentContainer,
-  ContentHeader,
-} from '../../../styling/Grid';
-import BackButton from '../../sharedComponents/BackButton';
 import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
 
@@ -15,13 +9,12 @@ const ComparePeakListPage = () => {
   const userId = user ? user._id : null;
   const { id: profileId, peakListId }: any = useParams();
 
-  let comparison: React.ReactElement<any> | null;
   if (!peakListId) {
-    comparison = null;
+    return null;
   } else if (peakListId === 'all' && userId !== null) {
-    comparison = <CompareAllMountains userId={userId} id={profileId} />;
+    return <CompareAllMountains userId={userId} id={profileId} />;
   } else if (userId !== null) {
-    comparison = (
+    return (
       <PeakListComparison
         key={peakListId}
         userId={userId}
@@ -30,21 +23,8 @@ const ComparePeakListPage = () => {
       />
     );
   } else {
-    comparison = null;
+    return null;
   }
-
-  return (
-    <>
-      <ContentContainer>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody>
-          {comparison}
-        </ContentBody>
-      </ContentContainer>
-    </>
-  );
 };
 
 export default ComparePeakListPage;

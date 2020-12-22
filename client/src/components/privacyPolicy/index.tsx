@@ -3,10 +3,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
-import {
-  ContentBody,
-  ContentContainer,
-} from '../../styling/Grid';
 
 const PrivacyPolicy = () => {
   const getString = useFluent();
@@ -27,10 +23,8 @@ const PrivacyPolicy = () => {
           content={metaDescription}
         />
       </Helmet>
-      <ContentContainer>
-        <ContentBody>
+      <div>
           <h1>{getString('header-text-menu-privacy-policy')}</h1>
-          <div>
           <p><small>Last Update: March 6, 2020</small></p>
 
           <p>It is Wilderlist's policy to respect your privacy regarding any information we may collect while operating our website. This Privacy Policy applies to <a href='https://www.wilderlist.app'>https://www.wilderlist.app</a> (hereinafter, "us", "we", or "https://www.wilderlist.app"). We respect your privacy and are committed to protecting personally identifiable information you may provide us through the Website. We have adopted this privacy policy ("Privacy Policy") to explain what information may be collected on our Website, how we use this information, and under what circumstances we may disclose the information to third parties. This Privacy Policy applies only to information we collect through the Website and does not apply to our collection of information from other sources.</p>
@@ -101,9 +95,7 @@ const PrivacyPolicy = () => {
 
           <p><small>This privacy policy was created in part and with the aid of <a href='https://privacytermsgenerator.com/' title='Privacy policy template generator' target='_blank' rel='noopener noreferrer'>privacytermsgenerator.com</a>. If you have any questions about this Privacy Policy, please contact us via <a href='mailto:help@wilderlist.app'>help@wilderlist.app</a>.</small></p>
 
-          </div>
-        </ContentBody>
-      </ContentContainer>
+      </div>
     </>
   );
 };

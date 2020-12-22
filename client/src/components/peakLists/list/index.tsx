@@ -8,10 +8,6 @@ import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { listDetailLink } from '../../../routing/Utils';
 import {
-  ContentBody,
-  ContentContainer,
-} from '../../../styling/Grid';
-import {
   LinkButton,
   Next,
   NoResults,
@@ -372,11 +368,9 @@ const PeakListPage = () => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink('search')} />
       </Helmet>
-      <ContentContainer>
-        <ContentBody ref={listContainerElm} style={{paddingTop: queryText ? 0 : undefined}}>
-          {list}
-        </ContentBody>
-      </ContentContainer>
+      <div ref={listContainerElm}>
+        {list}
+      </div>
     </>
   );
 };

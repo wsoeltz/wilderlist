@@ -2,12 +2,6 @@ import { Types } from 'mongoose';
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
-import {
-  ContentBody,
-  ContentContainer,
-  ContentHeader,
-} from '../../../styling/Grid';
-import BackButton from '../../sharedComponents/BackButton';
 import ListOfLists from '../list';
 import PeakListDetail from './PeakListDetail';
 
@@ -23,18 +17,7 @@ const PeakListDetailPage = () => {
   if (listId === 'search') {
     return <ListOfLists />;
   } else {
-    return (
-      <>
-        <ContentContainer>
-          <ContentHeader>
-            <BackButton />
-          </ContentHeader>
-          <ContentBody>
-            <PeakListDetail userId={peakListUser} id={listId} setOwnMetaData={true} />
-          </ContentBody>
-        </ContentContainer>
-      </>
-    );
+    return <PeakListDetail userId={peakListUser} id={listId} setOwnMetaData={true} />;
   }
 
 };

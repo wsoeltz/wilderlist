@@ -3,11 +3,6 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { withRouter } from 'react-router';
 import useCurrentUser from '../../hooks/useCurrentUser';
-import {
-  ContentBody,
-  ContentContainer as MountainListColumn,
-  ContentHeader,
-} from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Mountain, PermissionTypes } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
@@ -276,8 +271,8 @@ const AdminMountains = () => {
 
   return (
     <>
-      <MountainListColumn>
-        <ContentHeader>
+      <div>
+        <div>
           <h2>Mountains</h2>
           <SubNav>
             <NavButtonLink
@@ -302,8 +297,8 @@ const AdminMountains = () => {
             focusOnMount={false}
             initialQuery={searchQuery}
           />
-        </ContentHeader>
-        <ContentBody>
+        </div>
+        <div>
           <ListMountains
             loading={loading}
             error={error}
@@ -312,12 +307,10 @@ const AdminMountains = () => {
             editMountain={editMountain}
             searchQuery={searchQuery}
           />
-        </ContentBody>
-      </MountainListColumn>
+        </div>
+      </div>
       <div>
-        <ContentBody>
         {editPanel}
-        </ContentBody>
       </div>
     </>
   );

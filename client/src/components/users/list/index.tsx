@@ -7,11 +7,6 @@ import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { userProfileLink } from '../../../routing/Utils';
 import {
-  ContentBody,
-  ContentContainer,
-  SearchContainer,
-} from '../../../styling/Grid';
-import {
   Next,
   PaginationContainer,
   PlaceholderText,
@@ -193,19 +188,15 @@ const UserList = () => {
       <Helmet>
         <title>{getString('meta-data-friend-search-default-title')}</title>
       </Helmet>
-      <ContentContainer>
-        <SearchContainer>
-          <StandardSearch
-            placeholder='Search users'
-            setSearchQuery={searchUsers}
-            focusOnMount={true}
-            initialQuery={initialSearchQuery}
-          />
-        </SearchContainer>
-        <ContentBody ref={userListContainerElm}>
-          {list}
-        </ContentBody>
-      </ContentContainer>
+      <div ref={userListContainerElm}>
+        <StandardSearch
+          placeholder='Search users'
+          setSearchQuery={searchUsers}
+          focusOnMount={true}
+          initialQuery={initialSearchQuery}
+        />
+        {list}
+      </div>
     </>
   );
 };

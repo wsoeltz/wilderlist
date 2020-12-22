@@ -9,10 +9,6 @@ export const gridLines = {
   bannerBottom: 'wilderListGlobalGridBannerBottom',
   headerTop: 'wilderListGlobalGridHeaderTop',
   headerBottom: 'wilderListGlobalGridHeaderBottom',
-  historyTop: 'wilderListGlobalGridHistoryTop',
-  historyBottom: 'wilderListGlobalGridHistoryBottom',
-  searchTop: 'wilderListGlobalGridSearchTop',
-  searchBottom: 'wilderListGlobalGridSearchBottom',
   contentTop: 'wilderListGlobalGridContentTop',
   contentHeaderTop: 'wilderListGlobalGridContentHeaderTop',
   contentHeaderBottom: 'wilderListGlobalGridContentHeaderBottom',
@@ -33,9 +29,7 @@ const Grid = styled.div`
   grid-template-rows:
     [${gridLines.pageTop} ${gridLines.bannerTop}] auto
     [${gridLines.bannerBottom} ${gridLines.headerTop}] ${headerHeight}rem
-    [${gridLines.headerBottom} ${gridLines.historyTop}] auto
-    [${gridLines.historyBottom} ${gridLines.searchTop}] auto
-    [${gridLines.searchBottom} ${gridLines.contentHeaderTop}] auto
+    [${gridLines.headerBottom} ${gridLines.contentHeaderTop}] auto
     [${gridLines.contentHeaderBottom} ${gridLines.contentTop}] 1fr
     [${gridLines.contentBottom} ${gridLines.footerTop}] auto
     [${gridLines.footerbottom} ${gridLines.pageBottom}];
@@ -72,35 +66,22 @@ export const PreContentHeaderFull = styled.div`
 const contentGridLines = {
   header: 'wilderListContentGridHeader',
   body: 'wilderListContentGridBody',
-  footer: 'wilderListContentGridFooter',
 };
-
-const BaseContentElement = styled.div`
-  position: relative;
-  display: grid;
-  overflow: hidden;
-  grid-template-rows:
-    [${contentGridLines.header}] auto
-    [${contentGridLines.body}] 1fr
-    [${contentGridLines.footer}] auto;
-`;
 
 export const ContentHeader = styled.div`
   grid-row: ${contentGridLines.header};
-  padding: 0 ${standardContainerPadding};
-  position: relative;
-`;
-export const SearchContainer = styled(ContentHeader)`
-  padding: ${standardContainerPadding};
-`;
 
-const mobilePadding = '120px'; // padding buffer to account for the url changing on mobile devices & sticky header
+  @media(max-width: ${mobileSize}px) {
+    padding-top: 99px;
+  }
+`;
 
 export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};
-  position: relative;
   padding: ${standardContainerPadding};
+  background-color: #fff;
   overflow: auto;
+
   ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -114,15 +95,21 @@ export const ContentBody = styled.div`
   }
 
   @media(max-width: ${mobileSize}px) {
-    padding: ${mobilePadding} ${standardContainerPadding};
+    height: auto;
+    min-height: 100vh;
+    padding-bottom: 150px;
   }
 `;
 
-// const mediumColumnBreakpoint = 1400;
-
-export const ContentContainer = styled(BaseContentElement)`
+export const ContentContainer = styled.div`
   grid-column: ${gridLines.contentSpace};
   grid-row: ${gridLines.contentTop} / ${gridLines.contentBottom};
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows:
+    [${contentGridLines.header}] auto
+    [${contentGridLines.body}] 1fr;
 `;
 
 export const Root = styled(Grid)`

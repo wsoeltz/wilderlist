@@ -2,11 +2,6 @@ import { useMutation, useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { withRouter } from 'react-router';
-import {
-  ContentBody,
-  ContentContainer as PeakListListColumn,
-  ContentHeader,
-} from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { ExternalResource, PeakList, PeakListVariants, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
@@ -288,8 +283,8 @@ const AdminPeakLists = () => {
 
   return (
     <>
-      <PeakListListColumn>
-        <ContentHeader>
+      <div>
+        <div>
           <h2>Peak Lists</h2>
           <SubNav>
             <NavButtonLink
@@ -314,8 +309,8 @@ const AdminPeakLists = () => {
             focusOnMount={false}
             initialQuery={searchQuery}
           />
-        </ContentHeader>
-        <ContentBody>
+        </div>
+        <div>
           <ListPeakLists
             loading={loading}
             error={error}
@@ -324,12 +319,12 @@ const AdminPeakLists = () => {
             editPeakList={editPeakList}
             searchQuery={searchQuery}
           />
-        </ContentBody>
-      </PeakListListColumn>
+        </div>
+      </div>
       <div>
-        <ContentBody>
+        <div>
         {editPanel}
-        </ContentBody>
+        </div>
       </div>
     </>
   );

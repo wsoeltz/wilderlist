@@ -1,11 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { withRouter } from 'react-router';
-import {
-  ContentBody,
-  ContentContainer as StateListColumn,
-  ContentHeader,
-} from '../../styling/Grid';
 import { ButtonPrimary } from '../../styling/styleUtils';
 import { Region, State } from '../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../Utils';
@@ -172,8 +167,8 @@ const AdminStates = () => {
 
   return (
     <>
-      <StateListColumn>
-        <ContentHeader>
+      <div>
+        <div>
           <h2>States</h2>
           <StandardSearch
             placeholder={'Filter states'}
@@ -181,8 +176,8 @@ const AdminStates = () => {
             focusOnMount={false}
             initialQuery={searchQuery}
           />
-        </ContentHeader>
-        <ContentBody>
+        </div>
+        <div>
           <ListStates
             loading={loading}
             error={error}
@@ -191,12 +186,12 @@ const AdminStates = () => {
             editState={editState}
             searchQuery={searchQuery}
           />
-        </ContentBody>
-      </StateListColumn>
+        </div>
+      </div>
       <div>
-        <ContentBody>
+        <div>
         {editPanel}
-        </ContentBody>
+        </div>
       </div>
     </>
   );

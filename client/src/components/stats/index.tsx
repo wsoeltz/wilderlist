@@ -3,10 +3,6 @@ import Helmet from 'react-helmet';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
 import {
-  ContentBody,
-  ContentContainer,
-} from '../../styling/Grid';
-import {
   SectionTitleH3,
 } from '../../styling/styleUtils';
 import Stats from './Stats';
@@ -21,16 +17,12 @@ const YourStats = () => {
         <Helmet>
           <title>{getString('meta-data-your-stats-default-title')}</title>
         </Helmet>
-        <ContentContainer>
-          <ContentBody>
-            <SectionTitleH3>
-              {getString('your-stats-title')}
-            </SectionTitleH3>
-            <Stats
-              userId={user._id}
-            />
-          </ContentBody>
-        </ContentContainer>
+        <SectionTitleH3>
+          {getString('your-stats-title')}
+        </SectionTitleH3>
+        <Stats
+          userId={user._id}
+        />
       </>
     );
   } else {

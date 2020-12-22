@@ -268,7 +268,7 @@ const Header = () => {
     const {route, label} = input;
     let normalizedPathname: string;
     if (pathname.includes('dashboard')) {
-      normalizedPathname = '/dashboard';
+      normalizedPathname = Routes.Dashboard;
     } else if  (pathname.includes('your-stats')) {
       normalizedPathname = Routes.YourStats;
     } else if (pathname.includes('user') && !pathname.includes('settings')) {

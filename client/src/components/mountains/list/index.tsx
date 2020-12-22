@@ -7,10 +7,6 @@ import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
-  ContentBody,
-  ContentContainer,
-} from '../../../styling/Grid';
-import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
 import GhostMountainCard from './GhostMountainCard';
@@ -142,11 +138,7 @@ const MountainSearchPage = () => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink('search')} />
       </Helmet>
-      <ContentContainer>
-        <ContentBody>
-          {list}
-        </ContentBody>
-      </ContentContainer>
+      {list}
     </>
   );
 };

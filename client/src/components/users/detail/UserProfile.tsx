@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { History } from 'history';
 import React from 'react';
 import Helmet from 'react-helmet';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { comparePeakListIsolatedLink } from '../../../routing/Utils';
@@ -83,13 +83,12 @@ interface QueryVariables {
 interface Props {
   userId: string;
   id: string;
-  history: History;
   setActionDisabled?: (peakListId: string) => boolean;
 }
 
 const UserProfile = (props: Props) => {
-  const { id, history, userId, setActionDisabled } = props;
-
+  const { id, userId, setActionDisabled } = props;
+  const history = useHistory();
   const getString = useFluent();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {

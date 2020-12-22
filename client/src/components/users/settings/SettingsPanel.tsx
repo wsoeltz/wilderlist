@@ -4,10 +4,6 @@ import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
-  ContentBody,
-  ContentContainer,
-} from '../../../styling/Grid';
-import {
   ButtonPrimary,
   InputBase,
   lightBaseColor,
@@ -356,12 +352,10 @@ const SettingsPanel = ({userId}: Props) => {
       <Helmet>
         <title>{getString('meta-data-settings-default-title')}</title>
       </Helmet>
-      <ContentContainer>
-        <ContentBody>
-          <h1>{getString('header-text-menu-settings')}</h1>
-          {output}
-        </ContentBody>
-      </ContentContainer>
+      <div>
+        <h1>{getString('header-text-menu-settings')}</h1>
+        {output}
+      </div>
     </>
   );
 };

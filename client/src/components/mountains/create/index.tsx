@@ -6,14 +6,8 @@ import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
-import {
-  ContentBody,
-  ContentContainer,
-  ContentHeader,
-} from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import { ExternalResource, Mountain, PermissionTypes, User } from '../../../types/graphQLTypes';
-import BackButton from '../../sharedComponents/BackButton';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
@@ -318,15 +312,8 @@ const MountainCreatePage = () => {
 
   return (
     <>
-      <ContentContainer>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody style={{paddingBottom: 0}}>
-          {mountainForm}
-        </ContentBody>
-        {errorModal}
-      </ContentContainer>
+      {mountainForm}
+      {errorModal}
     </>
   );
 };

@@ -5,10 +5,6 @@ import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import { listDetailLink } from '../../routing/Utils';
 import {
-  ContentBody,
-  ContentContainer,
-} from '../../styling/Grid';
-import {
   ButtonPrimaryLink,
   PlaceholderText,
   SectionTitleH3,
@@ -140,11 +136,7 @@ const SavedLists = ({userId}: Props) => {
       <Helmet>
         <title>{getString('meta-data-dashboard-default-title')}</title>
       </Helmet>
-      <ContentContainer>
-        <ContentBody>
-          {peakListsList}
-        </ContentBody>
-      </ContentContainer>
+      {peakListsList}
     </>
   );
 };
