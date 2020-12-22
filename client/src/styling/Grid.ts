@@ -27,8 +27,6 @@ export const gridLines = {
 
 export const headerHeight = 2.1; // in rem
 
-export const smallHeaderBreakpoint = 1000;
-
 const Grid = styled.div`
   height: 100vh;
   display: grid;

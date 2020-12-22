@@ -1,15 +1,13 @@
 import {
-  faCampground,
   faChartLine,
   faList,
   faMap,
-  faMapSigns,
-  faMountain,
   faStar,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
-import React, { useContext, useState } from 'react';
+import raw from 'raw.macro';
+import React, { useCallback, useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
@@ -28,13 +26,19 @@ import {
   baseColor,
   lightBaseColor,
   lightFontWeight,
-  primaryBlue,
+  primaryColor,
   regularFontWeight,
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import {mobileSize} from '../../../Utils';
 import { AppContext } from '../../App';
 import NotificationBar from './NotificationBar';
+import AddAscentButton from './toolsAndSettings/AddAscentButton';
+import CreateItineraryButton from './toolsAndSettings/CreateItineraryButton';
+import CreateRouteButton from './toolsAndSettings/CreateRouteButton';
+import MapLayersButton from './toolsAndSettings/MapLayersButton';
+import Toggle3dModeButton from './toolsAndSettings/Toggle3dModeButton';
+import ToolsAndSettingsButton from './toolsAndSettings/ToolsAndSettingsButton';
 import UserMenu from './UserMenu';
 
 const HeaderContainer = styled(HeaderContainerBase)`
@@ -43,6 +47,7 @@ const HeaderContainer = styled(HeaderContainerBase)`
   justify-content: space-between;
   position: relative;
   z-index: 450;
+  background-color: #fff;
 
   @media(max-width: ${mobileSize}px) {
     width: 100%;
@@ -56,6 +61,8 @@ const HeaderContainer = styled(HeaderContainerBase)`
 
 const SideContent = styled.div`
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 
   @media(min-width: ${mobileSize + 1}px) {
     position: fixed;
@@ -63,6 +70,7 @@ const SideContent = styled.div`
     top: ${headerHeight}rem;
     max-width: 200px;
     padding: 1rem;
+    display: block;
   }
 `;
 
@@ -71,6 +79,10 @@ const SemanticLogoContainer = styled.h1`
   overflow: hidden;
   font-size: 0;
   color: rgba(0, 0, 0, 0);
+
+  @media(min-width: ${mobileSize + 1}px) {
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const LogoContainer = styled(Link)`
@@ -132,7 +144,7 @@ const InactiveNavLink = styled(NavLink)`
 const ActiveNavLink = styled(NavLink)`
   color: #fff;
   font-weight: ${regularFontWeight};
-  background-color: ${primaryBlue};
+  background-color: ${primaryColor};
 
   &:hover {
     color: #fff;
@@ -154,7 +166,7 @@ const ActiveIconContainer = styled(IconContainerBase)`
 `;
 
 const InactiveIconContainer = styled(IconContainerBase)`
-  color: ${lightBaseColor};
+  color: ${primaryColor};
 `;
 
 const TopNav = styled.div`
@@ -171,6 +183,7 @@ const BottomContent = styled.div`
   right: 0;
   width: 100%;
   z-index: 450;
+  box-shadow: 0 1px 3px 1px #d1d1d1;
 `;
 
 const BottomNav = styled.div`
@@ -178,6 +191,8 @@ const BottomNav = styled.div`
   box-shadow: 0 1px 3px 1px #d1d1d1;
   display: flex;
   justify-content: space-between;
+  box-shadow: 0 1px 3px 1px #d1d1d1;
+  position: relative;
 `;
 
 const Copyright = styled.div`
@@ -186,11 +201,59 @@ const Copyright = styled.div`
   font-size: 0.75rem;
   padding: 0.35rem;
   text-align: center;
+  position: relative;
 
   a {
     color: ${lightBaseColor};
   }
 `;
+
+const CustomIconInTextBase = styled(IconContainerBase)`
+  svg {
+    width: 0.9rem;
+  }
+`;
+const CustomIconInTextActive = styled(CustomIconInTextBase)`
+  svg {
+    .fill-path {
+      fill: #fff;
+    }
+    .stroke-path {
+      fill: ${primaryColor};
+    }
+  }
+`;
+const CustomIconInTextInactive = styled(CustomIconInTextBase)`
+  svg {
+    .fill-path {
+      fill: ${primaryColor};
+    }
+    .stroke-path {
+      fill: #fff;
+    }
+  }
+`;
+
+const LineBreak = styled.hr`
+  border: solid 1px #fff;
+`;
+
+const peakListsPath = listDetailLink('search');
+const usersPath = userProfileLink('search');
+const mountainPath = mountainDetailLink('search');
+
+type LinkInput = {
+  route: string,
+  label: string,
+} & (
+  {
+    customIcon: true,
+    icon: string,
+  } | {
+    customIcon: false,
+    icon: FaProps['icon'],
+  }
+);
 
 const Header = () => {
   const user = useCurrentUser();
@@ -201,11 +264,8 @@ const Header = () => {
   const { windowWidth } = useContext(AppContext);
   const getString = useFluent();
 
-  const peakListsPath = listDetailLink('search');
-  const usersPath = userProfileLink('search');
-  const mountainPath = mountainDetailLink('search');
-
-  const createLink = (route: string, label: string, icon: FaProps['icon']) => {
+  const createLink = useCallback((input: LinkInput) => {
+    const {route, label} = input;
     let normalizedPathname: string;
     if (pathname.includes('dashboard')) {
       normalizedPathname = '/dashboard';
@@ -222,16 +282,29 @@ const Header = () => {
     }
     const className = route === Routes.Dashboard ? 'header-dashboard-link' : undefined;
     const Container = route === normalizedPathname ? ActiveNavLink : InactiveNavLink;
-    const IconContainer = route === normalizedPathname ? ActiveIconContainer : InactiveIconContainer;
+    let icon: React.ReactElement<any>;
+    if (input.customIcon === true) {
+      const IconContainer = route === normalizedPathname ? CustomIconInTextActive : CustomIconInTextInactive;
+      icon = (
+        <IconContainer
+          dangerouslySetInnerHTML={{__html: input.icon}}
+        />
+      );
+    } else {
+      const IconContainer = route === normalizedPathname ? ActiveIconContainer : InactiveIconContainer;
+      icon = (
+        <IconContainer>
+          <FontAwesomeIcon icon={input.icon} />
+        </IconContainer>
+      );
+    }
     return (
       <Container className={className} to={route}>
-        <IconContainer>
-          <FontAwesomeIcon icon={icon} />
-        </IconContainer>
+        {icon}
         {label}
       </Container>
     );
-  };
+  }, [pathname]);
 
   const hikingListsText = windowWidth > 530
     ? getString('header-text-menu-item-lists')
@@ -240,23 +313,74 @@ const Header = () => {
     ? getString('header-text-menu-item-your-stats')
     : getString('header-text-menu-item-your-stats-short');
 
+  const dashboardLink = createLink({
+    route: Routes.Dashboard,
+    label: getString('header-text-menu-item-dashboard'),
+    customIcon: false,
+    icon: faStar,
+  });
+  const statsLink = createLink({
+    route: Routes.YourStats,
+    label: yourStatsText,
+    customIcon: false,
+    icon: faChartLine,
+  });
+  const friendsLink = createLink({
+    route: usersPath,
+    label: getString('header-text-menu-item-friends'),
+    customIcon: false,
+    icon: faUserFriends,
+  });
+  const listsLink = createLink({
+    route: peakListsPath,
+    label: hikingListsText,
+    customIcon: false,
+    icon: faList,
+  });
+  const mountainsLink = createLink({
+    route: mountainPath,
+    label: getString('header-text-menu-item-mountains'),
+    customIcon: true,
+    icon: raw('../../../assets/images/icons/mountain-neutral.svg'),
+  });
+  const trailsLink = createLink({
+    route: '#',
+    label: getString('header-text-menu-item-trails'),
+    customIcon: true,
+    icon: raw('../../../assets/images/icons/trail-default.svg'),
+  });
+  const campsitesLink = createLink({
+    route: '#',
+    label: getString('header-text-menu-item-camping'),
+    customIcon: true,
+    icon: raw('../../../assets/images/icons/tent-neutral.svg'),
+  });
+
   let notifications: React.ReactElement<any> | null;
   let userLinks: React.ReactElement<any> | null;
+  let addAscentButton: React.ReactElement<any> | null;
   if (user) {
     notifications = <NotificationBar userId={user._id} />;
     const mapLink = windowWidth > mobileSize
-      ? null : createLink(Routes.Landing, getString('map-generic-title'), faMap);
+      ? null : createLink({
+        route: Routes.Landing,
+        label: getString('map-generic-title'),
+        customIcon: false,
+        icon: faMap,
+    });
     userLinks = (
       <>
         {mapLink}
-        {createLink(Routes.Dashboard, getString('header-text-menu-item-dashboard'), faStar)}
-        {createLink(Routes.YourStats, yourStatsText, faChartLine)}
-        {createLink(usersPath, getString('header-text-menu-item-friends'), faUserFriends)}
+        {dashboardLink}
+        {statsLink}
+        {friendsLink}
       </>
     );
+    addAscentButton = <AddAscentButton />;
   } else {
     notifications = null;
     userLinks = null;
+    addAscentButton = null;
   }
 
   if (windowWidth > mobileSize) {
@@ -274,12 +398,19 @@ const Header = () => {
                 />
               </LogoContainer>
             </SemanticLogoContainer>
+            {addAscentButton}
+            <CreateRouteButton />
+            <CreateItineraryButton />
+            <LineBreak />
+            <Toggle3dModeButton />
+            <MapLayersButton />
+            <ToolsAndSettingsButton />
           </SideContent>
           <CoreNav>
-            {createLink(peakListsPath, hikingListsText, faList)}
-            {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
-            {createLink('#', getString('header-text-menu-item-trails'), faMapSigns)}
-            {createLink('#', getString('header-text-menu-item-camping'), faCampground)}
+            {listsLink}
+            {mountainsLink}
+            {trailsLink}
+            {campsitesLink}
           </CoreNav>
           <UserNav>
             {userLinks}
@@ -317,15 +448,20 @@ const Header = () => {
             </UserNav>
           </TopNav>
           <CoreNav>
-            {createLink(peakListsPath, hikingListsText, faList)}
-            {createLink(mountainPath, getString('header-text-menu-item-mountains'), faMountain)}
-            {createLink('#', getString('header-text-menu-item-trails'), faMapSigns)}
-            {createLink('#', getString('header-text-menu-item-camping'), faCampground)}
+            {listsLink}
+            {mountainsLink}
+            {trailsLink}
+            {campsitesLink}
           </CoreNav>
         </HeaderContainer>
         {notifications}
         <BottomContent>
           <SideContent>
+            <CreateRouteButton />
+            <CreateItineraryButton />
+            <Toggle3dModeButton />
+            <MapLayersButton />
+            <ToolsAndSettingsButton />
           </SideContent>
           <BottomNav>
             {userLinks}

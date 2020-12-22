@@ -277,7 +277,13 @@ global-text-value-list-tier-desc =
   </p>
 
 
-global-add-trip-report = Add Trip Report
+global-add-trip-report = Add&nbsp;Trip Report
+global-create-route = Create Route
+global-create-itinerary = Create Itinerary
+global-3d-mode-on = Turn&nbsp;on 3D&nbsp;Mode
+global-3d-mode-off = Turn&nbsp;off 3D&nbsp;Mode
+global-map-layers = Map Layers
+global-tools-and-settings = Tools&nbsp;&amp; Settings
 
 header-text-login-with-google = Login With Google
 header-text-login-with-reddit = Login With Reddit

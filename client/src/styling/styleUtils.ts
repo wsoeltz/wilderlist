@@ -13,9 +13,9 @@ export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and c
 export const placeholderColor = '#a7a7a7'; // light gray color for placeholder text
 export const lightBorderColor = '#dcdcdc'; // really light gray color for subtle borders between elements
 
-export const primaryColor = '#668434'; // primary green color for buttons and other highlighted elements
+export const primaryColor = '#206ca6'; // primary blue color for buttons and other highlighted elements
 export const secondaryColor = '#696969'; // gray color for use with buttons or other clickable items
-export const primaryHoverColor = '#86a651'; // hover variant of primaryColor
+export const primaryHoverColor = '#0580ca'; // hover variant of primaryColor
 export const secondaryHoverColor = '#908d8d'; // hover variant of secondaryColor
 
 export const tertiaryColor = '#f3f3f3'; // really light gray color for use as a hover background color on cards
@@ -37,9 +37,6 @@ export const coolBlueColor = '#3a29c3';
 export const warmRedColor = '#d92a21';
 
 export const lightBlue = '#d1e2e9';
-
-export const primaryBlue = '#206ca6';
-export const primaryBlueHoverColor = '#0580ca';
 
 export interface ColorSet {
   primary: string;
@@ -340,14 +337,6 @@ export const ButtonSecondary = styled(ButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
-  }
-`;
-
-export const ButtonPrimaryBlue = styled(ButtonBase)`
-  background-color: ${primaryBlue};
-
-  &:hover {
-    background-color: ${primaryBlueHoverColor};
   }
 `;
 

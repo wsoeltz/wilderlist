@@ -94,6 +94,7 @@ const GlobalStyles = createGlobalStyle`
   body {
     font-family: ${primaryFont};
     color: ${baseColor};
+    background-color: beige;
   }
 
   h1 {

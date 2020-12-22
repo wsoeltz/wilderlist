@@ -18,7 +18,7 @@ import {
   GhostButton,
   lightBorderColor,
   PlaceholderText,
-  primaryBlue,
+  primaryColor,
   secondaryColor,
 } from '../../../../styling/styleUtils';
 import { State } from '../../../../types/graphQLTypes';
@@ -116,12 +116,12 @@ const Path = styled.path`
 
   &:hover {
     cursor: pointer;
-    stroke: ${darken(0.1, primaryBlue)};
+    stroke: ${darken(0.1, primaryColor)};
     stroke-width: 4px;
   }
 
   &.selected-state {
-    stroke: ${darken(0.1, primaryBlue)};
+    stroke: ${darken(0.1, primaryColor)};
     stroke-width: 2px;
   }
 `;
@@ -151,7 +151,7 @@ const TooltipTitle = styled.h2`
 const TooltipListCount = styled.h3`
   font-size: 1.2rem;
   margin: 0.4rem 0 0.2rem;
-  color: ${primaryBlue};
+  color: ${primaryColor};
 `;
 
 const TooltipClickText = styled.small`
@@ -198,7 +198,7 @@ const ScaleContainer = styled.div`
 
 const Scale = styled.div`
   width: 100%;
-  background: linear-gradient(90deg, ${lightBorderColor} 0%, ${primaryBlue} 100%);
+  background: linear-gradient(90deg, ${lightBorderColor} 0%, ${primaryColor} 100%);
   height: 1rem;
   border: solid 1px #fff;
 `;
@@ -250,7 +250,7 @@ const ListMapSelect = (props: Props) => {
     : [0, 0];
   const maxVal = max(allValues) as number;
 
-  const colorScale = scaleLinear<string>().domain([0, maxVal]).range([lightBorderColor, primaryBlue]);
+  const colorScale = scaleLinear<string>().domain([0, maxVal]).range([lightBorderColor, primaryColor]);
 
   const paths = statePaths.map(state => {
     const targetState = data && data.states

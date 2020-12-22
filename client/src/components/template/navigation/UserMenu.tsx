@@ -11,10 +11,9 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { Routes } from '../../../routing/routes';
 import { userProfileLink } from '../../../routing/Utils';
-import { smallHeaderBreakpoint } from '../../../styling/Grid';
 import {
   baseColor,
-  ButtonPrimaryBlue,
+  ButtonPrimary,
   lightBorderColor,
   lightFontWeight,
   tertiaryColor,
@@ -30,7 +29,7 @@ import {
   LoginText as LoginTextBase,
   redditRed,
 } from '../../sharedComponents/SignUpModal';
-import AddAscentButton from './AddAscentButton';
+import AddAscentButton from './toolsAndSettings/AddAscentButton';
 
 const UserMenu = styled.div`
   height: 100%;
@@ -63,9 +62,13 @@ const UserMenuListContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 0 1.5rem;
   box-sizing: border-box;
   min-width: 200px;
+  box-shadow: 0 1px 3px 1px #d1d1d1;
+
+  @media(max-width: ${mobileSize}px) {
+    width: 100vw;
+  }
 `;
 
 const userMenuLinkStyles = `
@@ -85,6 +88,14 @@ const userMenuLinkStyles = `
   &:not(:first-child) {
     border-top: none;
   }
+
+
+  @media(max-width: ${mobileSize}px) {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    min-height: 45px;
+  }
 `;
 
 const UserMenuLink = styled(Link)`
@@ -99,13 +110,9 @@ const UserImage = styled.img`
   display: inline-block;
   border-radius: 1000px;
   max-width: 28px;
-
-  @media(max-width: ${smallHeaderBreakpoint}px) {
-    margin-right: 0;
-  }
 `;
 
-const LoginOrSignUpMenuButton = styled(ButtonPrimaryBlue)`
+const LoginOrSignUpMenuButton = styled(ButtonPrimary)`
   padding: 0.45rem 0.75rem;
   margin-right: 0.75rem;
 `;
@@ -122,6 +129,15 @@ const LoginButtonListItem = styled(LoginButtonBase)`
   margin: 0;
   border-radius: 0;
   width: 160px;
+
+  @media(max-width: ${mobileSize}px) {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    min-height: 45px;
+    width: 100%;
+    max-width: 100%;
+  }
 `;
 
 const BrandIcon = styled(BrandIconBase)`
@@ -129,6 +145,7 @@ const BrandIcon = styled(BrandIconBase)`
 
   @media(max-width: ${mobileSize}px) {
     padding: 8px 0;
+    font-size: 1.5rem;
   }
 `;
 const LoginText = styled(LoginTextBase)`
@@ -137,6 +154,14 @@ const LoginText = styled(LoginTextBase)`
 
 const Caret = styled(FontAwesomeIcon)`
   margin-left: 0.5rem;
+`;
+
+const AddAscentButtonContainer = styled.div`
+  height: 100%;
+  border-left: solid 1px ${lightBorderColor};
+  border-right: solid 1px ${lightBorderColor};
+  display: flex;
+  align-items: center;
 `;
 
 interface UserMenuListProps {
@@ -168,6 +193,9 @@ const UserMenuList = ({user, closeUserMenu}: UserMenuListProps) => {
         </UserMenuLink>
         <UserMenuLink to={Routes.UserSettings}>
           {getString('header-text-menu-settings')}
+        </UserMenuLink>
+        <UserMenuLink to={Routes.About}>
+          {getString('header-text-menu-item-about')}
         </UserMenuLink>
         <UserMenuLink to={Routes.PrivacyPolicy}>
           {getString('header-text-menu-privacy-policy')}
@@ -253,11 +281,15 @@ const UserMenuComponent = (props: Props) => {
          />
       ) : null;
 
+    const addAscentButton = windowWidth < mobileSize ? (
+      <AddAscentButtonContainer>
+        <AddAscentButton />
+      </AddAscentButtonContainer>
+    ) : null;
     output = (
       <UserMenu>
-        <AddAscentButton />
+        {addAscentButton}
         <UserButton
-
           onClick={toggleUserMenu}
         >
           <UserImage src={user.profilePictureUrl} />
