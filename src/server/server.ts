@@ -9,6 +9,7 @@ import { redirectToHTTPS } from 'express-http-to-https';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import passport from 'passport';
+import getGlobalSearch from './api/getGlobalSearch';
 import facebookAuth from './auth/facebook';
 import googleAuth from './auth/google';
 import redditAuth from './auth/reddit';
@@ -108,6 +109,23 @@ app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
 
 // Send invites to ascent added emails
 notificationRoutes(app);
+
+app.get('/api/global-search', async (req, res) => {
+  try {
+    const lat = req.query && req.query.lat ? parseFloat(req.query.lat) : undefined;
+    const lng = req.query && req.query.lng ? parseFloat(req.query.lng) : undefined;
+    const search = req.query && req.query.search ? req.query.search : undefined;
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getGlobalSearch({lat, lng, search});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
 
 app.get('/api/weather', async (req, res) => {
   try {

@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLFloat,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -60,6 +61,9 @@ const PeakListSchema = new Schema({
   status: { type: String },
   flag: { type: String },
   tier: { type: String },
+  center: [{type: Number}],
+  bbox: [{type: Number}],
+  classification:  { type: String },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -438,7 +442,9 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
-
+    center: { type: new GraphQLList(GraphQLFloat) },
+    bbox: { type: new GraphQLList(GraphQLFloat) },
+    classification:  { type: GraphQLString },
   }),
 });
 

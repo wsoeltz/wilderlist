@@ -5,6 +5,7 @@ export interface Region {
 }
 
 export interface State {
+  _id: string;
   id: string;
   name: string;
   abbreviation: string;
@@ -32,6 +33,10 @@ export enum MountainFlag {
   deleteRequest = 'deleteRequest',
 }
 
+type Longitude = number;
+type Latitude = number;
+type Coordinate = [Longitude, Latitude];
+
 export interface Mountain {
   id: string;
   name: string;
@@ -47,6 +52,8 @@ export interface Mountain {
   flag: MountainFlag | null;
   description: string | null;
   resources: ExternalResource[] | null;
+  location: Coordinate;
+  trailAccessible: boolean;
 }
 
 export enum PeakListVariants {
@@ -103,6 +110,97 @@ export interface PeakList {
   latestAscent: string | null;
   isActive: boolean | null;
   stateOrRegionString: string | null;
+  center: Coordinate;
+  bbox: [Longitude, Latitude, Longitude, Latitude];
+  classification: string;
+}
+
+export enum TrailType {
+  dirtroad = 'dirtroad',
+  trail = 'trail',
+  path = 'path',
+  stairs = 'stairs',
+  cycleway = 'cycleway',
+  road = 'road',
+  hiking = 'hiking',
+  bridleway = 'bridleway',
+  demandingMountainHiking = 'demanding_mountain_hiking',
+  mountainHiking = 'mountain_hiking',
+  herdpath = 'herdpath',
+  alpineHiking = 'alpine_hiking',
+  demandingAlpineHiking = 'demanding_alpine_hiking',
+  difficultAlpineHiking = 'difficult_alpine_hiking',
+  parentTrail = 'parent_trail',
+}
+
+export interface Trail {
+  _id: string;
+  id: string;
+  name: string | null;
+  osmId: number | null;
+  relId: number | null;
+  type: TrailType;
+  states: Array<State | null> | null;
+  line: Coordinate[];
+  center: Coordinate;
+  allowsBikes: boolean | null;
+  allowsHorses: boolean | null;
+  parents: Array<Trail | null> | null;
+  children: Array<Trail | null> | null;
+  waterCrossing: string | null;
+  skiTrail: boolean | null;
+}
+
+export enum CampsiteType {
+  campSite = 'camp_site',
+  caravanSite = 'caravan_site',
+  weatherShelter = 'weather_shelter',
+  campPitch = 'camp_pitch',
+  leanTo = 'lean_to',
+  wildernessHut = 'wilderness_hut',
+  alpineHut = 'alpine_hut',
+  basicHut = 'basic_hut',
+  rockShelter = 'rock_shelter',
+}
+
+export enum CampsiteOwnership {
+  private = 'private',
+  federal = 'federal',
+  state = 'state',
+}
+
+export enum CampsiteReservation {
+  reservable = 'reservable',
+  notReservable = 'not reservable',
+  recommended = 'recommended',
+  required = 'required',
+}
+
+export interface Campsite {
+  _id: string;
+  id: string;
+  reserveamericaId: string | null;
+  ridbId: string | null;
+  osmId: string | null;
+  name: string | null;
+  location: Coordinate;
+  state: State | null;
+  website: string | null;
+  type: CampsiteType;
+  ownership: CampsiteOwnership | null;
+  electricity: boolean | null;
+  toilets: boolean | null;
+  drinking_water: boolean | null;
+  email: string | null;
+  reservation: CampsiteReservation | string | null;
+  showers: boolean | null;
+  phone: string | null;
+  fee: boolean | null;
+  tents: boolean | null;
+  capacity: number | null;
+  internet_access: boolean | null;
+  fire: boolean | null;
+  maxtents: number | null;
 }
 
 export enum PermissionTypes {

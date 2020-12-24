@@ -1,5 +1,6 @@
 /* tslint:disable:await-promise */
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLInt,
@@ -12,11 +13,14 @@ import { CreatedItemStatus } from '../graphQLTypes';
 import {
   buildNearSphereQuery,
   GeoSphereInput,
+  TextPlusGeoWithinInput,
 } from './geospatial/utils';
+import CampsiteType, { Campsite } from './queryTypes/campsiteType';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
+import TrailType, { Trail } from './queryTypes/trailType';
 import TripReportType, { TripReport } from './queryTypes/tripReportType';
 import UserType, { User } from './queryTypes/userType';
 
@@ -251,6 +255,28 @@ const RootQuery = new GraphQLObjectType({
         }
       },
     },
+    trail: {
+      type: TrailType,
+      args: { id: { type: GraphQLID } },
+      resolve(parentValue, { id }) {
+        if (id === null) {
+          return null;
+        } else {
+          return Trail.findById(id);
+        }
+      },
+    },
+    campsite: {
+      type: CampsiteType,
+      args: { id: { type: GraphQLID } },
+      resolve(parentValue, { id }) {
+        if (id === null) {
+          return null;
+        } else {
+          return Campsite.findById(id);
+        }
+      },
+    },
     state: {
       type: StateType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
@@ -383,26 +409,86 @@ const RootQuery = new GraphQLObjectType({
         return PeakList.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
-    geoSphereMountains: {
+    geoNearMountains: {
       type: new GraphQLList(MountainType),
       args: {
         latitude: { type: GraphQLNonNull(GraphQLFloat) },
         longitude: { type: GraphQLNonNull(GraphQLFloat) },
         maxDistance: { type: GraphQLFloat },
-        minDistance: { type: GraphQLFloat },
         limit: {type: GraphQLNonNull(GraphQLInt)},
-        searchText: {type: GraphQLString},
       },
-      resolve(parentValue, { latitude, longitude, maxDistance, minDistance, limit, searchText }: GeoSphereInput) {
+      resolve(parentValue, { latitude, longitude, maxDistance, limit}: GeoSphereInput) {
         const query = buildNearSphereQuery({
-          field: 'location',
+          locationField: 'location',
           longitude,
           latitude,
           maxDistance,
-          minDistance,
-          searchText,
         });
         return Mountain.find(query).limit(limit);
+      },
+    },
+    geoNearPeakLists: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+      },
+      resolve(parentValue, { latitude, longitude, maxDistance, limit }: GeoSphereInput) {
+        const query = buildNearSphereQuery({
+          locationField: 'center',
+          longitude,
+          latitude,
+          maxDistance,
+        });
+        return PeakList.find(query).limit(limit);
+      },
+    },
+    geoNearTrails: {
+      type: new GraphQLList(TrailType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+        hasName: {type: GraphQLBoolean},
+      },
+      resolve(parentValue,
+              { latitude, longitude, maxDistance, searchText, limit, hasName }:
+        TextPlusGeoWithinInput & {hasName: boolean | null}) {
+        const geoQuery = buildNearSphereQuery({
+          locationField: 'center',
+          longitude,
+          latitude,
+          maxDistance,
+        });
+        const query = hasName ? {...geoQuery, name: {$ne: null}} : geoQuery;
+        return Trail.find(query)
+        .limit(limit);
+      },
+    },
+    geoNearCampsites: {
+      type: new GraphQLList(CampsiteType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+        hasName: {type: GraphQLBoolean},
+      },
+      resolve(parentValue,
+              { latitude, longitude, maxDistance, searchText, limit, hasName }:
+        TextPlusGeoWithinInput & {hasName: boolean | null}) {
+        const geoQuery = buildNearSphereQuery({
+          locationField: 'location',
+          longitude,
+          latitude,
+          maxDistance,
+        });
+        const query = hasName ? {...geoQuery, name: {$ne: null}} : geoQuery;
+        return Campsite.find(query)
+        .limit(limit);
       },
     },
   }),

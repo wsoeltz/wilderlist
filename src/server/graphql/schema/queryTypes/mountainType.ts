@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLID,
@@ -49,6 +50,7 @@ const MountainSchema = new Schema({
     url: { type: String },
   }],
   location: [{type: Number}],
+  trailAccessible: {type: Boolean},
 });
 
 MountainSchema.index({ location: '2dsphere' });
@@ -172,6 +174,7 @@ const MountainType: any = new GraphQLObjectType({
     description: { type: GraphQLString },
     resources: { type: new GraphQLList(ExternalResourcesType) },
     location: { type: new GraphQLList(GraphQLFloat) },
+    trailAccessible: { type: GraphQLBoolean },
   }),
 });
 

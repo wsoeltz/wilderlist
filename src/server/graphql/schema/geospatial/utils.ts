@@ -1,34 +1,35 @@
 interface NearSphereBaseInput {
+  locationField: string;
   latitude: number;
   longitude: number;
   maxDistance: number | null;
-  minDistance: number | null;
-  searchText: string | null;
 }
 
 export interface GeoSphereInput extends NearSphereBaseInput {
   limit: number;
 }
 
-export const buildNearSphereQuery = (input: NearSphereBaseInput & {field: string}) => {
+export interface TextPlusGeoWithinInput {
+  latitude: number;
+  longitude: number;
+  maxDistance: number;
+  searchText: string;
+  limit: number;
+}
+
+export const buildNearSphereQuery = (input: NearSphereBaseInput) => {
   const {
-    field, latitude, longitude, maxDistance, minDistance, searchText,
+    locationField, latitude, longitude, maxDistance,
   } = input;
-  const nearSphereQuery = {
-    [field]: {
+  return {
+    [locationField]: {
         $nearSphere: {
            $geometry: {
               type : 'Point',
               coordinates : [ longitude, latitude ],
            },
-           $minDistance: minDistance ? minDistance : 0,
-           $maxDistance: maxDistance ? maxDistance : 402336, // 250 miles
+           $maxDistance: maxDistance ? maxDistance : 2414016, // 1500 miles
         },
      },
    };
-  const query = searchText && searchText.length ? {
-    ...nearSphereQuery,
-     name: { $regex: searchText, $options: 'i' },
-  } : nearSphereQuery;
-  return query;
 };
