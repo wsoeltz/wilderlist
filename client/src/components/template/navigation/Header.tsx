@@ -10,6 +10,7 @@ import raw from 'raw.macro';
 import React, { useCallback, useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import LogoPng from '../../../assets/logo/logo.png';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { Routes } from '../../../routing/routes';
@@ -40,6 +41,10 @@ import MapLayersButton from './toolsAndSettings/MapLayersButton';
 import Toggle3dModeButton from './toolsAndSettings/Toggle3dModeButton';
 import ToolsAndSettingsButton from './toolsAndSettings/ToolsAndSettingsButton';
 import UserMenu from './UserMenu';
+
+export const mountainNeutralSvg = raw('../../../assets/images/icons/mountain-neutral.svg');
+export const trailDefaultSvg = raw('../../../assets/images/icons/trail-default.svg');
+export const tentNeutralSvg = raw('../../../assets/images/icons/tent-neutral.svg');
 
 const HeaderContainer = styled(HeaderContainerBase)`
   box-shadow: 0 1px 3px 1px #d1d1d1;
@@ -341,19 +346,19 @@ const Header = () => {
     route: mountainPath,
     label: getString('header-text-menu-item-mountains'),
     customIcon: true,
-    icon: raw('../../../assets/images/icons/mountain-neutral.svg'),
+    icon: mountainNeutralSvg,
   });
   const trailsLink = createLink({
     route: '#',
     label: getString('header-text-menu-item-trails'),
     customIcon: true,
-    icon: raw('../../../assets/images/icons/trail-default.svg'),
+    icon: trailDefaultSvg,
   });
   const campsitesLink = createLink({
     route: '#',
     label: getString('header-text-menu-item-camping'),
     customIcon: true,
-    icon: raw('../../../assets/images/icons/tent-neutral.svg'),
+    icon: tentNeutralSvg,
   });
 
   let notifications: React.ReactElement<any> | null;
@@ -392,7 +397,7 @@ const Header = () => {
               <LogoContainer to={Routes.Landing}>
                 {getString('global-text-value-wilderlist-name')}
                 <Logo
-                  src={require('../../../assets/logo/logo.png').default}
+                  src={LogoPng}
                   alt={getString('global-text-value-wilderlist-name')}
                   title={getString('global-text-value-wilderlist-name')}
                 />

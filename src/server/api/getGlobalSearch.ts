@@ -50,7 +50,7 @@ const mergeAndSort = (
         } else {
           return undefined;
         }
-      }),
+      }).filter((v: string | null) => v),
     };
   })
 );
@@ -107,7 +107,7 @@ const fetchValuesAsync = (input: Input) => {
     let campsiteData: any[] = [];
 
     setTimeout(() => {
-      if (mountainsFetched || listsFetched || trailsFetched || campsitesFetched) {
+      if (mountainsFetched && (listsFetched || campsitesFetched) || (listsFetched && campsitesFetched)) {
         State.find({_id: {$in: stateIds}}).then(res => {
           resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, res));
         }).catch(reject);
@@ -129,7 +129,6 @@ const fetchValuesAsync = (input: Input) => {
     )
     .sort( { score: { $meta: 'textScore' } } )
     .limit(30).then(res => {
-      trailsFetched = true;
       res.forEach(trail => {
         const parents = trail.parents ? trail.parents.map(p => (p as unknown as string).toString()) : [];
         if (!trailData.find(
@@ -138,8 +137,8 @@ const fetchValuesAsync = (input: Input) => {
         ) {
           const states = trail.states ? trail.states.map(s => s as unknown as string) : [];
           states.forEach(stateId => {
-            if (!stateIds.includes(stateId)) {
-              stateIds.push(stateId);
+            if (!stateIds.includes(stateId.toString())) {
+              stateIds.push(stateId.toString());
             }
           });
           trailData.push({
@@ -155,6 +154,7 @@ const fetchValuesAsync = (input: Input) => {
         }
       });
       trailData = orderBy(trailData, ['priority', 'distance']).slice(0, 7);
+      trailsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
           resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
@@ -162,24 +162,20 @@ const fetchValuesAsync = (input: Input) => {
       }
     }).catch(reject);
 
-    Mountain.find(
-      {
-        location: {
-          $geoWithin: { $centerSphere: [ [ input.lng, input.lat ], 2500 / 3963.2 ] },
-        },
-        $text: { $search: `\"${input.search}\"` },
-      },
-      { score: { $meta: 'textScore' } },
-    )
-    .sort( { score: { $meta: 'textScore' } } )
-    .limit(30).then(res => {
-      mountainsFetched = true;
+    Mountain.find({...buildNearSphereQuery({
+      locationField: 'location',
+      longitude: input.lng,
+      latitude: input.lat,
+      maxDistance: 1514016,
+    }), name: { $regex: input.search, $options: 'i' }})
+    .limit(10).then(res => {
       mountainData = res.map(mtn => {
         const stateId = mtn.state as unknown as string;
-        if (!stateIds.includes(stateId)) {
-          stateIds.push(stateId);
+        if (!stateIds.includes(stateId.toString())) {
+          stateIds.push(stateId.toString());
         }
         return {
+          id: mtn._id,
           name: mtn.name,
           type: 'mountain',
           elevation: mtn.elevation,
@@ -189,6 +185,7 @@ const fetchValuesAsync = (input: Input) => {
           priority: mountainPriority(mtn),
         };
       });
+      mountainsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
           resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
@@ -196,24 +193,20 @@ const fetchValuesAsync = (input: Input) => {
       }
     }).catch(reject);
 
-    Campsite.find(
-      {
-        location: {
-          $geoWithin: { $centerSphere: [ [ input.lng, input.lat ], 2500 / 3963.2 ] },
-        },
-        $text: { $search: `\"${input.search}\"` },
-      },
-      { score: { $meta: 'textScore' } },
-    )
-    .sort( { score: { $meta: 'textScore' } } )
-    .limit(30).then(res => {
-      campsitesFetched = true;
+    Campsite.find({...buildNearSphereQuery({
+      locationField: 'location',
+      longitude: input.lng,
+      latitude: input.lat,
+      maxDistance: 914016,
+    }), name: { $regex: input.search, $options: 'i' }})
+    .limit(10).then(res => {
       campsiteData = res.map(campsite => {
         const stateId = campsite.state as unknown as string;
-        if (!stateIds.includes(stateId)) {
-          stateIds.push(stateId);
+        if (!stateIds.includes(stateId.toString())) {
+          stateIds.push(stateId.toString());
         }
         return {
+          id: campsite._id,
           name: campsite.name,
           type: 'campsite',
           campsiteType: campsite.type,
@@ -223,6 +216,7 @@ const fetchValuesAsync = (input: Input) => {
           priority: campsitePriority(campsite),
         };
       });
+      campsitesFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
           resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
@@ -236,15 +230,15 @@ const fetchValuesAsync = (input: Input) => {
       latitude: input.lat,
       maxDistance: 4814016,
     }), searchString: { $regex: input.search, $options: 'i' }}).limit(15).then(res => {
-      listsFetched = true;
       listData = res.map(list => {
         const states = list.states ? list.states.map(s => s as unknown as string) : [];
         states.forEach(stateId => {
-          if (!stateIds.includes(stateId)) {
-            stateIds.push(stateId);
+          if (!stateIds.includes(stateId.toString())) {
+            stateIds.push(stateId.toString());
           }
         });
         return {
+          id: list._id,
           name: list.name,
           type: 'list',
           numPeaks: list.mountains.length,
@@ -254,6 +248,7 @@ const fetchValuesAsync = (input: Input) => {
           priority: listPriority(list),
         };
       });
+      listsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
           resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));

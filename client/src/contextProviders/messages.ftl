@@ -188,6 +188,38 @@ global-formatted-text-month-year = {
   [12] December
 } { $year }
 
+global-formatted-trail-type = {
+  $type ->
+  *[trail] trail
+  [dirtroad] dirt road
+  [path] path
+  [stairs] path
+  [cycleway] bike trail
+  [road] road
+  [hiking] trail
+  [bridleway] trail
+  [demanding_mountain_hiking] trail
+  [mountain_hiking] trail
+  [herdpath] herd path
+  [alpine_hiking] alpine trail
+  [demanding_alpine_hiking] alpine trail
+  [difficult_alpine_hiking] alpine trail
+  [parent_trail] trail
+}
+
+global-formatted-campsite-type = {
+  $type ->
+  *[camp_site] campsite
+  [caravan_site] campground
+  [weather_shelter] shelter
+  [camp_pitch] tentsite
+  [lean_to] lean-to
+  [wilderness_hut] wilderness hut
+  [alpine_hut] alpine hut
+  [basic_hut] hut
+  [rock_shelter] rock shelter
+}
+
 global-text-value-weeks = weeks
 global-text-value-week = week
 global-text-value-days = days
