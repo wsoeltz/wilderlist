@@ -1,3 +1,10 @@
+const { point } = require('@turf/helpers');
+const distance = require('@turf/distance');
+
+import axios from 'axios';
+import { setupCache } from 'axios-cache-adapter';
+import intersection from 'lodash/intersection';
+import orderBy from 'lodash/orderBy';
 import {
   Campsite as ICampsite,
   CampsiteType,
@@ -15,10 +22,14 @@ import { Mountain } from '../graphql/schema/queryTypes/mountainType';
 import { PeakList } from '../graphql/schema/queryTypes/peakListType';
 import { State } from '../graphql/schema/queryTypes/stateType';
 import { Trail } from '../graphql/schema/queryTypes/trailType';
-const { point } = require('@turf/helpers');
-const distance = require('@turf/distance');
-import intersection from 'lodash/intersection';
-import orderBy from 'lodash/orderBy';
+
+const cacheGeoCode: any = setupCache({
+  maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
+});
+
+const getGeoCode = axios.create({
+  adapter: cacheGeoCode.adapter,
+});
 
 interface Input {
   lat: number;
@@ -252,11 +263,42 @@ const fetchValuesAsync = (input: Input) => {
 
   });
 };
+const mapboxGeocode = async (input: Input) => {
+  try {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
+      input.search
+    }.json?country=US&proximity=${
+      Math.round(input.lng)
+    },${
+      Math.round(input.lat)
+    }&autocomplete&limit=5&access_token=${
+      process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+    }`;
+    const geoCodeRes = await getGeoCode(url) as any;
+    const sourcePoint = point([input.lng, input.lat]);
+    return geoCodeRes.data.features.map((f: any) => ({
+      name: f.text,
+      type: 'geolocation',
+      locationName: f.place_name.startsWith(f.text + ',')
+        ? f.place_name.replace(f.text + ',', '').trim() : f.place_name,
+      distance: distance(point(f.center), sourcePoint, {units: 'miles'}),
+      coordinates: f.center,
+      bbox: f.bbox,
+    }));
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+};
 
 const getGlobalSearch = async (input: Input) => {
   try {
-    const values = await fetchValuesAsync(input);
-    return {values};
+    const values = await fetchValuesAsync(input) as any[];
+    if (values.length < 5) {
+      const geoResults = await mapboxGeocode(input) as any[];
+      return {data: [...values, ...geoResults]};
+    }
+    return {data: values};
   } catch (err) {
     console.error(err);
   }
