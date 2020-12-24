@@ -35,7 +35,7 @@ export enum MountainFlag {
 
 type Longitude = number;
 type Latitude = number;
-type Coordinate = [Longitude, Latitude];
+export type Coordinate = [Longitude, Latitude];
 
 export interface Mountain {
   id: string;

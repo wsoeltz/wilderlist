@@ -263,9 +263,10 @@ const fetchValuesAsync = (input: Input) => {
 
   });
 };
+
 const mapboxGeocode = async (input: Input) => {
   try {
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
+    const url = encodeURI(`https://api.mapbox.com/geocoding/v5/mapbox.places/${
       input.search
     }.json?country=US&proximity=${
       Math.round(input.lng)
@@ -273,7 +274,7 @@ const mapboxGeocode = async (input: Input) => {
       Math.round(input.lat)
     }&autocomplete&limit=5&access_token=${
       process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-    }`;
+    }`);
     const geoCodeRes = await getGeoCode(url) as any;
     const sourcePoint = point([input.lng, input.lat]);
     return geoCodeRes.data.features.map((f: any) => ({
@@ -296,9 +297,9 @@ const getGlobalSearch = async (input: Input) => {
     const values = await fetchValuesAsync(input) as any[];
     if (values.length < 5) {
       const geoResults = await mapboxGeocode(input) as any[];
-      return {data: [...values, ...geoResults]};
+      return [...values, ...geoResults].slice(0, 5);
     }
-    return {data: values};
+    return values.slice(0, 5);
   } catch (err) {
     console.error(err);
   }

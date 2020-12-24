@@ -1,4 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
+import { setupCache } from 'axios-cache-adapter';
 import debounce from 'lodash/debounce';
 import React, {useCallback, useMemo, useState} from 'react';
 import Autosuggest from 'react-autosuggest';
@@ -10,6 +12,11 @@ import {
   placeholderColor,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
+import {
+  CampsiteType,
+  Coordinate,
+  TrailType,
+} from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
 import LoadingSimple from '../../../sharedComponents/LoadingSimple';
 
@@ -109,95 +116,98 @@ const LoadingContainer = styled.div`
   right: 1rem;
 `;
 
-const languages = [
-  {
-    name: 'C',
-    year: 1972,
-  },
-  {
-    name: 'C#',
-    year: 2000,
-  },
-  {
-    name: 'C++',
-    year: 1983,
-  },
-  {
-    name: 'Clojure',
-    year: 2007,
-  },
-  {
-    name: 'Elm',
-    year: 2012,
-  },
-  {
-    name: 'Go',
-    year: 2009,
-  },
-  {
-    name: 'Haskell',
-    year: 1990,
-  },
-  {
-    name: 'Java',
-    year: 1995,
-  },
-  {
-    name: 'Javascript',
-    year: 1995,
-  },
-  {
-    name: 'Perl',
-    year: 1987,
-  },
-  {
-    name: 'PHP',
-    year: 1995,
-  },
-  {
-    name: 'Python',
-    year: 1991,
-  },
-  {
-    name: 'Ruby',
-    year: 1995,
-  },
-  {
-    name: 'Scala',
-    year: 2003,
-  },
-];
-function escapeRegexCharacters(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-function getMatchingLanguages(value: string) {
-  const escapedValue = escapeRegexCharacters(value.trim());
+const cacheSearchCall: any = setupCache({
+  maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
+});
+const getSearchResults = axios.create({
+  adapter: cacheSearchCall.adapter,
+});
 
-  if (escapedValue === '') {
-    return [];
+enum SearchResultType {
+  mountain = 'mountain',
+  trail = 'trail',
+  campsite = 'campsite',
+  list = 'list',
+  geolocation = 'geolocation',
+}
+
+type SearchResult = {
+  name: string,
+  type: SearchResultType,
+  distance: number,
+  coordinates: Coordinate,
+} & (
+  {
+    type: SearchResultType.mountain,
+    elevation: number,
+    stateText: string[],
+  } |
+  {
+    type: SearchResultType.trail,
+    stateText: string[],
+    trailType: TrailType,
+    parents: string[],
+  } |
+  {
+    type: SearchResultType.campsite,
+    campsiteType: CampsiteType,
+    stateText: string[],
+  } |
+  {
+    type: SearchResultType.list,
+    numPeaks: number,
+    stateText: string[],
+  } |
+  {
+    type: SearchResultType.geolocation,
+    locationName: string,
   }
-
-  const regex = new RegExp('^' + escapedValue, 'i');
-
-  return languages.filter(language => regex.test(language.name));
-}
+);
 
 interface SearchState {
   value: string;
-  suggestions: any[];
+  suggestions: SearchResult[];
   loading: boolean;
 }
 
-function getSuggestionValue(suggestion: any) {
+function getSuggestionValue(suggestion: SearchResult) {
   return suggestion.name;
 }
 
-function renderSuggestion(suggestion: any) {
+function renderSuggestion(suggestion: SearchResult, {query}: {query: string}) {
+  let subtitleText: string;
+  if (suggestion.type === SearchResultType.mountain) {
+    subtitleText = `${suggestion.stateText[0]}, ${suggestion.elevation}ft`;
+  } else if (suggestion.type === SearchResultType.trail) {
+    subtitleText = `${
+      suggestion.trailType.charAt(0).toUpperCase() + suggestion.trailType.slice(1).replaceAll('_', ' ')
+    } in ${suggestion.stateText.join(', ')}`;
+  } else if (suggestion.type === SearchResultType.campsite) {
+    subtitleText = `${
+      suggestion.campsiteType.charAt(0).toUpperCase() + suggestion.campsiteType.slice(1).replaceAll('_', ' ')
+    } in ${suggestion.stateText.join(', ')}`;
+  } else if (suggestion.type === SearchResultType.list) {
+    subtitleText = `${suggestion.numPeaks} peaks in ${suggestion.stateText.join(', ')}`;
+  } else if (suggestion.type === SearchResultType.geolocation) {
+    subtitleText = suggestion.locationName;
+  } else {
+    subtitleText = '';
+  }
   return (
-    <>{suggestion.name}</>
+    <>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: suggestion.name.replace(new RegExp(query, 'gi'), (match: string) => `<strong>${match}</strong>`),
+        }}
+      />
+      <div>
+        <small>{subtitleText}</small>
+      </div>
+    </>
   );
 }
-function onSuggestionSelected() {//_event: any, {suggestion}: any) {
+
+function onSuggestionSelected() {//_event: any, {suggestion}: SearchResult) {
   const activeElement = document.activeElement;
   if (activeElement) {
     (activeElement as HTMLElement).blur();
@@ -210,13 +220,19 @@ const Search = () => {
 
   const loadSuggestions = useMemo(
     () => debounce((value: string) => {
-      setTimeout(() => { // fake api call
+      const url = encodeURI(
+        '/api/global-search?' +
+        '&lat=' + 41.478050 +
+        '&lng=' + -71.475360 +
+        '&search=' + value,
+      );
+      getSearchResults(url).then((res: {data: SearchResult[]}) => {
         updateState(curr => ({
           ...curr,
           loading: false,
-          suggestions: getMatchingLanguages(value),
+          suggestions: res.data,
         }));
-      }, 200);
+      });
   }, 300), [updateState]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
