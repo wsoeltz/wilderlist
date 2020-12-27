@@ -26,6 +26,7 @@ import {
 import {
   baseColor,
   lightBaseColor,
+  lightBorderColor,
   lightFontWeight,
   primaryColor,
   regularFontWeight,
@@ -33,6 +34,7 @@ import {
 } from '../../../styling/styleUtils';
 import {mobileSize} from '../../../Utils';
 import { AppContext } from '../../App';
+import Search from '../contentHeader/search';
 import NotificationBar from './NotificationBar';
 import AddAscentButton from './toolsAndSettings/AddAscentButton';
 import CreateItineraryButton from './toolsAndSettings/CreateItineraryButton';
@@ -103,7 +105,7 @@ const Logo = styled.img`
   @media(max-width: ${mobileSize}px) {
     box-sizing: border-box;
     padding: 0.4rem 0.65rem;
-    width: 150px;
+    height: 45px;
   }
 `;
 
@@ -118,6 +120,10 @@ const CoreNav = styled.nav`
 const UserNav = styled.nav`
   display: flex;
   margin-left: 1rem;
+
+  @media(max-width: ${mobileSize}px) {
+    margin-left: auto;
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -133,6 +139,12 @@ const NavLink = styled(Link)`
   @media(max-width: ${mobileSize}px) {
     flex-grow: 1;
     min-height: 45px;
+    flex-direction: column;
+    font-size: 1.1rem;
+  }
+
+  @media(max-width: 310px) {
+    font-size: 0.85rem;
   }
 `;
 
@@ -163,6 +175,9 @@ const IconContainerBase = styled.div`
 
   @media(max-width: ${mobileSize}px) {
     margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+
   }
 `;
 
@@ -175,8 +190,10 @@ const InactiveIconContainer = styled(IconContainerBase)`
 `;
 
 const TopNav = styled.div`
+  height: 45px;
   display: flex;
   justify-content: space-between;
+  align-items: stretch;
   box-shadow: 0 1px 3px 1px #d1d1d1;
   z-index: 10;
 `;
@@ -194,7 +211,9 @@ const BottomContent = styled.div`
 const BottomNav = styled.div`
   background-color: #fff;
   box-shadow: 0 1px 3px 1px #d1d1d1;
+  height: 45px;
   display: flex;
+  align-items: stretch;
   justify-content: space-between;
   box-shadow: 0 1px 3px 1px #d1d1d1;
   position: relative;
@@ -237,6 +256,14 @@ const CustomIconInTextInactive = styled(CustomIconInTextBase)`
       fill: #fff;
     }
   }
+`;
+const MobileAddAscentButtonContainer = styled.div`
+  height: 100%;
+  border-left: solid 1px ${lightBorderColor};
+  border-right: solid 1px ${lightBorderColor};
+  display: flex;
+  align-items: center;
+  margin-left: auto;
 `;
 
 const LineBreak = styled.hr`
@@ -381,7 +408,13 @@ const Header = () => {
         {friendsLink}
       </>
     );
-    addAscentButton = <AddAscentButton />;
+    addAscentButton = windowWidth > mobileSize ? (
+      <AddAscentButton />
+    ) : (
+      <MobileAddAscentButtonContainer>
+        <AddAscentButton />
+      </MobileAddAscentButtonContainer>
+    );
   } else {
     notifications = null;
     userLinks = null;
@@ -430,6 +463,39 @@ const Header = () => {
       </>
     );
   } else {
+    const utiltyButtons = pathname === Routes.Landing ? (
+      <SideContent>
+        <CreateRouteButton />
+        <CreateItineraryButton />
+        <Toggle3dModeButton />
+        <MapLayersButton />
+        <ToolsAndSettingsButton />
+      </SideContent>
+    ) : null;
+
+    const bottomNav = user ? (
+      <BottomNav>
+        {userLinks}
+        <UserNav>
+          <UserMenu
+            userMenuOpen={userMenuOpen}
+            setUserMenuOpen={setUserMenuOpen}
+            user={user}
+          />
+        </UserNav>
+      </BottomNav>
+    ) : null;
+
+    const loginMenu = !user ? (
+      <UserNav>
+        <UserMenu
+          userMenuOpen={userMenuOpen}
+          setUserMenuOpen={setUserMenuOpen}
+          user={user}
+        />
+      </UserNav>
+    ) : null;
+
     return (
       <>
         <HeaderContainer>
@@ -444,13 +510,9 @@ const Header = () => {
                 />
               </LogoContainer>
             </SemanticLogoContainer>
-            <UserNav>
-              <UserMenu
-                userMenuOpen={userMenuOpen}
-                setUserMenuOpen={setUserMenuOpen}
-                user={user}
-              />
-            </UserNav>
+            {addAscentButton}
+            {loginMenu}
+            <Search />
           </TopNav>
           <CoreNav>
             {listsLink}
@@ -461,16 +523,8 @@ const Header = () => {
         </HeaderContainer>
         {notifications}
         <BottomContent>
-          <SideContent>
-            <CreateRouteButton />
-            <CreateItineraryButton />
-            <Toggle3dModeButton />
-            <MapLayersButton />
-            <ToolsAndSettingsButton />
-          </SideContent>
-          <BottomNav>
-            {userLinks}
-          </BottomNav>
+          {utiltyButtons}
+          {bottomNav}
           <Copyright>
             {' © '}
             <Link to={Routes.About}>

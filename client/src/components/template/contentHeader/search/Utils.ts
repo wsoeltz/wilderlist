@@ -4,6 +4,8 @@ import {
   TrailType,
 } from '../../../../types/graphQLTypes';
 
+export const noResultsFoundClassName = 'react-autosuggest__no_results_found';
+
 export enum SearchResultType {
   mountain = 'mountain',
   trail = 'trail',

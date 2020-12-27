@@ -66,6 +66,7 @@ global-text-value-modal-create-trip-report = Create Trip Report
 global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
+global-text-value-modal-close-menu = Close Menu
 global-text-value-modal-mark-complete = Log Ascent
 global-text-value-description = Description
 global-text-value-directions = Directions

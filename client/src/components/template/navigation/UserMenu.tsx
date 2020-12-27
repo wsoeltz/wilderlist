@@ -29,7 +29,6 @@ import {
   LoginText as LoginTextBase,
   redditRed,
 } from '../../sharedComponents/SignUpModal';
-import AddAscentButton from './toolsAndSettings/AddAscentButton';
 
 const UserMenu = styled.div`
   height: 100%;
@@ -47,13 +46,18 @@ const UserButton = styled.button`
   font-weight: ${lightFontWeight};
   display: flex;
   align-items: center;
+  height: 100%;
 
   &:focus {
     outline: none;
   }
+
+  @media(max-width: ${mobileSize}px) {
+    padding: 0 1rem;
+  }
 `;
 
-const UserMenuListContainer = styled.div`
+const UserMenuListContainerBase = styled.div`
   position: absolute;
   z-index: 500;
   bottom: 0;
@@ -68,6 +72,12 @@ const UserMenuListContainer = styled.div`
 
   @media(max-width: ${mobileSize}px) {
     width: 100vw;
+  }
+`;
+const UserMenuListContainer = styled(UserMenuListContainerBase)`
+  @media(max-width: ${mobileSize}px) {
+    width: 100vw;
+    transform: translateY(-45px);
   }
 `;
 
@@ -109,7 +119,7 @@ const UserMenuAnchor = styled.a`
 const UserImage = styled.img`
   display: inline-block;
   border-radius: 1000px;
-  max-width: 28px;
+  max-width: 24px;
 `;
 
 const LoginOrSignUpMenuButton = styled(ButtonPrimary)`
@@ -154,22 +164,16 @@ const LoginText = styled(LoginTextBase)`
 
 const Caret = styled(FontAwesomeIcon)`
   margin-left: 0.5rem;
-`;
-
-const AddAscentButtonContainer = styled.div`
-  height: 100%;
-  border-left: solid 1px ${lightBorderColor};
-  border-right: solid 1px ${lightBorderColor};
-  display: flex;
-  align-items: center;
+  font-size: 0.9rem;
 `;
 
 interface UserMenuListProps {
   user: User | null;
+  isMobile: boolean;
   closeUserMenu: () => void;
 }
 
-const UserMenuList = ({user, closeUserMenu}: UserMenuListProps) => {
+const UserMenuList = ({user, closeUserMenu, isMobile}: UserMenuListProps) => {
   const node = useRef<HTMLDivElement | null>(null);
   const userId = user !== null ? user._id : 'none';
   const getString = useFluent();
@@ -186,6 +190,11 @@ const UserMenuList = ({user, closeUserMenu}: UserMenuListProps) => {
     };
   });
   if (user) {
+    const closeMenuButton = isMobile ? (
+      <UserMenuAnchor href='#' onClick={closeUserMenu}>
+        {getString('global-text-value-modal-close-menu')}
+      </UserMenuAnchor>
+    ) : null;
     return (
       <UserMenuListContainer ref={node} onClick={closeUserMenu}>
         <UserMenuLink to={userProfileLink(userId)}>
@@ -206,11 +215,12 @@ const UserMenuList = ({user, closeUserMenu}: UserMenuListProps) => {
         <UserMenuAnchor href='/api/logout'>
           {getString('header-text-menu-item-logout')}
         </UserMenuAnchor>
+        {closeMenuButton}
       </UserMenuListContainer>
     );
   } else {
     return (
-      <UserMenuListContainer ref={node} onClick={closeUserMenu}>
+      <UserMenuListContainerBase ref={node} onClick={closeUserMenu}>
         <LoginButtonListItem href='/auth/google'>
           <BrandIcon
             icon={faGoogle as IconDefinition}
@@ -238,7 +248,7 @@ const UserMenuList = ({user, closeUserMenu}: UserMenuListProps) => {
             {getString('header-text-login-with-reddit')}
           </LoginText>
         </LoginButtonListItem>
-      </UserMenuListContainer>
+      </UserMenuListContainerBase>
     );
   }
 };
@@ -278,17 +288,12 @@ const UserMenuComponent = (props: Props) => {
         <UserMenuList
           user={user}
           closeUserMenu={closeUserMenu}
+          isMobile={windowWidth <= mobileSize}
          />
       ) : null;
 
-    const addAscentButton = windowWidth < mobileSize ? (
-      <AddAscentButtonContainer>
-        <AddAscentButton />
-      </AddAscentButtonContainer>
-    ) : null;
     output = (
-      <UserMenu>
-        {addAscentButton}
+      <UserMenu style={{borderLeft: windowWidth <= mobileSize ? `solid 1px ${lightBorderColor}` : undefined}}>
         <UserButton
           onClick={toggleUserMenu}
         >
@@ -337,6 +342,7 @@ const UserMenuComponent = (props: Props) => {
           <UserMenuList
             user={null}
             closeUserMenu={() => setUserMenuOpen(false)}
+            isMobile={windowWidth <= mobileSize}
            />
         ) : null;
 

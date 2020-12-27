@@ -23,11 +23,6 @@ const Root = styled.div`
   }
 `;
 
-const Buffer = styled.div`
-  height: 5rem;
-  background-color: #fff;
-`;
-
 const peakListsPath = listDetailLink('search');
 const usersPath = userProfileLink('search');
 const mountainPath = mountainDetailLink('search');
@@ -65,7 +60,11 @@ const Header = () => {
   );
 
   const mobileMapViewbox = showMobileMapViewBox ? <MobileMapViewBox key={pathname} /> : null;
-  const mobileBuffer = windowWidth <= mobileSize && showBackground ? <Buffer /> : null;
+  const searchBar = windowWidth > mobileSize ? (
+    <Root style={{backgroundColor: showBackground ? '#fff' : undefined}}>
+      <Search />
+    </Root>
+  ) : null;
 
   useEffect(() => {
     if (!showMobileMapViewBox) {
@@ -75,11 +74,8 @@ const Header = () => {
 
   return (
     <>
-    <Root style={{backgroundColor: showBackground && !mobileBuffer ? '#fff' : undefined}}>
-      <Search />
-    </Root>
-    {mobileBuffer}
-    {mobileMapViewbox}
+      {searchBar}
+      {mobileMapViewbox}
     </>
   );
 };

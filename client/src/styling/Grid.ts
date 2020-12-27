@@ -68,11 +68,13 @@ const contentGridLines = {
   body: 'wilderListContentGridBody',
 };
 
+export const mobileTopPadding = 89; // in px
+
 export const ContentHeader = styled.div`
   grid-row: ${contentGridLines.header};
 
   @media(max-width: ${mobileSize}px) {
-    padding-top: 99px;
+    padding-top: ${mobileTopPadding}px;
   }
 `;
 

@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import debounce from 'lodash/debounce';
@@ -8,21 +7,13 @@ import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {listDetailLink, mountainDetailLink} from '../../../../routing/Utils';
 import {
-  GhostButton,
   lightBorderColor,
-  lightFontWeight,
-  placeholderColor,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
 import {mobileSize} from '../../../../Utils';
-import LoadingSimple from '../../../sharedComponents/LoadingSimple';
+import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
-import {SearchResultDatum, SearchResultType} from './Utils';
-
-const magnifyingGlassSize = 1.5; // in rem
-const magnifyingGlassSpacing = 0.5; // in rem
-
-const noResultsFoundClassName = 'react-autosuggest__no_results_found';
+import {noResultsFoundClassName, SearchResultDatum, SearchResultType} from './Utils';
 
 const Root = styled.div`
   div.react-autosuggest__container {
@@ -32,23 +23,7 @@ const Root = styled.div`
   }
 
   input.react-autosuggest__input {
-    width: 100%;
-    padding: 8px 8px 8px ${magnifyingGlassSize + (magnifyingGlassSpacing * 2)}rem;
-    box-sizing: border-box;
-    border: solid 1px ${lightBorderColor};
-    box-shadow: 0px 0px 3px -1px #b5b5b5;
-    font-size: 1.2rem;
-    font-weight: ${lightFontWeight};
 
-    &::placeholder {
-      color: ${placeholderColor};
-    }
-
-    &.react-autosuggest__input--focused
-    + .react-autosuggest__suggestions-container
-    .${noResultsFoundClassName} {
-      display: block;
-    }
   }
 
   ul.react-autosuggest__suggestions-list {
@@ -82,41 +57,35 @@ const Root = styled.div`
     box-sizing: border-box;
     z-index: 100;
   }
-`;
-
-const SearchIcon = styled(FontAwesomeIcon)`
-  position: absolute;
-  z-index: 550;
-  top: 1.5rem;
-  margin: auto ${magnifyingGlassSpacing}rem;
-  font-size: ${magnifyingGlassSize}rem;
-  color: ${placeholderColor};
-  pointer-events: none;
 
   @media(max-width: ${mobileSize}px) {
-    top: 1.65rem;
+    width: 45px;
+    div.react-autosuggest__container {
+      position: static;
+    }
+
+    input.react-autosuggest__input {
+      height: 45px;
+      width: 45px;
+      border: none;
+
+      &:focus {
+        width: 100vw;
+        left: 0;
+        top: 0;
+        z-index: 600;
+        position: absolute;
+        border: solid 1px ${lightBorderColor};
+      }
+    }
+    ul.react-autosuggest__suggestions-list, .${noResultsFoundClassName} {
+        width: 100vw;
+        left: 0;
+        top: 45px;
+        z-index: 600;
+    }
+
   }
-`;
-
-const ClearButton = styled(GhostButton)`
-  position: absolute;
-  z-index: 550;
-  top: 1.2rem;
-  right: 1rem;
-  padding: 1rem;
-  line-height: 0;
-  font-size: 1.2rem;
-
-  @media(max-width: ${mobileSize}px) {
-    top: 1.4rem;
-  }
-`;
-
-const LoadingContainer = styled.div`
-  position: absolute;
-  z-index: 550;
-  top: 1.2rem;
-  right: 1rem;
 `;
 
 const cacheSearchCall: any = setupCache({
@@ -132,9 +101,7 @@ interface SearchState {
   loading: boolean;
 }
 
-function getSuggestionValue(suggestion: SearchResultDatum) {
-  return suggestion.name;
-}
+const getSuggestionValue = (suggestion: SearchResultDatum) => suggestion.name;
 
 const renderSuggestion = (suggestion: SearchResultDatum, {query}: {query: string}) =>
   <SearchResult suggestion={suggestion} query={query} />;
@@ -175,11 +142,6 @@ const Search = () => {
     updateState(curr => ({...curr, suggestions: []}));
   }, [updateState]);
 
-  const clearSearch = useCallback(
-    () => updateState(curr => ({...curr, suggestions: [], value: ''})),
-    [updateState],
-  );
-
   const onSuggestionSelected = useCallback((_event: any, {suggestion}: {suggestion: SearchResultDatum}) => {
     const activeElement = document.activeElement;
     if (activeElement) {
@@ -215,20 +177,19 @@ const Search = () => {
     onChange,
   }), [state, onChange]);
 
-  const clearContent = state.loading ? (
-    <LoadingContainer>
-      <LoadingSimple />
-    </LoadingContainer>
-  ) : (
-    <ClearButton
-      style={{
-        display: state.value ? undefined : 'none',
-      }}
-      onClick={clearSearch}
-    >
-      ×
-    </ClearButton>
+  const clearSearch = useCallback(
+    () => updateState({suggestions: [], value: '', loading: false}),
+    [updateState],
   );
+
+  const renderInputComponent = useCallback((inputComponentProps: any) => (
+    <SearchInput
+      inputProps={inputComponentProps}
+      clearSearch={clearSearch}
+      loading={state.loading}
+      value={state.value}
+    />
+  ), [state.loading, state.value, clearSearch]);
 
   return (
     <Root>
@@ -237,6 +198,7 @@ const Search = () => {
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
         onSuggestionsClearRequested={onSuggestionsClearRequested}
         getSuggestionValue={getSuggestionValue}
+        renderInputComponent={renderInputComponent}
         renderSuggestion={renderSuggestion}
         inputProps={inputProps}
         highlightFirstSuggestion={true}
@@ -244,8 +206,6 @@ const Search = () => {
         onSuggestionSelected={onSuggestionSelected}
         renderSuggestionsContainer={renderSuggestionsContainer}
       />
-      {clearContent}
-      <SearchIcon icon='search' />
     </Root>
   );
 };
