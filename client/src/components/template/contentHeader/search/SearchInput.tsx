@@ -61,7 +61,7 @@ const ClearButton = styled(GhostButton)`
   position: absolute;
   z-index: 650;
   top: 0.2rem;
-  right: 0rem;
+  right: 0;
   padding: 1rem;
   line-height: 0;
   font-size: 1.2rem;
@@ -70,16 +70,24 @@ const ClearButton = styled(GhostButton)`
     font-size: 1.6rem;
     top: 0.6rem;
   }
+
+  @media(max-width: 450px) {
+    top: 0.9rem;
+  }
 `;
 
 const LoadingContainer = styled.div`
   position: absolute;
   z-index: 650;
   top: 0.2rem;
-  right: 0rem;
+  right: 0;
 
   @media(max-width: ${mobileSize}px) {
     top: 0.6rem;
+  }
+
+  @media(max-width: 450px) {
+    top: 0.9rem;
   }
 `;
 

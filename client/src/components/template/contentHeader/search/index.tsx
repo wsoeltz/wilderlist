@@ -22,10 +22,6 @@ const Root = styled.div`
     z-index: 500;
   }
 
-  input.react-autosuggest__input {
-
-  }
-
   ul.react-autosuggest__suggestions-list {
     position: absolute;
     background-color: #fff;
