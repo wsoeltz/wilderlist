@@ -33,8 +33,8 @@ export enum MountainFlag {
   deleteRequest = 'deleteRequest',
 }
 
-type Longitude = number;
-type Latitude = number;
+export type Longitude = number;
+export type Latitude = number;
 export type Coordinate = [Longitude, Latitude];
 
 export interface Mountain {

@@ -7,11 +7,11 @@ const cacheIp: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
 });
 
-const getUsersIAndpLocation = axios.create({
+export const getUsersIAndpLocation = axios.create({
   adapter: cacheIp.adapter,
 });
 
-interface GeoPluginDatum {
+export interface GeoPluginDatum {
   geoplugin_areaCode: string | '';
   geoplugin_city: string | '';
   geoplugin_continentCode: string;
@@ -38,7 +38,6 @@ interface GeoPluginDatum {
   geoplugin_timezone: string;
 }
 
-
 interface LocationResponse {
   loading: boolean;
   error: undefined | {message: string};
@@ -64,7 +63,7 @@ const useUsersLocation = (): LocationResponse => {
             geoplugin_latitude, geoplugin_longitude,
           } = res.data;
           if (geoplugin_latitude && geoplugin_longitude) {
-            location = [parseFloat(geoplugin_longitude), parseFloat(geoplugin_latitude) ]
+            location = [parseFloat(geoplugin_longitude), parseFloat(geoplugin_latitude) ];
             error = undefined;
           }
         }

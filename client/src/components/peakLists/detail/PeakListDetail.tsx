@@ -1,7 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import {
 } from '../../../contextProviders/getFluentLocalizationContext';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import useMapContext from '../../../hooks/useMapContext';
 import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
@@ -84,6 +85,7 @@ const GET_PEAK_LIST = gql`
       shortName
       description
       optionalPeaksDescription
+      bbox
       parent {
         id
         name
@@ -176,6 +178,7 @@ export interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  bbox: PeakList['bbox'];
   description: PeakList['description'];
   optionalPeaksDescription: PeakList['optionalPeaksDescription'];
   resources: PeakList['resources'];
@@ -269,6 +272,7 @@ const PeakListDetail = (props: Props) => {
   const { userId, id, queryRefetchArray, setOwnMetaData } = props;
 
   const getString = useFluent();
+  const mapContext = useMapContext();
 
   const me = useCurrentUser();
   const isOtherUser = (me && userId) && (me._id !== userId) ? true : false;
@@ -276,6 +280,12 @@ const PeakListDetail = (props: Props) => {
   const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
     variables: { id, userId },
   });
+
+  useEffect(() => {
+    if (mapContext.intialized && data && data.peakList && data.peakList.bbox) {
+      mapContext.setNewBounds(data.peakList.bbox);
+    }
+  }, [mapContext, data]);
 
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const openExportModal = useCallback(() => setIsExportModalOpen(true), []);

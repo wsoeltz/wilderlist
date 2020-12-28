@@ -31,7 +31,6 @@ const SuggestedLists = (props: Props) => {
 
   const getString = useFluent();
 
-
   const {loading, error, data} = useQuery<CardSuccessResponse, Variables>(SEARCH_PEAK_LISTS, {variables: {
     searchQuery: '',
     pageNumber: 1,

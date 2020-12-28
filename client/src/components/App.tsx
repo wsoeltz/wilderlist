@@ -14,9 +14,9 @@ import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
 import { Root } from '../styling/Grid';
 import { overlayPortalContainerId } from '../Utils';
+import GlobalMap from './template/globalMap';
 import MainContent from './template/MainContent';
 import Header from './template/navigation/Header';
-import GlobalMap from './template/globalMap';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});

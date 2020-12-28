@@ -7,7 +7,9 @@ export enum Routes {
   Dashboard = '/dashboard',
 
   ListDetail = '/list/:id',
+  SearchLists = '/list/search',
   MountainDetail = '/mountain/:id',
+  SearchMountains = '/mountain/search',
 
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',
@@ -15,6 +17,7 @@ export enum Routes {
   CreateList = '/create-list',
   EditList = '/edit-list/:id',
 
+  SearchUsers = '/user/search',
   UserProfile = '/user/:id',
   OtherUserPeakList = '/user/:id/list/:peakListId',
   ComparePeakListIsolated = '/compare/user/:id/list/:peakListId',

@@ -1,11 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {useLocation} from 'react-router-dom';
-import styled from 'styled-components/macro';
 import {mobileTopPadding} from '../../../styling/Grid';
-
-const Box = styled.div`
-  pointer-events: none;
-`;
 
 const MobileMapViewBox = () => {
   const mobileMidViewboxRef = useRef<HTMLDivElement | null>(null);
@@ -20,10 +15,10 @@ const MobileMapViewBox = () => {
 
   return (
     <>
-     <Box
+     <div
        style={{height: '20vh'}}
      />
-     <Box
+     <div
        ref={mobileMidViewboxRef}
        style={{height: `calc(80vh - ${mobileTopPadding * 2.1}px)`}}
      />

@@ -66,6 +66,8 @@ const HeaderContainer = styled(HeaderContainerBase)`
   }
 `;
 
+export const sideContentWidth = 200;
+
 const SideContent = styled.div`
   box-sizing: border-box;
   display: flex;
@@ -75,7 +77,7 @@ const SideContent = styled.div`
     position: fixed;
     right: 0;
     top: ${headerHeight}rem;
-    max-width: 200px;
+    max-width: ${sideContentWidth}px;
     padding: 1rem;
     display: block;
   }
@@ -99,11 +101,14 @@ const LogoContainer = styled(Link)`
   color: rgba(0, 0, 0, 0);
 `;
 
+export const logoSmallWindoWidth = 1080;
+export const logoSmallWidth = 120;
+
 const Logo = styled.img`
   max-width: 100%;
 
-  @media(max-width: 1080px) {
-    max-width: 120px;
+  @media(max-width: ${logoSmallWindoWidth}px) {
+    max-width: ${logoSmallWidth}px;
   }
   @media(max-width: ${mobileSize}px) {
     box-sizing: border-box;

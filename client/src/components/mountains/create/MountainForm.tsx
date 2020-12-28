@@ -4,6 +4,7 @@ import sortBy from 'lodash/sortBy';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import useFluent from '../../../hooks/useFluent';
 import usePointLocationData from '../../../hooks/usePointLocationData';
+import useUsersLocation from '../../../hooks/useUsersLocation';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -41,7 +42,6 @@ import {
 import Loading from '../../sharedComponents/LoadingSimple';
 import {mobileWidth} from '../../sharedComponents/Modal';
 import { BaseMountainVariables } from './';
-import useUsersLocation from '../../../hooks/useUsersLocation';
 
 export const FLAG_MOUNTAIN = gql`
   mutation($id: ID!, $flag: MountainFlag) {

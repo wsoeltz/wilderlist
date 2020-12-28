@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import useMapContext from '../../../hooks/useMapContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { setMountainOgImageUrl } from '../../../routing/routes';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
@@ -30,7 +31,6 @@ import {
   State,
   User,
 } from '../../../types/graphQLTypes';
-import checkForMountainDataIssues from '../../../utilities/checkForMountainDataIssues';
 import {
   convertDMS,
   isValidURL,
@@ -128,6 +128,7 @@ const GET_MOUNTAIN_DETAIL = gql`
       elevation
       latitude
       longitude
+      location
       description
       resources {
         title
@@ -171,6 +172,7 @@ interface QuerySuccessResponse {
     elevation: Mountain['elevation'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
+    location: Mountain['location'];
     description: Mountain['description'];
     resources: Mountain['resources'];
     state: {
@@ -253,16 +255,17 @@ const MountainDetail = (props: Props) => {
   const { userId, id, setOwnMetaData} = props;
 
   const getString = useFluent();
+  const mapContext = useMapContext();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
   });
 
   useEffect(() => {
-    if (data && data.mountain) {
-      checkForMountainDataIssues(data.mountain);
+    if (mapContext.intialized && data && data.mountain) {
+      mapContext.setNewCenter(data.mountain.location, 15);
     }
-  }, [data]);
+  }, [mapContext, data]);
 
   const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);

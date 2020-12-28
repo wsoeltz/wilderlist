@@ -23,6 +23,10 @@ export const gridLines = {
 
 export const headerHeight = 2.1; // in rem
 
+export const contentColumnMin = 400; // in px
+export const contentColumnIdeal = 40; // in vw
+export const contentColumnMax = 500; // in vw
+
 const Grid = styled.div`
   height: 100vh;
   display: grid;
@@ -34,7 +38,7 @@ const Grid = styled.div`
     [${gridLines.contentBottom} ${gridLines.footerTop}] auto
     [${gridLines.footerbottom} ${gridLines.pageBottom}];
   grid-template-columns:
-    [${gridLines.contentSpace}] clamp(400px, 40vw, 500px)
+    [${gridLines.contentSpace}] clamp(${contentColumnMin}px, ${contentColumnIdeal}vw, ${contentColumnMax}px)
     [${gridLines.mapSpace}] 1fr;
 
     @media(max-width: ${mobileSize}px) {
@@ -75,6 +79,7 @@ export const ContentHeader = styled.div`
   pointer-events: all;
 
   @media(max-width: ${mobileSize}px) {
+    pointer-events: none;
     padding-top: ${mobileTopPadding}px;
   }
 `;
