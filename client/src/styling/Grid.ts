@@ -72,6 +72,7 @@ export const mobileTopPadding = 89; // in px
 
 export const ContentHeader = styled.div`
   grid-row: ${contentGridLines.header};
+  pointer-events: all;
 
   @media(max-width: ${mobileSize}px) {
     padding-top: ${mobileTopPadding}px;
@@ -83,6 +84,7 @@ export const ContentBody = styled.div`
   padding: ${standardContainerPadding};
   background-color: #fff;
   overflow: auto;
+  pointer-events: all;
 
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -109,6 +111,7 @@ export const ContentContainer = styled.div`
   position: relative;
   overflow: hidden;
   display: grid;
+  pointer-events: none;
   grid-template-rows:
     [${contentGridLines.header}] auto
     [${contentGridLines.body}] 1fr;

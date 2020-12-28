@@ -1,10 +1,9 @@
 import {
   faArrowRight,
-  faCrow,
   faMapMarkerAlt,
   faMountain,
 } from '@fortawesome/free-solid-svg-icons';
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink } from '../../../routing/Utils';
@@ -23,8 +22,6 @@ import {
   StackableCardSection,
   StackedCardWrapper,
 } from '../../../styling/styleUtils';
-import {AppContext} from '../../App';
-import Tooltip from '../../sharedComponents/Tooltip';
 import { MountainDatumWithDistance } from './ListMountains';
 
 const Root = styled.div`
@@ -71,11 +68,9 @@ interface Props {
 }
 
 const MountainCard = ({ mountain }: Props) => {
-  const { name, elevation, state, distanceToUser } = mountain;
+  const { name, elevation, state } = mountain;
 
   const getString = useFluent();
-
-  const {usersLocation} = useContext(AppContext);
 
   const stateName = state !== null ? (
     <>
@@ -84,20 +79,8 @@ const MountainCard = ({ mountain }: Props) => {
     </>
   ) : null;
 
-  const crowFliesText = usersLocation && usersLocation.data && distanceToUser
-    ? (
-        <span>
-          <Tooltip
-            explanation={getString('mountain-card-crow-flies-tooltip')}
-          >
-            <BasicIconInText icon={faCrow} />
-          </Tooltip>
-          {parseFloat(distanceToUser.toFixed(1))} mi from {usersLocation.data.text}
-        </span>)
-    : null;
-
   return (
-<>
+  <>
     <Root>
       <LinkWrapper
         to={mountainDetailLink(mountain.id)}
@@ -111,7 +94,6 @@ const MountainCard = ({ mountain }: Props) => {
                 {elevation}ft
                 {stateName}
               </span>
-              {crowFliesText}
             </Details>
           </CardSubtitle>
         </StackableCardSection>

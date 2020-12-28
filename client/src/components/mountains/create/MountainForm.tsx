@@ -41,6 +41,7 @@ import {
 import Loading from '../../sharedComponents/LoadingSimple';
 import {mobileWidth} from '../../sharedComponents/Modal';
 import { BaseMountainVariables } from './';
+import useUsersLocation from '../../../hooks/useUsersLocation';
 
 export const FLAG_MOUNTAIN = gql`
   mutation($id: ID!, $flag: MountainFlag) {
@@ -112,7 +113,8 @@ const MountainForm = (props: Props) => {
 
   const getString = useFluent();
 
-  const {windowWidth, usersLocation} = useContext(AppContext);
+  const {windowWidth} = useContext(AppContext);
+  const {location: usersLocation} = useUsersLocation();
 
   const [name, setName] = useState<string>(initialData.name);
 
@@ -161,9 +163,9 @@ const MountainForm = (props: Props) => {
 
   let defaultLatitude: number;
   let defaultLongitude: number;
-  if (usersLocation && usersLocation.data && usersLocation.data.localCoordinates) {
-    defaultLatitude = usersLocation.data.localCoordinates.lat;
-    defaultLongitude = usersLocation.data.localCoordinates.lng;
+  if (usersLocation) {
+    defaultLatitude = usersLocation[1];
+    defaultLongitude = usersLocation[0];
   } else {
     defaultLatitude = 43.20415146;
     defaultLongitude = -71.52769471;

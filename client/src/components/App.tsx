@@ -9,10 +9,6 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {useQueryLoggedInUser, UserContext} from '../contextProviders/userContext';
-import useUsersLocation, {
-  userAllowsPreciseLocation,
-  UsersLocation,
-} from '../hooks/useUsersLocation';
 import { defaultOgImageUrl } from '../routing/routes';
 import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
@@ -20,6 +16,7 @@ import { Root } from '../styling/Grid';
 import { overlayPortalContainerId } from '../Utils';
 import MainContent from './template/MainContent';
 import Header from './template/navigation/Header';
+import GlobalMap from './template/globalMap';
 
 if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_ID, {debug: false});
@@ -34,37 +31,18 @@ const OverlayPortal = styled.div`
 
 export interface IAppContext {
   windowWidth: number;
-  usersLocation: UsersLocation;
 }
 
 export const AppContext = React.createContext<IAppContext>({
   windowWidth: window.innerWidth,
-  usersLocation: {
-    loading: true,
-    error: undefined,
-    data: undefined,
-    requestAccurateLocation: undefined,
-  },
 });
 
 const App: React.FC = () => {
   const user = useQueryLoggedInUser();
 
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const [checkedForAccurateLocationOnLoad, setCheckedForAccurateLocationOnLoad] = useState<boolean>(false);
 
-  const usersLocation = useUsersLocation();
-
-  const appContext = {windowWidth, usersLocation};
-
-  useEffect(() => {
-    if (usersLocation !== undefined && usersLocation.loading === false && checkedForAccurateLocationOnLoad === false) {
-      if (userAllowsPreciseLocation() && usersLocation.requestAccurateLocation) {
-        usersLocation.requestAccurateLocation();
-      }
-      setCheckedForAccurateLocationOnLoad(true);
-    }
-  }, [usersLocation, checkedForAccurateLocationOnLoad, setCheckedForAccurateLocationOnLoad]);
+  const appContext = {windowWidth};
 
   useEffect(() => {
     const updateWindowWidth = debounce(() => {
@@ -97,9 +75,11 @@ const App: React.FC = () => {
           <GlobalStyles />
           <Router>
             <Root>
-              <Header />
-              <MainContent />
-              <OverlayPortal id={overlayPortalContainerId} />
+              <GlobalMap>
+                <Header />
+                <MainContent />
+                <OverlayPortal id={overlayPortalContainerId} />
+              </GlobalMap>
             </Root>
           </Router>
       </AppContext.Provider>

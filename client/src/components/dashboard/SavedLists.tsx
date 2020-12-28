@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import React, {useContext} from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
@@ -10,7 +10,6 @@ import {
   SectionTitleH3,
 } from '../../styling/styleUtils';
 import { User } from '../../types/graphQLTypes';
-import { AppContext } from '../App';
 import { ViewMode } from '../peakLists/list';
 import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
 import SuggestedLists from '../peakLists/list/SuggestedLists';
@@ -60,11 +59,6 @@ interface Props {
 const SavedLists = ({userId}: Props) => {
   const getString = useFluent();
 
-  const { usersLocation } = useContext(AppContext);
-
-  const usersState = usersLocation.data
-    ? usersLocation.data : undefined;
-
   const {
     loading: listLoading,
     error: listsError,
@@ -85,8 +79,8 @@ const SavedLists = ({userId}: Props) => {
   } else if (listsData !== undefined) {
     const { user } = listsData;
     const { peakLists } = user;
-    const suggestedLists = peakLists.length < 3 && usersState !== undefined
-      ? <SuggestedLists userId={userId} usersLocationData={usersState} /> : null;
+    const suggestedLists = peakLists.length < 3
+      ? <SuggestedLists userId={userId} /> : null;
     if (peakLists.length === 0) {
       peakListsList = (
         <div>
