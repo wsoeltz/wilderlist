@@ -14,8 +14,11 @@ import {mobileSize} from '../../../../Utils';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
 import {noResultsFoundClassName, SearchResultDatum, SearchResultType} from './Utils';
+import BackButton from '../backButton';
 
 const Root = styled.div`
+  display: flex;
+
   div.react-autosuggest__container {
     width: 100%;
     position: relative;
@@ -189,6 +192,9 @@ const Search = () => {
 
   return (
     <Root>
+      <BackButton
+        clearSearch={clearSearch}
+      />
       <Autosuggest
         suggestions={state.suggestions}
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useCallback} from 'react';
 import styled from 'styled-components/macro';
 import {
   GhostButton,
@@ -12,6 +12,8 @@ import {mobileSize} from '../../../../Utils';
 import { AppContext } from '../../../App';
 import LoadingSimple from '../../../sharedComponents/LoadingSimple';
 import {noResultsFoundClassName} from './Utils';
+import {useHistory} from 'react-router-dom';
+import {Routes} from '../../../../routing/routes';
 
 const magnifyingGlassSize = 1.5; // in rem
 const magnifyingGlassSpacing = 0.5; // in rem
@@ -106,6 +108,7 @@ const SearchInput = (props: Props) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const { windowWidth } = useContext(AppContext);
+  const { push, location: {pathname} } = useHistory();
 
   const onFocus = (event: any) => {
     inputProps.onFocus(event);
@@ -118,6 +121,13 @@ const SearchInput = (props: Props) => {
     setIsFocused(false);
   };
 
+  const onClear = useCallback(() => {
+    clearSearch();
+    if (windowWidth > mobileSize) {
+      push(Routes.Landing);
+    }
+  }, [windowWidth, push, clearSearch])
+
   const clearContent = loading ? (
     <LoadingContainer>
       <LoadingSimple />
@@ -125,10 +135,11 @@ const SearchInput = (props: Props) => {
   ) : (
     <ClearButton
       style={{
-        display: (value && windowWidth > mobileSize) || (isFocused && windowWidth <= mobileSize)
+        display: ((value || pathname !== Routes.Landing) && windowWidth > mobileSize) ||
+                 (isFocused && windowWidth <= mobileSize)
           ? undefined : 'none',
       }}
-      onClick={clearSearch}
+      onClick={onClear}
     >
       ×
     </ClearButton>

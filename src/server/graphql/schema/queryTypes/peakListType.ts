@@ -451,7 +451,7 @@ const PeakListType: any = new GraphQLObjectType({
           if (parentValue.parent) {
             const res = await peakListLoader.load(parentValue.parent);
             if (res && res.bbox) {
-              return parentValue.parent.bbox;
+              return res.bbox;
             }
           }
           return await parentValue.bbox;
