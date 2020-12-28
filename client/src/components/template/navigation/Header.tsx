@@ -102,6 +102,9 @@ const LogoContainer = styled(Link)`
 const Logo = styled.img`
   max-width: 100%;
 
+  @media(max-width: 1080px) {
+    max-width: 120px;
+  }
   @media(max-width: ${mobileSize}px) {
     box-sizing: border-box;
     padding: 0.4rem 0.65rem;

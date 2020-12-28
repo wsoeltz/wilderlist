@@ -3,7 +3,6 @@ const distance = require('@turf/distance');
 
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
-import intersection from 'lodash/intersection';
 import orderBy from 'lodash/orderBy';
 import {
   Campsite as ICampsite,
@@ -22,6 +21,7 @@ import { Mountain } from '../graphql/schema/queryTypes/mountainType';
 import { PeakList } from '../graphql/schema/queryTypes/peakListType';
 import { State } from '../graphql/schema/queryTypes/stateType';
 import { Trail } from '../graphql/schema/queryTypes/trailType';
+import groupBy from 'lodash/groupBy';
 
 const cacheGeoCode: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
@@ -131,29 +131,30 @@ const fetchValuesAsync = (input: Input) => {
     .limit(30).then(res => {
       res.forEach(trail => {
         const parents = trail.parents ? trail.parents.map(p => (p as unknown as string).toString()) : [];
-        if (!trailData.find(
-          (t: any) => t.name === trail.name && parents.length && t.parents.length &&
-                      intersection(parents, t.parents).length)
-        ) {
-          const states = trail.states ? trail.states.map(s => s as unknown as string) : [];
-          states.forEach(stateId => {
-            if (!stateIds.includes(stateId.toString())) {
-              stateIds.push(stateId.toString());
-            }
-          });
-          trailData.push({
-            name: trail.name,
-            type: 'trail',
-            distance: distance(point(trail.center), sourcePoint, {units: 'miles'}),
-            coordinates: trail.center,
-            stateText: states,
-            parents,
-            trailType: trail.type,
-            priority: trailPriority(trail),
-          });
-        }
+        const states = trail.states ? trail.states.map(s => s as unknown as string) : [];
+        states.forEach(stateId => {
+          if (!stateIds.includes(stateId.toString())) {
+            stateIds.push(stateId.toString());
+          }
+        });
+        trailData.push({
+          name: trail.name,
+          type: 'trail',
+          distance: distance(point(trail.center), sourcePoint, {units: 'miles'}),
+          coordinates: trail.center,
+          stateText: states,
+          parents,
+          trailType: trail.type,
+          priority: trailPriority(trail),
+        });
       });
-      trailData = orderBy(trailData, ['priority', 'distance']).slice(0, 7);
+      const filteredTrails = [];
+      const groupedTrails = groupBy(trailData, ['name']);
+      for (let group in groupedTrails) {
+        const sortedGroup = orderBy(groupedTrails[group], ['distance']);
+        filteredTrails.push(sortedGroup[0]);
+      }
+      trailData = orderBy(filteredTrails, ['priority', 'distance']).slice(0, 7);
       trailsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
