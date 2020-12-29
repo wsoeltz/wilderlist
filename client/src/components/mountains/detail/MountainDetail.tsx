@@ -1,11 +1,9 @@
-const {point} = require('@turf/helpers');
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faCloudSun, faEdit, faFlag, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import useMapContext from '../../../hooks/useMapContext';
 import { CaltopoLink, GoogleMapsLink } from '../../../routing/externalLinks';
 import { setMountainOgImageUrl } from '../../../routing/routes';
 import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
@@ -37,6 +35,7 @@ import {
   isValidURL,
 } from '../../../Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
@@ -256,18 +255,10 @@ const MountainDetail = (props: Props) => {
   const { userId, id, setOwnMetaData} = props;
 
   const getString = useFluent();
-  const mapContext = useMapContext();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
     variables: { id, userId },
   });
-
-  useEffect(() => {
-    if (mapContext.intialized && data && data.mountain) {
-      mapContext.setNewCenter(data.mountain.location, 15);
-      mapContext.setHighlightedMountains(point(data.mountain.location));
-    }
-  }, [mapContext, data, id]);
 
   const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
@@ -518,6 +509,11 @@ const MountainDetail = (props: Props) => {
             setMetaDescription={setOwnMetaData === true ? true : false}
           />
           {flagModal}
+          <MapRenderProp
+            mountains={completedDates && completedDates.mountain
+              ? [{...mountain, dates: completedDates.dates}] : [{...mountain, dates: []}]}
+            center={mountain.location}
+          />
         </>
       );
     }
