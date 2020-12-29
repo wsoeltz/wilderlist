@@ -19,7 +19,19 @@ export interface Output {
   map: mapboxgl.Map;
   setNewCenter: (center: Coordinate, zoom: number) => void;
   setNewBounds: (bbox: [Longitude, Latitude, Longitude, Latitude]) => void;
+  setHighlightedMountains: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
+  clearMap: () => void;
 }
+
+const highlightedMountainsLayerId = 'temporary-highlight-mountains-layer-id';
+const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
+  type: 'Feature',
+  properties: {},
+  geometry: {
+    type: 'Point',
+    coordinates: [],
+  },
+};
 
 const initMap = ({container}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
@@ -32,6 +44,27 @@ const initMap = ({container}: Input): Output => {
     center: [-98.5795, 39.8283], // starting position [lng, lat]
     zoom: 3.5, // starting zoom
     maxZoom: 15.5,
+  });
+
+  let mapLoaded = false;
+
+  map.on('load', () => {
+    mapLoaded = true;
+    map.addSource(highlightedMountainsLayerId, {
+      type: 'geojson',
+      data: defaultGeoJsonPoint,
+    });
+    map.addLayer({
+      id: highlightedMountainsLayerId,
+      type: 'circle',
+      source: highlightedMountainsLayerId,
+      layout: {
+      },
+      paint: {
+        'circle-color': '#088',
+        'circle-radius': 10,
+      },
+    });
   });
 
   const setPadding = () => {
@@ -74,7 +107,39 @@ const initMap = ({container}: Input): Output => {
     });
   };
 
-  return {map, setNewCenter, setNewBounds};
+  const clearHighlightedMountains = () =>
+    (map.getSource(highlightedMountainsLayerId) as any).setData(defaultGeoJsonPoint);
+
+  const updateSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
+    (map.getSource(highlightedMountainsLayerId) as any).setData(data);
+
+  const clearMap = () => {
+    if (mapLoaded) {
+      clearHighlightedMountains();
+    } else {
+      const clearSourceOnLoad = () => {
+        clearHighlightedMountains();
+        map.off('load', clearSourceOnLoad);
+      };
+      map.on('load', clearSourceOnLoad);
+    }
+  };
+
+  const setHighlightedMountains = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    if (mapLoaded) {
+      updateSource(data);
+    } else {
+      const updateSourceOnLoad = () => {
+        updateSource(data);
+        map.off('load', updateSourceOnLoad);
+      };
+      map.on('load', updateSourceOnLoad);
+    }
+  };
+
+  return {
+    map, setNewCenter, setNewBounds, setHighlightedMountains, clearMap,
+  };
 };
 
 export default initMap;

@@ -7,12 +7,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
 import raw from 'raw.macro';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import LogoPng from '../../../assets/logo/logo.png';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import { Routes } from '../../../routing/routes';
 import {
   listDetailLink,
@@ -33,7 +34,6 @@ import {
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import {mobileSize} from '../../../Utils';
-import { AppContext } from '../../App';
 import Search from '../contentHeader/search';
 import NotificationBar from './NotificationBar';
 import AddAscentButton from './toolsAndSettings/AddAscentButton';
@@ -301,7 +301,7 @@ const Header = () => {
 
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
   const getString = useFluent();
 
   const createLink = useCallback((input: LinkInput) => {

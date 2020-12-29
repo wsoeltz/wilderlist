@@ -11,10 +11,10 @@ import {
   tertiaryColor,
 } from '../../../../styling/styleUtils';
 import {mobileSize} from '../../../../Utils';
+import BackButton from '../backButton';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
 import {noResultsFoundClassName, SearchResultDatum, SearchResultType} from './Utils';
-import BackButton from '../backButton';
 
 const Root = styled.div`
   display: flex;

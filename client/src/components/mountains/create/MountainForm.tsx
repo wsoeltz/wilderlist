@@ -1,10 +1,11 @@
 import { gql, useMutation } from '@apollo/client';
 import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import useFluent from '../../../hooks/useFluent';
 import usePointLocationData from '../../../hooks/usePointLocationData';
 import useUsersLocation from '../../../hooks/useUsersLocation';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -23,7 +24,6 @@ import {
   MountainFlag,
   State,
 } from '../../../types/graphQLTypes';
-import {AppContext} from '../../App';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
@@ -113,7 +113,7 @@ const MountainForm = (props: Props) => {
 
   const getString = useFluent();
 
-  const {windowWidth} = useContext(AppContext);
+  const windowWidth = useWindowWidth();
   const {location: usersLocation} = useUsersLocation();
 
   const [name, setName] = useState<string>(initialData.name);

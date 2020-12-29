@@ -20,7 +20,8 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     const container = rootRef.current;
     if (container && !mapState.intialized) {
-      setMapState({intialized: true, ...initMap({container})});
+      const mapOutput = initMap({container});
+      setMapState({intialized: true, ...mapOutput});
     }
   }, [rootRef, mapState]);
 

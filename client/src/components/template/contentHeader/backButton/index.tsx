@@ -1,16 +1,16 @@
+import {
+  faArrowLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {useEffect} from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useMapContext from '../../../../hooks/useMapContext';
+import {Routes} from '../../../../routing/routes';
 import {
   GhostButton,
 } from '../../../../styling/styleUtils';
-import {Routes} from '../../../../routing/routes';
 import {mobileSize} from '../../../../Utils';
-import {
-  faArrowLeft,
-} from '@fortawesome/free-solid-svg-icons';
-
 
 const Button = styled(GhostButton)`
   text-align: center;
@@ -24,12 +24,19 @@ const Button = styled(GhostButton)`
 
 const BackButton = ({clearSearch}: {clearSearch: () => void}) => {
   const { goBack, location } = useHistory();
+  const mapContext = useMapContext();
+
+  useEffect(() => {
+    if (mapContext.intialized) {
+      mapContext.clearMap();
+    }
+  }, [mapContext, location]);
 
   useEffect(() => {
     if (location.pathname === Routes.Landing) {
       clearSearch();
     }
-  }, [location.pathname, clearSearch])
+  }, [location.pathname, clearSearch]);
 
   if (location.pathname === Routes.Landing) {
     return null;
@@ -37,7 +44,7 @@ const BackButton = ({clearSearch}: {clearSearch: () => void}) => {
 
   const onClick = () => {
     goBack();
-  }
+  };
 
   return (
     <Button onClick={onClick}>

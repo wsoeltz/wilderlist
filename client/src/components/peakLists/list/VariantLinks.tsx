@@ -1,10 +1,11 @@
 import { gql, useMutation } from '@apollo/client';
 import { faLeaf, faMountain, faSnowflake, faTh } from '@fortawesome/free-solid-svg-icons';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useRouteMatch} from 'react-router';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import {
   listDetailLink,
 } from '../../../routing/Utils';
@@ -19,7 +20,6 @@ import { PeakList, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   mobileSize,
 } from '../../../Utils';
-import {AppContext} from '../../App';
 import Tooltip from '../../sharedComponents/Tooltip';
 
 const VariantLink = styled(CardFooterLink)`
@@ -98,8 +98,7 @@ const VariantLinks = (props: Props) => {
     queryRefetchArray, grayText,
   } = props;
 
-  const {windowWidth} = useContext(AppContext);
-
+  const windowWidth = useWindowWidth();
   const getString = useFluent();
 
   const match = useRouteMatch<{peakListId: string | undefined, id: string | undefined}>();

@@ -5,10 +5,11 @@ import {
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import { Routes } from '../../../routing/routes';
 import { userProfileLink } from '../../../routing/Utils';
 import {
@@ -20,7 +21,6 @@ import {
 } from '../../../styling/styleUtils';
 import { User } from '../../../types/graphQLTypes';
 import {mobileSize} from '../../../Utils';
-import { AppContext } from '../../App';
 import {
   BrandIcon as BrandIconBase,
   facebookBlue,
@@ -265,7 +265,7 @@ const UserMenuComponent = (props: Props) => {
   } = props;
 
   const userMenuButtonEl = useRef<HTMLDivElement | null>(null);
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
   const getString = useFluent();
   useEffect(() => {
     if (userMenuButtonEl.current !== null) {

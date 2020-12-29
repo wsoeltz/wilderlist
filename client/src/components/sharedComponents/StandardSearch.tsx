@@ -1,14 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { debounce } from 'lodash';
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../hooks/useWindowWidth';
 import {
   GhostButton,
   lightBorderColor,
   lightFontWeight,
   placeholderColor,
 } from '../../styling/styleUtils';
-import { AppContext } from '../App';
 
 const SearchContainer = styled.label`
   position: relative;
@@ -66,7 +66,7 @@ const StandardSearch = (props: Props) => {
 
   const searchEl = useRef<HTMLInputElement | null>(null);
   const clearEl = useRef<HTMLButtonElement | null>(null);
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   const onChange = debounce(() => {
     if (searchEl !== null && searchEl.current !== null) {

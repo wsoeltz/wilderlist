@@ -1,6 +1,7 @@
-import React, {useContext, useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {useLocation} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import {Routes} from '../../../routing/routes';
 import {
   listDetailLink,
@@ -8,7 +9,6 @@ import {
   userProfileLink,
 } from '../../../routing/Utils';
 import {mobileSize} from '../../../Utils';
-import { AppContext } from '../../App';
 import MobileMapViewBox from './MobileMapViewBox';
 import Search from './search';
 
@@ -29,7 +29,7 @@ const mountainPath = mountainDetailLink('search');
 
 const Header = () => {
   const { pathname } = useLocation();
-  const {windowWidth} = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   let normalizedPathname: string;
   if (pathname.includes('dashboard')) {

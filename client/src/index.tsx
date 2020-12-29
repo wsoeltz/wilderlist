@@ -3,6 +3,9 @@ import * as Sentry from '@sentry/react';
 import 'core-js/stable';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {
+  BrowserRouter as Router,
+} from 'react-router-dom';
 import 'regenerator-runtime/runtime';
 import App from './components/App';
 import NoApp from './components/NoApp';
@@ -31,7 +34,9 @@ if ( browser === 'IE'                       ||
   ReactDOM.render((
     <ApolloProvider client={client}>
       <FluentText.Provider value={fluentValue}>
-        <App />
+        <Router>
+          <App />
+        </Router>
       </FluentText.Provider>
     </ApolloProvider>
   ), document.getElementById('root'));

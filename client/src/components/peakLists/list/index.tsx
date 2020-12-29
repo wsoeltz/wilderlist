@@ -1,11 +1,12 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import queryString from 'query-string';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import { listDetailLink } from '../../../routing/Utils';
 import {
   LinkButton,
@@ -17,7 +18,6 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
 import {mobileSize} from '../../../Utils';
-import {AppContext} from '../../App';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
 import MapSelect from './mapSelect';
@@ -192,7 +192,7 @@ const PeakListPage = () => {
   const history = useHistory();
 
   const { query, page } = queryString.parse(history.location.search);
-  const {windowWidth} = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);

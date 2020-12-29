@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import styled from 'styled-components';
-import { AppContext } from '../../App';
+import useWindowWidth from '../../../hooks/useWindowWidth';
 import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
 import createLineChart, {Datum as LineChartDatum} from './createLineChart';
@@ -46,7 +46,7 @@ const D3Viz = (props: Props) => {
   const { id } = props;
   const sizingNodeRef = useRef<HTMLDivElement | null>(null);
   const svgNodeRef = useRef<any>(null);
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   useEffect(() => {
     if (svgNodeRef && svgNodeRef.current && sizingNodeRef && sizingNodeRef.current) {

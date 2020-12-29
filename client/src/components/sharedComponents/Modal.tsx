@@ -1,9 +1,9 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../hooks/useWindowWidth';
 import { borderRadius, lightBorderColor } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
-import {AppContext} from '../App';
 import BackButton from './BackButton';
 
 export const mobileWidth = 600; // in px
@@ -139,7 +139,7 @@ const Modal = (props: Props) => {
     };
   }, [onClose]);
 
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   const actions = props.actions === null ? null : (
     <Actions>

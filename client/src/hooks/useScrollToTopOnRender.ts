@@ -1,10 +1,10 @@
-import {useContext, useEffect} from 'react';
+import {useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
-import {AppContext} from '../components/App';
 import {mobileSize} from '../Utils';
+import useWindowWidth from './useWindowWidth';
 
 const useScrollToTopOnRender = (node: HTMLElement | null) => {
-  const {windowWidth} = useContext(AppContext);
+  const windowWidth = useWindowWidth();
   const {pathname} = useLocation();
 
   useEffect(() => {

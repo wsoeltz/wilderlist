@@ -1,12 +1,12 @@
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../hooks/useWindowWidth';
 import {
   DetailBox,
   DetailBoxTitle,
   secondaryColor,
   semiBoldFontBoldWeight,
 } from '../../styling/styleUtils';
-import {AppContext} from '../App';
 
 const Root = styled.div`
   margin-bottom: 1rem;
@@ -49,7 +49,7 @@ const CollapsibleDetailBox = (props: Props) => {
     title, children, defaultHidden,
   } = props;
 
-  const {windowWidth} = useContext(AppContext);
+  const windowWidth = useWindowWidth();
   const ref = useRef<HTMLDivElement | null>(null);
 
   const [hidden, setHidden] = useState<boolean>(!!defaultHidden);

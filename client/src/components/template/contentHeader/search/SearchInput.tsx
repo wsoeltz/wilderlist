@@ -1,6 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useContext, useState, useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../../../hooks/useWindowWidth';
+import {Routes} from '../../../../routing/routes';
 import {
   GhostButton,
   lightBorderColor,
@@ -9,11 +12,8 @@ import {
   primaryColor,
 } from '../../../../styling/styleUtils';
 import {mobileSize} from '../../../../Utils';
-import { AppContext } from '../../../App';
 import LoadingSimple from '../../../sharedComponents/LoadingSimple';
 import {noResultsFoundClassName} from './Utils';
-import {useHistory} from 'react-router-dom';
-import {Routes} from '../../../../routing/routes';
 
 const magnifyingGlassSize = 1.5; // in rem
 const magnifyingGlassSpacing = 0.5; // in rem
@@ -107,7 +107,7 @@ const SearchInput = (props: Props) => {
 
   const [isFocused, setIsFocused] = useState(false);
 
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
   const { push, location: {pathname} } = useHistory();
 
   const onFocus = (event: any) => {
@@ -126,7 +126,7 @@ const SearchInput = (props: Props) => {
     if (windowWidth > mobileSize) {
       push(Routes.Landing);
     }
-  }, [windowWidth, push, clearSearch])
+  }, [windowWidth, push, clearSearch]);
 
   const clearContent = loading ? (
     <LoadingContainer>

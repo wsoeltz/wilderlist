@@ -1,3 +1,4 @@
+const {point} = require('@turf/helpers');
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { faCloudSun, faEdit, faFlag, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -264,8 +265,9 @@ const MountainDetail = (props: Props) => {
   useEffect(() => {
     if (mapContext.intialized && data && data.mountain) {
       mapContext.setNewCenter(data.mountain.location, 15);
+      mapContext.setHighlightedMountains(point(data.mountain.location));
     }
-  }, [mapContext, data]);
+  }, [mapContext, data, id]);
 
   const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
   const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
