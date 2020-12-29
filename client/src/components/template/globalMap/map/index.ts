@@ -70,7 +70,7 @@ const initMap = ({container}: Input): Output => {
               11,
           ],
           'icon-image': ['get', 'icon'],
-          'text-ignore-placement': true,
+          'text-ignore-placement': false,
           'text-font': [
               'Source Sans Pro Regular',
               'Arial Unicode MS Regular',
@@ -90,9 +90,9 @@ const initMap = ({container}: Input): Output => {
               ['exponential', 0.96],
               ['zoom'],
               0,
-              0,
+              0.2,
               22,
-              0.8,
+              1,
           ],
           'text-anchor': 'top',
           'text-field': [
@@ -119,6 +119,7 @@ const initMap = ({container}: Input): Output => {
               8,
           ],
           'icon-allow-overlap': true,
+          'text-allow-overlap': false,
           'text-max-width': [
               'interpolate',
               ['linear'],

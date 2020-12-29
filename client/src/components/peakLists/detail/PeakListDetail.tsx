@@ -31,6 +31,7 @@ import {
 import {
   Mountain,
   PeakList,
+  PeakListVariants,
   State,
   User,
 } from '../../../types/graphQLTypes';
@@ -38,6 +39,7 @@ import {
   isValidURL,
 } from '../../../Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
 import { getType, isState } from '../Utils';
@@ -114,6 +116,7 @@ const GET_PEAK_LIST = gql`
         name
         latitude
         longitude
+        location
         elevation
         state {
           id
@@ -125,6 +128,7 @@ const GET_PEAK_LIST = gql`
         name
         latitude
         longitude
+        location
         elevation
         state {
           id
@@ -160,6 +164,7 @@ export interface MountainDatum {
   name: Mountain['name'];
   latitude: Mountain['latitude'];
   longitude: Mountain['longitude'];
+  location: Mountain['location'];
   elevation: Mountain['elevation'];
   state: {
     id: State['id'];
@@ -490,6 +495,30 @@ const PeakListDetail = (props: Props) => {
         </Helmet>
       ) : null;
 
+      const mountainsForMap = [...requiredMountainsWithDates, ...optionalMountainsWithDates].map(mtn => {
+        let ascentCount: number;
+        if (!mtn.completionDates) {
+          ascentCount = 0;
+        } else if (mtn.completionDates.type === PeakListVariants.standard && mtn.completionDates.standard) {
+          ascentCount = 1;
+        }  else if (mtn.completionDates.type === PeakListVariants.winter && mtn.completionDates.winter) {
+          ascentCount = 1;
+        } else if (mtn.completionDates.type === PeakListVariants.fourSeason ||
+                   mtn.completionDates.type === PeakListVariants.grid) {
+          ascentCount = 0;
+          for (const key in mtn.completionDates) {
+            if (mtn.completionDates.hasOwnProperty(key) && key !== 'type' &&
+                // @ts-expect-error: This will always be a key of mtn.completionDates
+                (mtn.completionDates[key] as any) !== undefined) {
+              ascentCount++;
+            }
+          }
+        } else {
+          ascentCount = 0;
+        }
+        return {...mtn, ascentCount};
+      });
+
       header = (
         <>
           {metaData}
@@ -552,6 +581,12 @@ const PeakListDetail = (props: Props) => {
             setIsExportModalOpen={setIsExportModalOpen}
           />
           {optionalMountainsTable}
+          <MapRenderProp
+            id={id}
+            mountains={mountainsForMap}
+            bbox={peakList.bbox}
+            type={type}
+          />
         </>
       );
     }

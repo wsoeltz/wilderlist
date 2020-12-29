@@ -139,6 +139,7 @@ const SEARCH_MOUNTAINS = gql`
       elevation
       latitude
       longitude
+      location
     }
   }
 `;
@@ -153,6 +154,7 @@ export interface MountainDatum {
   elevation: Mountain['elevation'];
   latitude: Mountain['latitude'];
   longitude: Mountain['longitude'];
+  location: Mountain['location'];
 }
 
 interface SuccessResponse {

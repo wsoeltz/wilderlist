@@ -26,6 +26,7 @@ import {
   CreatedItemStatus,
   Mountain,
   PeakList,
+  PeakListVariants,
   PermissionTypes,
   State,
   User,
@@ -510,9 +511,11 @@ const MountainDetail = (props: Props) => {
           />
           {flagModal}
           <MapRenderProp
+            id={id}
             mountains={completedDates && completedDates.mountain
-              ? [{...mountain, dates: completedDates.dates}] : [{...mountain, dates: []}]}
+              ? [{...mountain, ascentCount: 1}] : [{...mountain, ascentCount: 0}]}
             center={mountain.location}
+            type={PeakListVariants.standard}
           />
         </>
       );

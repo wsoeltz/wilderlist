@@ -18,6 +18,7 @@ const mountainQuery = `
       elevation
       latitude
       longitude
+      location
       description
       resources {
         title
@@ -108,6 +109,7 @@ export interface MountainSuccessResponse {
     elevation: Mountain['elevation'];
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
+    location: Mountain['location'];
     state: Mountain['state'];
     description: Mountain['description'];
     resources: Mountain['resources'];
