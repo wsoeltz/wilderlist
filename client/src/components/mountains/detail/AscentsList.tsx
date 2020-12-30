@@ -1,12 +1,13 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {
   ButtonPrimary,
   GhostButton,
 } from '../../../styling/styleUtils';
-import { CompletedMountain, Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
 import EditAscentReport from '../../peakLists/detail/completionModal/EditAscentReport';
 import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
@@ -15,6 +16,7 @@ import {
   formatDate,
   getDates,
 } from '../../peakLists/Utils';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   AscentListItem,
@@ -32,15 +34,20 @@ const CalendarButton = styled(FontAwesomeIcon)`
 `;
 
 interface Props {
-  completedDates: CompletedMountain | undefined;
-  userId: string | null;
   mountain: MountainDatum;
 }
 
 const AscentsList = (props: Props) => {
-  const { completedDates, userId, mountain } = props;
+  const { mountain } = props;
 
   const getString = useFluent();
+  const currentUser = useCurrentUser();
+  const userId = currentUser ? currentUser._id : null;
+
+  const userMountains = (currentUser && currentUser.mountains) ? currentUser.mountains : [];
+  const completedDates = userMountains.find(
+    // currentUser has raw object ids instead of resolved mountain data
+    (completedMountain) => (completedMountain.mountain as unknown as string) === mountain.id);
 
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
@@ -147,6 +154,13 @@ const AscentsList = (props: Props) => {
       <ItemTitle>{getString('global-text-value-ascent-dates')}:</ItemTitle>
       {output}
       {ascentModal}
+      <MapRenderProp
+        id={mountain.id}
+        mountains={completedDates && completedDates.mountain
+              ? [{...mountain, ascentCount: 1}] : [{...mountain, ascentCount: 0}]}
+        center={mountain.location}
+        type={PeakListVariants.standard}
+      />
     </>
   );
 };

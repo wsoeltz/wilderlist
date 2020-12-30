@@ -70,12 +70,11 @@ const initMap = ({container}: Input): Output => {
               11,
           ],
           'icon-image': ['get', 'icon'],
-          'text-ignore-placement': false,
           'text-font': [
               'Source Sans Pro Regular',
               'Arial Unicode MS Regular',
           ],
-          'text-padding': 25,
+          'text-padding': 10,
           'text-offset': [
               'interpolate',
               ['linear'],
@@ -99,7 +98,7 @@ const initMap = ({container}: Input): Output => {
               'step',
               ['zoom'],
               ['get', 'name'],
-              10,
+              12,
               [
                   'concat',
                   ['get', 'name'],
@@ -109,15 +108,7 @@ const initMap = ({container}: Input): Output => {
               ],
           ],
           'text-letter-spacing': 0.04,
-          'icon-padding': [
-              'interpolate',
-              ['exponential', 0.81],
-              ['zoom'],
-              0,
-              20,
-              22,
-              8,
-          ],
+          'icon-padding': 25,
           'icon-allow-overlap': true,
           'text-allow-overlap': false,
           'text-max-width': [
@@ -134,7 +125,7 @@ const initMap = ({container}: Input): Output => {
           'text-halo-color': '#ffffff',
           'text-halo-width': 2,
           'text-color': '#242a1d',
-          'text-opacity': ['step', ['zoom'], 0, 8, 1],
+          'text-opacity': ['step', ['zoom'], 0, 10, 1],
       },
     });
   });

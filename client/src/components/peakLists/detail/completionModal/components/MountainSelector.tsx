@@ -220,10 +220,10 @@ const MountainSelector = (props: Props) => {
         if (!selectedMountains.find(m => m.id === mtn.id)) {
           const distance = targetMountain && targetMountain.id !== mtn.id
             ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
-              lat1: targetMountain.latitude,
-              lon1: targetMountain.longitude,
-              lat2: mtn.latitude,
-              lon2: mtn.longitude,
+              lat1: targetMountain.location[1],
+              lon1: targetMountain.location[0],
+              lat2: mtn.location[1],
+              lon2: mtn.location[0],
             }).toFixed(2)) + ' mi from ' + targetMountain.name : '';
           mountainList.push(
             <MountainItemAdd

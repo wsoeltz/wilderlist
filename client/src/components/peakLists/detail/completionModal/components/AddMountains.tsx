@@ -25,8 +25,7 @@ export interface MountainDatum {
     abbreviation: State['abbreviation'];
   };
   elevation: Mountain['elevation'];
-  latitude: Mountain['latitude'];
-  longitude: Mountain['longitude'];
+  location: Mountain['location'];
 }
 
 interface Props {
@@ -46,11 +45,11 @@ const AdditionalMountains = (props: Props) => {
 
   const targetMountain = selectedMountains.length ? selectedMountains[0] : null;
 
-  const selectedMountainList = selectedMountains.map(({id, name, elevation, latitude, longitude, state}, i) => {
+  const selectedMountainList = selectedMountains.map(({id, name, elevation, location, state}, i) => {
     const stateAbbr = state && state.abbreviation ? ', ' + state.abbreviation : '';
     const distance = targetMountain && i !== 0
       ? ` | ${getDistanceFromLatLonInMiles({
-        lat1: latitude, lon1: longitude, lat2: targetMountain.latitude, lon2: targetMountain.longitude,
+        lat1: location[1], lon1: location[0], lat2: targetMountain.location[1], lon2: targetMountain.location[0],
       }).toFixed(2)} mi from ${targetMountain.name}` : '';
     return (
         <ListItem key={id}>

@@ -48,12 +48,12 @@ const ContentRoutes = () => {
   useScrollToTopOnRender(containerRef.current);
   return (
     <ContentBody ref={containerRef}>
-      <Suspense fallback={<LoadingSuspense />}>
-        <Switch>
+      <Switch>
           <TrackedRoute exact path={Routes.Landing} component={null} />
-          <TrackedRoute exact path={Routes.Dashboard} component={Dashboard} />
-          <TrackedRoute exact path={Routes.ListDetail} component={PeakListDetailPage} />
           <TrackedRoute exact path={Routes.MountainDetail} component={MountainDetailPage} />
+          <TrackedRoute exact path={Routes.ListDetail} component={PeakListDetailPage} />
+        <Suspense fallback={<LoadingSuspense />}>
+          <TrackedRoute exact path={Routes.Dashboard} component={Dashboard} />
           <TrackedRoute exact path={Routes.UserProfile} component={UserProfile} />
           <TrackedRoute exact path={Routes.UserSettings} component={UserSettings} />
           <TrackedRoute exact path={Routes.OtherUserPeakList} component={UserProfilePeakListDetail} />
@@ -68,8 +68,8 @@ const ContentRoutes = () => {
           <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
           {/* 404 Route -> */}
           <Route component={PageNotFound} />
-        </Switch>
-      </Suspense>
+        </Suspense>
+      </Switch>
     </ContentBody>
   );
 };
@@ -80,12 +80,10 @@ const MainContent = () => {
       <ContentHeader>
         <Header />
       </ContentHeader>
-      <Suspense fallback={<LoadingSuspense />}>
-        <Switch>
-          <TrackedRoute exact path={Routes.Landing} component={null} />
-          <Route component={ContentRoutes} />
-        </Switch>
-      </Suspense>
+      <Switch>
+        <TrackedRoute exact path={Routes.Landing} component={null} />
+        <Route component={ContentRoutes} />
+      </Switch>
     </ContentContainer>
   );
 };

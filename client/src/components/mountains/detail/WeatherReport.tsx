@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import getWeather from '../../../utilities/getWeather';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -32,12 +33,18 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
   const [forecast, setForecast] = useState<Forecast | null>(null);
   const [error, setError] = useState<any | null>(null);
 
+  const currentUser = useCurrentUser();
   const getString = useFluent();
 
   useEffect(() => {
+    let ignoreResult: boolean = false;
     const getWeatherData = async () => {
       try {
         const res = await getWeather(`/api/weather?lat=${latitude}&lng=${longitude}`);
+        if (ignoreResult) {
+          console.warn('Weather report promise canceled for unmounted component');
+          return undefined;
+        }
         if (res && res.data) {
           setForecast(res.data);
         } else {
@@ -45,11 +52,17 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
         }
       } catch (err) {
         console.error(err);
-        setError(err);
+        if (!ignoreResult) {
+          setError(err);
+        }
       }
     };
-    getWeatherData();
-  }, [setForecast, latitude, longitude]);
+    if (currentUser !== null) {
+      getWeatherData();
+    }
+
+    return () => {ignoreResult = true; };
+  }, [setForecast, latitude, longitude, currentUser]);
 
   let output: React.ReactElement<any> | null;
   if (error !== null) {

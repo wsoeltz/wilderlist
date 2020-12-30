@@ -2,6 +2,7 @@ import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import orderBy from 'lodash/sortBy';
 import {useEffect, useState} from 'react';
+import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
 
 export interface Input {
@@ -70,10 +71,12 @@ const handleHyphens = (word: string) => word.split('-').map(w => w.charAt(0).toU
 const isDirections = (word: string) => word.length <= 3 && word.match(/^[WENS]+$/g) && word !== 'NEW';
 
 const useSnowReport = (input: Input) => {
+  const currentUser = useCurrentUser();
   const [output, setOutput] = useState<Output>({loading: true, error: undefined, data: undefined});
 
   useEffect(() => {
     const {stateAbbr, latitude, longitude} = input;
+    let ignoreResult: boolean = false;
     const fetchSnowReport = async () => {
       try {
         const today = new Date();
@@ -113,7 +116,7 @@ const useSnowReport = (input: Input) => {
           let snowdepthPrevMonth: undefined | RawSnowDatum;
           const prevMonthMaxDay = daysInMonth(month - 1, year);
           if (day < 7) {
-            const stringPrevMonth = month - 1 < 10 ? `0${month - 1}` : (month - 1).toString();
+            const stringPrevMonth: any = month - 1 < 10 ? `0${month - 1}` : (month - 1).toString();
             const prevSnowFall = await getSnowFall(
               `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${
                 stateAbbr}-snowfall-${year}${stringPrevMonth}.json`,
@@ -221,17 +224,27 @@ const useSnowReport = (input: Input) => {
             elevation: parseInt(sortedSnowDepthStations[0].elev, 10),
             values: snowdepthValues,
           };
+          if (ignoreResult) {
+            console.warn('Snow report promise canceled for unmounted component');
+            return undefined;
+          }
           setOutput({loading: false, error: undefined, data: {snowfall, snowdepth}});
         } else {
           throw new Error('Unable to get snow report right now');
         }
       } catch (error) {
         console.error(error);
-        setOutput({loading: false, error, data: undefined});
+        if (!ignoreResult) {
+          setOutput({loading: false, error, data: undefined});
+        }
       }
     };
-    fetchSnowReport();
-  }, [input]);
+    if (currentUser !== null) {
+      fetchSnowReport();
+    }
+
+    return () => {ignoreResult = true; };
+  }, [input, currentUser]);
 
   return output;
 };

@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
@@ -141,14 +142,16 @@ export const isCondition = (key: string) => {
 interface Props {
   mountainId: string;
   mountainName: string;
-  userId: string | null;
 }
 
-const TripReports = ({mountainId, mountainName, userId}: Props) => {
+const TripReports = ({mountainId, mountainName}: Props) => {
 
   const [fullReport, setFullReport] = useState<TripReport | null>(null);
   const closeFullReport = useCallback(() => setFullReport(null), []);
   const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const currentUser = useCurrentUser();
+  const userId = currentUser ? currentUser._id : null;
 
   const loadMoreReports = useCallback(() => setPageNumber(curr => curr + 1), []);
 
