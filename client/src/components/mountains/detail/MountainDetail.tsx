@@ -1,6 +1,5 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import React from 'react';
-import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import {
@@ -10,11 +9,11 @@ import {
   User,
 } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Content, {MountainNoteSuccess, MountainNoteVariables} from './Content';
+import Content from './Content';
 import Header from './Header';
 
 const GET_MOUNTAIN_DETAIL = gql`
-  query getMountain($id: ID, $userId: ID) {
+  query getMountain($id: ID) {
     mountain(id: $id) {
       id
       name
@@ -38,14 +37,6 @@ const GET_MOUNTAIN_DETAIL = gql`
       }
       status
     }
-    user(id: $userId) {
-      id
-      mountainNote(mountainId: $id) {
-        id
-        text
-      }
-      mountainPermissions
-    }
   }
 `;
 
@@ -68,51 +59,11 @@ interface QuerySuccessResponse {
     author: null | { id: User['id'] };
     status: Mountain['status'];
   };
-  user: null | {
-    id: User['name'];
-    permissions: User['permissions'];
-    mountains: User['mountains'];
-    mountainNote: User['mountainNote'];
-    mountainPermissions: User['mountainPermissions'];
-  };
 }
 
 interface QueryVariables {
   id: string | null;
-  userId: string | null;
 }
-
-const ADD_MOUNTAIN_NOTE = gql`
-  mutation($userId: ID!, $mountainId: ID!, $text: String!) {
-    user: addMountainNote(
-      userId: $userId,
-      mountainId: $mountainId,
-      text: $text
-    ) {
-      id
-      mountainNote(mountainId: $mountainId) {
-        id
-        text
-      }
-    }
-  }
-`;
-
-const EDIT_MOUNTAIN_NOTE = gql`
-  mutation($userId: ID!, $mountainId: ID!, $text: String!) {
-    user: editMountainNote(
-      userId: $userId,
-      mountainId: $mountainId,
-      text: $text
-    ) {
-      id
-      mountainNote(mountainId: $mountainId) {
-        id
-        text
-      }
-    }
-  }
-`;
 
 interface Props {
   id: string | null;
@@ -122,17 +73,11 @@ interface Props {
 const MountainDetail = (props: Props) => {
   const { id, setOwnMetaData} = props;
 
-  const currentUser = useCurrentUser();
-  const userId = currentUser ? currentUser._id : null;
-
   const getString = useFluent();
 
   const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAIN_DETAIL, {
-    variables: { id, userId },
+    variables: { id },
   });
-
-  const [addMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(ADD_MOUNTAIN_NOTE);
-  const [editMountainNote] = useMutation<MountainNoteSuccess, MountainNoteVariables>(EDIT_MOUNTAIN_NOTE);
 
   let header: React.ReactElement<any> | null;
   let body: React.ReactElement<any> | null;
@@ -151,7 +96,7 @@ const MountainDetail = (props: Props) => {
     );
     body = null;
   } else if (data !== undefined) {
-    const { mountain, user } = data;
+    const { mountain } = data;
     if (!mountain) {
       return (
         <PlaceholderText>
@@ -166,9 +111,7 @@ const MountainDetail = (props: Props) => {
       header = (
         <Header
           setOwnMetaData={setOwnMetaData ? setOwnMetaData : false}
-          userId={userId}
-          user={user}
-          author={author}
+          authorId={author ? author.id : null}
           id={id}
           name={name}
           elevation={elevation}
@@ -180,10 +123,7 @@ const MountainDetail = (props: Props) => {
       body = (
         <Content
           setOwnMetaData={setOwnMetaData === true ? true : false}
-          user={user}
           mountain={mountain}
-          addMountainNote={addMountainNote}
-          editMountainNote={editMountainNote}
         />
       );
     }

@@ -4,6 +4,7 @@ import styled from 'styled-components/macro';
 import {
   baseColor,
   boldFontWeight,
+  DetailBox as DetailBoxBase,
   lightBaseColor,
   lightBlue,
   lightBorderColor,
@@ -113,4 +114,16 @@ export const ExternalLink = styled.a`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+`;
+
+export const InlineSectionContainer = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+export const DetailBox = styled(DetailBoxBase)`
+  margin-bottom: 2rem;
+`;
+
+export const NotesTitle = styled(ItemTitle)`
+  margin-bottom: 0.5rem;
 `;

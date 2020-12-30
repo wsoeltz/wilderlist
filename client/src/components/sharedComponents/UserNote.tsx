@@ -25,13 +25,15 @@ import {
   redditRed,
 } from './SignUpModal';
 
+const defaultHeight = 4.75; // in rem
+
 const Textarea = styled.textarea`
   padding: 0.5rem;
   box-sizing: border-box;
   font-size: 1rem;
   font-weight: ${lightFontWeight};
   width: 100%;
-  min-height: 4.75rem;
+  min-height: ${defaultHeight}rem;
   line-height: 1.5;
   border: solid 1px ${rgba(lightBorderColor, 0.6)};
   outline: none;
@@ -44,6 +46,10 @@ const Textarea = styled.textarea`
   &:focus {
     border-color: ${lightBorderColor};
   }
+`;
+
+export const PlaceholderTextarea = styled(Textarea)`
+  cursor: wait;
 `;
 
 const ButtonContainer = styled.div`

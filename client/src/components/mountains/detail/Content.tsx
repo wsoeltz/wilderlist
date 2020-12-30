@@ -1,11 +1,8 @@
-import { MutationFunction } from '@apollo/client';
 import { faCloudSun, faEdit } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
   BasicIconInText,
-  DetailBox as DetailBoxBase,
   DetailBoxTitle,
   PreFormattedParagraph,
   ResourceItem,
@@ -21,49 +18,21 @@ import {
   isValidURL,
 } from '../../../Utils';
 import Tooltip from '../../sharedComponents/Tooltip';
-import UserNote from '../../sharedComponents/UserNote';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
+import MountainNote from './MountainNote';
 import {
-  ItemTitle,
+  DetailBox,
+  InlineSectionContainer,
+  NotesTitle,
   VerticalContentItem,
 } from './sharedStyling';
 import TripReports from './TripReports';
 import SnowDepth from './weather/snowDepth';
 import WeatherReport from './WeatherReport';
 
-const InlineSectionContainer = styled.div`
-  margin-bottom: 1.5rem;
-`;
-
-const DetailBox = styled(DetailBoxBase)`
-  margin-bottom: 2rem;
-`;
-
-const NotesTitle = styled(ItemTitle)`
-  margin-bottom: 0.5rem;
-`;
-
-export interface MountainNoteSuccess {
-  user: {
-    id: User['id'];
-    mountainNote: User['mountainNote'];
-  };
-}
-
-export interface MountainNoteVariables {
-  userId: string;
-  mountainId: string;
-  text: string;
-}
-
 interface Props {
   setOwnMetaData: boolean;
-  user: null | {
-    id: User['name'];
-    mountains: User['mountains'];
-    mountainNote: User['mountainNote'];
-  };
   mountain: {
     id: Mountain['name'];
     name: Mountain['name'];
@@ -82,15 +51,12 @@ interface Props {
     author: null | { id: User['id'] };
     status: Mountain['status'];
   };
-  addMountainNote: MutationFunction<MountainNoteSuccess, MountainNoteVariables>;
-  editMountainNote: MutationFunction<MountainNoteSuccess, MountainNoteVariables>;
 }
 
 const Content = (props: Props) => {
   const  {
-    user, setOwnMetaData,
-    mountain: {location, name, id, description, resources, state, lists},
-    mountain, addMountainNote, editMountainNote,
+    setOwnMetaData, mountain: {location, name, id, description, resources, state, lists},
+    mountain,
   } = props;
 
   const getString = useFluent();
@@ -98,20 +64,6 @@ const Content = (props: Props) => {
   const stateAbbreviation = state && state.abbreviation ? state.abbreviation : '';
 
   const [longitude, latitude] = location;
-
-  const mountainNote = user && user.mountainNote ? user.mountainNote : null;
-  const defaultNoteText = mountainNote && mountainNote.text ? mountainNote.text : '';
-  const notesPlaceholderText = getString('user-notes-placeholder', {name});
-
-  const saveNote = (text: string) => {
-    if (user) {
-      if (mountainNote === null) {
-        addMountainNote({variables: {userId: user.id, mountainId: id, text}});
-      } else {
-        editMountainNote({variables: {userId: user.id, mountainId: id, text}});
-      }
-    }
-  };
 
   const descriptionEl = description && description.length ? (
     <div>
@@ -188,13 +140,10 @@ const Content = (props: Props) => {
               explanation={getString('user-notes-tooltip')}
             />
           </NotesTitle>
-          <UserNote
-            placeholder={notesPlaceholderText}
-            defaultValue={defaultNoteText}
-            onSave={saveNote}
-            key={defaultNoteText}
-          />
         </InlineSectionContainer>
+        <MountainNote
+          mountainId={mountain.id}
+        />
         <AscentsList
           mountain={mountain}
         />

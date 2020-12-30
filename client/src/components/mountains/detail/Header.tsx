@@ -1,24 +1,18 @@
-import { faFlag } from '@fortawesome/free-solid-svg-icons';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { setMountainOgImageUrl } from '../../../routing/routes';
-import { editMountainLink, mountainDetailLink } from '../../../routing/Utils';
+import { mountainDetailLink } from '../../../routing/Utils';
 import {
-  BasicIconInText,
-  CompactGhostButton,
-  CompactGhostButtonLink,
   lowWarningColorDark,
 } from '../../../styling/styleUtils';
 import {
   CreatedItemStatus,
   Mountain,
-  PermissionTypes,
   State,
-  User,
 } from '../../../types/graphQLTypes';
-import FlagModal from './FlagModal';
+import ActionButton from './ActionButton';
 
 const MountainNameHeader = styled.div`
   display: flex;
@@ -43,18 +37,11 @@ const Subtitle = styled.em`
 
 interface Props {
   setOwnMetaData: boolean;
-  userId: string | null;
-  user: null | {
-    id: User['name'];
-    permissions: User['permissions'];
-    mountainPermissions: User['mountainPermissions'];
-  };
-  author: null | { id: User['id'] };
+  authorId: string | null;
   id: Mountain['id'];
   name: Mountain['name'];
   elevation: Mountain['elevation'];
   state: {
-    id: State['id'];
     name: State['name'];
     abbreviation: State['abbreviation'];
   };
@@ -63,32 +50,11 @@ interface Props {
 
 const Header = (props: Props) => {
   const {
-    setOwnMetaData, elevation, user, author, userId, id, name, state,
+    setOwnMetaData, elevation, authorId, id, name, state,
     status,
   } = props;
 
   const getString = useFluent();
-
-  const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
-  const openFlagModal = useCallback(() => setIsFlagModalOpen(true), []);
-  const closeFlagModal = useCallback(() => setIsFlagModalOpen(false), []);
-
-  let actionButton: React.ReactElement<any> | null;
-  if (!user) {
-    actionButton = null;
-  } else {
-    actionButton = (author && author.id && author.id === userId
-              && user.mountainPermissions !== -1) || user.permissions === PermissionTypes.admin ? (
-      <CompactGhostButtonLink to={editMountainLink(id)}>
-        {getString('global-text-value-edit')}
-      </CompactGhostButtonLink>
-    ) : (
-      <CompactGhostButton onClick={openFlagModal}>
-        <BasicIconInText icon={faFlag} />
-        {getString('global-text-value-flag')}
-      </CompactGhostButton>
-    );
-  }
 
   const title = status === CreatedItemStatus.pending ? (
     <div>
@@ -123,28 +89,22 @@ const Header = (props: Props) => {
     </Helmet>
   ) : null;
 
-  const flagModal = isFlagModalOpen === false ? null : (
-    <FlagModal
-      onClose={closeFlagModal}
-      mountainId={id}
-      mountainName={name}
-    />
-  );
-
   return (
     <>
       {metaData}
       <MountainNameHeader>
         {title}
         <div>
-          {actionButton}
+          <ActionButton
+            id={id}
+            authorId={authorId}
+          />
         </div>
       </MountainNameHeader>
       <Details>
         <span>{state.name}</span>
         <span>{elevation}ft</span>
       </Details>
-      {flagModal}
     </>
   );
 };
