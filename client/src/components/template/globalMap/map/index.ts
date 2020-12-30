@@ -15,6 +15,8 @@ interface Input {
   container: HTMLElement;
 }
 
+export const defaultCenter: Coordinate = [-98.5795, 39.8283];
+
 export interface Output {
   map: mapboxgl.Map;
   setNewCenter: (center: Coordinate, zoom: number) => void;
@@ -41,7 +43,7 @@ const initMap = ({container}: Input): Output => {
   const map = new mapboxgl.Map({
     container,
     style: 'mapbox://styles/wsoeltz/ckis2a1er0czp19qjthgqy9l5', // stylesheet location
-    center: [-98.5795, 39.8283], // starting position [lng, lat]
+    center: defaultCenter, // starting position [lng, lat]
     zoom: 3.5, // starting zoom
     maxZoom: 15.5,
   });

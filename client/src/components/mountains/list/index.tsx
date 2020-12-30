@@ -1,9 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
-import queryString from 'query-string';
 import React from 'react';
 import Helmet from 'react-helmet';
-import {useHistory} from 'react-router-dom';
 import useFluent from '../../../hooks/useFluent';
+import useMapCenter from '../../../hooks/useMapCenter';
 import usePrevious from '../../../hooks/usePrevious';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
@@ -12,19 +11,18 @@ import {
 import GhostMountainCard from './GhostMountainCard';
 import ListMountains, {
   MountainDatum,
-  MountainDatumWithDistance,
 } from './ListMountains';
 
-const SEARCH_MOUNTAINS = gql`
-  query SearchMountains(
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!,
+const GEO_NEAR_MOUNTAINS = gql`
+  query GeoNearMountains(
+    $latitude: Float!,
+    $longitude: Float!,
+    $limit: Int!,
   ) {
-    mountains: mountainSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
+    mountains: geoNearMountains(
+      latitude: $latitude,
+      longitude: $longitude,
+      limit: $limit,
     ) {
       id
       name
@@ -33,8 +31,7 @@ const SEARCH_MOUNTAINS = gql`
         name
       }
       elevation
-      latitude
-      longitude
+      location
     }
   }
 `;
@@ -44,25 +41,21 @@ interface SuccessResponse {
 }
 
 interface Variables {
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
+  latitude: number;
+  longitude: number;
+  limit: number;
 }
 
 const MountainSearchPage = () => {
-  const history = useHistory();
-  const { query } = queryString.parse(history.location.search);
-  const searchQuery = query && typeof query === 'string' && query.length ? query : '';
-
-  const nPerPage = 10;
-
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
+  const [longitude, latitude] = useMapCenter();
+
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GEO_NEAR_MOUNTAINS, {
     variables: {
-      searchQuery,
-      pageNumber: 1,
-      nPerPage,
+      latitude,
+      longitude,
+      limit: 15,
     },
   });
 
@@ -77,7 +70,7 @@ const MountainSearchPage = () => {
   }
 
   let list: React.ReactElement<any> | null;
-  if (loading === true) {
+  if (loading === true && dataToUse === undefined) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostMountainCard key={i} />);
@@ -98,16 +91,10 @@ const MountainSearchPage = () => {
       }
       list = <>{loadingCards}</>;
     } else {
-      const rawMountains = dataToUse.mountains;
-      const extendedMountains: MountainDatumWithDistance[] = rawMountains.map(mtn => {
-        const distanceToUser = null;
-        const distanceToMapCenter = null;
-        return {...mtn, distanceToUser, distanceToMapCenter};
-      });
       list = (
         <>
           <ListMountains
-            mountainData={extendedMountains}
+            mountainData={dataToUse.mountains}
             noResultsText={getString('global-text-value-no-results-found')}
           />
         </>

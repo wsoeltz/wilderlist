@@ -1,28 +1,19 @@
 import {
-  faArrowRight,
-  faMapMarkerAlt,
   faMountain,
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components/macro';
-import useFluent from '../../../hooks/useFluent';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
-  BasicIconAtEndOfText,
   BasicIconInText,
-  CardFooterButton,
-  CardFooterLink,
+  Card,
   CardSubtitle,
   CardTitle,
   CollapsedParagraph,
-  primaryColor,
-  secondaryColor,
   Seperator,
-  StackableCardFooter,
-  StackableCardSection,
   StackedCardWrapper,
 } from '../../../styling/styleUtils';
-import { MountainDatumWithDistance } from './ListMountains';
+import { MountainDatum } from './ListMountains';
 
 const Root = styled.div`
   margin-bottom: 2rem;
@@ -41,36 +32,12 @@ const Details = styled(CollapsedParagraph)`
   margin: 0.4rem 0 0;
 `;
 
-const CardFooter = styled(StackableCardFooter)`
-  border-left-width: 1px;
-`;
-
-const OverviewLink = styled(CardFooterLink)`
-  width: 50%;
-  color: ${secondaryColor};
-
-  &:hover {
-    color: #fff;
-  }
-`;
-
-const MapButton = styled(CardFooterButton)`
-  width: 50%;
-  color: ${secondaryColor};
-
-  &:hover {
-    color: #fff;
-  }
-`;
-
 interface Props {
-  mountain: MountainDatumWithDistance;
+  mountain: MountainDatum;
 }
 
 const MountainCard = ({ mountain }: Props) => {
   const { name, elevation, state } = mountain;
-
-  const getString = useFluent();
 
   const stateName = state !== null ? (
     <>
@@ -85,7 +52,7 @@ const MountainCard = ({ mountain }: Props) => {
       <LinkWrapper
         to={mountainDetailLink(mountain.id)}
       >
-        <StackableCardSection>
+        <Card>
           <CardTitle>{name}</CardTitle>
           <CardSubtitle>
             <Details>
@@ -96,25 +63,8 @@ const MountainCard = ({ mountain }: Props) => {
               </span>
             </Details>
           </CardSubtitle>
-        </StackableCardSection>
+        </Card>
       </LinkWrapper>
-      <CardFooter>
-        <OverviewLink
-          to={mountainDetailLink(mountain.id)}
-          color={secondaryColor}
-          $isActive={false}
-        >
-          {getString('mountain-card-view-details')}
-          <BasicIconAtEndOfText icon={faArrowRight} />
-        </OverviewLink>
-        <MapButton
-          color={primaryColor}
-          $isActive={false}
-        >
-          {getString('mountain-card-show-on-map')}
-          <BasicIconAtEndOfText icon={faMapMarkerAlt} />
-        </MapButton>
-      </CardFooter>
     </Root>
 
   </>

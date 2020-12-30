@@ -5,6 +5,8 @@ import React, {useCallback, useMemo, useState} from 'react';
 import Autosuggest from 'react-autosuggest';
 import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useMapCenter from '../../../../hooks/useMapCenter';
+import useMapContext from '../../../../hooks/useMapContext';
 import {listDetailLink, mountainDetailLink} from '../../../../routing/Utils';
 import {
   lightBorderColor,
@@ -107,14 +109,17 @@ const renderSuggestion = (suggestion: SearchResultDatum, {query}: {query: string
 
 const Search = () => {
   const {push} = useHistory();
+  const center = useMapCenter();
+  const mapContext = useMapContext();
   const [state, updateState] = useState<SearchState>({value: '', suggestions: [], loading: false});
 
   const loadSuggestions = useMemo(
     () => debounce((value: string) => {
+      const [lng, lat] = center;
       const url = encodeURI(
         '/api/global-search?' +
-        '&lat=' + 41.478050 +
-        '&lng=' + -71.475360 +
+        '&lat=' + lat.toFixed(3) +
+        '&lng=' + lng.toFixed(3) +
         '&search=' + value.replace(/[^\w\s]/gi, '').trim(),
       );
       getSearchResults(url).then((res: {data: SearchResultDatum[]}) => {
@@ -124,7 +129,7 @@ const Search = () => {
           suggestions: res.data,
         }));
       });
-  }, 300), [updateState]);
+  }, 300), [updateState, center]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
     updateState(curr => ({...curr, value: newValue}));
@@ -150,8 +155,10 @@ const Search = () => {
       push(mountainDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.list) {
       push(listDetailLink(suggestion.id));
+    } else if (suggestion.type === SearchResultType.geolocation && mapContext.intialized) {
+      mapContext.setNewCenter(suggestion.coordinates, 12);
     }
-  }, [push]);
+  }, [push, mapContext]);
 
   const renderSuggestionsContainer = useCallback(({ containerProps, children, query }: any) => {
     let noResults: React.ReactElement<any> | null;
