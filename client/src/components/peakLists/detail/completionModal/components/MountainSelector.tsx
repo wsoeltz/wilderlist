@@ -140,8 +140,7 @@ const SEARCH_MOUNTAINS = gql`
         abbreviation
       }
       elevation
-      latitude
-      longitude
+      location
     }
   }
 `;
