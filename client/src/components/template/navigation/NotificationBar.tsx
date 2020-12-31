@@ -20,6 +20,7 @@ import {
   SemiBold,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
+import {mobileSize} from '../../../Utils';
 import AscentReportFromNotification from '../../peakLists/detail/completionModal/AscentReportFromNotification';
 import { formatStringDate } from '../../peakLists/Utils';
 
@@ -44,6 +45,14 @@ const Root = styled(PreContentHeaderFull)`
   align-items: center;
   transition: all 0.2s ease;
   animation: ${slideDown} 0.5s ease-in-out forwards;
+  z-index: 2000;
+
+  @media (max-width: ${mobileSize}px) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 90px;
+  }
 `;
 
 const buttonSize = '0.7rem';
@@ -82,7 +91,7 @@ const NotificationBar = (props: Props) => {
 
   const {loading, error, data} = useGetNotifications(userId);
   const {addMountainCompletion} = useTripReportMutaions(null, 0);
-  const clearAscentNotification = useClearAscentNotification();
+  const clearAscentNotification = useClearAscentNotification(userId);
   const acceptFriendRequestMutation = useAcceptFriendRequestMutation(userId);
   const removeFriendMutation = useRemoveFriendMutation(userId);
 

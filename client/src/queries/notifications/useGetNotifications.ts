@@ -30,8 +30,7 @@ const GET_NOTIFICATIONS = gql`
             id
             abbreviation
           }
-          latitude
-          longitude
+          location
           elevation
         }
         date
@@ -73,8 +72,7 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
             id
             abbreviation
           }
-          latitude
-          longitude
+          location
           elevation
         }
         date
@@ -93,9 +91,11 @@ export const useGetNotifications = (userId: string) => useQuery<SuccessResponse,
   GET_NOTIFICATIONS, {variables: { userId }},
 );
 
-export const useClearAscentNotification = () => {
+export const useClearAscentNotification = (userId: string) => {
   const [clearAscentNotification] =
-  useMutation<SuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
+  useMutation<SuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION, {
+    refetchQueries: () => [{query: GET_NOTIFICATIONS, variables: { userId }}],
+  });
   return clearAscentNotification;
 };
 

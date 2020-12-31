@@ -134,7 +134,7 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
   } = useTripReportMutaions(initialMountainId, nPerPage);
   const addAscentNotifications = useAddAscentNotifications();
 
-  const clearAscentNotification = useClearAscentNotification();
+  const clearAscentNotification = useClearAscentNotification(userId);
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');
