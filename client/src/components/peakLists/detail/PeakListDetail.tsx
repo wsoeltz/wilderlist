@@ -269,12 +269,11 @@ interface PeakListNoteVariables {
 interface Props {
   userId: string | null;
   id: string;
-  queryRefetchArray?: Array<{query: any, variables: any}>;
   setOwnMetaData?: boolean;
 }
 
 const PeakListDetail = (props: Props) => {
-  const { userId, id, queryRefetchArray, setOwnMetaData } = props;
+  const { userId, id, setOwnMetaData } = props;
 
   const getString = useFluent();
   const mapContext = useMapContext();
@@ -529,7 +528,6 @@ const PeakListDetail = (props: Props) => {
             peakList={peakList}
             completedAscents={userMountains}
             isOtherUser={isOtherUser}
-            queryRefetchArray={queryRefetchArray}
           />
           <DetailBoxTitle>
             <BasicIconInText icon={faMapMarkedAlt} />
@@ -576,7 +574,6 @@ const PeakListDetail = (props: Props) => {
             peakListShortName={peakList.shortName}
             isOtherUser={isOtherUser}
             showImportExport={true}
-            queryRefetchArray={queryRefetchArray}
             isExportModalOpen={isExportModalOpen}
             setIsExportModalOpen={setIsExportModalOpen}
           />

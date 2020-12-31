@@ -1,14 +1,12 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import React from 'react';
 import { withRouter } from 'react-router';
+import {
+  useRemovePeakListFromUser,
+} from '../../queries/lists/addRemovePeakListsToUser';
 import { User } from '../../types/graphQLTypes';
 import { asyncForEach } from '../../Utils';
 import { notEmpty } from '../../Utils';
-import { REMOVE_PEAK_LIST_FROM_USER } from '../peakLists/detail/Header';
-import {
-  AddRemovePeakListSuccessResponse,
-  AddRemovePeakListVariables,
-} from '../peakLists/list';
 import {
   FriendRequestSuccessResponse,
   FriendRequestVariables,
@@ -65,8 +63,7 @@ export interface SuccessResponse {
 const AdminUsers = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_USERS);
 
-  const [removePeakListFromUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(REMOVE_PEAK_LIST_FROM_USER);
+  const removePeakListFromUser = useRemovePeakListFromUser();
   const [removeFriendMutation] =
     useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
   const [deleteUserMutation] = useMutation(DELETE_USER, {

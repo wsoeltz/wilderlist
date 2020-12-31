@@ -1,9 +1,11 @@
-import { gql, useMutation } from '@apollo/client';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import { refetchUsersLists } from '../../../queries/getUsersPeakLists';
+import {
+  useAddPeakListToUser,
+  useRemovePeakListFromUser,
+} from '../../../queries/lists/addRemovePeakListsToUser';
 import { editPeakListLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -23,11 +25,6 @@ import {
 import { failIfValidOrNonExhaustive} from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
-import {
-  ADD_PEAK_LIST_TO_USER,
-  AddRemovePeakListSuccessResponse,
-  AddRemovePeakListVariables,
-} from '../list';
 import {
   TextRight,
 } from '../list/PeakListCard';
@@ -141,27 +138,6 @@ const ProgressBarContainer = styled.div`
   }
 `;
 
-export const REMOVE_PEAK_LIST_FROM_USER = gql`
-  mutation removePeakListFromUser($userId: ID!, $peakListId: ID!) {
-    removePeakListFromUser(userId: $userId, peakListId: $peakListId) {
-      id
-      peakLists {
-        id
-        name
-        shortName
-        type
-        parent {
-          id
-        }
-        numMountains
-        numCompletedAscents(userId: $userId)
-        latestAscent(userId: $userId)
-        isActive(userId: $userId)
-      }
-    }
-  }
-`;
-
 interface Props {
   mountains: MountainDatum[];
   peakList: PeakListDatum;
@@ -170,7 +146,6 @@ interface Props {
   isOtherUser?: boolean;
   comparisonUser?: UserDatum;
   comparisonAscents?: CompletedMountain[];
-  queryRefetchArray?: Array<{query: any, variables: any}>;
 }
 
 const Header = (props: Props) => {
@@ -181,24 +156,8 @@ const Header = (props: Props) => {
 
   const getString = useFluent();
 
-  const queryRefetchArray = props.queryRefetchArray && props.queryRefetchArray.length ? [
-      ...props.queryRefetchArray,
-  ] : [];
-
-  if (user) {
-    queryRefetchArray.push(refetchUsersLists({userId: user.id}));
-  }
-
-  const mutationOptions = queryRefetchArray && queryRefetchArray.length && user ? {
-    refetchQueries: () => [...queryRefetchArray],
-  } : {};
-
-  const [addPeakListToUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(
-      ADD_PEAK_LIST_TO_USER, {...mutationOptions});
-  const [removePeakListFromUser] =
-    useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(
-      REMOVE_PEAK_LIST_FROM_USER, {...mutationOptions});
+  const addPeakListToUser = useAddPeakListToUser();
+  const removePeakListFromUser = useRemovePeakListFromUser();
 
   const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
@@ -427,7 +386,6 @@ const Header = (props: Props) => {
       <Footer>
         <VariantLinks
           peakList={peakList}
-          queryRefetchArray={queryRefetchArray}
         />
       </Footer>
       {areYouSureModal}

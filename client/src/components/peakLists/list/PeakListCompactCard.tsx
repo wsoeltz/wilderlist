@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
+import { CompactPeakListDatum } from '../../../queries/lists/getGeoNearPeakLists';
 import {
   listDetailLink,
   preventNavigation,
@@ -26,7 +27,6 @@ import {
 import ImportAscentNotification from '../import/ImportAscentsNotification';
 import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
 import { getType } from '../Utils';
-import { CompactPeakListDatum } from './ListPeakLists';
 import VariantLinks from './VariantLinks';
 
 const Root = styled.div`
@@ -77,14 +77,13 @@ interface Props {
   actionText: string;
   totalRequiredAscents: number;
   numCompletedAscents: number;
-  queryRefetchArray: Array<{query: any, variables: any}>;
 }
 
 const PeakListCard = (props: Props) => {
   const {
     peakList: {id, name, type, stateOrRegionString, numMountains}, peakList,
     active, listAction, actionText, totalRequiredAscents,
-    numCompletedAscents, queryRefetchArray,
+    numCompletedAscents,
   } = props;
 
   const getString = useFluent();
@@ -177,7 +176,6 @@ const PeakListCard = (props: Props) => {
       <CardFooter>
         <VariantLinks
           peakList={peakList}
-          queryRefetchArray={queryRefetchArray}
           grayText={!hovered}
         />
         {importAscentsNotification}

@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
 import useFluent from '../../../hooks/useFluent';
-import { CardPeakListDatum } from '../../../queries/getUsersPeakLists';
+import { CardPeakListDatum } from '../../../queries/lists/getUsersPeakLists';
 import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,

@@ -3,7 +3,7 @@ import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
-import {refetchUsersLists} from '../../../../queries/getUsersPeakLists';
+import {refetchUsersPeakLists} from '../../../../queries/lists/getUsersPeakLists';
 import { PeakListVariants } from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
 import NewAscentReport from '../../../peakLists/detail/completionModal/NewAscentReport';
@@ -39,7 +39,7 @@ const AddAscentButton = () => {
         closeEditMountainModalModal={closeAscentModal}
         userId={userId}
         variant={PeakListVariants.standard}
-        queryRefetchArray={[refetchUsersLists({userId})]}
+        queryRefetchArray={[refetchUsersPeakLists({userId})]}
       />
     ) : null;
 

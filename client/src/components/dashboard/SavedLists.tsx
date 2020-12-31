@@ -2,7 +2,7 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
-import {refetchUsersLists, useUsersPeakLists} from '../../queries/getUsersPeakLists';
+import {useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
   ButtonPrimaryLink,
@@ -43,7 +43,7 @@ const SavedLists = ({userId}: Props) => {
     const { user } = listsData;
     const { peakLists } = user;
     const suggestedLists = peakLists.length < 3
-      ? <SuggestedLists userId={userId} /> : null;
+      ? <SuggestedLists /> : null;
     if (peakLists.length === 0) {
       peakListsList = (
         <div>
@@ -74,7 +74,6 @@ const SavedLists = ({userId}: Props) => {
             profileId={undefined}
             noResultsText={''}
             showTrophies={true}
-            queryRefetchArray={[refetchUsersLists({userId})]}
           />
           {suggestedLists}
         </>

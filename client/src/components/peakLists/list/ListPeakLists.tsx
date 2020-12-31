@@ -3,7 +3,8 @@ import sortBy from 'lodash/sortBy';
 import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import {CardPeakListDatum} from '../../../queries/getUsersPeakLists';
+import {CompactPeakListDatum} from '../../../queries/lists/getGeoNearPeakLists';
+import {CardPeakListDatum} from '../../../queries/lists/getUsersPeakLists';
 import { NoResults } from '../../../styling/styleUtils';
 import {
   BasicIconInText,
@@ -13,10 +14,7 @@ import {
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import {
-  PeakList,
   PeakListVariants,
-  Region,
-  State,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import PeakListCard from './PeakListCard';
@@ -41,37 +39,6 @@ const TrophyContainer = styled(DetailBox)`
   border-top: none;
 `;
 
-export interface RegionDatum {
-  id: Region['id'];
-  name: Region['name'];
-  states: Array<{
-    id: State['id'],
-  } | null>;
-}
-
-export interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  regions: Array<RegionDatum | null>;
-}
-
-export interface CompactPeakListDatum {
-  id: PeakList['id'];
-  name: PeakList['name'];
-  shortName: PeakList['shortName'];
-  type: PeakList['type'];
-  numMountains: PeakList['numMountains'];
-  numCompletedAscents: PeakList['numCompletedAscents'];
-  latestAscent: PeakList['latestAscent'];
-  isActive: PeakList['isActive'];
-  stateOrRegionString: PeakList['stateOrRegionString'];
-  center: PeakList['center'];
-  numUsers: PeakList['numUsers'];
-  parent: null | {id: PeakList['id'], type: PeakList['type']};
-  children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
-  siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
-}
-
 export enum ViewMode {
   Card = 'Card',
   Compact = 'Compact',
@@ -84,7 +51,6 @@ interface BaseProps {
   showTrophies: boolean;
   viewMode: ViewMode;
   setActionDisabled?: (peakListId: string) => boolean;
-  queryRefetchArray: Array<{query: any, variables: any}>;
 }
 
 type Props = BaseProps & (
@@ -101,7 +67,7 @@ const ListPeakLists = (props: Props) => {
   const {
     listAction, actionText,
     noResultsText, showTrophies,
-    profileId, setActionDisabled, queryRefetchArray,
+    profileId, setActionDisabled,
   } = props;
 
   const getString = useFluent();
@@ -210,7 +176,7 @@ const ListPeakLists = (props: Props) => {
         totalRequiredAscents = numMountains * 12;
       } else {
         totalRequiredAscents = 0;
-        failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+        console.error('Invalid value for type ' + type);
       }
       return (
           <PeakListCompactCard
@@ -221,7 +187,6 @@ const ListPeakLists = (props: Props) => {
             actionText={actionText}
             totalRequiredAscents={totalRequiredAscents}
             numCompletedAscents={numCompletedAscents}
-            queryRefetchArray={queryRefetchArray}
           />
         );
     });

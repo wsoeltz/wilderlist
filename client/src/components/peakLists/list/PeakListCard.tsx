@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import { CardPeakListDatum } from '../../../queries/getUsersPeakLists';
+import { CardPeakListDatum } from '../../../queries/lists/getUsersPeakLists';
 import {
   listDetailLink,
   otherUserPeakListLink,

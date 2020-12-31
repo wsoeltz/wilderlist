@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import {
   PeakList,
   User,
-} from '../types/graphQLTypes';
+} from '../../types/graphQLTypes';
 
 export interface CardPeakListDatum {
   id: PeakList['id'];
@@ -17,7 +17,7 @@ export interface CardPeakListDatum {
   stateOrRegionString: PeakList['stateOrRegionString'];
 }
 
-export const GET_USERS_PEAK_LISTS = gql`
+const GET_USERS_PEAK_LISTS = gql`
   query GetUsersPeakLists($userId: ID) {
     user(id: $userId) {
       id
@@ -50,7 +50,7 @@ interface PeakListsSuccessResponse {
   };
 }
 
-export const refetchUsersLists = (variables: Variables) => ({query: GET_USERS_PEAK_LISTS, variables});
+export const refetchUsersPeakLists = (variables: Variables) => ({query: GET_USERS_PEAK_LISTS, variables});
 
 export const useUsersPeakLists = (variables: Variables) => useQuery<PeakListsSuccessResponse, Variables>(
   GET_USERS_PEAK_LISTS, {variables},

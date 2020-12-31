@@ -88,14 +88,12 @@ interface PeakListDatum {
 
 interface Props {
   peakList: PeakListDatum;
-  queryRefetchArray: Array<{query: any, variables: any}>;
   grayText?: boolean;
 }
 
 const VariantLinks = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type}, peakList,
-    queryRefetchArray, grayText,
+    peakList: {id, name, shortName, type}, peakList, grayText,
   } = props;
 
   const windowWidth = useWindowWidth();
@@ -111,9 +109,7 @@ const VariantLinks = (props: Props) => {
     currentListId = null;
   }
 
-  const [addPeakList] = useMutation<SuccessResponse, AddChildListVariables>(ADD_PEAK_LIST, {
-    refetchQueries: () => queryRefetchArray,
-  });
+  const [addPeakList] = useMutation<SuccessResponse, AddChildListVariables>(ADD_PEAK_LIST);
 
   const [loadingNewList, setLoadingNewList] = useState<boolean>(false);
 
