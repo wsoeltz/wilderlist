@@ -1,3 +1,5 @@
+const {point} = require('@turf/helpers');
+const distance = require('@turf/distance').default;
 import mapboxgl from 'mapbox-gl';
 import {
   contentColumnIdeal,
@@ -7,12 +9,14 @@ import {
 import {Coordinate, Latitude, Longitude} from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
+import initInteractions from './interactions';
 
 // eslint-disable-next-line
 (mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 
 interface Input {
   container: HTMLElement;
+  push: (url: string) => void;
 }
 
 export const defaultCenter: Coordinate = [-98.5795, 39.8283];
@@ -35,7 +39,7 @@ const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
   },
 };
 
-const initMap = ({container}: Input): Output => {
+const initMap = ({container, push}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
     mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
   }
@@ -130,6 +134,9 @@ const initMap = ({container}: Input): Output => {
           'text-opacity': ['step', ['zoom'], 0, 10, 1],
       },
     });
+
+    initInteractions({map, push});
+
   });
 
   const setPadding = () => {
@@ -158,10 +165,19 @@ const initMap = ({container}: Input): Output => {
 
   const setNewCenter = (center: Coordinate, zoom: number) => {
     setPadding();
-    map.jumpTo({
-      center,
-      zoom,
-    });
+    const {lat, lng} = map.getCenter();
+    const dist = distance(point([lng, lat]), center, {units: 'miles'});
+    if (dist < 30) {
+      map.flyTo({
+        center,
+        zoom,
+      });
+    } else {
+      map.jumpTo({
+        center,
+        zoom,
+      });
+    }
   };
 
   const setNewBounds = (bbox: [Longitude, Latitude, Longitude, Latitude]) => {

@@ -1,5 +1,6 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import React, {useEffect, useRef, useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import MapContext, {MapState} from '../../../contextProviders/mapContext';
 import useUsersLocation from '../../../hooks/useUsersLocation';
@@ -16,14 +17,15 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [mapState, setMapState] = useState<MapState>({intialized: false});
   const {location: initialCenter} = useUsersLocation();
+  const {push} = useHistory();
 
   useEffect(() => {
     const container = rootRef.current;
     if (container && !mapState.intialized) {
-      const mapOutput = initMap({container});
+      const mapOutput = initMap({container, push});
       setMapState({intialized: true, ...mapOutput});
     }
-  }, [rootRef, mapState]);
+  }, [rootRef, mapState, push]);
 
   useEffect(() => {
     if (mapState.intialized === true && mapState.map && initialCenter !== undefined) {
