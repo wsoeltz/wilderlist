@@ -78,6 +78,8 @@ export interface CompactPeakListDatum {
   latestAscent: PeakList['latestAscent'];
   isActive: PeakList['isActive'];
   stateOrRegionString: PeakList['stateOrRegionString'];
+  center: PeakList['center'];
+  numUsers: PeakList['numUsers'];
   parent: null | {id: PeakList['id'], type: PeakList['type']};
   children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
   siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;

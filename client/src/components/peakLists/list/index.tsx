@@ -1,34 +1,25 @@
+const {point} = require('@turf/helpers');
+const distance = require('@turf/distance').default;
 import { gql, useMutation, useQuery } from '@apollo/client';
-import queryString from 'query-string';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import orderBy from 'lodash/orderBy';
+import React from 'react';
 import Helmet from 'react-helmet';
-import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
-import useWindowWidth from '../../../hooks/useWindowWidth';
+import useMapCenter from '../../../hooks/useMapCenter';
+import usePrevious from '../../../hooks/usePrevious';
 import { listDetailLink } from '../../../routing/Utils';
 import {
-  LinkButton,
-  Next,
-  NoResults,
-  PaginationContainer,
   PlaceholderText,
-  Prev,
 } from '../../../styling/styleUtils';
 import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
-import {mobileSize} from '../../../Utils';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
 import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
-import MapSelect from './mapSelect';
 
 export const SearchAndFilterContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
-`;
-const ClearButton = styled(LinkButton)`
-  margin-left: 0.5rem;
-  font-style: italic;
 `;
 
 export const SEARCH_PEAK_LISTS = gql`
@@ -64,27 +55,25 @@ export const SEARCH_PEAK_LISTS = gql`
     }
   }
 `;
-const SEARCH_PEAK_LISTS_COMPACT = gql`
+const GEO_NEAR_PEAK_LISTS = gql`
   query SearchPeakLists(
     $userId: ID,
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!,
-    $variant: String,
-    $state: ID,
+    $latitude: Float!,
+    $longitude: Float!,
+    $limit: Int!,
   ) {
-    peakLists: peakListsSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-      variant: $variant,
-      state: $state,
+    peakLists: geoNearPeakLists(
+      latitude: $latitude,
+      longitude: $longitude,
+      limit: $limit,
     ) {
       id
       name
       shortName
       type
+      center
       numMountains
+      numUsers
       numCompletedAscents(userId: $userId)
       latestAscent(userId: $userId)
       isActive(userId: $userId)
@@ -115,7 +104,7 @@ export const getRefetchSearchQueries = (userId: string) => [
     userId,
     state: null,
   }},
-  {query: SEARCH_PEAK_LISTS_COMPACT, variables: {
+  {query: GEO_NEAR_PEAK_LISTS, variables: {
     searchQuery: '',
     pageNumber: 1,
     nPerPage: compactViewNPerPage,
@@ -128,11 +117,9 @@ export interface CardSuccessResponse {
   peakLists: CardPeakListDatum[];
 }
 
-interface CompactSuccessResponse {
+interface SuccessResponse {
   peakLists: CompactPeakListDatum[];
 }
-
-type SuccessResponse = CardSuccessResponse | CompactSuccessResponse;
 
 export interface Variables {
   userId: string | null;
@@ -141,6 +128,12 @@ export interface Variables {
   nPerPage: number;
   variant: PeakListVariants | null;
   state: string| null;
+}
+
+interface GeoNearVariables {
+  latitude: number;
+  longitude: number;
+  limit: number;
 }
 
 export const ADD_PEAK_LIST_TO_USER = gql`
@@ -181,103 +174,42 @@ export enum ViewMode {
   Compact = 'Compact',
 }
 
-enum View {
-  Map,
-  List,
-}
-
 const PeakListPage = () => {
   const user = useCurrentUser();
   const userId = user ? user._id : null;
-  const history = useHistory();
-
-  const { query, page } = queryString.parse(history.location.search);
-  const windowWidth = useWindowWidth();
-
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [selectedState, setSelectedState] = useState<{id: string, name: string} | null>(null);
-  const [mobileView, setMobileView] = useState<View>(View.List);
-
-  const updateSelectedState = useCallback((value: {id: string, name: string} | null) => {
-    setSelectedState(value);
-    if (windowWidth < mobileSize) {
-      setMobileView(View.List);
-    }
-  }, [windowWidth]);
-
-  const clearSelectedState = useCallback(() => updateSelectedState(null), [updateSelectedState]);
-
-  const incrementPageNumber = () => {
-    const newPageNumber = pageNumber + 1;
-    setPageNumber(newPageNumber);
-    const url = listDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
-    history.push(url);
-  };
-  const decrementPageNumber = () => {
-    const newPageNumber = pageNumber - 1;
-    setPageNumber(newPageNumber);
-    const url = listDetailLink('search') + '?query=' + searchQuery + '&page=' + newPageNumber;
-    history.push(url);
-  };
-
-  useEffect(() => {
-    if (typeof query === 'string') {
-      setSearchQuery(query);
-    }
-    if (typeof page === 'string') {
-      const pageAsNumber = parseInt(page, 10);
-      if (!isNaN(pageAsNumber)) {
-        setPageNumber(pageAsNumber);
-      }
-    }
-  }, [query, page]);
 
   const getString = useFluent();
 
+  const [longitude, latitude] = useMapCenter();
+
   const variables = {
-    searchQuery,
-    pageNumber,
-    nPerPage: compactViewNPerPage,
-    userId,
-    variant: PeakListVariants.standard,
-    state: selectedState ? selectedState.id : null,
-  };
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS_COMPACT, {
+      latitude: parseFloat(latitude.toFixed(2)),
+      longitude: parseFloat(longitude.toFixed(2)),
+      limit: 15,
+    };
+
+  const {loading, error, data} = useQuery<SuccessResponse, GeoNearVariables>(GEO_NEAR_PEAK_LISTS, {
     variables,
   });
 
-  const listContainerElm = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const node = listContainerElm.current;
-    if (node) {
-      node.scrollTop = 0;
-    }
-  }, [listContainerElm, pageNumber]);
+  const prevData = usePrevious(data);
+  let dataToUse: SuccessResponse | undefined;
+  if (data !== undefined) {
+    dataToUse = data;
+  } else if (prevData !== undefined) {
+    dataToUse = prevData;
+  } else {
+    dataToUse = undefined;
+  }
 
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER, {
-      refetchQueries: () => [{query: SEARCH_PEAK_LISTS_COMPACT, variables}],
+      refetchQueries: () => [{query: GEO_NEAR_PEAK_LISTS, variables}],
     });
   const beginList = userId ? (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}}) : null;
 
-  const queryText = selectedState ? (
-    <NoResults>
-      <span dangerouslySetInnerHTML={{
-          __html: getString('peak-list-search-state', {
-            'state-name': selectedState.name,
-          }),
-        }}
-      />
-      <ClearButton onClick={clearSelectedState}>
-        {getString('global-text-value-clear')}
-      </ClearButton>
-    </NoResults>
-  ) : null;
-
   let list: React.ReactElement<any> | null;
-  if (loading === true) {
+  if (loading === true && dataToUse === undefined) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostMountainCard key={i} />);
@@ -290,58 +222,33 @@ const PeakListPage = () => {
         {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (data !== undefined) {
-    if (mobileView === View.Map && windowWidth < mobileSize) {
+  } else if (dataToUse !== undefined) {
+    const { peakLists } = dataToUse;
+    if (!peakLists) {
       list = (
-        <MapSelect
-          selectedState={selectedState}
-          setSelectedState={updateSelectedState}
-        />
+        <PlaceholderText>
+          {getString('global-error-retrieving-data')}
+        </PlaceholderText>
       );
     } else {
-      const { peakLists } = data;
-      if (!peakLists) {
-        list = (
-          <PlaceholderText>
-            {getString('global-error-retrieving-data')}
-          </PlaceholderText>
-        );
-      } else {
-        const nextBtn = peakLists.length === compactViewNPerPage ? (
-          <Next onClick={incrementPageNumber}>
-            {getString('global-text-value-navigation-next')}
-          </Next> ) : null;
-        const prevBtn = pageNumber > 1 ? (
-          <Prev onClick={decrementPageNumber}>
-            {getString('global-text-value-navigation-prev')}
-          </Prev> ) : null;
-        const noResultsText = searchQuery ? getString('global-text-value-no-results-found-for-term', {
-          term: searchQuery,
-        }) : getString('global-text-value-no-results-found');
-        const {peakLists: peakListData} = data as CompactSuccessResponse;
-        const listElm = (
-          <ListPeakLists
-            viewMode={ViewMode.Compact}
-            peakListData={peakListData}
-            listAction={beginList}
-            actionText={getString('peak-list-detail-text-begin-list')}
-            profileId={undefined}
-            noResultsText={noResultsText}
-            showTrophies={false}
-            queryRefetchArray={[{query: SEARCH_PEAK_LISTS_COMPACT, variables}]}
-          />
-        );
-        list = (
-          <>
-            {queryText}
-            {listElm}
-            <PaginationContainer>
-              {prevBtn}
-              {nextBtn}
-            </PaginationContainer>
-          </>
-        );
-      }
+      const mapCenter = point([longitude, latitude]);
+      const sortedPeakLists = orderBy(peakLists.map(p => ({
+        ...p,
+        distance: Math.round(distance(mapCenter, point(p.center)) / 100) * 100,
+        percent: Math.round(p.numCompletedAscents / p.numMountains * 100),
+      })), ['distance', 'percent', 'numUser'], ['asc', 'desc', 'desc']);
+      list = (
+        <ListPeakLists
+          viewMode={ViewMode.Compact}
+          peakListData={sortedPeakLists}
+          listAction={beginList}
+          actionText={getString('peak-list-detail-text-begin-list')}
+          profileId={undefined}
+          noResultsText={getString('global-text-value-no-results-found')}
+          showTrophies={false}
+          queryRefetchArray={[{query: GEO_NEAR_PEAK_LISTS, variables}]}
+        />
+      );
     }
   } else {
     list =  (
@@ -368,7 +275,7 @@ const PeakListPage = () => {
         />
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink('search')} />
       </Helmet>
-      <div ref={listContainerElm}>
+      <div>
         {list}
       </div>
     </>
