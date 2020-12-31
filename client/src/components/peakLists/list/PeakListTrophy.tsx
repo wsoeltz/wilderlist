@@ -1,13 +1,13 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { CardPeakListDatum } from '../../../queries/getUsersPeakLists';
 import {
   listDetailLink,
   otherUserPeakListLink,
 } from '../../../routing/Utils';
 import {mediumSize, mobileSize} from '../../../Utils';
 import MountainLogo from '../mountainLogo';
-import { CardPeakListDatum } from './ListPeakLists';
 
 const LinkWrapper = styled(Link)`
   display: block;

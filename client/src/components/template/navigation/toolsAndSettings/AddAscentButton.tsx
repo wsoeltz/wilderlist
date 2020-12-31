@@ -3,9 +3,9 @@ import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
+import {refetchUsersLists} from '../../../../queries/getUsersPeakLists';
 import { PeakListVariants } from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
-import {GET_USERS_PEAK_LISTS} from '../../../dashboard/SavedLists';
 import NewAscentReport from '../../../peakLists/detail/completionModal/NewAscentReport';
 import {
   FloatingButton,
@@ -39,7 +39,7 @@ const AddAscentButton = () => {
         closeEditMountainModalModal={closeAscentModal}
         userId={userId}
         variant={PeakListVariants.standard}
-        queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
+        queryRefetchArray={[refetchUsersLists({userId})]}
       />
     ) : null;
 

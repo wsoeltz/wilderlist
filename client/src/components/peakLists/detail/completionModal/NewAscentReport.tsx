@@ -1,5 +1,4 @@
 import React from 'react';
-import {getRefetchSearchQueries} from '../../list';
 import { DateType } from '../../Utils';
 import MountainCompletionModal, {
   preferredDateFormatLocalStorageVariable,
@@ -12,8 +11,6 @@ type Props = BaseProps & {
 
 const NewAscentReport = (props: Props) => {
   const {queryRefetchArray, ...rest} = props;
-
-  const baseRefetchSearchQueries = getRefetchSearchQueries(props.userId);
 
   const localStorageDateType = localStorage.getItem(preferredDateFormatLocalStorageVariable);
   let initialDateType: DateType;
@@ -30,7 +27,7 @@ const NewAscentReport = (props: Props) => {
   }
 
   const refetchQuery = queryRefetchArray
-    ? [...queryRefetchArray, ...baseRefetchSearchQueries] : [...baseRefetchSearchQueries];
+    ? [...queryRefetchArray] : undefined;
   return (
     <MountainCompletionModal
       {...rest}

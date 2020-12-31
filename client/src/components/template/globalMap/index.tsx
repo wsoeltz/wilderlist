@@ -28,6 +28,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     if (mapState.intialized === true && mapState.map && initialCenter !== undefined) {
       if (window.location.pathname === Routes.Landing ||
+          window.location.pathname === Routes.Dashboard ||
           window.location.pathname === Routes.SearchLists ||
           window.location.pathname === Routes.SearchMountains ||
           window.location.pathname === Routes.UserSettings ||

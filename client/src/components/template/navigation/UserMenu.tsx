@@ -220,7 +220,7 @@ const UserMenuList = ({user, closeUserMenu, isMobile}: UserMenuListProps) => {
     );
   } else {
     return (
-      <UserMenuListContainerBase ref={node} onClick={closeUserMenu}>
+      <UserMenuListContainerBase ref={node} onClick={closeUserMenu} style={{right: '-45px'}}>
         <LoginButtonListItem href='/auth/google'>
           <BrandIcon
             icon={faGoogle as IconDefinition}

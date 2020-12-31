@@ -4,11 +4,12 @@ import Helmet from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import { CardPeakListDatum } from '../../../queries/getUsersPeakLists';
 import { comparePeakListIsolatedLink } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus, User } from '../../../types/graphQLTypes';
-import { ViewMode } from '../../peakLists/list';
-import ListPeakLists, { CardPeakListDatum } from '../../peakLists/list/ListPeakLists';
+import { ViewMode } from '../../peakLists/list/ListPeakLists';
+import ListPeakLists from '../../peakLists/list/ListPeakLists';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Header from './Header';
 

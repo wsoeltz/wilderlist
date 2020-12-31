@@ -4,60 +4,21 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import Helmet from 'react-helmet';
-import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import useMapCenter from '../../../hooks/useMapCenter';
 import usePrevious from '../../../hooks/usePrevious';
+import {refetchUsersLists} from '../../../queries/getUsersPeakLists';
 import { listDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import { PeakList, PeakListVariants, User } from '../../../types/graphQLTypes';
+import { PeakList, User } from '../../../types/graphQLTypes';
 import GhostMountainCard from '../../mountains/list/GhostMountainCard';
-import ListPeakLists, { CardPeakListDatum, CompactPeakListDatum } from './ListPeakLists';
+import ListPeakLists, { CompactPeakListDatum, ViewMode } from './ListPeakLists';
 
-export const SearchAndFilterContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto;
-`;
-
-export const SEARCH_PEAK_LISTS = gql`
+export const GEO_NEAR_PEAK_LISTS = gql`
   query SearchPeakLists(
-    $userId: ID,
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!,
-    $variant: String,
-    $selectionArray: [ID],
-    $state: ID,
-  ) {
-    peakLists: peakListsSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-      variant: $variant,
-      selectionArray: $selectionArray,
-      state: $state,
-    ) {
-      id
-      name
-      shortName
-      type
-      stateOrRegionString
-      parent {
-        id
-      }
-      numMountains
-      numCompletedAscents(userId: $userId)
-      latestAscent(userId: $userId)
-      isActive(userId: $userId)
-    }
-  }
-`;
-const GEO_NEAR_PEAK_LISTS = gql`
-  query SearchPeakLists(
-    $userId: ID,
     $latitude: Float!,
     $longitude: Float!,
     $limit: Int!,
@@ -74,9 +35,9 @@ const GEO_NEAR_PEAK_LISTS = gql`
       center
       numMountains
       numUsers
-      numCompletedAscents(userId: $userId)
-      latestAscent(userId: $userId)
-      isActive(userId: $userId)
+      numCompletedAscents
+      latestAscent
+      isActive
       stateOrRegionString
       parent {
         id
@@ -94,43 +55,11 @@ const GEO_NEAR_PEAK_LISTS = gql`
   }
 `;
 
-const compactViewNPerPage = 50;
-
-export const getRefetchSearchQueries = (userId: string) => [
-  {query: SEARCH_PEAK_LISTS, variables: {
-    searchQuery: '',
-    pageNumber: 1,
-    nPerPage: 15,
-    userId,
-    state: null,
-  }},
-  {query: GEO_NEAR_PEAK_LISTS, variables: {
-    searchQuery: '',
-    pageNumber: 1,
-    nPerPage: compactViewNPerPage,
-    userId,
-    state: null,
-  }},
-];
-
-export interface CardSuccessResponse {
-  peakLists: CardPeakListDatum[];
-}
-
-interface SuccessResponse {
+export interface SuccessResponse {
   peakLists: CompactPeakListDatum[];
 }
 
 export interface Variables {
-  userId: string | null;
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
-  variant: PeakListVariants | null;
-  state: string| null;
-}
-
-interface GeoNearVariables {
   latitude: number;
   longitude: number;
   limit: number;
@@ -169,11 +98,6 @@ export interface AddRemovePeakListVariables {
   peakListId: string;
 }
 
-export enum ViewMode {
-  Card = 'Card',
-  Compact = 'Compact',
-}
-
 const PeakListPage = () => {
   const user = useCurrentUser();
   const userId = user ? user._id : null;
@@ -188,7 +112,7 @@ const PeakListPage = () => {
       limit: 15,
     };
 
-  const {loading, error, data} = useQuery<SuccessResponse, GeoNearVariables>(GEO_NEAR_PEAK_LISTS, {
+  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GEO_NEAR_PEAK_LISTS, {
     variables,
   });
 
@@ -204,7 +128,10 @@ const PeakListPage = () => {
 
   const [addPeakListToUser] =
     useMutation<AddRemovePeakListSuccessResponse, AddRemovePeakListVariables>(ADD_PEAK_LIST_TO_USER, {
-      refetchQueries: () => [{query: GEO_NEAR_PEAK_LISTS, variables}],
+      refetchQueries: () => [
+        {query: GEO_NEAR_PEAK_LISTS, variables},
+        refetchUsersLists({userId}),
+      ],
     });
   const beginList = userId ? (peakListId: string) => addPeakListToUser({variables: {userId,  peakListId}}) : null;
 
@@ -236,7 +163,7 @@ const PeakListPage = () => {
         ...p,
         distance: Math.round(distance(mapCenter, point(p.center)) / 100) * 100,
         percent: Math.round(p.numCompletedAscents / p.numMountains * 100),
-      })), ['distance', 'percent', 'numUser'], ['asc', 'desc', 'desc']);
+      })), ['distance', 'percent', 'numUsers'], ['asc', 'desc', 'desc']);
       list = (
         <ListPeakLists
           viewMode={ViewMode.Compact}

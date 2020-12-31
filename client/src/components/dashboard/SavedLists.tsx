@@ -1,56 +1,21 @@
-import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
+import {refetchUsersLists, useUsersPeakLists} from '../../queries/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
   ButtonPrimaryLink,
   PlaceholderText,
   SectionTitleH3,
 } from '../../styling/styleUtils';
-import { User } from '../../types/graphQLTypes';
-import { ViewMode } from '../peakLists/list';
-import ListPeakLists, { CardPeakListDatum } from '../peakLists/list/ListPeakLists';
+import ListPeakLists, { ViewMode } from '../peakLists/list/ListPeakLists';
 import SuggestedLists from '../peakLists/list/SuggestedLists';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 
 const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
 `;
-
-export const GET_USERS_PEAK_LISTS = gql`
-  query GetUsersFriends($userId: ID!) {
-    user(id: $userId) {
-      id
-      peakLists {
-        id
-        name
-        shortName
-        type
-        parent {
-          id
-        }
-        numMountains
-        stateOrRegionString
-        numCompletedAscents(userId: $userId)
-        latestAscent(userId: $userId)
-        isActive(userId: $userId)
-      }
-    }
-  }
-`;
-
-interface PeakListsSuccessResponse {
-  user: {
-    id: User['id'];
-    peakLists: CardPeakListDatum[];
-  };
-}
-
-interface Variables {
-  userId: string;
-}
 
 interface Props {
   userId: string;
@@ -63,9 +28,7 @@ const SavedLists = ({userId}: Props) => {
     loading: listLoading,
     error: listsError,
     data: listsData,
-  } = useQuery<PeakListsSuccessResponse, Variables>(GET_USERS_PEAK_LISTS, {
-    variables: { userId },
-  });
+  } = useUsersPeakLists({ userId });
 
   let peakListsList: React.ReactElement<any> | null;
   if (listLoading === true) {
@@ -111,7 +74,7 @@ const SavedLists = ({userId}: Props) => {
             profileId={undefined}
             noResultsText={''}
             showTrophies={true}
-            queryRefetchArray={[{query: GET_USERS_PEAK_LISTS, variables: { userId }}]}
+            queryRefetchArray={[refetchUsersLists({userId})]}
           />
           {suggestedLists}
         </>

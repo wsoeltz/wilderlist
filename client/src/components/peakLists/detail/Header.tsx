@@ -3,6 +3,7 @@ import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import { refetchUsersLists } from '../../../queries/getUsersPeakLists';
 import { editPeakListLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -20,14 +21,12 @@ import {
   PermissionTypes,
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
-import { GET_USERS_PEAK_LISTS } from '../../dashboard/SavedLists';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import {
   ADD_PEAK_LIST_TO_USER,
   AddRemovePeakListSuccessResponse,
   AddRemovePeakListVariables,
-  getRefetchSearchQueries,
 } from '../list';
 import {
   TextRight,
@@ -182,11 +181,13 @@ const Header = (props: Props) => {
 
   const getString = useFluent();
 
-  const queryRefetchArray = props.queryRefetchArray && props.queryRefetchArray.length && user ? [
+  const queryRefetchArray = props.queryRefetchArray && props.queryRefetchArray.length ? [
       ...props.queryRefetchArray,
-      ...getRefetchSearchQueries(user.id),
-      {query: GET_USERS_PEAK_LISTS, variables: {userId: user.id}},
   ] : [];
+
+  if (user) {
+    queryRefetchArray.push(refetchUsersLists({userId: user.id}));
+  }
 
   const mutationOptions = queryRefetchArray && queryRefetchArray.length && user ? {
     refetchQueries: () => [...queryRefetchArray],

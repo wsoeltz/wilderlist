@@ -3,6 +3,7 @@ import sortBy from 'lodash/sortBy';
 import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import {CardPeakListDatum} from '../../../queries/getUsersPeakLists';
 import { NoResults } from '../../../styling/styleUtils';
 import {
   BasicIconInText,
@@ -18,7 +19,6 @@ import {
   State,
  } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
-import { ViewMode } from './index';
 import PeakListCard from './PeakListCard';
 import PeakListCompactCard from './PeakListCompactCard';
 import PeakListTrophy from './PeakListTrophy';
@@ -55,19 +55,6 @@ export interface StateDatum {
   regions: Array<RegionDatum | null>;
 }
 
-export interface CardPeakListDatum {
-  id: PeakList['id'];
-  name: PeakList['name'];
-  shortName: PeakList['shortName'];
-  type: PeakList['type'];
-  numMountains: PeakList['numMountains'];
-  numCompletedAscents: PeakList['numCompletedAscents'];
-  latestAscent: PeakList['latestAscent'];
-  isActive: PeakList['isActive'];
-  parent: null | {id: PeakList['id']};
-  stateOrRegionString: PeakList['stateOrRegionString'];
-}
-
 export interface CompactPeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
@@ -83,6 +70,11 @@ export interface CompactPeakListDatum {
   parent: null | {id: PeakList['id'], type: PeakList['type']};
   children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
   siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
+}
+
+export enum ViewMode {
+  Card = 'Card',
+  Compact = 'Compact',
 }
 
 interface BaseProps {

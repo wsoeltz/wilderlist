@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
 import useFluent from '../../../hooks/useFluent';
+import { CardPeakListDatum } from '../../../queries/getUsersPeakLists';
 import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
@@ -17,7 +18,6 @@ import {
   User,
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
-import { CardPeakListDatum } from '../../peakLists/list/ListPeakLists';
 import {
   formatDate,
   getDates,

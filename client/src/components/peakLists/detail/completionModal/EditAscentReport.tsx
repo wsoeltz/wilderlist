@@ -8,7 +8,6 @@ import {
   notEmpty,
 } from '../../../../Utils';
 import Modal from '../../../sharedComponents/Modal';
-import {getRefetchSearchQueries} from '../../list';
 import {
   DateObject,
   getDateType,
@@ -89,9 +88,6 @@ const EditAscentReport = (props: Props) => {
   const {userId, date, initialMountainList} = props;
 
   const getString = useFluent();
-
-  const baseRefetchSearchQueries = getRefetchSearchQueries(props.userId);
-
   const day = !isNaN(date.day) ? date.day.toString() : '';
   const month = !isNaN(date.month) ? date.month.toString() : '';
   const year = !isNaN(date.year) ? date.year.toString() : '';
@@ -101,7 +97,6 @@ const EditAscentReport = (props: Props) => {
   const refetchQuery = [
         {query: GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, variables: {
           author: userId, mountain: initialMountainList[0].id, date: stringDate }},
-        ...baseRefetchSearchQueries,
         ];
 
   const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, {
