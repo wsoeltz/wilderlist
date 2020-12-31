@@ -3,6 +3,7 @@ import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import {useUsersAscentsForMountain} from '../../../queries/users/useUsersAscentsForMountain';
 import {
   ButtonPrimary,
   GhostButton,
@@ -42,12 +43,12 @@ const AscentsList = (props: Props) => {
 
   const getString = useFluent();
   const currentUser = useCurrentUser();
-  const userId = currentUser ? currentUser._id : null;
+  const userId = currentUser ? currentUser._id : '';
 
-  const userMountains = (currentUser && currentUser.mountains) ? currentUser.mountains : [];
-  const completedDates = userMountains.find(
-    // currentUser has raw object ids instead of resolved mountain data
-    (completedMountain) => (completedMountain.mountain as unknown as string) === mountain.id);
+  const {data} = useUsersAscentsForMountain(userId);
+
+  const userMountains = data && data.user && data.user.mountains ? data.user.mountains : [];
+  const completedDates = userMountains.find((m) => m.mountain && m.mountain.id === mountain.id);
 
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 

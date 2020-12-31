@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import { isCondition } from '../../../queries/tripReports/useLatestTripReports';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
@@ -28,7 +29,6 @@ import {
   Section,
   SectionTitle,
 } from './sharedStyling';
-import { isCondition } from './TripReports';
 
 const ButtonWrapper = styled.div`
   display: flex;

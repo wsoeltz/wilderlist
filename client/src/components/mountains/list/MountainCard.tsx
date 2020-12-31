@@ -3,6 +3,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components/macro';
+import { MountainDatum } from '../../../queries/mountains/useGeoNearMountains';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -13,7 +14,6 @@ import {
   Seperator,
   StackedCardWrapper,
 } from '../../../styling/styleUtils';
-import { MountainDatum } from './ListMountains';
 
 const Root = styled.div`
   margin-bottom: 2rem;

@@ -1,9 +1,8 @@
-import { gql, useQuery } from '@apollo/client';
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import useFluent from '../../../../../hooks/useFluent';
-import usePrevious from '../../../../../hooks/usePrevious';
+import {useBasicSearchMountains} from '../../../../../queries/mountains/useBasicSearchMountains';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -122,39 +121,6 @@ const SearchResults = styled.div`
   overflow: auto;
 `;
 
-const SEARCH_MOUNTAINS = gql`
-  query SearchMountains(
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!
-  ) {
-    mountains: mountainSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-    ) {
-      id
-      name
-      state {
-        id
-        abbreviation
-      }
-      elevation
-      location
-    }
-  }
-`;
-
-interface SuccessResponse {
-  mountains: MountainDatum[];
-}
-
-interface Variables {
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
-}
-
 interface Props {
   initialSelectedMountains: MountainDatum[];
   closeAndAddMountains: (mountains: MountainDatum[]) => void;
@@ -173,20 +139,9 @@ const MountainSelector = (props: Props) => {
   const pageNumber = 1;
   const nPerPage = 30;
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: { searchQuery, pageNumber, nPerPage },
+  const {loading, error, data} = useBasicSearchMountains({
+    searchQuery, pageNumber, nPerPage, minElevation: null, maxElevation: null, state: null,
   });
-
-  const prevData = usePrevious(data);
-
-  let dataToUse: SuccessResponse | undefined;
-  if (data !== undefined) {
-    dataToUse = data;
-  } else if (prevData !== undefined) {
-    dataToUse = prevData;
-  } else {
-    dataToUse = undefined;
-  }
 
   const addMountainToList = (newMtn: MountainDatum) => {
     if (!selectedMountains.find(mtn => mtn.id === newMtn.id)) {
@@ -211,8 +166,8 @@ const MountainSelector = (props: Props) => {
     </MountainItemRemove>
   ));
 
-  if (dataToUse !== undefined ) {
-    const { mountains } = dataToUse;
+  if (data !== undefined ) {
+    const { mountains } = data;
     const mountainList: Array<React.ReactElement<any>> = [];
     if (mountains && mountains.length) {
       mountains.forEach(mtn => {

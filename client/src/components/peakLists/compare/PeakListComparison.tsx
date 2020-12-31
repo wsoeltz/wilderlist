@@ -1,112 +1,14 @@
-import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
-import { PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
-import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Header from '../detail/Header';
+import {useComparePeakList} from '../../../queries/lists/useComparePeakList';
 import {
   MountainDatum,
-  PeakListDatum,
-} from '../detail/PeakListDetail';
+} from '../../../queries/lists/usePeakListDetail';
+import { PlaceholderText } from '../../../styling/styleUtils';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import Header from '../detail/Header';
 import ComparisonTable from './ComparisonTable';
-
-const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID!, $friendId: ID!) {
-    peakList(id: $id) {
-      id
-      name
-      shortName
-      type
-      parent {
-        id
-        name
-        type
-      }
-      children {
-        id
-        name
-        type
-      }
-      siblings {
-        id
-        name
-        type
-      }
-      stateOrRegionString
-      mountains {
-        id
-        name
-        latitude
-        longitude
-        elevation
-      }
-    }
-    user(id: $friendId) {
-      id
-      name
-      permissions
-      peakLists {
-        id
-        type
-        mountains {
-          id
-        }
-      }
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-    me: user(id: $userId) {
-      id
-      name
-      permissions
-      peakLists {
-        id
-        type
-        mountains {
-          id
-        }
-      }
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-  }
-`;
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  permissions: User['permissions'];
-  peakLists: Array<{
-    id: PeakList['id'];
-    type: PeakList['type'];
-    mountains: Array<{
-      id: Mountain['id'];
-    }>;
-  }>;
-  mountains: User['mountains'];
-}
-
-interface SuccessResponse {
-  peakList: PeakListDatum;
-  user: UserDatum;
-  me: UserDatum;
-}
-
-interface Variables {
-  id: string;
-  userId: string;
-  friendId: string;
-}
 
 interface Props {
   userId: string;
@@ -119,9 +21,7 @@ const ComparePeakListPage = (props: Props) => {
 
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
-    variables: { id: peakListId, userId, friendId },
-  });
+  const {loading, error, data} = useComparePeakList(peakListId, userId, friendId);
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {

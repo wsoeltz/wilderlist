@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client';
 import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -6,6 +5,9 @@ import useFluent from '../../../hooks/useFluent';
 import usePointLocationData from '../../../hooks/usePointLocationData';
 import useUsersLocation from '../../../hooks/useUsersLocation';
 import useWindowWidth from '../../../hooks/useWindowWidth';
+import { BaseMountainVariables } from '../../../queries/mountains/addRemoveMountain';
+import {useUpdateMountainFlag} from '../../../queries/mountains/flagMountain';
+import { StateDatum } from '../../../queries/states/useStates';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -41,28 +43,6 @@ import {
 } from '../../sharedComponents/formUtils';
 import Loading from '../../sharedComponents/LoadingSimple';
 import {mobileWidth} from '../../sharedComponents/Modal';
-import { BaseMountainVariables } from './';
-
-export const FLAG_MOUNTAIN = gql`
-  mutation($id: ID!, $flag: MountainFlag) {
-    mountain: updateMountainFlag(id: $id, flag: $flag) {
-      id
-      flag
-    }
-  }
-`;
-
-export interface FlagSuccessResponse {
-  mountain: null | {
-    id: Mountain['id'];
-    flag: Mountain['flag'];
-  };
-}
-
-export interface FlagVariables {
-  id: string;
-  flag: MountainFlag | null;
-}
 
 const latitudeMin = -90;
 const latitudeMax = 90;
@@ -81,12 +61,6 @@ const validateFloatValue = (value: string, min: number, max: number, defaultValu
     return parsedValue;
   }
 };
-
-export interface StateDatum {
-  id: State['id'];
-  name: State['name'];
-  abbreviation: State['abbreviation'];
-}
 
 export interface InitialMountainDatum {
   id: Mountain['id'];
@@ -179,7 +153,7 @@ const MountainForm = (props: Props) => {
     setDeleteModalOpen(false);
   }, []);
   const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
-  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
+  const updateMountainFlag = useUpdateMountainFlag();
   const flagForDeletion = (id: string) => {
     if (id) {
       updateMountainFlag({variables: {id, flag: MountainFlag.deleteRequest}});

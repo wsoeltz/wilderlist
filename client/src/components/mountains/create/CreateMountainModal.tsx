@@ -1,39 +1,15 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
 import React from 'react';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import {BaseMountainVariables, useAddMountain} from '../../../queries/mountains/addRemoveMountain';
+import {MountainDatum} from '../../../queries/mountains/useBasicSearchMountains';
+import {useStates} from '../../../queries/states/useStates';
 import { PlaceholderText } from '../../../styling/styleUtils';
-import { State } from '../../../types/graphQLTypes';
-import { MountainDatum } from '../../peakLists/create/MountainSelectionModal';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
-import {
-  ADD_MOUNTAIN,
-  AddMountainVariables,
-  BaseMountainVariables,
-  MountainSuccessResponse,
-} from './';
 import MountainForm, {
   InitialMountainDatum,
 } from './MountainForm';
-
-const GET_STATES = gql`
-  query getStates {
-    states {
-      id
-      name
-      abbreviation
-    }
-  }
-`;
-
-interface QuerySuccessResponse {
-  states: Array<{
-    id: State['id'];
-    name: State['name'];
-    abbreviation: State['abbreviation'];
-  }>;
-}
 
 export interface Props {
   onSuccess: (mountain: MountainDatum) => void;
@@ -43,11 +19,10 @@ export interface Props {
 const CreateMountainModal = (props: Props) => {
   const { onCancel, onSuccess } = props;
   const user = useCurrentUser();
-
+  const {loading, error, data} = useStates();
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse>(GET_STATES);
-  const [addMountain] = useMutation<MountainSuccessResponse, AddMountainVariables>(ADD_MOUNTAIN);
+  const addMountain = useAddMountain();
 
   let modalContent: React.ReactElement<any> | null;
   if (!user) {

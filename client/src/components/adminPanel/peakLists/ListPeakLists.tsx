@@ -1,16 +1,12 @@
 import { ApolloError, gql, useMutation } from '@apollo/client';
 import React, {useState} from 'react';
+import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
 import {
   LinkButton,
   lowWarningColorDark,
   warningColor,
 } from '../../../styling/styleUtils';
 import { CreatedItemStatus, PeakList, User } from '../../../types/graphQLTypes';
-import {
-  FLAG_PEAK_LIST,
-  FlagSuccessResponse,
-  FlagVariables,
-} from '../../peakLists/create/PeakListForm';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { PeakListDatum, SuccessResponse } from '../AdminPeakLists';
 import { ListItem } from '../sharedStyles';
@@ -76,7 +72,7 @@ const ListStates = (props: Props) => {
   const [updatePeakListPermissions] =
     useMutation<PermissionsSuccessResponse, PermissionsVariables>(
       UPDATE_PEAK_LIST_PERMISSIONS);
-  const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
+  const updatePeakListFlag = useUpdatePeakListFlag();
 
   const approveMountain = (peakListId: string, author: PermissionsSuccessResponse['user']) => {
     if (peakListId && author && author.id && author.peakListPermissions !== -1) {

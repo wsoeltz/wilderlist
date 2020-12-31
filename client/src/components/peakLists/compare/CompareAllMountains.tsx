@@ -1,103 +1,11 @@
-import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
+import {useCompareAllMountains} from '../../../queries/lists/useCompareAllMountains';
 import { PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import { MountainDatumLite } from './ComparisonRow';
 import ComparisonTable from './ComparisonTable';
-
-const GET_PEAK_LIST = gql`
-  query getUserAndMe($userId: ID!, $friendId: ID!) {
-    user(id: $friendId) {
-      id
-      name
-      permissions
-      peakLists {
-        id
-        type
-        mountains {
-          id
-          name
-        }
-        parent {
-          id
-          mountains {
-            id
-            name
-          }
-        }
-      }
-      mountains {
-        mountain {
-          id
-          name
-        }
-        dates
-      }
-    }
-    me: user(id: $userId) {
-      id
-      name
-      permissions
-      peakLists {
-        id
-        type
-        mountains {
-          id
-          name
-        }
-        parent {
-          id
-          mountains {
-            id
-            name
-          }
-        }
-      }
-      mountains {
-        mountain {
-          id
-          name
-        }
-        dates
-      }
-    }
-  }
-`;
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  permissions: User['permissions'];
-  peakLists: Array<{
-    id: PeakList['id'];
-    type: PeakList['type'];
-    mountains: Array<{
-      id: Mountain['id'];
-      name: Mountain['name'];
-    }>;
-    parent: {
-      id: PeakList['id'];
-      mountains: Array<{
-        id: Mountain['id'];
-        name: Mountain['name'];
-      }>;
-    }
-  }>;
-  mountains: User['mountains'];
-}
-
-interface SuccessResponse {
-  user: UserDatum;
-  me: UserDatum;
-}
-
-interface Variables {
-  userId: string;
-  friendId: string;
-}
 
 interface Props {
   userId: string;
@@ -109,9 +17,7 @@ const CompareAllMountains = (props: Props) => {
 
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
-    variables: { userId, friendId: id },
-  });
+  const {loading, error, data} = useCompareAllMountains(userId, id);
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {

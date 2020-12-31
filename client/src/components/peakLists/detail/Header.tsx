@@ -6,6 +6,11 @@ import {
   useAddPeakListToUser,
   useRemovePeakListFromUser,
 } from '../../../queries/lists/addRemovePeakListsToUser';
+import {
+  MountainDatum,
+  PeakListDatum,
+  UserDatum,
+} from '../../../queries/lists/usePeakListDetail';
 import { editPeakListLink } from '../../../routing/Utils';
 import {
   BasicIconInText,
@@ -33,11 +38,6 @@ import VariantLinks from '../list/VariantLinks';
 import MountainLogo from '../mountainLogo';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import FlagModal from './FlagModal';
-import {
-  MountainDatum,
-  PeakListDatum,
-  UserDatum,
-} from './PeakListDetail';
 
 const mobileWidth = 500; // in px
 

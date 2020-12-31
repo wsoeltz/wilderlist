@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client';
 import { faLeaf, faMountain, faSnowflake, faTh } from '@fortawesome/free-solid-svg-icons';
 import React, {useEffect, useState} from 'react';
 import {useRouteMatch} from 'react-router';
@@ -6,6 +5,7 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import usePrevious from '../../../hooks/usePrevious';
 import useWindowWidth from '../../../hooks/useWindowWidth';
+import {useAddPeakListVariant} from '../../../queries/lists/useAddPeakListVariant';
 import {
   listDetailLink,
 } from '../../../routing/Utils';
@@ -31,37 +31,6 @@ const VariantButton = styled(CardFooterButton)`
 `;
 
 const replaceCurrentPageId = (url: string, currentId: string, newId: string) => url.replace(currentId, newId);
-
-const ADD_PEAK_LIST = gql`
-  mutation addPeakList(
-    $name: String!,
-    $shortName: String!,
-    $type: PeakListVariants!,
-    $parent: ID!,
-  ) {
-    peakList: addPeakList(
-      name: $name,
-      shortName: $shortName,
-      type: $type,
-      parent: $parent,
-    ) {
-      id
-    }
-  }
-`;
-
-interface SuccessResponse {
-  peakList: {
-    id: PeakList['id'];
-  };
-}
-
-interface AddChildListVariables {
-  name: string;
-  shortName: string;
-  type: PeakListVariants;
-  parent: string;
-}
 
 const allVariantsArray = [
   PeakListVariants.standard,
@@ -109,7 +78,7 @@ const VariantLinks = (props: Props) => {
     currentListId = null;
   }
 
-  const [addPeakList] = useMutation<SuccessResponse, AddChildListVariables>(ADD_PEAK_LIST);
+  const addPeakList = useAddPeakListVariant();
 
   const [loadingNewList, setLoadingNewList] = useState<boolean>(false);
 

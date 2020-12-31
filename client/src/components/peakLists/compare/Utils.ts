@@ -1,5 +1,6 @@
 import {GetString} from 'fluent-react/compat';
 import startCase from 'lodash/startCase';
+import { UserDatum } from '../../../queries/lists/useComparePeakList';
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   formatDate,
@@ -8,8 +9,6 @@ import {
   getStandardCompletion,
   getWinterCompletion,
 } from '../Utils';
-import { UserDatum } from './PeakListComparison';
-// import toLower from 'lodash/toLower';
 
 type BasicAscentGoal = {
   goal: false;

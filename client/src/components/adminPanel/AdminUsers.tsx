@@ -4,14 +4,12 @@ import { withRouter } from 'react-router';
 import {
   useRemovePeakListFromUser,
 } from '../../queries/lists/addRemovePeakListsToUser';
+import {
+  useRemoveFriendMutation,
+} from '../../queries/users/friendRequestMutations';
 import { User } from '../../types/graphQLTypes';
 import { asyncForEach } from '../../Utils';
 import { notEmpty } from '../../Utils';
-import {
-  FriendRequestSuccessResponse,
-  FriendRequestVariables,
-  REMOVE_FRIEND,
-} from '../users/list/UserCard';
 import ListUsers from './users/ListUsers';
 
 export const GET_USERS = gql`
@@ -64,8 +62,7 @@ const AdminUsers = () => {
   const {loading, error, data} = useQuery<SuccessResponse>(GET_USERS);
 
   const removePeakListFromUser = useRemovePeakListFromUser();
-  const [removeFriendMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
+  const removeFriendMutation = useRemoveFriendMutation();
   const [deleteUserMutation] = useMutation(DELETE_USER, {
     update: (cache, { data: successData }) => {
       const response: SuccessResponse | null = cache.readQuery({ query: GET_USERS });

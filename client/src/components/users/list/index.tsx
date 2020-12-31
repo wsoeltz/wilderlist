@@ -1,10 +1,10 @@
-import { gql, useQuery } from '@apollo/client';
 import queryString from 'query-string';
 import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import { UserDatum, useUserSearch } from '../../../queries/users/useUserSearch';
 import { userProfileLink } from '../../../routing/Utils';
 import {
   Next,
@@ -12,60 +12,11 @@ import {
   PlaceholderText,
   Prev,
 } from '../../../styling/styleUtils';
-import { User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import GhostUserCard from './GhostUserCard';
-import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
 
-const SEARCH_USERS = gql`
-  query searchUsers(
-    $id: ID!
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!
-  ) {
-    users: usersSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-    ) {
-      id
-      name
-      profilePictureUrl
-      hideProfilePicture
-    }
-    me: user(id: $id) {
-      id
-      friends {
-        user {
-          id
-          name
-          profilePictureUrl
-          hideProfilePicture
-        }
-        status
-      }
-    }
-  }
-`;
-
-interface QuerySuccessResponse {
-  users: UserDatum[];
-  me: {
-    id: User['id'];
-    friends: FriendDatum[];
-  };
-}
-
-interface QueryVariables {
-  id: string | null;
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
-}
 const UserList = () => {
-  // const { userId, match, history, location } = props;
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const history = useHistory();
@@ -111,9 +62,7 @@ const UserList = () => {
     history.push(url);
   };
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(SEARCH_USERS, {
-    variables: { id: userId, searchQuery, pageNumber, nPerPage },
-  });
+  const {loading, error, data} = useUserSearch(userId, searchQuery, pageNumber, nPerPage);
 
   const userListContainerElm = useRef<HTMLDivElement>(null);
 

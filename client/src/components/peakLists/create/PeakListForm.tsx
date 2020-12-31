@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client';
 import {
   faCheck,
   faEdit,
@@ -9,6 +8,9 @@ import {
 import React, {useCallback, useState} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import useFluent from '../../../hooks/useFluent';
+import {FormInput} from '../../../queries/lists/addEditPeakList';
+import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
+import {MountainDatum} from '../../../queries/mountains/useBasicSearchMountains';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -23,7 +25,6 @@ import {
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
-  PeakList,
   PeakListFlag,
   PeakListTier,
   PeakListVariants,
@@ -47,29 +48,7 @@ import {
 } from '../../sharedComponents/formUtils';
 import Tooltip from '../../sharedComponents/Tooltip';
 import AddMountains from './AddMountains';
-import {MountainDatum} from './MountainSelectionModal';
 import ParentModal from './ParentModal';
-
-export const FLAG_PEAK_LIST = gql`
-  mutation($id: ID!, $flag: PeakListFlag) {
-    peakList: updatePeakListFlag(id: $id, flag: $flag) {
-      id
-      flag
-    }
-  }
-`;
-
-export interface FlagSuccessResponse {
-  peakList: null | {
-    id: PeakList['id'];
-    flag: PeakList['flag'];
-  };
-}
-
-export interface FlagVariables {
-  id: string;
-  flag: PeakListFlag | null;
-}
 
 export interface InitialPeakListDatum {
   id: string | undefined;
@@ -84,20 +63,6 @@ export interface InitialPeakListDatum {
   tier: PeakListTier | undefined;
   resources: ExternalResource[];
   parent: null;
-}
-
-export interface FormInput {
-  name: string;
-  shortName: string;
-  description: string | null;
-  optionalPeaksDescription: string | null;
-  type: PeakListVariants;
-  mountains: string[];
-  optionalMountains: string[];
-  parent: null;
-  states: string[];
-  resources: ExternalResource[] | null;
-  tier: PeakListTier | null;
 }
 
 interface Props extends RouteComponentProps {
@@ -133,7 +98,7 @@ const PeakListForm = (props: Props) => {
   const closeParentModal = useCallback(() => setParentModalOpen(false), []);
   const closeCreateMountainModal = useCallback(() => setCreateMountainModalOpen(false), []);
 
-  const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
+  const updatePeakListFlag = useUpdatePeakListFlag();
   const flagForDeletion = (id: string | undefined) => {
     if (id) {
       updatePeakListFlag({variables: {id, flag: PeakListFlag.deleteRequest}});

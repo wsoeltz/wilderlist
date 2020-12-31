@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faReddit,
@@ -8,6 +7,12 @@ import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
 import useFluent from '../../../hooks/useFluent';
+import {
+  useAcceptFriendRequestMutation,
+  useRemoveFriendMutation,
+  useSendFriendRequestMutation,
+} from '../../../queries/users/friendRequestMutations';
+import { UserDatum } from '../../../queries/users/useUserProfile';
 import { comparePeakListIsolatedLink, preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
@@ -20,14 +25,6 @@ import {
 import { FriendStatus } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive, mediumSize, mobileSize } from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
-import {
-  ACCEPT_FRIEND_REQUEST,
-  FriendRequestSuccessResponse,
-  FriendRequestVariables,
-  REMOVE_FRIEND,
-  SEND_FRIEND_REQUEST,
-} from '../list/UserCard';
-import { UserDatum } from './UserProfile';
 
 const contactLinkMobileSize = 950;
 
@@ -162,12 +159,9 @@ const Header = (props: Props) => {
   const [profilePictureUrl, setProfilePictureUrl] = useState<string>(initialProfilePictureUrl);
 
   let actionButtons: React.ReactElement<any> | null;
-  const [sendFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
-  const [acceptFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(ACCEPT_FRIEND_REQUEST);
-  const [removeFriendMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
+  const sendFriendRequestMutation = useSendFriendRequestMutation();
+  const acceptFriendRequestMutation = useAcceptFriendRequestMutation();
+  const removeFriendMutation = useRemoveFriendMutation();
 
   const sendFriendRequest = (e: React.SyntheticEvent) => {
     preventNavigation(e);

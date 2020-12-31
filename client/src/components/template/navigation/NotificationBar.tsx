@@ -1,8 +1,16 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import { Link } from 'react-router-dom';
 import styled, {keyframes} from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import {
+  useAcceptFriendRequestMutation,
+  useClearAscentNotification,
+  useGetNotifications,
+  useRemoveFriendMutation,
+} from '../../../queries/notifications/useGetNotifications';
+import {
+  useTripReportMutaions,
+} from '../../../queries/tripReports/tripReportMutations';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import { PreContentHeaderFull } from '../../../styling/Grid';
 import {
@@ -11,102 +19,9 @@ import {
   lowWarningColorLight,
   SemiBold,
 } from '../../../styling/styleUtils';
-import { PeakListVariants, User } from '../../../types/graphQLTypes';
+import { PeakListVariants } from '../../../types/graphQLTypes';
 import AscentReportFromNotification from '../../peakLists/detail/completionModal/AscentReportFromNotification';
-import {
-  ADD_MOUNTAIN_COMPLETION,
-  MountainCompletionSuccessResponse,
-  MountainCompletionVariables,
-} from '../../peakLists/detail/completionModal/queries';
 import { formatStringDate } from '../../peakLists/Utils';
-import {
-  ACCEPT_FRIEND_REQUEST,
-  FriendRequestSuccessResponse,
-  FriendRequestVariables,
-  REMOVE_FRIEND,
-} from '../../users/list/UserCard';
-
-const GET_NOTIFICATIONS = gql`
-  query notifications($userId: ID) {
-    user(id: $userId) {
-      id
-      friendRequests {
-        user {
-          id
-          name
-        }
-      }
-      ascentNotifications {
-        id
-        user {
-          id
-          name
-        }
-        mountain {
-          id
-          name
-          state {
-            id
-            abbreviation
-          }
-          latitude
-          longitude
-          elevation
-        }
-        date
-      }
-    }
-  }
-`;
-
-export interface SuccessResponse {
-  user: null | {
-    id: User['id'];
-    ascentNotifications: User['ascentNotifications'];
-    friendRequests: User['friendRequests'];
-  };
-}
-
-export const CLEAR_ASCENT_NOTIFICATION = gql`
-  mutation clearAscentNotification(
-    $userId: ID!,
-    $mountainId: ID,
-    $date: String!
-    ) {
-    user: clearAscentNotification(
-      userId: $userId,
-      mountainId: $mountainId,
-      date: $date
-    ) {
-      id
-      ascentNotifications {
-        id
-        user {
-          id
-          name
-        }
-        mountain {
-          id
-          name
-          state {
-            id
-            abbreviation
-          }
-          latitude
-          longitude
-          elevation
-        }
-        date
-      }
-    }
-  }
-`;
-
-export interface ClearNotificationVariables {
-  userId: string;
-  mountainId: string | null;
-  date: string;
-}
 
 const slideDown = keyframes`
   0%   {
@@ -165,23 +80,11 @@ const NotificationBar = (props: Props) => {
     () => setIsAscentReportModalOpen(true),
   [setIsAscentReportModalOpen]);
 
-  const {loading, error, data} = useQuery<SuccessResponse, {userId: string}>(GET_NOTIFICATIONS, {
-    variables: { userId },
-  });
-
-  const [addMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
-  const [clearAscentNotification] =
-    useMutation<SuccessResponse, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
-
-  const [acceptFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(ACCEPT_FRIEND_REQUEST, {
-      refetchQueries: () => [{query: GET_NOTIFICATIONS, variables: { userId }}],
-    });
-  const [removeFriendMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND, {
-      refetchQueries: () => [{query: GET_NOTIFICATIONS, variables: { userId }}],
-    });
+  const {loading, error, data} = useGetNotifications(userId);
+  const {addMountainCompletion} = useTripReportMutaions(null, 0);
+  const clearAscentNotification = useClearAscentNotification();
+  const acceptFriendRequestMutation = useAcceptFriendRequestMutation(userId);
+  const removeFriendMutation = useRemoveFriendMutation(userId);
 
   if (loading === true) {
     return null;

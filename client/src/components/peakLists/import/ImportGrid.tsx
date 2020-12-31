@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client';
 import axios from 'axios';
 import csv from 'csvtojson';
 import raw from 'raw.macro';
@@ -11,6 +10,9 @@ import PublishToWebModalImgUrl from '../../../assets/images/import-gifs/import-g
 import PublishToWebImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web.png';
 import useFluent from '../../../hooks/useFluent';
 import {
+  useTripReportMutaions,
+} from '../../../queries/tripReports/tripReportMutations';
+import {
   ButtonPrimary,
   ButtonSecondary,
   lightBorderColor,
@@ -19,11 +21,6 @@ import {
 import { convertFieldsToDate } from '../../../Utils';
 import { asyncForEach, roundPercentToSingleDecimal } from '../../../Utils';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
-import {
-  ADD_MOUNTAIN_COMPLETION,
-  MountainCompletionSuccessResponse,
-  MountainCompletionVariables,
-} from '../detail/completionModal/queries';
 import {
   BigNumber,
   HelpText as HelpTextBase,
@@ -154,8 +151,7 @@ const ImportAscentsModal = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [percent, setPercent] = useState<number>(0);
 
-  const [addMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+  const {addMountainCompletion} = useTripReportMutaions(null, 0);
 
   const onGridCsvPaste = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fetchGridData = async () => {

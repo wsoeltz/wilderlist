@@ -1,221 +1,24 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
 import React, {useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import {
+  FormInput,
+  useAddPeakList,
+  useEditPeakList,
+  useGetPeakList,
+} from '../../../queries/lists/addEditPeakList';
 import {listDetailLink} from '../../../routing/Utils';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import {
   ExternalResource,
   Mountain,
-  PeakList,
   PeakListVariants,
   PermissionTypes,
-  State,
 } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
-import PeakListForm, {FormInput, InitialPeakListDatum} from './PeakListForm';
-
-const baseQuery = `
-  id
-  name
-  shortName
-  description
-  optionalPeaksDescription
-  type
-  mountains {
-    id
-    name
-    latitude
-    longitude
-    elevation
-    state {
-      id
-      name
-      abbreviation
-      regions {
-        id
-        name
-        states {
-          id
-        }
-      }
-    }
-  }
-  optionalMountains {
-    id
-    name
-    latitude
-    longitude
-    elevation
-    state {
-      id
-      name
-      abbreviation
-      regions {
-        id
-        name
-        states {
-          id
-        }
-      }
-    }
-  }
-  parent {
-    id
-    name
-    mountains {
-      id
-      name
-      latitude
-      longitude
-      elevation
-      state {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-    }
-    optionalMountains {
-      id
-      name
-      latitude
-      longitude
-      elevation
-      state {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-    }
-  }
-  states {
-    id
-  }
-  resources {
-    title
-    url
-  }
-  author {
-    id
-  }
-  tier
-  flag
-  status
-`;
-
-const baseMutationVariableDefs = `
-  $name: String!,
-  $shortName: String!,
-  $description: String,
-  $optionalPeaksDescription: String,
-  $type: PeakListVariants!,
-  $mountains: [ID!],
-  $optionalMountains: [ID],
-  $parent: ID,
-  $states: [ID!],
-  $resources: [ExternalResourcesInputType],
-  $tier: PeakListTier!,
-`;
-const baseMutationVariables = `
-  name: $name,
-  shortName: $shortName,
-  description: $description,
-  optionalPeaksDescription: $optionalPeaksDescription,
-  type: $type,
-  mountains: $mountains,
-  optionalMountains: $optionalMountains,
-  parent: $parent,
-  states: $states,
-  resources: $resources,
-  tier: $tier,
-`;
-
-const ADD_PEAK_LIST = gql`
-  mutation addPeakList(
-    $author: ID!,
-    ${baseMutationVariableDefs}
-  ) {
-    peakList: addPeakList(
-      author: $author,
-      ${baseMutationVariables}
-    ) {
-      ${baseQuery}
-    }
-  }
-`;
-const EDIT_PEAK_LIST = gql`
-  mutation editPeakList(
-    $id: ID!,
-    ${baseMutationVariableDefs}
-  ) {
-    peakList: editPeakList(
-      id: $id,
-      ${baseMutationVariables}
-    ) {
-      ${baseQuery}
-    }
-  }
-`;
-
-const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID) {
-    peakList(id: $id) {
-      ${baseQuery}
-    }
-    states {
-      id
-      abbreviation
-    }
-  }
-`;
-
-interface BaseVariables extends FormInput {
-  author: string;
-}
-
-interface EditVariables extends FormInput {
-  id: string;
-}
-
-interface SuccessResponse {
-  peakList: {
-    id: PeakList['id'];
-    name: PeakList['name'];
-    shortName: PeakList['shortName'];
-    description: PeakList['description'];
-    optionalPeaksDescription: PeakList['optionalPeaksDescription'];
-    type: PeakList['type'];
-    mountains: PeakList['mountains'];
-    optionalMountains: PeakList['optionalMountains'];
-    parent: PeakList['parent'];
-    states: PeakList['states'];
-    resources: PeakList['resources'];
-    author: PeakList['author'];
-    tier: PeakList['tier'];
-    flag: PeakList['flag'];
-    status: PeakList['status'];
-  };
-  states: Array<{
-    id: State['id']
-    abbreviation: State['abbreviation'],
-  }>;
-}
+import PeakListForm, {InitialPeakListDatum} from './PeakListForm';
 
 const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
   const getString = useFluent();
@@ -237,12 +40,10 @@ const PeakListCreatePage = () => {
 
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<SuccessResponse, {id: string | null}>(GET_PEAK_LIST,
-    {variables: { id: id ? id : null },
-  });
+  const {loading, error, data} = useGetPeakList(id ? id : null);
 
-  const [addPeakList] = useMutation<SuccessResponse, BaseVariables>(ADD_PEAK_LIST);
-  const [editPeakList] = useMutation<SuccessResponse, EditVariables>(EDIT_PEAK_LIST);
+  const addPeakList = useAddPeakList();
+  const editPeakList = useEditPeakList();
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 

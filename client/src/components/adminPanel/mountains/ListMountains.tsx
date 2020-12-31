@@ -1,17 +1,15 @@
 import { ApolloError, gql, useMutation } from '@apollo/client';
 import React, {useState} from 'react';
 import {
+  useUpdateMountainFlag,
+} from '../../../queries/mountains/flagMountain';
+import {
   LinkButton,
   lowWarningColorDark,
   warningColor,
 } from '../../../styling/styleUtils';
 import { CreatedItemStatus, Mountain, User } from '../../../types/graphQLTypes';
 import sendGenericEmail from '../../../utilities/sendGenericEmail';
-import {
-  FLAG_MOUNTAIN,
-  FlagSuccessResponse,
-  FlagVariables,
-} from '../../mountains/create/MountainForm';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import { SuccessResponse } from '../AdminMountains';
 import { ListItem } from '../sharedStyles';
@@ -79,7 +77,7 @@ const ListMountains = (props: Props) => {
   const [updateMountainPermissions] =
     useMutation<PermissionsSuccessResponse, PermissionsVariables>(
       UPDATE_MOUNTAIN_PERMISSIONS);
-  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
+  const updateMountainFlag = useUpdateMountainFlag();
 
   const approveMountain =
     (mountainId: string, mountainName: string,

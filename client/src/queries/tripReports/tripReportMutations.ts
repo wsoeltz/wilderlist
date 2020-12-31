@@ -1,32 +1,21 @@
-import gql from 'graphql-tag';
+import { DocumentNode, gql, useMutation} from '@apollo/client';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import {
   TripReport,
   User,
-} from '../../../../types/graphQLTypes';
+} from '../../types/graphQLTypes';
+import {
+  refetchGeoNearPeakLists,
+  useGeoNearVariables,
+} from '../lists/getGeoNearPeakLists';
+import {
+  refetchUsersPeakLists,
+} from '../lists/getUsersPeakLists';
+import {
+  refetchLatestTripReports,
+} from './useLatestTripReports';
 
-export const GET_FRIENDS = gql`
-  query getFriends($userId: ID) {
-    user(id: $userId) {
-      id
-      friends {
-        user {
-          id
-          name
-        }
-        status
-      }
-    }
-  }
-`;
-
-export interface FriendsDatum {
-  user: {
-    id: User['id'];
-    friends: User['friends'];
-  };
-}
-
-export const ADD_MOUNTAIN_COMPLETION = gql`
+const ADD_MOUNTAIN_COMPLETION = gql`
   mutation addMountainCompletion(
     $userId: ID!,
     $mountainId: ID!,
@@ -48,7 +37,7 @@ export const ADD_MOUNTAIN_COMPLETION = gql`
   }
 `;
 
-export const REMOVE_MOUNTAIN_COMPLETION = gql`
+const REMOVE_MOUNTAIN_COMPLETION = gql`
   mutation removeMountainCompletion(
     $userId: ID!,
     $mountainId: ID!,
@@ -81,7 +70,7 @@ export interface MountainCompletionVariables {
   date: string;
 }
 
-export const ADD_ASCENT_NOTIFICATIONS = gql`
+const ADD_ASCENT_NOTIFICATIONS = gql`
   mutation addAscentNotifications(
     $userId: ID!,
     $friendId: ID!,
@@ -163,7 +152,7 @@ const addTripReportVariableParameters = `
   obstaclesOther: $obstaclesOther,
 `;
 
-export const ADD_TRIP_REPORT = gql`
+const ADD_TRIP_REPORT = gql`
   mutation addTripReport( ${addTripReportVariableDeclerations} ) {
     tripReport: addTripReport( ${addTripReportVariableParameters} ) {
       id
@@ -238,7 +227,7 @@ export interface AddTripReportSuccess {
   tripReport: TripReport;
 }
 
-export const EDIT_TRIP_REPORT = gql`
+const EDIT_TRIP_REPORT = gql`
   mutation editTripReport( $id: ID!, ${addTripReportVariableDeclerations} ) {
     tripReport: editTripReport( id: $id, ${addTripReportVariableParameters} ) {
       id
@@ -285,7 +274,7 @@ export interface EditTripReportVariables extends AddTripReportVariables {
   id: TripReport['id'];
 }
 
-export const DELETE_TRIP_REPORT = gql`
+const DELETE_TRIP_REPORT = gql`
   mutation deleteTripReport($id: ID!) {
     tripReport: deleteTripReport(id: $id) {
       id
@@ -331,3 +320,54 @@ export const DELETE_TRIP_REPORT = gql`
 export interface DeleteTripReportVariables {
   id: TripReport['id'];
 }
+
+export const useTripReportMutaions = (mountain: string | null, pageNumber: number) => {
+  const currentUser = useCurrentUser();
+  const userId = currentUser ? currentUser._id : null;
+  const geoNearVariables = useGeoNearVariables();
+  const refetchArray: Array<{query: DocumentNode, variables: any}> = [refetchGeoNearPeakLists(geoNearVariables)];
+  if (mountain && pageNumber) {
+    refetchArray.push(refetchLatestTripReports(mountain, pageNumber));
+  }
+  if (userId) {
+    refetchArray.push(refetchUsersPeakLists({userId}));
+  }
+  const [addMountainCompletion] =
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION, {
+      refetchQueries: refetchArray,
+  });
+
+  const [removeMountainCompletion] =
+    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION, {
+      refetchQueries: refetchArray,
+  });
+
+  const [addTripReport] =
+    useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
+      refetchQueries: refetchArray,
+  });
+
+  const [editTripReport] =
+    useMutation<AddTripReportSuccess, EditTripReportVariables>(EDIT_TRIP_REPORT, {
+      refetchQueries: refetchArray,
+  });
+
+  const [deleteTripReport] =
+    useMutation<AddTripReportSuccess, DeleteTripReportVariables>(DELETE_TRIP_REPORT, {
+      refetchQueries: refetchArray,
+  });
+
+  return {
+    addMountainCompletion,
+    removeMountainCompletion,
+    addTripReport,
+    editTripReport,
+    deleteTripReport,
+  };
+};
+
+export const useAddAscentNotifications = () => {
+  const [addAscentNotifications] =
+    useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
+  return addAscentNotifications;
+};

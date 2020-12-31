@@ -1,19 +1,8 @@
 import React from 'react';
+import { FriendDatum, UserDatum } from '../../../queries/users/useUserSearch';
 import { NoResults } from '../../../styling/styleUtils';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
+import { FriendStatus } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  profilePictureUrl: User['profilePictureUrl'];
-  hideProfilePicture: User['hideProfilePicture'];
-}
-
-export interface FriendDatum {
-  user: UserDatum;
-  status: FriendStatus;
-}
 
 interface Props {
   userData: UserDatum[] | null;

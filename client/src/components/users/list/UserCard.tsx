@@ -1,10 +1,16 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
 import useFluent from '../../../hooks/useFluent';
 import { CardPeakListDatum } from '../../../queries/lists/getUsersPeakLists';
+import {
+  useAcceptFriendRequestMutation,
+  useRemoveFriendMutation,
+  useSendFriendRequestMutation,
+} from '../../../queries/users/friendRequestMutations';
+import {usePeakListDataForUser} from '../../../queries/users/usePeakListDataForUser';
+import { UserDatum } from '../../../queries/users/useUserSearch';
 import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
@@ -15,7 +21,6 @@ import {
 import {
   FriendStatus,
   PeakListVariants,
-  User,
 } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
@@ -23,128 +28,6 @@ import {
   getDates,
   getType,
 } from '../../peakLists/Utils';
-import { UserDatum } from './ListUsers';
-
-const GET_PEAK_LIST_DATA_FOR_USER = gql`
-  query getPeakListDataForUser($id: ID!) {
-    user(id: $id) {
-      id
-      peakLists {
-        id
-        name
-        shortName
-        type
-        parent {
-          id
-        }
-        numMountains
-        numCompletedAscents(userId: $id)
-        latestAscent(userId: $id)
-        isActive(userId: $id)
-      }
-      latestAscent {
-        mountain {
-          id
-          name
-        }
-        dates
-      }
-    }
-  }
-`;
-
-interface PeakListsForUserVariables {
-  id: string;
-}
-
-interface PeakListsForUserResponse {
-  user: {
-    id: User['id'];
-    peakLists: CardPeakListDatum[];
-    latestAscent: User['latestAscent'];
-  };
-}
-
-export const SEND_FRIEND_REQUEST = gql`
-  mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
-  sendFriendRequest(userId: $userId, friendId: $friendId) {
-    id
-    friends {
-      status
-      user {
-        id
-        friends {
-          user {
-            id
-          }
-          status
-        }
-      }
-    }
-  }
-}
-`;
-
-export const ACCEPT_FRIEND_REQUEST = gql`
-  mutation acceptFriendRequest($userId: ID!, $friendId: ID!) {
-  acceptFriendRequest(userId: $userId, friendId: $friendId) {
-    id
-    friends {
-      status
-      user {
-        id
-        friends {
-          user {
-            id
-          }
-          status
-        }
-      }
-    }
-  }
-}
-`;
-
-export const REMOVE_FRIEND = gql`
-  mutation removeFriend($userId: ID!, $friendId: ID!) {
-  removeFriend(userId: $userId, friendId: $friendId) {
-    id
-    friends {
-      status
-      user {
-        id
-        friends {
-          user {
-            id
-          }
-          status
-        }
-      }
-    }
-  }
-}
-`;
-
-export interface FriendRequestVariables {
-  userId: string;
-  friendId: string;
-}
-
-export interface FriendRequestSuccessResponse {
-  id: User['id'];
-  friends: Array<{
-    user: {
-      id: User['id'];
-      friends: Array<{
-        user: {
-          id: User['id'];
-        }
-        status: FriendStatus;
-      }>;
-    },
-    status: FriendStatus;
-  }>;
-}
 
 const LinkWrapper = styled(Link)`
   display: block;
@@ -251,20 +134,14 @@ const UserCard = (props: Props) => {
 
   const getString = useFluent();
 
-  const {loading, error, data} =
-    useQuery<PeakListsForUserResponse, PeakListsForUserVariables>(GET_PEAK_LIST_DATA_FOR_USER, {
-      variables: { id: user.id },
-    });
+  const {loading, error, data} = usePeakListDataForUser(user.id);
 
   const initialProfilePictureUrl = user.hideProfilePicture ? BackupImage : user.profilePictureUrl;
   const [profilePictureUrl, setProfilePictureUrl] = useState<string>(initialProfilePictureUrl);
 
-  const [sendFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
-  const [acceptFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(ACCEPT_FRIEND_REQUEST);
-  const [removeFriendMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
+  const sendFriendRequestMutation = useSendFriendRequestMutation();
+  const acceptFriendRequestMutation = useAcceptFriendRequestMutation();
+  const removeFriendMutation = useRemoveFriendMutation();
 
   const sendFriendRequest = (e: React.SyntheticEvent) => {
     preventNavigation(e);

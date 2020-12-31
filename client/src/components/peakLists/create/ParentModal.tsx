@@ -1,7 +1,11 @@
-import { gql, useQuery } from '@apollo/client';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import {
+  PeakListDatum,
+  useBasicPeakListSearch,
+} from '../../../queries/lists/useBasicPeakListSearch';
+import {MountainDatum} from '../../../queries/mountains/useBasicSearchMountains';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -9,79 +13,14 @@ import {
   lightBorderColor,
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import { PeakList } from '../../../types/graphQLTypes';
 import {
   CheckboxContainer,
-  MountainDatum,
   MountainItem as PeakListItem,
   Subtitle,
 } from '../../peakLists/create/MountainSelectionModal';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-
-const SEARCH_PEAK_LISTS = gql`
-  query SearchPeakLists(
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!,
-  ) {
-    peakLists: peakListsSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-    ) {
-      id
-      name
-      shortName
-      type
-      mountains {
-        id
-        name
-        state {
-          id
-          abbreviation
-        }
-        elevation
-        latitude
-        longitude
-      }
-      optionalMountains {
-        id
-        name
-        state {
-          id
-          abbreviation
-        }
-        elevation
-        latitude
-        longitude
-      }
-      parent {
-        id
-      }
-    }
-  }
-`;
-
-export interface PeakListDatum {
-  id: PeakList['id'];
-  name: PeakList['name'];
-  shortName: PeakList['shortName'];
-  mountains: null | MountainDatum[];
-  optionalMountains: null | MountainDatum[];
-  parent: null | { id: PeakList['id'] };
-}
-
-interface SuccessResponse {
-  peakLists: null | PeakListDatum[];
-}
-
-interface Variables {
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
-}
 
 const Container = styled(CheckboxContainer)`
   border: 1px solid ${lightBorderColor};
@@ -120,12 +59,10 @@ const AreYouSureModal = (props: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedList, setSelectedList] = useState<PeakListDatum | null>(null);
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_PEAK_LISTS, {
-    variables: {
-      searchQuery,
-      pageNumber: 1,
-      nPerPage: searchQuery.length ? 20 : 0,
-    },
+  const {loading, error, data} = useBasicPeakListSearch({
+    searchQuery,
+    pageNumber: 1,
+    nPerPage: searchQuery.length ? 20 : 0,
   });
 
   let peakListList: React.ReactElement<any> | null;

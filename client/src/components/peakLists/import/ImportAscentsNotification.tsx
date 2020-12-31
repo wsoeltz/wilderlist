@@ -1,40 +1,18 @@
-import { gql, useQuery } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {
+  usePeakListMountains,
+} from '../../../queries/lists/usePeakListMountains';
+import {
   CompactButtonPrimary,
   CompactGhostButton,
   lowWarningColorLight,
 } from '../../../styling/styleUtils';
-import {PeakList, PeakListVariants} from '../../../types/graphQLTypes';
-import ImportAscentsModal, {MountainDatum} from '../import';
+import {PeakListVariants} from '../../../types/graphQLTypes';
+import ImportAscentsModal from '../import';
 import ImportGridModal, {NH48_GRID_OBJECT_ID} from '../import/ImportGrid';
-
-const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!) {
-    peakList(id: $id) {
-      id
-      mountains {
-        id
-        name
-        elevation
-        state {
-          id
-          abbreviation
-        }
-      }
-    }
-  }
-`;
-
-interface SuccessResponse {
-  peakList: {
-    id: PeakList['id'];
-    mountains: MountainDatum[];
-  };
-}
 
 const slideIn = keyframes`
   0% {
@@ -82,9 +60,7 @@ const ImportAscentsNotification = (props: Props) => {
 
   const user = useCurrentUser();
 
-  const {loading, error, data} = useQuery<SuccessResponse, {id: string}>(GET_PEAK_LIST, {
-    variables: { id: peakListId },
-  });
+  const {loading, error, data} = usePeakListMountains(peakListId);
 
   let importAscentsModal: React.ReactElement<any> | null;
   if (user && isImportModalOpen === true) {

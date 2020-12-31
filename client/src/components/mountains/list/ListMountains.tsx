@@ -1,20 +1,7 @@
 import React from 'react';
+import {MountainDatum} from '../../../queries/mountains/useGeoNearMountains';
 import { NoResults } from '../../../styling/styleUtils';
-import {
-  Mountain, State,
- } from '../../../types/graphQLTypes';
 import MountainCard from './MountainCard';
-
-export interface MountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-  state: null | {
-    id: State['id'],
-    name: State['name'],
-  };
-  elevation: Mountain['elevation'];
-  location: Mountain['location'];
-}
 
 interface Props {
   mountainData: MountainDatum[];

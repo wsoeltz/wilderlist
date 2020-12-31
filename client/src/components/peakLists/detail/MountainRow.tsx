@@ -3,6 +3,9 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
+  MountainDatum,
+} from '../../../queries/lists/usePeakListDetail';
+import {
   mountainDetailLink,
 } from '../../../routing/Utils';
 import {
@@ -26,9 +29,6 @@ import {
 } from '../Utils';
 import {VariableDate} from './getCompletionDates';
 import { MountainToEdit } from './MountainTable';
-import {
-  MountainDatum,
-} from './PeakListDetail';
 
 export const horizontalPadding = 0.6; // in rem
 export const smallPadding = 0.4; // in rem

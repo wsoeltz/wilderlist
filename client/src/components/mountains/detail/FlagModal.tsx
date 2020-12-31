@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import useFluent from '../../../hooks/useFluent';
+import { useUpdateMountainFlag } from '../../../queries/mountains/flagMountain';
 import { ButtonPrimary, Label, SelectBox } from '../../../styling/styleUtils';
 import { MountainFlag } from '../../../types/graphQLTypes';
 import {
@@ -8,11 +8,6 @@ import {
   CancelButton,
 } from '../../sharedComponents/AreYouSureModal';
 import Modal from '../../sharedComponents/Modal';
-import {
-  FLAG_MOUNTAIN,
-  FlagSuccessResponse,
-  FlagVariables,
-} from '../create/MountainForm';
 
 interface Props {
   onClose: () => void;
@@ -25,7 +20,7 @@ const FlagModal = (props: Props) => {
 
   const getString = useFluent();
 
-  const [updateMountainFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_MOUNTAIN);
+  const updateMountainFlag = useUpdateMountainFlag();
 
   const [flag, setFlag] = useState<MountainFlag | ''>('');
   const updateFlagValue = useCallback((e: React.ChangeEvent<HTMLSelectElement>) =>

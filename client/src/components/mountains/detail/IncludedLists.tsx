@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import Helmet from 'react-helmet';
@@ -6,11 +5,14 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ORDINAL_NUMBER } from '../../../contextProviders/getFluentLocalizationContext';
 import useFluent from '../../../hooks/useFluent';
+import {
+  MountainDatum,
+  useGetIncludedListsForMountain,
+} from '../../../queries/mountains/getIncludedLists';
 import { listDetailLink } from '../../../routing/Utils';
 import {
   lightBorderColor,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakList } from '../../../types/graphQLTypes';
 import {
   BasicUnorderedListContainer,
   BasicUnorderedListItem,
@@ -23,55 +25,6 @@ const PlaceholderBlock = styled.div`
   height: 0.9rem;
   background-color: ${lightBorderColor};
 `;
-
-const GET_MOUNTAINS_INCLUDE_LISTS = gql`
-  query getMountainsIncludedLists($id: ID!) {
-    mountain(id: $id) {
-      id
-      lists {
-        id
-        name
-        numUsers
-        mountains {
-          id
-          elevation
-        }
-        parent {
-          id
-          mountains {
-            id
-            elevation
-          }
-        }
-      }
-    }
-  }
-`;
-
-interface MountainDatum {
-  id: Mountain['id'];
-  elevation: Mountain['elevation'];
-}
-
-interface QuerySuccessResponse {
-  mountain: {
-    id: Mountain['name'];
-    lists: Array<{
-      id: PeakList['id'];
-      name: PeakList['name'];
-      numUsers: PeakList['numUsers'];
-      mountains: MountainDatum[];
-      parent: {
-        id: PeakList['id'];
-        mountains: MountainDatum[];
-      }
-    }>;
-  };
-}
-
-interface QueryVariables {
-  id: string;
-}
 
 interface Props {
   mountainDatum: {
@@ -89,9 +42,7 @@ const IncludedLists = (props: Props) => {
 
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_MOUNTAINS_INCLUDE_LISTS, {
-    variables: { id: mountainDatum.id },
-  });
+  const {loading, error, data} = useGetIncludedListsForMountain(mountainDatum.id);
 
   if (numLists === 0) {
     return null;

@@ -2,9 +2,10 @@ import {sortBy} from 'lodash';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import {MountainDatum} from '../../../queries/lists/usePeakListMountains';
 import { baseColor, InputBase, lightBorderColor, warningColor } from '../../../styling/styleUtils';
 import { TableCellBase } from '../detail/MountainRow';
-import { DateDatum, MountainDatum } from './index';
+import { DateDatum } from './index';
 
 export const gridCols = {
   userInput: 1,

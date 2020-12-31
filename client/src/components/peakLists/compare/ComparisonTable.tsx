@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import useFluent from '../../../hooks/useFluent';
+import { UserDatum } from '../../../queries/lists/useComparePeakList';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
   FilterBar,
@@ -8,7 +9,6 @@ import {
   TitleCell,
 } from '../detail/MountainTable';
 import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
-import { UserDatum } from './PeakListComparison';
 import { getAscentGoals } from './Utils';
 
 const gridColumns = {

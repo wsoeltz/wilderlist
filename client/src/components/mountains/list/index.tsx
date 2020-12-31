@@ -1,76 +1,23 @@
-import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
-import useMapCenter from '../../../hooks/useMapCenter';
-import usePrevious from '../../../hooks/usePrevious';
+import {
+  useGeoNearMountains,
+} from '../../../queries/mountains/useGeoNearMountains';
 import { mountainDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
 import GhostMountainCard from './GhostMountainCard';
-import ListMountains, {
-  MountainDatum,
-} from './ListMountains';
-
-const GEO_NEAR_MOUNTAINS = gql`
-  query GeoNearMountains(
-    $latitude: Float!,
-    $longitude: Float!,
-    $limit: Int!,
-  ) {
-    mountains: geoNearMountains(
-      latitude: $latitude,
-      longitude: $longitude,
-      limit: $limit,
-    ) {
-      id
-      name
-      state {
-        id
-        name
-      }
-      elevation
-      location
-    }
-  }
-`;
-
-interface SuccessResponse {
-  mountains: MountainDatum[];
-}
-
-interface Variables {
-  latitude: number;
-  longitude: number;
-  limit: number;
-}
+import ListMountains from './ListMountains';
 
 const MountainSearchPage = () => {
   const getString = useFluent();
 
-  const [longitude, latitude] = useMapCenter();
-
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GEO_NEAR_MOUNTAINS, {
-    variables: {
-      latitude,
-      longitude,
-      limit: 15,
-    },
-  });
-
-  const prevData = usePrevious(data);
-  let dataToUse: SuccessResponse | undefined;
-  if (data !== undefined) {
-    dataToUse = data;
-  } else if (prevData !== undefined) {
-    dataToUse = prevData;
-  } else {
-    dataToUse = undefined;
-  }
+  const {loading, error, data} = useGeoNearMountains();
 
   let list: React.ReactElement<any> | null;
-  if (loading === true && dataToUse === undefined) {
+  if (loading === true && data === undefined) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
       loadingCards.push(<GhostMountainCard key={i} />);
@@ -83,8 +30,8 @@ const MountainSearchPage = () => {
         {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (dataToUse !== undefined) {
-    if (!dataToUse.mountains) {
+  } else if (data !== undefined) {
+    if (!data.mountains) {
       const loadingCards: Array<React.ReactElement<any>> = [];
       for (let i = 0; i < 3; i++) {
         loadingCards.push(<GhostMountainCard key={i} />);
@@ -94,7 +41,7 @@ const MountainSearchPage = () => {
       list = (
         <>
           <ListMountains
-            mountainData={dataToUse.mountains}
+            mountainData={data.mountains}
             noResultsText={getString('global-text-value-no-results-found')}
           />
         </>

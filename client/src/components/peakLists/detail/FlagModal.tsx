@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/client';
 import React, { useCallback, useState } from 'react';
 import useFluent from '../../../hooks/useFluent';
+import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
 import { ButtonPrimary, Label, SelectBox } from '../../../styling/styleUtils';
 import { PeakListFlag } from '../../../types/graphQLTypes';
 import {
@@ -8,11 +8,6 @@ import {
   CancelButton,
 } from '../../sharedComponents/AreYouSureModal';
 import Modal from '../../sharedComponents/Modal';
-import {
-  FLAG_PEAK_LIST,
-  FlagSuccessResponse,
-  FlagVariables,
-} from '../create/PeakListForm';
 
 interface Props {
   onClose: () => void;
@@ -25,7 +20,7 @@ const FlagModal = (props: Props) => {
 
   const getString = useFluent();
 
-  const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
+  const updatePeakListFlag = useUpdatePeakListFlag();
 
   const [flag, setFlag] = useState<PeakListFlag | ''>('');
   const updateFlagValue = useCallback((e: React.ChangeEvent<HTMLSelectElement>) =>

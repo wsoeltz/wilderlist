@@ -1,13 +1,12 @@
-import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import { CardPeakListDatum } from '../../../queries/lists/getUsersPeakLists';
+import {useUserProfile} from '../../../queries/users/useUserProfile';
 import { comparePeakListIsolatedLink } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
+import { FriendStatus } from '../../../types/graphQLTypes';
 import { ViewMode } from '../../peakLists/list/ListPeakLists';
 import ListPeakLists from '../../peakLists/list/ListPeakLists';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
@@ -16,70 +15,6 @@ import Header from './Header';
 const ListContainer = styled.div`
   margin-top: 3rem;
 `;
-
-const GET_USER = gql`
-  query getUser($userId: ID!, $profileId: ID!) {
-    user(id: $profileId) {
-      id
-      name
-      email
-      redditId
-      profilePictureUrl
-      hideEmail
-      hideProfilePicture
-      peakLists {
-        id
-        name
-        shortName
-        type
-        parent {
-          id
-        }
-        numMountains
-        numCompletedAscents(userId: $profileId)
-        latestAscent(userId: $profileId)
-        isActive(userId: $profileId)
-      }
-    }
-    me: user(id: $userId) {
-      id
-      friends {
-        user {
-          id
-        }
-        status
-      }
-    }
-  }
-`;
-
-export interface UserDatum {
-  id: User['name'];
-  name: User['name'];
-  email: User['email'];
-  redditId: User['redditId'];
-  hideEmail: User['hideEmail'];
-  hideProfilePicture: User['hideProfilePicture'];
-  profilePictureUrl: User['profilePictureUrl'];
-  peakLists: CardPeakListDatum[];
-}
-
-interface QuerySuccessResponse {
-  user: UserDatum;
-  me: {
-    friends: Array<{
-      user: {
-        id: User['id'];
-      }
-      status: FriendStatus;
-    }>,
-  };
-}
-
-interface QueryVariables {
-  userId: string;
-  profileId: string;
-}
 
 interface Props {
   userId: string;
@@ -92,9 +27,7 @@ const UserProfile = (props: Props) => {
   const history = useHistory();
   const getString = useFluent();
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(GET_USER, {
-    variables: { profileId: id, userId },
-  });
+  const {loading, error, data} = useUserProfile(id, userId);
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {

@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client';
 import {intersection, sortBy} from 'lodash';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
@@ -7,6 +6,10 @@ import SelectDatesStaticUrl from '../../../assets/images/import-gifs/select-date
 import SelectMountainsGifUrl from '../../../assets/images/import-gifs/select-mountains.gif';
 import SelectMountainsStaticUrl from '../../../assets/images/import-gifs/select-mountains.png';
 import useFluent from '../../../hooks/useFluent';
+import {MountainDatum} from '../../../queries/lists/usePeakListMountains';
+import {
+  useTripReportMutaions,
+} from '../../../queries/tripReports/tripReportMutations';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -19,14 +22,9 @@ import {
   successColor,
   successColorLight,
 } from '../../../styling/styleUtils';
-import { Mountain, State } from '../../../types/graphQLTypes';
+import { Mountain } from '../../../types/graphQLTypes';
 import { asyncForEach, convertFieldsToDate, roundPercentToSingleDecimal } from '../../../Utils';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
-import {
-  ADD_MOUNTAIN_COMPLETION,
-  MountainCompletionSuccessResponse,
-  MountainCompletionVariables,
-} from '../detail/completionModal/queries';
 import {
   horizontalPadding,
 } from '../detail/MountainRow';
@@ -166,15 +164,6 @@ export const genericWords = [
   'mountain',
 ];
 
-export interface MountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-  elevation: Mountain['elevation'];
-  state: {
-    id: State['id'];
-    abbreviation: State['abbreviation'];
-  } | null;
-}
 export interface DateDatum {
   day: number;
   month: number;
@@ -234,8 +223,7 @@ const ImportAscentsModal = (props: Props) => {
     setSelectDatesGif(src);
   };
 
-  const [addMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION);
+  const {addMountainCompletion} = useTripReportMutaions(null, 0);
 
   const validateAndAddMountainCompletion =
     async (mountainId: Mountain['id'], day: string, month: string, year: string) => {

@@ -3,6 +3,9 @@ import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../../hooks/useFluent';
 import {
+  FriendsDatum,
+} from '../../../../../queries/users/useGetFriendsBasic';
+import {
   BasicIconInText,
   ButtonPrimary,
   ButtonSecondary,
@@ -16,9 +19,6 @@ import {
   FriendStatus,
 } from '../../../../../types/graphQLTypes';
 import Modal from '../../../../sharedComponents/Modal';
-import {
-  FriendsDatum,
-} from '../queries';
 import {
   CheckboxList,
   Input,

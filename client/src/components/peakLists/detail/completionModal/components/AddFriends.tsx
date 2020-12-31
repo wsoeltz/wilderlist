@@ -1,7 +1,9 @@
-import { useQuery } from '@apollo/client';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
 import useFluent from '../../../../../hooks/useFluent';
+import {
+  useGetFriendsBasic,
+} from '../../../../../queries/users/useGetFriendsBasic';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -9,10 +11,6 @@ import {
   DetailBoxWithMargin,
   SemiBold,
 } from '../../../../../styling/styleUtils';
-import {
-  FriendsDatum,
-  GET_FRIENDS,
-} from '../queries';
 import {
   ButtonWrapper,
   ListItem,
@@ -34,10 +32,7 @@ const AddFriends = (props: Props) => {
   } = props;
 
   const getString = useFluent();
-
-  const {loading, error, data} = useQuery<FriendsDatum, {userId: string}>(GET_FRIENDS, {
-    variables: { userId },
-  });
+  const {loading, error, data} = useGetFriendsBasic(userId);
 
   const [isFriendSelectorModalOpen, setFriendSelectorModalOpen] = useState<boolean>(false);
   const openFriendSelector = useCallback(() => setFriendSelectorModalOpen(true), []);

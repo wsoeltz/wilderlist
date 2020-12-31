@@ -1,10 +1,20 @@
-import { useMutation } from '@apollo/client';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
+import {
+  useClearAscentNotification,
+} from '../../../../queries/notifications/useGetNotifications';
+import {
+  useAddAscentNotifications,
+  useTripReportMutaions,
+} from '../../../../queries/tripReports/tripReportMutations';
+import {
+  GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
+  nPerPage,
+} from '../../../../queries/tripReports/useLatestTripReports';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -24,38 +34,14 @@ import {
   isValidURL,
   Seasons,
 } from '../../../../Utils';
-import {
-  GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
-  nPerPage,
-} from '../../../mountains/detail/TripReports';
 import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
 import LoadingDisablePage from '../../../sharedComponents/LoadingDisablePage';
 import Modal, {mobileWidth as modalMobileWidth} from '../../../sharedComponents/Modal';
-import {
-  CLEAR_ASCENT_NOTIFICATION,
-  ClearNotificationVariables,
-  SuccessResponse as ClearNotificationsSuccess,
-} from '../../../template/navigation/NotificationBar';
 import { DateType, formatStringDate } from '../../Utils';
 import AddFriends from './components/AddFriends';
 import AddMountains, {MountainDatum} from './components/AddMountains';
 import DateWidget, {Restrictions} from './components/DateWidget';
 import TripDetails, {charLimit, nullConditions} from './components/TripDetails';
-import {
-  ADD_ASCENT_NOTIFICATIONS,
-  ADD_MOUNTAIN_COMPLETION,
-  ADD_TRIP_REPORT,
-  AddTripReportSuccess,
-  AddTripReportVariables,
-  AscentNotificationsVariables,
-  DELETE_TRIP_REPORT,
-  DeleteTripReportVariables,
-  EDIT_TRIP_REPORT,
-  EditTripReportVariables,
-  MountainCompletionSuccessResponse,
-  MountainCompletionVariables,
-  REMOVE_MOUNTAIN_COMPLETION,
-} from './queries';
 import {
   ColumnRoot,
   LeftColumn,
@@ -139,31 +125,16 @@ const MountainCompletionModal = (props: PropsWithConditions) => {
     refetchQuery.forEach(query => refetchQueries.push(query));
   }
 
-  const [addMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION, {
-      refetchQueries: () => [...refetchQueries],
-  });
-  const [removeMountainCompletion] =
-    useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION, {
-      refetchQueries: () => [...refetchQueries],
-  });
-  const [addTripReport] =
-    useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
-      refetchQueries: () => [...refetchQueries],
-  });
-  const [editTripReport] =
-    useMutation<AddTripReportSuccess, EditTripReportVariables>(EDIT_TRIP_REPORT, {
-      refetchQueries: () => [...refetchQueries],
-  });
-  const [deleteTripReport] =
-    useMutation<AddTripReportSuccess, DeleteTripReportVariables>(DELETE_TRIP_REPORT, {
-      refetchQueries: () => [...refetchQueries],
-  });
-  const [addAscentNotifications] =
-    useMutation<{id: string}, AscentNotificationsVariables>(ADD_ASCENT_NOTIFICATIONS);
+  const {
+    addMountainCompletion,
+    removeMountainCompletion,
+    addTripReport,
+    editTripReport,
+    deleteTripReport,
+  } = useTripReportMutaions(initialMountainId, nPerPage);
+  const addAscentNotifications = useAddAscentNotifications();
 
-  const [clearAscentNotification] =
-    useMutation<ClearNotificationsSuccess, ClearNotificationVariables>(CLEAR_ASCENT_NOTIFICATION);
+  const clearAscentNotification = useClearAscentNotification();
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');

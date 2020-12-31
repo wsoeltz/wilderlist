@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import {MountainDatum} from '../../../queries/mountains/useBasicSearchMountains';
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -9,7 +10,7 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import MountainTable from '../detail/MountainTable';
-import MountainSelectionModal, {MountainDatum} from './MountainSelectionModal';
+import MountainSelectionModal from './MountainSelectionModal';
 
 const AddButtonsContainer = styled(Section)`
   display: flex;

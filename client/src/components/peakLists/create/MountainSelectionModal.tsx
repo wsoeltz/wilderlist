@@ -1,9 +1,11 @@
-import { gql, useQuery } from '@apollo/client';
 import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-import usePrevious from '../../../hooks/usePrevious';
+import {
+  MountainDatum,
+  useBasicSearchMountains,
+} from '../../../queries/mountains/useBasicSearchMountains';
 import {
   ButtonPrimary,
   CheckboxList as CheckboxListBase,
@@ -16,7 +18,6 @@ import {
   SelectBox,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import { Mountain, State } from '../../../types/graphQLTypes';
 import Modal from '../../sharedComponents/Modal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {ModalButtonWrapper} from '../detail/completionModal/Utils';
@@ -113,63 +114,6 @@ const MountainItemRemove = styled(MountainItem)`
   }
 `;
 
-const SEARCH_MOUNTAINS = gql`
-  query SearchMountains(
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!
-    $state: ID,
-    $minElevation: Float,
-    $maxElevation: Float,
-  ) {
-    mountains: mountainSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-      state: $state,
-      minElevation: $minElevation,
-      maxElevation: $maxElevation,
-    ) {
-      id
-      name
-      state {
-        id
-        abbreviation
-      }
-      elevation
-      latitude
-      longitude
-      location
-    }
-  }
-`;
-
-export interface MountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-  state: null | {
-    id: State['id'];
-    abbreviation: State['abbreviation'];
-  };
-  elevation: Mountain['elevation'];
-  latitude: Mountain['latitude'];
-  longitude: Mountain['longitude'];
-  location: Mountain['location'];
-}
-
-interface SuccessResponse {
-  mountains: MountainDatum[];
-}
-
-interface Variables {
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
-  state: string;
-  minElevation: number;
-  maxElevation: number;
-}
-
 interface Props {
   closeAndSetMountains: (mountains: MountainDatum[]) => void;
   initialSelectedMountains: MountainDatum[];
@@ -194,23 +138,10 @@ const MountainSelectionModal = (props: Props) => {
   const pageNumber = 1;
   const nPerPage = 30;
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(SEARCH_MOUNTAINS, {
-    variables: {
-      searchQuery, pageNumber, nPerPage, state,
-      minElevation: parseFloat(minElevation), maxElevation: parseFloat(maxElevation),
-    },
+  const {loading, error, data} = useBasicSearchMountains({
+    searchQuery, pageNumber, nPerPage, state,
+    minElevation: parseFloat(minElevation), maxElevation: parseFloat(maxElevation),
   });
-
-  const prevData = usePrevious(data);
-
-  let dataToUse: SuccessResponse | undefined;
-  if (data !== undefined) {
-    dataToUse = data;
-  } else if (prevData !== undefined) {
-    dataToUse = prevData;
-  } else {
-    dataToUse = undefined;
-  }
 
   const addMountainToList = (newMtn: MountainDatum) => {
     if (!selectedMountains.find(mtn => mtn.id === newMtn.id)) {
@@ -227,8 +158,8 @@ const MountainSelectionModal = (props: Props) => {
   const listStyle: React.CSSProperties = {margin: 0};
 
   let searchResults: React.ReactElement<any> | null;
-  if (dataToUse !== undefined ) {
-    const { mountains } = dataToUse;
+  if (data !== undefined ) {
+    const { mountains } = data;
     if (mountains) {
       const mountainList: Array<React.ReactElement<any>> = [];
       mountains.forEach(mtn => {

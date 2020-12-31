@@ -1,4 +1,3 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
 import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -11,6 +10,14 @@ import {
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import useMapContext from '../../../hooks/useMapContext';
+import {
+  useAddPeakListNote,
+  useEditPeakListNote,
+} from '../../../queries/lists/peakListNotes';
+import {
+  MountainDatum,
+  usePeakListDetail,
+} from '../../../queries/lists/usePeakListDetail';
 import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { listDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
@@ -29,11 +36,7 @@ import {
   SectionTitle,
 } from '../../../styling/styleUtils';
 import {
-  Mountain,
-  PeakList,
   PeakListVariants,
-  State,
-  User,
 } from '../../../types/graphQLTypes';
 import {
   isValidURL,
@@ -79,193 +82,6 @@ const ButtonPrimaryLinkSmall = styled(ButtonPrimaryLink)`
   font-size: 0.7rem;
 `;
 
-const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID) {
-    peakList(id: $id) {
-      id
-      name
-      shortName
-      description
-      optionalPeaksDescription
-      bbox
-      parent {
-        id
-        name
-        type
-      }
-      children {
-        id
-        name
-        type
-      }
-      siblings {
-        id
-        name
-        type
-      }
-      author {
-        id
-      }
-      resources {
-        title
-        url
-      }
-      type
-      mountains {
-        id
-        name
-        latitude
-        longitude
-        location
-        elevation
-        state {
-          id
-          abbreviation
-        }
-      }
-      optionalMountains {
-        id
-        name
-        latitude
-        longitude
-        location
-        elevation
-        state {
-          id
-          abbreviation
-        }
-      }
-      stateOrRegionString
-    }
-    user(id: $userId) {
-      id
-      name
-      permissions
-      peakListPermissions
-      peakLists {
-        id
-      }
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-      peakListNote(peakListId: $id) {
-        id
-        text
-      }
-    }
-  }
-`;
-
-export interface MountainDatum {
-  id: Mountain['id'];
-  name: Mountain['name'];
-  latitude: Mountain['latitude'];
-  longitude: Mountain['longitude'];
-  location: Mountain['location'];
-  elevation: Mountain['elevation'];
-  state: {
-    id: State['id'];
-    abbreviation: State['abbreviation'];
-  } | null;
-}
-
-interface ListVariantDatum {
-  id: PeakList['id'];
-  name: PeakList['name'];
-  type: PeakList['type'];
-}
-
-export interface PeakListDatum {
-  id: PeakList['id'];
-  name: PeakList['name'];
-  shortName: PeakList['shortName'];
-  type: PeakList['type'];
-  bbox: PeakList['bbox'];
-  description: PeakList['description'];
-  optionalPeaksDescription: PeakList['optionalPeaksDescription'];
-  resources: PeakList['resources'];
-  mountains: MountainDatum[] | null;
-  optionalMountains: MountainDatum[] | null;
-  stateOrRegionString: PeakList['stateOrRegionString'];
-  parent: null | ListVariantDatum;
-  children: null | ListVariantDatum[];
-  siblings: null | ListVariantDatum[];
-  author: null | { id: User['id'] };
-}
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  peakLists: Array<{
-    id: PeakList['id'];
-  }>;
-  mountains: User['mountains'];
-  peakListPermissions?: User['peakListPermissions'];
-  permissions: User['permissions'];
-}
-
-interface UserDatumWithNote extends UserDatum {
-  peakListNote: User['peakListNote'];
-}
-
-interface SuccessResponse {
-  peakList: PeakListDatum;
-  user: UserDatumWithNote | null;
-}
-
-interface Variables {
-  id: string;
-  userId: string | null;
-}
-
-const ADD_PEAKLIST_NOTE = gql`
-  mutation($userId: ID!, $peakListId: ID!, $text: String!) {
-    user: addPeakListNote(
-      userId: $userId,
-      peakListId: $peakListId,
-      text: $text
-    ) {
-      id
-      peakListNote(peakListId: $peakListId) {
-        id
-        text
-      }
-    }
-  }
-`;
-
-const EDIT_PEAKLIST_NOTE = gql`
-  mutation($userId: ID!, $peakListId: ID!, $text: String!) {
-    user: editPeakListNote(
-      userId: $userId,
-      peakListId: $peakListId,
-      text: $text
-    ) {
-      id
-      peakListNote(peakListId: $peakListId) {
-        id
-        text
-      }
-    }
-  }
-`;
-
-interface PeakListNoteSuccess {
-  user: {
-    id: User['id'];
-    peakListNote: User['peakListNote'];
-  };
-}
-
-interface PeakListNoteVariables {
-  userId: string;
-  peakListId: string;
-  text: string;
-}
-
 interface Props {
   userId: string | null;
   id: string;
@@ -281,9 +97,7 @@ const PeakListDetail = (props: Props) => {
   const me = useCurrentUser();
   const isOtherUser = (me && userId) && (me._id !== userId) ? true : false;
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
-    variables: { id, userId },
-  });
+  const {loading, error, data} = usePeakListDetail(id, userId);
 
   useEffect(() => {
     if (mapContext.intialized && data && data.peakList && data.peakList.bbox) {
@@ -294,8 +108,8 @@ const PeakListDetail = (props: Props) => {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const openExportModal = useCallback(() => setIsExportModalOpen(true), []);
 
-  const [addPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(ADD_PEAKLIST_NOTE);
-  const [editPeakListNote] = useMutation<PeakListNoteSuccess, PeakListNoteVariables>(EDIT_PEAKLIST_NOTE);
+  const addPeakListNote = useAddPeakListNote();
+  const editPeakListNote = useEditPeakListNote();
 
   let header: React.ReactElement<any> | null;
   let body: React.ReactElement<any> | null;

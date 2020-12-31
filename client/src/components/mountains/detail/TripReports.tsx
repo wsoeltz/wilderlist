@@ -1,8 +1,12 @@
-import { gql, useQuery } from '@apollo/client';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import {
+  isCondition,
+  nPerPage,
+  useLatestTripReports,
+} from '../../../queries/tripReports/useLatestTripReports';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonSecondary,
@@ -14,7 +18,7 @@ import {
   SemiBold,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
-import { Conditions, TripReport } from '../../../types/graphQLTypes';
+import { TripReport } from '../../../types/graphQLTypes';
 import {
   isValidURL,
   notEmpty,
@@ -51,94 +55,6 @@ const Text = styled(PreFormattedParagraph)`
   margin: 0;
 `;
 
-export const nPerPage = 7;
-
-export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
-  query getLatestTripReportsForMountain($mountain: ID!, $nPerPage: Int!) {
-    tripReports: tripReportsForMountain(
-    mountain: $mountain, nPerPage: $nPerPage) {
-      id
-      date
-      author {
-        id
-        name
-        hideProfileInSearch
-      }
-      mountains {
-        id
-        name
-      }
-      users {
-        id
-        name
-        hideProfileInSearch
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
-    }
-  }
-`;
-
-export interface SuccessResponse {
-  tripReports: TripReport[];
-}
-
-interface QueryVariables {
-  mountain: string;
-  nPerPage: number;
-}
-
-export const isCondition = (key: string) => {
-  const conditionsObject: Conditions = {
-    mudMinor: null,
-    mudMajor: null,
-    waterSlipperyRocks: null,
-    waterOnTrail: null,
-    leavesSlippery: null,
-    iceBlack: null,
-    iceBlue: null,
-    iceCrust: null,
-    snowIceFrozenGranular: null,
-    snowIceMonorailStable: null,
-    snowIceMonorailUnstable: null,
-    snowIcePostholes: null,
-    snowMinor: null,
-    snowPackedPowder: null,
-    snowUnpackedPowder: null,
-    snowDrifts: null,
-    snowSticky: null,
-    snowSlush: null,
-    obstaclesBlowdown: null,
-    obstaclesOther: null,
-  };
-  const conditionsKeys = Object.keys(conditionsObject);
-  if (conditionsKeys.indexOf(key) !== -1) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
 interface Props {
   mountainId: string;
   mountainName: string;
@@ -165,9 +81,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
     />
   );
 
-  const {loading, error, data} = useQuery<SuccessResponse, QueryVariables>(GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, {
-    variables: { mountain: mountainId, nPerPage: nPerPage * pageNumber },
-  });
+  const {loading, error, data} = useLatestTripReports(mountainId, pageNumber);
 
   let output: React.ReactElement<any> | null;
   if (loading === true) {
