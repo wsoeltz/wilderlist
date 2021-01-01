@@ -80,11 +80,12 @@ const useSnowReport = (input: Input) => {
     const fetchSnowReport = async () => {
       try {
         const today = new Date();
-        const year = today.getFullYear();
+        let year = today.getFullYear();
         let month = (today.getMonth() + 1); // javascript months start at 0
         let day = today.getDate() - 1; // report should be for yesterday
         if (day === 0) {
-          month = month - 1;
+          year = month === 1 ? year - 1 : year;
+          month = month === 1 ? 12 : month - 1;
           day = daysInMonth(month, year);
         }
         const stringMonth = month < 10 ? `0${month}` : month.toString();
@@ -115,15 +116,17 @@ const useSnowReport = (input: Input) => {
           let snowfallPrevMonth: undefined | RawSnowDatum;
           let snowdepthPrevMonth: undefined | RawSnowDatum;
           const prevMonthMaxDay = daysInMonth(month - 1, year);
+          const prevMonth = month === 1 ? 12 : month - 1;
+          const stringPrevMonth = prevMonth < 10 ? `0${prevMonth}` : (prevMonth).toString();
+          const prevYear = prevMonth === 12 ? year - 1 : year;
           if (day < 7) {
-            const stringPrevMonth: any = month - 1 < 10 ? `0${month - 1}` : (month - 1).toString();
             const prevSnowFall = await getSnowFall(
               `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${
-                stateAbbr}-snowfall-${year}${stringPrevMonth}.json`,
+                stateAbbr}-snowfall-${prevYear}${stringPrevMonth}.json`,
             );
             const prevSnowDepth = await getSnowDepth(
             `https://www.ncdc.noaa.gov/snow-and-ice/daily-snow/${
-              stateAbbr}-snow-depth-${year}${stringPrevMonth}.json`,
+              stateAbbr}-snow-depth-${prevYear}${stringPrevMonth}.json`,
             );
             snowfallPrevMonth = prevSnowFall.data.data[sortedSnowFallStations[0].ghcnid];
             snowdepthPrevMonth = prevSnowDepth.data.data[sortedSnowFallStations[0].ghcnid];
@@ -156,7 +159,7 @@ const useSnowReport = (input: Input) => {
 
             } else if (snowfallPrevMonth && snowdepthPrevMonth && prevMonthMaxDay) {
               const prevDay = prevMonthMaxDay + i;
-              date = new Date(`${year}-${month - 1}-${prevDay} 00:00`);
+              date = new Date(`${prevYear}-${prevMonth}-${prevDay} 00:00`);
               if (snowfallPrevMonth.values[prevDay] === 'M') {
                 snowfallValue = AltValues.NoData;
               } else if (snowfallPrevMonth.values[prevDay] === 'T') {
