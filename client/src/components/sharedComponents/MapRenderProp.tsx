@@ -96,7 +96,7 @@ const MapRenderProp = (props: Props) => {
             }
             return point(mtn.location, {
               name: mtn.name, elevation: mtn.elevation,
-              icon,
+              icon, id: mtn.id,
             });
           });
           mapContext.setHighlightedMountains(featureCollection(points));

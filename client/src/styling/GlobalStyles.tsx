@@ -57,9 +57,13 @@ import { createGlobalStyle } from 'styled-components/macro';
 import {
   baseColor,
   lightBaseColor,
+  lightBorderColor,
   linkStyles,
+  primaryColor,
   primaryFont,
+  primaryHoverColor,
   semiBoldFontBoldWeight,
+  tertiaryColor,
 } from './styleUtils';
 
 // Add all font awesome icons here
@@ -138,6 +142,61 @@ const GlobalStyles = createGlobalStyle`
         padding: 0;
     }
 
+  }
+
+  /********
+      MAPBOX CUSTOM STYLES
+  ********/
+  .mapboxgl-popup {
+    .mapboxgl-popup-content {
+      padding: 0;
+      font-family: ${primaryFont};
+      border-radius: 8px;
+      overflow: hidden;
+
+      .popup-title {
+        padding: 0.8rem 1rem 0.7rem;
+        display: grid;
+        grid-template-columns: 1.5rem 1fr;
+        background-color: ${tertiaryColor};
+        border-bottom: solid 1px ${lightBorderColor};
+        font-size: 1rem;
+
+        button {
+          border: none;
+          background-color: transparent;
+          font-family: ${primaryFont};
+          color: ${primaryColor};
+          text-decoration: underline;
+          padding: 0;
+
+          &:focus {
+            outline: none;
+          }
+
+          &:hover {
+            color: ${primaryHoverColor};
+          }
+
+        }
+        div {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    &.mapbox-gl-popup-compact {
+      .popup-title {
+        border-bottom: none;
+      }
+      .mapboxgl-popup-close-button {
+        display: none;
+      }
+      .mapboxgl-popup-tip {
+        border-top-color: ${tertiaryColor};
+      }
+    }
   }
 `;
 
