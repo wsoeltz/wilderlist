@@ -4,6 +4,8 @@ export const listDetailLink = (id: string) => Routes.ListDetail.replace(':id', i
 
 export const mountainDetailLink = (id: string) => Routes.MountainDetail.replace(':id', id);
 
+export const campsiteDetailLink = (id: string) => Routes.CampsiteDetail.replace(':id', id);
+
 export const userProfileLink = (id: string) => Routes.UserProfile.replace(':id', id);
 
 export const otherUserPeakListLink = (friendId: string, peakListId: string) =>

@@ -16,11 +16,6 @@ import useFluent from '../../../hooks/useFluent';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import { Routes } from '../../../routing/routes';
 import {
-  listDetailLink,
-  mountainDetailLink,
-  userProfileLink,
-} from '../../../routing/Utils';
-import {
   HeaderContainer as HeaderContainerBase,
   headerHeight,
 } from '../../../styling/Grid';
@@ -278,10 +273,6 @@ const LineBreak = styled.hr`
   border: solid 1px #fff;
 `;
 
-const peakListsPath = listDetailLink('search');
-const usersPath = userProfileLink('search');
-const mountainPath = mountainDetailLink('search');
-
 type LinkInput = {
   route: string,
   label: string,
@@ -312,11 +303,13 @@ const Header = () => {
     } else if  (pathname.includes('your-stats')) {
       normalizedPathname = Routes.YourStats;
     } else if (pathname.includes('user') && !pathname.includes('settings')) {
-      normalizedPathname = usersPath;
+      normalizedPathname = Routes.SearchUsers;
     } else if (pathname.includes('list')) {
-      normalizedPathname = peakListsPath;
+      normalizedPathname = Routes.SearchLists;
     } else if (pathname.includes('mountain')) {
-      normalizedPathname = mountainPath;
+      normalizedPathname = Routes.SearchMountains;
+    } else if (pathname.includes('campsite')) {
+      normalizedPathname = Routes.SearchCampsites;
     } else {
       normalizedPathname = pathname;
     }
@@ -366,19 +359,19 @@ const Header = () => {
     icon: faChartLine,
   });
   const friendsLink = createLink({
-    route: usersPath,
+    route: Routes.SearchUsers,
     label: getString('header-text-menu-item-friends'),
     customIcon: false,
     icon: faUserFriends,
   });
   const listsLink = createLink({
-    route: peakListsPath,
+    route: Routes.SearchLists,
     label: hikingListsText,
     customIcon: false,
     icon: faList,
   });
   const mountainsLink = createLink({
-    route: mountainPath,
+    route: Routes.SearchMountains,
     label: getString('header-text-menu-item-mountains'),
     customIcon: true,
     icon: mountainNeutralSvg,
@@ -390,7 +383,7 @@ const Header = () => {
     icon: trailDefaultSvg,
   });
   const campsitesLink = createLink({
-    route: '#',
+    route: Routes.SearchCampsites,
     label: getString('header-text-menu-item-camping'),
     customIcon: true,
     icon: tentNeutralSvg,

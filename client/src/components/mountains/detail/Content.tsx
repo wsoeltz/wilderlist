@@ -2,6 +2,12 @@ import { faCloudSun, faEdit } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import {
+  DetailBox,
+  InlineSectionContainer,
+  NotesTitle,
+  VerticalContentItem,
+} from '../../../styling/sharedContentStyles';
+import {
   BasicIconInText,
   DetailBoxTitle,
   PreFormattedParagraph,
@@ -21,12 +27,6 @@ import Tooltip from '../../sharedComponents/Tooltip';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
 import MountainNote from './MountainNote';
-import {
-  DetailBox,
-  InlineSectionContainer,
-  NotesTitle,
-  VerticalContentItem,
-} from './sharedStyling';
 import TripReports from './TripReports';
 import SnowDepth from './weather/snowDepth';
 import WeatherReport from './WeatherReport';

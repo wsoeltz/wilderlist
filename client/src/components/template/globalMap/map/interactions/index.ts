@@ -1,5 +1,7 @@
+import { GetString } from 'fluent-react/compat';
 import mapboxgl from 'mapbox-gl';
 import campsiteInteractions from './campsites';
+import highlightedPoints from './highlightedPoints';
 import mountainInteractions from './mountains';
 import roadInteractions from './roads';
 import trailInteractions from './trails';
@@ -7,6 +9,7 @@ import trailInteractions from './trails';
 interface Input {
   map: mapboxgl.Map;
   push: (url: string) => void;
+  getString: GetString;
 }
 
 export type Id = string | number | undefined;
@@ -43,6 +46,7 @@ const initInteractions = (input: Input) => {
   mountainInteractions({...input, setHovered, getHovered});
   campsiteInteractions({...input, setHovered, getHovered});
   trailInteractions({...input, setHovered, getHovered});
+  highlightedPoints({...input, setHovered, getHovered});
   roadInteractions(input);
 };
 

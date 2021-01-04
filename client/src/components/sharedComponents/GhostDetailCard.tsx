@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import {
   Card,
   lightBorderColor,
-} from '../../../styling/styleUtils';
+} from '../../styling/styleUtils';
 
 const GhostCard = styled(Card)`
   height: 80px;

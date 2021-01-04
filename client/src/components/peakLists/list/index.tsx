@@ -11,7 +11,7 @@ import { listDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import GhostMountainCard from '../../mountains/list/GhostMountainCard';
+import GhostCard from '../../sharedComponents/GhostDetailCard';
 import GeoSearchResults from './GeoSearchResults';
 import {ViewMode} from './ListPeakLists';
 
@@ -23,7 +23,7 @@ const PeakListPage = () => {
   if (loading === true && data === undefined) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
-      loadingCards.push(<GhostMountainCard key={i} />);
+      loadingCards.push(<GhostCard key={i} />);
     }
     list = <>{loadingCards}</>;
   } else if (error !== undefined) {

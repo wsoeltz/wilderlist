@@ -28,6 +28,8 @@ meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
 
 meta-data-mountain-detail-description = { $name }{ $state } stands at { $elevation }ft high{ $additionaltext }. View trails, camping, directions, weather, and trip reports for { $name }.
 
+meta-data-campsite-detail-description = { $name } is a { $type } in { $state }. Explore nearby trails, mountains, directions, weather, and trip reports for { $name }.
+
 meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
 meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
 
@@ -636,7 +638,14 @@ map-all-months = 12
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Location To Center
 
-map-get-directions = Get Directions
+map-get-directions = Show Directions
+last-trip-dynamic = Last {
+  $type ->
+    [mountains] hiked
+    [campsites] camped
+    [trails] hiked
+    *[other] trip
+} on
 
 map-legend-location = Your Location &amp;<br />Driving Directions
 map-legend-location-tooltip = <strong>Show the driving times and routes from your location to any mountain, trailhead, or campsite.</strong> Click on a point on the map and then click "Get Directions".

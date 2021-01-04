@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import MapContext, {MapState} from '../../../contextProviders/mapContext';
+import useFluent from '../../../hooks/useFluent';
 import useUsersLocation from '../../../hooks/useUsersLocation';
 import {Routes} from '../../../routing/routes';
 import initMap from './map';
@@ -18,14 +19,15 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   const [mapState, setMapState] = useState<MapState>({intialized: false});
   const {location: initialCenter} = useUsersLocation();
   const {push} = useHistory();
+  const getString = useFluent();
 
   useEffect(() => {
     const container = rootRef.current;
-    if (container && !mapState.intialized) {
-      const mapOutput = initMap({container, push});
+    if (container && !mapState.intialized && getString) {
+      const mapOutput = initMap({container, push, getString});
       setMapState({intialized: true, ...mapOutput});
     }
-  }, [rootRef, mapState, push]);
+  }, [rootRef, mapState, push, getString]);
 
   useEffect(() => {
     if (mapState.intialized === true && mapState.map && initialCenter !== undefined) {
@@ -33,6 +35,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
           window.location.pathname === Routes.Dashboard ||
           window.location.pathname === Routes.SearchLists ||
           window.location.pathname === Routes.SearchMountains ||
+          window.location.pathname === Routes.SearchCampsites ||
           window.location.pathname === Routes.UserSettings ||
           window.location.pathname === Routes.PrivacyPolicy ||
           window.location.pathname === Routes.TermsOfUse ||

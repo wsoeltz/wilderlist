@@ -13,6 +13,7 @@ import {
   ContentContainer,
   ContentHeader,
 } from '../../styling/Grid';
+import CampsiteDetailPage from '../campsites/detail';
 import MountainDetailPage from '../mountains/detail';
 import PeakListDetailPage from '../peakLists/detail';
 import LoadingSuspense from '../sharedComponents/LoadingSuspense';
@@ -52,6 +53,7 @@ const ContentRoutes = () => {
         <Switch>
           <TrackedRoute exact path={Routes.Landing} component={null} />
           <TrackedRoute exact path={Routes.MountainDetail} component={MountainDetailPage} />
+          <TrackedRoute exact path={Routes.CampsiteDetail} component={CampsiteDetailPage} />
           <TrackedRoute exact path={Routes.ListDetail} component={PeakListDetailPage} />
           <TrackedRoute exact path={Routes.Dashboard} component={Dashboard} />
           <TrackedRoute exact path={Routes.UserProfile} component={UserProfile} />

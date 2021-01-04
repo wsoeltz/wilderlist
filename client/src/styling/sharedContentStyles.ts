@@ -9,7 +9,7 @@ import {
   lightBlue,
   lightBorderColor,
   semiBoldFontBoldWeight,
-} from '../../../styling/styleUtils';
+} from './styleUtils';
 
 export const ItemTitle = styled.h2`
   text-transform: uppercase;

@@ -5,6 +5,11 @@ import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {useUsersAscentsForMountain} from '../../../queries/users/useUsersAscentsForMountain';
 import {
+  AscentListItem,
+  BasicListItem,
+  ItemTitle,
+} from '../../../styling/sharedContentStyles';
+import {
   ButtonPrimary,
   GhostButton,
 } from '../../../styling/styleUtils';
@@ -19,11 +24,6 @@ import {
 } from '../../peakLists/Utils';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import SignUpModal from '../../sharedComponents/SignUpModal';
-import {
-  AscentListItem,
-  BasicListItem,
-  ItemTitle,
-} from './sharedStyling';
 
 const AddAscentButton = styled(ButtonPrimary)`
   margin-top: 1rem;

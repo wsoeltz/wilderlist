@@ -7,7 +7,11 @@ import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useMapCenter from '../../../../hooks/useMapCenter';
 import useMapContext from '../../../../hooks/useMapContext';
-import {listDetailLink, mountainDetailLink} from '../../../../routing/Utils';
+import {
+  campsiteDetailLink,
+  listDetailLink,
+  mountainDetailLink,
+} from '../../../../routing/Utils';
 import {
   lightBorderColor,
   tertiaryColor,
@@ -155,6 +159,8 @@ const Search = () => {
       push(mountainDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.list) {
       push(listDetailLink(suggestion.id));
+    } else if (suggestion.type === SearchResultType.campsite) {
+      push(campsiteDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.geolocation && mapContext.intialized) {
       mapContext.setNewCenter(suggestion.coordinates, 12);
     }

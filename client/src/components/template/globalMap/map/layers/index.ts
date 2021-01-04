@@ -1,5 +1,4 @@
-export const highlightedMountainsLayerId = 'temporary-highlight-mountains-layer-id';
-export const highlightedCampsitesLayerId = 'temporary-highlight-campsites-layer-id';
+export const highlightedPointsLayerId = 'temporary-highlight-mountains-layer-id';
 export const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
   type: 'Feature',
   properties: {},
@@ -14,14 +13,14 @@ interface Input {
 }
 
 const initLayers = ({map}: Input) => {
-  map.addSource(highlightedMountainsLayerId, {
+  map.addSource(highlightedPointsLayerId, {
     type: 'geojson',
     data: defaultGeoJsonPoint,
   });
   map.addLayer({
-    id: highlightedMountainsLayerId,
+    id: highlightedPointsLayerId,
     type: 'symbol',
-    source: highlightedMountainsLayerId,
+    source: highlightedPointsLayerId,
       layout: {
         'text-optional': true,
         'text-size': [
@@ -31,12 +30,12 @@ const initLayers = ({map}: Input) => {
             0,
             6,
             22,
-            11,
+            12,
         ],
         'icon-image': ['get', 'icon'],
         'text-font': [
-            'Source Sans Pro Regular',
-            'Arial Unicode MS Regular',
+          'Source Sans Pro Bold',
+          'Arial Unicode MS Regular',
         ],
         'text-padding': 0,
         'text-offset': [
@@ -59,17 +58,10 @@ const initLayers = ({map}: Input) => {
         ],
         'text-anchor': 'top',
         'text-field': [
-            'step',
-            ['zoom'],
+            'concat',
             ['get', 'name'],
-            12,
-            [
-                'concat',
-                ['get', 'name'],
-                '\n',
-                ['to-string', ['get', 'elevation']],
-                'ft',
-            ],
+            '\n',
+            ['get', 'subtitle'],
         ],
         'text-letter-spacing': 0.04,
         'icon-padding': 0,
@@ -86,10 +78,22 @@ const initLayers = ({map}: Input) => {
         ],
     },
     paint: {
-        'text-halo-color': '#ffffff',
-        'text-halo-width': 2,
-        'text-color': '#242a1d',
-        'text-opacity': ['step', ['zoom'], 0, 10, 1],
+        'text-halo-color': 'hsla(0, 0%, 100%, 0.77)',
+        'text-halo-width': 0.4,
+        'text-color': [
+          'case',
+          [
+            'boolean',
+            [
+              'feature-state',
+              'hover',
+            ],
+            false,
+          ],
+          '#206ca6',
+          '#5b6151',
+        ],
+        'text-opacity': ['step', ['zoom'], 0, 12, 1],
     },
   });
 };

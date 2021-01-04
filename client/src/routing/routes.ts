@@ -8,8 +8,12 @@ export enum Routes {
 
   ListDetail = '/list/:id',
   SearchLists = '/list/search',
+
   MountainDetail = '/mountain/:id',
   SearchMountains = '/mountain/search',
+
+  CampsiteDetail = '/campsite/:id',
+  SearchCampsites = '/campsite/search',
 
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',
@@ -37,3 +41,9 @@ export const setMountainOgImageUrl = (id: string) => mountainOgImageUrl.replace(
 
 const peakListOgImageUrl = '/og-image/peaklist/:peakListId/image.jpg';
 export const setPeakListOgImageUrl = (id: string) => peakListOgImageUrl.replace(':peakListId', id);
+
+const campsiteOgImageUrl = '/og-image/campsite/:campsiteId/image.jpg';
+export const setCampsiteOgImageUrl = (id: string) => campsiteOgImageUrl.replace(':campsiteId', id);
+
+const trailOgImageUrl = '/og-image/trail/:trailId/image.jpg';
+export const setTrailOgImageUrl = (id: string) => trailOgImageUrl.replace(':trailId', id);

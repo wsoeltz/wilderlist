@@ -1,5 +1,9 @@
+import { GetString } from 'fluent-react/compat';
 import React from 'react';
 import {Coordinate} from '../../../../../types/graphQLTypes';
+import {
+  ItemType,
+} from './index';
 import {
   addClickedPopup,
 } from './popup';
@@ -8,10 +12,11 @@ import ClickedPopup from './popup/ClickedPopup';
 interface Input {
   map: mapboxgl.Map;
   push: (url: string) => void;
+  getString: GetString;
 }
 
 const roadInteractions = (input: Input) => {
-  const {map, push} = input;
+  const {map, push, getString} = input;
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'roads-background', function(e) {
@@ -36,6 +41,9 @@ const roadInteractions = (input: Input) => {
         subtitle={type}
         id={id}
         push={push}
+        itemType={ItemType.trail}
+        getString={getString}
+        location={coordinates}
       />, coordinates, map);
   });
 

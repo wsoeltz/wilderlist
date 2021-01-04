@@ -2,25 +2,25 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
 import {
-  useGeoNearMountains,
-} from '../../../queries/mountains/useGeoNearMountains';
-import { mountainDetailLink } from '../../../routing/Utils';
+  useGeoNearCampsites,
+} from '../../../queries/campsites/useGeoNearCampsites';
+import { campsiteDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import GhostDetailCard from '../../sharedComponents/GhostDetailCard';
-import ListMountains from './ListMountains';
+import GhostCard from '../../sharedComponents/GhostDetailCard';
+import ListCampsites from './ListCampsites';
 
-const MountainSearchPage = () => {
+const CampsiteSearchPage = () => {
   const getString = useFluent();
 
-  const {loading, error, data} = useGeoNearMountains();
+  const {loading, error, data} = useGeoNearCampsites();
 
   let list: React.ReactElement<any> | null;
   if (loading === true && data === undefined) {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
-      loadingCards.push(<GhostDetailCard key={i} />);
+      loadingCards.push(<GhostCard key={i} />);
     }
     list = <>{loadingCards}</>;
   } else if (error !== undefined) {
@@ -31,17 +31,17 @@ const MountainSearchPage = () => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
-    if (!data.mountains) {
+    if (!data.campsites) {
       const loadingCards: Array<React.ReactElement<any>> = [];
       for (let i = 0; i < 3; i++) {
-        loadingCards.push(<GhostDetailCard key={i} />);
+        loadingCards.push(<GhostCard key={i} />);
       }
       list = <>{loadingCards}</>;
     } else {
       list = (
         <>
-          <ListMountains
-            mountainData={data.mountains}
+          <ListCampsites
+            campsiteData={data.campsites}
             noResultsText={getString('global-text-value-no-results-found')}
           />
         </>
@@ -50,12 +50,12 @@ const MountainSearchPage = () => {
   } else {
     const loadingCards: Array<React.ReactElement<any>> = [];
     for (let i = 0; i < 3; i++) {
-      loadingCards.push(<GhostDetailCard key={i} />);
+      loadingCards.push(<GhostCard key={i} />);
     }
     list = <>{loadingCards}</>;
   }
 
-  const metaDescription = getString('meta-data-mountain-search-description');
+  const metaDescription = getString('meta-data-campsite-search-description');
 
   return (
     <>
@@ -70,11 +70,11 @@ const MountainSearchPage = () => {
           property='og:description'
           content={metaDescription}
         />
-        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink('search')} />
+        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + campsiteDetailLink('search')} />
       </Helmet>
       {list}
     </>
   );
 };
 
-export default MountainSearchPage;
+export default CampsiteSearchPage;

@@ -1,3 +1,5 @@
+import { GetString } from 'fluent-react/compat';
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import {
   Id,
@@ -13,19 +15,27 @@ interface Input {
   push: (url: string) => void;
   setHovered: (id: Id, type: ItemType | undefined) => void;
   getHovered: () => ({id: Id, type: ItemType | undefined});
+  getString: GetString;
 }
 
 const campiteInteractions = (input: Input) => {
-  const {map, push, setHovered, getHovered} = input;
+  const {
+    map, push, setHovered, getHovered, getString,
+  } = input;
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'campsites', function(e) {
     const coordinates = e && e.features && e.features[0] && e.features[0].geometry
       ? (e.features[0].geometry as any).coordinates.slice() : [e.lngLat.lng, e.lngLat.lat];
-    const name = e && e.features && e.features[0]
+    let name = e && e.features && e.features[0]
       ? (e.features[0].properties as any).name : '';
-    const type = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).type : '';
+    let type = e && e.features && e.features[0]
+        ? upperFirst(getString('global-formatted-campsite-type', {type: (e.features[0].properties as any).type}))
+        : '';
+    if (!name) {
+      name = type;
+      type = '';
+    }
     const id = e && e.features && e.features[0]
       ? (e.features[0].properties as any).id : '';
 
@@ -42,6 +52,9 @@ const campiteInteractions = (input: Input) => {
         subtitle={type}
         id={id}
         push={push}
+        itemType={ItemType.campsite}
+        getString={getString}
+        location={coordinates}
       />, coordinates, map);
   });
 

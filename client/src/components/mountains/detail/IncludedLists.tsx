@@ -11,14 +11,14 @@ import {
 } from '../../../queries/mountains/getIncludedLists';
 import { listDetailLink } from '../../../routing/Utils';
 import {
-  lightBorderColor,
-} from '../../../styling/styleUtils';
-import {
   BasicUnorderedListContainer,
   BasicUnorderedListItem,
   ItemTitle,
   VerticalContentItem,
-} from './sharedStyling';
+} from '../../../styling/sharedContentStyles';
+import {
+  lightBorderColor,
+} from '../../../styling/styleUtils';
 
 const PlaceholderBlock = styled.div`
   width: 70%;

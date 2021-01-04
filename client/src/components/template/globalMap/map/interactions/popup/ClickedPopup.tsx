@@ -1,18 +1,36 @@
+import { GetString } from 'fluent-react/compat';
 import React from 'react';
-import {mountainDetailLink} from '../../../../../../routing/Utils';
+import {
+  campsiteDetailLink,
+  mountainDetailLink,
+} from '../../../../../../routing/Utils';
+import {Coordinate} from '../../../../../../types/graphQLTypes';
+import {ItemType} from '../../interactions';
 import DrivingDirections from './DrivingDirections';
-import LastAscent from './LastAscent';
+import LastTrip from './LastTrip';
 import PopupTitle from './PopupTitle';
 
 interface Props {
   title: string;
   subtitle: string;
+  location: Coordinate;
   id: string;
   push: (url: string) => void;
+  itemType: ItemType;
+  getString: GetString;
 }
 
-const ClickedPopup = ({title, subtitle, id, push}: Props) => {
-  const onClick = () => push(mountainDetailLink(id));
+const ClickedPopup = (props: Props) => {
+  const {
+    title, subtitle, id, push, itemType, location, getString,
+  } = props;
+  const onClick = () => {
+    if (itemType === ItemType.mountain) {
+      push(mountainDetailLink(id));
+    } else if (itemType === ItemType.campsite) {
+      push(campsiteDetailLink(id));
+    }
+  };
   return (
     <>
       <PopupTitle
@@ -21,8 +39,15 @@ const ClickedPopup = ({title, subtitle, id, push}: Props) => {
         onClick={onClick}
       />
       <div className={'popup-main-content'}>
-        <DrivingDirections id={id} />
-        <LastAscent id={id} />
+        <DrivingDirections
+          getString={getString}
+          destination={location}
+        />
+        <LastTrip
+          id={id}
+          itemType={itemType}
+          getString={getString}
+        />
       </div>
     </>
   );

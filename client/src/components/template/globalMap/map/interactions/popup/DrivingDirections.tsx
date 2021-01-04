@@ -1,13 +1,16 @@
+import { GetString } from 'fluent-react/compat';
 import React from 'react';
+import {Coordinate} from '../../../../../../types/graphQLTypes';
 
 interface Props {
-  id: string;
+  destination: Coordinate;
+  getString: GetString;
 }
 
-const DrivingDirections = ({id}: Props) => {
+const DrivingDirections = ({getString}: Props) => {
   return (
     <>
-      <div>Driving Directions for Mountain {id}</div>
+      <div>{getString('map-get-directions')}</div>
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { GetString } from 'fluent-react/compat';
 import React from 'react';
 import {Coordinate} from '../../../../../types/graphQLTypes';
 import {
@@ -14,10 +15,11 @@ interface Input {
   push: (url: string) => void;
   setHovered: (id: Id, type: ItemType | undefined) => void;
   getHovered: () => ({id: Id, type: ItemType | undefined});
+  getString: GetString;
 }
 
 const trailInteractions = (input: Input) => {
-  const {map, push, setHovered, getHovered} = input;
+  const {map, push, setHovered, getHovered, getString} = input;
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'trails-background', function(e) {
@@ -42,6 +44,9 @@ const trailInteractions = (input: Input) => {
         subtitle={type}
         id={id}
         push={push}
+        itemType={ItemType.trail}
+        getString={getString}
+        location={coordinates}
       />, coordinates, map);
   });
 

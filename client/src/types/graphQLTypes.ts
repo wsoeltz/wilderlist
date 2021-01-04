@@ -201,6 +201,10 @@ export interface Campsite {
   internet_access: boolean | null;
   fire: boolean | null;
   maxtents: number | null;
+  author: User | null;
+  status: CreatedItemStatus | null;
+  description: string | null;
+  resources: ExternalResource[] | null;
 }
 
 export enum PermissionTypes {

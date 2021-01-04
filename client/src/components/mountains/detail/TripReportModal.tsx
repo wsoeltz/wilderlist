@@ -5,6 +5,15 @@ import useFluent from '../../../hooks/useFluent';
 import { isCondition } from '../../../queries/tripReports/useLatestTripReports';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
+  BoldLink,
+  Condition,
+  ExternalLink,
+  ReportBody,
+  ReportHeader,
+  Section,
+  SectionTitle,
+} from '../../../styling/sharedContentStyles';
+import {
   ButtonSecondary,
   PreFormattedParagraph,
   SemiBold,
@@ -20,15 +29,6 @@ import {
   formatStringDate,
 } from '../../peakLists/Utils';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
-import {
-  BoldLink,
-  Condition,
-  ExternalLink,
-  ReportBody,
-  ReportHeader,
-  Section,
-  SectionTitle,
-} from './sharedStyling';
 
 const ButtonWrapper = styled.div`
   display: flex;

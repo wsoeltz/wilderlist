@@ -2,12 +2,12 @@ import {faSnowflake} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components';
 import useFluent from '../../../../../hooks/useFluent';
+import {ItemTitle} from '../../../../../styling/sharedContentStyles';
 import {
   BasicIconInText,
   lightBaseColor,
 } from '../../../../../styling/styleUtils';
 import LoadingSpinner from '../../../../sharedComponents/LoadingSpinner';
-import {ItemTitle} from '../../sharedStyling';
 import {
   ForecastBlock,
   ForecastRootContainer,

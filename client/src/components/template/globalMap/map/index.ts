@@ -1,5 +1,6 @@
 const {point} = require('@turf/helpers');
 const distance = require('@turf/distance').default;
+import { GetString } from 'fluent-react/compat';
 import mapboxgl from 'mapbox-gl';
 import {
   contentColumnIdeal,
@@ -12,7 +13,7 @@ import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navig
 import initInteractions from './interactions';
 import initLayers, {
   defaultGeoJsonPoint,
-  highlightedMountainsLayerId,
+  highlightedPointsLayerId,
 } from './layers';
 
 // eslint-disable-next-line
@@ -21,6 +22,7 @@ import initLayers, {
 interface Input {
   container: HTMLElement;
   push: (url: string) => void;
+  getString: GetString;
 }
 
 export const defaultCenter: Coordinate = [-98.5795, 39.8283];
@@ -29,11 +31,11 @@ export interface Output {
   map: mapboxgl.Map;
   setNewCenter: (center: Coordinate, zoom: number) => void;
   setNewBounds: (bbox: [Longitude, Latitude, Longitude, Latitude]) => void;
-  setHighlightedMountains: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
+  setHighlightedPoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   clearMap: () => void;
 }
 
-const initMap = ({container, push}: Input): Output => {
+const initMap = ({container, push, getString}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
     mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
   }
@@ -51,7 +53,7 @@ const initMap = ({container, push}: Input): Output => {
   map.on('load', () => {
     mapLoaded = true;
     initLayers({map});
-    initInteractions({map, push});
+    initInteractions({map, push, getString});
   });
 
   const setPadding = () => {
@@ -104,10 +106,10 @@ const initMap = ({container, push}: Input): Output => {
   };
 
   const clearHighlightedMountains = () =>
-    (map.getSource(highlightedMountainsLayerId) as any).setData(defaultGeoJsonPoint);
+    (map.getSource(highlightedPointsLayerId) as any).setData(defaultGeoJsonPoint);
 
   const updateSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
-    (map.getSource(highlightedMountainsLayerId) as any).setData(data);
+    (map.getSource(highlightedPointsLayerId) as any).setData(data);
 
   const clearMap = () => {
     if (mapLoaded) {
@@ -121,7 +123,7 @@ const initMap = ({container, push}: Input): Output => {
     }
   };
 
-  const setHighlightedMountains = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+  const setHighlightedPoints = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
     if (mapLoaded) {
       updateSource(data);
     } else {
@@ -134,7 +136,7 @@ const initMap = ({container, push}: Input): Output => {
   };
 
   return {
-    map, setNewCenter, setNewBounds, setHighlightedMountains, clearMap,
+    map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap,
   };
 };
 

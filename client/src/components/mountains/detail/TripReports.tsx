@@ -9,6 +9,18 @@ import {
 } from '../../../queries/tripReports/useLatestTripReports';
 import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import {
+  BasicListItem,
+  BoldLink,
+  Condition,
+  ExternalLink,
+  ItemTitle,
+  ReportBody,
+  ReportContainer,
+  ReportHeader,
+  Section,
+  SectionTitle,
+} from '../../../styling/sharedContentStyles';
+import {
   ButtonSecondary,
   CollapsedParagraph,
   GhostButton,
@@ -27,18 +39,6 @@ import {
   formatStringDate,
 } from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import {
-  BasicListItem,
-  BoldLink,
-  Condition,
-  ExternalLink,
-  ItemTitle,
-  ReportBody,
-  ReportContainer,
-  ReportHeader,
-  Section,
-  SectionTitle,
-} from './sharedStyling';
 import TripReportModal from './TripReportModal';
 
 const LinkButton = styled(LinkButtonBase)`
