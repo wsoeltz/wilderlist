@@ -2,19 +2,19 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
 import {
-  useGeoNearCampsites,
-} from '../../../queries/campsites/useGeoNearCampsites';
-import { campsiteDetailLink } from '../../../routing/Utils';
+  useGeoNearTrails,
+} from '../../../queries/trails/useGeoNearTrails';
+import { trailDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
 import GhostCard from '../../sharedComponents/GhostDetailCard';
-import ListCampsites from './ListCampsites';
+import ListTrails from './ListTrails';
 
-const CampsiteSearchPage = () => {
+const TrailSearchPage = () => {
   const getString = useFluent();
 
-  const {loading, error, data} = useGeoNearCampsites();
+  const {loading, error, data} = useGeoNearTrails();
 
   let list: React.ReactElement<any> | null;
   if (loading === true && data === undefined) {
@@ -31,7 +31,7 @@ const CampsiteSearchPage = () => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
-    if (!data.campsites) {
+    if (!data.trails) {
       const loadingCards: Array<React.ReactElement<any>> = [];
       for (let i = 0; i < 3; i++) {
         loadingCards.push(<GhostCard key={i} />);
@@ -40,8 +40,8 @@ const CampsiteSearchPage = () => {
     } else {
       list = (
         <>
-          <ListCampsites
-            campsiteData={data.campsites}
+          <ListTrails
+            trailData={data.trails}
             noResultsText={getString('global-text-value-no-results-found')}
           />
         </>
@@ -55,26 +55,26 @@ const CampsiteSearchPage = () => {
     list = <>{loadingCards}</>;
   }
 
-  const metaDescription = getString('meta-data-campsite-search-description');
+  const metaDescription = getString('meta-data-trail-search-description');
 
   return (
     <>
       <Helmet>
-        <title>{getString('meta-data-campsite-search-default-title')}</title>
+        <title>{getString('meta-data-trail-search-default-title')}</title>
         <meta
           name='description'
           content={metaDescription}
         />
-        <meta property='og:title' content={getString('meta-data-campsite-search-default-title')} />
+        <meta property='og:title' content={getString('meta-data-trail-search-default-title')} />
         <meta
           property='og:description'
           content={metaDescription}
         />
-        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + campsiteDetailLink('search')} />
+        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + trailDetailLink('search')} />
       </Helmet>
       {list}
     </>
   );
 };
 
-export default CampsiteSearchPage;
+export default TrailSearchPage;

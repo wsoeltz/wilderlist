@@ -11,6 +11,7 @@ import {
   campsiteDetailLink,
   listDetailLink,
   mountainDetailLink,
+  trailDetailLink,
 } from '../../../../routing/Utils';
 import {
   lightBorderColor,
@@ -161,6 +162,8 @@ const Search = () => {
       push(listDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.campsite) {
       push(campsiteDetailLink(suggestion.id));
+    } else if (suggestion.type === SearchResultType.trail) {
+      push(trailDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.geolocation && mapContext.intialized) {
       mapContext.setNewCenter(suggestion.coordinates, 12);
     }

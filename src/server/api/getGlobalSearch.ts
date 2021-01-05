@@ -4,6 +4,7 @@ const distance = require('@turf/distance');
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import groupBy from 'lodash/groupBy';
+import intersection from 'lodash/intersection';
 import orderBy from 'lodash/orderBy';
 import {
   Campsite as ICampsite,
@@ -149,11 +150,19 @@ const fetchValuesAsync = (input: Input) => {
         });
       });
       const filteredTrails = [];
-      const groupedTrails = groupBy(trailData, ['name']);
+      const groupedTrails = groupBy(trailData, 'name');
       for (const group in groupedTrails) {
         if (groupedTrails.hasOwnProperty(group)) {
           const sortedGroup = orderBy(groupedTrails[group], ['distance']);
-          filteredTrails.push(sortedGroup[0]);
+          const parent = intersection(...sortedGroup.map(t => t.parents));
+          if (parent.length) {
+            filteredTrails.push({
+              id: parent[0],
+              ...sortedGroup[0],
+            });
+          } else {
+            filteredTrails.push(sortedGroup[0]);
+          }
         }
       }
       trailData = orderBy(filteredTrails, ['priority', 'distance']).slice(0, 7);

@@ -36,6 +36,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
           window.location.pathname === Routes.SearchLists ||
           window.location.pathname === Routes.SearchMountains ||
           window.location.pathname === Routes.SearchCampsites ||
+          window.location.pathname === Routes.SearchTrails ||
           window.location.pathname === Routes.UserSettings ||
           window.location.pathname === Routes.PrivacyPolicy ||
           window.location.pathname === Routes.TermsOfUse ||

@@ -3,11 +3,6 @@ import {useLocation} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import {Routes} from '../../../routing/routes';
-import {
-  listDetailLink,
-  mountainDetailLink,
-  userProfileLink,
-} from '../../../routing/Utils';
 import {mobileSize} from '../../../Utils';
 import MobileMapViewBox from './MobileMapViewBox';
 import Search from './search';
@@ -23,10 +18,6 @@ const Root = styled.div`
   }
 `;
 
-const peakListsPath = listDetailLink('search');
-const usersPath = userProfileLink('search');
-const mountainPath = mountainDetailLink('search');
-
 const Header = () => {
   const { pathname } = useLocation();
   const windowWidth = useWindowWidth();
@@ -37,11 +28,15 @@ const Header = () => {
   } else if  (pathname.includes('your-stats')) {
     normalizedPathname = Routes.YourStats;
   } else if (pathname.includes('user') && !pathname.includes('settings')) {
-    normalizedPathname = usersPath;
+    normalizedPathname = Routes.SearchUsers;
   } else if (pathname.includes('list')) {
-    normalizedPathname = peakListsPath;
+    normalizedPathname = Routes.SearchLists;
   } else if (pathname.includes('mountain')) {
-    normalizedPathname = mountainPath;
+    normalizedPathname = Routes.SearchMountains;
+  } else if (pathname.includes('campsite')) {
+    normalizedPathname = Routes.SearchCampsites;
+  } else if (pathname.includes('trail')) {
+    normalizedPathname = Routes.SearchTrails;
   } else {
     normalizedPathname = pathname;
   }
@@ -49,8 +44,8 @@ const Header = () => {
   const showBackground = useMemo(
     () => (windowWidth > mobileSize && normalizedPathname !== Routes.Landing) ||
                          (normalizedPathname !== Routes.Landing &&
-                          normalizedPathname !== peakListsPath  &&
-                          normalizedPathname !== mountainPath),
+                          normalizedPathname !== Routes.SearchLists  &&
+                          normalizedPathname !== Routes.SearchMountains),
    [windowWidth, normalizedPathname],
   );
 

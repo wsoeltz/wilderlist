@@ -92,6 +92,23 @@ const TrailType: any = new GraphQLObjectType({
     },
     waterCrossing: { type: GraphQLString },
     skiTrail: { type: GraphQLBoolean },
+    primaryParent: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          if (parentValue.parents && parentValue.parents.length) {
+            const parents = await trailLoader.loadMany(parentValue.parents);
+            const primary = parents.find((p: ITrail) => p.name === parentValue.name);
+            if (primary) {
+              return primary;
+            }
+          }
+          return parentValue;
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 

@@ -15,6 +15,9 @@ export enum Routes {
   CampsiteDetail = '/campsite/:id',
   SearchCampsites = '/campsite/search',
 
+  TrailDetail = '/trail/:id',
+  SearchTrails = '/trail/search',
+
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',
 

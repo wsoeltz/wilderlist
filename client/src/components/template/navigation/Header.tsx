@@ -310,6 +310,8 @@ const Header = () => {
       normalizedPathname = Routes.SearchMountains;
     } else if (pathname.includes('campsite')) {
       normalizedPathname = Routes.SearchCampsites;
+    } else if (pathname.includes('trail')) {
+      normalizedPathname = Routes.SearchTrails;
     } else {
       normalizedPathname = pathname;
     }
@@ -377,7 +379,7 @@ const Header = () => {
     icon: mountainNeutralSvg,
   });
   const trailsLink = createLink({
-    route: '#',
+    route: Routes.SearchTrails,
     label: getString('header-text-menu-item-trails'),
     customIcon: true,
     icon: trailDefaultSvg,

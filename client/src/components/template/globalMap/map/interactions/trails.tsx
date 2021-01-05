@@ -28,8 +28,8 @@ const trailInteractions = (input: Input) => {
       ? (e.features[0].properties as any).name : '';
     const type = e && e.features && e.features[0]
       ? (e.features[0].properties as any).type : '';
-    const id = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).id : '';
+    const ids = e && e.features && e.features[0]
+      ? (e.features[0].properties as any).id.split(',') : [''];
 
     // Ensure that if the map is zoomed out such that multiple
     // copies of the feature are visible, the popup appears
@@ -42,7 +42,7 @@ const trailInteractions = (input: Input) => {
       <ClickedPopup
         title={name}
         subtitle={type}
-        id={id}
+        ids={ids}
         push={push}
         itemType={ItemType.trail}
         getString={getString}

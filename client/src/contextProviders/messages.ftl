@@ -3,6 +3,8 @@ global-text-value-default-meta-description = Track, plan and share your hiking a
 
 meta-data-list-search-default-title = Search hiking lists - Wilderlist
 meta-data-mtn-search-default-title = Search mountains - Wilderlist
+meta-data-campsite-search-default-title = Search campsites - Wilderlist
+meta-data-trail-search-default-title = Search trails - Wilderlist
 meta-data-friend-search-default-title = Friends - Wilderlist
 meta-data-settings-default-title = Settings - Wilderlist
 meta-data-dashboard-default-title = Dashboard - Wilderlist
@@ -30,8 +32,12 @@ meta-data-mountain-detail-description = { $name }{ $state } stands at { $elevati
 
 meta-data-campsite-detail-description = { $name } is a { $type } in { $state }. Explore nearby trails, mountains, directions, weather, and trip reports for { $name }.
 
+meta-data-trail-detail-description = { $name } is a { $type } in { $state }. Find nearby camping, mountains, directions, weather, and trip reports for { $name }.
+
 meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
 meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
+meta-data-campsite-search-description = Search for campsites and find maps, trails, weather and trip reports.
+meta-data-trail-search-description = Search for trails and find maps, trails, weather and trip reports.
 
 meta-data-peak-list-detail-description = {
   $type ->

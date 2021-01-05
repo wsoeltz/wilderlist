@@ -8,6 +8,7 @@ import {
   Mountain,
   PeakList,
   PeakListVariants,
+  Trail,
 } from '../../types/graphQLTypes';
 import {ItemType} from '../template/globalMap/map/interactions';
 
@@ -67,6 +68,13 @@ interface Props {
     type: Campsite['type'];
     location: Campsite['location'];
     campedCount: number;
+  }>;
+  trails?: Array<{
+    id: Trail['id'];
+    name: Trail['name'];
+    type: Trail['type'];
+    line: Trail['line'];
+    hikedCount: number;
   }>;
   type: PeakListVariants;
   center?: Coordinate;

@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { setCampsiteOgImageUrl } from '../../../routing/routes';
-import { mountainDetailLink } from '../../../routing/Utils';
+import { campsiteDetailLink } from '../../../routing/Utils';
 import {
   lowWarningColorDark,
 } from '../../../styling/styleUtils';
@@ -84,7 +84,7 @@ const Header = (props: Props) => {
         property='og:description'
         content={metaDescription}
       />
-      <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink(id)} />
+      <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + campsiteDetailLink(id)} />
       <meta property='og:image' content={setCampsiteOgImageUrl(id)} />
     </Helmet>
   ) : null;

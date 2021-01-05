@@ -3,6 +3,7 @@ import React from 'react';
 import {
   campsiteDetailLink,
   mountainDetailLink,
+  trailDetailLink,
 } from '../../../../../../routing/Utils';
 import {Coordinate} from '../../../../../../types/graphQLTypes';
 import {ItemType} from '../../interactions';
@@ -14,7 +15,7 @@ interface Props {
   title: string;
   subtitle: string;
   location: Coordinate;
-  id: string;
+  ids: string[];
   push: (url: string) => void;
   itemType: ItemType;
   getString: GetString;
@@ -22,13 +23,15 @@ interface Props {
 
 const ClickedPopup = (props: Props) => {
   const {
-    title, subtitle, id, push, itemType, location, getString,
+    title, subtitle, ids, push, itemType, location, getString,
   } = props;
   const onClick = () => {
     if (itemType === ItemType.mountain) {
-      push(mountainDetailLink(id));
+      push(mountainDetailLink(ids[0]));
     } else if (itemType === ItemType.campsite) {
-      push(campsiteDetailLink(id));
+      push(campsiteDetailLink(ids[0]));
+    } else if (itemType === ItemType.trail) {
+      push(trailDetailLink(ids[0]));
     }
   };
   return (
@@ -44,7 +47,7 @@ const ClickedPopup = (props: Props) => {
           destination={location}
         />
         <LastTrip
-          id={id}
+          id={ids[0]}
           itemType={itemType}
           getString={getString}
         />
