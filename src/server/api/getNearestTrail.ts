@@ -1,13 +1,22 @@
 /* tslint:disable:await-promise */
 import {
   Coordinate,
+  TrailType,
 } from '../graphql/graphQLTypes';
 import {
   buildNearSphereQuery,
 } from '../graphql/schema/geospatial/utils';
-import { Trail } from '../graphql/schema/queryTypes/trailType';
+import {
+  Trail,
+} from '../graphql/schema/queryTypes/trailType';
 
-const getNearestTrail = async (coord: Coordinate) => {
+interface Input {
+  coord: Coordinate;
+  name: string;
+  ignoreTypes: TrailType[];
+}
+
+const getNearestTrail = async ({coord, name, ignoreTypes}: Input) => {
   try {
     return await Trail.find({
       ...buildNearSphereQuery({
@@ -16,10 +25,10 @@ const getNearestTrail = async (coord: Coordinate) => {
         longitude: coord[0],
         maxDistance: 16093.4,
       }),
-      name: {$eq: null},
-      type: {$nin: ['road', 'dirtroad']},
+      name: {$eq: name},
+      type: {$nin: ignoreTypes},
     })
-    .limit(20);
+    .limit(25);
   } catch (err) {
     console.error(err);
   }

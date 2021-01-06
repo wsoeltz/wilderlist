@@ -5,7 +5,10 @@ import { setupCache } from 'axios-cache-adapter';
 import { GetString } from 'fluent-react/compat';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
-import {Coordinate} from '../../../../../types/graphQLTypes';
+import {
+  Coordinate,
+  TrailType,
+} from '../../../../../types/graphQLTypes';
 import {defaultGeoJsonLineString, hoveredTrailsLayerId} from '../layers';
 import {
   Id,
@@ -70,11 +73,20 @@ const trailInteractions = (input: Input) => {
       const id = e.features[0].id;
       setHovered(id, ItemType.trail);
       if (!(e && e.features && e.features[0] && (e.features[0].properties as any).name)) {
-        getNearestTrail(`/api/nearest-trail?lat=${
-            e.lngLat.lat.toFixed(6)
-          }&lng=${
-            e.lngLat.lng.toFixed(6)
-          }`)
+        const {lng, lat} = e.lngLat;
+        getNearestTrail({
+            method: 'post',
+            url: '/api/nearest-trail',
+            data: {
+              lat: lat.toFixed(6),
+              lng: lng.toFixed(6),
+              name: null,
+              ignoreTypes: [
+                TrailType.road,
+                TrailType.dirtroad,
+              ]
+            }
+          })
           .then(({data}) => {
             if (getHovered().id === id) {
               const withDistance = data.map((t: any) => ({

@@ -117,13 +117,14 @@ const SearchResult = ({query, suggestion}: Props) => {
     subtitleText = '';
     icon = null;
   }
+  const safeQuery = new RegExp(query.replace(/[^\w\s]/gi, '').trim(), 'gi');
   return (
     <Root>
       {icon}
       <Content>
         <div
           dangerouslySetInnerHTML={{
-            __html: suggestion.name.replace(new RegExp(query, 'gi'), (match: string) => `<strong>${match}</strong>`),
+            __html: suggestion.name.replace(safeQuery, (match: string) => `<strong>${match}</strong>`),
           }}
         />
         <Subtitle>

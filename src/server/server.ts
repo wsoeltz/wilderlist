@@ -128,12 +128,20 @@ app.get('/api/global-search', async (req, res) => {
   }
 });
 
-app.get('/api/nearest-trail', async (req, res) => {
+app.post('/api/nearest-trail', async (req, res) => {
   try {
-    const lat = req.query && req.query.lat ? parseFloat(req.query.lat) : undefined;
-    const lng = req.query && req.query.lng ? parseFloat(req.query.lng) : undefined;
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const name = req.body && req.body.name && req.body.name.length
+      ? req.body.name : null;
+    const ignoreTypes = req.body && req.body.ignoreTypes && req.body.ignoreTypes.length
+      ? req.body.ignoreTypes : [];
     if (lat !== undefined && lng !== undefined) {
-      const trail = await getNearestTrail([lng, lat]);
+      const trail = await getNearestTrail({
+        coord: [lng, lat],
+        name,
+        ignoreTypes,
+      });
       res.json(trail);
     } else {
       throw new Error('Missing parameters');

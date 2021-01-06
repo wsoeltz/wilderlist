@@ -2,6 +2,7 @@ const {point} = require('@turf/helpers');
 const distance = require('@turf/distance').default;
 const centroid = require('@turf/centroid').default;
 const bboxPolygon = require('@turf/bbox-polygon').default;
+const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 import { GetString } from 'fluent-react/compat';
 import mapboxgl from 'mapbox-gl';
 import {
@@ -29,6 +30,12 @@ interface Input {
   push: (url: string) => void;
   getString: GetString;
 }
+
+const getRectFromBounds = (bounds: mapboxgl.LngLatBounds): [Longitude, Latitude, Longitude, Latitude] => {
+  const ne = bounds.getNorthEast();
+  const sw = bounds.getSouthWest();
+  return [ne.lat, ne.lng, sw.lat, sw.lng];
+};
 
 export const defaultCenter: Coordinate = [-98.5795, 39.8283];
 
@@ -91,7 +98,9 @@ const initMap = ({container, push, getString}: Input): Output => {
     setPadding();
     const {lat, lng} = map.getCenter();
     const dist = distance(point([lng, lat]), center, {units: 'miles'});
-    if (dist < 30) {
+    const mapBounds = getRectFromBounds(map.getBounds());
+    const isInBounds = booleanPointInPolygon(point(center), bboxPolygon(mapBounds));
+    if ((isInBounds && dist < 30) || dist < 5) {
       map.flyTo({
         center,
         zoom,
@@ -109,8 +118,11 @@ const initMap = ({container, push, getString}: Input): Output => {
     const {lat, lng} = map.getCenter();
     const bboxAsPolygon = bboxPolygon(bbox);
     const bboxCenter = centroid(bboxAsPolygon);
-    const mapCenterToBboxCenter = distance(point([lng, lat]), bboxCenter, {units: 'miles'});
-    const animate = mapCenterToBboxCenter < 250;
+    const mapCenter = point([lng, lat]);
+    const mapCenterToBboxCenter = distance(mapCenter, bboxCenter, {units: 'miles'});
+    const mapBounds = getRectFromBounds(map.getBounds());
+    const isInBounds = booleanPointInPolygon(bboxCenter, bboxPolygon(mapBounds));
+    const animate = (isInBounds && mapCenterToBboxCenter < 250) || mapCenterToBboxCenter < 50;
     map.fitBounds(bbox, {
       padding: window.innerWidth * 0.05,
       animate,

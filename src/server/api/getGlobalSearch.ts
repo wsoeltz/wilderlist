@@ -1,6 +1,5 @@
 const { point } = require('@turf/helpers');
 const distance = require('@turf/distance');
-
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import groupBy from 'lodash/groupBy';
@@ -23,6 +22,7 @@ import { Mountain } from '../graphql/schema/queryTypes/mountainType';
 import { PeakList } from '../graphql/schema/queryTypes/peakListType';
 import { State } from '../graphql/schema/queryTypes/stateType';
 import { Trail } from '../graphql/schema/queryTypes/trailType';
+import {asyncForEach} from '../graphql/Utils';
 
 const cacheGeoCode: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
@@ -38,23 +38,40 @@ interface Input {
   search: string;
 }
 
-const mergeAndSort = (
-  mountainData: any[], listData: any[], trailData: any[], campsiteData: any[], stateData: IState[]) =>
-(
-  orderBy([...mountainData, ...listData, ...trailData, ...campsiteData], ['priority', 'distance']).map(val => {
-    return {
-      ...val,
-      stateText: val.stateText.map((id: string) => {
-        const state = stateData.find((s) => s._id.toString() === id.toString());
-        if (state) {
-          return state.name;
+const mergeAndSort = async (
+  mountainData: any[], listData: any[], trailData: any[], campsiteData: any[], stateData: IState[]) => {
+    const trailsAsNamedParent: any[] = [];
+    await asyncForEach(trailData, async (trail: any) => {
+      if (trail.parents) {
+        const namedParent = await Trail.findOne(
+          {_id: {$in: trail.parents}, name: {$eq: trail.name}},
+        );
+        if (namedParent) {
+          trailsAsNamedParent.push({
+            ...trail,
+            id: namedParent._id,
+          });
         } else {
-          return undefined;
+          trailsAsNamedParent.push(trail);
         }
-      }).filter((v: string | null) => v),
-    };
-  })
-);
+      } else {
+        trailsAsNamedParent.push(trail);
+      }
+    });
+    return orderBy([...mountainData, ...listData, ...trailsAsNamedParent, ...campsiteData], ['priority', 'distance']).map(val => {
+      return {
+        ...val,
+        stateText: val.stateText.map((id: string) => {
+          const state = stateData.find((s) => s._id.toString() === id.toString());
+          if (state) {
+            return state.name;
+          } else {
+            return undefined;
+          }
+        }).filter((v: string | null) => v),
+      };
+    });
+  };
 
 const trailPriority = (trail: ITrail) => {
   if (trail.type === TrailType.dirtroad || trail.type === TrailType.road) {
@@ -110,7 +127,8 @@ const fetchValuesAsync = (input: Input) => {
     setTimeout(() => {
       if (mountainsFetched && (listsFetched || campsitesFetched) || (listsFetched && campsitesFetched)) {
         State.find({_id: {$in: stateIds}}).then(res => {
-          resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, res));
+          mergeAndSort(mountainData, listData, trailData, campsiteData, res)
+            .then(resolve).catch(reject);
         }).catch(reject);
       }
     }, 700);
@@ -129,7 +147,7 @@ const fetchValuesAsync = (input: Input) => {
       { score: { $meta: 'textScore' } },
     )
     .sort( { score: { $meta: 'textScore' } } )
-    .limit(30).then(res => {
+    .limit(50).then(res => {
       res.forEach(trail => {
         const parents = trail.parents ? trail.parents.map(p => (p as unknown as string).toString()) : [];
         const states = trail.states ? trail.states.map(s => s as unknown as string) : [];
@@ -138,30 +156,35 @@ const fetchValuesAsync = (input: Input) => {
             stateIds.push(stateId.toString());
           }
         });
+        const name = trail.name;
+        const dist = distance(point(trail.center), sourcePoint, {units: 'miles'});
         trailData.push({
           id: trail._id,
-          name: trail.name,
+          linkedParent: trail._id,
+          name,
+          groupKey: name ? name + Math.floor(dist / 10) * 10 : trail._id,
           type: 'trail',
-          distance: distance(point(trail.center), sourcePoint, {units: 'miles'}),
+          distance: dist,
           coordinates: trail.center,
           stateText: states,
+          sortState: states && states[0] ? states[0] : trail._id,
           parents,
           trailType: trail.type,
           priority: trailPriority(trail),
         });
       });
-      const filteredTrails = [];
-      const groupedTrails = groupBy(trailData, 'name');
+      const filteredTrails: any[] = [];
+      const groupedTrails = groupBy(trailData, 'groupKey');
       for (const group in groupedTrails) {
         if (groupedTrails.hasOwnProperty(group)) {
           const sortedGroup = orderBy(groupedTrails[group], ['distance']);
           const parent = intersection(...sortedGroup.map(t => t.parents));
-          if (parent.length) {
+          if (parent.length && !filteredTrails.find(t => t.linkedParent.toString() === (parent[0] as any).toString())) {
             filteredTrails.push({
               ...sortedGroup[0],
-              id: parent[0],
+              linkedParent: parent[0],
             });
-          } else {
+          } else if (!filteredTrails.find(t => t.linkedParent.toString() === (parent[0] as any))) {
             filteredTrails.push(sortedGroup[0]);
           }
         }
@@ -170,7 +193,8 @@ const fetchValuesAsync = (input: Input) => {
       trailsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
-          resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
+          mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes)
+            .then(resolve).catch(reject);
         }).catch(reject);
       }
     }).catch(reject);
@@ -201,7 +225,8 @@ const fetchValuesAsync = (input: Input) => {
       mountainsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
-          resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
+          mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes)
+            .then(resolve).catch(reject);
         }).catch(reject);
       }
     }).catch(reject);
@@ -232,7 +257,8 @@ const fetchValuesAsync = (input: Input) => {
       campsitesFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
-          resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
+          mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes)
+            .then(resolve).catch(reject);
         }).catch(reject);
       }
     }).catch(reject);
@@ -264,7 +290,8 @@ const fetchValuesAsync = (input: Input) => {
       listsFetched = true;
       if (mountainsFetched === true && listsFetched === true && trailsFetched && campsitesFetched) {
         State.find({_id: {$in: stateIds}}).then(stateRes => {
-          resolve(mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes));
+          mergeAndSort(mountainData, listData, trailData, campsiteData, stateRes)
+            .then(resolve).catch(reject);
         }).catch(reject);
       }
     }).catch(reject);
