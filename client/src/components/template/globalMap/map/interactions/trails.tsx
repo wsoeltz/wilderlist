@@ -1,6 +1,12 @@
+const {lineString} = require('@turf/helpers');
+const pointToLineDistance = require('@turf/point-to-line-distance').default;
+import axios from 'axios';
+import { setupCache } from 'axios-cache-adapter';
 import { GetString } from 'fluent-react/compat';
+import orderBy from 'lodash/orderBy';
 import React from 'react';
 import {Coordinate} from '../../../../../types/graphQLTypes';
+import {defaultGeoJsonLineString, hoveredTrailsLayerId} from '../layers';
 import {
   Id,
   ItemType,
@@ -9,6 +15,13 @@ import {
   addClickedPopup,
 } from './popup';
 import ClickedPopup from './popup/ClickedPopup';
+
+const cacheNearestTrail: any = setupCache({
+  maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
+});
+const getNearestTrail = axios.create({
+  adapter: cacheNearestTrail.adapter,
+});
 
 interface Input {
   map: mapboxgl.Map;
@@ -20,6 +33,7 @@ interface Input {
 
 const trailInteractions = (input: Input) => {
   const {map, push, setHovered, getHovered, getString} = input;
+
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'trails-background', function(e) {
@@ -28,8 +42,6 @@ const trailInteractions = (input: Input) => {
       ? (e.features[0].properties as any).name : '';
     const type = e && e.features && e.features[0]
       ? (e.features[0].properties as any).type : '';
-    const ids = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).id.split(',') : [''];
 
     // Ensure that if the map is zoomed out such that multiple
     // copies of the feature are visible, the popup appears
@@ -42,7 +54,7 @@ const trailInteractions = (input: Input) => {
       <ClickedPopup
         title={name}
         subtitle={type}
-        ids={ids}
+        id={''}
         push={push}
         itemType={ItemType.trail}
         getString={getString}
@@ -55,15 +67,35 @@ const trailInteractions = (input: Input) => {
     map.getCanvas().style.cursor = 'pointer';
     const type = getHovered().type;
     if ((type === undefined || type === ItemType.trail) && e && e.features && e.features.length > 0) {
-      setHovered(e.features[0].id, ItemType.trail);
-      map.setFeatureState(
-        {
-          source: 'composite',
-          sourceLayer: 'trails',
-          id: getHovered().id,
-        },
-        { hover: true },
-      );
+      const id = e.features[0].id;
+      setHovered(id, ItemType.trail);
+      if (!(e && e.features && e.features[0] && (e.features[0].properties as any).name)) {
+        getNearestTrail(`/api/nearest-trail?lat=${
+            e.lngLat.lat.toFixed(6)
+          }&lng=${
+            e.lngLat.lng.toFixed(6)
+          }`)
+          .then(({data}) => {
+            if (getHovered().id === id) {
+              const withDistance = data.map((t: any) => ({
+                ...t,
+                distance: pointToLineDistance([e.lngLat.lng, e.lngLat.lat], lineString(t.line)),
+              }));
+              const trail = orderBy(withDistance, ['distance'], ['asc'])[0];
+              (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(trail.line));
+            }
+          })
+          .catch(err => console.error(err));
+      } else {
+        map.setFeatureState(
+          {
+            source: 'composite',
+            sourceLayer: 'trails',
+            id: getHovered().id,
+          },
+          { hover: true },
+        );
+      }
     }
   });
 
@@ -72,6 +104,7 @@ const trailInteractions = (input: Input) => {
     const hoveredTrail = getHovered();
     if (hoveredTrail.id && hoveredTrail.type === ItemType.trail) {
       map.getCanvas().style.cursor = '';
+      (map.getSource(hoveredTrailsLayerId) as any).setData(defaultGeoJsonLineString);
       map.setFeatureState(
         {
           source: 'composite',

@@ -68,7 +68,7 @@ const mountainInteractions = (input: Input) => {
         <ClickedPopup
           title={name}
           subtitle={subtitle}
-          ids={[id]}
+          id={id}
           push={push}
           getString={getString}
           itemType={itemType}

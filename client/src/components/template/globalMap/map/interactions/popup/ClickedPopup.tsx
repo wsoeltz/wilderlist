@@ -15,7 +15,7 @@ interface Props {
   title: string;
   subtitle: string;
   location: Coordinate;
-  ids: string[];
+  id: string;
   push: (url: string) => void;
   itemType: ItemType;
   getString: GetString;
@@ -23,15 +23,15 @@ interface Props {
 
 const ClickedPopup = (props: Props) => {
   const {
-    title, subtitle, ids, push, itemType, location, getString,
+    title, subtitle, push, id, itemType, location, getString,
   } = props;
   const onClick = () => {
     if (itemType === ItemType.mountain) {
-      push(mountainDetailLink(ids[0]));
+      push(mountainDetailLink(id));
     } else if (itemType === ItemType.campsite) {
-      push(campsiteDetailLink(ids[0]));
+      push(campsiteDetailLink(id));
     } else if (itemType === ItemType.trail) {
-      push(trailDetailLink(ids[0]));
+      push(trailDetailLink(id));
     }
   };
   return (
@@ -47,7 +47,7 @@ const ClickedPopup = (props: Props) => {
           destination={location}
         />
         <LastTrip
-          id={ids[0]}
+          id={id}
           itemType={itemType}
           getString={getString}
         />

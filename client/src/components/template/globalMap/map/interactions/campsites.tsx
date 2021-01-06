@@ -50,7 +50,7 @@ const campiteInteractions = (input: Input) => {
       <ClickedPopup
         title={name}
         subtitle={type}
-        ids={[id]}
+        id={id}
         push={push}
         itemType={ItemType.campsite}
         getString={getString}
