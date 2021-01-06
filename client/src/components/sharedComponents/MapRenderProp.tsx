@@ -121,7 +121,11 @@ const MapRenderProp = (props: Props) => {
           }));
         }
         if (points.length) {
-          mapContext.setHighlightedPoints(featureCollection(points));
+          const {features} = featureCollection(points);
+          mapContext.setHighlightedPoints({
+            type: 'FeatureCollection',
+            features: features.map((f: any, i: number) => ({...f, id: i})),
+          });
         }
 
         const trails: any[] = [];

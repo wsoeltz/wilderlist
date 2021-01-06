@@ -18,6 +18,7 @@ export enum ItemType {
   mountain = 'mountains',
   campsite = 'campsites',
   trail = 'trails',
+  highlightedPoint = 'highlightedPoint',
 }
 
 const initInteractions = (input: Input) => {
@@ -47,7 +48,7 @@ const initInteractions = (input: Input) => {
   campsiteInteractions({...input, setHovered, getHovered});
   trailInteractions({...input, setHovered, getHovered});
   highlightedPoints({...input, setHovered, getHovered});
-  roadInteractions(input);
+  roadInteractions({...input, setHovered, getHovered});
 };
 
 export default initInteractions;

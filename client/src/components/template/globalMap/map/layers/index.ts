@@ -17,6 +17,9 @@ const hoveredTrailsLayerTopId = 'temporary-hovered-trails-top-layer-id';
 export const highlightedRoadsLayerId = 'temporary-highlight-roads-layer-id';
 const highlightedRoadsLayerTopId = 'temporary-highlight-roads-top-layer-id';
 
+export const hoveredRoadsLayerId = 'temporary-hovered-roads-layer-id';
+const hoveredRoadsLayerTopId = 'temporary-hovered-roads-top-layer-id';
+
 export const defaultGeoJsonLineString: mapboxgl.GeoJSONSourceOptions['data'] = {
   type: 'Feature',
   properties: {},
@@ -148,6 +151,57 @@ const initLayers = ({map}: Input) => {
     id: highlightedRoadsLayerTopId,
     type: 'line',
     source: highlightedRoadsLayerId,
+    layout: {'line-join': 'round', 'line-cap': 'round'},
+    paint: {
+        'line-width': [
+          'interpolate',
+          ['exponential', 1.96],
+          ['zoom'],
+          0, 0.75,
+          9.65, 0.75,
+          11.5, 2,
+          13, 4,
+          22, 6,
+        ],
+        'line-dasharray': [2.5, 1.35],
+        'line-color': '#ffffff',
+        'line-opacity': 0.75,
+    },
+  }, 'admin-1-boundary-bg');
+
+  map.addSource(hoveredRoadsLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonLineString,
+  });
+  map.addLayer({
+    id: hoveredRoadsLayerId,
+    type: 'line',
+    source: hoveredRoadsLayerId,
+    layout: {
+      'line-join': 'round',
+      'line-round-limit': 2,
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-color': '#206ca6',
+      'line-width': [
+          'interpolate',
+          ['exponential', 1.96],
+          ['zoom'],
+          // ZOOM, VALUE
+          0, 1.25,
+          9.65, 1.5,
+          11.5, 3.75,
+          13, 7,
+          22, 10,
+      ],
+      'line-opacity': 1,
+    },
+  }, 'admin-1-boundary-bg');
+  map.addLayer({
+    id: hoveredRoadsLayerTopId,
+    type: 'line',
+    source: hoveredRoadsLayerId,
     layout: {'line-join': 'round', 'line-cap': 'round'},
     paint: {
         'line-width': [

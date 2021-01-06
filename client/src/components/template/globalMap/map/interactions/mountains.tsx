@@ -24,32 +24,35 @@ const mountainInteractions = (input: Input) => {
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'mountains', function(e) {
-    const coordinates = e && e.features && e.features[0] && e.features[0].geometry
-      ? (e.features[0].geometry as any).coordinates.slice() : [e.lngLat.lng, e.lngLat.lat];
-    const name = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).name : '';
-    const elevation = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).ele + 'ft' : '';
-    const id = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).id : '';
+    const layerId = e && e.features && e.features[0] ? e.features[0].id : undefined;
+    if (layerId === getHovered().id) {
+      const coordinates = e && e.features && e.features[0] && e.features[0].geometry
+        ? (e.features[0].geometry as any).coordinates.slice() : [e.lngLat.lng, e.lngLat.lat];
+      const name = e && e.features && e.features[0]
+        ? (e.features[0].properties as any).name : '';
+      const elevation = e && e.features && e.features[0]
+        ? (e.features[0].properties as any).ele + 'ft' : '';
+      const id = e && e.features && e.features[0]
+        ? (e.features[0].properties as any).id : '';
 
-    // Ensure that if the map is zoomed out such that multiple
-    // copies of the feature are visible, the popup appears
-    // over the copy being pointed to.
-    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears
+      // over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      addClickedPopup(
+        <ClickedPopup
+          title={name}
+          subtitle={elevation}
+          id={id}
+          push={push}
+          itemType={ItemType.mountain}
+          getString={getString}
+          location={coordinates}
+        />, coordinates, map);
     }
-
-    addClickedPopup(
-      <ClickedPopup
-        title={name}
-        subtitle={elevation}
-        id={id}
-        push={push}
-        itemType={ItemType.mountain}
-        getString={getString}
-        location={coordinates}
-      />, coordinates, map);
   });
 
   // Change the cursor to a pointer when the mouse is over the places layer.

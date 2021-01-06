@@ -1,3 +1,4 @@
+/* tslint:disable:await-promise */
 const { point } = require('@turf/helpers');
 const distance = require('@turf/distance');
 import axios from 'axios';
@@ -58,7 +59,8 @@ const mergeAndSort = async (
         trailsAsNamedParent.push(trail);
       }
     });
-    return orderBy([...mountainData, ...listData, ...trailsAsNamedParent, ...campsiteData], ['priority', 'distance']).map(val => {
+    return orderBy([...mountainData, ...listData, ...trailsAsNamedParent, ...campsiteData], ['priority', 'distance'])
+      .map(val => {
       return {
         ...val,
         stateText: val.stateText.map((id: string) => {

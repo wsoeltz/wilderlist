@@ -40,29 +40,32 @@ const trailInteractions = (input: Input) => {
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'trails-background', function(e) {
-    const coordinates: Coordinate = [e.lngLat.lng, e.lngLat.lat];
-    const name = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).name : '';
-    const type = e && e.features && e.features[0]
-      ? (e.features[0].properties as any).type : '';
+    const layerId = e && e.features && e.features[0] ? e.features[0].id : undefined;
+    if (layerId === getHovered().id) {
+      const coordinates: Coordinate = [e.lngLat.lng, e.lngLat.lat];
+      const name = e && e.features && e.features[0]
+        ? (e.features[0].properties as any).name : '';
+      const type = e && e.features && e.features[0]
+        ? (e.features[0].properties as any).type : '';
 
-    // Ensure that if the map is zoomed out such that multiple
-    // copies of the feature are visible, the popup appears
-    // over the copy being pointed to.
-    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears
+      // over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      addClickedPopup(
+        <ClickedPopup
+          title={name}
+          subtitle={type}
+          id={''}
+          push={push}
+          itemType={ItemType.trail}
+          getString={getString}
+          location={coordinates}
+        />, coordinates, map);
     }
-
-    addClickedPopup(
-      <ClickedPopup
-        title={name}
-        subtitle={type}
-        id={''}
-        push={push}
-        itemType={ItemType.trail}
-        getString={getString}
-        location={coordinates}
-      />, coordinates, map);
   });
 
   // Change the cursor to a pointer when the mouse is over the places layer.
@@ -84,8 +87,8 @@ const trailInteractions = (input: Input) => {
               ignoreTypes: [
                 TrailType.road,
                 TrailType.dirtroad,
-              ]
-            }
+              ],
+            },
           })
           .then(({data}) => {
             if (getHovered().id === id) {
