@@ -44,8 +44,10 @@ const TrailDetail = (props: Props) => {
       );
     } else {
       const {
-        name, states, type,
+        name, states, type, children,
       } = trail;
+
+      const segments = children && children.length ? children : [trail];
 
       header = (
         <Header
@@ -59,7 +61,8 @@ const TrailDetail = (props: Props) => {
 
       body = (
         <Content
-          trail={trail}
+          id={id}
+          trails={segments}
         />
       );
     }

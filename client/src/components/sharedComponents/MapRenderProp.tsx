@@ -1,4 +1,4 @@
-const {point, featureCollection} = require('@turf/helpers');
+const {point, lineString, featureCollection} = require('@turf/helpers');
 import {useEffect} from 'react';
 import useMapContext from '../../hooks/useMapContext';
 import usePrevious from '../../hooks/usePrevious';
@@ -9,6 +9,7 @@ import {
   PeakList,
   PeakListVariants,
   Trail,
+  TrailType,
 } from '../../types/graphQLTypes';
 import {ItemType} from '../template/globalMap/map/interactions';
 
@@ -122,6 +123,32 @@ const MapRenderProp = (props: Props) => {
         if (points.length) {
           mapContext.setHighlightedPoints(featureCollection(points));
         }
+
+        const trails: any[] = [];
+        const roads: any[] = [];
+        if (props.trails && props.trails.length) {
+          props.trails.forEach(trail => {
+            const line = lineString(trail.line, {
+              name: trail.name,
+              itemType: ItemType.mountain,
+              type: trail.type,
+              subtitle: trail.type,
+              id: trail.id,
+            });
+            if (trail.type === TrailType.road || trail.type === TrailType.dirtroad) {
+              roads.push(line);
+            } else {
+              trails.push(line);
+            }
+          });
+        }
+        if (trails.length) {
+          mapContext.setHighlightedTrails(featureCollection(trails));
+        }
+        if (roads.length) {
+          mapContext.setHighlightedRoads(featureCollection(roads));
+        }
+
       }
     }
   }, [mapContext, props, prevId]);

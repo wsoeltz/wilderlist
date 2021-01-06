@@ -17,6 +17,17 @@ const GET_TRAIL_DETAIL = gql`
         name
         abbreviation
       }
+      children {
+        id
+        name
+        center
+        type
+        line
+      }
+      parents {
+        id
+        name
+      }
     }
   }
 `;
@@ -32,6 +43,17 @@ interface QuerySuccessResponse {
       id: State['id'];
       name: State['name'];
       abbreviation: State['abbreviation'];
+    }>;
+    children: Array<{
+      id: Trail['id'];
+      name: Trail['name'];
+      center: Trail['center'];
+      type: Trail['type'];
+      line: Trail['line'];
+    }>;
+    parents: Array<{
+      id: Trail['id'];
+      name: Trail['name'];
     }>;
   };
 }

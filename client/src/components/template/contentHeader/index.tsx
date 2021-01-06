@@ -45,6 +45,8 @@ const Header = () => {
     () => (windowWidth > mobileSize && normalizedPathname !== Routes.Landing) ||
                          (normalizedPathname !== Routes.Landing &&
                           normalizedPathname !== Routes.SearchLists  &&
+                          normalizedPathname !== Routes.SearchTrails  &&
+                          normalizedPathname !== Routes.SearchCampsites  &&
                           normalizedPathname !== Routes.SearchMountains),
    [windowWidth, normalizedPathname],
   );

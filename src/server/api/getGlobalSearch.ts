@@ -139,6 +139,7 @@ const fetchValuesAsync = (input: Input) => {
           }
         });
         trailData.push({
+          id: trail._id,
           name: trail.name,
           type: 'trail',
           distance: distance(point(trail.center), sourcePoint, {units: 'miles'}),
@@ -157,8 +158,8 @@ const fetchValuesAsync = (input: Input) => {
           const parent = intersection(...sortedGroup.map(t => t.parents));
           if (parent.length) {
             filteredTrails.push({
-              id: parent[0],
               ...sortedGroup[0],
+              id: parent[0],
             });
           } else {
             filteredTrails.push(sortedGroup[0]);

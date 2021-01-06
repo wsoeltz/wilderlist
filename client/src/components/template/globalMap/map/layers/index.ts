@@ -8,6 +8,21 @@ export const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
   },
 };
 
+export const highlightedTrailsLayerId = 'temporary-highlight-trails-layer-id';
+const highlightedTrailsLayerTopId = 'temporary-highlight-trails-top-layer-id';
+
+export const highlightedRoadsLayerId = 'temporary-highlight-roads-layer-id';
+const highlightedRoadsLayerTopId = 'temporary-highlight-roads-top-layer-id';
+
+export const defaultGeoJsonLineString: mapboxgl.GeoJSONSourceOptions['data'] = {
+  type: 'Feature',
+  properties: {},
+  geometry: {
+    type: 'LineString',
+    coordinates: [],
+  },
+};
+
 interface Input {
   map: mapboxgl.Map;
 }
@@ -96,6 +111,111 @@ const initLayers = ({map}: Input) => {
         'text-opacity': ['step', ['zoom'], 0, 12, 1],
     },
   });
+
+  map.addSource(highlightedRoadsLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonLineString,
+  });
+  map.addLayer({
+    id: highlightedRoadsLayerId,
+    type: 'line',
+    source: highlightedRoadsLayerId,
+    layout: {
+      'line-join': 'round',
+      'line-round-limit': 2,
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-color': '#206ca6',
+      'line-width': [
+          'interpolate',
+          ['exponential', 1.96],
+          ['zoom'],
+          // ZOOM, VALUE
+          0, 1.25,
+          9.65, 1.5,
+          11.5, 3.75,
+          13, 7,
+          22, 10,
+      ],
+      'line-opacity': 1,
+    },
+  }, 'admin-1-boundary-bg');
+  map.addLayer({
+    id: highlightedRoadsLayerTopId,
+    type: 'line',
+    source: highlightedRoadsLayerId,
+    layout: {'line-join': 'round', 'line-cap': 'round'},
+    paint: {
+        'line-width': [
+          'interpolate',
+          ['exponential', 1.96],
+          ['zoom'],
+          0, 0.75,
+          9.65, 0.75,
+          11.5, 2,
+          13, 4,
+          22, 6,
+        ],
+        'line-dasharray': [2.5, 1.35],
+        'line-color': '#ffffff',
+        'line-opacity': 0.75,
+    },
+  }, 'admin-1-boundary-bg');
+
+  map.addSource(highlightedTrailsLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonLineString,
+  });
+  map.addLayer({
+    id: highlightedTrailsLayerId,
+    type: 'line',
+    source: highlightedTrailsLayerId,
+    layout: {
+      'line-join': 'round',
+      'line-round-limit': 2,
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-color': '#206ca6',
+      'line-width': [
+          'interpolate',
+          ['exponential', 1.96],
+          ['zoom'],
+          // ZOOM, VALUE
+          0, 1.25,
+          9.65, 1.5,
+          11.5, 3.75,
+          13, 7,
+          22, 10,
+      ],
+      'line-opacity': 1,
+    },
+  }, 'admin-1-boundary-bg');
+  map.addLayer({
+    id: highlightedTrailsLayerTopId,
+    type: 'line',
+    source: highlightedTrailsLayerId,
+    layout: {'line-join': 'round', 'line-cap': 'round'},
+    paint: {
+        'line-width': [
+          'step', ['zoom'],
+          0,
+          12, 2.5,
+          22, 4,
+        ],
+        'line-dasharray': [
+            'step',
+            ['zoom'],
+            ['literal', [1, 0]],
+            7.5,
+            ['literal', [3, 7]],
+        ],
+        'line-color': '#eeeeec',
+        'line-translate': [0, 0],
+    },
+  }, 'admin-1-boundary-bg');
+
 };
 
 export default initLayers;

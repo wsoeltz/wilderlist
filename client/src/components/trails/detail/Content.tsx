@@ -1,3 +1,6 @@
+const {lineString, point, featureCollection} = require('@turf/helpers');
+const getBbox = require('@turf/bbox').default;
+const centroid = require('@turf/centroid').default;
 import { faCloudSun } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
@@ -17,24 +20,36 @@ import WeatherReport from '../../mountains/detail/WeatherReport';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 
 interface Props {
-  trail: {
+  id: Trail['id'];
+  trails: Array<{
     id: Trail['id'];
     name: Trail['name'];
     type: Trail['type'];
     center: Trail['center'];
     line: Trail['line'];
-  };
+  }>;
 }
 
 const Content = (props: Props) => {
   const  {
-    trail: {center},
-    trail,
+    id, trails,
   } = props;
 
   const getString = useFluent();
 
-  const [longitude, latitude] = center;
+  const allPoints: any = [];
+  const allLines: any = [];
+  const trailsWithHikedCount: any[] = [];
+  trails.forEach(t => {
+    allPoints.push(point(t.center));
+    allLines.push(lineString(t.line));
+    trailsWithHikedCount.push({...t, hikedCount: 0});
+  });
+
+  const center = centroid(featureCollection(allPoints));
+  const bbox = getBbox(featureCollection(allLines));
+
+  const [longitude, latitude] = center.geometry.coordinates;
 
   return (
     <>
@@ -51,9 +66,10 @@ const Content = (props: Props) => {
         </InlineSectionContainer>
       </DetailBox>
       <MapRenderProp
-        id={trail.id}
+        id={id}
         type={PeakListVariants.standard}
-        center={center}
+        bbox={bbox}
+        trails={trailsWithHikedCount}
       />
     </>
   );

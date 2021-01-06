@@ -1,5 +1,7 @@
 const {point} = require('@turf/helpers');
 const distance = require('@turf/distance').default;
+const centroid = require('@turf/centroid').default;
+const bboxPolygon = require('@turf/bbox-polygon').default;
 import { GetString } from 'fluent-react/compat';
 import mapboxgl from 'mapbox-gl';
 import {
@@ -12,8 +14,11 @@ import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
 import initInteractions from './interactions';
 import initLayers, {
+  defaultGeoJsonLineString,
   defaultGeoJsonPoint,
   highlightedPointsLayerId,
+  highlightedRoadsLayerId,
+  highlightedTrailsLayerId,
 } from './layers';
 
 // eslint-disable-next-line
@@ -32,6 +37,8 @@ export interface Output {
   setNewCenter: (center: Coordinate, zoom: number) => void;
   setNewBounds: (bbox: [Longitude, Latitude, Longitude, Latitude]) => void;
   setHighlightedPoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
+  setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
+  setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   clearMap: () => void;
 }
 
@@ -99,24 +106,38 @@ const initMap = ({container, push, getString}: Input): Output => {
 
   const setNewBounds = (bbox: [Longitude, Latitude, Longitude, Latitude]) => {
     setPadding();
+    const {lat, lng} = map.getCenter();
+    const bboxAsPolygon = bboxPolygon(bbox);
+    const bboxCenter = centroid(bboxAsPolygon);
+    const mapCenterToBboxCenter = distance(point([lng, lat]), bboxCenter, {units: 'miles'});
+    const animate = mapCenterToBboxCenter < 250;
     map.fitBounds(bbox, {
       padding: window.innerWidth * 0.05,
-      animate: false,
+      animate,
     });
   };
 
-  const clearHighlightedMountains = () =>
+  const clearHighlightedPoints = () => {
     (map.getSource(highlightedPointsLayerId) as any).setData(defaultGeoJsonPoint);
+    (map.getSource(highlightedTrailsLayerId) as any).setData(defaultGeoJsonLineString);
+    (map.getSource(highlightedRoadsLayerId) as any).setData(defaultGeoJsonLineString);
+  };
 
-  const updateSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
+  const updatePointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
     (map.getSource(highlightedPointsLayerId) as any).setData(data);
+
+  const updateTrailSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
+    (map.getSource(highlightedTrailsLayerId) as any).setData(data);
+
+  const updateRoadSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
+    (map.getSource(highlightedRoadsLayerId) as any).setData(data);
 
   const clearMap = () => {
     if (mapLoaded) {
-      clearHighlightedMountains();
+      clearHighlightedPoints();
     } else {
       const clearSourceOnLoad = () => {
-        clearHighlightedMountains();
+        clearHighlightedPoints();
         map.off('load', clearSourceOnLoad);
       };
       map.on('load', clearSourceOnLoad);
@@ -125,18 +146,43 @@ const initMap = ({container, push, getString}: Input): Output => {
 
   const setHighlightedPoints = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
     if (mapLoaded) {
-      updateSource(data);
+      updatePointsSource(data);
     } else {
-      const updateSourceOnLoad = () => {
-        updateSource(data);
-        map.off('load', updateSourceOnLoad);
+      const updatePointsSourceOnLoad = () => {
+        updatePointsSource(data);
+        map.off('load', updatePointsSourceOnLoad);
       };
-      map.on('load', updateSourceOnLoad);
+      map.on('load', updatePointsSourceOnLoad);
+    }
+  };
+
+  const setHighlightedTrails = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    if (mapLoaded) {
+      updateTrailSource(data);
+    } else {
+      const updateTrailSourceOnLoad = () => {
+        updateTrailSource(data);
+        map.off('load', updateTrailSourceOnLoad);
+      };
+      map.on('load', updateTrailSourceOnLoad);
+    }
+  };
+
+  const setHighlightedRoads = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    if (mapLoaded) {
+      updateRoadSource(data);
+    } else {
+      const updateRoadSourceOnLoad = () => {
+        updateRoadSource(data);
+        map.off('load', updateRoadSourceOnLoad);
+      };
+      map.on('load', updateRoadSourceOnLoad);
     }
   };
 
   return {
-    map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap,
+    map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
+    setHighlightedRoads,
   };
 };
 
