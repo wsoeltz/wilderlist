@@ -5,7 +5,7 @@ import {
   ItemType,
 } from './index';
 import {
-  addClickedPopup,
+  createClickedPopup,
 } from './popup';
 import ClickedPopup from './popup/ClickedPopup';
 
@@ -40,7 +40,8 @@ const campiteInteractions = (input: Input) => {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
       }
 
-      addClickedPopup(
+      const {addToMap, removeFromMap} = createClickedPopup();
+      addToMap(
         <ClickedPopup
           name={name}
           id={id}
@@ -48,6 +49,7 @@ const campiteInteractions = (input: Input) => {
           itemType={ItemType.campsite}
           getString={getString}
           location={coordinates}
+          close={removeFromMap}
         />, coordinates, map);
     }
   });

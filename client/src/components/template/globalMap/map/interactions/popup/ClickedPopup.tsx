@@ -38,11 +38,12 @@ interface Props {
   push: (url: string) => void;
   itemType: ItemType;
   getString: GetString;
+  close: () => void;
 }
 
 const ClickedPopup = (props: Props) => {
   const {
-    push, itemType, location, getString,
+    push, itemType, location, getString, close,
   } = props;
 
   const {loading, error, data} = usePopupData(itemType, props.id, location, props.name);
@@ -66,6 +67,7 @@ const ClickedPopup = (props: Props) => {
       } else if (itemType === ItemType.trail) {
         push(trailDetailLink(id));
       }
+      close();
     };
     let name: string;
     let subtitle: string;

@@ -6,7 +6,7 @@ import {
   ItemType,
 } from './index';
 import {
-  addClickedPopup,
+  createClickedPopup,
 } from './popup';
 import ClickedPopup from './popup/ClickedPopup';
 
@@ -45,8 +45,8 @@ const mountainInteractions = (input: Input) => {
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
-
-        addClickedPopup(
+        const {addToMap, removeFromMap} = createClickedPopup();
+        addToMap(
           <ClickedPopup
             name={name}
             id={id}
@@ -54,6 +54,7 @@ const mountainInteractions = (input: Input) => {
             getString={getString}
             itemType={itemType}
             location={coordinates}
+            close={removeFromMap}
           />, coordinates, map);
       }
     }

@@ -7,14 +7,21 @@ export enum PopupStyle {
   compact = 'mapbox-gl-popup-compact',
 }
 
-export function addClickedPopup(el: JSX.Element, center: Coordinate, map: mapboxgl.Map) {
-  const placeholder = document.createElement('div');
-  ReactDOM.render(el, placeholder);
+export function createClickedPopup() {
+  const popup = new mapboxgl.Popup({className: PopupStyle.expanded});
 
-  new mapboxgl.Popup({className: PopupStyle.expanded})
-  .setDOMContent(placeholder)
-  .setLngLat(center)
-  .addTo(map);
+  const addToMap = (el: JSX.Element, center: Coordinate, map: mapboxgl.Map) => {
+    const placeholder = document.createElement('div');
+    ReactDOM.render(el, placeholder);
+
+    popup
+    .setDOMContent(placeholder)
+    .setLngLat(center)
+    .addTo(map);
+  };
+  const removeFromMap = () => popup.remove();
+
+  return {addToMap, removeFromMap};
 }
 
 export function createHoverPopup() {

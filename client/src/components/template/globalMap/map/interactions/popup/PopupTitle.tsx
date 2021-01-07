@@ -25,7 +25,7 @@ const Root = styled.div`
 `;
 
 const Image = styled.img`
-  width: 24px;
+  max-width: 24px;
   cursor: pointer;
 `;
 
