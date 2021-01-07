@@ -149,6 +149,7 @@ export interface Trail {
   children: Array<Trail | null> | null;
   waterCrossing: string | null;
   skiTrail: boolean | null;
+  trailLength: number;
 }
 
 export enum CampsiteType {

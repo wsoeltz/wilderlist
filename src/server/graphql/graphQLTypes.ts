@@ -33,8 +33,8 @@ export enum MountainFlag {
   deleteRequest = 'deleteRequest',
 }
 
-type Longitude = number;
-type Latitude = number;
+export type Longitude = number;
+export type Latitude = number;
 export type Coordinate = [Longitude, Latitude];
 
 export interface Mountain {
@@ -149,6 +149,7 @@ export interface Trail {
   children: Array<Trail | null> | null;
   waterCrossing: string | null;
   skiTrail: boolean | null;
+  trailLength: number;
 }
 
 export enum CampsiteType {
@@ -201,6 +202,10 @@ export interface Campsite {
   internet_access: boolean | null;
   fire: boolean | null;
   maxtents: number | null;
+  author: User | null;
+  status: CreatedItemStatus | null;
+  description: string | null;
+  resources: ExternalResource[] | null;
 }
 
 export enum PermissionTypes {

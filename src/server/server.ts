@@ -9,12 +9,18 @@ import { redirectToHTTPS } from 'express-http-to-https';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import passport from 'passport';
+import getCampsite from './api/getCampsite';
 import getGlobalSearch from './api/getGlobalSearch';
+import getMountain from './api/getMountain';
 import getNearestTrail from './api/getNearestTrail';
+import getTrail, {
+  getNamedParent,
+} from './api/getTrail';
 import facebookAuth from './auth/facebook';
 import googleAuth from './auth/google';
 import redditAuth from './auth/reddit';
 import buildDataloaders from './dataloaders';
+import {Trail} from './graphql/graphQLTypes';
 import schema from './graphql/schema';
 import {State} from './graphql/schema/queryTypes/stateType';
 import {getStatesOrRegion} from './graphql/Utils';
@@ -143,6 +149,53 @@ app.post('/api/nearest-trail', async (req, res) => {
         ignoreTypes,
       });
       res.json(trail);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/named-parent-trail', async (req, res) => {
+  try {
+    const id = req.body && req.body.id && req.body.id.length
+      ? req.body.id : null;
+    const trail = await getTrail(id);
+    if (trail) {
+      const parent = await getNamedParent(trail as unknown as Trail);
+      if (parent) {
+        res.json(parent);
+      } else {
+        res.json(trail);
+      }
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/get-item', async (req, res) => {
+  try {
+    const id = req.body && req.body.id && req.body.id.length
+      ? req.body.id : null;
+    const type = req.body && req.body.itemType
+      ? req.body.itemType : null;
+    if (id !== null) {
+      if (type === 'trails') {
+        const trail = await getTrail(id);
+        res.json(trail);
+      } else if (type === 'mountains') {
+        const mountain = await getMountain(id);
+        res.json(mountain);
+      } else if (type === 'campsites') {
+        const campsite = await getCampsite(id);
+        res.json(campsite);
+      }
     } else {
       throw new Error('Missing parameters');
     }
