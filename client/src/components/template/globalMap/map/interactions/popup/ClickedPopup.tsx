@@ -15,8 +15,7 @@ import PopupTitle from './PopupTitle';
 import usePopupData from './usePopupData';
 
 interface Props {
-  title: string;
-  subtitle: string;
+  name: string | null;
   location: Coordinate;
   id: string | null;
   push: (url: string) => void;
@@ -26,10 +25,10 @@ interface Props {
 
 const ClickedPopup = (props: Props) => {
   const {
-    title, push, itemType, location, getString,
+    push, itemType, location, getString,
   } = props;
 
-  const {loading, error, data} = usePopupData(itemType, props.id, location, title);
+  const {loading, error, data} = usePopupData(itemType, props.id, location, props.name);
 
   let output: React.ReactElement<any> | null;
   if (loading) {

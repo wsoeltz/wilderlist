@@ -29,11 +29,9 @@ const mountainInteractions = (input: Input) => {
       const coordinates = e && e.features && e.features[0] && e.features[0].geometry
         ? (e.features[0].geometry as any).coordinates.slice() : [e.lngLat.lng, e.lngLat.lat];
       const name = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).name : '';
-      const elevation = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).ele + 'ft' : '';
+        ? (e.features[0].properties as any).name : null;
       const id = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).id : '';
+        ? (e.features[0].properties as any).id : null;
 
       // Ensure that if the map is zoomed out such that multiple
       // copies of the feature are visible, the popup appears
@@ -44,8 +42,7 @@ const mountainInteractions = (input: Input) => {
 
       addClickedPopup(
         <ClickedPopup
-          title={name}
-          subtitle={elevation}
+          name={name}
           id={id}
           push={push}
           itemType={ItemType.mountain}

@@ -22,6 +22,7 @@ export const getNamedParent = async (trail: ITrail) => {
       return {
         _id: parent._id,
         name: parent.name,
+        type: trail.name,
         trailLength,
       };
     } else {
@@ -29,6 +30,7 @@ export const getNamedParent = async (trail: ITrail) => {
       return {
         _id: trail._id,
         name: trail.name,
+        type: trail.name,
         trailLength,
       };
     }
@@ -38,6 +40,7 @@ export const getNamedParent = async (trail: ITrail) => {
     return {
       _id: trail._id,
       name: trail.name,
+      type: trail.type,
       trailLength,
     };
   }
@@ -45,7 +48,18 @@ export const getNamedParent = async (trail: ITrail) => {
 
 const getTrail = async (_id: string) => {
   try {
-    return await Trail.findOne({_id});
+    const trail = await Trail.findOne({_id});
+    if (trail) {
+      const trailLength = length(lineString(trail.line), {units: 'miles'});
+      return {
+        _id: trail._id,
+        name: trail.name,
+        type: trail.type,
+        trailLength,
+      };
+    } else {
+      return null;
+    }
   } catch (err) {
     console.error(err);
   }

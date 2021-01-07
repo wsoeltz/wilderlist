@@ -21,13 +21,6 @@ const getNearestTrail = axios.create({
   adapter: cacheNearestTrail.adapter,
 });
 
-const cacheNamedParentTrail: any = setupCache({
-  maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
-});
-const getNamedParentTrail = axios.create({
-  adapter: cacheNamedParentTrail.adapter,
-});
-
 interface PopupData {
   itemType: ItemType;
   id: string;
@@ -76,31 +69,27 @@ const usePopupData = (itemType: ItemType, id: string | null, coordinate: Coordin
           ...t,
           distance: pointToLineDistance(coordinate, lineString(t.line)),
         }));
-        const trail = orderBy(withDistance, ['distance'], ['asc'])[0];
-        if (trail.parents) {
-          getNamedParentTrail({
-            method: 'post',
-            url: '/api/named-parent-trail',
-            data: {id: trail._id},
-          }).then(parent => {
-            setOutput({loading: false, error: undefined, data: {
-              itemType,
-              id: parent.data._id,
-              name: parent.data.name,
-              type: trail.type,
-              subtitle: parseFloat(parent.data.trailLength.toFixed(2)) + 'mi',
-            }});
-          }).catch(error => setOutput({loading: false, error, data: undefined}));
-        } else {
+        const likelyTrail = orderBy(withDistance, ['distance'], ['asc'])[0];
+        getItem({
+          method: 'post',
+          url: '/api/get-item',
+          data: {id: likelyTrail._id, itemType},
+        }).then((trail) => {
           setOutput({loading: false, error: undefined, data: {
             itemType,
-            id: trail._id,
-            name: trail.name,
-            type: trail.type,
-            subtitle: parseFloat(trail.trailLength.toFixed(2)) + 'mi',
+            id: trail.data._id,
+            name: trail.data.name,
+            type: trail.data.type,
+            subtitle: parseFloat(trail.data.trailLength.toFixed(2)) + 'mi',
           }});
-        }
-      }).catch(error => setOutput({loading: false, error, data: undefined}));
+        }).catch(error => {
+          console.error('1');
+          setOutput({loading: false, error, data: undefined});
+        });
+      }).catch(error => {
+        console.error('2');
+        setOutput({loading: false, error, data: undefined});
+      });
     }
   }, [itemType, id, coordinate, name]);
 

@@ -1,5 +1,4 @@
 import { GetString } from 'fluent-react/compat';
-import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import {
   Id,
@@ -29,17 +28,10 @@ const campiteInteractions = (input: Input) => {
     if (layerId === getHovered().id) {
       const coordinates = e && e.features && e.features[0] && e.features[0].geometry
         ? (e.features[0].geometry as any).coordinates.slice() : [e.lngLat.lng, e.lngLat.lat];
-      let name = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).name : '';
-      let type = e && e.features && e.features[0]
-          ? upperFirst(getString('global-formatted-campsite-type', {type: (e.features[0].properties as any).type}))
-          : '';
-      if (!name) {
-        name = type;
-        type = '';
-      }
+      const name = e && e.features && e.features[0]
+        ? (e.features[0].properties as any).name : null;
       const id = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).id : '';
+        ? (e.features[0].properties as any).id : null;
 
       // Ensure that if the map is zoomed out such that multiple
       // copies of the feature are visible, the popup appears
@@ -50,8 +42,7 @@ const campiteInteractions = (input: Input) => {
 
       addClickedPopup(
         <ClickedPopup
-          title={name}
-          subtitle={type}
+          name={name}
           id={id}
           push={push}
           itemType={ItemType.campsite}

@@ -40,9 +40,7 @@ const roadInteractions = (input: Input) => {
     if (layerId === getHovered().id) {
       const coordinates: Coordinate = [e.lngLat.lng, e.lngLat.lat];
       const name = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).name : '';
-      const type = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).type : '';
+        ? (e.features[0].properties as any).name : null;
 
       // Ensure that if the map is zoomed out such that multiple
       // copies of the feature are visible, the popup appears
@@ -53,9 +51,8 @@ const roadInteractions = (input: Input) => {
 
       addClickedPopup(
         <ClickedPopup
-          title={name}
-          subtitle={type}
-          id={''}
+          name={name}
+          id={null}
           push={push}
           itemType={ItemType.trail}
           getString={getString}
@@ -72,54 +69,44 @@ const roadInteractions = (input: Input) => {
     if ((type === undefined || type === ItemType.trail) && e && e.features && e.features.length > 0) {
       const id = e.features[0].id;
       setHovered(id, ItemType.trail);
-      if (!(e && e.features && e.features[0] && (e.features[0].properties as any).name)) {
-        const {lng, lat} = e.lngLat;
-        getNearestRoad({
-            method: 'post',
-            url: '/api/nearest-trail',
-            data: {
-              lat: lat.toFixed(6),
-              lng: lng.toFixed(6),
-              name: null,
-              ignoreTypes: [
-                TrailType.trail,
-                TrailType.path,
-                TrailType.stairs,
-                TrailType.cycleway,
-                TrailType.hiking,
-                TrailType.bridleway,
-                TrailType.demandingMountainHiking,
-                TrailType.mountainHiking,
-                TrailType.herdpath,
-                TrailType.alpineHiking,
-                TrailType.demandingAlpineHiking,
-                TrailType.difficultAlpineHiking,
-                TrailType.parentTrail,
-              ],
-            },
-          })
-          .then(({data}) => {
-            if (getHovered().id === id) {
-              const withDistance = data.map((t: any) => ({
-                ...t,
-                distance: pointToLineDistance([e.lngLat.lng, e.lngLat.lat], lineString(t.line)),
-              }));
-              const road = orderBy(withDistance, ['distance'], ['asc'])[0];
-              (map.getSource(hoveredRoadsLayerId) as any).setData(lineString(road.line));
-            }
-          })
-          .catch(err => console.error(err));
-      } else {
-        map.setFeatureState(
-          {
-            source: 'composite',
-            sourceLayer: 'roads',
-            id: getHovered().id,
+      const name = e && e.features && e.features[0] ? (e.features[0].properties as any).name : null;
+      const {lng, lat} = e.lngLat;
+      getNearestRoad({
+          method: 'post',
+          url: '/api/nearest-trail',
+          data: {
+            lat: lat.toFixed(6),
+            lng: lng.toFixed(6),
+            name,
+            ignoreTypes: [
+              TrailType.trail,
+              TrailType.path,
+              TrailType.stairs,
+              TrailType.cycleway,
+              TrailType.hiking,
+              TrailType.bridleway,
+              TrailType.demandingMountainHiking,
+              TrailType.mountainHiking,
+              TrailType.herdpath,
+              TrailType.alpineHiking,
+              TrailType.demandingAlpineHiking,
+              TrailType.difficultAlpineHiking,
+              TrailType.parentTrail,
+            ],
           },
-          { hover: true },
-        );
+        })
+        .then(({data}) => {
+          if (getHovered().id === id) {
+            const withDistance = data.map((t: any) => ({
+              ...t,
+              distance: pointToLineDistance([e.lngLat.lng, e.lngLat.lat], lineString(t.line)),
+            }));
+            const road = orderBy(withDistance, ['distance'], ['asc'])[0];
+            (map.getSource(hoveredRoadsLayerId) as any).setData(lineString(road.line));
+          }
+        })
+        .catch(err => console.error(err));
       }
-    }
   });
 
   // Change it back to a pointer when it leaves.

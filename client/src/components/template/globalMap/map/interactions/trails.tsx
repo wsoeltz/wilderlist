@@ -45,8 +45,6 @@ const trailInteractions = (input: Input) => {
       const coordinates: Coordinate = [e.lngLat.lng, e.lngLat.lat];
       const name = e && e.features && e.features[0]
         ? (e.features[0].properties as any).name : '';
-      const type = e && e.features && e.features[0]
-        ? (e.features[0].properties as any).type : '';
 
       // Ensure that if the map is zoomed out such that multiple
       // copies of the feature are visible, the popup appears
@@ -57,9 +55,8 @@ const trailInteractions = (input: Input) => {
 
       addClickedPopup(
         <ClickedPopup
-          title={name}
-          subtitle={type}
-          id={''}
+          name={name}
+          id={null}
           push={push}
           itemType={ItemType.trail}
           getString={getString}
@@ -70,12 +67,14 @@ const trailInteractions = (input: Input) => {
 
   // Change the cursor to a pointer when the mouse is over the places layer.
   map.on('mouseenter', 'trails-background', function(e) {
-    map.getCanvas().style.cursor = 'pointer';
-    const type = getHovered().type;
-    if ((type === undefined || type === ItemType.trail) && e && e.features && e.features.length > 0) {
-      const id = e.features[0].id;
-      setHovered(id, ItemType.trail);
-      if (!(e && e.features && e.features[0] && (e.features[0].properties as any).name)) {
+    const zoom = map.getZoom();
+    if (zoom > 10) {
+      map.getCanvas().style.cursor = 'pointer';
+      const type = getHovered().type;
+      if ((type === undefined || type === ItemType.trail) && e && e.features && e.features.length > 0) {
+        const id = e.features[0].id;
+        setHovered(id, ItemType.trail);
+        const name = e && e.features && e.features[0] ? (e.features[0].properties as any).name : null;
         const {lng, lat} = e.lngLat;
         getNearestTrail({
             method: 'post',
@@ -83,7 +82,7 @@ const trailInteractions = (input: Input) => {
             data: {
               lat: lat.toFixed(6),
               lng: lng.toFixed(6),
-              name: null,
+              name,
               ignoreTypes: [
                 TrailType.road,
                 TrailType.dirtroad,
@@ -101,15 +100,6 @@ const trailInteractions = (input: Input) => {
             }
           })
           .catch(err => console.error(err));
-      } else {
-        map.setFeatureState(
-          {
-            source: 'composite',
-            sourceLayer: 'trails',
-            id: getHovered().id,
-          },
-          { hover: true },
-        );
       }
     }
   });

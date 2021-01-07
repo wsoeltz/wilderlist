@@ -1,5 +1,4 @@
 import { GetString } from 'fluent-react/compat';
-import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import {highlightedPointsLayerId} from '../layers';
 import {
@@ -35,27 +34,10 @@ const mountainInteractions = (input: Input) => {
       if (itemType) {
         const coordinates = e && e.features && e.features[0] && e.features[0].geometry
           ? (e.features[0].geometry as any).coordinates.slice() : [e.lngLat.lng, e.lngLat.lat];
-        let name = e && e.features && e.features[0]
+        const name = e && e.features && e.features[0]
           ? (e.features[0].properties as any).name : '';
-
         const id = e && e.features && e.features[0]
           ? (e.features[0].properties as any).id : '';
-
-        let subtitle: string;
-        if (itemType === ItemType.mountain) {
-          subtitle = e && e.features && e.features[0]
-            ? (e.features[0].properties as any).elevation + 'ft' : '';
-        } else if (itemType === ItemType.campsite) {
-          subtitle = e && e.features && e.features[0]
-            ? upperFirst(getString('global-formatted-campsite-type', {type: (e.features[0].properties as any).type}))
-            : '';
-          if (!name) {
-            name = subtitle;
-            subtitle = '';
-          }
-        } else {
-          subtitle = '';
-        }
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -66,8 +48,7 @@ const mountainInteractions = (input: Input) => {
 
         addClickedPopup(
           <ClickedPopup
-            title={name}
-            subtitle={subtitle}
+            name={name}
             id={id}
             push={push}
             getString={getString}
