@@ -55,6 +55,7 @@ const getTrail = async (_id: string) => {
         _id: trail._id,
         name: trail.name,
         type: trail.type,
+        parents: trail.parents,
         trailLength,
       };
     } else {

@@ -130,6 +130,13 @@ global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Your Ascents
 global-text-value-done = Hiked
 global-text-value-not-done = Not Hiked
+global-text-value-not-done-dynamic = {
+  $type ->
+    [mountains] Not yet hiked
+    [campsites] Not yet camped
+    [trails] Not yet hiked
+    *[other] Not yet visited
+}
 global-text-value-today = Today
 global-text-value-yesterday = Yesterday
 global-text-value-summer = Summer
@@ -597,6 +604,7 @@ mountain-detail-pending-approval = This mountain is pending confirmation
 mountain-detail-weather-and-reports = Summit Weather & Trip Reports
 mountain-detail-snow-depth = Last 7-Day Snowfall & Snow Depth
 mountain-detail-notes-and-ascents = Notes & Ascents
+mountain-detail-get-weather = Get Weather
 
 
 user-list-no-user-selected-text = Select a user on the left to see more details

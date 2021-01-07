@@ -93,7 +93,7 @@ const trailInteractions = (input: Input) => {
             if (getHovered().id === id) {
               const withDistance = data.map((t: any) => ({
                 ...t,
-                distance: pointToLineDistance([e.lngLat.lng, e.lngLat.lat], lineString(t.line)),
+                distance: pointToLineDistance([lng, lat], lineString(t.line)),
               }));
               const trail = orderBy(withDistance, ['distance'], ['asc'])[0];
               (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(trail.line));

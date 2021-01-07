@@ -1,18 +1,35 @@
 import { GetString } from 'fluent-react/compat';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
+import styled from 'styled-components/macro';
+import MountainIcon from '../../../../../../assets/images/icons/mountain-highlighted.svg';
+import TentIcon from '../../../../../../assets/images/icons/tent-highlighted.svg';
+import TrailIcon from '../../../../../../assets/images/icons/trail-highlighted.svg';
 import {
   campsiteDetailLink,
   mountainDetailLink,
   trailDetailLink,
 } from '../../../../../../routing/Utils';
+import {
+  tertiaryColor,
+} from '../../../../../../styling/styleUtils';
 import {Coordinate} from '../../../../../../types/graphQLTypes';
 import LoadingSimple from '../../../../../sharedComponents/LoadingSimple';
 import {ItemType} from '../../interactions';
+import ActionButtons from './ActionButtons';
 import DrivingDirections from './DrivingDirections';
 import LastTrip from './LastTrip';
 import PopupTitle from './PopupTitle';
 import usePopupData from './usePopupData';
+
+const Content = styled.div`
+  padding: 0.4rem 0.6rem;
+`;
+
+const LoadingContainer = styled.div`
+  background-color: ${tertiaryColor};
+  padding: 2rem;
+`;
 
 interface Props {
   name: string | null;
@@ -32,7 +49,11 @@ const ClickedPopup = (props: Props) => {
 
   let output: React.ReactElement<any> | null;
   if (loading) {
-    output = <LoadingSimple />;
+    output = (
+      <LoadingContainer>
+        <LoadingSimple />
+      </LoadingContainer>
+    );
   } else if (error) {
     output = <div>{getString('global-error-retrieving-data')}</div>;
   } else if (data !== undefined) {
@@ -48,18 +69,28 @@ const ClickedPopup = (props: Props) => {
     };
     let name: string;
     let subtitle: string;
+    let imgSrc: string;
     if (itemType === ItemType.mountain) {
       name = data.name ? data.name : 'Unnamed Peak';
       subtitle = data.subtitle ? data.subtitle : '';
+      imgSrc = MountainIcon;
     } else if (itemType === ItemType.trail) {
       name = data.name ? data.name : upperFirst(getString('global-formatted-trail-type', {type}));
-      subtitle = data.subtitle ? data.subtitle : '';
+      subtitle = data.subtitle
+        ? data.subtitle + ' long ' + getString('global-formatted-trail-type', {type})
+        : getString('global-formatted-trail-type', {type});
+      if (data.parents && data.parents.length && data.subtitle) {
+        subtitle += ' segment';
+      }
+      imgSrc = TrailIcon;
     } else if (itemType === ItemType.campsite) {
       name = data.name ? data.name : upperFirst(getString('global-formatted-campsite-type', {type}));
       subtitle = upperFirst(getString('global-formatted-campsite-type', {type}));
+      imgSrc = TentIcon;
     } else {
       name = data.name ? data.name : 'Point';
       subtitle = '';
+      imgSrc = MountainIcon;
     }
 
     output = (
@@ -67,9 +98,10 @@ const ClickedPopup = (props: Props) => {
         <PopupTitle
           title={name}
           subtitle={subtitle}
+          imgSrc={imgSrc}
           onClick={onClick}
         />
-        <div className={'popup-main-content'}>
+        <Content>
           <DrivingDirections
             getString={getString}
             destination={location}
@@ -79,7 +111,11 @@ const ClickedPopup = (props: Props) => {
             itemType={itemType}
             getString={getString}
           />
-        </div>
+        </Content>
+        <ActionButtons
+          detailAction={onClick}
+          getString={getString}
+        />
       </>
     );
   } else {

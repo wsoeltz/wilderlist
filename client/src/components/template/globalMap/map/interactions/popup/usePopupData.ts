@@ -27,6 +27,7 @@ interface PopupData {
   name: string;
   subtitle: string;
   type: string | undefined;
+  parents?: string[];
 }
 
 interface Output {
@@ -80,6 +81,7 @@ const usePopupData = (itemType: ItemType, id: string | null, coordinate: Coordin
             id: trail.data._id,
             name: trail.data.name,
             type: trail.data.type,
+            parents: trail.data.parents,
             subtitle: parseFloat(trail.data.trailLength.toFixed(2)) + 'mi',
           }});
         }).catch(error => {

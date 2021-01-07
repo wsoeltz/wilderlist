@@ -20,8 +20,8 @@ export const secondaryHoverColor = '#908d8d'; // hover variant of secondaryColor
 
 export const tertiaryColor = '#f3f3f3'; // really light gray color for use as a hover background color on cards
 
-export const linkColor = '#2b5b37'; // greenish blue color for use with links
-export const linkHoverColor = '#3dad15'; // hover color for links, light green
+export const linkColor = primaryColor; // greenish blue color for use with links
+export const linkHoverColor = primaryHoverColor; // hover color for links, light green
 export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
 export const lowWarningColorLight = '#f2e4b3';
@@ -72,6 +72,25 @@ export const colorSetGray: ColorSet = {
   primary: '#c4c4c4',
   secondary: '#cecece',
   tertiary: '#dddddd',
+};
+
+export const incompleteColor = '#d94728';
+export const completeColor = '#145500';
+
+export const completionColorScale = {
+  0: incompleteColor,
+  8: '#d17728,',
+  17: '#cd932b',
+  25: '#c99e2c',
+  33: '#c7ab2d',
+  42: '#c4b52f',
+  50: '#b4bf35',
+  58: '#99ba3c',
+  67: '#89b13f',
+  75: '#7caa41',
+  83: '#619a41',
+  92: '#4b8a3f',
+  100: '#145500',
 };
 
 export const getColorSetFromVariant = (variant: PeakListVariants) => {
@@ -337,6 +356,16 @@ export const ButtonSecondary = styled(ButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
+  }
+`;
+
+export const ButtonOutline = styled(ButtonBase)`
+  background-color: #fff;
+  color: ${baseColor};
+  border: solid 1px ${lightBorderColor};
+
+  &:hover {
+    background-color: ${tertiaryColor};
   }
 `;
 

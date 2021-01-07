@@ -67,6 +67,11 @@ const SideContent = styled.div`
   box-sizing: border-box;
   display: flex;
   justify-content: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: all;
+  }
 
   @media(min-width: ${mobileSize + 1}px) {
     position: fixed;
