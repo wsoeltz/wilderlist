@@ -1,4 +1,5 @@
-import styled from 'styled-components/macro';
+import {Link} from 'react-router-dom';
+import styled, {css} from 'styled-components/macro';
 import {
   baseColor,
   primaryColor,
@@ -6,7 +7,7 @@ import {
 } from '../../../../styling/styleUtils';
 import {mobileSize} from '../../../../Utils';
 
-export const FloatingButton = styled.button`
+const linkStyles = css`
   background-color: #fff;
   border-radius: 4px;
   margin-bottom: 0.75rem;
@@ -29,6 +30,15 @@ export const FloatingButton = styled.button`
     flex-grow: 1;
     border-radius: 0;
   }
+`;
+
+export const FloatingButton = styled.button`
+  ${linkStyles}
+`;
+
+export const FloatingLinkButton = styled(Link)`
+  text-decoration: none;
+  ${linkStyles}
 `;
 
 export const IconContainer = styled.div`

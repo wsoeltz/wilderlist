@@ -1,31 +1,30 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {useUsersAscentsForMountain} from '../../../queries/users/useUsersAscentsForMountain';
+import { addTripReportLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   AscentListItem,
   BasicListItem,
   ItemTitle,
 } from '../../../styling/sharedContentStyles';
 import {
-  ButtonPrimary,
+  ButtonPrimaryLink,
   GhostButton,
 } from '../../../styling/styleUtils';
-import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
   DateObject,
   formatDate,
   getDates,
 } from '../../../utilities/dateUtils';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
-import SignUpModal from '../../sharedComponents/SignUpModal';
 import {MountainDatum} from '../../tripReports/add/components/AddMountains';
 import EditAscentReport from '../../tripReports/add/EditAscentReport';
-import NewAscentReport from '../../tripReports/add/NewAscentReport';
 
-const AddAscentButton = styled(ButtonPrimary)`
+const AddAscentButton = styled(ButtonPrimaryLink)`
   margin-top: 1rem;
 `;
 
@@ -50,39 +49,16 @@ const AscentsList = (props: Props) => {
   const userMountains = data && data.user && data.user.mountains ? data.user.mountains : [];
   const completedDates = userMountains.find((m) => m.mountain && m.mountain.id === mountain.id);
 
+  const addTripReportUrl = addTripReportLink({
+    refpath: mountainDetailLink(mountain.id),
+    mountain: mountain.id,
+  });
+
   const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
 
-  const [editMountainId, setEditMountainId] = useState<Mountain['id'] | null>(null);
-  const openEditMountainModal = useCallback(() => setEditMountainId(mountain.id), [mountain.id]);
   const closeAscentModalModal = () => {
-    setEditMountainId(null);
     setDateToEdit(null);
   };
-
-  let ascentModal: React.ReactElement<any> | null;
-  if (editMountainId === null) {
-    ascentModal = null;
-  } else {
-    if (!userId) {
-      ascentModal = (
-        <SignUpModal
-          text={getString('global-text-value-modal-sign-up-today-ascents-list', {
-            'mountain-name': mountain.name,
-          })}
-          onCancel={closeAscentModalModal}
-        />
-      );
-    } else {
-      ascentModal = editMountainId === null ? null : (
-        <NewAscentReport
-          initialMountainList={[mountain]}
-          closeEditMountainModalModal={closeAscentModalModal}
-          userId={userId}
-          variant={PeakListVariants.standard}
-        />
-      );
-    }
-  }
 
   const editAscentModal =
     dateToEdit === null || userId === null ? null : (
@@ -130,7 +106,7 @@ const AscentsList = (props: Props) => {
     output = (
       <>
         {completionListItems}
-        <AddAscentButton onClick={openEditMountainModal}>
+        <AddAscentButton to={addTripReportUrl}>
           <CalendarButton icon='calendar-alt' />
           {getString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
@@ -143,7 +119,7 @@ const AscentsList = (props: Props) => {
         <BasicListItem>{getString('mountain-detail-no-ascents-text', {
           'mountain-name': mountain.name,
         })}</BasicListItem>
-        <AddAscentButton onClick={openEditMountainModal}>
+        <AddAscentButton to={addTripReportUrl}>
           <CalendarButton icon='calendar-alt' />
           {getString('mountain-detail-add-ascent-date')}
         </AddAscentButton>
@@ -154,7 +130,6 @@ const AscentsList = (props: Props) => {
     <>
       <ItemTitle>{getString('global-text-value-ascent-dates')}:</ItemTitle>
       {output}
-      {ascentModal}
       <MapRenderProp
         id={mountain.id}
         mountains={completedDates && completedDates.mountain

@@ -22,7 +22,6 @@ import {
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {MountainDatum} from '../../tripReports/add/components/AddMountains';
-import NewAscentReport from '../../tripReports/add/NewAscentReport';
 import ExportAscentsModal, {SpecialExport} from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
@@ -254,7 +253,6 @@ interface Props {
   peakListShortName: string;
   isOtherUser?: boolean;
   showImportExport?: boolean;
-  queryRefetchArray?: Array<{query: any, variables: any}>;
   disallowImports?: boolean;
   disallowExports?: boolean;
   isExportModalOpen?: boolean;
@@ -269,14 +267,13 @@ interface Props {
 const MountainTable = (props: Props) => {
   const {
     mountains, user, type, peakListId, peakListShortName, isOtherUser,
-    showImportExport, queryRefetchArray, disallowImports, disallowExports,
+    showImportExport, disallowImports, disallowExports,
     isExportModalOpen, setIsExportModalOpen, disableLinks, showCount, customAction,
     customActionText,
   } = props;
 
   const getString = useFluent();
 
-  const [mountainToEdit, setMountainToEdit] = useState<MountainToEdit | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const closeImportModal = useCallback(() => setIsImportModalOpen(false), []);
   const openImportModal = useCallback(() => setIsImportModalOpen(true), []);
@@ -313,10 +310,6 @@ const MountainTable = (props: Props) => {
 
   const top = isOtherUser === true ? (friendHeaderHeight + topOfPageBuffer) + 'rem' : topOfPageBuffer + 'rem';
 
-  const closeEditMountainModalModal = useCallback(() => {
-    setMountainToEdit(null);
-  }, []);
-
   const openExportModal = useCallback(() => {
     if (setIsExportModalOpen) {
       setIsExportModalOpen(true);
@@ -338,87 +331,6 @@ const MountainTable = (props: Props) => {
     peakListShortNameWithType = peakListShortName + ' ' + type.replace(/^\w/, c => c.toUpperCase());
   } else {
     peakListShortNameWithType = peakListShortName;
-  }
-
-  let editMountainModal: React.ReactElement<any> | null;
-  if (mountainToEdit === null) {
-    editMountainModal = null;
-  } else {
-    if (!user) {
-      editMountainModal = (
-        <SignUpModal
-          text={getString('global-text-value-modal-sign-up-today', {
-            'list-short-name': peakListShortNameWithType,
-          })}
-          onCancel={closeEditMountainModalModal}
-        />
-      );
-    } else {
-      if (type === PeakListVariants.standard) {
-        const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getString('mountain-completion-modal-text-note-standard'),
-        }} />;
-        editMountainModal = (
-          <NewAscentReport
-            initialMountainList={[mountainToEdit]}
-            closeEditMountainModalModal={closeEditMountainModalModal}
-            userId={user.id}
-            textNote={textNote}
-            variant={type}
-            queryRefetchArray={queryRefetchArray}
-          />
-        );
-      } else if (type === PeakListVariants.winter) {
-        const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getString('mountain-completion-modal-text-note-winter'),
-        }} />;
-        editMountainModal = (
-          <NewAscentReport
-            initialMountainList={[mountainToEdit]}
-            closeEditMountainModalModal={closeEditMountainModalModal}
-            userId={user.id}
-            textNote={textNote}
-            variant={type}
-            queryRefetchArray={queryRefetchArray}
-          />
-        );
-      } else if (type === PeakListVariants.fourSeason) {
-        const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getString('mountain-completion-modal-text-note-four-season'),
-        }} />;
-        const season = mountainToEdit.target as Seasons;
-        editMountainModal = (
-          <NewAscentReport
-            initialMountainList={[mountainToEdit]}
-            closeEditMountainModalModal={closeEditMountainModalModal}
-            userId={user.id}
-            textNote={textNote}
-            variant={type}
-            season={season}
-            queryRefetchArray={queryRefetchArray}
-          />
-        );
-      } else if (type === PeakListVariants.grid) {
-        const textNote = <Note dangerouslySetInnerHTML={{
-          __html: getString('mountain-completion-modal-text-note-grid'),
-        }} />;
-        const month = mountainToEdit.target as Months;
-        editMountainModal = (
-          <NewAscentReport
-            initialMountainList={[mountainToEdit]}
-            closeEditMountainModalModal={closeEditMountainModalModal}
-            userId={user.id}
-            textNote={textNote}
-            variant={type}
-            month={month}
-            queryRefetchArray={queryRefetchArray}
-          />
-        );
-      } else {
-        editMountainModal = null;
-        failIfValidOrNonExhaustive(type, 'Invalid list type ' + type);
-      }
-    }
   }
 
   let importAscentsModal: React.ReactElement<any> | null;
@@ -532,7 +444,7 @@ const MountainTable = (props: Props) => {
         index={index}
         mountain={mountain}
         type={type}
-        setEditMountainId={setMountainToEdit}
+        peakListId={peakListId ? peakListId : ''}
         isOtherUser={isOtherUser !== undefined ? isOtherUser : false}
         disableLinks={disableLinks}
         showCount={showCount}
@@ -772,7 +684,6 @@ const MountainTable = (props: Props) => {
         <Root style={{gridTemplateColumns: `repeat(${titleColumns.length}, auto)`}}>
           {titleColumns}
           {mountainRows}
-          {editMountainModal}
           {importAscentsModal}
           {exportAscentsModal}
         </Root>

@@ -129,18 +129,13 @@ const Modal = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    let closedWithBackButton = false;
     const closeModalOnBackClick = (e: Event) => {
-      closedWithBackButton = true;
       e.preventDefault();
       onClose();
     };
     window.addEventListener('popstate', closeModalOnBackClick);
     return () => {
       window.removeEventListener('popstate', closeModalOnBackClick);
-      if (!closedWithBackButton) {
-        window.history.back();
-      }
     };
   }, [onClose]);
 

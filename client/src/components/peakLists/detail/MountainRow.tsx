@@ -1,15 +1,17 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
   MountainDatum,
 } from '../../../queries/lists/usePeakListDetail';
 import {
+  addTripReportLink,
+  listDetailLink,
   mountainDetailLink,
 } from '../../../routing/Utils';
 import {
-  ButtonSecondary,
+  ButtonPrimaryLink,
   lightBaseColor,
   lightBorderColor,
   SemiBold,
@@ -28,7 +30,6 @@ import {
 } from '../../../Utils';
 import { Months, Seasons } from '../../../Utils';
 import {VariableDate} from './getCompletionDates';
-import { MountainToEdit } from './MountainTable';
 
 export const horizontalPadding = 0.6; // in rem
 export const smallPadding = 0.4; // in rem
@@ -130,7 +131,7 @@ const MountainButton = styled(TableCellBase)`
   justify-content: flex-end;
 `;
 
-const MarkDoneButton = styled(ButtonSecondary)`
+const MarkDoneButton = styled(ButtonPrimaryLink)`
   @media ${smallColumnMediaQuery} {
     font-size: 0.7rem;
     padding: 0.3rem;
@@ -158,7 +159,7 @@ interface Props {
   index: number;
   mountain: MountainDatumWithDate;
   type: PeakListVariants;
-  setEditMountainId: (mountainToEdit: MountainToEdit) => void;
+  peakListId: string;
   isOtherUser: boolean;
   disableLinks: undefined | boolean;
   showCount: undefined | boolean;
@@ -168,18 +169,31 @@ interface Props {
 
 const MountainRow = (props: Props) => {
   const {
-    index, mountain, type, setEditMountainId, isOtherUser,
+    index, mountain, type, peakListId, isOtherUser,
     disableLinks, showCount, customAction, customActionText,
   } = props;
   const backgroundColor: React.CSSProperties['backgroundColor'] = (index % 2 === 0) ? undefined : lightBorderColor;
   const borderColor: React.CSSProperties['borderColor'] = (index % 2 === 0) ? undefined : '#fff';
-  const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
-  const completeButton = (target: Months | Seasons | null) => isOtherUser
-    ? (<EmptyDate>{'—'}</EmptyDate>) : (
-      <MarkDoneButton onClick={() => setEditMountainId({...mountain, target})}>
-        <CalendarButton icon='calendar-alt' /> {completeButtonText}
-      </MarkDoneButton>
-    );
+
+  const completeButton = useCallback((target: Months | Seasons | null) => {
+    if (isOtherUser) {
+      return <EmptyDate>{'—'}</EmptyDate>;
+    } else {
+      const addTripReportUrl = addTripReportLink({
+        refpath: listDetailLink(peakListId),
+        mountain: mountain.id,
+        listtype: type,
+        month: type === PeakListVariants.grid ? target as Months : undefined,
+        season: type === PeakListVariants.fourSeason ? target as Seasons : undefined,
+      });
+      const completeButtonText = type !== PeakListVariants.grid ? 'Mark Done' : '';
+      return (
+        <MarkDoneButton to={addTripReportUrl}>
+          <CalendarButton icon='calendar-alt' /> {completeButtonText}
+        </MarkDoneButton>
+      );
+    }
+  }, [isOtherUser, type, peakListId, mountain.id]);
 
   let peakCompletedContent: React.ReactElement<any> | null = completeButton(null);
   const { completionDates } = mountain;

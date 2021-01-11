@@ -21,7 +21,7 @@
     "mapbox-gl": "^2.0.1",
     "normalize.css": "^8.0.1",
     "polished": "^3.4.2",
-    "query-string": "^6.8.3",
+    "query-string": "^6.13.8",
     "raw.macro": "^0.3.0",
     "react": "^17.0.1",
     "react-autosuggest": "^10.0.4",

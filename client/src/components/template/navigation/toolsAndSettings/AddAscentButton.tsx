@@ -1,14 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useCallback, useState} from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
-import {refetchUsersPeakLists} from '../../../../queries/lists/getUsersPeakLists';
-import { PeakListVariants } from '../../../../types/graphQLTypes';
+import {addTripReportLink} from '../../../../routing/Utils';
 import {mobileSize} from '../../../../Utils';
-import NewAscentReport from '../../../tripReports/add/NewAscentReport';
 import {
-  FloatingButton,
+  FloatingLinkButton,
   IconContainer,
   TextContainer as TextContainerBase,
 } from './Utils';
@@ -26,34 +24,17 @@ const AddAscentButton = () => {
   const user = useCurrentUser();
   const getString = useFluent();
 
-  const [ascentModalOpen, setAscentModalOpen] = useState<boolean>(false);
-  const openAscentModal = useCallback(() => setAscentModalOpen(true), []);
-  const closeAscentModal = useCallback(() => setAscentModalOpen(false), []);
-
   if (user) {
-    const userId = user._id;
-
-    const addAscentModal = ascentModalOpen ? (
-      <NewAscentReport
-        initialMountainList={[]}
-        closeEditMountainModalModal={closeAscentModal}
-        userId={userId}
-        variant={PeakListVariants.standard}
-        queryRefetchArray={[refetchUsersPeakLists({userId})]}
-      />
-    ) : null;
-
     return (
       <>
-        <FloatingButton onClick={openAscentModal}>
+        <FloatingLinkButton to={addTripReportLink({})}>
           <IconContainer>
             <FontAwesomeIcon icon='calendar-alt' />
           </IconContainer>
           <TextContainer
             dangerouslySetInnerHTML={{__html: getString('global-add-trip-report')}}
           />
-        </FloatingButton>
-        {addAscentModal}
+        </FloatingLinkButton>
       </>
     );
   } else {

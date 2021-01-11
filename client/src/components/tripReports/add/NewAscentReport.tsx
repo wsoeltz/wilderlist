@@ -1,9 +1,9 @@
 import React from 'react';
 import { DateType } from '../../../utilities/dateUtils';
-import MountainCompletionModal, {
+import TripReportForm, {
   preferredDateFormatLocalStorageVariable,
   Props as BaseProps,
-} from './MountainCompletionModal';
+} from './TripReportForm';
 
 type Props = BaseProps & {
   queryRefetchArray?: Array<{query: any, variables: any}>,
@@ -29,7 +29,7 @@ const NewAscentReport = (props: Props) => {
   const refetchQuery = queryRefetchArray
     ? [...queryRefetchArray] : undefined;
   return (
-    <MountainCompletionModal
+    <TripReportForm
       {...rest}
       tripReportId={undefined}
       refetchQuery={refetchQuery}
