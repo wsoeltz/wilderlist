@@ -32,12 +32,12 @@ import {
 } from '../../../styling/styleUtils';
 import { TripReport } from '../../../types/graphQLTypes';
 import {
+  formatStringDate,
+} from '../../../utilities/dateUtils';
+import {
   isValidURL,
   notEmpty,
 } from '../../../Utils';
-import {
-  formatStringDate,
-} from '../../peakLists/Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import TripReportModal from './TripReportModal';
 

@@ -12,9 +12,9 @@ import {
   Card,
   CompactButtonPrimary,
 } from '../../../styling/styleUtils';
+import { getType } from '../../../utilities/dateUtils';
 import {mediumSize, mobileSize} from '../../../Utils';
 import MountainLogo from '../mountainLogo';
-import { getType } from '../Utils';
 import PeakProgressBar from './PeakProgressBar';
 
 const LinkWrapper = styled(Link)`

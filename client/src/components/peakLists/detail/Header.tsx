@@ -27,6 +27,7 @@ import {
   PeakListVariants,
   PermissionTypes,
 } from '../../../types/graphQLTypes';
+import { completedPeaks, formatDate, getLatestAscent, getType } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
@@ -36,7 +37,6 @@ import {
 import PeakProgressBar from '../list/PeakProgressBar';
 import VariantLinks from '../list/VariantLinks';
 import MountainLogo from '../mountainLogo';
-import { completedPeaks, formatDate, getLatestAscent, getType } from '../Utils';
 import FlagModal from './FlagModal';
 
 const mobileWidth = 500; // in px

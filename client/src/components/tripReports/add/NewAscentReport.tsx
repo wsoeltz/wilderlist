@@ -1,5 +1,5 @@
 import React from 'react';
-import { DateType } from '../../Utils';
+import { DateType } from '../../../utilities/dateUtils';
 import MountainCompletionModal, {
   preferredDateFormatLocalStorageVariable,
   Props as BaseProps,

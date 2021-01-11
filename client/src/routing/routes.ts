@@ -24,6 +24,8 @@ export enum Routes {
   CreateList = '/create-list',
   EditList = '/edit-list/:id',
 
+  AddTripReport = '/add-trip-report',
+
   SearchUsers = '/user/search',
   UserProfile = '/user/:id',
   OtherUserPeakList = '/user/:id/list/:peakListId',

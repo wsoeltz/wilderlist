@@ -14,6 +14,7 @@ import {
   Mountain,
   PeakListVariants,
 } from '../../types/graphQLTypes';
+import { DateObject, getDates } from '../../utilities/dateUtils';
 import {
   getSeason,
   Months,
@@ -21,7 +22,6 @@ import {
   Seasons,
 } from '../../Utils';
 import PeakProgressBar from '../peakLists/list/PeakProgressBar';
-import { DateObject, getDates } from '../peakLists/Utils';
 import LoadingSpinner from '../sharedComponents/LoadingSpinner';
 import DataViz, {
   VizType,

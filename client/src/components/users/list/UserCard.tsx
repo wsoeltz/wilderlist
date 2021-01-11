@@ -22,12 +22,12 @@ import {
   FriendStatus,
   PeakListVariants,
 } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
 import {
   formatDate,
   getDates,
   getType,
-} from '../../peakLists/Utils';
+} from '../../../utilities/dateUtils';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
 
 const LinkWrapper = styled(Link)`
   display: block;

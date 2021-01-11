@@ -1,19 +1,19 @@
 import React, {useMemo} from 'react';
-import useFluent from '../../../../hooks/useFluent';
+import useFluent from '../../../hooks/useFluent';
 import {
   refetchTripReportForDateAndMountain,
   useGetTripReportForDateAndMountain,
-} from '../../../../queries/tripReports/useGetTripReportForDateAndMountain';
-import { PlaceholderText } from '../../../../styling/styleUtils';
-import {
-  convertFieldsToDate,
-  notEmpty,
-} from '../../../../Utils';
-import Modal from '../../../sharedComponents/Modal';
+} from '../../../queries/tripReports/useGetTripReportForDateAndMountain';
+import { PlaceholderText } from '../../../styling/styleUtils';
 import {
   DateObject,
   getDateType,
-} from '../../Utils';
+} from '../../../utilities/dateUtils';
+import {
+  convertFieldsToDate,
+  notEmpty,
+} from '../../../Utils';
+import Modal from '../../sharedComponents/Modal';
 import MountainCompletionModal, {
   ButtonWrapper,
   CancelButton,

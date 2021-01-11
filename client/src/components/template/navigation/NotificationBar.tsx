@@ -20,9 +20,9 @@ import {
   SemiBold,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
+import { formatStringDate } from '../../../utilities/dateUtils';
 import {mobileSize} from '../../../Utils';
-import AscentReportFromNotification from '../../peakLists/detail/completionModal/AscentReportFromNotification';
-import { formatStringDate } from '../../peakLists/Utils';
+import AscentReportFromNotification from '../../tripReports/add/AscentReportFromNotification';
 
 const slideDown = keyframes`
   0%   {

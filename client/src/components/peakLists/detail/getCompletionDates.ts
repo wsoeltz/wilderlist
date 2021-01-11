@@ -1,14 +1,14 @@
 import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
-  failIfValidOrNonExhaustive,
-} from '../../../Utils';
-import {
   DateObject,
   getFourSeasonCompletion,
   getGridCompletion,
   getStandardCompletion,
   getWinterCompletion,
-} from '../Utils';
+} from '../../../utilities/dateUtils';
+import {
+  failIfValidOrNonExhaustive,
+} from '../../../Utils';
 
 export type VariableDate = {
   type: PeakListVariants.standard;

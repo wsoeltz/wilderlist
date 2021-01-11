@@ -3,8 +3,8 @@ import React from 'react';
 import {
   AscentNotification,
   Mountain,
-} from '../../../../types/graphQLTypes';
-import { DateType, getDates, getDateType } from '../../Utils';
+} from '../../../types/graphQLTypes';
+import { DateType, getDates, getDateType } from '../../../utilities/dateUtils';
 import MountainCompletionModal, {
   Props as BaseProps,
 } from './MountainCompletionModal';

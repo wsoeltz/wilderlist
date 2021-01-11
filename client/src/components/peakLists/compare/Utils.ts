@@ -8,7 +8,7 @@ import {
   getGridCompletion,
   getStandardCompletion,
   getWinterCompletion,
-} from '../Utils';
+} from '../../../utilities/dateUtils';
 
 type BasicAscentGoal = {
   goal: false;

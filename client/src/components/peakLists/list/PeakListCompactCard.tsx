@@ -21,12 +21,12 @@ import {
 } from '../../../styling/styleUtils';
 import { getColorSetFromVariant } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
+import { getType } from '../../../utilities/dateUtils';
 import {
   roundPercentToSingleDecimal,
 } from '../../../Utils';
 import ImportAscentNotification from '../import/ImportAscentsNotification';
 import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
-import { getType } from '../Utils';
 import VariantLinks from './VariantLinks';
 
 const Root = styled.div`

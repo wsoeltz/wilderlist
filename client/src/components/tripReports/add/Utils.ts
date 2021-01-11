@@ -4,7 +4,7 @@ import {
   InputBase,
   Label,
   lightBorderColor,
-} from '../../../../styling/styleUtils';
+} from '../../../styling/styleUtils';
 
 export const today = new Date();
 

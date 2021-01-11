@@ -1,19 +1,19 @@
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import React, {forwardRef, Ref} from 'react';
 import styled from 'styled-components/macro';
-import useFluent from '../../../../../hooks/useFluent';
+import useFluent from '../../../../hooks/useFluent';
 import {
   BasicIconInText,
   CheckboxListCheckbox,
   CheckboxListItem,
   DetailBoxTitle,
   DetailBoxWithMargin,
-} from '../../../../../styling/styleUtils';
+} from '../../../../styling/styleUtils';
 import {
   Conditions,
-} from '../../../../../types/graphQLTypes';
-import Tooltip from '../../../../sharedComponents/Tooltip';
-import { DateType } from '../../../Utils';
+} from '../../../../types/graphQLTypes';
+import { DateType } from '../../../../utilities/dateUtils';
+import Tooltip from '../../../sharedComponents/Tooltip';
 import {
   CheckboxList,
   Input,

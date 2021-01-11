@@ -22,12 +22,12 @@ import {
   TripReport,
 } from '../../../types/graphQLTypes';
 import {
+  formatStringDate,
+} from '../../../utilities/dateUtils';
+import {
   isValidURL,
   notEmpty,
 } from '../../../Utils';
-import {
-  formatStringDate,
-} from '../../peakLists/Utils';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 
 const ButtonWrapper = styled.div`

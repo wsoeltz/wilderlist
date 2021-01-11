@@ -1,10 +1,10 @@
 import { faAt, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
-import useFluent from '../../../../../hooks/useFluent';
+import useFluent from '../../../../hooks/useFluent';
 import {
   FriendsDatum,
-} from '../../../../../queries/users/useGetFriendsBasic';
+} from '../../../../queries/users/useGetFriendsBasic';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -14,11 +14,11 @@ import {
   DetailBox,
   DetailBoxTitle,
   GhostButton,
-} from '../../../../../styling/styleUtils';
+} from '../../../../styling/styleUtils';
 import {
   FriendStatus,
-} from '../../../../../types/graphQLTypes';
-import Modal from '../../../../sharedComponents/Modal';
+} from '../../../../types/graphQLTypes';
+import Modal from '../../../sharedComponents/Modal';
 import {
   CheckboxList,
   Input,

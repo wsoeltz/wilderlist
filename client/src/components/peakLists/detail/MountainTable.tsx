@@ -19,13 +19,13 @@ import {
   Months,
   Seasons,
 } from '../../../Utils';
-import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
+import {MountainDatum} from '../../tripReports/add/components/AddMountains';
+import NewAscentReport from '../../tripReports/add/NewAscentReport';
 import ExportAscentsModal, {SpecialExport} from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
-import NewAscentReport from './completionModal/NewAscentReport';
 import MountainRow from './MountainRow';
 import {
   extraSmallPadding,

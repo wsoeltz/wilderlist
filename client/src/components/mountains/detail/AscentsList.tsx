@@ -14,16 +14,16 @@ import {
   GhostButton,
 } from '../../../styling/styleUtils';
 import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
-import {MountainDatum} from '../../peakLists/detail/completionModal/components/AddMountains';
-import EditAscentReport from '../../peakLists/detail/completionModal/EditAscentReport';
-import NewAscentReport from '../../peakLists/detail/completionModal/NewAscentReport';
 import {
   DateObject,
   formatDate,
   getDates,
-} from '../../peakLists/Utils';
+} from '../../../utilities/dateUtils';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import SignUpModal from '../../sharedComponents/SignUpModal';
+import {MountainDatum} from '../../tripReports/add/components/AddMountains';
+import EditAscentReport from '../../tripReports/add/EditAscentReport';
+import NewAscentReport from '../../tripReports/add/NewAscentReport';
 
 const AddAscentButton = styled(ButtonPrimary)`
   margin-top: 1rem;

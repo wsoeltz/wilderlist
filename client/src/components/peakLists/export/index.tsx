@@ -7,13 +7,13 @@ import {
   ButtonSecondary,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
-import Modal from '../../sharedComponents/Modal';
-import { MountainDatumWithDate } from '../detail/MountainRow';
 import {
   formatDate,
   formatGridDate,
-} from '../Utils';
+} from '../../../utilities/dateUtils';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
+import Modal from '../../sharedComponents/Modal';
+import { MountainDatumWithDate } from '../detail/MountainRow';
 
 const ButtonWrapper = styled.div`
   display: flex;

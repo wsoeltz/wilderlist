@@ -1,12 +1,12 @@
 import { sortBy } from 'lodash';
-import { CompletedMountain, PeakListVariants} from '../../types/graphQLTypes';
+import { CompletedMountain, PeakListVariants} from '../types/graphQLTypes';
 import {
   failIfValidOrNonExhaustive,
   getSeason,
   Months,
   Seasons,
   states,
-} from '../../Utils';
+} from '../Utils';
 
 export interface DateObject {
   dateAsNumber: number;

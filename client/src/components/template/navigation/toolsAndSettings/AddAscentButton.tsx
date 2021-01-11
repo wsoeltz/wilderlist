@@ -6,7 +6,7 @@ import useFluent from '../../../../hooks/useFluent';
 import {refetchUsersPeakLists} from '../../../../queries/lists/getUsersPeakLists';
 import { PeakListVariants } from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
-import NewAscentReport from '../../../peakLists/detail/completionModal/NewAscentReport';
+import NewAscentReport from '../../../tripReports/add/NewAscentReport';
 import {
   FloatingButton,
   IconContainer,

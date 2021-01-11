@@ -1,25 +1,25 @@
 import React, {useCallback} from 'react';
 import DatePicker from 'react-datepicker';
 import styled from 'styled-components/macro';
-import useFluent from '../../../../../hooks/useFluent';
+import useFluent from '../../../../hooks/useFluent';
 import {
   GhostButton,
   lightBlue,
   lightBorderColor,
   secondaryColor,
   tertiaryColor,
-} from '../../../../../styling/styleUtils';
+} from '../../../../styling/styleUtils';
 import {
   PeakListVariants,
-} from '../../../../../types/graphQLTypes';
+} from '../../../../types/graphQLTypes';
+import { DateType } from '../../../../utilities/dateUtils';
 import {
   getMonthIndex,
   getSeason,
   Months,
   Seasons,
-} from '../../../../../Utils';
-import {mobileWidth} from '../../../../sharedComponents/Modal';
-import { DateType } from '../../../Utils';
+} from '../../../../Utils';
+import {mobileWidth} from '../../../sharedComponents/Modal';
 import '../react-datepicker.custom.css';
 import {
   NoDateText,

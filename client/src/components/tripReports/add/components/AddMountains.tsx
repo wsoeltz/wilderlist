@@ -1,6 +1,6 @@
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
-import useFluent from '../../../../../hooks/useFluent';
+import useFluent from '../../../../hooks/useFluent';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -8,9 +8,9 @@ import {
   DetailBoxWithMargin,
   SemiBold,
   SmallTextNote,
-} from '../../../../../styling/styleUtils';
-import { Mountain, State } from '../../../../../types/graphQLTypes';
-import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
+} from '../../../../styling/styleUtils';
+import { Mountain, State } from '../../../../types/graphQLTypes';
+import {getDistanceFromLatLonInMiles} from '../../../../Utils';
 import {
   ButtonWrapper,
   ListItem,

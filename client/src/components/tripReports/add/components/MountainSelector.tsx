@@ -1,8 +1,8 @@
 import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import useFluent from '../../../../../hooks/useFluent';
-import {useBasicSearchMountains} from '../../../../../queries/mountains/useBasicSearchMountains';
+import useFluent from '../../../../hooks/useFluent';
+import {useBasicSearchMountains} from '../../../../queries/mountains/useBasicSearchMountains';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -12,10 +12,10 @@ import {
   lightBlue,
   lightBorderColor,
   tertiaryColor,
-} from '../../../../../styling/styleUtils';
-import {getDistanceFromLatLonInMiles} from '../../../../../Utils';
-import Modal from '../../../../sharedComponents/Modal';
-import StandardSearch from '../../../../sharedComponents/StandardSearch';
+} from '../../../../styling/styleUtils';
+import {getDistanceFromLatLonInMiles} from '../../../../Utils';
+import Modal from '../../../sharedComponents/Modal';
+import StandardSearch from '../../../sharedComponents/StandardSearch';
 import {ModalButtonWrapper} from '../Utils';
 import {MountainDatum} from './AddMountains';
 

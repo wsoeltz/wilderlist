@@ -38,6 +38,7 @@ import {
 import {
   PeakListVariants,
 } from '../../../types/graphQLTypes';
+import { getType, isState } from '../../../utilities/dateUtils';
 import {
   isValidURL,
 } from '../../../Utils';
@@ -45,7 +46,6 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import Tooltip from '../../sharedComponents/Tooltip';
 import UserNote from '../../sharedComponents/UserNote';
-import { getType, isState } from '../Utils';
 import getCompletionDates from './getCompletionDates';
 import Header from './Header';
 import IntroText from './IntroText';

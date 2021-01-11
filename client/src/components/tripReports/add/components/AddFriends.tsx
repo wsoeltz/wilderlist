@@ -1,16 +1,16 @@
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
-import useFluent from '../../../../../hooks/useFluent';
+import useFluent from '../../../../hooks/useFluent';
 import {
   useGetFriendsBasic,
-} from '../../../../../queries/users/useGetFriendsBasic';
+} from '../../../../queries/users/useGetFriendsBasic';
 import {
   BasicIconInText,
   ButtonPrimary,
   DetailBoxTitle,
   DetailBoxWithMargin,
   SemiBold,
-} from '../../../../../styling/styleUtils';
+} from '../../../../styling/styleUtils';
 import {
   ButtonWrapper,
   ListItem,

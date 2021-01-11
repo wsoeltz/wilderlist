@@ -18,15 +18,15 @@ import {
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
+  formatDate,
+  formatGridDate,
+} from '../../../utilities/dateUtils';
+import {
   failIfValidOrNonExhaustive,
   formatNumberWithCommas,
   mobileSize,
 } from '../../../Utils';
 import { Months, Seasons } from '../../../Utils';
-import {
-  formatDate,
-  formatGridDate,
-} from '../Utils';
 import {VariableDate} from './getCompletionDates';
 import { MountainToEdit } from './MountainTable';
 

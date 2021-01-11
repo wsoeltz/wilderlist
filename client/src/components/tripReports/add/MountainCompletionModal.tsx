@@ -3,18 +3,18 @@ import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
-import useFluent from '../../../../hooks/useFluent';
+import useFluent from '../../../hooks/useFluent';
 import {
   useClearAscentNotification,
-} from '../../../../queries/notifications/useGetNotifications';
+} from '../../../queries/notifications/useGetNotifications';
 import {
   useAddAscentNotifications,
   useTripReportMutaions,
-} from '../../../../queries/tripReports/tripReportMutations';
+} from '../../../queries/tripReports/tripReportMutations';
 import {
   GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
   nPerPage,
-} from '../../../../queries/tripReports/useLatestTripReports';
+} from '../../../queries/tripReports/useLatestTripReports';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -22,22 +22,22 @@ import {
   ButtonWarning,
   InlineTitle,
   warningColor,
-} from '../../../../styling/styleUtils';
+} from '../../../styling/styleUtils';
 import {
   Conditions,
   PeakListVariants,
-} from '../../../../types/graphQLTypes';
-import sendInvites from '../../../../utilities/sendInvites';
+} from '../../../types/graphQLTypes';
+import { DateType, formatStringDate } from '../../../utilities/dateUtils';
+import sendInvites from '../../../utilities/sendInvites';
 import {
   asyncForEach,
   convertFieldsToDate,
   isValidURL,
   Seasons,
-} from '../../../../Utils';
-import AreYouSureModal from '../../../sharedComponents/AreYouSureModal';
-import LoadingDisablePage from '../../../sharedComponents/LoadingDisablePage';
-import Modal, {mobileWidth as modalMobileWidth} from '../../../sharedComponents/Modal';
-import { DateType, formatStringDate } from '../../Utils';
+} from '../../../Utils';
+import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
+import LoadingDisablePage from '../../sharedComponents/LoadingDisablePage';
+import Modal, {mobileWidth as modalMobileWidth} from '../../sharedComponents/Modal';
 import AddFriends from './components/AddFriends';
 import AddMountains, {MountainDatum} from './components/AddMountains';
 import DateWidget, {Restrictions} from './components/DateWidget';

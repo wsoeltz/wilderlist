@@ -20,7 +20,7 @@ import {
 } from '../../../styling/styleUtils';
 import Modal from '../../sharedComponents/Modal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import {ModalButtonWrapper} from '../detail/completionModal/Utils';
+import {ModalButtonWrapper} from '../../tripReports/add/Utils';
 
 export const MountainItem = styled.div`
   display: block;
