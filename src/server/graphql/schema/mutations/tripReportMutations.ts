@@ -44,6 +44,8 @@ const tripReportMutations: any = {
       date: { type: GraphQLNonNull(GraphQLString) },
       author: { type: GraphQLNonNull(GraphQLID) },
       mountains: { type: new GraphQLList(GraphQLID)},
+      trails: { type: new GraphQLList(GraphQLID)},
+      campsites: { type: new GraphQLList(GraphQLID)},
       users: { type: new GraphQLList(GraphQLID)},
       notes: { type: GraphQLString },
       link: { type: GraphQLString },

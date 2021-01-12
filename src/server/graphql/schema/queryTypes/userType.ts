@@ -16,8 +16,10 @@ import {
   User as IUser,
 } from '../../graphQLTypes';
 import { asyncForEach } from '../../Utils';
+import CampsiteType from './campsiteType';
 import MountainType, {Mountain} from './mountainType';
 import PeakListType, {PeakList} from './peakListType';
+import TrailType from './trailType';
 import TripReportType, {TripReport} from './tripReportType';
 
 type UserSchemaType = mongoose.Document & IUser;
@@ -52,6 +54,20 @@ const UserSchema = new Schema({
     },
     dates: [{ type: String }],
   }],
+  trails: [{
+    trail: {
+      type: Schema.Types.ObjectId,
+      ref: 'trail',
+    },
+    dates: [{ type: String }],
+  }],
+  campsites: [{
+    campsite: {
+      type: Schema.Types.ObjectId,
+      ref: 'campsite',
+    },
+    dates: [{ type: String }],
+  }],
   ascentNotifications: [{
     user: {
       type: Schema.Types.ObjectId,
@@ -60,6 +76,28 @@ const UserSchema = new Schema({
     mountain: {
       type: Schema.Types.ObjectId,
       ref: 'mountain',
+    },
+    date: { type: String },
+  }],
+  trailNotifications: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    trail: {
+      type: Schema.Types.ObjectId,
+      ref: 'trail',
+    },
+    date: { type: String },
+  }],
+  campsiteNotifications: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    campsite: {
+      type: Schema.Types.ObjectId,
+      ref: 'campsite',
     },
     date: { type: String },
   }],
@@ -77,7 +115,23 @@ const UserSchema = new Schema({
     },
     text: { type: String },
   }],
+  trailNotes: [{
+    trail: {
+      type: Schema.Types.ObjectId,
+      ref: 'trail',
+    },
+    text: { type: String },
+  }],
+  campsiteNotes: [{
+    campsite: {
+      type: Schema.Types.ObjectId,
+      ref: 'campsite',
+    },
+    text: { type: String },
+  }],
   mountainPermissions: { type: Number },
+  trailPermissions: { type: Number },
+  campsitePermissions: { type: Number },
   peakListPermissions: { type: Number },
 });
 
@@ -93,6 +147,44 @@ const CompletedMountainsType = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    dates: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+});
+
+const CompletedTrailsType = new GraphQLObjectType({
+  name: 'CompletedTrailsType',
+  fields: () => ({
+    trail: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.load(parentValue.trail);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    dates: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+});
+
+const CompletedCampsitesType = new GraphQLObjectType({
+  name: 'CompletedCampsitesType',
+  fields: () => ({
+    campsite: {
+      type: CampsiteType,
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.load(parentValue.campsite);
         } catch (err) {
           return err;
         }
@@ -142,6 +234,66 @@ const AscentNotificationType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    date: {
+      type: GraphQLString,
+    },
+  }),
+});
+
+const TrailNotificationType: any = new GraphQLObjectType({
+  name: 'TrailNotificationType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    trail: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.load(parentValue.trail);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    date: {
+      type: GraphQLString,
+    },
+  }),
+});
+
+const CampsiteNotificationType: any = new GraphQLObjectType({
+  name: 'CampsiteNotificationType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsite: {
+      type: CampsiteType,
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.load(parentValue.campsite);
         } catch (err) {
           return err;
         }
@@ -224,7 +376,11 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountains: { type: new GraphQLList(CompletedMountainsType) },
+    trails: { type: new GraphQLList(CompletedTrailsType) },
+    campsites: { type: new GraphQLList(CompletedCampsitesType) },
     ascentNotifications: { type: new GraphQLList(AscentNotificationType) },
+    trailNotifications: { type: new GraphQLList(TrailNotificationType) },
+    campsiteNotifications: { type: new GraphQLList(CampsiteNotificationType) },
     peakListNotes: { type: new GraphQLList(PeakListNotesType) },
     peakListNote: {
       type: PeakListNotesType,

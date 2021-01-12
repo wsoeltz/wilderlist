@@ -7,7 +7,9 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { TripReport as ITripReport } from '../../graphQLTypes';
+import CampsiteType from './campsiteType';
 import MountainType from './mountainType';
+import TrailType from './trailType';
 import UserType from './userType';
 
 type TripReportSchemaType = mongoose.Document & ITripReport;
@@ -20,6 +22,14 @@ const TripReportSchema = new Schema({
   mountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
+  }],
+  trails: [{
+    type: Schema.Types.ObjectId,
+    ref: 'trail',
+  }],
+  campsites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'campsite',
   }],
   users: [{
     type: Schema.Types.ObjectId,
@@ -71,6 +81,26 @@ const TripReportType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.loadMany(parentValue.mountains);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    trails:  {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.loadMany(parentValue.trails);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsites:  {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.loadMany(parentValue.campsites);
         } catch (err) {
           return err;
         }

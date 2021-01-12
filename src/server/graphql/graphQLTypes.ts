@@ -218,6 +218,16 @@ export interface CompletedMountain {
   dates: string[];
 }
 
+export interface CompletedTrail {
+  trail: Trail | null;
+  dates: string[];
+}
+
+export interface CompletedCampsite {
+  campsite: Campsite | null;
+  dates: string[];
+}
+
 export enum FriendStatus {
   friends = 'friends',
   sent = 'sent',
@@ -261,6 +271,8 @@ export interface User {
   friendRequests: Friend[] | null;
   peakLists: Array<PeakList | null> | null;
   mountains: CompletedMountain[] | null;
+  trails: CompletedTrail[] | null;
+  campsites: CompletedCampsite[] | null;
   permissions: PermissionTypes;
   hideEmail: boolean | null;
   hideProfilePicture: boolean | null;
@@ -308,6 +320,8 @@ export interface TripReport extends Conditions {
   date: string;
   author: User | null;
   mountains: Array<Mountain | null>;
+  trails: Array<Trail | null>;
+  campsites: Array<Campsite | null>;
   users: Array<User | null>;
   notes: string | null;
   link: string | null;
