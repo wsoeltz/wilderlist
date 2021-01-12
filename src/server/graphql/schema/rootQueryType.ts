@@ -491,6 +491,33 @@ const RootQuery = new GraphQLObjectType({
         .limit(limit);
       },
     },
+    mountainsIn: {
+      type: new GraphQLList(MountainType),
+      args: {
+        ids: { type: GraphQLList(GraphQLID) },
+      },
+      resolve(parentValue, {ids}) {
+        return Mountain.find({_id: {$in: ids}});
+      },
+    },
+    trailsIn: {
+      type: new GraphQLList(TrailType),
+      args: {
+        ids: { type: GraphQLList(GraphQLID) },
+      },
+      resolve(parentValue, {ids}) {
+        return Trail.find({_id: {$in: ids}});
+      },
+    },
+    campsitesIn: {
+      type: new GraphQLList(CampsiteType),
+      args: {
+        ids: { type: GraphQLList(GraphQLID) },
+      },
+      resolve(parentValue, {ids}) {
+        return Campsite.find({_id: {$in: ids}});
+      },
+    },
   }),
 });
 

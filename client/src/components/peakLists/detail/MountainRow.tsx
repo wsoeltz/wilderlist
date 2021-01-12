@@ -181,7 +181,7 @@ const MountainRow = (props: Props) => {
     } else {
       const addTripReportUrl = addTripReportLink({
         refpath: listDetailLink(peakListId),
-        mountain: mountain.id,
+        mountains: mountain.id,
         listtype: type,
         month: type === PeakListVariants.grid ? target as Months : undefined,
         season: type === PeakListVariants.fourSeason ? target as Seasons : undefined,

@@ -14,11 +14,11 @@ import {
   notEmpty,
 } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
-import MountainCompletionModal, {
+import TripReportForm, {
   ButtonWrapper,
   CancelButton,
   Props as BaseProps,
-} from './MountainCompletionModal';
+} from './TripReportForm';
 
 type Props = BaseProps & {
   date: DateObject;
@@ -51,7 +51,7 @@ const EditAscentReport = (props: Props) => {
 
   const actions = (
     <ButtonWrapper>
-      <CancelButton onClick={props.closeEditMountainModalModal} mobileExtend={true}>
+      <CancelButton onClick={props.onClose} mobileExtend={true}>
         {getString('global-text-value-modal-cancel')}
       </CancelButton>
     </ButtonWrapper>
@@ -62,7 +62,7 @@ const EditAscentReport = (props: Props) => {
     console.error(error);
     return (
       <Modal
-        onClose={props.closeEditMountainModalModal}
+        onClose={props.onClose}
         width={'300px'}
         height={'auto'}
         actions={actions}
@@ -76,7 +76,7 @@ const EditAscentReport = (props: Props) => {
     const { tripReport } = data;
     if (tripReport === null) {
       return (
-        <MountainCompletionModal
+        <TripReportForm
           {...props}
           tripReportId={undefined}
           refetchQuery={[...refetchQuery]}
@@ -126,7 +126,7 @@ const EditAscentReport = (props: Props) => {
 
       const userList = filteredUsers.map(user => user.id);
       return (
-        <MountainCompletionModal
+        <TripReportForm
           {...props}
           tripReportId={id}
           refetchQuery={[...refetchQuery]}

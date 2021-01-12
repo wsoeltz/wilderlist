@@ -15,6 +15,7 @@ const GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE = gql`
       mountains {
         id
         name
+        location
         state {
           id
           abbreviation

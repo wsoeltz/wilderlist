@@ -4,41 +4,53 @@ import {useHistory} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {
-  QueryType,
-  useSingleMountainOrTrailOrCampsite,
-} from '../../../queries/compound/useSingleMountainOrTrailOrCampsite';
+  useItemsFromIdLists,
+} from '../../../queries/compound/getItemsFromIdLists';
 import { Routes } from '../../../routing/routes';
-import { AddTripReportLinkParams } from '../../../routing/Utils';
+import { EditTripReportLinkParams } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  getDates,
+} from '../../../utilities/dateUtils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import NewAscentReport from './NewAscentReport';
+import EditAscentReport from './EditAscentReport';
 
-const AddTripReport = () => {
+const EditTripReport = () => {
   const getString = useFluent();
   const user = useCurrentUser();
   const {goBack, location, push} = useHistory();
   const {
-    refpath, mountain, trail, campsite, listtype, month, season,
-  } = queryString.parse(location.search) as AddTripReportLinkParams;
+    refpath, mountains, trails, campsites, listtype, month, season,
+    date,
+  } = queryString.parse(location.search) as EditTripReportLinkParams;
 
-  let id: string | null;
-  let type: QueryType | null;
-  if (mountain) {
-    id = mountain;
-    type = QueryType.Mountain;
-  } else if (trail) {
-    id = trail;
-    type = QueryType.Trail;
-  } else if (campsite) {
-    id = campsite;
-    type = QueryType.Campsite;
-  } else {
-    id = null;
-    type = null;
+  let mountainIds: string[] = [];
+  let trailIds: string[] = [];
+  let campsiteIds: string[] = [];
+  if (mountains) {
+    if (typeof mountains === 'string') {
+      mountainIds = [mountains];
+    } else {
+      mountainIds = mountains;
+    }
+  }
+  if (trails) {
+    if (typeof trails === 'string') {
+      trailIds = [trails];
+    } else {
+      trailIds = trails;
+    }
+  }
+  if (campsites) {
+    if (typeof campsites === 'string') {
+      campsiteIds = [campsites];
+    } else {
+      campsiteIds = campsites;
+    }
   }
 
-  const {loading, error, data} = useSingleMountainOrTrailOrCampsite(type, id);
+  const {loading, error, data} = useItemsFromIdLists({mountainIds, trailIds, campsiteIds});
 
   const onSave = useCallback(() => {
     if (refpath) {
@@ -66,42 +78,43 @@ const AddTripReport = () => {
         </PlaceholderText>
       );
     } else {
-      const initialMountain = data && data.mountain ? [data.mountain] : [];
+      const initialMountainList = data && data.mountains ? data.mountains : [];
+      const dateObject = getDates([date]);
       if (listtype && listtype === PeakListVariants.fourSeason && season) {
         return (
-          <NewAscentReport
-            initialMountainList={initialMountain}
+          <EditAscentReport
+            date={dateObject[0]}
+            initialMountainList={initialMountainList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
             variant={listtype}
             season={season}
-            queryRefetchArray={[]}
           />
         );
       }
       if (listtype && listtype === PeakListVariants.grid && month) {
         return (
-          <NewAscentReport
-            initialMountainList={initialMountain}
+          <EditAscentReport
+            date={dateObject[0]}
+            initialMountainList={initialMountainList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
             variant={listtype}
             month={month}
-            queryRefetchArray={[]}
           />
         );
       } else {
         const variant = listtype === PeakListVariants.winter ? listtype : PeakListVariants.standard;
         return (
-          <NewAscentReport
-            initialMountainList={initialMountain}
+          <EditAscentReport
+            date={dateObject[0]}
+            initialMountainList={initialMountainList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
             variant={variant}
-            queryRefetchArray={[]}
           />
         );
       }
@@ -112,4 +125,4 @@ const AddTripReport = () => {
   }
 };
 
-export default AddTripReport;
+export default EditTripReport;

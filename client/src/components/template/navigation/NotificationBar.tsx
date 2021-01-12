@@ -22,7 +22,7 @@ import {
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import { formatStringDate } from '../../../utilities/dateUtils';
 import {mobileSize} from '../../../Utils';
-import AscentReportFromNotification from '../../tripReports/add/AscentReportFromNotification';
+import AscentReportFromNotification from '../../tripReports/form/AscentReportFromNotification';
 
 const slideDown = keyframes`
   0%   {

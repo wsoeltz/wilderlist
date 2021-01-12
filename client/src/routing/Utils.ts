@@ -16,17 +16,26 @@ export const trailDetailLink = (id: string) => Routes.TrailDetail.replace(':id',
 
 export type AddTripReportLinkParams = {
   refpath?: string | null;
-  mountain?: string | null;
-  trail?: string | null;
-  campsite?: string | null;
+  mountains?: string | string[] | null;
+  trails?: string | string[] | null;
+  campsites?: string | string[] | null;
   listtype?: PeakListVariants | null;
   month?: Months | null;
   season?: Seasons | null;
 };
 
+export type EditTripReportLinkParams = AddTripReportLinkParams & {
+  id?: string | null;
+  date: string;
+};
+
 export const addTripReportLink = (input: AddTripReportLinkParams) => {
   const query = queryString.stringify(input);
   return query ? Routes.AddTripReport + '?' + query : Routes.AddTripReport;
+};
+export const editTripReportLink = (input: EditTripReportLinkParams) => {
+  const query = queryString.stringify(input);
+  return query ? Routes.EditTripReport + '?' + query : Routes.AddTripReport;
 };
 
 export const userProfileLink = (id: string) => Routes.UserProfile.replace(':id', id);

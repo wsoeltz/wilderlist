@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {useState} from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {useUsersAscentsForMountain} from '../../../queries/users/useUsersAscentsForMountain';
-import { addTripReportLink, mountainDetailLink } from '../../../routing/Utils';
+import { addTripReportLink, editTripReportLink, mountainDetailLink } from '../../../routing/Utils';
 import {
   AscentListItem,
   BasicListItem,
@@ -12,17 +12,15 @@ import {
 } from '../../../styling/sharedContentStyles';
 import {
   ButtonPrimaryLink,
-  GhostButton,
+  CompactGhostButtonLink,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import {
-  DateObject,
   formatDate,
   getDates,
 } from '../../../utilities/dateUtils';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
-import {MountainDatum} from '../../tripReports/add/components/AddMountains';
-import EditAscentReport from '../../tripReports/add/EditAscentReport';
+import {MountainDatum} from '../../tripReports/form/components/AddMountains';
 
 const AddAscentButton = styled(ButtonPrimaryLink)`
   margin-top: 1rem;
@@ -51,25 +49,8 @@ const AscentsList = (props: Props) => {
 
   const addTripReportUrl = addTripReportLink({
     refpath: mountainDetailLink(mountain.id),
-    mountain: mountain.id,
+    mountains: [mountain.id],
   });
-
-  const [dateToEdit, setDateToEdit] = useState<DateObject | null>(null);
-
-  const closeAscentModalModal = () => {
-    setDateToEdit(null);
-  };
-
-  const editAscentModal =
-    dateToEdit === null || userId === null ? null : (
-    <EditAscentReport
-      initialMountainList={[mountain]}
-      closeEditMountainModalModal={closeAscentModalModal}
-      userId={userId}
-      variant={PeakListVariants.standard}
-      date={dateToEdit}
-    />
-  );
 
   let output: React.ReactElement<any>;
   if (completedDates && completedDates.dates.length) {
@@ -90,16 +71,19 @@ const AscentsList = (props: Props) => {
       } else {
         textDate = formatDate(date);
       }
-      const onClick = () => setDateToEdit(date);
+      const editTripReportUrl = editTripReportLink({
+        refpath: mountainDetailLink(mountain.id),
+        mountains: [mountain.id],
+        date: date.original,
+      });
       return (
         <AscentListItem
           key={date.dateAsNumber + index.toString()}
-          onClick={onClick}
         >
           <strong>{textDate}</strong>
-          <GhostButton>
+          <CompactGhostButtonLink to={editTripReportUrl}>
             {getString('trip-reports-view-edit-button')}
-          </GhostButton>
+          </CompactGhostButtonLink>
         </AscentListItem>
       );
     });
@@ -110,7 +94,6 @@ const AscentsList = (props: Props) => {
           <CalendarButton icon='calendar-alt' />
           {getString('mountain-detail-add-another-ascent')}
         </AddAscentButton>
-        {editAscentModal}
       </>
     );
   } else {

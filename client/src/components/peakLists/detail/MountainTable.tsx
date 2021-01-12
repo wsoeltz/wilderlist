@@ -21,7 +21,7 @@ import {
 } from '../../../Utils';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import {MountainDatum} from '../../tripReports/add/components/AddMountains';
+import {MountainDatum} from '../../tripReports/form/components/AddMountains';
 import ExportAscentsModal, {SpecialExport} from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';

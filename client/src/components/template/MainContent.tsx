@@ -32,7 +32,7 @@ const PageNotFound = React.lazy(() => import('../sharedComponents/404'));
 const CreatePeakList = React.lazy(() => import('../peakLists/create'));
 const CreateMountain = React.lazy(() => import('../mountains/create'));
 const ComparePeakListPage = React.lazy(() => import('../peakLists/compare'));
-const AddTripReport = React.lazy(() => import('../tripReports/add'));
+const AddTripReport = React.lazy(() => import('../tripReports/form'));
 
 const TrackedRoute = (props: any) => {
   useEffect(() => {
@@ -64,6 +64,7 @@ const ContentRoutes = () => {
           <TrackedRoute exact path={Routes.OtherUserPeakList} component={UserProfilePeakListDetail} />
           <TrackedRoute exact path={Routes.ComparePeakListIsolated} component={ComparePeakListPage} />
           <TrackedRoute exact path={Routes.AddTripReport} component={AddTripReport} />
+          <TrackedRoute exact path={Routes.EditTripReport} component={AddTripReport} />
           <TrackedRoute exact path={Routes.CreateMountain} component={CreateMountain} />
           <TrackedRoute exact path={Routes.EditMountain} component={CreateMountain} />
           <TrackedRoute exact path={Routes.CreateList} component={CreatePeakList} />

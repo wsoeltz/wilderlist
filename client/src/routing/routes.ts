@@ -25,6 +25,7 @@ export enum Routes {
   EditList = '/edit-list/:id',
 
   AddTripReport = '/add-trip-report',
+  EditTripReport = '/edit-trip-report',
 
   SearchUsers = '/user/search',
   UserProfile = '/user/:id',
