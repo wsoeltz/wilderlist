@@ -408,7 +408,6 @@ export const ButtonWarningLow = styled(ButtonBase)`
 
 export const ButtonPrimaryLink = styled(Link)`
   padding: 0.6rem;
-  text-transform: uppercase;
   color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
@@ -424,9 +423,26 @@ export const ButtonPrimaryLink = styled(Link)`
   }
 `;
 
+export const CompactButtonPrimaryLink = styled(Link)`
+  color: #fff;
+  text-align: center;
+  border-radius: ${borderRadius}px;
+  font-weight: ${semiBoldFontBoldWeight};
+  background-color: ${primaryColor};
+  display: inline-block;
+  text-decoration: none;
+  font-size: 0.7rem;
+  padding: 0.4rem;
+  line-height: 1.3;
+
+  &:hover {
+    color: #fff;
+    background-color: ${primaryHoverColor};
+  }
+`;
+
 export const GhostButtonLink = styled(Link)`
   padding: 0.6rem;
-  text-transform: uppercase;
   color: ${secondaryColor};
   text-align: center;
   border-radius: ${borderRadius}px;

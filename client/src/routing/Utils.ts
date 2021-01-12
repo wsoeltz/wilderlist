@@ -22,6 +22,8 @@ export type AddTripReportLinkParams = {
   listtype?: PeakListVariants | null;
   month?: Months | null;
   season?: Seasons | null;
+  date?: string | null;
+  notification?: 'yes' | 'no' | null;
 };
 
 export type EditTripReportLinkParams = AddTripReportLinkParams & {

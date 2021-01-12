@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, {keyframes} from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
@@ -11,10 +11,11 @@ import {
 import {
   useTripReportMutaions,
 } from '../../../queries/tripReports/tripReportMutations';
-import { mountainDetailLink, userProfileLink } from '../../../routing/Utils';
+import { addTripReportLink, mountainDetailLink, userProfileLink } from '../../../routing/Utils';
 import { PreContentHeaderFull } from '../../../styling/Grid';
 import {
   ButtonPrimary,
+  CompactButtonPrimaryLink,
   GhostButton,
   lowWarningColorLight,
   SemiBold,
@@ -22,7 +23,7 @@ import {
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import { formatStringDate } from '../../../utilities/dateUtils';
 import {mobileSize} from '../../../Utils';
-import AscentReportFromNotification from '../../tripReports/form/AscentReportFromNotification';
+// import AscentReportFromNotification from '../../tripReports/form/AscentReportFromNotification';
 
 const slideDown = keyframes`
   0%   {
@@ -62,7 +63,7 @@ const ConfirmButton = styled(ButtonPrimary)`
   font-size: ${buttonSize};
 `;
 
-const TripReportButton = styled(ButtonPrimary)`
+const TripReportButton = styled(CompactButtonPrimaryLink)`
   margin-right: 1rem;
   font-size: ${buttonSize};
   white-space: nowrap;
@@ -81,13 +82,13 @@ const NotificationBar = (props: Props) => {
 
   const getString = useFluent();
 
-  const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
-  const closeEditMountainModalModal = useCallback(
-    () => setIsAscentReportModalOpen(false),
-  [setIsAscentReportModalOpen]);
-  const openEditMountainModalModal = useCallback(
-    () => setIsAscentReportModalOpen(true),
-  [setIsAscentReportModalOpen]);
+  // const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
+  // const closeEditMountainModalModal = useCallback(
+  //   () => setIsAscentReportModalOpen(false),
+  // [setIsAscentReportModalOpen]);
+  // const openEditMountainModalModal = useCallback(
+  //   () => setIsAscentReportModalOpen(true),
+  // [setIsAscentReportModalOpen]);
 
   const {loading, error, data} = useGetNotifications(userId);
   const {addMountainCompletion} = useTripReportMutaions(null, 0);
@@ -150,17 +151,24 @@ const NotificationBar = (props: Props) => {
           dismissNotification();
         };
 
-        const ascentReportModal = isAscentReportModalOpen === false ? null : (
-          <AscentReportFromNotification
-            initialMountainList={[mountain]}
-            closeEditMountainModalModal={closeEditMountainModalModal}
-            userId={user.id}
-            textNote={null}
-            variant={PeakListVariants.standard}
-            date={date}
-            ascentNotifications={user.ascentNotifications}
-          />
-        );
+        // const ascentReportModal = isAscentReportModalOpen === false ? null : (
+        //   <AscentReportFromNotification
+        //     initialMountainList={[mountain]}
+        //     closeEditMountainModalModal={closeEditMountainModalModal}
+        //     userId={user.id}
+        //     textNote={null}
+        //     variant={PeakListVariants.standard}
+        //     date={date}
+        //     ascentNotifications={user.ascentNotifications}
+        //   />
+        // );
+        const addTripReportUrl = addTripReportLink({
+          refpath: window.location.pathname,
+          mountains: mountain.id,
+          listtype: PeakListVariants.standard,
+          notification: 'yes',
+          date,
+        });
 
         return (
           <Root key={id}>
@@ -178,13 +186,12 @@ const NotificationBar = (props: Props) => {
             <ConfirmButton onClick={onConfirm}>
               {getString('global-text-value-modal-confirm')}
             </ConfirmButton>
-            <TripReportButton onClick={openEditMountainModalModal}>
+            <TripReportButton to={addTripReportUrl}>
               {getString('global-text-value-modal-create-trip-report')}
             </TripReportButton>
             <DismissButton onClick={dismissNotification}>
               {getString('global-text-value-modal-dismiss')}
             </DismissButton>
-            {ascentReportModal}
           </Root>
         );
       } else {

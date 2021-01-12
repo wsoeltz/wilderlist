@@ -11,6 +11,7 @@ import { AddTripReportLinkParams } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import AscentReportFromNotification from './AscentReportFromNotification';
 import NewAscentReport from './NewAscentReport';
 
 const AddTripReport = () => {
@@ -19,6 +20,7 @@ const AddTripReport = () => {
   const {goBack, location, push} = useHistory();
   const {
     refpath, mountains, trails, campsites, listtype, month, season,
+    notification, date,
   } = queryString.parse(location.search) as AddTripReportLinkParams;
 
   let mountainIds: string[] = [];
@@ -75,6 +77,18 @@ const AddTripReport = () => {
       );
     } else {
       const initialMountainList = data && data.mountains ? data.mountains : [];
+      if (notification === 'yes' && date) {
+        return (
+          <AscentReportFromNotification
+            date={date}
+            initialMountainList={initialMountainList}
+            onClose={onClose}
+            onSave={onSave}
+            userId={user._id}
+            variant={PeakListVariants.standard}
+          />
+        );
+      }
       if (listtype && listtype === PeakListVariants.fourSeason && season) {
         return (
           <NewAscentReport
