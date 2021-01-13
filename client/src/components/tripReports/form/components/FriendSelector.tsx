@@ -1,35 +1,35 @@
 import { faAt, faUserFriends } from '@fortawesome/free-solid-svg-icons';
-import React, {useCallback, useState} from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import sortBy from 'lodash/sortBy';
+import React, {useCallback} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {
   FriendsDatum,
 } from '../../../../queries/users/useGetFriendsBasic';
 import {
-  BasicIconInText,
-  ButtonPrimary,
+  BasketTitle,
   ButtonSecondary,
   CheckboxListCheckbox,
   CheckboxListItem,
-  DetailBox,
-  DetailBoxTitle,
   GhostButton,
+  IconContainer,
+  placeholderColor,
 } from '../../../../styling/styleUtils';
 import {
   FriendStatus,
 } from '../../../../types/graphQLTypes';
-import Modal from '../../../sharedComponents/Modal';
 import {
   CheckboxList,
   Input,
-  ModalButtonWrapper,
   NoDateText,
 } from '../Utils';
 
 const Root = styled.div`
+  margin: 1rem 0 2rem;
   display: grid;
-  grid-template-columns: 220px 300px;
-  grid-gap: 1rem;
+  grid-template-columns: auto auto;
+  grid-gap: 0.75rem;
 
   @media (max-width: 600px) {
     grid-template-columns: auto;
@@ -43,24 +43,21 @@ const EmailRow = styled.div`
 `;
 
 interface Props {
-  closeAndAddFriends: (friends: string[], emails: string[]) => void;
   friends: FriendsDatum['user']['friends'];
-  initialUserList: string[];
-  initialEmails: string[];
+  userList: string[];
+  emails: string[];
+  setUserList: (users: string[]) => void;
+  setEmails: (emails: string[]) => void;
 }
 
 const FriendSelector = (props: Props) => {
   const {
-    closeAndAddFriends, friends, initialUserList, initialEmails,
+    friends, userList, emails, setUserList, setEmails,
   } = props;
 
   const getString = useFluent();
 
-  const [userList, setUserList] = useState<string[]>(initialUserList);
-  const [emails, setEmails] = useState<string[]>(
-    initialEmails.length ? initialEmails : ['']);
-
-  const incrementEmailList = useCallback(() => setEmails(curr => [...curr, '']), []);
+  const incrementEmailList = useCallback(() => setEmails([...emails, '']), [setEmails, emails]);
 
   const toggleUserList = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -75,7 +72,7 @@ const FriendSelector = (props: Props) => {
   let friendsList: React.ReactElement<any> | null;
   if (friends && friends.length) {
     const friendElements: Array<React.ReactElement<any>> = [];
-    friends.forEach(f => {
+    sortBy(friends, ['user.name']).forEach(f => {
       if (f.status === FriendStatus.friends && f.user) {
         friendElements.push(
           <CheckboxListItem htmlFor={f.user.id} key={f.user.id}>
@@ -153,49 +150,34 @@ const FriendSelector = (props: Props) => {
     </EmailRow>
   ));
 
-  const onClose = () => {
-    closeAndAddFriends(userList, emails.filter(v => v.length));
-  };
-
-  const actions = (
-    <ModalButtonWrapper>
-      <ButtonPrimary onClick={onClose} mobileExtend={true}>
-        Done adding friends
-      </ButtonPrimary>
-    </ModalButtonWrapper>
-  );
-
   return (
-    <Modal
-      onClose={onClose}
-      actions={actions}
-      width={'600px'}
-      height={'400px'}
-    >
-      <Root>
+    <Root>
+      <div>
+        <BasketTitle>
+          <IconContainer $color={placeholderColor}>
+            <FontAwesomeIcon icon={faUserFriends} />
+          </IconContainer>
+          {getString('mountain-completion-modal-text-add-wilderlist-friends')}
+        </BasketTitle>
         <div>
-          <DetailBoxTitle>
-            <BasicIconInText icon={faUserFriends} />
-            {getString('mountain-completion-modal-text-add-wilderlist-friends')}
-          </DetailBoxTitle>
-          <DetailBox>
-            {friendsList}
-          </DetailBox>
+          {friendsList}
         </div>
+      </div>
+      <div>
+        <BasketTitle>
+          <IconContainer $color={placeholderColor}>
+            <FontAwesomeIcon icon={faAt} />
+          </IconContainer>
+          {getString('mountain-completion-modal-text-add-other-friends')}
+        </BasketTitle>
         <div>
-          <DetailBoxTitle>
-            <BasicIconInText icon={faAt} />
-            {getString('mountain-completion-modal-text-add-other-friends')}
-          </DetailBoxTitle>
-          <DetailBox>
-            {emailInputs}
-            <ButtonSecondary onClick={incrementEmailList}>
-              {getString('mountain-completion-modal-text-add-email-button')}
-            </ButtonSecondary>
-          </DetailBox>
+          {emailInputs}
+          <ButtonSecondary onClick={incrementEmailList}>
+            {getString('mountain-completion-modal-text-add-email-button')}
+          </ButtonSecondary>
         </div>
-      </Root>
-    </Modal>
+      </div>
+    </Root>
   );
 };
 

@@ -21,7 +21,6 @@ import {
 } from '../../../Utils';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import {MountainDatum} from '../../tripReports/form/components/AddMountains';
 import ExportAscentsModal, {SpecialExport} from '../export';
 import ImportAscentsModal from '../import';
 import ImportGridModal, { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
@@ -163,10 +162,6 @@ export const FilterBar = styled.div`
   margin-bottom: 1rem;
   font-size: 75%;
 `;
-
-export interface MountainToEdit extends MountainDatum {
-  target: Months | Seasons | null;
-}
 
 enum SortingCategories {
   name = 'name',

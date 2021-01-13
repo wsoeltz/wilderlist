@@ -20,7 +20,7 @@ interface Props {
   setSelectedMountains: (mountains: MountainDatum[]) => void;
 }
 
-const AdditionalMountains = (props: Props) => {
+const AddItems = (props: Props) => {
   const {
     selectedMountains, setSelectedMountains,
   } = props;
@@ -43,4 +43,4 @@ const AdditionalMountains = (props: Props) => {
 
 };
 
-export default AdditionalMountains;
+export default AddItems;

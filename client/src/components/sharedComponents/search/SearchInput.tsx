@@ -35,7 +35,6 @@ const Input = styled.input`
 
 const SearchIcon = styled(FontAwesomeIcon)`
   position: absolute;
-  z-index: 550;
   top: 0.5rem;
   margin: auto ${magnifyingGlassSpacing}rem;
   font-size: ${magnifyingGlassSize}rem;

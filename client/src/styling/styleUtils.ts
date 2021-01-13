@@ -653,6 +653,27 @@ export const BasicIconAtEndOfText = styled(IconInTextBase)`
   margin-left: 0.6rem;
 `;
 
+export const IconContainer = styled.div<{$color: string}>`
+  margin-right: 0.25rem;
+  margin-top: 0.1em;
+  font-size: 0.85em;
+  color: ${({$color}) => $color};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 1rem;
+
+    .fill-path {
+      fill: ${({$color}) => $color};
+    }
+    .stroke-path {
+      fill: #fff;
+    }
+  }
+`;
+
 export const HighlightedIconInText = styled(IconInTextBase)`
   color: ${primaryColor};
 `;

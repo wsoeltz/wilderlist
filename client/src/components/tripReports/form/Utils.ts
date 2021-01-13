@@ -23,7 +23,7 @@ export const SectionTitle = styled(Label)`
 
 export const ColumnRoot = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 220px 1fr;
   grid-column-gap: 0.75rem;
 
   @media (max-width: 600px) {
@@ -77,7 +77,7 @@ export const SelectBoxBase = styled.select`
     background-color: #ddd;
   }
 
-  @media(max-width: 810px) {
+  @media(max-width: 470px) {
     font-size: 1.2rem;
   }
 `;
@@ -94,6 +94,12 @@ export const NoDateText = styled.p`
 export const Input = styled(InputBase)`
   margin-top: 0.3rem;
   margin-bottom: 0.6rem;
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+  border: solid 1px ${lightBorderColor};
+  font-size: 0.85rem;
+  font-weight: 300;
 `;
 
 export const ButtonWrapper = styled.div`
@@ -122,6 +128,19 @@ export const ModalButtonWrapper = styled.div`
 export const CheckboxList = styled(CheckboxListBase)`
   background-color: #fff;
   margin-top: 0.3rem;
+  font-size: 0.85rem;
+
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .3);
+  }
+  ::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, .1);
+  }
 `;
 
 export const SelectedDetailsBox = styled.div`

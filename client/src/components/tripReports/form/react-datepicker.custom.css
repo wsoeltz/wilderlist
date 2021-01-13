@@ -49,7 +49,7 @@
   margin: 0;
   width: 1.6rem;
 }
-@media(max-width: 810px) {
+@media(max-width: 470px) {
   .mountain-completion-modal-datepicker .react-datepicker__day-name,
   .mountain-completion-modal-datepicker .react-datepicker__day,
   .mountain-completion-modal-datepicker .react-datepicker__time-name {

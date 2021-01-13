@@ -1,4 +1,5 @@
 import { faCalendarAlt, faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {validate as validateEmail} from 'email-validator';
 import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -41,7 +42,7 @@ import {
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import LoadingDisablePage from '../../sharedComponents/LoadingDisablePage';
 import AddFriends from './components/AddFriends';
-import AddMountains, {MountainDatum} from './components/AddMountains';
+import AddItems, {MountainDatum} from './components/AddItems';
 import DateWidget, {Restrictions} from './components/DateWidget';
 import TripDetails, {charLimit, nullConditions} from './components/TripDetails';
 import {
@@ -161,7 +162,7 @@ const TripReportForm = (props: PropsWithConditions) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [dateType, setDateType] = useState<DateType>(initialDateType);
-  const [emailList, setEmailList] = useState<string[]>([]);
+  const [emailList, setEmailList] = useState<string[]>(['']);
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [mountainList, setMountainList] = useState<MountainDatum[]>(initialMountainList);
   const [saving, setSaving] = useState<boolean>(false);
@@ -225,8 +226,6 @@ const TripReportForm = (props: PropsWithConditions) => {
       const tripLink =
         tripLinkEl && tripLinkEl.current && tripLinkEl.current.value.length
         ? tripLinkEl.current.value.substring(0, 1000) : null;
-
-      // closeEditMountainModalModal();
 
       const mountainIds = [...mountainList.map(mtn => mtn.id)];
       const initialMountainIds = initialMountainList.map(mtn => mtn.id);
@@ -364,7 +363,11 @@ const TripReportForm = (props: PropsWithConditions) => {
             }
           });
         }
-        sendInvites({mountainName: mountainNames, emailList, date: completedDate.date});
+        sendInvites({
+          mountainName: mountainNames,
+          emailList: emailList.filter(email => email && validateEmail(email)),
+          date: completedDate.date,
+        });
       }
       onSave();
     }
@@ -500,9 +503,9 @@ const TripReportForm = (props: PropsWithConditions) => {
         <TitleText>{title}</TitleText>
       </IconTitle>
       <SectionTitle>
-        Day 1 - Details*
+        {getString('mountain-completion-modal-text-day-number', {day: 1})}*
         <SmallTextNote>
-        * At least one mountain, trail or campsite is required to log a trip
+          {getString('mountain-completion-modal-text-required-text')}*
         </SmallTextNote>
       </SectionTitle>
       <ColumnRoot>
@@ -510,12 +513,15 @@ const TripReportForm = (props: PropsWithConditions) => {
           {dateSelect}
         </LeftColumn>
         <RightColumn>
-          <AddMountains
+          <AddItems
             selectedMountains={mountainList}
             setSelectedMountains={setMountainList}
           />
         </RightColumn>
       </ColumnRoot>
+      <SectionTitle>
+        {getString('mountain-completion-modal-text-people-hiked-with')}
+      </SectionTitle>
       <AddFriends
         userId={userId}
         emailList={emailList}

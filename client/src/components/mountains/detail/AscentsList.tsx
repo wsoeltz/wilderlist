@@ -14,13 +14,12 @@ import {
   ButtonPrimaryLink,
   CompactGhostButtonLink,
 } from '../../../styling/styleUtils';
-import { PeakListVariants } from '../../../types/graphQLTypes';
+import { Mountain, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   formatDate,
   getDates,
 } from '../../../utilities/dateUtils';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
-import {MountainDatum} from '../../tripReports/form/components/AddMountains';
 
 const AddAscentButton = styled(ButtonPrimaryLink)`
   margin-top: 1rem;
@@ -32,7 +31,12 @@ const CalendarButton = styled(FontAwesomeIcon)`
 `;
 
 interface Props {
-  mountain: MountainDatum;
+  mountain: {
+    id: Mountain['id'];
+    name: Mountain['name'];
+    elevation: Mountain['elevation'];
+    location: Mountain['location'];
+  };
 }
 
 const AscentsList = (props: Props) => {

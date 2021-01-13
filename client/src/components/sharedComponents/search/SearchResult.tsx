@@ -7,10 +7,10 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
+  IconContainer,
   primaryColor,
 } from '../../../styling/styleUtils';
 import {
-  IconContainer,
   mountainNeutralSvg,
   tentNeutralSvg,
   trailDefaultSvg,

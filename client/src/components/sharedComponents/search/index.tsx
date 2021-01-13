@@ -19,7 +19,6 @@ const Root = styled.div`
   div.react-autosuggest__container {
     width: 100%;
     position: relative;
-    z-index: 500;
   }
 
   ul.react-autosuggest__suggestions-list {

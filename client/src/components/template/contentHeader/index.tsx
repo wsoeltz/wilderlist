@@ -47,7 +47,10 @@ const Header = () => {
                           normalizedPathname !== Routes.SearchLists  &&
                           normalizedPathname !== Routes.SearchTrails  &&
                           normalizedPathname !== Routes.SearchCampsites  &&
-                          normalizedPathname !== Routes.SearchMountains),
+                          normalizedPathname !== Routes.SearchCampsites  &&
+                          normalizedPathname !== Routes.SearchMountains &&
+                          normalizedPathname !== Routes.AddTripReport &&
+                          normalizedPathname !== Routes.EditTripReport),
    [windowWidth, normalizedPathname],
   );
 

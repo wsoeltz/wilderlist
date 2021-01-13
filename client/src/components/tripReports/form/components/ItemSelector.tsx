@@ -2,11 +2,11 @@ import React from 'react';
 import {
   Basket,
   BasketTitle,
+  IconContainer,
   lightBaseColor,
   SmallTextNote,
 } from '../../../../styling/styleUtils';
 import Search from '../../../sharedComponents/search';
-import {IconContainer} from '../../../sharedComponents/svgIcons';
 import {
   SelectedDetailsBox,
 } from '../Utils';
