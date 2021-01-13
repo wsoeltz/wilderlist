@@ -20,7 +20,9 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-Sentry.init({dsn: 'https://6f07b454e1a84442b2f2ec02bc0996a4@o425164.ingest.sentry.io/5357955'});
+if (process.env.NODE_ENV !== 'development') {
+  Sentry.init({dsn: 'https://6f07b454e1a84442b2f2ec02bc0996a4@o425164.ingest.sentry.io/5357955'});
+}
 
 const {browser, version} = getBrowser();
 

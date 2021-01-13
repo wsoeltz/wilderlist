@@ -2,20 +2,15 @@ import { faMountain } from '@fortawesome/free-solid-svg-icons';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import useFluent from '../../../../hooks/useFluent';
-import {useBasicSearchMountains} from '../../../../queries/mountains/useBasicSearchMountains';
 import {
   BasicIconInText,
   ButtonPrimary,
   DetailBox,
   DetailBoxTitle,
-  lightBaseColor,
   lightBlue,
-  lightBorderColor,
-  tertiaryColor,
 } from '../../../../styling/styleUtils';
-import {getDistanceFromLatLonInMiles} from '../../../../Utils';
 import Modal from '../../../sharedComponents/Modal';
-import StandardSearch from '../../../sharedComponents/StandardSearch';
+import Search from '../../../sharedComponents/search';
 import {ModalButtonWrapper} from '../Utils';
 import {MountainDatum} from './AddMountains';
 
@@ -23,7 +18,6 @@ const mobileWidth = 550; // in px
 
 const Root = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto 1fr;
   grid-gap: 1rem;
   height: 100%;
@@ -41,10 +35,14 @@ const SelectedMountainsRoot = styled.div`
 `;
 
 const SearchPanel = styled.div`
-  grid-column: 1;
+  width: 600px;
   grid-row: 2;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: ${mobileWidth}px) {
+    width: 100%;
+  }
 `;
 
 const SelectedMountainsDetails = styled(DetailBox)`
@@ -52,41 +50,6 @@ const SelectedMountainsDetails = styled(DetailBox)`
   flex-wrap: wrap;
 `;
 
-const MountainItem = styled.div`
-  display: block;
-  position: relative;
-  padding: 0.5rem;
-  padding-right: 2rem;
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${lightBorderColor};
-  }
-
-  &:hover {
-    cursor: pointer;
-    background-color: ${lightBlue};
-  }
-
-  &:after {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0.4rem;
-    display: flex;
-    align-items: center;
-    font-size: 1.3rem;
-    color: ${lightBaseColor};
-  }
-`;
-
-const MountainItemAdd = styled(MountainItem)`
-  &:after {
-    content: '+';
-  }
-`;
 const MountainItemRemove = styled.div`
   flex-shrink: 0;
   white-space: nowrap;
@@ -108,19 +71,6 @@ const MountainItemRemove = styled.div`
   }
 `;
 
-const Subtitle = styled.small`
-  color: ${lightBaseColor};
-`;
-
-const SearchResults = styled.div`
-  flex-grow: 1;
-  background-color: ${tertiaryColor};
-  border: solid 1px ${lightBorderColor};
-  border-top: none;
-  height: 250px;
-  overflow: auto;
-`;
-
 interface Props {
   initialSelectedMountains: MountainDatum[];
   closeAndAddMountains: (mountains: MountainDatum[]) => void;
@@ -134,18 +84,10 @@ const MountainSelector = (props: Props) => {
   const getString = useFluent();
 
   const [selectedMountains, setSelectedMountains] = useState<MountainDatum[]>(initialSelectedMountains);
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const pageNumber = 1;
-  const nPerPage = 30;
-
-  const {loading, error, data} = useBasicSearchMountains({
-    searchQuery, pageNumber, nPerPage, minElevation: null, maxElevation: null, state: null,
-  });
-
-  const addMountainToList = (newMtn: MountainDatum) => {
-    if (!selectedMountains.find(mtn => mtn.id === newMtn.id)) {
-      setSelectedMountains([...selectedMountains, newMtn]);
+  const addMountainToList = (newMtn: {datum: MountainDatum}) => {
+    if (!selectedMountains.find(mtn => mtn.id === newMtn.datum.id)) {
+      setSelectedMountains([...selectedMountains, newMtn.datum]);
     }
   };
 
@@ -154,9 +96,6 @@ const MountainSelector = (props: Props) => {
     setSelectedMountains([...updatedMtnList]);
   };
 
-  let searchResults: React.ReactElement<any> | null;
-  const targetMountain = selectedMountains.length && selectedMountains[0]
-    ? selectedMountains[0] : null;
   const selectedMountainList = selectedMountains.map(mtn => (
     <MountainItemRemove
       onClick={() => removeMountainFromList(mtn)}
@@ -165,62 +104,6 @@ const MountainSelector = (props: Props) => {
       {mtn.name}
     </MountainItemRemove>
   ));
-
-  if (data !== undefined ) {
-    const { mountains } = data;
-    const mountainList: Array<React.ReactElement<any>> = [];
-    if (mountains && mountains.length) {
-      mountains.forEach(mtn => {
-        if (!selectedMountains.find(m => m.id === mtn.id)) {
-          const distance = targetMountain && targetMountain.id !== mtn.id
-            ? ' | ' + parseFloat(getDistanceFromLatLonInMiles({
-              lat1: targetMountain.location[1],
-              lon1: targetMountain.location[0],
-              lat2: mtn.location[1],
-              lon2: mtn.location[0],
-            }).toFixed(2)) + ' mi from ' + targetMountain.name : '';
-          mountainList.push(
-            <MountainItemAdd
-              onClick={() => addMountainToList(mtn)}
-              key={mtn.id}
-            >
-              {mtn.name}
-              <Subtitle>
-                {mtn.state ? mtn.state.abbreviation + ' | ' : ''}
-                {mtn.elevation + 'ft' }
-                {distance}
-              </Subtitle>
-            </MountainItemAdd>,
-          );
-        } else {
-          return null;
-        }
-      });
-      searchResults = (
-        <>{mountainList}</>
-      );
-    } else {
-      if (loading === false) {
-        searchResults = (
-          <p style={{textAlign: 'center'}}>
-            <small
-              dangerouslySetInnerHTML={{
-                __html: getString('global-text-value-no-results-found-for-term', {term: searchQuery}),
-              }} />
-          </p>
-        );
-      } else {
-        searchResults = null;
-      }
-    }
-  } else if (loading === true) {
-    searchResults = null;
-  } else if (error !== undefined) {
-    console.error(error);
-    searchResults = null;
-  } else {
-    searchResults = null;
-  }
 
   const onClose = () => {
     closeAndAddMountains(selectedMountains);
@@ -252,15 +135,11 @@ const MountainSelector = (props: Props) => {
           </SelectedMountainsDetails>
         </SelectedMountainsRoot>
         <SearchPanel>
-          <StandardSearch
-            placeholder={getString('global-text-value-search-mountains')}
-            setSearchQuery={setSearchQuery}
-            focusOnMount={false}
-            initialQuery={searchQuery}
+          <Search
+            endpoint={'/api/mountain-search'}
+            ignore={selectedMountains.map(mtn => mtn.id)}
+            onSelect={addMountainToList}
           />
-          <SearchResults>
-            {searchResults}
-          </SearchResults>
         </SearchPanel>
       </Root>
     </Modal>

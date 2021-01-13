@@ -5,15 +5,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
-import useFluent from '../../../../hooks/useFluent';
+import useFluent from '../../../hooks/useFluent';
 import {
   primaryColor,
-} from '../../../../styling/styleUtils';
+} from '../../../styling/styleUtils';
 import {
   mountainNeutralSvg,
   tentNeutralSvg,
   trailDefaultSvg,
-} from '../../../sharedComponents/svgIcons';
+} from '../svgIcons';
 import {SearchResultDatum, SearchResultType} from './Utils';
 
 const Root = styled.div`

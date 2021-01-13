@@ -6,7 +6,6 @@ import {
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
-import raw from 'raw.macro';
 import React, { useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -29,6 +28,11 @@ import {
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import {mobileSize} from '../../../Utils';
+import {
+  mountainNeutralSvg,
+  tentNeutralSvg,
+  trailDefaultSvg,
+} from '../../sharedComponents/svgIcons';
 import Search from '../contentHeader/search';
 import NotificationBar from './NotificationBar';
 import AddAscentButton from './toolsAndSettings/AddAscentButton';
@@ -38,10 +42,6 @@ import MapLayersButton from './toolsAndSettings/MapLayersButton';
 import Toggle3dModeButton from './toolsAndSettings/Toggle3dModeButton';
 import ToolsAndSettingsButton from './toolsAndSettings/ToolsAndSettingsButton';
 import UserMenu from './UserMenu';
-
-export const mountainNeutralSvg = raw('../../../assets/images/icons/mountain-neutral.svg');
-export const trailDefaultSvg = raw('../../../assets/images/icons/trail-default.svg');
-export const tentNeutralSvg = raw('../../../assets/images/icons/tent-neutral.svg');
 
 const HeaderContainer = styled(HeaderContainerBase)`
   box-shadow: 0 1px 3px 1px #d1d1d1;

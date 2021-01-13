@@ -32,10 +32,35 @@
   text-transform: uppercase;
   font-weight: 600;
   color: #333;
+  padding: 0.75rem;
+  font-size: 0.75rem;
 }
 .mountain-completion-modal-datepicker .react-datepicker__today-button:hover {
   background-color: #f3f3f3;
 }
 .mountain-completion-modal-datepicker .react-datepicker__day--outside-month {
   opacity: 0.5;
+}
+
+
+.mountain-completion-modal-datepicker .react-datepicker__day-name,
+.mountain-completion-modal-datepicker .react-datepicker__day,
+.mountain-completion-modal-datepicker .react-datepicker__time-name {
+  margin: 0;
+  width: 1.6rem;
+}
+@media(max-width: 810px) {
+  .mountain-completion-modal-datepicker .react-datepicker__day-name,
+  .mountain-completion-modal-datepicker .react-datepicker__day,
+  .mountain-completion-modal-datepicker .react-datepicker__time-name {
+    margin: 0.166rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+    padding: 0.4rem;
+    box-sizing: border-box;
+  }
+  .mountain-completion-modal-datepicker .react-datepicker__today-button {
+    font-size: 1rem;
+  }
 }

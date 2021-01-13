@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { ReactDatePickerProps } from 'react-datepicker';
 import styled from 'styled-components/macro';
+import {mobileSize} from '../../../../Utils';
 import {
   SelectBoxBase,
   SelectDateOption,
@@ -21,14 +22,22 @@ const MonthNavBtn = styled.button`
 const SelectYear = styled(SelectBoxBase)`
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
-  padding-right: 30px;
+  padding: 0.1rem 1.5rem 0.2rem 0.4rem;
+
+  @media(max-width: ${mobileSize}px) {
+    padding-right: 3rem;
+  }
 `;
 
 const SelectMonth = styled(SelectBoxBase)`
   border-left: none;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  padding-right: 25px;
+  padding: 0.1rem 1.5rem 0.2rem 0.4rem;
+
+  @media(max-width: ${mobileSize}px) {
+    padding-right: 3rem;
+  }
 `;
 
 const months = [

@@ -139,6 +139,16 @@ export const SectionTitleH3 = styled.h3`
   margin: 0 0 1.2rem;
 `;
 
+export const IconTitle = styled.h1`
+  display: flex;
+  align-items: center;
+  margin: 0 0 0.75rem;
+`;
+
+export const TitleText = styled.span`
+  padding-left: 1rem;
+`;
+
 export const standardContainerPadding = '1rem';
 
 export const linkStyles = `
@@ -343,6 +353,24 @@ export const ButtonBase = styled.button<{mobileExtend?: boolean}>`
   ` : ''}
 `;
 
+export const ExpandedButtonBase = styled.button`
+  color: #fff;
+  text-align: center;
+  font-weight: ${semiBoldFontBoldWeight};
+  letter-spacing: 0.01rem;
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1rem;
+  border-radius: 0;
+  white-space: nowrap;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+`;
+
 export const ButtonPrimary = styled(ButtonBase)`
   background-color: ${primaryColor};
 
@@ -352,6 +380,22 @@ export const ButtonPrimary = styled(ButtonBase)`
 `;
 
 export const ButtonSecondary = styled(ButtonBase)`
+  background-color: ${secondaryColor};
+
+  &:hover {
+    background-color: ${secondaryHoverColor};
+  }
+`;
+
+export const ExpandedButtonPrimary = styled(ExpandedButtonBase)`
+  background-color: ${primaryColor};
+
+  &:hover {
+    background-color: ${primaryHoverColor};
+  }
+`;
+
+export const ExpandedButtonSecondary = styled(ExpandedButtonBase)`
   background-color: ${secondaryColor};
 
   &:hover {
@@ -581,6 +625,10 @@ export const BasicIconInText = styled(IconInTextBase)`
 `;
 export const BasicIconAtEndOfText = styled(IconInTextBase)`
   margin-left: 0.6rem;
+`;
+
+export const HighlightedIconInText = styled(IconInTextBase)`
+  color: ${primaryColor};
 `;
 
 export const PlaceholderText = styled.div`

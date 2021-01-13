@@ -1,4 +1,4 @@
-import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -17,10 +17,13 @@ import {
 } from '../../../queries/tripReports/useLatestTripReports';
 import {
   BasicIconInText,
-  ButtonPrimary,
-  ButtonSecondary,
   ButtonWarning,
-  InlineTitle,
+  ExpandedButtonPrimary,
+  ExpandedButtonSecondary,
+  HighlightedIconInText,
+  IconTitle,
+  SmallTextNote,
+  TitleText,
   warningColor,
 } from '../../../styling/styleUtils';
 import {
@@ -49,18 +52,35 @@ import {
 
 export const preferredDateFormatLocalStorageVariable = 'preferredDateFormatLocalStorageVariable';
 
-const TitleText = styled(InlineTitle)`
-  margin: 0 0 1rem;
-  text-transform: capitalize;
+export const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const SectionTitle = styled.h2`
+  font-weight: 600;
+  font-size: 1.25rem;
+  text-align: center;
+
+  div {
+    margin-top: 0.5rem;
+    font-weight: 400;
+  }
 `;
 
 export const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: stretch;
   align-items: center;
+  position: sticky;
+  bottom: -1rem;
+  margin: 0 -1rem;
+  margin-top: auto;
+  background-color: #fff;
 `;
 
-export const CancelButton = styled(ButtonSecondary)`
+export const CancelButton = styled(ExpandedButtonSecondary)`
   margin-right: 0;
 `;
 
@@ -395,16 +415,16 @@ const TripReportForm = (props: PropsWithConditions) => {
   let dateWidgetVariant: Restrictions | undefined;
   if (props.variant === PeakListVariants.standard) {
     title = tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
-      ? 'Edit Ascent Report' : 'Log Ascent';
+      ? 'Edit Your Trip' : 'Log Your Trip';
     dateWidgetVariant = {variant: props.variant};
   } else if (props.variant === PeakListVariants.winter) {
-    title = `Log ${Seasons.winter} ascent`;
+    title = `Log ${Seasons.winter} trip`;
     dateWidgetVariant = {variant: props.variant};
   } else if (props.variant === PeakListVariants.fourSeason) {
-    title = ' Log ' + props.season + ' ascent';
+    title = ' Log ' + props.season + ' trip';
     dateWidgetVariant = {variant: props.variant, season: props.season};
   } else if (props.variant === PeakListVariants.grid) {
-    title = 'Log ascent for ' + props.month;
+    title = 'Log ' + props.month + ' trip';
     dateWidgetVariant = {variant: props.variant, month: props.month};
   } else {
     title = '';
@@ -458,29 +478,35 @@ const TripReportForm = (props: PropsWithConditions) => {
   const actions = (
     <ButtonWrapper>
       {deleteAscentButton}
-      <CancelButton onClick={onClose} mobileExtend={true}>
+      <CancelButton onClick={onClose}>
         {getString('global-text-value-modal-cancel')}
       </CancelButton>
-      <ButtonPrimary
+      <ExpandedButtonPrimary
         onClick={validateAndAddMountainCompletion}
         disabled={isConfirmDisabled()}
-         mobileExtend={true}
       >
         <BasicIconInText icon={faCheck} />
         {saveButtonText}
-      </ButtonPrimary>
+      </ExpandedButtonPrimary>
     </ButtonWrapper>
   );
 
   const saveOverlay = saving ? <LoadingDisablePage /> : null;
 
   return (
-    <>
+    <Root>
+      <IconTitle>
+        <HighlightedIconInText icon={faCalendarAlt} />
+        <TitleText>{title}</TitleText>
+      </IconTitle>
+      <SectionTitle>
+        Day 1 - Details*
+        <SmallTextNote>
+        * At least one mountain, trail or campsite is required to log a trip
+        </SmallTextNote>
+      </SectionTitle>
       <ColumnRoot>
         <LeftColumn>
-        <TitleText>
-          {title}
-        </TitleText>
           {dateSelect}
         </LeftColumn>
         <RightColumn>
@@ -488,29 +514,29 @@ const TripReportForm = (props: PropsWithConditions) => {
             selectedMountains={mountainList}
             setSelectedMountains={setMountainList}
           />
-          <AddFriends
-            userId={userId}
-            emailList={emailList}
-            setEmailList={setEmailList}
-            userList={userList}
-            setUserList={setUserList}
-          />
-          <TripDetails
-            conditions={conditions}
-            setConditions={setConditions}
-            dateType={dateType}
-            initialTripNotes={initialTripNotes}
-            initialLink={initialLink}
-            ref={{tripNotesEl, tripLinkEl} as any}
-          />
         </RightColumn>
-        {actions}
       </ColumnRoot>
+      <AddFriends
+        userId={userId}
+        emailList={emailList}
+        setEmailList={setEmailList}
+        userList={userList}
+        setUserList={setUserList}
+      />
+      <TripDetails
+        conditions={conditions}
+        setConditions={setConditions}
+        dateType={dateType}
+        initialTripNotes={initialTripNotes}
+        initialLink={initialLink}
+        ref={{tripNotesEl, tripLinkEl} as any}
+      />
+      {actions}
       {errorNote}
       {textNote}
       {areYouSureModal}
       {saveOverlay}
-    </>
+    </Root>
   );
 };
 
