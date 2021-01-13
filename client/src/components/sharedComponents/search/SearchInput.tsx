@@ -19,8 +19,7 @@ const Input = styled.input`
   padding: 8px 8px 8px ${magnifyingGlassSize + (magnifyingGlassSpacing * 2)}rem;
   box-sizing: border-box;
   border: solid 1px ${lightBorderColor};
-  box-shadow: 0px 0px 3px -1px #b5b5b5;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: ${lightFontWeight};
 
   &::placeholder {
@@ -82,11 +81,13 @@ interface Props {
   clearSearch: () => void;
   loading: boolean;
   value: string;
+  hideIcon: boolean | undefined;
+  compact: boolean | undefined;
 }
 
 const SearchInput = (props: Props) => {
   const {
-    inputProps, clearSearch, loading, value,
+    inputProps, clearSearch, loading, value, hideIcon, compact,
   } = props;
 
   const [isFocused, setIsFocused] = useState(false);
@@ -104,12 +105,16 @@ const SearchInput = (props: Props) => {
 
   const clearContent = loading ? (
     <LoadingContainer>
-      <LoadingSimple />
+      <LoadingSimple
+        size={compact ? 20 : undefined}
+      />
     </LoadingContainer>
   ) : (
     <ClearButton
       style={{
         display: value || isFocused ? undefined : 'none',
+        fontSize: compact ? 1 + 'rem' : undefined,
+        padding: compact ? '0.6rem 0.3rem' : undefined,
       }}
       onClick={clearSearch}
     >
@@ -117,17 +122,32 @@ const SearchInput = (props: Props) => {
     </ClearButton>
   );
 
+  const searchIcon = hideIcon ? null : (
+    <SearchIcon
+      icon='search'
+      style={{
+        fontSize: compact ? magnifyingGlassSize * 0.5 + 'rem' : undefined,
+      }}
+    />
+  );
+  const style = compact ? {
+    padding: hideIcon
+      ? 6 : `6px 6px 6px ${(magnifyingGlassSize * 0.5) + magnifyingGlassSpacing * 1.5}rem`,
+    fontSize: '0.85rem',
+  } : {
+    paddingLeft: hideIcon ? 8 : undefined,
+  };
+
   return (
     <>
-      <SearchIcon
-        icon='search'
-      />
+      {searchIcon}
       {clearContent}
       <Input
         {...inputProps}
         onFocus={onFocus}
         onBlur={onBlur}
         placeholder={inputProps.placeholder}
+        style={style}
       />
     </>
   );

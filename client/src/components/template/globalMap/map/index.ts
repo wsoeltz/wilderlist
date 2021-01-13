@@ -72,7 +72,7 @@ const initMap = ({container, push, getString}: Input): Output => {
 
   const setPadding = () => {
     const windowWidth = window.innerWidth;
-    let left: number = windowWidth * contentColumnIdeal;
+    let left: number = windowWidth * (contentColumnIdeal / 100);
     if (windowWidth <= mobileSize) {
       left = 0;
     } else if (left > contentColumnMax) {
@@ -89,7 +89,7 @@ const initMap = ({container, push, getString}: Input): Output => {
     map.setPadding({
       left,
       top: 110,
-      bottom: windowWidth <= mobileSize ? window.innerHeight * 0.55 : window.innerHeight * 0.25,
+      bottom: windowWidth <= mobileSize ? window.innerHeight * 0.55 : 80,
       right,
     });
   };

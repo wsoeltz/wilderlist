@@ -123,3 +123,8 @@ export const CheckboxList = styled(CheckboxListBase)`
   background-color: #fff;
   margin-top: 0.3rem;
 `;
+
+export const SelectedDetailsBox = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;

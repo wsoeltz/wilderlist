@@ -23,9 +23,9 @@ export const gridLines = {
 
 export const headerHeight = 2.1; // in rem
 
-export const contentColumnMin = 400; // in px
+export const contentColumnMin = 450; // in px
 export const contentColumnIdeal = 40; // in vw
-export const contentColumnMax = 500; // in vw
+export const contentColumnMax = 600; // in vw
 
 const Grid = styled.div`
   height: 100vh;

@@ -44,7 +44,8 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
           window.location.pathname === Routes.About ||
           window.location.pathname === Routes.SearchUsers ||
           window.location.pathname === Routes.CreateList ||
-          window.location.pathname === Routes.EditList
+          window.location.pathname === Routes.EditList ||
+          window.location.pathname === Routes.AddTripReport
           ) {
         mapState.setNewCenter(initialCenter, 7);
       }

@@ -4,12 +4,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
   primaryColor,
 } from '../../../styling/styleUtils';
 import {
+  IconContainer,
   mountainNeutralSvg,
   tentNeutralSvg,
   trailDefaultSvg,
@@ -37,33 +38,13 @@ const Subtitle = styled.div`
   opacity: 0.8;
 `;
 
-const IconContainer = styled.div`
-  margin-right: 0.25rem;
-  margin-top: 0.1em;
-  font-size: 0.85em;
-  color: ${primaryColor};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: 1rem;
-
-    .fill-path {
-      fill: ${primaryColor};
-    }
-    .stroke-path {
-      fill: #fff;
-    }
-  }
-`;
-
 interface Props {
   query: string;
   suggestion: SearchResultDatum;
+  compact: boolean | undefined;
 }
 
-const SearchResult = ({query, suggestion}: Props) => {
+const SearchResult = ({query, suggestion, compact}: Props) => {
   const getString = useFluent();
 
   let subtitleText: string;
@@ -73,6 +54,11 @@ const SearchResult = ({query, suggestion}: Props) => {
       ? `${suggestion.stateText[0]}, ${suggestion.elevation}ft` : `${suggestion.elevation}ft`;
     icon = (
       <IconContainer
+        $color={primaryColor}
+        style={{
+          width: compact ? '0.7rem' : undefined,
+          marginRight: compact ? 0 : undefined,
+        }}
         dangerouslySetInnerHTML={{__html: mountainNeutralSvg}}
       />
     );
@@ -84,6 +70,11 @@ const SearchResult = ({query, suggestion}: Props) => {
       : trailType.charAt(0).toUpperCase() + trailType.slice(1).replaceAll('_', ' ');
     icon = (
       <IconContainer
+        $color={primaryColor}
+        style={{
+          width: compact ? '0.7rem' : undefined,
+          marginRight: compact ? 0 : undefined,
+        }}
         dangerouslySetInnerHTML={{__html: trailDefaultSvg}}
       />
     );
@@ -95,6 +86,11 @@ const SearchResult = ({query, suggestion}: Props) => {
       : campsiteType.charAt(0).toUpperCase() + campsiteType.slice(1).replaceAll('_', ' ');
     icon = (
       <IconContainer
+        $color={primaryColor}
+        style={{
+          width: compact ? '0.7rem' : undefined,
+          marginRight: compact ? 0 : undefined,
+        }}
         dangerouslySetInnerHTML={{__html: tentNeutralSvg}}
       />
     );
@@ -102,14 +98,20 @@ const SearchResult = ({query, suggestion}: Props) => {
     const states = suggestion.stateText.join(', ');
     subtitleText = states.length ? `${suggestion.numPeaks} peaks in ${states}` : `${suggestion.numPeaks} peaks`;
     icon = (
-      <IconContainer>
+      <IconContainer
+        $color={primaryColor}
+        style={{fontSize: compact ? '0.7rem' : undefined}}
+      >
         <FontAwesomeIcon icon={faList} />
       </IconContainer>
     );
   } else if (suggestion.type === SearchResultType.geolocation) {
     subtitleText = suggestion.locationName;
     icon = (
-      <IconContainer>
+      <IconContainer
+        $color={primaryColor}
+        style={{fontSize: compact ? '0.7rem' : undefined}}
+      >
         <FontAwesomeIcon icon={faMapMarkerAlt} />
       </IconContainer>
     );
@@ -119,9 +121,9 @@ const SearchResult = ({query, suggestion}: Props) => {
   }
   const safeQuery = new RegExp(query.replace(/[^\w\s]/gi, '').trim(), 'gi');
   return (
-    <Root>
+    <Root style={{gridColumnGap: compact ? 0 : undefined}}>
       {icon}
-      <Content>
+      <Content style={{fontSize: compact ? '0.8rem' : undefined}}>
         <div
           dangerouslySetInnerHTML={{
             __html: suggestion.name.replace(safeQuery, (match: string) => `<strong>${match}</strong>`),

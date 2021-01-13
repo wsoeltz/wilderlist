@@ -71,17 +71,18 @@ interface SearchState {
 
 const getSuggestionValue = (suggestion: SearchResultDatum) => suggestion.name;
 
-const renderSuggestion = (suggestion: SearchResultDatum, {query}: {query: string}) =>
-  <SearchResult suggestion={suggestion} query={query} />;
-
 interface Props {
   endpoint: string;
   ignore: string[];
-  onSelect: (datum: SearchResultDatum) => void;
+  onSelect: (datum: SearchResultDatum) => boolean | void;
+  placeholder: string;
+  hideIcon?: boolean;
+  keepFocusOnSelect?: boolean;
+  compact?: boolean;
 }
 
 const Search = (props: Props) => {
-  const {endpoint, ignore, onSelect} = props;
+  const {endpoint, ignore, onSelect, hideIcon, keepFocusOnSelect, compact, placeholder} = props;
   const center = useMapCenter();
   const [state, updateState] = useState<SearchState>({value: '', suggestions: [], loading: false});
 
@@ -104,7 +105,7 @@ const Search = (props: Props) => {
           suggestions: res.data,
         }));
       });
-  }, 100), [updateState, center, endpoint, ignore]);
+  }, 200), [updateState, center, endpoint, ignore]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
     updateState(curr => ({...curr, value: newValue}));
@@ -121,19 +122,32 @@ const Search = (props: Props) => {
     updateState(curr => ({...curr, suggestions: []}));
   }, [updateState]);
 
+  const clearSearch = useCallback(
+    () => updateState({suggestions: [], value: '', loading: false}),
+    [updateState],
+  );
+
   const onSuggestionSelected = useCallback((_event: any, {suggestion}: {suggestion: SearchResultDatum}) => {
     const activeElement = document.activeElement;
-    if (activeElement) {
+    if (activeElement && !keepFocusOnSelect) {
       (activeElement as HTMLElement).blur();
     }
-    onSelect(suggestion);
-  }, [onSelect]);
+    const shouldClearSearch = onSelect(suggestion);
+    if (shouldClearSearch) {
+      clearSearch();
+    }
+  }, [onSelect, clearSearch, keepFocusOnSelect]);
 
   const renderSuggestionsContainer = useCallback(({ containerProps, children, query }: any) => {
     let noResults: React.ReactElement<any> | null;
     if (query.length > 2 && children === null && state.loading === false) {
       noResults = (
-        <div className={noResultsFoundClassName}>No results found for <strong>{query}</strong></div>
+        <div
+          className={noResultsFoundClassName}
+          style={{fontSize: compact ? '0.8rem' : undefined}}
+        >
+          No results found for <strong>{query}</strong>
+        </div>
       );
     } else {
       noResults = null;
@@ -144,18 +158,13 @@ const Search = (props: Props) => {
         {noResults}
       </div>
     );
-  }, [state.loading]);
+  }, [state.loading, compact]);
 
   const inputProps = useMemo( () => ({
-    placeholder: 'Search Wilderlist',
+    placeholder,
     value: state.value,
     onChange,
-  }), [state, onChange]);
-
-  const clearSearch = useCallback(
-    () => updateState({suggestions: [], value: '', loading: false}),
-    [updateState],
-  );
+  }), [state, onChange, placeholder]);
 
   const renderInputComponent = useCallback((inputComponentProps: any) => (
     <SearchInput
@@ -163,8 +172,13 @@ const Search = (props: Props) => {
       clearSearch={clearSearch}
       loading={state.loading}
       value={state.value}
+      hideIcon={hideIcon}
+      compact={compact}
     />
-  ), [state.loading, state.value, clearSearch]);
+  ), [state.loading, state.value, clearSearch, hideIcon, compact]);
+
+  const renderSuggestionCallback = useCallback((suggestion: SearchResultDatum, {query}: {query: string}) =>
+    <SearchResult suggestion={suggestion} query={query} compact={compact} />, [compact]);
 
   return (
     <Root>
@@ -174,7 +188,7 @@ const Search = (props: Props) => {
         onSuggestionsClearRequested={onSuggestionsClearRequested}
         getSuggestionValue={getSuggestionValue}
         renderInputComponent={renderInputComponent}
-        renderSuggestion={renderSuggestion}
+        renderSuggestion={renderSuggestionCallback}
         inputProps={inputProps}
         highlightFirstSuggestion={true}
         focusInputOnSuggestionClick={false}

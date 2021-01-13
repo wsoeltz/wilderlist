@@ -75,7 +75,7 @@ global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
 global-text-value-modal-close-menu = Close Menu
-global-text-value-modal-mark-complete = Log Ascent
+global-text-value-modal-mark-complete = Log Trip
 global-text-value-description = Description
 global-text-value-directions = Directions
 global-text-value-more = more
@@ -111,6 +111,8 @@ global-text-value-modal-request-delete-text = This will submit a request to have
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
+global-text-value-trails = Trail
+global-text-value-campsites = Campsites
 global-text-value-ascents = ascents
 global-text-value-dates = Dates
 global-text-value-date = Date
@@ -829,7 +831,9 @@ trip-report-condition-name = {
 }
 
 trip-report-add-additional-mtns-title = Mountains Hiked
-trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
+trip-report-add-additional-mtns-desc = Click mountains on the map to add them or search below
+trip-report-add-additional-trails-desc = Click trails on the map to add them or search below
+trip-report-add-additional-campsites-desc = Click campsites on the map to add them or search below
 trip-report-add-mtns-btn = Add Mountains
 trip-report-add-remove-mtns-btn = Add/Remove Mountains
 trip-report-add-mtns-done = Done Updating Mountains

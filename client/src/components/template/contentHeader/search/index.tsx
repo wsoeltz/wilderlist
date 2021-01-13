@@ -7,6 +7,7 @@ import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useMapCenter from '../../../../hooks/useMapCenter';
 import useMapContext from '../../../../hooks/useMapContext';
+import {Routes} from '../../../../routing/routes';
 import {
   campsiteDetailLink,
   listDetailLink,
@@ -134,7 +135,7 @@ const Search = () => {
           suggestions: res.data,
         }));
       });
-  }, 300), [updateState, center]);
+  }, 200), [updateState, center]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
     updateState(curr => ({...curr, value: newValue}));
@@ -156,7 +157,11 @@ const Search = () => {
     if (activeElement) {
       (activeElement as HTMLElement).blur();
     }
-    if (suggestion.type === SearchResultType.mountain) {
+    if (mapContext.intialized && (
+          window.location.pathname === Routes.AddTripReport ||
+          window.location.pathname === Routes.EditTripReport)) {
+      mapContext.setNewCenter(suggestion.coordinates, 14);
+    } else if (suggestion.type === SearchResultType.mountain) {
       push(mountainDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.list) {
       push(listDetailLink(suggestion.id));

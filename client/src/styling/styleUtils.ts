@@ -317,9 +317,35 @@ export const DetailBoxFooter = styled.h4`
   color: ${baseColor};
 `;
 
+export const Basket = styled.div`
+  border: 1px solid ${lightBorderColor};
+  background-color: ${tertiaryColor};
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const BasketTitle = styled.h3`
+  border-bottom: none;
+  margin: 0;
+  font-weight: 600;
+  padding: 0 0.5rem 0.5rem;
+  color: ${lightBaseColor};
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+`;
+
 export const SmallTextNote = styled.div`
   font-size: 0.8rem;
-  color: ${lightBaseColor};
+  color: ${placeholderColor};
+  text-align: center;
+  font-style: italic;
+  margin: 1rem 0;
+  border-radius: 8px;
 `;
 
 export const SmallTextNoteWithMargin = styled(SmallTextNote)`
