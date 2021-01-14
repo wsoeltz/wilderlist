@@ -350,6 +350,7 @@ export const BasketTitle = styled(ComponentTitle)`
   justify-content: center;
   text-align: center;
   padding: 0 0.5rem 0.5rem;
+  box-sizing: border-box;
 `;
 
 export const SmallTextNote = styled.div`

@@ -246,6 +246,20 @@ export interface AscentNotification {
   date: string;
 }
 
+export interface TrailNotification {
+  id: string;
+  user: User | null;
+  trail: Trail | null;
+  date: string;
+}
+
+export interface CampsiteNotification {
+  id: string;
+  user: User | null;
+  campsite: Campsite | null;
+  date: string;
+}
+
 export interface PeakListNote {
   id: string;
   peakList: PeakList | null;
@@ -279,6 +293,8 @@ export interface User {
   hideProfileInSearch: boolean | null;
   disableEmailNotifications: boolean | null;
   ascentNotifications: AscentNotification[] | null;
+  trailNotifications: TrailNotification[] | null;
+  campsiteNotifications: CampsiteNotification[] | null;
   peakListNotes: Array<PeakListNote | null> | null;
   peakListNote: PeakListNote | null;
   mountainNotes: Array<MountainNote | null> | null;

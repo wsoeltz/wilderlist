@@ -70,17 +70,131 @@ export interface MountainCompletionVariables {
   date: string;
 }
 
+const ADD_TRAIL_COMPLETION = gql`
+  mutation addTrailCompletion(
+    $userId: ID!,
+    $trailId: ID!,
+    $date: String!
+    ) {
+    addTrailCompletion(
+      userId: $userId,
+      trailId: $trailId,
+      date: $date
+    ) {
+      id
+      trails {
+        trail {
+          id
+        }
+        dates
+      }
+    }
+  }
+`;
+
+const REMOVE_TRAIL_COMPLETION = gql`
+  mutation removeTrailCompletion(
+    $userId: ID!,
+    $trailId: ID!,
+    $date: String!
+    ) {
+    removeTrailCompletion(
+      userId: $userId,
+      trailId: $trailId,
+      date: $date
+    ) {
+      id
+      trails {
+        trail {
+          id
+        }
+        dates
+      }
+    }
+  }
+`;
+
+export interface TrailCompletionSuccessResponse {
+  id: User['id'];
+  trails: User['trails'];
+}
+
+export interface TrailCompletionVariables {
+  userId: string;
+  trailId: string;
+  date: string;
+}
+
+const ADD_CAMPSITE_COMPLETION = gql`
+  mutation addCampsiteCompletion(
+    $userId: ID!,
+    $campsiteId: ID!,
+    $date: String!
+    ) {
+    addCampsiteCompletion(
+      userId: $userId,
+      campsiteId: $campsiteId,
+      date: $date
+    ) {
+      id
+      trails {
+        trail {
+          id
+        }
+        dates
+      }
+    }
+  }
+`;
+
+const REMOVE_CAMPSITE_COMPLETION = gql`
+  mutation removeCampsiteCompletion(
+    $userId: ID!,
+    $campsiteId: ID!,
+    $date: String!
+    ) {
+    removeCampsiteCompletion(
+      userId: $userId,
+      campsiteId: $campsiteId,
+      date: $date
+    ) {
+      id
+      trails {
+        trail {
+          id
+        }
+        dates
+      }
+    }
+  }
+`;
+
+export interface CampsiteCompletionSuccessResponse {
+  id: User['id'];
+  campsites: User['campsites'];
+}
+
+export interface CampsiteCompletionVariables {
+  userId: string;
+  campsiteId: string;
+  date: string;
+}
+
 const ADD_ASCENT_NOTIFICATIONS = gql`
   mutation addAscentNotifications(
     $userId: ID!,
     $friendId: ID!,
     $mountainIds: [ID],
+    $trailIds: [ID],
+    $campsiteIds: [ID],
     $date: String!
     ) {
     addAscentNotifications(
       userId: $userId,
       friendId: $friendId,
       mountainIds: $mountainIds,
+      trailIds: $trailIds,
+      campsiteIds: $campsiteIds,
       date: $date
     ) {
       id
@@ -91,6 +205,8 @@ const ADD_ASCENT_NOTIFICATIONS = gql`
 export interface AscentNotificationsVariables {
   userId: string;
   mountainIds: string[];
+  trailIds: string[];
+  campsiteIds: string[];
   date: string;
   friendId: string;
 }
@@ -99,6 +215,8 @@ const addTripReportVariableDeclerations = `
   $date: String!,
   $author: ID!,
   $mountains: [ID],
+  $trails: [ID],
+  $campsites: [ID],
   $users: [ID],
   $privacy: String,
   $notes: String,
@@ -128,6 +246,8 @@ const addTripReportVariableParameters = `
   date: $date,
   author: $author,
   mountains: $mountains,
+  trails: $trails,
+  campsites: $campsites,
   users: $users,
   privacy: $privacy,
   notes: $notes,
@@ -167,6 +287,16 @@ const ADD_TRIP_REPORT = gql`
         id
         name
       }
+      trails {
+        id
+        name
+        type
+      }
+      campsites {
+        id
+        name
+        type
+      }
       users {
         id
         name
@@ -201,6 +331,8 @@ export interface AddTripReportVariables {
   date: TripReport['date'];
   author: string;
   mountains: string[];
+  trails: string[];
+  campsites: string[];
   users: string[];
   privacy: TripReport['privacy'];
   notes: TripReport['notes'];
@@ -242,6 +374,16 @@ const EDIT_TRIP_REPORT = gql`
       mountains {
         id
         name
+      }
+      trails {
+        id
+        name
+        type
+      }
+      campsites {
+        id
+        name
+        type
       }
       users {
         id
@@ -289,6 +431,16 @@ const DELETE_TRIP_REPORT = gql`
       mountains {
         id
         name
+      }
+      trails {
+        id
+        name
+        type
+      }
+      campsites {
+        id
+        name
+        type
       }
       users {
         id
@@ -345,6 +497,26 @@ export const useTripReportMutaions = (mountain: string | null, pageNumber: numbe
       refetchQueries: refetchArray,
   });
 
+  const [addTrailCompletion] =
+    useMutation<TrailCompletionSuccessResponse, TrailCompletionVariables>(ADD_TRAIL_COMPLETION, {
+      refetchQueries: refetchArray,
+  });
+
+  const [removeTrailCompletion] =
+    useMutation<TrailCompletionSuccessResponse, TrailCompletionVariables>(REMOVE_TRAIL_COMPLETION, {
+      refetchQueries: refetchArray,
+  });
+
+  const [addCampsiteCompletion] =
+    useMutation<CampsiteCompletionSuccessResponse, CampsiteCompletionVariables>(ADD_CAMPSITE_COMPLETION, {
+      refetchQueries: refetchArray,
+  });
+
+  const [removeCampsiteCompletion] =
+    useMutation<CampsiteCompletionSuccessResponse, CampsiteCompletionVariables>(REMOVE_CAMPSITE_COMPLETION, {
+      refetchQueries: refetchArray,
+  });
+
   const [addTripReport] =
     useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
       refetchQueries: refetchArray,
@@ -363,6 +535,10 @@ export const useTripReportMutaions = (mountain: string | null, pageNumber: numbe
   return {
     addMountainCompletion,
     removeMountainCompletion,
+    addTrailCompletion,
+    removeTrailCompletion,
+    addCampsiteCompletion,
+    removeCampsiteCompletion,
     addTripReport,
     editTripReport,
     deleteTripReport,

@@ -643,7 +643,7 @@ const userMutations: any = {
       userId: { type: GraphQLNonNull(GraphQLID) },
       friendId: { type: GraphQLNonNull(GraphQLID) },
       mountainIds: { type: new GraphQLList(GraphQLID)},
-      trailsIds: { type: new GraphQLList(GraphQLID)},
+      trailIds: { type: new GraphQLList(GraphQLID)},
       campsiteIds: { type: new GraphQLList(GraphQLID)},
       date: { type: GraphQLNonNull(GraphQLString) },
     },
@@ -790,10 +790,18 @@ const userMutations: any = {
     args: {
       userId: { type: GraphQLNonNull(GraphQLID) },
       mountainId: { type: GraphQLID },
+      trailId: { type: GraphQLID },
+      campsiteId: { type: GraphQLID },
       date: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any,
-                  {userId, mountainId, date}: {userId: string, mountainId: string, date: string},
+                  {userId, mountainId, trailId, campsiteId, date}: {
+                    userId: string,
+                    mountainId: string,
+                    trailId: string,
+                    campsiteId: string,
+                    date: string,
+                  },
                   context: {user: IUser | undefined | null}) {
       if (!isLoggedIn(context.user)) {
         throw new Error('You must be logged in');
@@ -803,9 +811,21 @@ const userMutations: any = {
           await User.findOneAndUpdate({ _id: userId },
             {$pull: { ascentNotifications: { mountain: mountainId, date } }},
           );
+        } else if (trailId) {
+          await User.findOneAndUpdate({ _id: userId },
+            {$pull: { trailNotifications: { trail: trailId, date } }},
+          );
+        } else if (campsiteId) {
+          await User.findOneAndUpdate({ _id: userId },
+            {$pull: { campsiteNotifications: { campsite: campsiteId, date } }},
+          );
         } else {
           await User.findOneAndUpdate({ _id: userId },
-            {$pull: { ascentNotifications: { date } }},
+            {$pull: {
+              ascentNotifications: { date },
+              trailNotifications: { date },
+              campsiteNotifications: { date },
+            }},
           );
         }
         return await User.findOne({_id: userId});

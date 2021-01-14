@@ -4,7 +4,9 @@ import {
   useGetNotifications,
 } from '../../../queries/notifications/useGetNotifications';
 import {
+  Campsite,
   Mountain,
+  Trail,
   TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import { DateType, getDates, getDateType } from '../../../utilities/dateUtils';
@@ -27,6 +29,8 @@ const NewAscentReport = (props: Props) => {
   } else if (data !== undefined) {
     const { user } = data;
     const ascentNotifications = user && user.ascentNotifications ? user.ascentNotifications : [];
+    const trailNotifications = user && user.trailNotifications ? user.trailNotifications : [];
+    const campsiteNotifications = user && user.campsiteNotifications ? user.campsiteNotifications : [];
     const date = getDates([props.date]).pop();
 
     const initialCompletionDay = date && !isNaN(date.day) ? date.day.toString() : '';
@@ -38,12 +42,16 @@ const NewAscentReport = (props: Props) => {
 
     const initialDateType = date ? getDateType(date) : DateType.full;
 
-    const sameDateNotifications = ascentNotifications.filter(
+    const sameDateMountainNotifications = ascentNotifications.filter(
       n => n.date === props.date && n.mountain !== null && n.user !== null);
+    const sameDateTrailNotifications = trailNotifications.filter(
+      n => n.date === props.date && n.trail !== null && n.user !== null);
+    const sameDateCampsiteNotifications = campsiteNotifications.filter(
+      n => n.date === props.date && n.campsite !== null && n.user !== null);
 
     const allUsers: string[] = [];
     const allMountains: Mountain[] = [];
-    sameDateNotifications.forEach(n => {
+    sameDateMountainNotifications.forEach(n => {
       if (n.user) {
         allUsers.push(n.user.id);
       }
@@ -51,9 +59,29 @@ const NewAscentReport = (props: Props) => {
         allMountains.push(n.mountain);
       }
     });
+    const allTrails: Trail[] = [];
+    sameDateTrailNotifications.forEach(n => {
+      if (n.user) {
+        allUsers.push(n.user.id);
+      }
+      if (n.trail) {
+        allTrails.push(n.trail);
+      }
+    });
+    const allCampsites: Campsite[] = [];
+    sameDateCampsiteNotifications.forEach(n => {
+      if (n.user) {
+        allUsers.push(n.user.id);
+      }
+      if (n.campsite) {
+        allCampsites.push(n.campsite);
+      }
+    });
 
     const initialUserList: string[] = uniq(allUsers);
     const initialMountainList: Mountain[] = uniqBy(allMountains, 'id');
+    const initialTrailList: Trail[] = uniqBy(allTrails, 'id');
+    const initialCampsiteList: Campsite[] = uniqBy(allCampsites, 'id');
 
     return (
       <TripReportForm
@@ -67,6 +95,8 @@ const NewAscentReport = (props: Props) => {
         initialDateType={initialDateType}
         initialUserList={initialUserList}
         initialMountainList={initialMountainList}
+        initialTrailList={initialTrailList}
+        initialCampsiteList={initialCampsiteList}
         initialConditions={{
           mudMinor: false,
           mudMajor: false,

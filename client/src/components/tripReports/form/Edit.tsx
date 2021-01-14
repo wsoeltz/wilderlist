@@ -79,12 +79,16 @@ const EditTripReport = () => {
       );
     } else {
       const initialMountainList = data && data.mountains ? data.mountains : [];
+      const initialTrailList = data && data.trails ? data.trails : [];
+      const initialCampsiteList = data && data.campsites ? data.campsites : [];
       const dateObject = getDates([date]);
       if (listtype && listtype === PeakListVariants.fourSeason && season) {
         return (
           <EditAscentReport
             date={dateObject[0]}
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
@@ -98,6 +102,8 @@ const EditTripReport = () => {
           <EditAscentReport
             date={dateObject[0]}
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
@@ -111,6 +117,8 @@ const EditTripReport = () => {
           <EditAscentReport
             date={dateObject[0]}
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}

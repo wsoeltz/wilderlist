@@ -26,7 +26,7 @@ type Props = BaseProps & {
 };
 
 const EditAscentReport = (props: Props) => {
-  const {userId, date, initialMountainList} = props;
+  const {userId, date, initialMountainList, initialTrailList, initialCampsiteList} = props;
 
   const getString = useFluent();
   const day = !isNaN(date.day) ? date.day.toString() : '';
@@ -37,9 +37,11 @@ const EditAscentReport = (props: Props) => {
 
   const variables = useMemo(() => ({
     author: userId,
-    mountain: initialMountainList[0].id,
+    mountain: initialMountainList && initialMountainList[0] ? initialMountainList[0].id : null,
+    trail: initialTrailList && initialTrailList[0] ? initialTrailList[0].id : null,
+    campsite: initialCampsiteList && initialCampsiteList[0] ? initialCampsiteList[0].id : null,
     date: stringDate,
-  }), [userId, stringDate, initialMountainList]);
+  }), [userId, stringDate, initialMountainList, initialTrailList, initialCampsiteList]);
 
   const refetchQuery = useMemo(() =>
     [refetchTripReportForDateAndMountain(variables)],
@@ -116,7 +118,7 @@ const EditAscentReport = (props: Props) => {
       );
     } else {
       const {
-        id, users, mountains, notes, link,
+        id, users, mountains, trails, campsites, notes, link,
         mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
         iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,
         snowIceMonorailUnstable, snowIcePostholes, snowMinor, snowPackedPowder,
@@ -125,6 +127,8 @@ const EditAscentReport = (props: Props) => {
       } = tripReport;
 
       const filteredMountains = mountains.filter(notEmpty);
+      const filteredTrails = trails.filter(notEmpty);
+      const filteredCampsites = campsites.filter(notEmpty);
       const filteredUsers = users.filter(notEmpty);
 
       const userList = filteredUsers.map(user => user.id);
@@ -140,6 +144,8 @@ const EditAscentReport = (props: Props) => {
           initialDateType={getDateType(date)}
           initialUserList={userList}
           initialMountainList={filteredMountains}
+          initialTrailList={filteredTrails}
+          initialCampsiteList={filteredCampsites}
           initialConditions={{
             mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
             iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,

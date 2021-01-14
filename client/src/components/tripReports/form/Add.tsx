@@ -77,11 +77,15 @@ const AddTripReport = () => {
       );
     } else {
       const initialMountainList = data && data.mountains ? data.mountains : [];
+      const initialTrailList = data && data.trails ? data.trails : [];
+      const initialCampsiteList = data && data.campsites ? data.campsites : [];
       if (notification === 'yes' && date) {
         return (
           <AscentReportFromNotification
             date={date}
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
@@ -93,6 +97,8 @@ const AddTripReport = () => {
         return (
           <NewAscentReport
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
@@ -106,6 +112,8 @@ const AddTripReport = () => {
         return (
           <NewAscentReport
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}
@@ -119,6 +127,8 @@ const AddTripReport = () => {
         return (
           <NewAscentReport
             initialMountainList={initialMountainList}
+            initialTrailList={initialTrailList}
+            initialCampsiteList={initialCampsiteList}
             onClose={onClose}
             onSave={onSave}
             userId={user._id}

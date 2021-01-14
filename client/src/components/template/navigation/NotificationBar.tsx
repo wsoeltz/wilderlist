@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styled, {keyframes} from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
   useAcceptFriendRequestMutation,
@@ -11,67 +10,19 @@ import {
 import {
   useTripReportMutaions,
 } from '../../../queries/tripReports/tripReportMutations';
-import { addTripReportLink, mountainDetailLink, userProfileLink } from '../../../routing/Utils';
-import { PreContentHeaderFull } from '../../../styling/Grid';
 import {
-  ButtonPrimary,
-  CompactButtonPrimaryLink,
-  GhostButton,
-  lowWarningColorLight,
+  addTripReportLink,
+  campsiteDetailLink,
+  mountainDetailLink,
+  trailDetailLink,
+  userProfileLink,
+} from '../../../routing/Utils';
+import {
   SemiBold,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import { formatStringDate } from '../../../utilities/dateUtils';
-import {mobileSize} from '../../../Utils';
-// import AscentReportFromNotification from '../../tripReports/form/AscentReportFromNotification';
-
-const slideDown = keyframes`
-  0%   {
-    opacity: 0;
-    min-height: 0px;
-  }
-  100% {
-    opacity: 1;
-    min-height: 50px;
-  }
-`;
-
-const Root = styled(PreContentHeaderFull)`
-  overflow: hidden;
-  background-color: ${lowWarningColorLight};
-  padding: 0 1rem;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.2s ease;
-  animation: ${slideDown} 0.5s ease-in-out forwards;
-  z-index: 2000;
-
-  @media (max-width: ${mobileSize}px) {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 90px;
-  }
-`;
-
-const buttonSize = '0.7rem';
-
-const ConfirmButton = styled(ButtonPrimary)`
-  margin: 0 1rem;
-  font-size: ${buttonSize};
-`;
-
-const TripReportButton = styled(CompactButtonPrimaryLink)`
-  margin-right: 1rem;
-  font-size: ${buttonSize};
-  white-space: nowrap;
-`;
-
-const DismissButton = styled(GhostButton)`
-  font-size: ${buttonSize};
-`;
+import Notification from './Notification';
 
 interface Props {
   userId: string;
@@ -82,16 +33,8 @@ const NotificationBar = (props: Props) => {
 
   const getString = useFluent();
 
-  // const [isAscentReportModalOpen, setIsAscentReportModalOpen] = useState<boolean>(false);
-  // const closeEditMountainModalModal = useCallback(
-  //   () => setIsAscentReportModalOpen(false),
-  // [setIsAscentReportModalOpen]);
-  // const openEditMountainModalModal = useCallback(
-  //   () => setIsAscentReportModalOpen(true),
-  // [setIsAscentReportModalOpen]);
-
   const {loading, error, data} = useGetNotifications(userId);
-  const {addMountainCompletion} = useTripReportMutaions(null, 0);
+  const {addMountainCompletion, addTrailCompletion, addCampsiteCompletion} = useTripReportMutaions(null, 0);
   const clearAscentNotification = useClearAscentNotification(userId);
   const acceptFriendRequestMutation = useAcceptFriendRequestMutation(userId);
   const removeFriendMutation = useRemoveFriendMutation(userId);
@@ -117,20 +60,19 @@ const NotificationBar = (props: Props) => {
         };
 
         return (
-          <Root key={id}>
-            <div>
-              <Link to={userProfileLink(friendId)}><SemiBold>{name}</SemiBold></Link>
-              {' '}
-              {getString('user-profile-sent-you-a-friend-request', {name: ''})}
-            </div>
-            <ConfirmButton onClick={onConfirm}>
-              {getString('user-profile-requests-accept-request')}
-            </ConfirmButton>
-            <DismissButton onClick={dismissNotification}>
-              {getString('user-profile-requests-decline-request')}
-            </DismissButton>
-          </Root>
+          <Notification
+            key={id}
+            confirmText={getString('global-text-value-modal-confirm')}
+            onConfirm={onConfirm}
+            dismissText={getString('global-text-value-modal-dismiss')}
+            onDismiss={dismissNotification}
+          >
+            <Link to={userProfileLink(friendId)}><SemiBold>{name}</SemiBold></Link>
+            {' '}
+            {getString('user-profile-sent-you-a-friend-request', {name: ''})}
+          </Notification>
         );
+
       } else {
         dismissNotification();
         return null;
@@ -140,60 +82,159 @@ const NotificationBar = (props: Props) => {
       const mountainId = mountain ? mountain.id : null;
       const dismissNotification = () => {
         clearAscentNotification({variables: {
-          userId, mountainId, date,
+          userId, mountainId, trailId: null, campsiteId: null, date,
         }});
       };
       if (friend && mountain && mountainId) {
         const onConfirm = () => {
-          addMountainCompletion({variables: {
-            userId, mountainId, date,
-          }});
+          if (mountainId) {
+            addMountainCompletion({variables: {
+              userId, mountainId, date,
+            }});
+          }
           dismissNotification();
         };
 
-        // const ascentReportModal = isAscentReportModalOpen === false ? null : (
-        //   <AscentReportFromNotification
-        //     initialMountainList={[mountain]}
-        //     closeEditMountainModalModal={closeEditMountainModalModal}
-        //     userId={user.id}
-        //     textNote={null}
-        //     variant={PeakListVariants.standard}
-        //     date={date}
-        //     ascentNotifications={user.ascentNotifications}
-        //   />
-        // );
         const addTripReportUrl = addTripReportLink({
           refpath: window.location.pathname,
-          mountains: mountain.id,
+          mountains: mountain ? mountain.id : null,
+          trails: null,
+          campsites: null,
           listtype: PeakListVariants.standard,
           notification: 'yes',
           date,
         });
 
         return (
-          <Root key={id}>
-            <div>
-              <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
-              {' '}
-              {getString('notification-bar-ascent-marked')}
-              {' '}
-              <Link to={mountainDetailLink(mountainId)}><SemiBold>{mountain.name}</SemiBold></Link>
-              {' '}
-              {getString('global-text-value-on')}
-              {' '}
-              <SemiBold>{formatStringDate(date)}</SemiBold>
-            </div>
-            <ConfirmButton onClick={onConfirm}>
-              {getString('global-text-value-modal-confirm')}
-            </ConfirmButton>
-            <TripReportButton to={addTripReportUrl}>
-              {getString('global-text-value-modal-create-trip-report')}
-            </TripReportButton>
-            <DismissButton onClick={dismissNotification}>
-              {getString('global-text-value-modal-dismiss')}
-            </DismissButton>
-          </Root>
+          <Notification
+            key={id}
+            confirmText={getString('global-text-value-modal-confirm')}
+            onConfirm={onConfirm}
+            tripReportText={getString('global-text-value-modal-create-trip-report')}
+            tripReportUrl={addTripReportUrl}
+            dismissText={getString('global-text-value-modal-dismiss')}
+            onDismiss={dismissNotification}
+          >
+            <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
+            {' '}
+            {getString('notification-bar-ascent-marked')}
+            {' '}
+            <Link to={mountainDetailLink(mountain.id)}><SemiBold>{mountain.name}</SemiBold></Link>
+            {' '}
+            {getString('global-text-value-on')}
+            {' '}
+            <SemiBold>{formatStringDate(date)}</SemiBold>
+          </Notification>
         );
+
+      } else {
+        dismissNotification();
+        return null;
+      }
+    } else if (user && user.trailNotifications && user.trailNotifications.length) {
+      const { id, user: friend, trail, date } = user.trailNotifications[0];
+      const trailId = trail ? trail.id : null;
+      const dismissNotification = () => {
+        clearAscentNotification({variables: {
+          userId, trailId, mountainId: null, campsiteId: null, date,
+        }});
+      };
+      if (friend && trail && trailId) {
+        const onConfirm = () => {
+          if (trailId) {
+            addTrailCompletion({variables: {
+              userId, trailId, date,
+            }});
+          }
+          dismissNotification();
+        };
+
+        const addTripReportUrl = addTripReportLink({
+          refpath: window.location.pathname,
+          trails: trail ? trail.id : null,
+          mountains: null,
+          campsites: null,
+          listtype: PeakListVariants.standard,
+          notification: 'yes',
+          date,
+        });
+
+        return (
+          <Notification
+            key={id}
+            confirmText={getString('global-text-value-modal-confirm')}
+            onConfirm={onConfirm}
+            tripReportText={getString('global-text-value-modal-create-trip-report')}
+            tripReportUrl={addTripReportUrl}
+            dismissText={getString('global-text-value-modal-dismiss')}
+            onDismiss={dismissNotification}
+          >
+            <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
+            {' '}
+            {getString('notification-bar-ascent-marked')}
+            {' '}
+            <Link to={trailDetailLink(trail.id)}><SemiBold>{trail.name}</SemiBold></Link>
+            {' '}
+            {getString('global-text-value-on')}
+            {' '}
+            <SemiBold>{formatStringDate(date)}</SemiBold>
+          </Notification>
+        );
+
+      } else {
+        dismissNotification();
+        return null;
+      }
+    } else if (user && user.campsiteNotifications && user.campsiteNotifications.length) {
+      const { id, user: friend, campsite, date } = user.campsiteNotifications[0];
+      const campsiteId = campsite ? campsite.id : null;
+      const dismissNotification = () => {
+        clearAscentNotification({variables: {
+          userId, campsiteId, mountainId: null, trailId: null, date,
+        }});
+      };
+      if (friend && campsite && campsiteId) {
+        const onConfirm = () => {
+          if (campsiteId) {
+            addCampsiteCompletion({variables: {
+              userId, campsiteId, date,
+            }});
+          }
+          dismissNotification();
+        };
+
+        const addTripReportUrl = addTripReportLink({
+          refpath: window.location.pathname,
+          campsites: campsite ? campsite.id : null,
+          mountains: null,
+          trails: null,
+          listtype: PeakListVariants.standard,
+          notification: 'yes',
+          date,
+        });
+
+        return (
+          <Notification
+            key={id}
+            confirmText={getString('global-text-value-modal-confirm')}
+            onConfirm={onConfirm}
+            tripReportText={getString('global-text-value-modal-create-trip-report')}
+            tripReportUrl={addTripReportUrl}
+            dismissText={getString('global-text-value-modal-dismiss')}
+            onDismiss={dismissNotification}
+          >
+            <Link to={userProfileLink(friend.id)}><SemiBold>{friend.name}</SemiBold></Link>
+            {' '}
+            {getString('notification-bar-ascent-marked')}
+            {' '}
+            <Link to={campsiteDetailLink(campsite.id)}><SemiBold>{campsite.name}</SemiBold></Link>
+            {' '}
+            {getString('global-text-value-on')}
+            {' '}
+            <SemiBold>{formatStringDate(date)}</SemiBold>
+          </Notification>
+        );
+
       } else {
         dismissNotification();
         return null;

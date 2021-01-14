@@ -312,7 +312,7 @@ const RootQuery = new GraphQLObjectType({
         return TripReport.findById(id);
       },
     },
-    tripReportByAuthorDateAndMountain: {
+    tripReportByAuthorDateAndItems: {
       type: TripReportType,
       args: {
         author: { type: GraphQLNonNull(GraphQLID) },

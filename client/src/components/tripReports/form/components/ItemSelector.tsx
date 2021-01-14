@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components/macro';
 import {
   Basket,
   BasketTitle,
@@ -12,6 +13,10 @@ import {
 } from '../Utils';
 import SelectedItem from './SelectedItem';
 
+const Title = styled(BasketTitle)`
+  padding-bottom: 0;
+`;
+
 interface Props<T> {
   selectedList: T[];
   setSelectedList: (items: T[]) => void;
@@ -20,12 +25,13 @@ interface Props<T> {
   title: string;
   note: string;
   searchPlaceholder: string;
+  endpoint: string;
 }
 
 function AdditionalMountains<T>(props: Props<T>) {
   const {
     selectedList, setSelectedList, getSubtitleFromDatum,
-    icon, title, note, searchPlaceholder,
+    icon, title, note, searchPlaceholder, endpoint,
   } = props;
 
   const addItemToList = (newItem: {datum: T}) => {
@@ -58,16 +64,16 @@ function AdditionalMountains<T>(props: Props<T>) {
   return (
     <>
       <Basket>
-        <BasketTitle>
+        <Title>
           <IconContainer $color={lightBaseColor} dangerouslySetInnerHTML={{__html: icon}} />
           {title}
-        </BasketTitle>
+        </Title>
         {texNote}
         <SelectedDetailsBox>
           {selectedItemList}
         </SelectedDetailsBox>
         <Search
-          endpoint={'/api/mountain-search'}
+          endpoint={endpoint}
           ignore={selectedList.map((item: any) => item.id)}
           onSelect={addItemToList}
           keepFocusOnSelect={true}

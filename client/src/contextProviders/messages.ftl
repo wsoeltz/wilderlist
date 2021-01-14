@@ -58,6 +58,8 @@ global-text-value-detail-view = Detail
 
 global-text-value-search-hiking-lists = Search hiking lists
 global-text-value-search-mountains = Search mountains
+global-text-value-search-trails = Search trails
+global-text-value-search-campsites = Search campsites
 global-text-value-search-users = Search users
 
 global-text-value-generic-user = Wilderlist User
@@ -111,7 +113,7 @@ global-text-value-modal-request-delete-text = This will submit a request to have
 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
-global-text-value-trails = Trail
+global-text-value-trails = Trails
 global-text-value-campsites = Campsites
 global-text-value-ascents = ascents
 global-text-value-dates = Dates
@@ -360,6 +362,7 @@ header-text-menu-privacy-policy = Privacy Policy
 header-text-menu-terms-of-use = Terms of Use
 
 notification-bar-ascent-marked = marked you as hiking
+notification-bar-camped-marked = marked you as camping at
 
 login-page-plan-your-trip-title = Plan your trip
 login-page-plan-your-trip-desc = ● Maps ● Trails ● Camping ● Weather Forecasts ● Trip Reports ● Driving Directions

@@ -35,6 +35,37 @@ const GET_NOTIFICATIONS = gql`
         }
         date
       }
+
+      trailNotifications {
+        id
+        user {
+          id
+          name
+        }
+        trail {
+          id
+          name
+          center
+          type
+        }
+        date
+      }
+
+      campsiteNotifications {
+        id
+        user {
+          id
+          name
+        }
+        campsite {
+          id
+          name
+          location
+          type
+        }
+        date
+      }
+
     }
   }
 `;
@@ -43,6 +74,8 @@ export interface SuccessResponse {
   user: null | {
     id: User['id'];
     ascentNotifications: User['ascentNotifications'];
+    trailNotifications: User['trailNotifications'];
+    campsiteNotifications: User['campsiteNotifications'];
     friendRequests: User['friendRequests'];
   };
 }
@@ -51,11 +84,15 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
   mutation clearAscentNotification(
     $userId: ID!,
     $mountainId: ID,
+    $trailId: ID,
+    $campsiteId: ID,
     $date: String!
     ) {
     user: clearAscentNotification(
       userId: $userId,
       mountainId: $mountainId,
+      trailId: $trailId,
+      campsiteId: $campsiteId,
       date: $date
     ) {
       id
@@ -77,6 +114,36 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
         }
         date
       }
+
+      trailNotifications {
+        id
+        user {
+          id
+          name
+        }
+        trail {
+          id
+          name
+          center
+          type
+        }
+        date
+      }
+
+      campsiteNotifications {
+        id
+        user {
+          id
+          name
+        }
+        campsite {
+          id
+          name
+          location
+          type
+        }
+        date
+      }
     }
   }
 `;
@@ -84,6 +151,8 @@ const CLEAR_ASCENT_NOTIFICATION = gql`
 export interface ClearNotificationVariables {
   userId: string;
   mountainId: string | null;
+  trailId: string | null;
+  campsiteId: string | null;
   date: string;
 }
 
