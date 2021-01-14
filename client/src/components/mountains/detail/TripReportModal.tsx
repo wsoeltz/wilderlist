@@ -20,6 +20,7 @@ import {
 } from '../../../styling/styleUtils';
 import {
   TripReport,
+  TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import {
   formatStringDate,
@@ -172,7 +173,8 @@ const AreYouSureModal = (props: Props) => {
     );
   }
 
-  const filteredUsers = tripReport.users.filter(notEmpty);
+  const filteredUsers = tripReport.privacy !== TripReportPrivacy.Anonymous
+    ? tripReport.users.filter(notEmpty) : [];
 
   let userList: React.ReactElement<any> | null;
   if (filteredUsers.length === 0) {
@@ -271,15 +273,17 @@ const AreYouSureModal = (props: Props) => {
     </ButtonWrapper>
   );
 
-  const authorName = author !== null && author.hideProfileInSearch !== true
-    ? author.name : getString('global-text-value-generic-user');
+  const authorName = tripReport.privacy !== TripReportPrivacy.Anonymous &&
+    author !== null && author.hideProfileInSearch !== true
+      ? author.name : getString('global-text-value-generic-user');
 
-  const authorLink = userId !== null && author !== null && author.hideProfileInSearch !== true
-    ? (
-      <BoldLink to={userProfileLink(author.id)}>
-        {authorName}
-      </BoldLink>
-    ) : <span>{authorName}</span>;
+  const authorLink = tripReport.privacy !== TripReportPrivacy.Anonymous &&
+    userId !== null && author !== null && author.hideProfileInSearch !== true
+      ? (
+        <BoldLink to={userProfileLink(author.id)}>
+          {authorName}
+        </BoldLink>
+      ) : <span>{authorName}</span>;
 
   return (
     <Modal

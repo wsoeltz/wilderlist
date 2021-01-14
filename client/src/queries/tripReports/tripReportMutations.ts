@@ -100,6 +100,7 @@ const addTripReportVariableDeclerations = `
   $author: ID!,
   $mountains: [ID],
   $users: [ID],
+  $privacy: String,
   $notes: String,
   $link: String,
   $mudMinor: Boolean,
@@ -128,6 +129,7 @@ const addTripReportVariableParameters = `
   author: $author,
   mountains: $mountains,
   users: $users,
+  privacy: $privacy,
   notes: $notes,
   link: $link,
   mudMinor: $mudMinor,
@@ -200,6 +202,7 @@ export interface AddTripReportVariables {
   author: string;
   mountains: string[];
   users: string[];
+  privacy: TripReport['privacy'];
   notes: TripReport['notes'];
   link: TripReport['link'];
   mudMinor: TripReport['mudMinor'];

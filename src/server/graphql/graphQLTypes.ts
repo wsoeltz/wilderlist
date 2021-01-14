@@ -315,9 +315,16 @@ export interface Conditions {
   obstaclesOther: boolean | null;
 }
 
+export enum TripReportPrivacy {
+  Private = 'private',
+  Public = 'public',
+  Anonymous = 'anonymous',
+}
+
 export interface TripReport extends Conditions {
   id: string;
   date: string;
+  parent: TripReport | null;
   author: User | null;
   mountains: Array<Mountain | null>;
   trails: Array<Trail | null>;
@@ -325,4 +332,5 @@ export interface TripReport extends Conditions {
   users: Array<User | null>;
   notes: string | null;
   link: string | null;
+  privacy: TripReportPrivacy | null;
 }

@@ -28,6 +28,7 @@ const GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE = gql`
         id
         name
       }
+      privacy
       notes
       link
       mudMinor

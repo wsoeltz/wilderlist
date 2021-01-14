@@ -402,6 +402,9 @@ export const ExpandedButtonBase = styled.button`
   font-size: 1rem;
   border-radius: 0;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:disabled {
     cursor: not-allowed;
@@ -439,6 +442,14 @@ export const ExpandedButtonSecondary = styled(ExpandedButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
+  }
+`;
+
+export const ExpandedButtonWarning = styled(ExpandedButtonBase)`
+  background-color: ${warningColor};
+
+  &:hover {
+    background-color: ${warningHoverColor};
   }
 `;
 

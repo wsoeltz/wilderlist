@@ -30,7 +30,7 @@ import {
   SemiBold,
   semiBoldFontBoldWeight,
 } from '../../../styling/styleUtils';
-import { TripReport } from '../../../types/graphQLTypes';
+import { TripReport, TripReportPrivacy } from '../../../types/graphQLTypes';
 import {
   formatStringDate,
 } from '../../../utilities/dateUtils';
@@ -102,185 +102,192 @@ const TripReports = ({mountainId, mountainName}: Props) => {
       const maxCharactersArray = [1000, 500];
       const maxCharactersDefault = 250;
       const reportList = tripReports.map((report, i) => {
-        const allConditionsArray: string[] = [];
-        const openReport = () => setFullReport(report);
-        Object.keys(report).forEach(function(key: string) {
-          if (isCondition(key) && report[key as keyof TripReport]) {
-            allConditionsArray.push(getString('trip-report-condition-name', {key}));
-          }
-        });
-        let conditionsList: React.ReactElement<any> | null;
-        if (allConditionsArray.length === 0) {
-          conditionsList = null;
-        } else if (allConditionsArray.length === 1) {
-          conditionsList = (
-            <Section>
-              <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
-              <Condition>{allConditionsArray[0]}</Condition>
-            </Section>
-          );
-        } else if (allConditionsArray.length === 2) {
-          conditionsList = (
-            <Section>
-              <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
-              <Condition>{allConditionsArray[0]}</Condition>
-              {' and '}
-              <Condition>{allConditionsArray[1]}</Condition>
-            </Section>
-          );
-        } else {
-          const conditionsText: Array<React.ReactElement<any>> = [];
-          allConditionsArray.forEach((condition, j) => {
-            if (j === allConditionsArray.length - 2) {
-              conditionsText.push(
-                <React.Fragment  key={condition + report.id}>
-                  <Condition>{condition}</Condition>{' and '}
-                </React.Fragment>,
-              );
-            } else if (j === allConditionsArray.length - 1) {
-              conditionsText.push(
-                <Condition key={condition + report.id}>{condition}</Condition>,
-              );
-            } else {
-              conditionsText.push(
-                <React.Fragment  key={condition + report.id}>
-                  <Condition key={condition + report.id}>{condition}</Condition>{', '}
-                </React.Fragment>,
-              );
+        if (report && report.privacy && report.privacy !== TripReportPrivacy.Private) {
+
+          const allConditionsArray: string[] = [];
+          const openReport = () => setFullReport(report);
+          Object.keys(report).forEach(function(key: string) {
+            if (isCondition(key) && report[key as keyof TripReport]) {
+              allConditionsArray.push(getString('trip-report-condition-name', {key}));
             }
           });
-          conditionsList = (
-            <Section>
-              <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
-              <CollapsedParagraph>{conditionsText}</CollapsedParagraph>
-            </Section>
-          );
-        }
-        let notes: React.ReactElement<any> | null;
-        if (report.notes && report.notes.length) {
-          const maxCharacters = i <= 1 ? maxCharactersArray[i] : maxCharactersDefault;
-          const text = report.notes.substring(0, maxCharacters);
-          const readMoreText = report.notes.length > maxCharacters ? (
-            <>
-              ...
-              [<LinkButton onClick={openReport}>Read More</LinkButton>]
-            </>
-          ) : null;
-          notes = (
+          let conditionsList: React.ReactElement<any> | null;
+          if (allConditionsArray.length === 0) {
+            conditionsList = null;
+          } else if (allConditionsArray.length === 1) {
+            conditionsList = (
+              <Section>
+                <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
+                <Condition>{allConditionsArray[0]}</Condition>
+              </Section>
+            );
+          } else if (allConditionsArray.length === 2) {
+            conditionsList = (
+              <Section>
+                <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
+                <Condition>{allConditionsArray[0]}</Condition>
+                {' and '}
+                <Condition>{allConditionsArray[1]}</Condition>
+              </Section>
+            );
+          } else {
+            const conditionsText: Array<React.ReactElement<any>> = [];
+            allConditionsArray.forEach((condition, j) => {
+              if (j === allConditionsArray.length - 2) {
+                conditionsText.push(
+                  <React.Fragment  key={condition + report.id}>
+                    <Condition>{condition}</Condition>{' and '}
+                  </React.Fragment>,
+                );
+              } else if (j === allConditionsArray.length - 1) {
+                conditionsText.push(
+                  <Condition key={condition + report.id}>{condition}</Condition>,
+                );
+              } else {
+                conditionsText.push(
+                  <React.Fragment  key={condition + report.id}>
+                    <Condition key={condition + report.id}>{condition}</Condition>{', '}
+                  </React.Fragment>,
+                );
+              }
+            });
+            conditionsList = (
+              <Section>
+                <SectionTitle>{getString('trip-report-conditions-title')}: </SectionTitle>
+                <CollapsedParagraph>{conditionsText}</CollapsedParagraph>
+              </Section>
+            );
+          }
+          let notes: React.ReactElement<any> | null;
+          if (report.notes && report.notes.length) {
+            const maxCharacters = i <= 1 ? maxCharactersArray[i] : maxCharactersDefault;
+            const text = report.notes.substring(0, maxCharacters);
+            const readMoreText = report.notes.length > maxCharacters ? (
+              <>
+                ...
+                [<LinkButton onClick={openReport}>Read More</LinkButton>]
+              </>
+            ) : null;
+            notes = (
+              <Section>
+                <SectionTitle>
+                  {getString('trip-report-notes-title')}
+                </SectionTitle>
+                <Text>
+                  {text}{readMoreText}
+                </Text>
+              </Section>
+            );
+          } else {
+            notes = null;
+          }
+
+          const filteredMountains = report.mountains.filter(notEmpty);
+
+          let mountainList: React.ReactElement<any> | null;
+          if (filteredMountains.length === 0) {
+            mountainList = null;
+          } else if (filteredMountains.length === 1) {
+            mountainList = (
+              <Section>
+                <SectionTitle>{getString('global-text-value-mountain')}: </SectionTitle>
+                <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
+              </Section>
+            );
+          } else if (filteredMountains.length === 2) {
+            mountainList = (
+              <Section>
+                <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
+                <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
+                {' and '}
+                <BoldLink to={mountainDetailLink(filteredMountains[1].id)}>{filteredMountains[1].name}</BoldLink>
+              </Section>
+            );
+          } else {
+            const mountainsText: Array<React.ReactElement<any>> = [];
+            filteredMountains.forEach((mountain, index) => {
+              if (index === filteredMountains.length - 2) {
+                mountainsText.push(
+                  <React.Fragment  key={mountain.id + report.id}>
+                    <BoldLink to={mountainDetailLink(mountain.id)}>{mountain.name}</BoldLink>
+                    {' and '}
+                  </React.Fragment>,
+                );
+              } else if (index === filteredMountains.length - 1) {
+                mountainsText.push(
+                  <BoldLink to={mountainDetailLink(mountain.id)} key={mountain.id + report.id}>
+                    {mountain.name}
+                  </BoldLink>,
+                );
+              } else {
+                mountainsText.push(
+                  <BoldLink to={mountainDetailLink(mountain.id)} key={mountain.id + report.id}>
+                    {mountain.name + ', '}
+                  </BoldLink>,
+                );
+              }
+            });
+            mountainList = (
+              <Section>
+                <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
+                {mountainsText}
+              </Section>
+            );
+          }
+
+          const link = report.link && isValidURL(report.link) ? (
             <Section>
               <SectionTitle>
-                {getString('trip-report-notes-title')}
+                {getString('trip-report-external-link-title')}
               </SectionTitle>
-              <Text>
-                {text}{readMoreText}
-              </Text>
+              <ExternalLink href={report.link} rel='noopener noreferrer' target='_blank'>{report.link}</ExternalLink>
             </Section>
+          ) : null;
+
+          const authorName = report.privacy !== TripReportPrivacy.Anonymous &&
+            report.author !== null && report.author.hideProfileInSearch !== true
+              ? report.author.name : getString('global-text-value-generic-user');
+
+          const authorLink = report.privacy !== TripReportPrivacy.Anonymous &&
+            userId !== null && report.author !== null && report.author.hideProfileInSearch !== true
+              ? (
+                <BoldLink to={userProfileLink(report.author.id)}>
+                  {authorName}
+                </BoldLink>
+              ) : <span>{authorName}</span>;
+          return (
+            <ReportContainer
+              key={report.id}
+              id={`trip-report-${report.date}`}
+              onClick={openReport}
+            >
+              <ReportHeader>
+                <SemiBold>
+                  {'On '}
+                  <LinkButton onClick={openReport}>
+                    {formatStringDate(report.date)}
+                  </LinkButton>
+                  {' by '}
+                  {authorLink}
+                </SemiBold>
+                <ReadFullReportButton
+                  className='read-full-report-button'
+                  onClick={openReport}
+                >
+                  {getString('trip-report-read-full-report')}
+                </ReadFullReportButton>
+              </ReportHeader>
+              <ReportBody>
+                {conditionsList}
+                {notes}
+                {mountainList}
+                {link}
+              </ReportBody>
+            </ReportContainer>
           );
         } else {
-          notes = null;
+          return null;
         }
-
-        const filteredMountains = report.mountains.filter(notEmpty);
-
-        let mountainList: React.ReactElement<any> | null;
-        if (filteredMountains.length === 0) {
-          mountainList = null;
-        } else if (filteredMountains.length === 1) {
-          mountainList = (
-            <Section>
-              <SectionTitle>{getString('global-text-value-mountain')}: </SectionTitle>
-              <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
-            </Section>
-          );
-        } else if (filteredMountains.length === 2) {
-          mountainList = (
-            <Section>
-              <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
-              <BoldLink to={mountainDetailLink(filteredMountains[0].id)}>{filteredMountains[0].name}</BoldLink>
-              {' and '}
-              <BoldLink to={mountainDetailLink(filteredMountains[1].id)}>{filteredMountains[1].name}</BoldLink>
-            </Section>
-          );
-        } else {
-          const mountainsText: Array<React.ReactElement<any>> = [];
-          filteredMountains.forEach((mountain, index) => {
-            if (index === filteredMountains.length - 2) {
-              mountainsText.push(
-                <React.Fragment  key={mountain.id + report.id}>
-                  <BoldLink to={mountainDetailLink(mountain.id)}>{mountain.name}</BoldLink>
-                  {' and '}
-                </React.Fragment>,
-              );
-            } else if (index === filteredMountains.length - 1) {
-              mountainsText.push(
-                <BoldLink to={mountainDetailLink(mountain.id)} key={mountain.id + report.id}>
-                  {mountain.name}
-                </BoldLink>,
-              );
-            } else {
-              mountainsText.push(
-                <BoldLink to={mountainDetailLink(mountain.id)} key={mountain.id + report.id}>
-                  {mountain.name + ', '}
-                </BoldLink>,
-              );
-            }
-          });
-          mountainList = (
-            <Section>
-              <SectionTitle>{getString('global-text-value-mountains')}: </SectionTitle>
-              {mountainsText}
-            </Section>
-          );
-        }
-
-        const link = report.link && isValidURL(report.link) ? (
-          <Section>
-            <SectionTitle>
-              {getString('trip-report-external-link-title')}
-            </SectionTitle>
-            <ExternalLink href={report.link} rel='noopener noreferrer' target='_blank'>{report.link}</ExternalLink>
-          </Section>
-        ) : null;
-
-        const authorName = report.author !== null && report.author.hideProfileInSearch !== true
-          ? report.author.name : getString('global-text-value-generic-user');
-
-        const authorLink = userId !== null && report.author !== null && report.author.hideProfileInSearch !== true
-          ? (
-            <BoldLink to={userProfileLink(report.author.id)}>
-              {authorName}
-            </BoldLink>
-          ) : <span>{authorName}</span>;
-        return (
-          <ReportContainer
-            key={report.id}
-            id={`trip-report-${report.date}`}
-            onClick={openReport}
-          >
-            <ReportHeader>
-              <SemiBold>
-                {'On '}
-                <LinkButton onClick={openReport}>
-                  {formatStringDate(report.date)}
-                </LinkButton>
-                {' by '}
-                {authorLink}
-              </SemiBold>
-              <ReadFullReportButton
-                className='read-full-report-button'
-                onClick={openReport}
-              >
-                {getString('trip-report-read-full-report')}
-              </ReadFullReportButton>
-            </ReportHeader>
-            <ReportBody>
-              {conditionsList}
-              {notes}
-              {mountainList}
-              {link}
-            </ReportBody>
-          </ReportContainer>
-        );
       });
 
       const loadMoreButton = tripReports.length === nPerPage * pageNumber ? (

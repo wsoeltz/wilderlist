@@ -19,6 +19,7 @@ export type TripReportModelType = mongoose.Model<TripReportSchemaType> & TripRep
 const TripReportSchema = new Schema({
   date: { type: String, required: true },
   author: { type: Schema.Types.ObjectId, ref: 'user' },
+  parent: { type: Schema.Types.ObjectId, ref: 'tripReport' },
   mountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
@@ -35,6 +36,7 @@ const TripReportSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'user',
   }],
+  privacy: { type: String },
   notes: { type: String },
   link: { type: String },
   mudMinor: { type: Boolean },
@@ -71,6 +73,16 @@ const TripReportType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {userLoader}}) {
         try {
           return await userLoader.load(parentValue.author);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    parent: {
+      type: TripReportType,
+      async resolve(parentValue, args, {dataloaders: {tripReportLoader}}) {
+        try {
+          return await tripReportLoader.load(parentValue.author);
         } catch (err) {
           return err;
         }
@@ -116,6 +128,7 @@ const TripReportType: any = new GraphQLObjectType({
         }
       },
     },
+    privacy: { type: GraphQLString },
     notes: { type: GraphQLString },
     link: { type: GraphQLString },
     mudMinor: { type: GraphQLBoolean },

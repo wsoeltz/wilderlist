@@ -1,5 +1,6 @@
-import { faEdit, faHiking, faLink } from '@fortawesome/free-solid-svg-icons';
-import React, {forwardRef, Ref} from 'react';
+import { faEdit, faHiking, faLink, faLock } from '@fortawesome/free-solid-svg-icons';
+import upperFirst from 'lodash/upperFirst';
+import React, {forwardRef, Ref, useCallback} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {
@@ -10,12 +11,14 @@ import {
 } from '../../../../styling/styleUtils';
 import {
   Conditions,
+  TripReportPrivacy,
 } from '../../../../types/graphQLTypes';
 import { DateType } from '../../../../utilities/dateUtils';
 import {mobileSize} from '../../../../Utils';
 import {
   CheckboxList,
   Input,
+  SelectBoxBase,
 } from '../Utils';
 
 const Root = styled.div`
@@ -41,6 +44,11 @@ const ReportTextarea = styled.textarea`
   width: 100%;
   min-height: 12.35rem;
   line-height: 1.4;
+`;
+
+const PrivacySelect = styled(SelectBoxBase)`
+  width: 100%;
+  margin: 0.3rem 0 1rem;
 `;
 
 export const nullConditions: Conditions = {
@@ -74,6 +82,8 @@ interface Props {
   dateType: DateType;
   initialTripNotes: string;
   initialLink: string;
+  privacy: TripReportPrivacy;
+  setPrivacy: (value: TripReportPrivacy) => void;
 }
 
 interface MultipleRefs {
@@ -84,6 +94,7 @@ interface MultipleRefs {
 const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
   const {
     conditions, setConditions, dateType, initialTripNotes, initialLink,
+    privacy, setPrivacy,
   } = props;
 
   const {tripNotesEl, tripLinkEl} = ref as any as MultipleRefs;
@@ -127,8 +138,37 @@ const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
     </small>
   );
 
+  const updatePrivacy = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === TripReportPrivacy.Public ||
+        value === TripReportPrivacy.Private ||
+        value === TripReportPrivacy.Anonymous
+      ) {
+      setPrivacy(value);
+    } else {
+      setPrivacy(TripReportPrivacy.Private);
+    }
+  }, [setPrivacy]);
+
   const reportContent = dateType === DateType.full ? (
     <>
+      <ComponentTitle>
+        <BasicIconInText icon={faLock} /> {getString('global-text-value-privacy')}
+      </ComponentTitle>
+      <PrivacySelect
+        value={privacy}
+        onChange={updatePrivacy}
+      >
+        <option value={TripReportPrivacy.Public}>
+          {upperFirst(TripReportPrivacy.Public)}
+        </option>
+        <option value={TripReportPrivacy.Anonymous}>
+          {upperFirst(TripReportPrivacy.Anonymous)}
+        </option>
+        <option value={TripReportPrivacy.Private}>
+          {upperFirst(TripReportPrivacy.Private)}
+        </option>
+      </PrivacySelect>
       <ComponentTitle>
         <BasicIconInText icon={faEdit} /> {getString('trip-report-notes-title')}
       </ComponentTitle>

@@ -5,6 +5,7 @@ import {
 } from '../../../queries/notifications/useGetNotifications';
 import {
   Mountain,
+  TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import { DateType, getDates, getDateType } from '../../../utilities/dateUtils';
 import TripReportForm, {
@@ -90,6 +91,7 @@ const NewAscentReport = (props: Props) => {
         }}
         initialTripNotes={''}
         initialLink={''}
+        initialPrivacy={TripReportPrivacy.Public}
       />
     );
   } else {

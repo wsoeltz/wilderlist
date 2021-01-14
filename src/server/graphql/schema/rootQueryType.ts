@@ -9,7 +9,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { CreatedItemStatus } from '../graphQLTypes';
+import { CreatedItemStatus, TripReportPrivacy } from '../graphQLTypes';
 import {
   buildNearSphereQuery,
   GeoSphereInput,
@@ -317,13 +317,19 @@ const RootQuery = new GraphQLObjectType({
       args: {
         author: { type: GraphQLNonNull(GraphQLID) },
         date: { type: GraphQLNonNull(GraphQLString) },
-        mountain: { type: GraphQLNonNull(GraphQLID) },
+        mountain: { type: GraphQLID },
+        trail: { type: GraphQLID },
+        campsite: { type: GraphQLID },
       },
-      resolve(parentValue, { author, date, mountain}) {
+      resolve(parentValue, { author, date, mountain, trail, campsite}) {
         return TripReport
           .findOne({
             author, date,
-            mountains: mountain,
+            $or: [
+              {mountains: mountain},
+              {trails: trail},
+              {campsites: campsite},
+            ],
           });
       },
     },
@@ -337,6 +343,7 @@ const RootQuery = new GraphQLObjectType({
         return TripReport
           .find({
             mountains: mountain,
+            privacy: { $in: [TripReportPrivacy.Public, TripReportPrivacy.Anonymous]},
             $or: [
               {notes: { $ne: null }},
               {link: { $ne: null }},

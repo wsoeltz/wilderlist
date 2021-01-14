@@ -5,6 +5,7 @@ import {
   useGetTripReportForDateAndMountain,
 } from '../../../queries/tripReports/useGetTripReportForDateAndMountain';
 import { PlaceholderText } from '../../../styling/styleUtils';
+import {TripReportPrivacy} from '../../../types/graphQLTypes';
 import {
   DateObject,
   getDateType,
@@ -110,6 +111,7 @@ const EditAscentReport = (props: Props) => {
           }}
           initialTripNotes={''}
           initialLink={''}
+          initialPrivacy={TripReportPrivacy.Public}
         />
       );
     } else {
@@ -119,6 +121,7 @@ const EditAscentReport = (props: Props) => {
         iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,
         snowIceMonorailUnstable, snowIcePostholes, snowMinor, snowPackedPowder,
         snowUnpackedPowder, snowDrifts, snowSticky, snowSlush, obstaclesBlowdown, obstaclesOther,
+        privacy,
       } = tripReport;
 
       const filteredMountains = mountains.filter(notEmpty);
@@ -145,6 +148,7 @@ const EditAscentReport = (props: Props) => {
           }}
           initialTripNotes={notes ? notes : ''}
           initialLink={link ? link : ''}
+          initialPrivacy={privacy ? privacy : TripReportPrivacy.Private}
         />
       );
     }

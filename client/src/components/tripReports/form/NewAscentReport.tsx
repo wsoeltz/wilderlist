@@ -1,4 +1,5 @@
 import React from 'react';
+import {TripReportPrivacy} from '../../../types/graphQLTypes';
 import { DateType } from '../../../utilities/dateUtils';
 import TripReportForm, {
   preferredDateFormatLocalStorageVariable,
@@ -63,6 +64,7 @@ const NewAscentReport = (props: Props) => {
       }}
       initialTripNotes={''}
       initialLink={''}
+      initialPrivacy={TripReportPrivacy.Public}
     />
   );
 };

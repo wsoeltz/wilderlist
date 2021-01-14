@@ -1,4 +1,4 @@
-import { faCalendarAlt, faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faCheck, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {validate as validateEmail} from 'email-validator';
 import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
@@ -18,9 +18,9 @@ import {
 } from '../../../queries/tripReports/useLatestTripReports';
 import {
   BasicIconInText,
-  ButtonWarning,
   ExpandedButtonPrimary,
   ExpandedButtonSecondary,
+  ExpandedButtonWarning,
   FullWidthBreak,
   HighlightedIconInText,
   IconTitle,
@@ -32,6 +32,7 @@ import {
 import {
   Conditions,
   PeakListVariants,
+  TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import { DateType, formatStringDate } from '../../../utilities/dateUtils';
 import sendInvites from '../../../utilities/sendInvites';
@@ -98,10 +99,6 @@ export const CancelButton = styled(ExpandedButtonSecondary)`
   margin-right: 0;
 `;
 
-const DeleteButton = styled(ButtonWarning)`
-  margin-right: auto;
-`;
-
 const Error = styled.p`
   color: ${warningColor};
   text-align: center;
@@ -138,6 +135,7 @@ type PropsWithConditions = Props & {
   initialConditions: Conditions;
   initialTripNotes: string;
   initialLink: string;
+  initialPrivacy: TripReportPrivacy;
 };
 
 const TripReportForm = (props: PropsWithConditions) => {
@@ -146,7 +144,7 @@ const TripReportForm = (props: PropsWithConditions) => {
     initialCompletionDay, initialCompletionMonth,
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
-    initialMountainList, tripReportId, refetchQuery,
+    initialMountainList, tripReportId, refetchQuery, initialPrivacy,
   } = props;
 
   const tripNotesEl = useRef<HTMLTextAreaElement | null>(null);
@@ -187,6 +185,7 @@ const TripReportForm = (props: PropsWithConditions) => {
   const [emailList, setEmailList] = useState<string[]>(['']);
   const [userList, setUserList] = useState<string[]>(initialUserList);
   const [mountainList, setMountainList] = useState<MountainDatum[]>(initialMountainList);
+  const [privacy, setPrivacy] = useState<TripReportPrivacy>(initialPrivacy);
   const [saving, setSaving] = useState<boolean>(false);
 
   const [isAreYouSureModalOpen, setIsAreYouSureModalOpen] = useState<boolean>(false);
@@ -305,6 +304,7 @@ const TripReportForm = (props: PropsWithConditions) => {
             author: userId,
             mountains: mountainIds,
             users: userList,
+            privacy,
             notes: tripNotes,
             link: tripLink,
             ...conditions,
@@ -318,6 +318,7 @@ const TripReportForm = (props: PropsWithConditions) => {
             author: userId,
             mountains: mountainIds,
             users: userList,
+            privacy,
             notes: null,
             link: null,
             ...nullConditions,
@@ -336,6 +337,7 @@ const TripReportForm = (props: PropsWithConditions) => {
             author: userId,
             mountains: mountainIds,
             users: userList,
+            privacy,
             notes: tripNotes,
             link: tripLink,
             ...conditions,
@@ -347,6 +349,7 @@ const TripReportForm = (props: PropsWithConditions) => {
             author: userId,
             mountains: mountainIds,
             users: userList,
+            privacy,
             notes: null,
             link: null,
             ...nullConditions,
@@ -490,10 +493,10 @@ const TripReportForm = (props: PropsWithConditions) => {
 
   const deleteAscentButton =
     tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
-      <DeleteButton onClick={openAreYouSureModal} mobileExtend={true}>
+      <ExpandedButtonWarning onClick={openAreYouSureModal}>
         <BasicIconInText icon={faTrash} />
         Delete Ascent
-      </DeleteButton>
+      </ExpandedButtonWarning>
     ) : null;
 
   const saveButtonText =
@@ -504,6 +507,7 @@ const TripReportForm = (props: PropsWithConditions) => {
     <ButtonWrapper>
       {deleteAscentButton}
       <CancelButton onClick={onClose}>
+        <BasicIconInText icon={faTimes} />
         {getString('global-text-value-modal-cancel')}
       </CancelButton>
       <ExpandedButtonPrimary
@@ -566,6 +570,8 @@ const TripReportForm = (props: PropsWithConditions) => {
         dateType={dateType}
         initialTripNotes={initialTripNotes}
         initialLink={initialLink}
+        privacy={privacy}
+        setPrivacy={setPrivacy}
         ref={{tripNotesEl, tripLinkEl} as any}
       />
       {actions}

@@ -24,6 +24,7 @@ export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
         hideProfileInSearch
       }
       notes
+      privacy
       link
       mudMinor
       mudMajor
