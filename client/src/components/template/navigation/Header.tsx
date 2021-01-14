@@ -61,7 +61,7 @@ const HeaderContainer = styled(HeaderContainerBase)`
   }
 `;
 
-export const sideContentWidth = 200;
+export const sideContentWidth = 175;
 
 const SideContent = styled.div`
   box-sizing: border-box;
@@ -102,7 +102,7 @@ const LogoContainer = styled(Link)`
 `;
 
 export const logoSmallWindoWidth = 1080;
-export const logoSmallWidth = 120;
+export const logoSmallWidth = 130;
 
 const Logo = styled.img`
   max-width: 100%;

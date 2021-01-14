@@ -1,4 +1,4 @@
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faHiking, faLink } from '@fortawesome/free-solid-svg-icons';
 import React, {forwardRef, Ref} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
@@ -6,22 +6,29 @@ import {
   BasicIconInText,
   CheckboxListCheckbox,
   CheckboxListItem,
-  DetailBoxTitle,
-  DetailBoxWithMargin,
+  ComponentTitle,
 } from '../../../../styling/styleUtils';
 import {
   Conditions,
 } from '../../../../types/graphQLTypes';
 import { DateType } from '../../../../utilities/dateUtils';
-import Tooltip from '../../../sharedComponents/Tooltip';
+import {mobileSize} from '../../../../Utils';
 import {
   CheckboxList,
   Input,
-  SectionTitle,
 } from '../Utils';
 
-const ReportContent = styled.div`
-  margin-top: 1rem;
+const Root = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  grid-column-gap: 0.75rem;
+  margin: 1rem 0 3rem;
+
+  @media(max-width: ${mobileSize}px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    grid-row-gap: 1rem;
+  }
 `;
 
 const ReportTextarea = styled.textarea`
@@ -29,10 +36,10 @@ const ReportTextarea = styled.textarea`
   padding: 8px;
   box-sizing: border-box;
   border: solid 1px #dcdcdc;
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 200;
   width: 100%;
-  min-height: 6.35rem;
+  min-height: 12.35rem;
   line-height: 1.4;
 `;
 
@@ -107,7 +114,9 @@ const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
 
   const conditionsList = dateType === DateType.full ? (
     <>
-      <SectionTitle>{getString('trip-report-conditions-title')}</SectionTitle>
+      <ComponentTitle>
+        <BasicIconInText icon={faHiking} /> {getString('trip-report-conditions-title')}
+      </ComponentTitle>
       <CheckboxList style={{maxHeight: '100%'}}>
         {conditionsListItems}
       </CheckboxList>
@@ -119,15 +128,19 @@ const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
   );
 
   const reportContent = dateType === DateType.full ? (
-    <ReportContent>
-      <SectionTitle>{getString('trip-report-notes-title')}</SectionTitle>
+    <>
+      <ComponentTitle>
+        <BasicIconInText icon={faEdit} /> {getString('trip-report-notes-title')}
+      </ComponentTitle>
       <ReportTextarea
         placeholder={getString('trip-report-notes-placeholder')}
         defaultValue={initialTripNotes}
         ref={tripNotesEl}
         maxLength={charLimit}
       />
-      <SectionTitle>{getString('trip-report-link-title')}</SectionTitle>
+      <ComponentTitle>
+        <BasicIconInText icon={faLink} /> {getString('trip-report-link-title')}
+      </ComponentTitle>
       <Input
         type='text'
         placeholder={getString('trip-report-link-placeholder')}
@@ -136,23 +149,18 @@ const TripDetails = (props: Props, ref: Ref<MultipleRefs>) => {
         maxLength={1000}
         autoComplete={'off'}
       />
-    </ReportContent>
+    </>
   ) : null;
 
   return (
-    <>
-      <DetailBoxTitle>
-        <BasicIconInText icon={faEdit} />
-        {getString('trip-report-title')}
-        <Tooltip
-          explanation={getString('trip-report-tooltip')}
-        />
-      </DetailBoxTitle>
-      <DetailBoxWithMargin>
-        {conditionsList}
+    <Root>
+      <div>
         {reportContent}
-      </DetailBoxWithMargin>
-    </>
+      </div>
+      <div>
+        {conditionsList}
+      </div>
+    </Root>
   );
 };
 

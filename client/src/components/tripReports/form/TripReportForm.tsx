@@ -21,8 +21,10 @@ import {
   ButtonWarning,
   ExpandedButtonPrimary,
   ExpandedButtonSecondary,
+  FullWidthBreak,
   HighlightedIconInText,
   IconTitle,
+  placeholderColor,
   SmallTextNote,
   TitleText,
   warningColor,
@@ -39,6 +41,7 @@ import {
   isValidURL,
   Seasons,
 } from '../../../Utils';
+import {mobileSize} from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import LoadingDisablePage from '../../sharedComponents/LoadingDisablePage';
 import AddFriends from './components/AddFriends';
@@ -79,6 +82,16 @@ export const ButtonWrapper = styled.div`
   margin: 0 -1rem;
   margin-top: auto;
   background-color: #fff;
+
+  @media(max-width: ${mobileSize}px) {
+    position: fixed;
+    bottom: 1.4rem;
+    left: 0;
+    right: 0;
+    height: 50px;
+    align-items: stretch;
+    z-index: 500;
+  }
 `;
 
 export const CancelButton = styled(ExpandedButtonSecondary)`
@@ -92,6 +105,15 @@ const DeleteButton = styled(ButtonWarning)`
 const Error = styled.p`
   color: ${warningColor};
   text-align: center;
+`;
+
+const OptionalSup = styled.sup`
+  text-transform: lowercase;
+  color: ${placeholderColor};
+  margin-left: 0.5rem;
+  font-size: 0.6em;
+  font-style: italic;
+  font-weight: 400;
 `;
 
 interface BaseProps {
@@ -505,7 +527,7 @@ const TripReportForm = (props: PropsWithConditions) => {
       <SectionTitle>
         {getString('mountain-completion-modal-text-day-number', {day: 1})}*
         <SmallTextNote>
-          {getString('mountain-completion-modal-text-required-text')}*
+          * {getString('mountain-completion-modal-text-required-text')}
         </SmallTextNote>
       </SectionTitle>
       <ColumnRoot>
@@ -521,6 +543,7 @@ const TripReportForm = (props: PropsWithConditions) => {
       </ColumnRoot>
       <SectionTitle>
         {getString('mountain-completion-modal-text-people-hiked-with')}
+        <OptionalSup>({getString('global-text-value-optional')})</OptionalSup>
       </SectionTitle>
       <AddFriends
         userId={userId}
@@ -529,6 +552,14 @@ const TripReportForm = (props: PropsWithConditions) => {
         userList={userList}
         setUserList={setUserList}
       />
+      <FullWidthBreak />
+      <SectionTitle>
+        {getString('trip-report-title')}
+        <OptionalSup>({getString('global-text-value-optional')})</OptionalSup>
+        <SmallTextNote>
+          {getString('trip-report-privacy-disclaimer')}
+        </SmallTextNote>
+      </SectionTitle>
       <TripDetails
         conditions={conditions}
         setConditions={setConditions}

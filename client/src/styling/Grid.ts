@@ -86,7 +86,7 @@ export const ContentHeader = styled.div`
 
 export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};
-  padding: ${standardContainerPadding};
+  padding: 0 ${standardContainerPadding} ${standardContainerPadding};
   background-color: #fff;
   overflow: auto;
   pointer-events: all;

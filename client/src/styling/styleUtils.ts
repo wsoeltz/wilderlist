@@ -143,6 +143,10 @@ export const IconTitle = styled.h1`
   display: flex;
   align-items: center;
   margin: 0 0 0.75rem;
+
+  @media(max-width: ${mobileSize}px) {
+    margin-top: 1rem;
+  }
 `;
 
 export const TitleText = styled.span`
@@ -317,6 +321,12 @@ export const DetailBoxFooter = styled.h4`
   color: ${baseColor};
 `;
 
+export const FullWidthBreak = styled.div`
+  margin: 0.5rem -1rem;
+  height: 0;
+  border-top: solid 1px ${lightBorderColor};
+`;
+
 export const Basket = styled.div`
   border: 1px solid ${lightBorderColor};
   background-color: ${tertiaryColor};
@@ -324,19 +334,22 @@ export const Basket = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-export const BasketTitle = styled.h3`
-  border-bottom: none;
+export const ComponentTitle = styled.h3`
   margin: 0;
   font-weight: 600;
-  padding: 0 0.5rem 0.5rem;
+  padding: 0 0 0.5rem;
   color: ${lightBaseColor};
   font-size: 0.8rem;
   text-transform: uppercase;
   display: flex;
-  text-align: center;
   align-items: center;
-  justify-content: center;
   width: 100%;
+`;
+
+export const BasketTitle = styled(ComponentTitle)`
+  justify-content: center;
+  text-align: center;
+  padding: 0 0.5rem 0.5rem;
 `;
 
 export const SmallTextNote = styled.div`
@@ -728,6 +741,10 @@ export const CheckboxList = styled.div`
   list-style: none;
   padding: 0;
   border: 1px solid ${lightBorderColor};
+
+  @media(max-width: ${mobileSize}px) {
+    max-height: initial;
+  }
 `;
 
 export const CheckboxListItem = styled.label`

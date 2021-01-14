@@ -8,10 +8,10 @@ import {
   FriendsDatum,
 } from '../../../../queries/users/useGetFriendsBasic';
 import {
-  BasketTitle,
   ButtonSecondary,
   CheckboxListCheckbox,
   CheckboxListItem,
+  ComponentTitle,
   GhostButton,
   IconContainer,
   placeholderColor,
@@ -153,23 +153,23 @@ const FriendSelector = (props: Props) => {
   return (
     <Root>
       <div>
-        <BasketTitle>
+        <ComponentTitle>
           <IconContainer $color={placeholderColor}>
             <FontAwesomeIcon icon={faUserFriends} />
           </IconContainer>
           {getString('mountain-completion-modal-text-add-wilderlist-friends')}
-        </BasketTitle>
+        </ComponentTitle>
         <div>
           {friendsList}
         </div>
       </div>
       <div>
-        <BasketTitle>
+        <ComponentTitle>
           <IconContainer $color={placeholderColor}>
             <FontAwesomeIcon icon={faAt} />
           </IconContainer>
           {getString('mountain-completion-modal-text-add-other-friends')}
-        </BasketTitle>
+        </ComponentTitle>
         <div>
           {emailInputs}
           <ButtonSecondary onClick={incrementEmailList}>

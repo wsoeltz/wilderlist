@@ -1,30 +1,40 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import {lightBlue} from '../../../../styling/styleUtils';
+import {
+  lightBorderColor,
+  SemiBold,
+} from '../../../../styling/styleUtils';
+import {mobileSize} from '../../../../Utils';
 
 const Root = styled.div`
   flex-shrink: 0;
-  border-radius: 8px;
   font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 0.4rem 0.8rem 0.4rem 0;
   overflow: hidden;
-  background-color: #fff;
   width: 100%;
+  padding-bottom: 0.8rem;
+
+  &:not(:last-of-type) {
+    border-bottom: solid 1px ${lightBorderColor};
+  }
+
+  @media(max-width: ${mobileSize}) {
+    font-size: 1rem;
+  }
 `;
 
 const RemoveItem = styled.button`
   margin-left: 1rem;
-  padding: 0.3rem 0.6rem;
-  height: 100%;
-  background-color: ${lightBlue};
+  padding: 0.3rem 0.3rem;
   border: none;
+  background-color: transparent;
 `;
 
 const Title = styled.div`
-  padding: 0.3rem 0.3rem 0.3rem 0.6rem;
+  padding: 0.3rem 0;
 `;
 
 const SelectedItemSubtitle = styled.small`
@@ -45,7 +55,7 @@ const SelectedItem = (props: Props) => {
   return (
     <Root>
       <Title>
-        {name}
+        <SemiBold>{name}</SemiBold>
         <SelectedItemSubtitle>
           {subtitle}
         </SelectedItemSubtitle>

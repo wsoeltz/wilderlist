@@ -802,7 +802,7 @@ local-trails-nearby-trails-title = Nearby Trails
 local-trails-all-trails-link-text = View trails for { $mountain-name } on
 
 trip-report-title = Trip Report
-trip-report-tooltip = Create an optional trip report for your records and to help the next hiker along. All trip reports are public, however you can remove your name from them by adjusting your privacy settings.
+trip-report-privacy-disclaimer = Public trip reports can help fellow hikers plan their hikes with insights from your experience. If you don’t want to share your trip publicly, you can set the visibility to “Private”  or simply leave this section blank.
 
 trip-report-conditions-title = Conditions
 
