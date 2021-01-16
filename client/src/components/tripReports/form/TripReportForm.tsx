@@ -1,15 +1,15 @@
 import { faCalendarAlt, faCheck, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {validate as validateEmail} from 'email-validator';
-import uniq from 'lodash/uniq';
+// import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+// import {
+//   useClearAscentNotification,
+// } from '../../../queries/notifications/useGetNotifications';
 import {
-  useClearAscentNotification,
-} from '../../../queries/notifications/useGetNotifications';
-import {
-  useAddAscentNotifications,
+  // useAddAscentNotifications,
   useTripReportMutaions,
 } from '../../../queries/tripReports/tripReportMutations';
 import {
@@ -35,9 +35,9 @@ import {
   TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import { DateType, formatStringDate } from '../../../utilities/dateUtils';
-import sendInvites from '../../../utilities/sendInvites';
+// import sendInvites from '../../../utilities/sendInvites';
 import {
-  asyncForEach,
+  // asyncForEach,
   convertFieldsToDate,
   isValidURL,
   Seasons,
@@ -48,7 +48,10 @@ import LoadingDisablePage from '../../sharedComponents/LoadingDisablePage';
 import AddFriends from './components/AddFriends';
 import AddItems, {CampsiteDatum, MountainDatum, TrailDatum} from './components/AddItems';
 import DateWidget, {Restrictions} from './components/DateWidget';
-import TripDetails, {charLimit, nullConditions} from './components/TripDetails';
+import TripDetails, {
+  charLimit,
+  // nullConditions,
+} from './components/TripDetails';
 import {
   ColumnRoot,
   LeftColumn,
@@ -166,19 +169,20 @@ const TripReportForm = (props: PropsWithConditions) => {
   }
 
   const {
-    addMountainCompletion,
+    // addMountainCompletion,
     removeMountainCompletion,
-    addTrailCompletion,
-    removeTrailCompletion,
-    addCampsiteCompletion,
-    removeCampsiteCompletion,
-    addTripReport,
-    editTripReport,
+    // addTrailCompletion,
+    // removeTrailCompletion,
+    // addCampsiteCompletion,
+    // removeCampsiteCompletion,
+    // addTripReport,
+    // editTripReport,
+    addEditTripReport,
     deleteTripReport,
   } = useTripReportMutaions(initialMountainId, nPerPage);
-  const addAscentNotifications = useAddAscentNotifications();
+  // const addAscentNotifications = useAddAscentNotifications();
 
-  const clearAscentNotification = useClearAscentNotification(userId);
+  // const clearAscentNotification = useClearAscentNotification(userId);
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');
@@ -264,9 +268,30 @@ const TripReportForm = (props: PropsWithConditions) => {
       const initialTrailIds = initialTrailList.map(trail => trail.id);
       const initialCampsiteIds = initialCampsiteList.map(campsite => campsite.id);
       // remove all dates from all mtns, old and new. dates will be readded to new and existing mtns
-      const uniqueAllMountainIds = uniq([...mountainIds, ...initialMountainIds]);
-      const uniqueAllTrailIds = uniq([...trailIds, ...initialTrailIds]);
-      const uniqueAllCampsiteIds = uniq([...campsiteIds, ...initialCampsiteIds]);
+      // const uniqueAllMountainIds = uniq([...mountainIds, ...initialMountainIds]);
+      // const uniqueAllTrailIds = uniq([...trailIds, ...initialTrailIds]);
+      // const uniqueAllCampsiteIds = uniq([...campsiteIds, ...initialCampsiteIds]);
+      await addEditTripReport({
+        variables: {
+          id: tripReportId ? tripReportId : null,
+          date: completedDate.date,
+          author: userId,
+          mountains: mountainIds,
+          trails: trailIds,
+          campsites: campsiteIds,
+          users: userList,
+          privacy,
+          notes: tripNotes,
+          link: tripLink,
+          originalDate: initialCompletionDate && initialCompletionDate.date ? initialCompletionDate.date : null,
+          originalMountains: initialMountainIds,
+          originalTrails: initialTrailIds,
+          originalCampsites: initialCampsiteIds,
+          emails: emailList.filter(email => email && validateEmail(email)),
+          ...conditions,
+        },
+      });
+      /*
       // if editing and the date has changed from initialCompletionDate, first delete the ascent
       // then add it. This should happen for main mountain as well as all within the
       // mountainList
@@ -489,6 +514,7 @@ const TripReportForm = (props: PropsWithConditions) => {
           date: completedDate.date,
         });
       }
+      */
       onSave();
     }
     localStorage.setItem(preferredDateFormatLocalStorageVariable, dateType);

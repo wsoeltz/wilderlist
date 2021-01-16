@@ -214,16 +214,19 @@ export enum PermissionTypes {
 }
 
 export interface CompletedMountain {
+  _id: string;
   mountain: Mountain | null;
   dates: string[];
 }
 
 export interface CompletedTrail {
+  _id: string;
   trail: Trail | null;
   dates: string[];
 }
 
 export interface CompletedCampsite {
+  _id: string;
   campsite: Campsite | null;
   dates: string[];
 }

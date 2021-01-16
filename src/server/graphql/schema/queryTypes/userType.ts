@@ -22,7 +22,7 @@ import PeakListType, {PeakList} from './peakListType';
 import TrailType from './trailType';
 import TripReportType, {TripReport} from './tripReportType';
 
-type UserSchemaType = mongoose.Document & IUser;
+export type UserSchemaType = mongoose.Document & IUser;
 
 const UserSchema = new Schema({
   googleId: { type: String},

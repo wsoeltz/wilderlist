@@ -70,7 +70,41 @@ interface DateObject {
   day: number;
   hour: number;
   minute: number;
+  original: string;
 }
+
+export const parseDate = (rawDate: string): DateObject => {
+  const dateParts = rawDate.split('-');
+  const dateAsNumber = parseInt(rawDate.replace(/X/g, '0').split('-').join(''), 10);
+  return {
+    dateAsNumber,
+    year: parseInt(dateParts[0], 10),
+    month: parseInt(dateParts[1], 10),
+    day: parseInt(dateParts[2], 10),
+    hour: parseInt(dateParts[3], 10),
+    minute: parseInt(dateParts[4], 10),
+    original: rawDate,
+  };
+};
+
+export enum DateType {
+  full = 'full',
+  monthYear = 'monthYear',
+  yearOnly = 'yearOnly',
+  none = 'none',
+}
+
+export const getDateType = ({day, month, year}: DateObject) => {
+  if (day && month && year) {
+    return DateType.full;
+  } else if (month && year) {
+    return DateType.monthYear;
+  } else if (year) {
+    return DateType.yearOnly;
+  } else {
+    return DateType.none;
+  }
+};
 
 const formatDate = ({ day, month, year }: { day: number, month: number, year: number }) => {
   // if year isn't known
@@ -93,24 +127,7 @@ const formatDate = ({ day, month, year }: { day: number, month: number, year: nu
   return month + '/' + day + '/' + year;
 };
 
-export const formatStringDate = (date: string) => {
-  const dateParts = date.split('-');
-  const dateAsNumber = parseInt(
-        dateParts[0]
-        + dateParts[1].replace(/X/g, '0')
-        + dateParts[2].replace(/X/g, '0')
-        + dateParts[3].replace(/X/g, '0'),
-        10);
-  const dateObject: DateObject = {
-    dateAsNumber,
-    year: parseInt(dateParts[0], 10),
-    month: parseInt(dateParts[1], 10),
-    day: parseInt(dateParts[2], 10),
-    hour: parseInt(dateParts[3], 10),
-    minute: parseInt(dateParts[4], 10),
-  };
-  return formatDate(dateObject);
-};
+export const formatStringDate = (date: string) => formatDate(parseDate(date));
 
 export interface RawStateDatum {
   _id: State['id'];

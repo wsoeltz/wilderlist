@@ -25,20 +25,22 @@ export enum DateType {
   none = 'none',
 }
 
+const parseDate = (rawDate: string): DateObject => {
+  const dateParts = rawDate.split('-');
+  const dateAsNumber = parseInt(rawDate.replace(/X/g, '0').split('-').join(''), 10);
+  return {
+    dateAsNumber,
+    year: parseInt(dateParts[0], 10),
+    month: parseInt(dateParts[1], 10),
+    day: parseInt(dateParts[2], 10),
+    hour: parseInt(dateParts[3], 10),
+    minute: parseInt(dateParts[4], 10),
+    original: rawDate,
+  };
+};
+
 export const getDates = (dates: CompletedMountain['dates']) => {
-    const parsedDates: DateObject[] = dates.map(date => {
-      const dateParts = date.split('-');
-      const dateAsNumber = parseInt(date.replace(/X/g, '0').split('-').join(''), 10);
-      return {
-        dateAsNumber,
-        year: parseInt(dateParts[0], 10),
-        month: parseInt(dateParts[1], 10),
-        day: parseInt(dateParts[2], 10),
-        hour: parseInt(dateParts[3], 10),
-        minute: parseInt(dateParts[4], 10),
-        original: date,
-      };
-    });
+    const parsedDates: DateObject[] = dates.map(date => parseDate(date));
     return sortBy(parsedDates, ({dateAsNumber}) => dateAsNumber);
 };
 
