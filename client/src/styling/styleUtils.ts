@@ -36,7 +36,7 @@ export const successColorLight = '#d0e3b1';
 export const coolBlueColor = '#3a29c3';
 export const warmRedColor = '#d92a21';
 
-export const lightBlue = '#d1e2e9';
+export const lightBlue = '#f2f7fb';
 
 export interface ColorSet {
   primary: string;

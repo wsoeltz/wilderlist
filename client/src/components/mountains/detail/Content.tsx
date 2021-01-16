@@ -23,6 +23,7 @@ import {
 import {
   isValidURL,
 } from '../../../Utils';
+import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Tooltip from '../../sharedComponents/Tooltip';
 import AscentsList from './AscentsList';
 import IncludedLists from './IncludedLists';
@@ -127,6 +128,8 @@ const Content = (props: Props) => {
           mountainName={name}
         />
       </DetailBox>
+      <TripsNotesAndReports
+      />
       <DetailBoxTitle>
         <BasicIconInText icon={faEdit} />
         {getString('mountain-detail-notes-and-ascents')}
