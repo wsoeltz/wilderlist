@@ -172,7 +172,9 @@ const TripReportForm = (props: PropsWithConditions) => {
   const [completionMonth, setCompletionMonth] = useState<string>
     (initialCompletionMonth !== null ? initialCompletionMonth : '');
   const [completionYear, setCompletionYear] = useState<string>
-    (initialCompletionYear !== null ? initialCompletionYear : new Date().getFullYear().toString());
+    (initialCompletionYear !== null
+      ? initialCompletionYear
+      : initialDateType !== DateType.none ? new Date().getFullYear().toString() : '');
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [dateType, setDateType] = useState<DateType>(initialDateType);
@@ -274,28 +276,32 @@ const TripReportForm = (props: PropsWithConditions) => {
       // additional mountains being sent (so that only a single email is sent)
       // Handled by the backend
       if (mountainList.length) {
-        let mountainNames: string = '';
+        let names: string;
+        let onlyCamping: boolean = false;
         if (mountainList.length === 1) {
-          mountainNames = mountainList[0].name;
+          names = mountainList[0].name;
         } else if (mountainList.length === 2) {
-          mountainNames = `${mountainList[0].name} and ${mountainList[1].name}`;
+          names = `${mountainList[0].name} and ${mountainList[1].name}`;
+        } else if (mountainList.length) {
+          names = `${mountainList[0].name}, ${mountainList[1].name} and ${mountainList.length - 2} others`;
+        } else if (trailList.length === 1 && trailList[0].name) {
+          names = trailList[0].name;
+        } else if (trailList.length && trailList[0].name) {
+          names = `${trailList[0].name} and ${trailList.length - 1} others`;
+        } else if (campsiteList.length === 1 && campsiteList[0].name) {
+          names = campsiteList[0].name;
+          onlyCamping = true;
+        } else if (campsiteList.length && campsiteList[0].name) {
+          names = `${campsiteList[0].name} and ${campsiteList.length - 1} others`;
+          onlyCamping = true;
         } else {
-          mountainList.forEach((mtn, i) => {
-            if (i === 0) {
-              mountainNames = `${mtn.name}, `;
-            } else if (i === mountainList.length - 2) {
-              mountainNames += mtn.name + ' and ';
-            } else if (i === mountainList.length - 1) {
-              mountainNames += mtn.name;
-            } else {
-              mountainNames += mtn.name + ', ';
-            }
-          });
+          names = '';
         }
         sendInvites({
-          mountainName: mountainNames,
+          mountainName: names,
           emailList: emailList.filter(email => email && validateEmail(email)),
           date: completedDate.date,
+          camping: onlyCamping,
         });
       }
       onSave();
@@ -389,14 +395,14 @@ const TripReportForm = (props: PropsWithConditions) => {
     } else if (dateType === DateType.none &&
       (completionDay !== '' || completionMonth !== '' || completionYear !== '')) {
       return true;
-    } else if (!mountainList.length) {
+    } else if (!mountainList.length && !trailList.length && !campsiteList.length) {
       return true;
     }
     return false;
   };
 
   const deleteAscentButton =
-    tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full ? (
+    tripReportId !== undefined || initialStartDate !== null ? (
       <ExpandedButtonWarning onClick={openAreYouSureModal}>
         <BasicIconInText icon={faTrash} />
         Delete Ascent
@@ -404,25 +410,9 @@ const TripReportForm = (props: PropsWithConditions) => {
     ) : null;
 
   const saveButtonText =
-    tripReportId !== undefined || initialStartDate !== null || initialDateType !== DateType.full
+    tripReportId !== undefined || initialStartDate !== null
       ? getString('global-text-value-save')
       : getString('global-text-value-modal-mark-complete');
-  const actions = (
-    <ButtonWrapper>
-      {deleteAscentButton}
-      <CancelButton onClick={onClose}>
-        <BasicIconInText icon={faTimes} />
-        {getString('global-text-value-modal-cancel')}
-      </CancelButton>
-      <ExpandedButtonPrimary
-        onClick={validateAndAddMountainCompletion}
-        disabled={isConfirmDisabled()}
-      >
-        <BasicIconInText icon={faCheck} />
-        {saveButtonText}
-      </ExpandedButtonPrimary>
-    </ButtonWrapper>
-  );
 
   const saveOverlay = saving ? <LoadingDisablePage /> : null;
 
@@ -482,7 +472,20 @@ const TripReportForm = (props: PropsWithConditions) => {
         setPrivacy={setPrivacy}
         ref={{tripNotesEl, tripLinkEl} as any}
       />
-      {actions}
+      <ButtonWrapper>
+        {deleteAscentButton}
+        <CancelButton onClick={onClose}>
+          <BasicIconInText icon={faTimes} />
+          {getString('global-text-value-modal-cancel')}
+        </CancelButton>
+        <ExpandedButtonPrimary
+          onClick={validateAndAddMountainCompletion}
+          disabled={isConfirmDisabled()}
+        >
+          <BasicIconInText icon={faCheck} />
+          {saveButtonText}
+        </ExpandedButtonPrimary>
+      </ButtonWrapper>
       {errorNote}
       {textNote}
       {areYouSureModal}

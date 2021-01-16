@@ -118,31 +118,37 @@ const addNotifications = async (args: AscentNotificationMutationArgs) => {
       });
     }
     const me = await User.findOne({_id: userId});
-    const allNames = [...mountainList];
-    if (me && friend && allNames.length &&
-        !friend.disableEmailNotifications && friend.email) {
-      let mountainNames: string;
-      if (allNames.length === 1) {
-        mountainNames = allNames[0];
-      } else if (allNames.length === 2) {
-        mountainNames = `${allNames[0]} and ${allNames[1]}`;
+    if (me && friend &&
+        (mountainList.length || trailList.length || campsiteList.length) &&
+        !friend.disableEmailNotifications && friend.email
+      ) {
+      let names: string;
+      let onlyCamping: boolean = false;
+      if (mountainList.length === 1) {
+        names = mountainList[0];
+      } else if (mountainList.length === 2) {
+        names = `${mountainList[0]} and ${mountainList[1]}`;
+      } else if (mountainList.length) {
+        names = `${mountainList[0]}, ${mountainList[1]} and ${mountainList.length - 2} others`;
+      } else if (trailList.length === 1) {
+        names = trailList[0];
+      } else if (trailList.length) {
+        names = `${trailList[0]} and ${trailList.length - 1} others`;
+      } else if (campsiteList.length === 1) {
+        names = campsiteList[0];
+        onlyCamping = true;
+      } else if (campsiteList.length) {
+        names = `${campsiteList[0]} and ${campsiteList.length - 1} others`;
+        onlyCamping = true;
       } else {
-        mountainNames = '';
-        allNames.forEach((mtn, i) => {
-          if (i === allNames.length - 2) {
-            mountainNames += mtn + ' and ';
-          } else if (i === allNames.length - 1) {
-            mountainNames += mtn;
-          } else {
-            mountainNames += mtn + ', ';
-          }
-        });
+        names = '';
       }
       sendAscentEmailNotification({
-        mountainName: mountainNames,
+        mountainName: names,
         user: me.name,
         userEmail: friend.email,
         date: formatStringDate(date),
+        camping: onlyCamping,
       });
     }
     return await User.findOne({_id: friendId});

@@ -71,7 +71,8 @@ interface ClearNotificationsInput {
 }
 
 const cleanedNotifications = ({notifications, field, items, dates}: ClearNotificationsInput): any[] =>
-  notifications.filter(m => !(items.find(i => i === m[field]) && !dates.find(d => d === m.date)));
+    notifications.filter(m =>
+      !(items.find(i => i.toString() === m[field].toString()) && dates.find(d => d === m.date)));
 
 const conditionsExist = (input: ITripReport) => {
   const {
