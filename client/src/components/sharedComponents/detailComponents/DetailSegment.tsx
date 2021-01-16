@@ -122,13 +122,16 @@ const DetailSegment = (props: Props) => {
 
     const content = active || panel.renderHiddenContent === true ? (
       <PanelContent
-        key={'panel-content' + panel.title + i}
         className={panel.renderHiddenContent === true && !active ? renderedButHiddenClassName : undefined}
       >
         {panel.node}
       </PanelContent>
     ) : null;
-    panelContents.push(<>{content}</>);
+    panelContents.push(
+      <React.Fragment key={'panel-content' + panel.title + i}>
+        {content}
+      </React.Fragment>,
+    );
   });
 
   return (
