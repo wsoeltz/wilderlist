@@ -455,7 +455,6 @@ const ADD_EDIT_TRIP_REPORT = gql`
     $originalMountains: [ID],
     $originalTrails: [ID],
     $originalCampsites: [ID],
-    $emails: [String],
   ) {
     tripReport: addEditTripReport(
       id: $id,
@@ -492,7 +491,6 @@ const ADD_EDIT_TRIP_REPORT = gql`
       originalMountains: $originalMountains,
       originalTrails: $originalTrails,
       originalCampsites: $originalCampsites,
-      emails: $emails,
     ) {
       id
       date
@@ -580,7 +578,6 @@ export interface AddEditTripReportVariables {
   originalMountains: string[]; // includes both original mountains and new mountains
   originalTrails: string[]; // includes both original trails and new trails
   originalCampsites: string[]; // includes both original campsites and new campsites
-  emails: string[];
 }
 
 const DELETE_TRIP_REPORT = gql`
@@ -640,7 +637,7 @@ export interface DeleteTripReportVariables {
   id: TripReport['id'];
 }
 
-export const useTripReportMutaions = (mountain: string | null, pageNumber: number) => {
+export const useTripReportMutations = (mountain: string | null, pageNumber: number) => {
   const currentUser = useCurrentUser();
   const userId = currentUser ? currentUser._id : null;
   const geoNearVariables = useGeoNearVariables();

@@ -214,7 +214,6 @@ const tripReportMutations: any = {
       originalMountains: { type: new GraphQLList(GraphQLID)},
       originalTrails: { type: new GraphQLList(GraphQLID)},
       originalCampsites: { type: new GraphQLList(GraphQLID)},
-      emails: { type: new GraphQLList(GraphQLString)},
     },
     async resolve(_unused: any, input: Input, {user}: {user: IUser | undefined | null}) {
       try {

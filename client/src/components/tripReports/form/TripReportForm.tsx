@@ -1,16 +1,11 @@
 import { faCalendarAlt, faCheck, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {validate as validateEmail} from 'email-validator';
-// import uniq from 'lodash/uniq';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
-// import {
-//   useClearAscentNotification,
-// } from '../../../queries/notifications/useGetNotifications';
 import {
-  // useAddAscentNotifications,
-  useTripReportMutaions,
+  useTripReportMutations,
 } from '../../../queries/tripReports/tripReportMutations';
 import {
   GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
@@ -35,9 +30,8 @@ import {
   TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import { DateType, formatStringDate } from '../../../utilities/dateUtils';
-// import sendInvites from '../../../utilities/sendInvites';
+import sendInvites from '../../../utilities/sendInvites';
 import {
-  // asyncForEach,
   convertFieldsToDate,
   isValidURL,
   Seasons,
@@ -50,7 +44,6 @@ import AddItems, {CampsiteDatum, MountainDatum, TrailDatum} from './components/A
 import DateWidget, {Restrictions} from './components/DateWidget';
 import TripDetails, {
   charLimit,
-  // nullConditions,
 } from './components/TripDetails';
 import {
   ColumnRoot,
@@ -169,20 +162,10 @@ const TripReportForm = (props: PropsWithConditions) => {
   }
 
   const {
-    // addMountainCompletion,
     removeMountainCompletion,
-    // addTrailCompletion,
-    // removeTrailCompletion,
-    // addCampsiteCompletion,
-    // removeCampsiteCompletion,
-    // addTripReport,
-    // editTripReport,
     addEditTripReport,
     deleteTripReport,
-  } = useTripReportMutaions(initialMountainId, nPerPage);
-  // const addAscentNotifications = useAddAscentNotifications();
-
-  // const clearAscentNotification = useClearAscentNotification(userId);
+  } = useTripReportMutations(initialMountainId, nPerPage);
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');
@@ -267,10 +250,6 @@ const TripReportForm = (props: PropsWithConditions) => {
       const initialMountainIds = initialMountainList.map(mtn => mtn.id);
       const initialTrailIds = initialTrailList.map(trail => trail.id);
       const initialCampsiteIds = initialCampsiteList.map(campsite => campsite.id);
-      // remove all dates from all mtns, old and new. dates will be readded to new and existing mtns
-      // const uniqueAllMountainIds = uniq([...mountainIds, ...initialMountainIds]);
-      // const uniqueAllTrailIds = uniq([...trailIds, ...initialTrailIds]);
-      // const uniqueAllCampsiteIds = uniq([...campsiteIds, ...initialCampsiteIds]);
       await addEditTripReport({
         variables: {
           id: tripReportId ? tripReportId : null,
@@ -287,208 +266,13 @@ const TripReportForm = (props: PropsWithConditions) => {
           originalMountains: initialMountainIds,
           originalTrails: initialTrailIds,
           originalCampsites: initialCampsiteIds,
-          emails: emailList.filter(email => email && validateEmail(email)),
           ...conditions,
         },
       });
-      /*
-      // if editing and the date has changed from initialCompletionDate, first delete the ascent
-      // then add it. This should happen for main mountain as well as all within the
-      // mountainList
-      if (initialCompletionDate !== null &&
-          initialCompletionDate.date !== undefined &&
-          initialCompletionDate.date !== completedDate.date) {
-        // initial date exists (being edited) and has been changed.
-        // DELETE original date
-
-        // FOR MOUNTAINS
-        await asyncForEach(uniqueAllMountainIds, async (mtn: string) => {
-          await removeMountainCompletion({ variables: {
-            userId, mountainId: mtn, date: initialCompletionDate.date,
-          }});
-        });
-        mountainIds.forEach(mtn => {
-          clearAscentNotification({variables: {
-            userId, mountainId: mtn, trailId: null, campsiteId: null, date: initialCompletionDate.date,
-          }});
-        });
-
-        // FOR TRAILS
-        await asyncForEach(uniqueAllTrailIds, async (trail: string) => {
-          await removeTrailCompletion({ variables: {
-            userId, trailId: trail, date: initialCompletionDate.date,
-          }});
-        });
-        trailIds.forEach(trail => {
-          clearAscentNotification({variables: {
-            userId, mountainId: null, trailId: trail, campsiteId: null, date: initialCompletionDate.date,
-          }});
-        });
-
-        // FOR CAMPSITES
-        await asyncForEach(uniqueAllCampsiteIds, async (campsite: string) => {
-          await removeCampsiteCompletion({ variables: {
-            userId, campsiteId: campsite, date: initialCompletionDate.date,
-          }});
-        });
-        campsiteIds.forEach(campsite => {
-          clearAscentNotification({variables: {
-            userId, mountainId: null, trailId: null, campsiteId: campsite, date: initialCompletionDate.date,
-          }});
-        });
-      }
-      if (initialDateType === DateType.none && dateType !== DateType.none) {
-        // if changing an unknown date to a known date
-        // MOUNTAINS
-        await asyncForEach(uniqueAllMountainIds, async (mtn: string) => {
-          await removeMountainCompletion({ variables: {
-            userId, mountainId: mtn, date: 'XXXX-XX-XX-XX-XX',
-          }});
-        });
-        // TRAILS
-        await asyncForEach(uniqueAllTrailIds, async (trail: string) => {
-          await removeTrailCompletion({ variables: {
-            userId, trailId: trail, date: 'XXXX-XX-XX-XX-XX',
-          }});
-        });
-        // CAMPSITES
-        await asyncForEach(uniqueAllCampsiteIds, async (campsite: string) => {
-          await removeCampsiteCompletion({ variables: {
-            userId, campsiteId: campsite, date: 'XXXX-XX-XX-XX-XX',
-          }});
-        });
-      }
-      // MOUNTAINS
-      // mountains may have changed even if date hasn't, so remove mountains from all current date
-      await asyncForEach(uniqueAllMountainIds, async (mtn: string) => {
-        await removeMountainCompletion({ variables: {
-          userId, mountainId: mtn, date: completedDate.date,
-        }});
-      });
-      // regardless of above outcome, add the date. Duplicate dates are ignored.
-      mountainIds.forEach(mtn => {
-        addMountainCompletion({ variables:
-          {userId, mountainId: mtn, date: completedDate.date},
-        });
-        clearAscentNotification({variables: {
-          userId, mountainId: mtn, trailId: null, campsiteId: null, date: completedDate.date,
-        }});
-      });
-      // TRAILS
-      // mountains may have changed even if date hasn't, so remove mountains from all current date
-      await asyncForEach(uniqueAllTrailIds, async (trail: string) => {
-        await removeTrailCompletion({ variables: {
-          userId, trailId: trail, date: completedDate.date,
-        }});
-      });
-      // regardless of above outcome, add the date. Duplicate dates are ignored.
-      mountainIds.forEach(trail => {
-        addTrailCompletion({ variables:
-          {userId, trailId: trail, date: completedDate.date},
-        });
-        clearAscentNotification({variables: {
-          userId, mountainId: null, trailId: trail, campsiteId: null, date: completedDate.date,
-        }});
-      });
-      // CAMPSITES
-      // mountains may have changed even if date hasn't, so remove mountains from all current date
-      await asyncForEach(uniqueAllCampsiteIds, async (campsite: string) => {
-        await removeCampsiteCompletion({ variables: {
-          userId, campsiteId: campsite, date: completedDate.date,
-        }});
-      });
-      // regardless of above outcome, add the date. Duplicate dates are ignored.
-      campsiteIds.forEach(campsite => {
-        addCampsiteCompletion({ variables:
-          {userId, campsiteId: campsite, date: completedDate.date},
-        });
-        clearAscentNotification({variables: {
-          userId, mountainId: null, trailId: null, campsiteId: campsite, date: completedDate.date,
-        }});
-      });
-      // then create a trip report (if no conditions it will be handled on the server)
-      if (tripReportId === undefined) {
-        // if no tripReportId, add the trip report
-        if (dateType === DateType.full) {
-          // if there is a full date type, then generate the report with the users settings
-          addTripReport({ variables: {
-            date: completedDate.date,
-            author: userId,
-            mountains: mountainIds,
-            trails: trailIds,
-            campsites: campsiteIds,
-            users: userList,
-            privacy,
-            notes: tripNotes,
-            link: tripLink,
-            ...conditions,
-          }});
-        } else {
-          // otherwise only create a report to track additional mountains and users
-          // this is to prevent the user from changing conditions/report values,
-          // switching to an invalid date format, and submitting
-          addTripReport({ variables: {
-            date: completedDate.date,
-            author: userId,
-            mountains: mountainIds,
-            trails: trailIds,
-            campsites: campsiteIds,
-            users: userList,
-            privacy,
-            notes: null,
-            link: null,
-            ...nullConditions,
-          }});
-        }
-
-      }  else {
-        // edit the trip report with tripReportId
-
-        // if no tripReportId, add the trip report
-        if (dateType === DateType.full) {
-          // if there is a full date type, then edit the report with the users settings
-          editTripReport({ variables: {
-            id: tripReportId,
-            date: completedDate.date,
-            author: userId,
-            mountains: mountainIds,
-            trails: trailIds,
-            campsites: campsiteIds,
-            users: userList,
-            privacy,
-            notes: tripNotes,
-            link: tripLink,
-            ...conditions,
-          }});
-        } else {
-          editTripReport({ variables: {
-            id: tripReportId,
-            date: completedDate.date,
-            author: userId,
-            mountains: mountainIds,
-            trails: trailIds,
-            campsites: campsiteIds,
-            users: userList,
-            privacy,
-            notes: null,
-            link: null,
-            ...nullConditions,
-          }});
-        }
-      }
-
-      // SEND 1 email to each user with all of the mountains names,
-      // but add a notification to their account for every mountain
-      // selected. Handled by the backend
-      userList.forEach(friendId => {
-        addAscentNotifications({ variables: {
-          userId, friendId, mountainIds, trailIds, campsiteIds, date: completedDate.date,
-        }});
-      });
       // SEND invites for all mountains to all entered emails
-        // mountainName should dynamically adjust based on the number of
-        // additional mountains being sent (so that only a single email is sent)
-        // Handled by the backend
+      // mountainName should dynamically adjust based on the number of
+      // additional mountains being sent (so that only a single email is sent)
+      // Handled by the backend
       if (mountainList.length) {
         let mountainNames: string = '';
         if (mountainList.length === 1) {
@@ -514,7 +298,6 @@ const TripReportForm = (props: PropsWithConditions) => {
           date: completedDate.date,
         });
       }
-      */
       onSave();
     }
     localStorage.setItem(preferredDateFormatLocalStorageVariable, dateType);

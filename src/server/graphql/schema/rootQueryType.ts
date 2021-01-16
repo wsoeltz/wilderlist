@@ -322,14 +322,20 @@ const RootQuery = new GraphQLObjectType({
         campsite: { type: GraphQLID },
       },
       resolve(parentValue, { author, date, mountain, trail, campsite}) {
+        const $or: any[] = [];
+        if (mountain) {
+          $or.push({mountains: mountain});
+        }
+        if (trail) {
+          $or.push({trails: trail});
+        }
+        if (campsite) {
+          $or.push({campsites: campsite});
+        }
         return TripReport
           .findOne({
             author, date,
-            $or: [
-              {mountains: mountain},
-              {trails: trail},
-              {campsites: campsite},
-            ],
+            $or,
           });
       },
     },

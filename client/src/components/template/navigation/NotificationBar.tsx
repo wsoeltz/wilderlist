@@ -8,7 +8,7 @@ import {
   useRemoveFriendMutation,
 } from '../../../queries/notifications/useGetNotifications';
 import {
-  useTripReportMutaions,
+  useTripReportMutations,
 } from '../../../queries/tripReports/tripReportMutations';
 import {
   addTripReportLink,
@@ -34,7 +34,7 @@ const NotificationBar = (props: Props) => {
   const getString = useFluent();
 
   const {loading, error, data} = useGetNotifications(userId);
-  const {addMountainCompletion, addTrailCompletion, addCampsiteCompletion} = useTripReportMutaions(null, 0);
+  const {addMountainCompletion, addTrailCompletion, addCampsiteCompletion} = useTripReportMutations(null, 0);
   const clearAscentNotification = useClearAscentNotification(userId);
   const acceptFriendRequestMutation = useAcceptFriendRequestMutation(userId);
   const removeFriendMutation = useRemoveFriendMutation(userId);

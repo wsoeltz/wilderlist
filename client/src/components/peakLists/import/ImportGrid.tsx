@@ -10,7 +10,7 @@ import PublishToWebModalImgUrl from '../../../assets/images/import-gifs/import-g
 import PublishToWebImgUrl from '../../../assets/images/import-gifs/import-grid/publish-to-web.png';
 import useFluent from '../../../hooks/useFluent';
 import {
-  useTripReportMutaions,
+  useTripReportMutations,
 } from '../../../queries/tripReports/tripReportMutations';
 import {
   ButtonPrimary,
@@ -151,7 +151,7 @@ const ImportAscentsModal = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [percent, setPercent] = useState<number>(0);
 
-  const {addMountainCompletion} = useTripReportMutaions(null, 0);
+  const {addMountainCompletion} = useTripReportMutations(null, 0);
 
   const onGridCsvPaste = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fetchGridData = async () => {

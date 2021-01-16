@@ -8,7 +8,7 @@ import SelectMountainsStaticUrl from '../../../assets/images/import-gifs/select-
 import useFluent from '../../../hooks/useFluent';
 import {MountainDatum} from '../../../queries/lists/usePeakListMountains';
 import {
-  useTripReportMutaions,
+  useTripReportMutations,
 } from '../../../queries/tripReports/tripReportMutations';
 import {
   ButtonPrimary,
@@ -223,7 +223,7 @@ const ImportAscentsModal = (props: Props) => {
     setSelectDatesGif(src);
   };
 
-  const {addMountainCompletion} = useTripReportMutaions(null, 0);
+  const {addMountainCompletion} = useTripReportMutations(null, 0);
 
   const validateAndAddMountainCompletion =
     async (mountainId: Mountain['id'], day: string, month: string, year: string) => {

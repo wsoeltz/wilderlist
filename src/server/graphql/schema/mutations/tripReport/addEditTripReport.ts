@@ -2,12 +2,11 @@
 import mongoose from 'mongoose';
 import {
   TripReport as ITripReport,
-  // User as IUser,
 } from '../../../graphQLTypes';
 import {DateType, getDateType, parseDate} from '../../../Utils';
 import {TripReport} from '../../queryTypes/tripReportType';
-// import uniq from 'lodash/uniq';
 import {UserSchemaType} from '../../queryTypes/userType';
+import addNotifications from './addNotifications';
 
 export interface Input extends ITripReport {
   authorDoc: UserSchemaType;
@@ -15,7 +14,6 @@ export interface Input extends ITripReport {
   originalMountains: string[]; // includes both original mountains and new mountains
   originalTrails: string[]; // includes both original trails and new trails
   originalCampsites: string[]; // includes both original campsites and new campsites
-  emails: string[];
 }
 
 interface UpdateCompletionFieldInput {
@@ -69,11 +67,11 @@ interface ClearNotificationsInput {
   notifications: any[];
   items: string[];
   field: string;
-  date: string;
+  dates: Array<string | null>;
 }
 
-const cleanedNotifications = ({notifications, field, items, date}: ClearNotificationsInput): any[] =>
-  notifications.filter(m => !(items.find(i => i === m[field]) && m.date === date));
+const cleanedNotifications = ({notifications, field, items, dates}: ClearNotificationsInput): any[] =>
+  notifications.filter(m => !(items.find(i => i === m[field]) && !dates.find(d => d === m.date)));
 
 const conditionsExist = (input: ITripReport) => {
   const {
@@ -97,7 +95,7 @@ const conditionsExist = (input: ITripReport) => {
 
 const addEditTripReport = async (input: Input) => {
   const {
-    id, authorDoc, author,
+    id, authorDoc, author, users,
     originalDate,
     originalMountains, mountains: newMountainStringIds,
     originalTrails, trails: newTrailStringIds,
@@ -134,7 +132,7 @@ const addEditTripReport = async (input: Input) => {
       notifications: authorDoc.ascentNotifications,
       items: mountains,
       field: 'mountain',
-      date,
+      dates: [date, originalDate],
     });
   }
   if (authorDoc.trailNotifications && authorDoc.trailNotifications.length) {
@@ -142,7 +140,7 @@ const addEditTripReport = async (input: Input) => {
       notifications: authorDoc.trailNotifications,
       items: trails,
       field: 'trail',
-      date,
+      dates: [date, originalDate],
     });
   }
   if (authorDoc.campsiteNotifications && authorDoc.campsiteNotifications.length) {
@@ -150,34 +148,39 @@ const addEditTripReport = async (input: Input) => {
       notifications: authorDoc.campsiteNotifications,
       items: campsites,
       field: 'campsite',
-      date,
+      dates: [date, originalDate],
     });
   }
   // 5 Save author doc
   authorDoc.save();
 
   // 1 Fetch all users that aren't the author
-  // 2 For ALL m, t, c
-    // Remove remove all notifications for originalDate and author
-  // 3 For new m, t, c only (NOT ALL)
-    // Filter out those with existing completionDate for new date or if notification already exists
-    // Create new notifications for newDate for remaining m, t, c
-  // 4 Save all user docs
-
-  // 1 Send additional email notifications
-  // 2 TODO: Save email ascents to database for when we people sign up
+  const friends = users.filter(friendId => friendId !== author) as unknown as string[];
+  if (friends.length) {
+    friends.forEach(friend => addNotifications({
+      userId: authorDoc._id,
+      friendId: friend,
+      mountainIds: mountains,
+      trailIds: trails,
+      campsiteIds: campsites,
+      date,
+    }));
+  }
 
   // 1 Attempt to fetch tripReport by id OR originalDate && author && items
+  const $or: any[] = [];
+  if (mountains) {
+    $or.push({mountains});
+  }
+  if (trails) {
+    $or.push({trails});
+  }
+  if (campsites) {
+    $or.push({campsites});
+  }
   const tripReportDoc = await TripReport.findOne({$or: [
-      {_id: id},
-      {
-        date: originalDate, author,
-        $or: [
-          {mountains: {$in: mountains}},
-          {trails: {$in: trails}},
-          {campsites: {$in: campsites}},
-        ],
-      },
+      { _id: id },
+      { date: originalDate, author, $or },
     ],
   });
   // 2 If it exists:
