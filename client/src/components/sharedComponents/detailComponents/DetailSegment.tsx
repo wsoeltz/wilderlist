@@ -1,4 +1,4 @@
-import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import {
@@ -8,7 +8,6 @@ import {
   lightBlue,
   lightBorderColor,
 } from '../../../styling/styleUtils';
-import {} from '../svgIcons';
 
 const Root = styled.div`
   margin: 0 -1rem;
@@ -58,11 +57,12 @@ const IconContainer = styled(IconContainerBase)`
 
 export type Panel = {
   title: string;
-  node: React.ReactNode;
+  // reactNode is of type "any" due to an issue with TypeScript overloading memory
+  reactNode: any;
   // if true, panel should render with display: none instead of null if not selected:
   renderHiddenContent?: boolean;
   customIcon?: boolean;
-  icon?: string | FaProps['icon'];
+  icon?: string | any;
 } & (
   {
     customIcon?: undefined;
@@ -72,7 +72,8 @@ export type Panel = {
     icon: string,
   } | {
     customIcon: false,
-    icon: FaProps['icon'],
+  // icon is of type "any" due to an issue with TypeScript overloading memory
+    icon: any,
   }
 );
 
@@ -124,7 +125,7 @@ const DetailSegment = (props: Props) => {
       <PanelContent
         className={panel.renderHiddenContent === true && !active ? renderedButHiddenClassName : undefined}
       >
-        {panel.node}
+        {panel.reactNode}
       </PanelContent>
     ) : null;
     panelContents.push(

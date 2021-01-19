@@ -1,6 +1,6 @@
 import {
-  faList,
-  faMapMarkerAlt,
+  faUserEdit,
+  // faNewspaper,
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import DetailSegment, {Panel} from './DetailSegment';
@@ -11,16 +11,16 @@ const TripsNotesAndReports = () => {
   const panels: Panel[] = [
     {
       title: 'Your notes and ascents',
-      node: <TripsAndNotes />,
+      reactNode: <TripsAndNotes />,
       customIcon: false,
-      icon: faList,
+      icon: faUserEdit,
     },
     {
       title: 'Latest Wilderlist Trip Reports',
-      node: <LatestWilderlistReports />,
+      reactNode: <LatestWilderlistReports />,
       renderHiddenContent: true,
-      customIcon: false,
-      icon: faMapMarkerAlt,
+      // customIcon: false,
+      // icon: faNewspaper,
     },
   ];
 
