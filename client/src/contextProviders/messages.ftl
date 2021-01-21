@@ -797,6 +797,7 @@ import-grid-img-alt-publish-link = Copy the generated link
 
 import-ascents-notification-text = Already have a spreadsheet of ascents?
 
+weather-forecast-summit-weather = Summit Forecast
 weather-forecast-weather = Weather
 weather-forecast-high = High
 weather-forecast-low = Low
@@ -820,6 +821,7 @@ weather-forecast-rain-volume = { $rain }mm of rainfall
 weather-forecast-snow-volume = { $snow }mm of snow
 weather-forecast-wind-gust = gusts up to { $wind_gust }mph
 
+snow-report-title = Snow Report
 snow-report-network-error = Unable to get snow report for this location at this time.
 snow-report-loading = Getting your snow report
 snow-report-snowfall-attr = Snowfall is for { $station } Station, { $county } County, { $state }
