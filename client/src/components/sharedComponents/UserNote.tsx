@@ -4,11 +4,18 @@ import {
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
+import {
+  faLock,
+} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {rgba} from 'polished';
 import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
+import {
+  ItemTitle,
+} from '../../styling/sharedContentStyles';
 import {
   ButtonWarningLow,
   lightBorderColor,
@@ -24,8 +31,23 @@ import {
   LoginText as LoginTextBase,
   redditRed,
 } from './SignUpModal';
+import Tooltip from './Tooltip';
 
 const defaultHeight = 4.75; // in rem
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: ${defaultHeight}rem;
+  position: relative;
+`;
+
+const Title = styled(ItemTitle)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
 const Textarea = styled.textarea`
   padding: 0.5rem;
@@ -38,6 +60,12 @@ const Textarea = styled.textarea`
   border: solid 1px ${rgba(lightBorderColor, 0.6)};
   outline: none;
   display: block;
+  resize: vertical;
+  flex-grow: 1;
+  padding-bottom: 4rem;
+  font-family: monospace;
+  color: #555;
+  background-color: #fdfdfd;
 
   &::placeholder {
     color: ${placeholderColor};
@@ -58,6 +86,9 @@ const ButtonContainer = styled.div`
   transition: all 0.2s ease;
   box-sizing: border-box;
   padding: 0.125rem;
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.4rem;
 `;
 
 const openContainerStyles: React.CSSProperties = {
@@ -176,7 +207,19 @@ const UserNote = (props: Props) => {
   );
 
   return (
-    <>
+    <Root>
+      <Title>
+        <div>{getString('user-notes-title')}:</div>
+        <div>
+          <small>
+            <Tooltip
+              explanation={getString('user-notes-tooltip')}
+            >
+            <FontAwesomeIcon icon={faLock} /> {getString('global-text-value-private')}
+            </Tooltip>
+          </small>
+        </div>
+      </Title>
       <Textarea
         placeholder={placeholder}
         value={value}
@@ -186,7 +229,7 @@ const UserNote = (props: Props) => {
         style={{height, borderColor: defaultValue !== value ? lowWarningColor : undefined}}
       />
       {buttons}
-    </>
+    </Root>
   );
 };
 

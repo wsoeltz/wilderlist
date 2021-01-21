@@ -11,7 +11,6 @@ import {
 } from '../../../styling/styleUtils';
 import {
   Campsite,
-  PeakListVariants,
 } from '../../../types/graphQLTypes';
 import WeatherReport from '../../mountains/detail/WeatherReport';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
@@ -51,8 +50,7 @@ const Content = (props: Props) => {
       </DetailBox>
       <MapRenderProp
         id={campsite.id}
-        type={PeakListVariants.standard}
-        campsites={[{...campsite, campedCount: 0}]}
+        campsites={[campsite]}
         center={location}
       />
     </>

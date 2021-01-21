@@ -22,6 +22,9 @@ const TripsAndNotes = (props: Props) => {
         item={item}
       />
       <UsersNotes
+        id={id}
+        name={name}
+        type={item}
       />
     </Root>
   );

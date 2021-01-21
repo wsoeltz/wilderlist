@@ -535,7 +535,7 @@ peak-list-detail-text-optional-mountains-desc = The following mountains are cons
 
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
-user-notes-title = Notes
+user-notes-title = Your Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
 

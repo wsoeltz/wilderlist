@@ -1,18 +1,13 @@
-import { faCloudSun, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faCloudSun } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import {
   DetailBox,
   InlineSectionContainer,
-  NotesTitle,
-  VerticalContentItem,
 } from '../../../styling/sharedContentStyles';
 import {
   BasicIconInText,
   DetailBoxTitle,
-  PreFormattedParagraph,
-  ResourceItem,
-  ResourceList,
 } from '../../../styling/styleUtils';
 import {
   Mountain,
@@ -21,14 +16,9 @@ import {
   User,
 } from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
-import {
-  isValidURL,
-} from '../../../Utils';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
-import Tooltip from '../../sharedComponents/Tooltip';
-import AscentsList from './AscentsList';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import IncludedLists from './IncludedLists';
-import MountainNote from './MountainNote';
 import TripReports from './TripReports';
 import SnowDepth from './weather/snowDepth';
 import WeatherReport from './WeatherReport';
@@ -40,8 +30,6 @@ interface Props {
     name: Mountain['name'];
     elevation: Mountain['elevation'];
     location: Mountain['location'];
-    description: Mountain['description'];
-    resources: Mountain['resources'];
     state: {
       id: State['id'];
       name: State['name'];
@@ -57,7 +45,7 @@ interface Props {
 
 const Content = (props: Props) => {
   const  {
-    setOwnMetaData, mountain: {location, name, id, description, resources, state, lists},
+    setOwnMetaData, mountain: {location, name, id, state, lists},
     mountain,
   } = props;
 
@@ -67,45 +55,8 @@ const Content = (props: Props) => {
 
   const [longitude, latitude] = location;
 
-  const descriptionEl = description && description.length ? (
-    <div>
-      <PreFormattedParagraph>
-        {description}
-      </PreFormattedParagraph>
-    </div>
-  ) : null;
-
-  let resourcesList: React.ReactElement<any> | null;
-  if (resources && resources.length) {
-    const resourcesArray: Array<React.ReactElement<any>> = [];
-    resources.forEach(resource => {
-      if (resource.title.length && resource.url.length && isValidURL(resource.url)) {
-        resourcesArray.push(
-          <ResourceItem key={resource.url + resource.title}>
-            <a href={resource.url}>{resource.title}</a>
-          </ResourceItem>,
-        );
-      }
-    });
-    resourcesList = resourcesArray.length ? (
-      <>
-        <VerticalContentItem>
-          <NotesTitle>
-            {getString('global-text-value-external-resources')}
-          </NotesTitle>
-          <ResourceList>
-            {resourcesArray}
-          </ResourceList>
-        </VerticalContentItem>
-      </>
-    ) : null;
-  } else {
-    resourcesList = null;
-  }
-
   return (
     <>
-      {descriptionEl}
       <DetailBoxTitle>
         <BasicIconInText icon={faCloudSun} />
         {getString('mountain-detail-weather-and-reports')}
@@ -134,32 +85,15 @@ const Content = (props: Props) => {
         name={name}
         item={CoreItem.mountain}
       />
-      <DetailBoxTitle>
-        <BasicIconInText icon={faEdit} />
-        {getString('mountain-detail-notes-and-ascents')}
-      </DetailBoxTitle>
-      <DetailBox>
-        <InlineSectionContainer>
-          <NotesTitle>
-            {getString('user-notes-title')}
-            <small style={{marginLeft: '0.4rem'}}>({getString('global-text-value-private')})</small>
-            <Tooltip
-              explanation={getString('user-notes-tooltip')}
-            />
-          </NotesTitle>
-        </InlineSectionContainer>
-        <MountainNote
-          mountainId={mountain.id}
-        />
-        <AscentsList
-          mountain={mountain}
-        />
-      </DetailBox>
-      {resourcesList}
       <IncludedLists
         mountainDatum={mountain}
         numLists={lists.length}
         setMetaDescription={setOwnMetaData}
+      />
+      <MapRenderProp
+        id={mountain.id}
+        mountains={[mountain]}
+        center={mountain.location}
       />
     </>
   );

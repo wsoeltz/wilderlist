@@ -13,8 +13,10 @@ import {
 } from '../../types/graphQLTypes';
 import {ItemType} from '../template/globalMap/map/interactions';
 
-const getPercentIcon = (label: string, type: PeakListVariants, count: number) => {
-  if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+const getPercentIcon = (label: string, type: PeakListVariants, count: number | undefined) => {
+  if (count === undefined) {
+    return `${label}-highlighted`;
+  } else if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     return count === 0 ? `${label}-perc-0` : `${label}-perc-100`;
   } else if (type === PeakListVariants.fourSeason) {
     return `${label}-perc-` + count / 4 * 100;
@@ -61,23 +63,23 @@ interface Props {
     name: Mountain['name'];
     elevation: Mountain['elevation'];
     location: Mountain['location'];
-    ascentCount: number;
+    ascentCount?: number;
   }>;
   campsites?: Array<{
     id: Campsite['id'];
     name: Campsite['name'];
     type: Campsite['type'];
     location: Campsite['location'];
-    campedCount: number;
+    campedCount?: number;
   }>;
   trails?: Array<{
     id: Trail['id'];
     name: Trail['name'];
     type: Trail['type'];
     line: Trail['line'];
-    hikedCount: number;
+    hikedCount?: number;
   }>;
-  type: PeakListVariants;
+  type?: PeakListVariants;
   center?: Coordinate;
   bbox?: PeakList['bbox'];
 }
@@ -89,7 +91,8 @@ const MapRenderProp = (props: Props) => {
 
   useEffect(() => {
     if (prevId !== props.id) {
-      const {center, bbox, type} = props;
+      const {center, bbox} = props;
+      const type = props.type ? props.type : PeakListVariants.standard;
       if (mapContext.intialized) {
         if (center) {
           mapContext.setNewCenter(center, 15);
