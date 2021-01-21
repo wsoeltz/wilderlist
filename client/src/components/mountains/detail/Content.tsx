@@ -20,6 +20,7 @@ import {
   State,
   User,
 } from '../../../types/graphQLTypes';
+import {CoreItem} from '../../../types/itemTypes';
 import {
   isValidURL,
 } from '../../../Utils';
@@ -129,6 +130,9 @@ const Content = (props: Props) => {
         />
       </DetailBox>
       <TripsNotesAndReports
+        id={id}
+        name={name}
+        item={CoreItem.mountain}
       />
       <DetailBoxTitle>
         <BasicIconInText icon={faEdit} />

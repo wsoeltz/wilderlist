@@ -18,11 +18,12 @@ import {
   lightBorderColor,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
+import {SearchResultType} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import BackButton from '../backButton';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
-import {noResultsFoundClassName, SearchResultDatum, SearchResultType} from './Utils';
+import {noResultsFoundClassName, SearchResultDatum} from './Utils';
 
 const Root = styled.div`
   display: flex;

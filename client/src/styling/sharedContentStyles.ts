@@ -15,8 +15,8 @@ export const ItemTitle = styled.h2`
   text-transform: uppercase;
   color: ${lightBaseColor};
   font-weight: ${semiBoldFontBoldWeight};
-  font-size: 1rem;
-  margin: 0;
+  font-size: 0.85rem;
+  margin: 0 0 0.45rem;
 `;
 
 export const ContentItem = styled.div`
@@ -46,15 +46,7 @@ export const BasicUnorderedListItem = styled.li`
 `;
 
 export const AscentListItem = styled(BasicListItem)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-basis: 1;
-
-  &:hover {
-    background-color: ${lightBorderColor};
-    cursor: pointer;
-  }
+  margin-bottom: 0.75rem;
 `;
 
 export const BoldLink = styled(Link)`

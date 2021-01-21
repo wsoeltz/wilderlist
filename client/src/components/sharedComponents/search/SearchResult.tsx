@@ -10,12 +10,13 @@ import {
   IconContainer,
   primaryColor,
 } from '../../../styling/styleUtils';
+import {SearchResultType} from '../../../types/itemTypes';
 import {
   mountainNeutralSvg,
   tentNeutralSvg,
   trailDefaultSvg,
 } from '../svgIcons';
-import {SearchResultDatum, SearchResultType} from './Utils';
+import {SearchResultDatum} from './Utils';
 
 const Root = styled.div`
   width: 100%;

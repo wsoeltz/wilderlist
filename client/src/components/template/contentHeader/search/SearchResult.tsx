@@ -9,12 +9,13 @@ import useFluent from '../../../../hooks/useFluent';
 import {
   primaryColor,
 } from '../../../../styling/styleUtils';
+import {SearchResultType} from '../../../../types/itemTypes';
 import {
   mountainNeutralSvg,
   tentNeutralSvg,
   trailDefaultSvg,
 } from '../../../sharedComponents/svgIcons';
-import {SearchResultDatum, SearchResultType} from './Utils';
+import {SearchResultDatum} from './Utils';
 
 const Root = styled.div`
   width: 100%;

@@ -132,6 +132,13 @@ global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Your Ascents
+global-text-value-item-dates = Your {
+  $type ->
+    [mountain] Ascents
+    [campsite] Trips
+    [trail] Hikes
+    *[other] Trips
+}
 global-text-value-done = Hiked
 global-text-value-not-done = Not Hiked
 global-text-value-not-done-dynamic = {
@@ -587,6 +594,32 @@ mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
 mountain-detail-lists-mountain-appears-on-ranks =  — { $elevation-rank } largest peak
+
+item-detail-remove-trip-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your {
+  $type ->
+    [mountain] ascents
+    [trail] hikes
+    *[campsite] trips
+}?
+item-detail-log-trip = Log {
+  $type ->
+    [mountain] ascent
+    [trail] hike
+    *[campsite] trip
+}
+item-detail-remove-trip = Remove {
+  $type ->
+    [mountain] ascent
+    [trail] hike
+    *[campsite] trip
+}
+item-detail-no-ascents-text = You have not yet {
+  $type ->
+    [mountain] hiked
+    [trail] hiked
+    [campsite] camped at
+    *[else] been to
+} { $name }.
 
 mountain-detail-enable-driving-distances = Enable Driving Distances
 mountain-detail-driving-distance = {

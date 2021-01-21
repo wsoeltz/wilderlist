@@ -3,16 +3,9 @@ import {
   Coordinate,
   TrailType,
 } from '../../../types/graphQLTypes';
+import {SearchResultType} from '../../../types/itemTypes';
 
 export const noResultsFoundClassName = 'react-autosuggest__no_results_found';
-
-export enum SearchResultType {
-  mountain = 'mountain',
-  trail = 'trail',
-  campsite = 'campsite',
-  list = 'list',
-  geolocation = 'geolocation',
-}
 
 export type SearchResultDatum = {
   id: string,

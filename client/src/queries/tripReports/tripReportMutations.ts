@@ -12,6 +12,9 @@ import {
   refetchUsersPeakLists,
 } from '../lists/getUsersPeakLists';
 import {
+  refetchUsersProgress,
+} from '../users/useUsersProgress';
+import {
   refetchLatestTripReports,
 } from './useLatestTripReports';
 
@@ -647,6 +650,7 @@ export const useTripReportMutations = (mountain: string | null, pageNumber: numb
   }
   if (userId) {
     refetchArray.push(refetchUsersPeakLists({userId}));
+    refetchArray.push(refetchUsersProgress({userId}));
   }
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION, {

@@ -5,7 +5,7 @@ import {
   faStar,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon, Props as FaProps } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -287,7 +287,8 @@ type LinkInput = {
     icon: string,
   } | {
     customIcon: false,
-    icon: FaProps['icon'],
+    // icon is of type "any" due to an issue with TypeScript overloading memory
+    icon: any,
   }
 );
 
