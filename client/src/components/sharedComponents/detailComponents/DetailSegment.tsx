@@ -30,6 +30,7 @@ const NavButton = styled.button`
   font-weight: 600;
   display: flex;
   align-items: center;
+  border-bottom: solid 1px ${lightBorderColor};
 
   &:not(:last-of-type) {
     border-right: solid 1px ${lightBorderColor};
@@ -39,6 +40,7 @@ const NavButton = styled.button`
 const ActiveNavButton = styled(NavButton)`
   background-color: #fff;
   color: ${baseColor};
+  border-bottom: none;
 `;
 
 const renderedButHiddenClassName = 'detail-segment-content-rendered-inactive';

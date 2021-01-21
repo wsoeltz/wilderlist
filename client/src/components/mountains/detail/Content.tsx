@@ -19,7 +19,6 @@ import {CoreItem} from '../../../types/itemTypes';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import IncludedLists from './IncludedLists';
-import TripReports from './TripReports';
 import SnowDepth from './weather/snowDepth';
 import WeatherReport from './WeatherReport';
 
@@ -75,10 +74,6 @@ const Content = (props: Props) => {
             stateAbbr={stateAbbreviation}
           />
         </InlineSectionContainer>
-        <TripReports
-          mountainId={id}
-          mountainName={name}
-        />
       </DetailBox>
       <TripsNotesAndReports
         id={id}

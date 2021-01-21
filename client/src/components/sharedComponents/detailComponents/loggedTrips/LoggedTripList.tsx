@@ -28,10 +28,6 @@ const CalendarButton = styled(FontAwesomeIcon)`
   margin-right: 0.5rem;
 `;
 
-const NoTrips = styled.div`
-  font-style: italic;
-`;
-
 interface Props {
   id: string;
   name: string;
@@ -100,7 +96,7 @@ const AscentsList = (props: Props) => {
     output = (
       <>
         <BasicListItem>
-          <NoTrips>{getString('item-detail-no-ascents-text', {name, type})}</NoTrips>
+          <em>{getString('item-detail-no-ascents-text', {name, type})}</em>
         </BasicListItem>
         <AddAscentButton to={addTripReportUrl}>
           <CalendarButton icon='calendar-alt' />

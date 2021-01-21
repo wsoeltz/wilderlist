@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { Conditions, TripReport } from '../../types/graphQLTypes';
 
-export const nPerPage = 7;
+export const nPerPage = 15;
 
 export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
   query getLatestTripReportsForMountain($mountain: ID!, $nPerPage: Int!) {

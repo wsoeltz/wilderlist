@@ -1,8 +1,21 @@
 import React from 'react';
+import {BasicRoot} from '../styleUtils';
+import TripReports from './TripReports';
 
-const LatestWilderlistReports = () => {
+interface Props {
+  id: string;
+  name: string;
+}
+
+const LatestWilderlistReports = (props: Props) => {
+  const {id, name} = props;
   return (
-    <div>latestWilderlistReports</div>
+    <BasicRoot>
+      <TripReports
+        mountainId={id}
+        mountainName={name}
+      />
+    </BasicRoot>
   );
 };
 

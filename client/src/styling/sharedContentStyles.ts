@@ -9,6 +9,7 @@ import {
   lightBlue,
   lightBorderColor,
   semiBoldFontBoldWeight,
+  tertiaryColor,
 } from './styleUtils';
 
 export const ItemTitle = styled.h2`
@@ -77,7 +78,7 @@ export const ReportContainer = styled(BasicListItem)`
   padding: 0.5rem 0;
 
   &:hover {
-    background-color: ${lightBorderColor};
+    background-color: ${tertiaryColor};
     cursor: pointer;
 
     .read-full-report-button {
@@ -98,7 +99,7 @@ export const ReportHeader = styled.h3`
 export const ReportBody = styled.div`
   margin-left: 1rem;
   padding-left: 0.8rem;
-  border-left: 1px solid ${lightBlue};
+  border-left: 1px solid ${lightBorderColor};
 `;
 export const ExternalLink = styled.a`
   display: block;

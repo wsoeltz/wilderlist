@@ -17,7 +17,7 @@ const TripsNotesAndReports = (props: Props) => {
     },
     {
       title: 'Latest Wilderlist Trip Reports',
-      reactNode: <LatestWilderlistReports />,
+      reactNode: <LatestWilderlistReports id={id} name={name} />,
       renderHiddenContent: true,
     },
   ];
