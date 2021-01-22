@@ -81,7 +81,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
     />
   );
 
-  const {loading, error, data} = useLatestTripReports(mountainId, pageNumber);
+  const {loading, error, data} = useLatestTripReports({mountain: mountainId, pageNumber});
 
   let output: React.ReactElement<any> | null;
   if (loading === true) {

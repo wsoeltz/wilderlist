@@ -1,26 +1,20 @@
 const {lineString, point, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
 const centroid = require('@turf/centroid').default;
-import { faCloudSun } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
-import {
-  DetailBox,
-  InlineSectionContainer,
-} from '../../../styling/sharedContentStyles';
-import {
-  BasicIconInText,
-  DetailBoxTitle,
-} from '../../../styling/styleUtils';
 import {
   PeakListVariants,
   Trail,
 } from '../../../types/graphQLTypes';
-import WeatherReport from '../../mountains/detail/WeatherReport';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
+import {CoreItem} from '../../../types/itemTypes';
+import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
+import Weather from '../../sharedComponents/detailComponents/weather';
 
 interface Props {
   id: Trail['id'];
+  name: string;
   trails: Array<{
     id: Trail['id'];
     name: Trail['name'];
@@ -28,11 +22,12 @@ interface Props {
     center: Trail['center'];
     line: Trail['line'];
   }>;
+  stateAbbreviation: string;
 }
 
 const Content = (props: Props) => {
   const  {
-    id, trails,
+    id, trails, stateAbbreviation, name,
   } = props;
 
   const getString = useFluent();
@@ -49,22 +44,21 @@ const Content = (props: Props) => {
   const center = centroid(featureCollection(allPoints));
   const bbox = getBbox(featureCollection(allLines));
 
-  const [longitude, latitude] = center.geometry.coordinates;
+  const location = center.geometry.coordinates;
 
   return (
     <>
-      <DetailBoxTitle>
-        <BasicIconInText icon={faCloudSun} />
-        {getString('weather-forecast-weather')}
-      </DetailBoxTitle>
-      <DetailBox>
-        <InlineSectionContainer>
-          <WeatherReport
-            latitude={latitude}
-            longitude={longitude}
-          />
-        </InlineSectionContainer>
-      </DetailBox>
+      <Weather
+        forecastTabs={[
+          {title: getString('weather-forecast-weather'), location},
+        ]}
+        snowReport={{location, stateAbbr: stateAbbreviation}}
+      />
+      <TripsNotesAndReports
+        id={id}
+        name={name}
+        item={CoreItem.trail}
+      />
       <MapRenderProp
         id={id}
         type={PeakListVariants.standard}

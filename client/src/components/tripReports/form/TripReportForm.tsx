@@ -8,7 +8,7 @@ import {
   useTripReportMutations,
 } from '../../../queries/tripReports/tripReportMutations';
 import {
-  GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
+  GET_LATEST_TRIP_REPORTS_FOR_ITEM,
   nPerPage,
 } from '../../../queries/tripReports/useLatestTripReports';
 import {
@@ -151,10 +151,19 @@ const TripReportForm = (props: PropsWithConditions) => {
 
   const initialMountainId = initialMountainList.length && initialMountainList[0].id ?
     initialMountainList[0].id : null;
+  const initialCampsiteId = initialCampsiteList.length && initialCampsiteList[0].id ?
+    initialCampsiteList[0].id : null;
+  const initialTrailId = initialTrailList.length && initialTrailList[0].id ?
+    initialTrailList[0].id : null;
 
   const refetchQueries: Array<{query: any, variables: any}> = initialMountainId !== null ? [{
-    query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN,
-    variables: { mountain: initialMountainId, nPerPage },
+    query: GET_LATEST_TRIP_REPORTS_FOR_ITEM,
+    variables: {
+      mountain: initialMountainId,
+      campsite: initialCampsiteId,
+      trail: initialTrailId,
+      nPerPage,
+    },
   }] : [];
 
   if (refetchQuery !== undefined) {
@@ -163,9 +172,16 @@ const TripReportForm = (props: PropsWithConditions) => {
 
   const {
     removeMountainCompletion,
+    removeCampsiteCompletion,
+    removeTrailCompletion,
     addEditTripReport,
     deleteTripReport,
-  } = useTripReportMutations(initialMountainId, nPerPage);
+  } = useTripReportMutations({
+      mountain: initialMountainId,
+      campsite: initialCampsiteId,
+      trail: initialTrailId,
+      pageNumber: 1,
+    });
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');
@@ -328,6 +344,20 @@ const TripReportForm = (props: PropsWithConditions) => {
       }});
     });
 
+    const campsiteIds = [...campsiteList.map(campsite => campsite.id)];
+    campsiteIds.forEach(campsite => {
+      removeCampsiteCompletion({ variables: {
+        userId, campsiteId: campsite, date: dateToDelete,
+      }});
+    });
+
+    const trailIds = [...trailList.map(trail => trail.id)];
+    trailIds.forEach(trail => {
+      removeTrailCompletion({ variables: {
+        userId, trailId: trail, date: dateToDelete,
+      }});
+    });
+
     if (tripReportId) {
       deleteTripReport({variables: {id: tripReportId}});
     }
@@ -339,7 +369,7 @@ const TripReportForm = (props: PropsWithConditions) => {
       onConfirm={deleteAscent}
       onCancel={closeAreYouSureModal}
       title={'Confirm delete'}
-      text={'Are your sure you want to delete your ascent on '
+      text={'Are your sure you want to delete your trip on '
         + formatStringDate(getDateToDelete()) +
         '? This cannot be undone.'}
       confirmText={'Confirm'}
@@ -405,7 +435,7 @@ const TripReportForm = (props: PropsWithConditions) => {
     tripReportId !== undefined || initialStartDate !== null ? (
       <ExpandedButtonWarning onClick={openAreYouSureModal}>
         <BasicIconInText icon={faTrash} />
-        Delete Ascent
+        Delete Trip
       </ExpandedButtonWarning>
     ) : null;
 

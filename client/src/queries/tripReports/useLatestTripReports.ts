@@ -3,10 +3,19 @@ import { Conditions, TripReport } from '../../types/graphQLTypes';
 
 export const nPerPage = 15;
 
-export const GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN = gql`
-  query getLatestTripReportsForMountain($mountain: ID!, $nPerPage: Int!) {
-    tripReports: tripReportsForMountain(
-    mountain: $mountain, nPerPage: $nPerPage) {
+export const GET_LATEST_TRIP_REPORTS_FOR_ITEM = gql`
+  query getLatestTripReportsForItem(
+    $mountain: ID,
+    $campsite: ID,
+    $trail: ID,
+    $nPerPage: Int!,
+  ) {
+    tripReports: tripReportsForItem(
+      mountain: $mountain,
+      campsite: $campsite,
+      trail: $trail,
+      nPerPage: $nPerPage,
+    ) {
       id
       date
       author {
@@ -55,7 +64,9 @@ export interface SuccessResponse {
 }
 
 interface QueryVariables {
-  mountain: string;
+  mountain: string | null;
+  trail: string | null;
+  campsite: string | null;
   nPerPage: number;
 }
 
@@ -90,10 +101,27 @@ export const isCondition = (key: string) => {
   }
 };
 
-export const refetchLatestTripReports = (mountain: string, pageNumber: number) =>
-  ({query: GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, variables: {mountain, nPerPage: nPerPage * pageNumber}});
+export interface Input {
+  mountain?: string | null;
+  trail?: string | null;
+  campsite?: string | null;
+  pageNumber: number;
+}
 
-export const useLatestTripReports = (mountain: string, pageNumber: number) =>
+export const refetchLatestTripReports = ({mountain, trail, campsite, pageNumber}: Input) =>
+  ({query: GET_LATEST_TRIP_REPORTS_FOR_ITEM, variables: {
+    mountain: mountain ? mountain : null,
+    trail: trail ? trail : null,
+    campsite: campsite ? campsite : null,
+    nPerPage: nPerPage * pageNumber,
+  }});
+
+export const useLatestTripReports = ({mountain, trail, campsite, pageNumber}: Input) =>
   useQuery<SuccessResponse, QueryVariables>(
-    GET_LATEST_TRIP_REPORTS_FOR_MOUNTAIN, {variables: { mountain, nPerPage: nPerPage * pageNumber }},
+    GET_LATEST_TRIP_REPORTS_FOR_ITEM, {variables: {
+      mountain: mountain ? mountain : null,
+      trail: trail ? trail : null,
+      campsite: campsite ? campsite : null,
+      nPerPage: nPerPage * pageNumber,
+    }},
   );

@@ -44,10 +44,14 @@ const TrailDetail = (props: Props) => {
       );
     } else {
       const {
-        name, states, type, children,
+        states, type, children,
       } = trail;
 
       const segments = children && children.length ? children : [trail];
+
+      const stateAbbreviation = states && states[0] && states[0].abbreviation ? states[0].abbreviation : '';
+
+      const name = trail.name ? trail.name : getString('global-formatted-trail-type', {type})
 
       header = (
         <Header
@@ -62,7 +66,9 @@ const TrailDetail = (props: Props) => {
       body = (
         <Content
           id={id}
+          name={name}
           trails={segments}
+          stateAbbreviation={stateAbbreviation}
         />
       );
     }

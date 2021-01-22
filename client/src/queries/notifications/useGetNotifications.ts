@@ -156,6 +156,8 @@ export interface ClearNotificationVariables {
   date: string;
 }
 
+export const refetchUsersNotifications = (userId: string) => ({query: GET_NOTIFICATIONS, variables: {userId}})
+
 export const useGetNotifications = (userId: string) => useQuery<SuccessResponse, {userId: string}>(
   GET_NOTIFICATIONS, {variables: { userId }},
 );

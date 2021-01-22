@@ -223,7 +223,7 @@ const ImportAscentsModal = (props: Props) => {
     setSelectDatesGif(src);
   };
 
-  const {addMountainCompletion} = useTripReportMutations(null, 0);
+  const {addMountainCompletion} = useTripReportMutations();
 
   const validateAndAddMountainCompletion =
     async (mountainId: Mountain['id'], day: string, month: string, year: string) => {

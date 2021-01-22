@@ -151,7 +151,7 @@ const ImportAscentsModal = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [percent, setPercent] = useState<number>(0);
 
-  const {addMountainCompletion} = useTripReportMutations(null, 0);
+  const {addMountainCompletion} = useTripReportMutations();
 
   const onGridCsvPaste = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fetchGridData = async () => {

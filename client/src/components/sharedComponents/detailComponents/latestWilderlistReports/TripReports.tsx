@@ -38,6 +38,7 @@ import {
 } from '../../../../Utils';
 import LoadingSpinner from '../../LoadingSpinner';
 import TripReportModal from './TripReportModal';
+import {CoreItem} from '../../../../types/itemTypes';
 
 const Root = styled.div`
   min-height: 150px;
@@ -58,11 +59,12 @@ const Text = styled(PreFormattedParagraph)`
 `;
 
 interface Props {
-  mountainId: string;
-  mountainName: string;
+  id: string;
+  name: string;
+  type: CoreItem;
 }
 
-const TripReports = ({mountainId, mountainName}: Props) => {
+const TripReports = ({id, name, type}: Props) => {
 
   const [fullReport, setFullReport] = useState<TripReport | null>(null);
   const closeFullReport = useCallback(() => setFullReport(null), []);
@@ -83,7 +85,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
     />
   );
 
-  const {loading, error, data} = useLatestTripReports(mountainId, pageNumber);
+  const {loading, error, data} = useLatestTripReports({[type]: id, pageNumber});
 
   let output: React.ReactElement<any> | null;
   if (loading === true) {
@@ -254,7 +256,7 @@ const TripReports = ({mountainId, mountainName}: Props) => {
         <BasicListItem>
           <em>
             {getString('trip-report-no-reports', {
-              'mountain-name': mountainName,
+              'mountain-name': name,
             })}
           </em>
         </BasicListItem>

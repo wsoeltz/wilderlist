@@ -34,7 +34,7 @@ const NotificationBar = (props: Props) => {
   const getString = useFluent();
 
   const {loading, error, data} = useGetNotifications(userId);
-  const {addMountainCompletion, addTrailCompletion, addCampsiteCompletion} = useTripReportMutations(null, 0);
+  const {addMountainCompletion, addTrailCompletion, addCampsiteCompletion} = useTripReportMutations();
   const clearAscentNotification = useClearAscentNotification(userId);
   const acceptFriendRequestMutation = useAcceptFriendRequestMutation(userId);
   const removeFriendMutation = useRemoveFriendMutation(userId);

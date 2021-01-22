@@ -189,6 +189,7 @@ const addEditTripReport = async (input: Input) => {
     if (getDateType(parseDate(date)) !== DateType.full) {
       // 1 If new date is not a full date
       // delete the report
+      console.log('delete trip')
       await TripReport.deleteOne({_id: tripReportDoc._id});
       return null;
     } else {
@@ -227,6 +228,7 @@ const addEditTripReport = async (input: Input) => {
         tripReportDoc.obstaclesBlowdown = input.obstaclesBlowdown ? input.obstaclesBlowdown : null;
         tripReportDoc.obstaclesOther = input.obstaclesOther ? input.obstaclesOther : null;
 
+        console.log('should be edited')
         tripReportDoc.save();
         return tripReportDoc;
       }
@@ -266,6 +268,7 @@ const addEditTripReport = async (input: Input) => {
       obstaclesBlowdown: input.obstaclesBlowdown ? input.obstaclesBlowdown : null,
       obstaclesOther: input.obstaclesOther ? input.obstaclesOther : null,
     });
+    console.log('should be new')
     return newTripReport.save();
   }
 

@@ -3,7 +3,14 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
-import { addTripReportLink, editTripReportLink, mountainDetailLink } from '../../../../routing/Utils';
+import {
+  addTripReportLink,
+  editTripReportLink,
+  mountainDetailLink,
+  campsiteDetailLink,
+  trailDetailLink,
+} from '../../../../routing/Utils';
+import {Routes} from '../../../../routing/routes';
 import {
   AscentListItem,
   BasicListItem,
@@ -13,7 +20,7 @@ import {
   CompactButtonPrimaryLink,
   SemiBold,
 } from '../../../../styling/styleUtils';
-import { CoreItem } from '../../../../types/itemTypes';
+import { CoreItem, CoreItems } from '../../../../types/itemTypes';
 import {
   formatDate,
   getDates,
@@ -40,9 +47,22 @@ const AscentsList = (props: Props) => {
 
   const getString = useFluent();
 
+  let returnLink: (id: string) => string;
+  if (type === CoreItem.mountain) {
+    returnLink = mountainDetailLink;
+  } else if (type === CoreItem.campsite) {
+    returnLink = campsiteDetailLink;
+  } else if (type === CoreItem.trail) {
+    returnLink = trailDetailLink;
+  } else {
+    returnLink = () => Routes.Landing;
+  }
+
+  const field = type + 's' as CoreItems;
+
   const addTripReportUrl = addTripReportLink({
-    refpath: mountainDetailLink(id),
-    mountains: [id],
+    refpath: returnLink(id),
+    [field]: [id],
   });
 
   let output: React.ReactElement<any>;
@@ -65,8 +85,8 @@ const AscentsList = (props: Props) => {
         textDate = formatDate(date);
       }
       const editTripReportUrl = editTripReportLink({
-        refpath: mountainDetailLink(id),
-        mountains: [id],
+        refpath: returnLink(id),
+        [field]: [id],
         date: date.original,
       });
       return (

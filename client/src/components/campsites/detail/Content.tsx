@@ -1,19 +1,12 @@
-import { faCloudSun } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import {
-  DetailBox,
-  InlineSectionContainer,
-} from '../../../styling/sharedContentStyles';
-import {
-  BasicIconInText,
-  DetailBoxTitle,
-} from '../../../styling/styleUtils';
-import {
   Campsite,
 } from '../../../types/graphQLTypes';
-import WeatherReport from '../../mountains/detail/WeatherReport';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
+import {CoreItem} from '../../../types/itemTypes';
+import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
+import Weather from '../../sharedComponents/detailComponents/weather';
 
 interface Props {
   campsite: {
@@ -22,32 +15,32 @@ interface Props {
     type: Campsite['type'];
     location: Campsite['location'];
   };
+  stateAbbreviation: string;
 }
 
 const Content = (props: Props) => {
   const  {
-    campsite: {location},
-    campsite,
+    campsite: {location, type},
+    campsite, stateAbbreviation,
   } = props;
 
   const getString = useFluent();
 
-  const [longitude, latitude] = location;
+  const name = campsite.name ? campsite.name : getString('global-formatted-campsite-type', {type})
 
   return (
     <>
-      <DetailBoxTitle>
-        <BasicIconInText icon={faCloudSun} />
-        {getString('weather-forecast-weather')}
-      </DetailBoxTitle>
-      <DetailBox>
-        <InlineSectionContainer>
-          <WeatherReport
-            latitude={latitude}
-            longitude={longitude}
-          />
-        </InlineSectionContainer>
-      </DetailBox>
+      <Weather
+        forecastTabs={[
+          {title: getString('weather-forecast-weather'), location},
+        ]}
+        snowReport={{location, stateAbbr: stateAbbreviation}}
+      />
+      <TripsNotesAndReports
+        id={campsite.id}
+        name={name}
+        item={CoreItem.campsite}
+      />
       <MapRenderProp
         id={campsite.id}
         campsites={[campsite]}

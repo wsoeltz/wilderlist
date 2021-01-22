@@ -49,6 +49,7 @@ const EditAscentReport = (props: Props) => {
   );
 
   const {loading, error, data} = useGetTripReportForDateAndMountain(variables);
+  console.log(loading, error, data)
   const initialStartDate = date.year && date.month && date.month && date.day
     ? new Date(date.year, date.month - 1, date.day) : null;
 

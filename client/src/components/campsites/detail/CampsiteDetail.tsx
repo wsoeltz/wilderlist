@@ -47,6 +47,8 @@ const CampsiteDetail = (props: Props) => {
         name, author, status, state, type,
       } = campsite;
 
+      const stateAbbreviation = state && state.abbreviation ? state.abbreviation : '';
+
       header = (
         <Header
           setOwnMetaData={setOwnMetaData ? setOwnMetaData : false}
@@ -62,6 +64,7 @@ const CampsiteDetail = (props: Props) => {
       body = (
         <Content
           campsite={campsite}
+          stateAbbreviation={stateAbbreviation}
         />
       );
     }

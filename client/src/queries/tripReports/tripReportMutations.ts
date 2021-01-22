@@ -15,7 +15,11 @@ import {
   refetchUsersProgress,
 } from '../users/useUsersProgress';
 import {
+  refetchUsersNotifications,
+} from '../notifications/useGetNotifications';
+import {
   refetchLatestTripReports,
+  Input as RefetchInput,
 } from './useLatestTripReports';
 
 const ADD_MOUNTAIN_COMPLETION = gql`
@@ -640,17 +644,18 @@ export interface DeleteTripReportVariables {
   id: TripReport['id'];
 }
 
-export const useTripReportMutations = (mountain: string | null, pageNumber: number) => {
+export const useTripReportMutations = (input?: RefetchInput) => {
   const currentUser = useCurrentUser();
   const userId = currentUser ? currentUser._id : null;
   const geoNearVariables = useGeoNearVariables();
   const refetchArray: Array<{query: DocumentNode, variables: any}> = [refetchGeoNearPeakLists(geoNearVariables)];
-  if (mountain && pageNumber) {
-    refetchArray.push(refetchLatestTripReports(mountain, pageNumber));
+  if (input && (input.mountain || input.trail || input.campsite) && input.pageNumber) {
+    refetchArray.push(refetchLatestTripReports(input));
   }
   if (userId) {
     refetchArray.push(refetchUsersPeakLists({userId}));
     refetchArray.push(refetchUsersProgress({userId}));
+    refetchArray.push(refetchUsersNotifications(userId));
   }
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION, {

@@ -332,6 +332,7 @@ const RootQuery = new GraphQLObjectType({
         if (campsite) {
           $or.push({campsites: campsite});
         }
+        console.log($or);
         return TripReport
           .findOne({
             author, date,
@@ -339,16 +340,28 @@ const RootQuery = new GraphQLObjectType({
           });
       },
     },
-    tripReportsForMountain: {
+    tripReportsForItem: {
       type: new GraphQLList(TripReportType),
       args: {
-        mountain: { type: GraphQLNonNull(GraphQLID) },
+        mountain: { type: GraphQLID },
+        trail: { type: GraphQLID },
+        campsite: { type: GraphQLID },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
       },
-      resolve(parentValue, {mountain, nPerPage}) {
+      resolve(parentValue, {mountain, trail, campsite, nPerPage}) {
+        let item: any = {};
+          if (mountain) {
+            item = {mountains: mountain};
+          }
+          if (trail) {
+            item = {trails: trail};
+          }
+          if (campsite) {
+            item = {campsites: campsite};
+          }
         return TripReport
           .find({
-            mountains: mountain,
+            ...item,
             privacy: { $in: [TripReportPrivacy.Public, TripReportPrivacy.Anonymous]},
             $or: [
               {notes: { $ne: null }},

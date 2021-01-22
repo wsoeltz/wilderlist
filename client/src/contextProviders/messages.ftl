@@ -132,6 +132,13 @@ global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Your Ascents
+global-text-value-item-notes-and-dates = Your notes and {
+  $type ->
+    [mountain] Ascents
+    [campsite] Trips
+    [trail] Hikes
+    *[other] Trips
+}
 global-text-value-item-dates = Your {
   $type ->
     [mountain] Ascents
@@ -798,7 +805,9 @@ import-grid-img-alt-publish-link = Copy the generated link
 import-ascents-notification-text = Already have a spreadsheet of ascents?
 
 weather-forecast-summit-weather = Summit Forecast
+weather-forecast-valley-weather = Valley Forecast
 weather-forecast-weather = Weather
+weather-forecast-weather-trail-center = Weather (at trail center)
 weather-forecast-high = High
 weather-forecast-low = Low
 weather-forecast-wind = Wind
@@ -841,6 +850,7 @@ local-trails-hiking-project-network-error = There was a network error retrieving
 local-trails-nearby-trails-title = Nearby Trails
 local-trails-all-trails-link-text = View trails for { $mountain-name } on
 
+trip-report-latest-title = Latest Wilderlist Trip Reports
 trip-report-title = Trip Report
 trip-report-privacy-disclaimer = Public trip reports can help fellow hikers plan their hikes with insights from your experience. If you don’t want to share your trip publicly, you can set the visibility to “Private”  or simply leave this section blank.
 
