@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import {mobileSize} from '../Utils';
-import { standardContainerPadding } from './styleUtils';
+import { lightBorderColor, standardContainerPadding } from './styleUtils';
 
 export const gridLines = {
   // Horizontal Grid Lines
@@ -88,6 +88,7 @@ export const ContentBody = styled.div`
   grid-row: ${contentGridLines.body};
   padding: 0 ${standardContainerPadding} ${standardContainerPadding};
   background-color: #fff;
+  border-right: solid 1px ${lightBorderColor};
   overflow: auto;
   pointer-events: all;
 
@@ -107,6 +108,8 @@ export const ContentBody = styled.div`
     height: auto;
     min-height: 100vh;
     padding-bottom: 150px;
+    border-top: solid 1px ${lightBorderColor};
+    border-right: none;
   }
 `;
 

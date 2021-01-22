@@ -199,7 +199,7 @@ export const ForecastRootContainer = styled(ScrollContainer)`
   padding: 1rem;
   margin-bottom: 1rem;
   box-sizing: border-box;
-  cursor: grab;
+  cursor: move;
 
   ::-webkit-scrollbar {
     -webkit-appearance: none;

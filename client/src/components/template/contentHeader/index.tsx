@@ -3,6 +3,7 @@ import {useLocation} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import {Routes} from '../../../routing/routes';
+import {lightBorderColor} from '../../../styling/styleUtils';
 import {mobileSize} from '../../../Utils';
 import MobileMapViewBox from './MobileMapViewBox';
 import Search from './search';
@@ -61,7 +62,10 @@ const Header = () => {
 
   const mobileMapViewbox = showMobileMapViewBox ? <MobileMapViewBox key={pathname} /> : null;
   const searchBar = windowWidth > mobileSize ? (
-    <Root style={{backgroundColor: showBackground ? '#fff' : undefined}}>
+    <Root style={{
+      backgroundColor: showBackground ? '#fff' : undefined,
+      borderRight: showBackground ? `solid 1px ${lightBorderColor}` : undefined,
+    }}>
       <Search />
     </Root>
   ) : null;
