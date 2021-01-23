@@ -19,6 +19,7 @@ export type AddTripReportLinkParams = {
   mountains?: string | string[] | null;
   trails?: string | string[] | null;
   campsites?: string | string[] | null;
+  friends?: string | string[] | null;
   listtype?: PeakListVariants | null;
   month?: Months | null;
   season?: Seasons | null;

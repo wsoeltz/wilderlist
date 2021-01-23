@@ -11,6 +11,7 @@ import {
 } from '../../../types/graphQLTypes';
 import { DateType, getDates, getDateType } from '../../../utilities/dateUtils';
 import TripReportForm, {
+  Origin,
   Props as BaseProps,
 } from './TripReportForm';
 
@@ -85,7 +86,9 @@ const NewAscentReport = (props: Props) => {
 
     return (
       <TripReportForm
+        key={initialStartDate as any}
         {...props}
+        origin={Origin.add}
         tripReportId={undefined}
         refetchQuery={undefined}
         initialCompletionDay={initialCompletionDay}

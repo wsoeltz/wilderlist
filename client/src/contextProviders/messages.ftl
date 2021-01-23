@@ -574,7 +574,7 @@ mountain-completion-modal-text-note-four-season =
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 
-mountain-completion-modal-text-day-number = Day { $day } - Details
+mountain-completion-modal-text-details = Details
 mountain-completion-modal-text-required-text = At least one mountain, trail or campsite is required to log a trip
 mountain-completion-modal-text-people-hiked-with = Friends on Trip
 mountain-completion-modal-text-add-wilderlist-friends = Wilderlist Friends
@@ -587,6 +587,8 @@ mountain-completion-modal-add-remove-people = Add/Remove People
 mountain-completion-modal-done-adding-people = Done Updating People
 
 mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
+trip-log-delete-trip = Delete Trip
+trip-log-add-another = Log & Add Next Day
 
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>

@@ -1,8 +1,9 @@
-import { faCalendarAlt, faCheck, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faCheck, faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {validate as validateEmail} from 'email-validator';
 import isEqual from 'lodash/isEqual';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useBeforeUnload from '../../../hooks/useBeforeUnload';
 import useFluent from '../../../hooks/useFluent';
@@ -13,6 +14,7 @@ import {
   GET_LATEST_TRIP_REPORTS_FOR_ITEM,
   nPerPage,
 } from '../../../queries/tripReports/useLatestTripReports';
+import {addTripReportLink, AddTripReportLinkParams} from '../../../routing/Utils';
 import {
   BasicIconInText,
   ButtonPrimary,
@@ -79,15 +81,18 @@ export const ButtonWrapper = styled.div`
   align-items: center;
   position: sticky;
   bottom: -1rem;
-  margin: 0 -1rem;
+  margin: 0 -1rem -1rem;
   margin-top: auto;
   background-color: ${tertiaryColor};
   border-top: solid 1px ${lightBorderColor};
   padding: 0.7rem 1rem;
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
 
   @media(max-width: ${mobileSize}px) {
     position: fixed;
     bottom: 1.4rem;
+    border-bottom: solid 1px ${lightBorderColor};
+    margin-bottom: 0;
     left: 0;
     right: 0;
     height: 50px;
@@ -99,6 +104,10 @@ export const ButtonWrapper = styled.div`
 `;
 
 export const CancelButton = styled(ButtonSecondary)`
+  margin-right: 1rem;
+`;
+
+const AddAnotherButton = styled(ButtonPrimary)`
   margin-right: 1rem;
 `;
 
@@ -166,6 +175,8 @@ const TripReportForm = (props: PropsWithConditions) => {
     initialMountainList, tripReportId, refetchQuery, initialPrivacy,
     initialTrailList, initialCampsiteList, origin,
   } = props;
+
+  const {push} = useHistory();
 
   const tripNotesEl = useRef<HTMLTextAreaElement | null>(null);
   const tripLinkEl = useRef<HTMLInputElement | null>(null);
@@ -294,7 +305,7 @@ const TripReportForm = (props: PropsWithConditions) => {
 
   const getString = useFluent();
 
-  const validateAndAddMountainCompletion = async () => {
+  const validateAndAddMountainCompletion = async (onComplete: () => void) => {
     setSaving(true);
     const completedDate = convertFieldsToDate(completionDay, completionMonth, completionYear);
     const initialCompletionDate =
@@ -372,10 +383,35 @@ const TripReportForm = (props: PropsWithConditions) => {
           camping: onlyCamping,
         });
       }
-      onSave();
+      onComplete();
     }
     localStorage.setItem(preferredDateFormatLocalStorageVariable, dateType);
   };
+
+  const onLogTripClick = () => validateAndAddMountainCompletion(onSave);
+  const onSaveAndAddAnother = () => validateAndAddMountainCompletion(() => {
+    const params: AddTripReportLinkParams = {
+      notification: 'no',
+    };
+    const nextDay = new Date(
+      parseInt(completionYear, 10),
+      parseInt(completionMonth, 10) - 1,
+      parseInt(completionDay, 10),
+      0, 0, 0, 0);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const completedDate = convertFieldsToDate(
+      nextDay.getDate().toString(),
+      (nextDay.getMonth() + 1).toString(),
+      nextDay.getFullYear().toString(),
+    );
+    if (completedDate.date) {
+      params.date = completedDate.date;
+    }
+    if (userList) {
+      params.friends = userList;
+    }
+    push(addTripReportLink(params));
+  });
 
   const getDateToDelete = () => {
     const initialCompletionDate =
@@ -483,13 +519,25 @@ const TripReportForm = (props: PropsWithConditions) => {
     return false;
   };
 
-  const deleteAscentButton =
-    tripReportId !== undefined || initialStartDate !== null || origin === Origin.edit ? (
+  const deleteAscentButton = (origin !== Origin.add && origin !== undefined) &&
+    (tripReportId !== undefined || initialStartDate !== null || origin === Origin.edit) ? (
       <DeleteButton onClick={openAreYouSureModal}>
         <Icon icon={faTrash} />
-        Delete Trip
+        {getString('trip-log-delete-trip')}
       </DeleteButton>
     ) : null;
+
+  const addAnotherButton = tripReportId !== undefined ||
+    origin === Origin.edit || dateType !== DateType.full
+    ? null : (
+      <AddAnotherButton
+        onClick={onSaveAndAddAnother}
+        disabled={isConfirmDisabled()}
+      >
+        <Icon icon={faPlus} />
+        {getString('trip-log-add-another')}
+      </AddAnotherButton>
+    );
 
   const saveButtonText =
     tripReportId !== undefined || initialStartDate !== null
@@ -505,7 +553,7 @@ const TripReportForm = (props: PropsWithConditions) => {
         <TitleText>{title}</TitleText>
       </IconTitle>
       <SectionTitle>
-        {getString('mountain-completion-modal-text-day-number', {day: 1})}*
+        {getString('mountain-completion-modal-text-details')}*
         <SmallTextNote>
           * {getString('mountain-completion-modal-text-required-text')}
         </SmallTextNote>
@@ -560,8 +608,9 @@ const TripReportForm = (props: PropsWithConditions) => {
           <Icon icon={faTimes} />
           {getString('global-text-value-modal-cancel')}
         </CancelButton>
+        {addAnotherButton}
         <ButtonPrimary
-          onClick={validateAndAddMountainCompletion}
+          onClick={onLogTripClick}
           disabled={isConfirmDisabled()}
         >
           <Icon icon={faCheck} />

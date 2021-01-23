@@ -20,7 +20,7 @@ const AddTripReport = () => {
   const {goBack, location, push} = useHistory();
   const {
     refpath, mountains, trails, campsites, listtype, month, season,
-    notification, date,
+    notification, date, friends,
   } = queryString.parse(location.search) as AddTripReportLinkParams;
 
   let mountainIds: string[] = [];
@@ -79,6 +79,9 @@ const AddTripReport = () => {
       const initialMountainList = data && data.mountains ? data.mountains : [];
       const initialTrailList = data && data.trails ? data.trails : [];
       const initialCampsiteList = data && data.campsites ? data.campsites : [];
+      const initialUserList = friends
+        ? (typeof friends === 'string' ? [friends] : friends)
+        : [];
       if (notification === 'yes' && date) {
         return (
           <AscentReportFromNotification
@@ -96,6 +99,7 @@ const AddTripReport = () => {
       if (listtype && listtype === PeakListVariants.fourSeason && season) {
         return (
           <NewAscentReport
+            date={date ? date : undefined}
             initialMountainList={initialMountainList}
             initialTrailList={initialTrailList}
             initialCampsiteList={initialCampsiteList}
@@ -105,12 +109,14 @@ const AddTripReport = () => {
             variant={listtype}
             season={season}
             queryRefetchArray={[]}
+            initialUserList={initialUserList}
           />
         );
       }
       if (listtype && listtype === PeakListVariants.grid && month) {
         return (
           <NewAscentReport
+            date={date ? date : undefined}
             initialMountainList={initialMountainList}
             initialTrailList={initialTrailList}
             initialCampsiteList={initialCampsiteList}
@@ -120,12 +126,14 @@ const AddTripReport = () => {
             variant={listtype}
             month={month}
             queryRefetchArray={[]}
+            initialUserList={initialUserList}
           />
         );
       } else {
         const variant = listtype === PeakListVariants.winter ? listtype : PeakListVariants.standard;
         return (
           <NewAscentReport
+            date={date ? date : undefined}
             initialMountainList={initialMountainList}
             initialTrailList={initialTrailList}
             initialCampsiteList={initialCampsiteList}
@@ -134,6 +142,7 @@ const AddTripReport = () => {
             userId={user._id}
             variant={variant}
             queryRefetchArray={[]}
+            initialUserList={initialUserList}
           />
         );
       }
