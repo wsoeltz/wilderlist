@@ -54,6 +54,16 @@ interface MountainNoteMutationArgs {
   mountainId: string;
   text: string;
 }
+interface TrailNoteMutationArgs {
+  userId: string;
+  trailId: string;
+  text: string;
+}
+interface CampsiteNoteMutationArgs {
+  userId: string;
+  campsiteId: string;
+  text: string;
+}
 
 const userMutations: any = {
   addPeakListToUser: {
@@ -985,6 +995,164 @@ const userMutations: any = {
           'mountainNotes.mountain': { $eq: mountainId },
         }, {
           $pull: { mountainNotes: { mountain: mountainId } },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addTrailNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      trailId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: TrailNoteMutationArgs,
+                  context: {user: IUser | undefined | null}) {
+      const { userId, trailId, text } = args;
+      try {
+        const user = await User.findById(userId);
+        if (!isCorrectUser(user, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'trailNotes.trail': { $ne: trailId },
+        }, {
+          $addToSet: { trailNotes: {trail: trailId, text} },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  editTrailNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      trailId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: TrailNoteMutationArgs,
+                  context: {user: IUser | undefined | null}) {
+      const { userId, trailId, text } = args;
+      try {
+        const user = await User.findById(userId);
+        if (!isCorrectUser(user, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'trailNotes.trail': { $eq: trailId },
+        }, { 'trailNotes.$.text': text },
+        );
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  deleteTrailNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      trailId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, args: TrailNoteMutationArgs,
+                  context: {user: IUser | undefined | null}) {
+      const { userId, trailId } = args;
+      try {
+        const user = await User.findById(userId);
+        if (!isCorrectUser(user, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'trailNotes.trail': { $eq: trailId },
+        }, {
+          $pull: { trailNotes: { trail: trailId } },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addCampsiteNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      campsiteId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: CampsiteNoteMutationArgs,
+                  context: {user: IUser | undefined | null}) {
+      const { userId, campsiteId, text } = args;
+      try {
+        const user = await User.findById(userId);
+        if (!isCorrectUser(user, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'campsiteNotes.campsite': { $ne: campsiteId },
+        }, {
+          $addToSet: { campsiteNotes: {campsite: campsiteId, text} },
+        });
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  editCampsiteNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      campsiteId: { type: GraphQLNonNull(GraphQLID) },
+      text: { type: GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(_unused: any, args: CampsiteNoteMutationArgs,
+                  context: {user: IUser | undefined | null}) {
+      const { userId, campsiteId, text } = args;
+      try {
+        const user = await User.findById(userId);
+        if (!isCorrectUser(user, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'campsiteNotes.campsite': { $eq: campsiteId },
+        }, { 'campsiteNotes.$.text': text },
+        );
+        return await User.findOne({_id: userId});
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  deleteCampsiteNote: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      campsiteId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, args: CampsiteNoteMutationArgs,
+                  context: {user: IUser | undefined | null}) {
+      const { userId, campsiteId } = args;
+      try {
+        const user = await User.findById(userId);
+        if (!isCorrectUser(user, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        await User.findOneAndUpdate({
+          '_id': userId,
+          'campsiteNotes.campsite': { $eq: campsiteId },
+        }, {
+          $pull: { campsiteNotes: { campsite: campsiteId } },
         });
         return await User.findOne({_id: userId});
       } catch (err) {

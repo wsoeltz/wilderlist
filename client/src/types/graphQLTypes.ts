@@ -275,6 +275,18 @@ export interface MountainNote {
   text: string;
 }
 
+export interface TrailNote {
+  id: string;
+  trail: Trail | null;
+  text: string;
+}
+
+export interface CampsiteNote {
+  id: string;
+  campsite: Campsite | null;
+  text: string;
+}
+
 export interface User {
   _id: string;
   id: string;
@@ -302,6 +314,8 @@ export interface User {
   peakListNote: PeakListNote | null;
   mountainNotes: Array<MountainNote | null> | null;
   mountainNote: MountainNote | null;
+  trailNote: TrailNote | null;
+  campsiteNote: CampsiteNote | null;
   mountainPermissions: number | null;
   peakListPermissions: number | null;
   latestAscent: CompletedMountain | null;

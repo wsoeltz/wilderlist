@@ -344,6 +344,44 @@ const MountainNotesType: any = new GraphQLObjectType({
     },
   }),
 });
+const TrailNotesType: any = new GraphQLObjectType({
+  name: 'TrailNotesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    trail: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.load(parentValue.trail);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    text: {
+      type: GraphQLString,
+    },
+  }),
+});
+const CampsiteNotesType: any = new GraphQLObjectType({
+  name: 'CampsiteNotesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    campsite: {
+      type: CampsiteType,
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.load(parentValue.campsite);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    text: {
+      type: GraphQLString,
+    },
+  }),
+});
 
 const UserType: any = new GraphQLObjectType({
   name:  'UserType',
@@ -425,6 +463,64 @@ const UserType: any = new GraphQLObjectType({
             });
             if (targetMountainNote) {
               return targetMountainNote;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    trailNotes: { type: new GraphQLList(TrailNotesType) },
+    trailNote: {
+      type: TrailNotesType,
+      args: {
+        trailId: { type: GraphQLID },
+      },
+      resolve(parentValue, {trailId}) {
+        if (!trailId) {
+          return null;
+        }
+        try {
+          const { trailNotes } = parentValue;
+          if (trailNotes && trailNotes.length) {
+            const targetTrailNote = trailNotes.find((note: any) => {
+              return note.trail.toString() === trailId.toString();
+            });
+            if (targetTrailNote) {
+              return targetTrailNote;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsiteNotes: { type: new GraphQLList(CampsiteNotesType) },
+    campsiteNote: {
+      type: CampsiteNotesType,
+      args: {
+        campsiteId: { type: GraphQLID },
+      },
+      resolve(parentValue, {campsiteId}) {
+        if (!campsiteId) {
+          return null;
+        }
+        try {
+          const { campsiteNotes } = parentValue;
+          if (campsiteNotes && campsiteNotes.length) {
+            const targetCampsiteNote = campsiteNotes.find((note: any) => {
+              return note.campsite.toString() === campsiteId.toString();
+            });
+            if (targetCampsiteNote) {
+              return targetCampsiteNote;
             } else {
               return null;
             }
