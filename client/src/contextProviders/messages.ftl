@@ -111,6 +111,8 @@ global-text-value-modal-cancel-request-text = This will cancel your request to h
 global-text-value-modal-request-delete-title = Request delete
 global-text-value-modal-request-delete-text = This will submit a request to have { $name } deleted. Are you sure you want to continue?
 
+global-text-value-unsaved-changes = You have changes that won't be saved if you leave. Are you sure you want to continue?
+
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
 global-text-value-trails = Trails

@@ -1,8 +1,10 @@
 import { faCalendarAlt, faCheck, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {validate as validateEmail} from 'email-validator';
+import isEqual from 'lodash/isEqual';
 import React, { useCallback, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components/macro';
+import useBeforeUnload from '../../../hooks/useBeforeUnload';
 import useFluent from '../../../hooks/useFluent';
 import {
   useTripReportMutations,
@@ -213,6 +215,25 @@ const TripReportForm = (props: PropsWithConditions) => {
   const closeAreYouSureModal = useCallback(() => setIsAreYouSureModalOpen(false), []);
 
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
+
+  const checkIfModified = () => {
+    return !saving && (
+      initialCompletionDay !== completionDay ||
+      initialCompletionMonth !== completionMonth ||
+      initialCompletionYear !== completionYear ||
+      initialDateType !== dateType ||
+      initialUserList.length !== userList.length ||
+      initialMountainList.length !== mountainList.length ||
+      initialTrailList.length !== trailList.length ||
+      initialCampsiteList.length !== campsiteList.length ||
+      initialPrivacy !== privacy ||
+      !isEqual(conditions, initialConditions) ||
+      !(tripNotesEl && tripNotesEl.current && tripNotesEl.current.value === initialTripNotes) ||
+      !(tripLinkEl && tripLinkEl.current && tripLinkEl.current.value === initialTripNotes)
+    );
+  };
+
+  useBeforeUnload(checkIfModified);
 
   const setDates = (date: Date | null) => {
     if (date !== null) {

@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {rgba} from 'polished';
 import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
+import useBeforeUnload from '../../hooks/useBeforeUnload';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
 import {
@@ -134,6 +135,8 @@ const UserNote = (props: Props) => {
   const user = useCurrentUser();
 
   const getString = useFluent();
+
+  useBeforeUnload(!((!defaultValue && !value) || (defaultValue === value)));
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
