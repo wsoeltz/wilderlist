@@ -3,25 +3,20 @@ import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import useFluent from '../../../../../hooks/useFluent';
 import getWeather from '../../../../../utilities/getWeather';
 import LoadingSpinner from '../../..//LoadingSpinner';
-import NWSForecast, {NWSForecastDatum} from './NWSForecast';
-import OpenWeatherForecast, {OpenWeatherForecastDatum} from './OpenWeatherForecast';
+import NWSForecast from './NWSForecast';
+import OpenWeatherForecast from './OpenWeatherForecast';
+import {
+  readNWSCache,
+  writeNWSCache,
+} from './simpleCache';
+import {
+  Forecast,
+  ForecastSource,
+} from './types';
 import {
   ForecastRootContainer,
   LoadingContainer,
 } from './Utils';
-
-enum ForecastSource {
-  NWS = 'nws',
-  OpenWeatherMap = 'openweathermap',
-}
-
-type Forecast = {
-  source: ForecastSource.OpenWeatherMap;
-  data: OpenWeatherForecastDatum;
-} | {
-  source: ForecastSource.NWS;
-  data: NWSForecastDatum[];
-};
 
 interface LatLong {
   latitude: number;
@@ -46,6 +41,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
           return undefined;
         }
         if (res && res.data) {
+          writeNWSCache(latitude, longitude, res.data);
           setForecast(res.data);
         } else {
           setError('Weather for this location is not available at this time.');
@@ -58,7 +54,12 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
       }
     };
     if (currentUser !== null) {
-      getWeatherData();
+      const cachedWeather = readNWSCache(latitude, longitude);
+      if (!cachedWeather) {
+        getWeatherData();
+      } else {
+        setForecast(cachedWeather.data);
+      }
     }
 
     return () => {ignoreResult = true; };

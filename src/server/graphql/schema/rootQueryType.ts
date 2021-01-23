@@ -322,7 +322,6 @@ const RootQuery = new GraphQLObjectType({
         campsite: { type: GraphQLID },
       },
       resolve(parentValue, { author, date, mountain, trail, campsite}) {
-        const $or: any[] = [];
         let item: any = {};
         if (mountain) {
           item = {mountains: mountain};
