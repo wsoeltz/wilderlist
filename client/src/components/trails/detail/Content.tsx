@@ -7,10 +7,10 @@ import {
   PeakListVariants,
   Trail,
 } from '../../../types/graphQLTypes';
-import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import {CoreItem} from '../../../types/itemTypes';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 
 interface Props {
   id: Trail['id'];

@@ -18,6 +18,7 @@ import Modal from '../../sharedComponents/Modal';
 import TripReportForm, {
   ButtonWrapper,
   CancelButton,
+  Origin,
   Props as BaseProps,
 } from './TripReportForm';
 
@@ -49,7 +50,6 @@ const EditAscentReport = (props: Props) => {
   );
 
   const {loading, error, data} = useGetTripReportForDateAndMountain(variables);
-  console.log(loading, error, data)
   const initialStartDate = date.year && date.month && date.month && date.day
     ? new Date(date.year, date.month - 1, date.day) : null;
 
@@ -90,6 +90,7 @@ const EditAscentReport = (props: Props) => {
           initialStartDate={initialStartDate}
           initialDateType={getDateType(date)}
           initialUserList={[]}
+          origin={Origin.edit}
           initialConditions={{
             mudMinor: false,
             mudMajor: false,
@@ -147,6 +148,7 @@ const EditAscentReport = (props: Props) => {
           initialMountainList={filteredMountains}
           initialTrailList={filteredTrails}
           initialCampsiteList={filteredCampsites}
+          origin={Origin.edit}
           initialConditions={{
             mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
             iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,

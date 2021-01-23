@@ -51,7 +51,7 @@ const TrailDetail = (props: Props) => {
 
       const stateAbbreviation = states && states[0] && states[0].abbreviation ? states[0].abbreviation : '';
 
-      const name = trail.name ? trail.name : getString('global-formatted-trail-type', {type})
+      const name = trail.name ? trail.name : getString('global-formatted-trail-type', {type});
 
       header = (
         <Header

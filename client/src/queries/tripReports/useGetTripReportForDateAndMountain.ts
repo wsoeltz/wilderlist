@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { TripReport } from '../../types/graphQLTypes';
 
-const GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE = gql`
+const GET_TRIP_REPORT_FOR_USER_ITEM_DATE = gql`
   query GetTripReportByAuthorDateAndItems
     ($author: ID!, $mountain: ID, $trail: ID, $campsite: ID, $date: String!) {
     tripReport: tripReportByAuthorDateAndItems(
@@ -80,8 +80,8 @@ interface QueryVariables {
 }
 
 export const refetchTripReportForDateAndMountain = (variables: QueryVariables) => (
-  {query: GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, variables}
+  {query: GET_TRIP_REPORT_FOR_USER_ITEM_DATE, variables, fetchPolicy: 'no-cache'}
 );
 
-export const useGetTripReportForDateAndMountain = (variables: QueryVariables) => 
-  useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_MOUNTAIN_DATE, {variables});
+export const useGetTripReportForDateAndMountain = (variables: QueryVariables) =>
+  useQuery<SuccessResponse, QueryVariables>(GET_TRIP_REPORT_FOR_USER_ITEM_DATE, {variables, fetchPolicy: 'no-cache'});

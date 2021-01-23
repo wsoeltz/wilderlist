@@ -12,14 +12,14 @@ import {
   refetchUsersPeakLists,
 } from '../lists/getUsersPeakLists';
 import {
-  refetchUsersProgress,
-} from '../users/useUsersProgress';
-import {
   refetchUsersNotifications,
 } from '../notifications/useGetNotifications';
 import {
-  refetchLatestTripReports,
+  refetchUsersProgress,
+} from '../users/useUsersProgress';
+import {
   Input as RefetchInput,
+  refetchLatestTripReports,
 } from './useLatestTripReports';
 
 const ADD_MOUNTAIN_COMPLETION = gql`

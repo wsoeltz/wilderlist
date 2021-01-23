@@ -2,10 +2,10 @@ import {
   faUserEdit,
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import useFluent from '../../../hooks/useFluent';
 import DetailSegment, {Panel} from './DetailSegment';
 import LatestWilderlistReports from './latestWilderlistReports';
 import TripsAndNotes, {Props} from './TripsAndNotes';
-import useFluent from '../../../hooks/useFluent';
 
 const TripsNotesAndReports = (props: Props) => {
   const {id, name, item} = props;

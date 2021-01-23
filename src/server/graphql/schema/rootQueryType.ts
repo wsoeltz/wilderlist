@@ -323,20 +323,20 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parentValue, { author, date, mountain, trail, campsite}) {
         const $or: any[] = [];
+        let item: any = {};
         if (mountain) {
-          $or.push({mountains: mountain});
+          item = {mountains: mountain};
         }
         if (trail) {
-          $or.push({trails: trail});
+          item = {trails: trail};
         }
         if (campsite) {
-          $or.push({campsites: campsite});
+          item = {campsites: campsite};
         }
-        console.log($or);
         return TripReport
           .findOne({
+            ...item,
             author, date,
-            $or,
           });
       },
     },
@@ -350,15 +350,15 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parentValue, {mountain, trail, campsite, nPerPage}) {
         let item: any = {};
-          if (mountain) {
-            item = {mountains: mountain};
-          }
-          if (trail) {
-            item = {trails: trail};
-          }
-          if (campsite) {
-            item = {campsites: campsite};
-          }
+        if (mountain) {
+          item = {mountains: mountain};
+        }
+        if (trail) {
+          item = {trails: trail};
+        }
+        if (campsite) {
+          item = {campsites: campsite};
+        }
         return TripReport
           .find({
             ...item,

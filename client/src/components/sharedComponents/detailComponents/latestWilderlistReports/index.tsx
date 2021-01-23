@@ -1,7 +1,7 @@
 import React from 'react';
+import {CoreItem} from '../../../../types/itemTypes';
 import {BasicRoot} from '../styleUtils';
 import TripReports from './TripReports';
-import {CoreItem} from '../../../../types/itemTypes';
 
 interface Props {
   id: string;

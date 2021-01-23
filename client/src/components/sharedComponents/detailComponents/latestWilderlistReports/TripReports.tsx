@@ -30,6 +30,7 @@ import {
   semiBoldFontBoldWeight,
 } from '../../../../styling/styleUtils';
 import { TripReport, TripReportPrivacy } from '../../../../types/graphQLTypes';
+import {CoreItem} from '../../../../types/itemTypes';
 import {
   formatStringDate,
 } from '../../../../utilities/dateUtils';
@@ -38,7 +39,6 @@ import {
 } from '../../../../Utils';
 import LoadingSpinner from '../../LoadingSpinner';
 import TripReportModal from './TripReportModal';
-import {CoreItem} from '../../../../types/itemTypes';
 
 const Root = styled.div`
   min-height: 150px;

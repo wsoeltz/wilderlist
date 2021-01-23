@@ -109,6 +109,11 @@ const OptionalSup = styled.sup`
   font-weight: 400;
 `;
 
+export enum Origin {
+  add = 'add',
+  edit = 'edit',
+}
+
 interface BaseProps {
   initialMountainList: MountainDatum[];
   initialTrailList: TrailDatum[];
@@ -117,6 +122,7 @@ interface BaseProps {
   onSave: () => void;
   userId: string;
   textNote?: React.ReactElement<any> | null;
+  origin?: Origin;
 }
 
 export type Props = BaseProps & Restrictions;
@@ -143,7 +149,7 @@ const TripReportForm = (props: PropsWithConditions) => {
     initialCompletionYear, initialStartDate, initialDateType,
     initialUserList, initialConditions, initialTripNotes, initialLink,
     initialMountainList, tripReportId, refetchQuery, initialPrivacy,
-    initialTrailList, initialCampsiteList,
+    initialTrailList, initialCampsiteList, origin,
   } = props;
 
   const tripNotesEl = useRef<HTMLTextAreaElement | null>(null);
@@ -432,7 +438,7 @@ const TripReportForm = (props: PropsWithConditions) => {
   };
 
   const deleteAscentButton =
-    tripReportId !== undefined || initialStartDate !== null ? (
+    tripReportId !== undefined || initialStartDate !== null || origin === Origin.edit ? (
       <ExpandedButtonWarning onClick={openAreYouSureModal}>
         <BasicIconInText icon={faTrash} />
         Delete Trip

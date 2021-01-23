@@ -3,10 +3,10 @@ import useFluent from '../../../hooks/useFluent';
 import {
   Campsite,
 } from '../../../types/graphQLTypes';
-import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import {CoreItem} from '../../../types/itemTypes';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 
 interface Props {
   campsite: {
@@ -26,7 +26,7 @@ const Content = (props: Props) => {
 
   const getString = useFluent();
 
-  const name = campsite.name ? campsite.name : getString('global-formatted-campsite-type', {type})
+  const name = campsite.name ? campsite.name : getString('global-formatted-campsite-type', {type});
 
   return (
     <>

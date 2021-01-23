@@ -3,14 +3,14 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
+import {Routes} from '../../../../routing/routes';
 import {
   addTripReportLink,
+  campsiteDetailLink,
   editTripReportLink,
   mountainDetailLink,
-  campsiteDetailLink,
   trailDetailLink,
 } from '../../../../routing/Utils';
-import {Routes} from '../../../../routing/routes';
 import {
   AscentListItem,
   BasicListItem,

@@ -169,19 +169,19 @@ const addEditTripReport = async (input: Input) => {
   }
 
   // 1 Attempt to fetch tripReport by id OR originalDate && author && items
-  const $or: any[] = [];
-  if (mountains) {
-    $or.push({mountains});
+  let item: any = {};
+  if (mountains && mountains.length) {
+    item = {mountains};
   }
-  if (trails) {
-    $or.push({trails});
+  if (trails && trails.length) {
+    item = {trails};
   }
-  if (campsites) {
-    $or.push({campsites});
+  if (campsites && campsites.length) {
+    item = {campsites};
   }
   const tripReportDoc = await TripReport.findOne({$or: [
       { _id: id },
-      { date: originalDate, author, $or },
+      { date: originalDate, author, ...item },
     ],
   });
   // 2 If it exists:
@@ -189,11 +189,18 @@ const addEditTripReport = async (input: Input) => {
     if (getDateType(parseDate(date)) !== DateType.full) {
       // 1 If new date is not a full date
       // delete the report
-      console.log('delete trip')
-      await TripReport.deleteOne({_id: tripReportDoc._id});
+      await TripReport.deleteMany({$or: [
+          { _id: id },
+          { date: originalDate, author, ...item },
+        ],
+      });
       return null;
     } else {
       // 2 else tripReport exists and with valid date
+      // delete any other trip reports that exist with the same date for the same items
+      await TripReport.deleteMany(
+        { _id: {$ne: id}, date, author, ...item },
+      );
       // Replace all contents of tripReport with new input
       // Save tripReport doc
       if (conditionsExist(input)) {
@@ -228,15 +235,21 @@ const addEditTripReport = async (input: Input) => {
         tripReportDoc.obstaclesBlowdown = input.obstaclesBlowdown ? input.obstaclesBlowdown : null;
         tripReportDoc.obstaclesOther = input.obstaclesOther ? input.obstaclesOther : null;
 
-        console.log('should be edited')
         tripReportDoc.save();
         return tripReportDoc;
+      } else {
+        await TripReport.deleteOne({_id: tripReportDoc._id});
+        return null;
       }
     }
   } else {
     // 3 else the report does not exist
+    // delete any other trip reports that exist with the same date for the same items
+      await TripReport.deleteMany(
+        { _id: {$ne: id}, date, author, ...item },
+      );
     // Create and save a new report with input
-    const newTripReport = new TripReport({
+      const newTripReport = new TripReport({
       date,
       parent: input.parent ? input.parent : null,
       author: input.author ? input.author : null,
@@ -268,8 +281,7 @@ const addEditTripReport = async (input: Input) => {
       obstaclesBlowdown: input.obstaclesBlowdown ? input.obstaclesBlowdown : null,
       obstaclesOther: input.obstaclesOther ? input.obstaclesOther : null,
     });
-    console.log('should be new')
-    return newTripReport.save();
+      return newTripReport.save();
   }
 
 };
