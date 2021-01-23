@@ -4,12 +4,23 @@ import orderBy from 'lodash/sortBy';
 import {useEffect, useState} from 'react';
 import useCurrentUser from '../../../../../../hooks/useCurrentUser';
 import {getDistanceFromLatLonInMiles} from '../../../../../../Utils';
+import {
+  readSnowReportCache,
+  writeSnowReportCache,
+} from '../simpleCache';
+import {
+  AltValues,
+  CleanedSnowData,
+  SnowReport,
+  SnowValue,
+} from '../types';
 
 export interface Input {
   latitude: number;
   longitude: number;
   stateAbbr: string;
 }
+
 interface RawSnowDatum {
   county: string;
   elev: string;
@@ -23,31 +34,10 @@ interface RawSnowDatum {
   values: {[key: string]: string};
 }
 
-export enum AltValues {
-  Trace = 'trace amounts',
-  NoData = 'no data',
-}
-
-interface SnowValue {
-  date: Date; value: number | AltValues;
-}
-
-interface CleanedSnowData {
-  county: string;
-  stationName: string;
-  location: [number, number];
-  distance: number;
-  elevation: number;
-  values: SnowValue[];
-}
-
 interface Output {
   loading: boolean;
   error: undefined | {message: string};
-  data: undefined | {
-    snowfall: CleanedSnowData;
-    snowdepth: CleanedSnowData;
-  };
+  data: undefined | SnowReport;
 }
 
 const cacheSnowFall: any = setupCache({
@@ -72,7 +62,13 @@ const isDirections = (word: string) => word.length <= 3 && word.match(/^[WENS]+$
 
 const useSnowReport = (input: Input) => {
   const currentUser = useCurrentUser();
-  const [output, setOutput] = useState<Output>({loading: true, error: undefined, data: undefined});
+
+  const initialReport = readSnowReportCache(input.latitude, input.longitude);
+
+  const [output, setOutput] = useState<Output>(initialReport
+    ? {loading: false, error: undefined, data: initialReport.data}
+    : {loading: true, error: undefined, data: undefined},
+  );
 
   useEffect(() => {
     const {stateAbbr, latitude, longitude} = input;
@@ -231,6 +227,7 @@ const useSnowReport = (input: Input) => {
             console.warn('Snow report promise canceled for unmounted component');
             return undefined;
           }
+          writeSnowReportCache(latitude, longitude, {snowfall, snowdepth});
           setOutput({loading: false, error: undefined, data: {snowfall, snowdepth}});
         } else {
           throw new Error('Unable to get snow report right now');
@@ -243,7 +240,12 @@ const useSnowReport = (input: Input) => {
       }
     };
     if (currentUser !== null) {
-      fetchSnowReport();
+      const cachedSnowReport = readSnowReportCache(latitude, longitude);
+      if (!cachedSnowReport) {
+        fetchSnowReport();
+      } else {
+        setOutput({loading: false, error: undefined, data: cachedSnowReport.data});
+      }
     }
 
     return () => {ignoreResult = true; };

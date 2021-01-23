@@ -6,8 +6,8 @@ import LoadingSpinner from '../../..//LoadingSpinner';
 import NWSForecast from './NWSForecast';
 import OpenWeatherForecast from './OpenWeatherForecast';
 import {
-  readNWSCache,
-  writeNWSCache,
+  readWeatherCache,
+  writeWeatherCache,
 } from './simpleCache';
 import {
   Forecast,
@@ -25,7 +25,8 @@ interface LatLong {
 
 const WeatherReport = ({latitude, longitude}: LatLong) => {
 
-  const [forecast, setForecast] = useState<Forecast | null>(null);
+  const intialCachedWeather = readWeatherCache(latitude, longitude);
+  const [forecast, setForecast] = useState<Forecast | null>(intialCachedWeather ? intialCachedWeather.data : null);
   const [error, setError] = useState<any | null>(null);
 
   const currentUser = useCurrentUser();
@@ -41,7 +42,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
           return undefined;
         }
         if (res && res.data) {
-          writeNWSCache(latitude, longitude, res.data);
+          writeWeatherCache(latitude, longitude, res.data);
           setForecast(res.data);
         } else {
           setError('Weather for this location is not available at this time.');
@@ -54,7 +55,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
       }
     };
     if (currentUser !== null) {
-      const cachedWeather = readNWSCache(latitude, longitude);
+      const cachedWeather = readWeatherCache(latitude, longitude);
       if (!cachedWeather) {
         getWeatherData();
       } else {
