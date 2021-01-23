@@ -382,6 +382,10 @@ export const ButtonBase = styled.button<{mobileExtend?: boolean}>`
     opacity: 0.5;
   }
 
+  @media (max-width: ${mobileSize}px) {
+    font-size: 0.9rem;
+  }
+
   ${({mobileExtend}) => mobileExtend ? `
     @media (max-width: 600px) {
       width: 100%;

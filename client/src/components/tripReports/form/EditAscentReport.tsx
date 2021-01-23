@@ -14,10 +14,9 @@ import {
   convertFieldsToDate,
   notEmpty,
 } from '../../../Utils';
-import Modal from '../../sharedComponents/Modal';
+import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import {useMapViewBoxScroll} from '../../template/contentHeader/MobileMapViewBox';
 import TripReportForm, {
-  ButtonWrapper,
-  CancelButton,
   Origin,
   Props as BaseProps,
 } from './TripReportForm';
@@ -53,28 +52,16 @@ const EditAscentReport = (props: Props) => {
   const initialStartDate = date.year && date.month && date.month && date.day
     ? new Date(date.year, date.month - 1, date.day) : null;
 
-  const actions = (
-    <ButtonWrapper>
-      <CancelButton onClick={props.onClose}>
-        {getString('global-text-value-modal-cancel')}
-      </CancelButton>
-    </ButtonWrapper>
-  );
+  useMapViewBoxScroll(data);
+
   if (loading === true) {
-    return null;
+    return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return (
-      <Modal
-        onClose={props.onClose}
-        width={'300px'}
-        height={'auto'}
-        actions={actions}
-      >
-        <PlaceholderText>
-          {getString('global-error-retrieving-data')}
-        </PlaceholderText>
-      </Modal>
+      <PlaceholderText>
+        {getString('global-error-retrieving-data')}
+      </PlaceholderText>
     );
   } else if (data !== undefined) {
     const { tripReport } = data;
@@ -162,7 +149,7 @@ const EditAscentReport = (props: Props) => {
       );
     }
   } else {
-    return null;
+    return <LoadingSpinner />;
   }
 };
 

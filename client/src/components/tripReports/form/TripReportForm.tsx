@@ -15,14 +15,16 @@ import {
 } from '../../../queries/tripReports/useLatestTripReports';
 import {
   BasicIconInText,
-  ExpandedButtonPrimary,
-  ExpandedButtonSecondary,
-  ExpandedButtonWarning,
+  ButtonPrimary,
+  ButtonSecondary,
+  ButtonWarning,
   FullWidthBreak,
   HighlightedIconInText,
   IconTitle,
+  lightBorderColor,
   placeholderColor,
   SmallTextNote,
+  tertiaryColor,
   TitleText,
   warningColor,
 } from '../../../styling/styleUtils';
@@ -58,7 +60,6 @@ export const preferredDateFormatLocalStorageVariable = 'preferredDateFormatLocal
 export const Root = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
 `;
 
 const SectionTitle = styled.h2`
@@ -74,13 +75,15 @@ const SectionTitle = styled.h2`
 
 export const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: stretch;
+  justify-content: flex-end;
   align-items: center;
   position: sticky;
   bottom: -1rem;
   margin: 0 -1rem;
   margin-top: auto;
-  background-color: #fff;
+  background-color: ${tertiaryColor};
+  border-top: solid 1px ${lightBorderColor};
+  padding: 0.7rem 1rem;
 
   @media(max-width: ${mobileSize}px) {
     position: fixed;
@@ -90,11 +93,21 @@ export const ButtonWrapper = styled.div`
     height: 50px;
     align-items: stretch;
     z-index: 500;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
   }
 `;
 
-export const CancelButton = styled(ExpandedButtonSecondary)`
-  margin-right: 0;
+export const CancelButton = styled(ButtonSecondary)`
+  margin-right: 1rem;
+`;
+
+const Icon = styled(BasicIconInText)`
+  transform: translateY(2px);
+`;
+
+const DeleteButton = styled(ButtonWarning)`
+  margin-right: auto;
 `;
 
 const Error = styled.p`
@@ -217,7 +230,19 @@ const TripReportForm = (props: PropsWithConditions) => {
   const [conditions, setConditions] = useState<Conditions>({...initialConditions});
 
   const checkIfModified = () => {
-    return !saving && (
+    if (!saving && !tripReportId && !(completionDay || completionMonth) && !(
+        userList.length ||
+        initialMountainList.length !== mountainList.length ||
+        initialTrailList.length !== trailList.length ||
+        initialCampsiteList.length !== campsiteList.length ||
+        initialPrivacy !== privacy ||
+        (tripNotesEl && tripNotesEl.current && tripNotesEl.current.value) ||
+        (tripLinkEl && tripLinkEl.current && tripLinkEl.current.value)
+      )) {
+      return false;
+    }
+    return !saving &&
+      (
       initialCompletionDay !== completionDay ||
       initialCompletionMonth !== completionMonth ||
       initialCompletionYear !== completionYear ||
@@ -229,8 +254,8 @@ const TripReportForm = (props: PropsWithConditions) => {
       initialPrivacy !== privacy ||
       !isEqual(conditions, initialConditions) ||
       !(tripNotesEl && tripNotesEl.current && tripNotesEl.current.value === initialTripNotes) ||
-      !(tripLinkEl && tripLinkEl.current && tripLinkEl.current.value === initialTripNotes)
-    );
+      !(tripLinkEl && tripLinkEl.current && tripLinkEl.current.value === initialLink)
+    ) ? true : false;
   };
 
   useBeforeUnload(checkIfModified);
@@ -460,10 +485,10 @@ const TripReportForm = (props: PropsWithConditions) => {
 
   const deleteAscentButton =
     tripReportId !== undefined || initialStartDate !== null || origin === Origin.edit ? (
-      <ExpandedButtonWarning onClick={openAreYouSureModal}>
-        <BasicIconInText icon={faTrash} />
+      <DeleteButton onClick={openAreYouSureModal}>
+        <Icon icon={faTrash} />
         Delete Trip
-      </ExpandedButtonWarning>
+      </DeleteButton>
     ) : null;
 
   const saveButtonText =
@@ -532,16 +557,16 @@ const TripReportForm = (props: PropsWithConditions) => {
       <ButtonWrapper>
         {deleteAscentButton}
         <CancelButton onClick={onClose}>
-          <BasicIconInText icon={faTimes} />
+          <Icon icon={faTimes} />
           {getString('global-text-value-modal-cancel')}
         </CancelButton>
-        <ExpandedButtonPrimary
+        <ButtonPrimary
           onClick={validateAndAddMountainCompletion}
           disabled={isConfirmDisabled()}
         >
-          <BasicIconInText icon={faCheck} />
+          <Icon icon={faCheck} />
           {saveButtonText}
-        </ExpandedButtonPrimary>
+        </ButtonPrimary>
       </ButtonWrapper>
       {errorNote}
       {textNote}
