@@ -1,3 +1,6 @@
+const {point, featureCollection} = require('@turf/helpers');
+const centroid = require('@turf/centroid').default;
+const getBbox = require('@turf/bbox').default;
 import {
   faCheck,
   faEdit,
@@ -5,10 +8,11 @@ import {
   faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
+import {Types} from 'mongoose';
 import React, {useCallback, useState} from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import {useHistory} from 'react-router-dom';
 import useFluent from '../../../hooks/useFluent';
-import {FormInput} from '../../../queries/lists/addEditPeakList';
+import {SuccessResponse, Variables} from '../../../queries/lists/addEditPeakList';
 import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
 import {MountainDatum} from '../../../queries/mountains/useBasicSearchMountains';
 import {
@@ -25,9 +29,9 @@ import {
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
+  ListPrivacy,
   PeakListFlag,
   PeakListTier,
-  PeakListVariants,
 } from '../../../types/graphQLTypes';
 import CreateMountainModal from '../../mountains/create/CreateMountainModal';
 import AreYouSureModal, {
@@ -50,43 +54,43 @@ import Tooltip from '../../sharedComponents/Tooltip';
 import AddMountains from './AddMountains';
 import ParentModal from './ParentModal';
 
-export interface InitialPeakListDatum {
-  id: string | undefined;
-  name: string;
-  shortName: string;
-  description: string;
-  optionalPeaksDescription: string;
-  type: PeakListVariants;
-  mountains: MountainDatum[];
-  optionalMountains: MountainDatum[];
-  flag: PeakListFlag | null;
-  tier: PeakListTier | undefined;
-  resources: ExternalResource[];
-  parent: null;
-}
+// export interface InitialPeakListDatum {
+//   id: string | undefined;
+//   name: string;
+//   shortName: string;
+//   description: string;
+//   optionalPeaksDescription: string;
+//   type: PeakListVariants;
+//   mountains: MountainDatum[];
+//   optionalMountains: MountainDatum[];
+//   flag: PeakListFlag | null;
+//   tier: PeakListTier | undefined;
+//   resources: ExternalResource[];
+//   parent: null;
+// }
 
-interface Props extends RouteComponentProps {
-  initialData: InitialPeakListDatum;
-  onSubmit: (input: FormInput) => void;
-  states: Array<{id: string, abbreviation: string}>;
+interface Props {
+  initialData: SuccessResponse['peakList'];
+  onSubmit: (input: Variables) => void;
 }
 
 const PeakListForm = (props: Props) => {
-  const { initialData, onSubmit, history, states } = props;
+  const { initialData, onSubmit } = props;
 
+  const history = useHistory();
   const getString = useFluent();
 
+  const [listId /*setListId*/] = useState<string | Types.ObjectId>(initialData.id);
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
   const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
-  const [tier, setTier] = useState<PeakListTier | undefined>(initialData.tier);
-  const [description, setDescription] = useState<string>(initialData.description);
-  const [optionalPeaksDescription, setOptionalPeaksDescription] =
-    useState<string>(initialData.optionalPeaksDescription);
+  const [tier, setTier] = useState<PeakListTier | null>(initialData.tier);
+  const [description, setDescription] = useState<string>(initialData.description ? initialData.description : '');
   const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
   const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
   const [externalResources, setExternalResources] =
-    useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
+    useState<ExternalResource[]>(
+      initialData.resources ? [...initialData.resources, {title: '', url: ''}] : [{title: '', url: ''}]);
   const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
 
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -157,18 +161,26 @@ const PeakListForm = (props: Props) => {
       const stateIds = statesArray.map(state => state.id);
       setLoadingSubmit(true);
       const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
+      const allPoints = featureCollection(mountains.map(mtn => point(mtn.location)));
+      const center = centroid(allPoints);
+      const bbox = getBbox(allPoints);
       onSubmit({
+        id: listId as unknown as string,
         name,
         shortName,
-        type: initialData.type ? initialData.type : PeakListVariants.standard,
         description,
-        optionalPeaksDescription,
         mountains: mountainIds,
         optionalMountains: optionalMountainIds,
+        trails: [],
+        optionalTrails: [],
+        campsites: [],
+        optionalCampsites: [],
         states: stateIds,
         tier,
         resources,
-        parent: null,
+        privacy: ListPrivacy.Public,
+        center: center.geometry.coordinates.map((c: number) => parseFloat(c.toFixed(3))),
+        bbox,
       });
     }
   };
@@ -183,7 +195,7 @@ const PeakListForm = (props: Props) => {
     } else if (value === 'mountaineer') {
       return setTier(PeakListTier.mountaineer);
     }
-    return setTier(undefined);
+    return setTier(null);
   };
 
   const saveButtonText = loadingSubmit === true
@@ -367,7 +379,7 @@ const PeakListForm = (props: Props) => {
               selectedMountains={mountains}
               setSelectedMountains={setMountains}
               openParentModal={openParentModal}
-              states={states}
+              states={[]}
             />
           </div>
         </CollapsibleDetailBox>
@@ -413,47 +425,6 @@ const PeakListForm = (props: Props) => {
           </div>
         </CollapsibleDetailBox>
 
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faMountain} style={{opacity: 0.5}}/>
-              {getString('create-peak-list-peak-list-optional-mountains')}
-              {' '}({optionalMountains.length})
-            </>
-          }
-          defaultHidden={true}
-        >
-          <Section>
-            <SmallTextNote>{getString('create-peak-list-peak-list-optional-mountains-note')}</SmallTextNote>
-          </Section>
-          <Section>
-            <LabelContainer htmlFor={'create-peak-list-optional-description'}>
-              <Label>
-                {getString('create-peak-list-peak-list-optional-description-label')}
-              </Label>
-            </LabelContainer>
-            <DelayedTextarea
-              id={'create-peak-list-optional-description'}
-              rows={6}
-              initialValue={optionalPeaksDescription}
-              setInputValue={value => setOptionalPeaksDescription(value)}
-              placeholder={getString('create-peak-list-peak-optional-description')}
-              maxLength={5000}
-            />
-          </Section>
-          <div>
-            <LabelContainer>
-              <Label>
-                {getString('peak-list-detail-text-optional-mountains')}
-              </Label>
-            </LabelContainer>
-            <AddMountains
-              selectedMountains={optionalMountains}
-              setSelectedMountains={setOptionalMountains}
-              states={states}
-            />
-          </div>
-        </CollapsibleDetailBox>
       </Wrapper>
 
       <ActionButtons>
@@ -482,4 +453,4 @@ const PeakListForm = (props: Props) => {
   );
 };
 
-export default withRouter(PeakListForm);
+export default PeakListForm;

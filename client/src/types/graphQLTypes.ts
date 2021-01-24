@@ -83,6 +83,11 @@ export enum PeakListTier {
   mountaineer = 'mountaineer',
 }
 
+export enum ListPrivacy {
+  Private = 'private',
+  Public = 'public',
+}
+
 export interface PeakList {
   _id: string;
   id: string;
@@ -94,6 +99,10 @@ export interface PeakList {
   parent: PeakList | null;
   mountains: Array<Mountain | null>;
   optionalMountains: null | Array<Mountain | null>;
+  trails: Array<Trail | null>;
+  optionalTrails: null | Array<Trail | null>;
+  campsites: Array<Campsite | null>;
+  optionalCampsites: null | Array<Campsite | null>;
   users: Array<User | null>;
   numUsers: number;
   searchString: string;
@@ -110,9 +119,10 @@ export interface PeakList {
   latestAscent: string | null;
   isActive: boolean | null;
   stateOrRegionString: string | null;
-  center: Coordinate;
-  bbox: [Longitude, Latitude, Longitude, Latitude];
-  classification: string;
+  center: Coordinate | null;
+  bbox: [Longitude, Latitude, Longitude, Latitude] | null;
+  classification: string | null;
+  privacy: ListPrivacy | null;
 }
 
 export enum TrailType {

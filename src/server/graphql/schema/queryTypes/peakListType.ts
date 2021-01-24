@@ -17,8 +17,10 @@ import {
 } from '../../../utilities/peakListUtils';
 import { PeakList as IPeakList } from '../../graphQLTypes';
 import {getStatesOrRegion} from '../../Utils';
+import CampsiteType from './campsiteType';
 import MountainType, {CreatedItemStatus} from './mountainType';
 import StateType from './stateType';
+import TrailType from './trailType';
 import UserType from './userType';
 
 type PeakListSchemaType = mongoose.Document & IPeakList;
@@ -38,6 +40,22 @@ const PeakListSchema = new Schema({
   optionalMountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
+  }],
+  trails: [{
+    type: Schema.Types.ObjectId,
+    ref: 'trail',
+  }],
+  optionalTrails: [{
+    type: Schema.Types.ObjectId,
+    ref: 'trail',
+  }],
+  campsites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'campsite',
+  }],
+  optionalCampsites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'campsite',
   }],
   users: [{
     type: Schema.Types.ObjectId,
@@ -64,6 +82,7 @@ const PeakListSchema = new Schema({
   center: [{type: Number}],
   bbox: [{type: Number}],
   classification:  { type: String },
+  privacy: { type: String },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -147,6 +166,7 @@ const PeakListType: any = new GraphQLObjectType({
     description: { type: GraphQLString },
     optionalPeaksDescription: { type: GraphQLString },
     type: { type: PeakListVariants },
+    privacy: { type: GraphQLString },
     mountains:  {
       type: new GraphQLList(MountainType),
       async resolve(parentValue, args, {dataloaders: {mountainLoader, peakListLoader}}) {
@@ -174,6 +194,70 @@ const PeakListType: any = new GraphQLObjectType({
             }
           }
           return await mountainLoader.loadMany(parentValue.optionalMountains);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    trails:  {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader, peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.trails && res.trails.length) {
+              return await trailLoader.loadMany(res.trails);
+            }
+          }
+          return await trailLoader.loadMany(parentValue.trails);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    optionalTrails:  {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader, peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.optionalTrails && res.optionalTrails.length) {
+              return await trailLoader.loadMany(res.optionalTrails);
+            }
+          }
+          return await trailLoader.loadMany(parentValue.optionalTrails);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsites:  {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader, peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.campsites && res.campsites.length) {
+              return await trailLoader.loadMany(res.campsites);
+            }
+          }
+          return await trailLoader.loadMany(parentValue.campsites);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    optionalCampsites:  {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader, peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.optionalCampsites && res.optionalCampsites.length) {
+              return await campsiteLoader.loadMany(res.optionalCampsites);
+            }
+          }
+          return await campsiteLoader.loadMany(parentValue.optionalCampsites);
         } catch (err) {
           return err;
         }

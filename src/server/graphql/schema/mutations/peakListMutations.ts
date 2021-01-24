@@ -1,5 +1,6 @@
 /* tslint:disable:await-promise */
 import {
+  GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
@@ -28,6 +29,7 @@ import PeakListType, {
 } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
+import addEditPeakList, {BaseInput} from './peakList/addEditPeakList';
 
 interface BaseVariables {
   name: string;
@@ -260,6 +262,35 @@ const peakListMutations: any = {
         return PeakList.findByIdAndDelete(id);
       } catch (err) {
         return err;
+      }
+    },
+  },
+  addEditPeakList: {
+    type: PeakListType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      name: { type: GraphQLNonNull(GraphQLString) },
+      shortName: { type: GraphQLNonNull(GraphQLString) },
+      description: { type: GraphQLString },
+      mountains: { type: new GraphQLList(GraphQLID)},
+      optionalMountains: { type: new GraphQLList(GraphQLID)},
+      trails: { type: new GraphQLList(GraphQLID)},
+      optionalTrails: { type: new GraphQLList(GraphQLID)},
+      campsites: { type: new GraphQLList(GraphQLID)},
+      optionalCampsites: { type: new GraphQLList(GraphQLID)},
+      states: { type: new GraphQLList(GraphQLID)},
+      resources: { type: new GraphQLList(ExternalResourcesInputType) },
+      tier: { type: PeakListTier },
+      privacy: { type: GraphQLString },
+      center: { type: new GraphQLList(GraphQLFloat) },
+      bbox: {type: new GraphQLList(GraphQLFloat) },
+    },
+    async resolve(_unused: any, input: BaseInput, {user}: {user: IUser | undefined | null}) {
+      const {name, shortName} = input;
+      if (name !== '' && shortName !== '') {
+        return await addEditPeakList({...input, user});
+      } else {
+        return null;
       }
     },
   },
