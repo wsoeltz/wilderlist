@@ -233,15 +233,15 @@ const PeakListType: any = new GraphQLObjectType({
     },
     campsites:  {
       type: new GraphQLList(CampsiteType),
-      async resolve(parentValue, args, {dataloaders: {trailLoader, peakListLoader}}) {
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader, peakListLoader}}) {
         try {
           if (parentValue.parent) {
             const res = await peakListLoader.load(parentValue.parent);
             if (res && res.campsites && res.campsites.length) {
-              return await trailLoader.loadMany(res.campsites);
+              return await campsiteLoader.loadMany(res.campsites);
             }
           }
-          return await trailLoader.loadMany(parentValue.campsites);
+          return await campsiteLoader.loadMany(parentValue.campsites);
         } catch (err) {
           return err;
         }

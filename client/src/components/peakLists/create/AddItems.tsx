@@ -1,7 +1,7 @@
 import React from 'react';
-import useFluent from '../../../../hooks/useFluent';
-import { Campsite, Mountain, State, Trail } from '../../../../types/graphQLTypes';
-import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../../sharedComponents/svgIcons';
+import useFluent from '../../../hooks/useFluent';
+import { Campsite, Mountain, State, Trail } from '../../../types/graphQLTypes';
+import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import ItemSelector from './ItemSelector';
 
 export interface MountainDatum {
@@ -13,6 +13,7 @@ export interface MountainDatum {
   };
   elevation: Mountain['elevation'];
   location: Mountain['location'];
+  optional: boolean;
 }
 
 export interface TrailDatum {
@@ -20,6 +21,11 @@ export interface TrailDatum {
   name: Trail['name'];
   type: Trail['type'];
   center: Trail['center'];
+  states: Array<{
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  }>;
+  optional: boolean;
 }
 
 export interface CampsiteDatum {
@@ -27,6 +33,11 @@ export interface CampsiteDatum {
   name: Campsite['name'];
   type: Campsite['type'];
   location: Campsite['location'];
+  state: null | {
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  };
+  optional: boolean;
 }
 
 const getMountainSubtitle = (mtn: MountainDatum) =>

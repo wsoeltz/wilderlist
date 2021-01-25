@@ -14,7 +14,6 @@ import {useHistory} from 'react-router-dom';
 import useFluent from '../../../hooks/useFluent';
 import {SuccessResponse, Variables} from '../../../queries/lists/addEditPeakList';
 import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
-import {MountainDatum} from '../../../queries/mountains/useBasicSearchMountains';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -51,23 +50,12 @@ import {
   Wrapper,
 } from '../../sharedComponents/formUtils';
 import Tooltip from '../../sharedComponents/Tooltip';
-import AddMountains from './AddMountains';
+import AddItems, {
+  CampsiteDatum,
+  MountainDatum,
+  TrailDatum,
+} from './AddItems';
 import ParentModal from './ParentModal';
-
-// export interface InitialPeakListDatum {
-//   id: string | undefined;
-//   name: string;
-//   shortName: string;
-//   description: string;
-//   optionalPeaksDescription: string;
-//   type: PeakListVariants;
-//   mountains: MountainDatum[];
-//   optionalMountains: MountainDatum[];
-//   flag: PeakListFlag | null;
-//   tier: PeakListTier | undefined;
-//   resources: ExternalResource[];
-//   parent: null;
-// }
 
 interface Props {
   initialData: SuccessResponse['peakList'];
@@ -80,15 +68,39 @@ const PeakListForm = (props: Props) => {
   const history = useHistory();
   const getString = useFluent();
 
+  const initialMountains = initialData.mountains.filter(d => d !== null).map((d) => ({
+    ...d, optional: false,
+  })) as MountainDatum[];
+  const initialOptionalMountains = initialData.optionalMountains.filter(d => d !== null).map((d) => ({
+    ...d, optional: true,
+  })) as MountainDatum[];
+
+  const initialTrails = initialData.trails.filter(d => d !== null).map(d => ({
+    ...d, optional: false,
+  })) as TrailDatum[];
+  const initialOptionalTrails = initialData.optionalTrails.filter(d => d !== null).map((d) => ({
+    ...d, optional: true,
+  })) as TrailDatum[];
+
+  const initialCampsites = initialData.campsites.filter(d => d !== null).map(d => ({
+    ...d, optional: false,
+  })) as CampsiteDatum[];
+  const initialOptionalCampsites = initialData.optionalCampsites.filter(d => d !== null).map((d) => ({
+    ...d, optional: true,
+  })) as CampsiteDatum[];
+
   const [listId /*setListId*/] = useState<string | Types.ObjectId>(initialData.id);
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
   const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
   const [tier, setTier] = useState<PeakListTier | null>(initialData.tier);
-  const [privacy, setPrivacy] = useState<ListPrivacy | null>(initialData.privacy);
+  const [privacy, setPrivacy] = useState<ListPrivacy | null>(
+    initialData.privacy ? initialData.privacy : ListPrivacy.Public,
+  );
   const [description, setDescription] = useState<string>(initialData.description ? initialData.description : '');
-  const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
-  const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
+  const [mountains, setMountains] = useState<MountainDatum[]>([...initialMountains, ...initialOptionalMountains]);
+  const [trails, setTrails] = useState<TrailDatum[]>([...initialTrails, ...initialOptionalTrails]);
+  const [campsites, setCampsites] = useState<CampsiteDatum[]>([...initialCampsites, ...initialOptionalCampsites]);
   const [externalResources, setExternalResources] =
     useState<ExternalResource[]>(
       initialData.resources ? [...initialData.resources, {title: '', url: ''}] : [{title: '', url: ''}]);
@@ -99,7 +111,7 @@ const PeakListForm = (props: Props) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const closeAreYouSureModal = useCallback(() => setDeleteModalOpen(false), []);
   const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
-  const openParentModal = useCallback(() => setParentModalOpen(true), []);
+  // const openParentModal = useCallback(() => setParentModalOpen(true), []);
   const closeParentModal = useCallback(() => setParentModalOpen(false), []);
   const closeCreateMountainModal = useCallback(() => setCreateMountainModalOpen(false), []);
 
@@ -143,26 +155,66 @@ const PeakListForm = (props: Props) => {
   );
 
   const statesArray: Array<{id: string, abbreviation: string}> = [];
-  [...mountains, ...optionalMountains].forEach(mtn => {
-    if (mtn.state !== null) {
-      const mtnStateId = mtn.state.id;
-      if (statesArray.filter(state => state && state.id === mtnStateId).length === 0) {
-        statesArray.push(mtn.state);
+  [...mountains, ...campsites].forEach(datum => {
+    if (datum.state !== null) {
+      const datumStateId = datum.state.id;
+      if (statesArray.filter(state => state && state.id === datumStateId).length === 0) {
+        statesArray.push(datum.state);
       }
     }
   });
+  trails.forEach(trail => {
+    if (trail.states !== null && trail.states.length) {
+      trail.states.forEach(trailState => {
+        const trailStateId = trailState.id;
+        if (statesArray.filter(state => state && state.id === trailStateId).length === 0) {
+          statesArray.push(trailState);
+        }
+      });
+    }
+  });
 
-  const verify = () => name && shortName && tier && mountains.length && !loadingSubmit
-    ? true : false;
+  const verify = () => name && shortName && tier && privacy && !loadingSubmit && (
+    mountains.length || trails.length || campsites.length
+  ) ? true : false;
 
   const validateAndSave = () => {
     if (verify() && tier && privacy) {
-      const mountainIds = mountains.map(mtn => mtn.id);
-      const optionalMountainIds = optionalMountains.map(mtn => mtn.id);
+      const mountainIds: string[] = [];
+      const optionalMountainIds: string[] = [];
+      mountains.forEach(mtn => {
+        if (mtn.optional) {
+          optionalMountainIds.push(mtn.id);
+        } else {
+          mountainIds.push(mtn.id);
+        }
+      });
+      const trailIds: string[] = [];
+      const optionalTrailIds: string[] = [];
+      trails.forEach(trail => {
+        if (trail.optional) {
+          optionalTrailIds.push(trail.id);
+        } else {
+          trailIds.push(trail.id);
+        }
+      });
+      const campsiteIds: string[] = [];
+      const optionalCampsiteIds: string[] = [];
+      campsites.forEach(campsite => {
+        if (campsite.optional) {
+          optionalCampsiteIds.push(campsite.id);
+        } else {
+          campsiteIds.push(campsite.id);
+        }
+      });
       const stateIds = statesArray.map(state => state.id);
       setLoadingSubmit(true);
       const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
-      const allPoints = featureCollection(mountains.map(mtn => point(mtn.location)));
+      const allPoints = featureCollection([
+        ...mountains.map(mtn => point(mtn.location)),
+        ...campsites.map(campsite => point(campsite.location)),
+        ...trails.map(trail => point(trail.center)),
+      ]);
       const center = centroid(allPoints);
       const bbox = getBbox(allPoints);
       onSubmit({
@@ -172,10 +224,10 @@ const PeakListForm = (props: Props) => {
         description,
         mountains: mountainIds,
         optionalMountains: optionalMountainIds,
-        trails: [],
-        optionalTrails: [],
-        campsites: [],
-        optionalCampsites: [],
+        trails: trailIds,
+        optionalTrails: optionalTrailIds,
+        campsites: campsiteIds,
+        optionalCampsites: optionalCampsiteIds,
         states: stateIds,
         tier,
         resources,
@@ -205,7 +257,7 @@ const PeakListForm = (props: Props) => {
     } else if (value === 'private') {
       return setPrivacy(ListPrivacy.Private);
     }
-    return setPrivacy(null);
+    return setPrivacy(ListPrivacy.Public);
   };
 
   const saveButtonText = loadingSubmit === true
@@ -261,12 +313,12 @@ const PeakListForm = (props: Props) => {
     </ResourceContainer>
   ));
 
-  const copyMountains = (mountainArray: MountainDatum[], optionalMountainArray: MountainDatum[]) => {
+  const copyMountains = (mountainArray: MountainDatum[] /*optionalMountainArray: MountainDatum[]*/) => {
     const uniqueMountains = mountainArray.filter(mtn1 => !mountains.find(mtn2 => mtn1.id === mtn2.id));
     setMountains([...mountains, ...uniqueMountains]);
-    const uniqueOptionalMountains =
-      optionalMountainArray.filter(mtn1 => !optionalMountains.find(mtn2 => mtn1.id === mtn2.id));
-    setOptionalMountains([...optionalMountains, ...uniqueOptionalMountains]);
+    // const uniqueOptionalMountains =
+    //   optionalMountainArray.filter(mtn1 => !optionalMountains.find(mtn2 => mtn1.id === mtn2.id));
+    // setOptionalMountains([...optionalMountains, ...uniqueOptionalMountains]);
   };
 
   const parentModal = parentModalOpen === false ? null : (
@@ -404,14 +456,14 @@ const PeakListForm = (props: Props) => {
               })}
             </SmallTextNote>
           </Section>
-          <div>
-            <AddMountains
-              selectedMountains={mountains}
-              setSelectedMountains={setMountains}
-              openParentModal={openParentModal}
-              states={[]}
-            />
-          </div>
+          <AddItems
+            selectedMountains={mountains}
+            setSelectedMountains={setMountains}
+            selectedTrails={trails}
+            setSelectedTrails={setTrails}
+            selectedCampsites={campsites}
+            setSelectedCampsites={setCampsites}
+          />
         </CollapsibleDetailBox>
         <CollapsibleDetailBox
           title={

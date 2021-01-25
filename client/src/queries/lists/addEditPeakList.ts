@@ -94,60 +94,6 @@ const baseQuery = `
   bbox
 `;
 
-// const baseMutationVariableDefs = `
-//   $name: String!,
-//   $shortName: String!,
-//   $description: String,
-//   $optionalPeaksDescription: String,
-//   $type: PeakListVariants!,
-//   $mountains: [ID!],
-//   $optionalMountains: [ID],
-//   $parent: ID,
-//   $states: [ID!],
-//   $resources: [ExternalResourcesInputType],
-//   $tier: PeakListTier!,
-// `;
-// const baseMutationVariables = `
-//   name: $name,
-//   shortName: $shortName,
-//   description: $description,
-//   optionalPeaksDescription: $optionalPeaksDescription,
-//   type: $type,
-//   mountains: $mountains,
-//   optionalMountains: $optionalMountains,
-//   parent: $parent,
-//   states: $states,
-//   resources: $resources,
-//   tier: $tier,
-// `;
-
-// const ADD_PEAK_LIST = gql`
-//   mutation addPeakList(
-//     $author: ID!,
-//     ${baseMutationVariableDefs}
-//   ) {
-//     peakList: addPeakList(
-//       author: $author,
-//       ${baseMutationVariables}
-//     ) {
-//       ${baseQuery}
-//     }
-//   }
-// `;
-// const EDIT_PEAK_LIST = gql`
-//   mutation editPeakList(
-//     $id: ID!,
-//     ${baseMutationVariableDefs}
-//   ) {
-//     peakList: editPeakList(
-//       id: $id,
-//       ${baseMutationVariables}
-//     ) {
-//       ${baseQuery}
-//     }
-//   }
-// `;
-
 const ADD_EDIT_PEAK_LIST = gql`
   mutation AddEditPeakList(
     $id: ID!,
@@ -195,10 +141,6 @@ const GET_PEAK_LIST = gql`
     peakList(id: $id) {
       ${baseQuery}
     }
-    states {
-      id
-      abbreviation
-    }
   }
 `;
 
@@ -221,21 +163,13 @@ export interface Variables {
   bbox: [number, number, number, number];
 }
 
-// interface BaseVariables extends FormInput {
-//   author: string;
-// }
-
-// interface EditVariables extends FormInput {
-//   id: string;
-// }
-
 export interface SuccessResponse {
   peakList: {
     id: PeakList['id'];
     name: PeakList['name'];
     shortName: PeakList['shortName'];
     description: PeakList['description'];
-    mountains: Array<{
+    mountains: Array<null | {
       id: Mountain['id'];
       name: Mountain['name'];
       location: Mountain['location'];
@@ -245,7 +179,7 @@ export interface SuccessResponse {
         abbreviation: State['abbreviation'];
       }
     }>
-    optionalMountains: Array<{
+    optionalMountains: Array<null | {
       id: Mountain['id'];
       name: Mountain['name'];
       location: Mountain['location'];
@@ -255,29 +189,29 @@ export interface SuccessResponse {
         abbreviation: State['abbreviation'];
       }
     }>
-    trails: Array<{
+    trails: Array<null | {
       id: Trail['id'];
       name: Trail['name'];
       center: Trail['center'];
       line: Trail['line'];
       type: Trail['type'];
-      states: Array<{
+      states: Array<null | {
         id: State['id'];
         abbreviation: State['abbreviation'];
       }>
     }>
-    optionalTrails: Array<{
+    optionalTrails: Array<null | {
       id: Trail['id'];
       name: Trail['name'];
       center: Trail['center'];
       line: Trail['line'];
       type: Trail['type'];
-      states: Array<{
+      states: Array<null | {
         id: State['id'];
         abbreviation: State['abbreviation'];
       }>
     }>
-    campsites: Array<{
+    campsites: Array<null | {
       id: Campsite['id'];
       name: Campsite['name'];
       location: Campsite['location'];
@@ -287,7 +221,7 @@ export interface SuccessResponse {
         abbreviation: State['abbreviation'];
       }
     }>
-    optionalCampsites: Array<{
+    optionalCampsites: Array<null | {
       id: Campsite['id'];
       name: Campsite['name'];
       location: Campsite['location'];
@@ -314,16 +248,6 @@ export const useGetPeakList = (id: string | null) => useQuery<SuccessResponse, {
   GET_PEAK_LIST,
   {variables: { id},
 });
-
-// export const useAddPeakList = () => {
-//   const [addPeakList] = useMutation<SuccessResponse, BaseVariables>(ADD_PEAK_LIST);
-//   return addPeakList;
-// };
-
-// export const useEditPeakList = () => {
-//   const [editPeakList] = useMutation<SuccessResponse, EditVariables>(EDIT_PEAK_LIST);
-//   return editPeakList;
-// };
 
 const useAddEditPeakList = () => {
   const [addEditPeakList] = useMutation<SuccessResponse, Variables>(ADD_EDIT_PEAK_LIST);
