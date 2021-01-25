@@ -9,7 +9,7 @@ import {
   primaryColor,
 } from '../../../styling/styleUtils';
 import Search from '../../sharedComponents/search';
-import SelectedItem from './SelectedItem';
+import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 
 const Root = styled.div`
   min-height: 100vh;
@@ -34,12 +34,17 @@ const SearchGrid = styled.div`
   grid-gap: 1rem;
 `;
 
+const RemoveItem = styled.button`
+  margin-left: 1rem;
+  padding: 0.3rem 0.3rem;
+  border: none;
+  background-color: transparent;
+`;
+
 interface Props<T> {
   selectedList: T[];
   setSelectedList: (items: T[]) => void;
-  getSubtitleFromDatum: (datum: T) => string;
-  icon: string;
-  title: string;
+  dataFieldKeys: KeySortPair[];
   note: string;
   searchPlaceholder: string;
   endpoint: string;
@@ -47,7 +52,7 @@ interface Props<T> {
 
 function ItemSelector<T>(props: Props<T>) {
   const {
-    selectedList, setSelectedList, getSubtitleFromDatum,
+    selectedList, setSelectedList, dataFieldKeys,
     note, searchPlaceholder, endpoint,
   } = props;
 
@@ -71,17 +76,35 @@ function ItemSelector<T>(props: Props<T>) {
     setSelectedList([...modifiedList]);
   };
 
-  const selectedItemList = selectedList.map((item: any, i: number) => (
-    <SelectedItem
-      key={item.id}
-      id={item.id}
-      name={item.name}
-      subtitle={getSubtitleFromDatum(item)}
-      onClose={() => removeItemFromList(item)}
-      isOptional={item.optional}
-      toggleOptional={() => toggleOptional(i)}
-    />
-  ));
+  const selectedItemList = selectedList.map((item: any, i: number) => {
+    return {
+      ...item,
+      id: item.id,
+      name: item.name,
+      optionalSort: item.optional ? 1 : 0,
+      optionalNode: (
+        <input
+          key={'create-list-optional-item-toggle-' + item.id}
+          type='checkbox'
+          checked={item.optional}
+          onChange={() => toggleOptional(i)}
+        />
+      ),
+      removeSort: undefined,
+      removeNode: (
+        <RemoveItem
+          key={'create-list-remove-item-' + item.id}
+          onClick={() => removeItemFromList(item)}
+        >
+          ×
+        </RemoveItem>),
+    }
+  });
+
+  const actionFieldKeys = [
+    {displayKey: 'optionalNode', sortKey: 'optionalSort', label: 'Optional'},
+    {displayKey: 'removeNode', sortKey: 'removeSort', label: 'Remove'}
+  ]
 
   return (
     <>
@@ -105,7 +128,12 @@ function ItemSelector<T>(props: Props<T>) {
           </CompactButtonSecondary>
         </SearchGrid>
         <div>
-          {selectedItemList}
+          <ItemTable
+            showIndex={true}
+            items={selectedItemList}
+            dataFieldKeys={dataFieldKeys}
+            actionFieldKeys={actionFieldKeys}
+          />
         </div>
       </Root>
     </>

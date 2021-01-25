@@ -126,6 +126,7 @@ global-text-value-dates = Dates
 global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
+global-text-value-length = Length
 global-text-value-elevation = Elevation
 global-text-value-elevation-gain = Elevation Gain
 global-text-value-high-point = Highest Point
