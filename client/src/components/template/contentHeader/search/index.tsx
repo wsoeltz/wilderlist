@@ -159,6 +159,8 @@ const Search = () => {
       (activeElement as HTMLElement).blur();
     }
     if (mapContext.intialized && (
+          window.location.pathname === Routes.CreateList ||
+          window.location.pathname.includes('/edit-list/') ||
           window.location.pathname === Routes.AddTripReport ||
           window.location.pathname === Routes.EditTripReport)) {
       mapContext.setNewCenter(suggestion.coordinates, 14);

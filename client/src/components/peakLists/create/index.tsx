@@ -11,11 +11,12 @@ import useAddEditPeakList, {
 import {listDetailLink} from '../../../routing/Utils';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import {
+  ListPrivacy,
   PermissionTypes,
 } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
-import PeakListForm from './PeakListForm';
+import PeakListForm, {FormSource} from './PeakListForm';
 
 const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
   const getString = useFluent();
@@ -100,6 +101,7 @@ const PeakListCreatePage = () => {
         <PeakListForm
           initialData={peakList}
           onSubmit={onSubmit}
+          source={FormSource.Edit}
         />
       );
     } else if (data.peakList) {
@@ -113,19 +115,19 @@ const PeakListCreatePage = () => {
         id: new Types.ObjectId() as unknown as string,
         name: '',
         shortName: '',
-        description: null,
+        description: '',
         mountains: [],
         optionalMountains: [],
         trails: [],
         optionalTrails: [],
         campsites: [],
         optionalCampsites: [],
-        resources: null,
+        resources: [],
         author: {id: user._id},
         tier: null,
         flag: null,
         status: null,
-        privacy: null,
+        privacy: ListPrivacy.Public,
         center: null,
         bbox: null,
       };
@@ -133,6 +135,7 @@ const PeakListCreatePage = () => {
         <PeakListForm
           initialData={initialData}
           onSubmit={onSubmit}
+          source={FormSource.Create}
         />
       );
     }

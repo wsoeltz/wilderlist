@@ -11,9 +11,12 @@ import {
 import {Types} from 'mongoose';
 import React, {useCallback, useState} from 'react';
 import {useHistory} from 'react-router-dom';
+import useBeforeUnload from '../../../hooks/useBeforeUnload';
 import useFluent from '../../../hooks/useFluent';
 import {SuccessResponse, Variables} from '../../../queries/lists/addEditPeakList';
 import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
+import {Routes} from '../../../routing/routes';
+import {listDetailLink} from '../../../routing/Utils';
 import {
   BasicIconInText,
   ButtonSecondary,
@@ -57,13 +60,19 @@ import AddItems, {
 } from './AddItems';
 import ParentModal from './ParentModal';
 
+export enum FormSource {
+  Create = 'create',
+  Edit = 'edit',
+}
+
 interface Props {
   initialData: SuccessResponse['peakList'];
   onSubmit: (input: Variables) => void;
+  source: FormSource;
 }
 
 const PeakListForm = (props: Props) => {
-  const { initialData, onSubmit } = props;
+  const { initialData, onSubmit, source } = props;
 
   const history = useHistory();
   const getString = useFluent();
@@ -107,6 +116,22 @@ const PeakListForm = (props: Props) => {
   const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
 
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
+
+  const checkIfModified = () => {
+    return !loadingSubmit &&
+    (
+      name !== initialData.name ||
+      shortName !== initialData.shortName ||
+      tier !== initialData.tier ||
+      privacy !== initialData.privacy ||
+      description !== initialData.description ||
+      mountains.length !== (initialMountains.length + initialOptionalMountains.length) ||
+      trails.length !== (initialTrails.length + initialOptionalTrails.length) ||
+      campsites.length !== (initialCampsites.length + initialOptionalCampsites.length)
+    ) ? true : false;
+  };
+
+  useBeforeUnload(checkIfModified);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const closeAreYouSureModal = useCallback(() => setDeleteModalOpen(false), []);
@@ -237,6 +262,14 @@ const PeakListForm = (props: Props) => {
       });
     }
   };
+
+  const onCancel = useCallback(() => {
+    if (source === FormSource.Edit) {
+      history.push(listDetailLink(initialData.id));
+    } else {
+      history.push(Routes.SearchLists);
+    }
+  }, [source, history, initialData.id]);
 
   const setStringToPeakListTier = (value: string) => {
     if (value === 'casual') {
@@ -513,7 +546,7 @@ const PeakListForm = (props: Props) => {
         <ButtonWrapper>
           {deleteButton}
           <GhostButton
-            onClick={history.goBack}
+            onClick={onCancel}
             mobileExtend={true}
           >
             {getString('global-text-value-modal-cancel')}
