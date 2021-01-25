@@ -296,6 +296,7 @@ global-text-value-optional = Optional
 global-text-value-parent = Parent
 
 global-text-value-privacy = Privacy
+global-text-value-visibility = Visibility
 
 global-text-value-other-list-versions = Other Version of this list
 

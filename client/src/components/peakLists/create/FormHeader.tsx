@@ -194,14 +194,14 @@ const FormHeader = (props: Props) => {
         <label htmlFor={'create-peak-list-select-privacy'}>
           <ItemTitle>
             <BasicIconInText icon={faLock} />
-            {getString('global-text-value-privacy')}
+            {getString('global-text-value-visibility')}
           </ItemTitle>
         </label>
         <ThinSelect
           id={'create-peak-list-select-privacy'}
           value={privacy || ''}
           onChange={setStringToListPrivacy}
-          placeholder={getString('global-text-value-privacy')}
+          placeholder={getString('global-text-value-visibility')}
         >
           <option value={ListPrivacy.Public}>
             {upperFirst(ListPrivacy.Public)}
@@ -215,4 +215,4 @@ const FormHeader = (props: Props) => {
   );
 };
 
-export default FormHeader;
+export default React.memo(FormHeader);

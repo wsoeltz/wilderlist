@@ -643,6 +643,11 @@ export const InputBase = styled.input`
   }
 `;
 
+export const InputBaseCompact = styled(InputBase)`
+  font-size: 0.9rem;
+  padding: 4px 8px;
+`;
+
 export const TextareaBase = styled.textarea`
   padding: 8px;
   box-sizing: border-box;
@@ -650,10 +655,16 @@ export const TextareaBase = styled.textarea`
   font-size: 1rem;
   font-weight: ${lightFontWeight};
   width: 100%;
+  resize: vertical;
 
   &::placeholder {
     color: ${placeholderColor};
   }
+`;
+
+export const TextareaBaseCompact = styled(TextareaBase)`
+  font-size: 0.9rem;
+  padding: 4px 8px;
 `;
 
 export const Label = styled.span`

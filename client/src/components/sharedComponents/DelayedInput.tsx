@@ -2,6 +2,7 @@ import { debounce } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import {
   InputBase,
+  InputBaseCompact,
 } from '../../styling/styleUtils';
 
 interface Props {
@@ -13,12 +14,13 @@ interface Props {
   type?: string;
   min?: number;
   max?: number;
+  compact?: boolean;
 }
 
-const StandardSearch = (props: Props) => {
+const DelayedInput = (props: Props) => {
   const {
     id, placeholder, setInputValue, initialValue,
-    maxLength, type, min, max,
+    maxLength, type, min, max, compact,
   } = props;
 
   const inputEl = useRef<HTMLInputElement | null>(null);
@@ -36,8 +38,10 @@ const StandardSearch = (props: Props) => {
     }
   }, [inputEl, initialValue]);
 
+  const Input = compact ? InputBaseCompact : InputBase;
+
   return (
-    <InputBase
+    <Input
       id={id}
       ref={inputEl}
       type={type ? type : 'text'}
@@ -51,4 +55,4 @@ const StandardSearch = (props: Props) => {
   );
 };
 
-export default StandardSearch;
+export default DelayedInput;

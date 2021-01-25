@@ -3,6 +3,7 @@ import {
   ButtonPrimary,
   ButtonWarning,
   CheckboxLabel as CheckboxLabelBase,
+  GhostButton,
   lightBorderColor,
   tertiaryColor,
 } from '../../styling/styleUtils';
@@ -51,10 +52,16 @@ export const DeleteButton = styled(ButtonWarning)`
 
 export const ResourceContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  grid-column-gap: 1rem;
+  border-left: solid 3px ${lightBorderColor};
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr 1rem;
   width: 100%;
   margin-bottom: 1rem;
+`;
+
+export const DeleteResourceButton = styled(GhostButton)`
+  grid-row: 1 / -1;
+  grid-column: 2;
 `;
 
 export const Sublabel = styled.small`

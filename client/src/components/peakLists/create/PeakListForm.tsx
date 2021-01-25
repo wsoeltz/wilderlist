@@ -3,7 +3,6 @@ const centroid = require('@turf/centroid').default;
 const getBbox = require('@turf/bbox').default;
 import {
   faCheck,
-  faEdit,
   faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
@@ -18,12 +17,8 @@ import {Routes} from '../../../routing/routes';
 import {listDetailLink} from '../../../routing/Utils';
 import {
   BasicIconInText,
-  ButtonSecondary,
   ButtonWrapper,
   CancelButton,
-  GhostButton,
-  Label,
-  LabelContainer,
   Section,
   SmallTextNote,
 } from '../../../styling/styleUtils';
@@ -38,11 +33,8 @@ import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
 import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
-import DelayedInput from '../../sharedComponents/DelayedInput';
-import DelayedTextarea from '../../sharedComponents/DelayedTextarea';
 import {
   DeleteButton,
-  ResourceContainer,
   SaveButton,
   Wrapper,
 } from '../../sharedComponents/formUtils';
@@ -51,6 +43,7 @@ import AddItems, {
   MountainDatum,
   TrailDatum,
 } from './AddItems';
+import FormDetails from './FormDetails';
 import FormHeader from './FormHeader';
 import ParentModal from './ParentModal';
 
@@ -306,42 +299,6 @@ const PeakListForm = (props: Props) => {
     </DeleteButton>
   );
 
-  const handleExternalResourceChange = (value: string) =>
-    (field: keyof ExternalResource, index: number) =>
-      setExternalResources(
-        externalResources.map((resource, _index) => {
-          if (resource[field] === value || index !== _index) {
-            return resource;
-          } else {
-            return {...resource, [field]: value};
-          }
-        },
-      ),
-    );
-
-  const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
-    e.preventDefault();
-    setExternalResources(externalResources.filter((_v, i) => i !== index));
-  };
-
-  const resourceInputs = externalResources.map((resource, i) => (
-    <ResourceContainer key={i}>
-      <DelayedInput
-        initialValue={resource.title}
-        setInputValue={value => handleExternalResourceChange(value)('title', i)}
-        placeholder={getString('global-text-value-resource-title')}
-      />
-      <DelayedInput
-        initialValue={resource.url}
-        setInputValue={value => handleExternalResourceChange(value)('url', i)}
-        placeholder={getString('global-text-value-resource-url')}
-      />
-      <GhostButton onClick={e => deleteResource(e)(i)}>
-        ×
-      </GhostButton>
-    </ResourceContainer>
-  ));
-
   const copyMountains = (mountainArray: MountainDatum[] /*optionalMountainArray: MountainDatum[]*/) => {
     const uniqueMountains = mountainArray.filter(mtn1 => !mountains.find(mtn2 => mtn1.id === mtn2.id));
     setMountains([...mountains, ...uniqueMountains]);
@@ -381,6 +338,12 @@ const PeakListForm = (props: Props) => {
         setStringToListPrivacy={setStringToListPrivacy}
         toggleId={source === FormSource.Create ? toggleId : null}
       />
+      <FormDetails
+        description={description}
+        setDescription={setDescription}
+        externalResources={externalResources}
+        setExternalResources={setExternalResources}
+      />
       <Wrapper>
         <CollapsibleDetailBox
           title={
@@ -406,47 +369,6 @@ const PeakListForm = (props: Props) => {
             selectedCampsites={campsites}
             setSelectedCampsites={setCampsites}
           />
-        </CollapsibleDetailBox>
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faEdit} />
-              {getString('create-mountain-optional-title')}
-            </>
-          }
-          defaultHidden={true}
-        >
-          <div style={{marginBottom: '1rem'}}>
-            <LabelContainer htmlFor={'create-peak-list-description'}>
-              <Label>
-                {getString('create-peak-list-peak-list-description-label')}
-              </Label>
-            </LabelContainer>
-            <DelayedTextarea
-              id={'create-peak-list-description'}
-              rows={6}
-              initialValue={description}
-              setInputValue={value => setDescription(value)}
-              placeholder={getString('create-peak-list-peak-description')}
-              maxLength={5000}
-            />
-          </div>
-          <div>
-            <LabelContainer>
-              <Label>
-                {getString('global-text-value-external-resources')}
-              </Label>
-            </LabelContainer>
-            {resourceInputs}
-            <div>
-              <ButtonSecondary onClick={e => {
-                e.preventDefault();
-                setExternalResources([...externalResources, {title: '', url: ''}]);
-              }}>
-                {getString('global-text-value-add-external-resources')}
-              </ButtonSecondary>
-            </div>
-          </div>
         </CollapsibleDetailBox>
 
       </Wrapper>

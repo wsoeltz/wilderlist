@@ -2,6 +2,7 @@ import { debounce } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import {
   TextareaBase,
+  TextareaBaseCompact,
 } from '../../styling/styleUtils';
 
 interface Props {
@@ -11,12 +12,13 @@ interface Props {
   initialValue: string;
   maxLength?: number;
   rows?: number;
+  compact?: boolean;
 }
 
 const StandardSearch = (props: Props) => {
   const {
     id, placeholder, setInputValue, initialValue,
-    maxLength, rows,
+    maxLength, rows, compact,
   } = props;
 
   const textareaEl = useRef<HTMLTextAreaElement | null>(null);
@@ -34,8 +36,10 @@ const StandardSearch = (props: Props) => {
     }
   }, [textareaEl, initialValue]);
 
+  const Textarea = compact ? TextareaBaseCompact : TextareaBase;
+
   return (
-    <TextareaBase
+    <Textarea
       id={id}
       ref={textareaEl}
       placeholder={placeholder}
