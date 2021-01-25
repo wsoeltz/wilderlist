@@ -1,4 +1,4 @@
-import { faCalendarAlt, faCheck, faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faCheck, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {validate as validateEmail} from 'email-validator';
 import isEqual from 'lodash/isEqual';
 import React, { useCallback, useRef, useState } from 'react';
@@ -18,15 +18,14 @@ import {addTripReportLink, AddTripReportLinkParams} from '../../../routing/Utils
 import {
   BasicIconInText,
   ButtonPrimary,
-  ButtonSecondary,
   ButtonWarning,
+  ButtonWrapper,
+  CancelButton,
   FullWidthBreak,
   HighlightedIconInText,
   IconTitle,
-  lightBorderColor,
   placeholderColor,
   SmallTextNote,
-  tertiaryColor,
   TitleText,
   warningColor,
 } from '../../../styling/styleUtils';
@@ -42,7 +41,6 @@ import {
   isValidURL,
   Seasons,
 } from '../../../Utils';
-import {mobileSize} from '../../../Utils';
 import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import LoadingDisablePage from '../../sharedComponents/LoadingDisablePage';
 import AddFriends from './components/AddFriends';
@@ -73,38 +71,6 @@ const SectionTitle = styled.h2`
   div {
     font-weight: 400;
   }
-`;
-
-export const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  position: sticky;
-  bottom: -1rem;
-  margin: 0 -1rem -1rem;
-  margin-top: auto;
-  background-color: ${tertiaryColor};
-  border-top: solid 1px ${lightBorderColor};
-  padding: 0.7rem 1rem;
-  box-shadow: 0px 0px 3px -1px #b5b5b5;
-
-  @media(max-width: ${mobileSize}px) {
-    position: fixed;
-    bottom: 1.4rem;
-    border-bottom: solid 1px ${lightBorderColor};
-    margin-bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    align-items: stretch;
-    z-index: 500;
-    padding: 1rem 2rem;
-    box-sizing: border-box;
-  }
-`;
-
-export const CancelButton = styled(ButtonSecondary)`
-  margin-right: 1rem;
 `;
 
 const AddAnotherButton = styled(ButtonPrimary)`
@@ -605,7 +571,6 @@ const TripReportForm = (props: PropsWithConditions) => {
       <ButtonWrapper>
         {deleteAscentButton}
         <CancelButton onClick={onClose}>
-          <Icon icon={faTimes} />
           {getString('global-text-value-modal-cancel')}
         </CancelButton>
         {addAnotherButton}

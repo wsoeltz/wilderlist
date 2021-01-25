@@ -978,6 +978,7 @@ create-peak-list-peak-list-name-placeholder = i.e. New Hampshire 4000 Footers
 create-peak-list-peak-list-short-name-label = Abbreviation
 create-peak-list-peak-list-short-name-note = max 8 characters
 create-peak-list-peak-list-short-name-placeholder = i.e. NH48
+create-peak-list-cycle-image = Cycle Image
 create-peak-list-peak-list-details-title = List Details
 create-peak-list-peak-list-mountains-note = Select mountains directly on the map or by clicking {
   $number-mountains ->

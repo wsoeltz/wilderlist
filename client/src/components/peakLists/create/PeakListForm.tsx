@@ -4,7 +4,6 @@ const getBbox = require('@turf/bbox').default;
 import {
   faCheck,
   faEdit,
-  faHiking,
   faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
@@ -20,13 +19,12 @@ import {listDetailLink} from '../../../routing/Utils';
 import {
   BasicIconInText,
   ButtonSecondary,
-  DetailBoxTitle,
-  DetailBoxWithMargin,
+  ButtonWrapper,
+  CancelButton,
   GhostButton,
   Label,
   LabelContainer,
   Section,
-  SelectBox,
   SmallTextNote,
 } from '../../../styling/styleUtils';
 import {
@@ -43,21 +41,17 @@ import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
 import DelayedInput from '../../sharedComponents/DelayedInput';
 import DelayedTextarea from '../../sharedComponents/DelayedTextarea';
 import {
-  ActionButtons,
-  ButtonWrapper,
   DeleteButton,
   ResourceContainer,
-  Root as Grid,
   SaveButton,
-  Sublabel,
   Wrapper,
 } from '../../sharedComponents/formUtils';
-import Tooltip from '../../sharedComponents/Tooltip';
 import AddItems, {
   CampsiteDatum,
   MountainDatum,
   TrailDatum,
 } from './AddItems';
+import FormHeader from './FormHeader';
 import ParentModal from './ParentModal';
 
 export enum FormSource {
@@ -98,7 +92,7 @@ const PeakListForm = (props: Props) => {
     ...d, optional: true,
   })) as CampsiteDatum[];
 
-  const [listId /*setListId*/] = useState<string | Types.ObjectId>(initialData.id);
+  const [listId, setListId] = useState<string | Types.ObjectId>(initialData.id);
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
   const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
@@ -271,7 +265,8 @@ const PeakListForm = (props: Props) => {
     }
   }, [source, history, initialData.id]);
 
-  const setStringToPeakListTier = (value: string) => {
+  const setStringToPeakListTier = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
     if (value === 'casual') {
       return setTier(PeakListTier.casual);
     } else if (value === 'advanced') {
@@ -282,16 +277,17 @@ const PeakListForm = (props: Props) => {
       return setTier(PeakListTier.mountaineer);
     }
     return setTier(null);
-  };
+  }, [setTier]);
 
-  const setStringToListPrivacy = (value: string) => {
+  const setStringToListPrivacy = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
     if (value === 'public') {
       return setPrivacy(ListPrivacy.Public);
     } else if (value === 'private') {
       return setPrivacy(ListPrivacy.Private);
     }
     return setPrivacy(ListPrivacy.Public);
-  };
+  }, [setPrivacy]);
 
   const saveButtonText = loadingSubmit === true
     ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
@@ -300,7 +296,7 @@ const PeakListForm = (props: Props) => {
     ? getString('global-text-value-delete')
     : getString('global-text-value-cancel-delete-request');
 
-  const deleteButton = !initialData.id ? null : (
+  const deleteButton = !initialData.id || source === FormSource.Create ? null : (
     <DeleteButton
       onClick={openDeleteModal}
       mobileExtend={true}
@@ -369,110 +365,23 @@ const PeakListForm = (props: Props) => {
     />
   );
 
+  const toggleId = useCallback(() => setListId(new Types.ObjectId()), [setListId]);
+
   return (
     <>
+      <FormHeader
+        id={listId.toString()}
+        name={name}
+        setName={setName}
+        shortName={shortName}
+        setShortName={setShortName}
+        tier={tier}
+        setStringToPeakListTier={setStringToPeakListTier}
+        privacy={privacy}
+        setStringToListPrivacy={setStringToListPrivacy}
+        toggleId={source === FormSource.Create ? toggleId : null}
+      />
       <Wrapper>
-        <DetailBoxTitle>
-          <BasicIconInText icon={faHiking} />
-          {getString('create-peak-list-peak-list-name-label')}
-        </DetailBoxTitle>
-        <DetailBoxWithMargin>
-          <Section>
-            <LabelContainer htmlFor={'create-peak-list-name'}>
-              <Label>
-                {getString('global-text-value-name')}
-              </Label>
-            </LabelContainer>
-            <DelayedInput
-              id={'create-peak-list-name'}
-              type={'text'}
-              initialValue={name}
-              setInputValue={value => setName(value)}
-              placeholder={getString('create-peak-list-peak-list-name-placeholder')}
-              /* autoComplete='off' is ignored in Chrome, but other strings aren't */
-              maxLength={1000}
-            />
-          </Section>
-          <Grid>
-            <div>
-              <LabelContainer htmlFor={'create-peak-list-short-name'}>
-                <Label>
-                  {getString('create-peak-list-peak-list-short-name-label')}
-                  {' '}
-                  <Sublabel>({getString('create-peak-list-peak-list-short-name-note')})</Sublabel>
-                </Label>
-              </LabelContainer>
-              <DelayedInput
-                id={'create-peak-list-short-name'}
-                type={'text'}
-                initialValue={shortName}
-                setInputValue={value => setShortName(value)}
-                placeholder={getString('create-peak-list-peak-list-short-name-placeholder')}
-                maxLength={8}
-              />
-            </div>
-            <div>
-              <LabelContainer htmlFor={'create-peak-list-select-tier'}>
-                <Label>
-                  {getString('global-text-value-difficulty')}
-                </Label>
-                <Tooltip
-                  explanation={
-                    <div dangerouslySetInnerHTML={{__html: getString('global-text-value-list-tier-desc')}} />
-                  }
-                />
-              </LabelContainer>
-              <SelectBox
-                id={'create-peak-list-select-tier'}
-                value={tier || ''}
-                onChange={e => setStringToPeakListTier(e.target.value)}
-                placeholder={getString('global-text-value-tier')}
-              >
-                <option value=''></option>
-                <option value={PeakListTier.casual}>
-                  {getString('global-text-value-list-tier', {
-                    tier: PeakListTier.casual,
-                  })}
-                </option>
-                <option value={PeakListTier.advanced}>
-                  {getString('global-text-value-list-tier', {
-                    tier: PeakListTier.advanced,
-                  })}
-                </option>
-                <option value={PeakListTier.expert}>
-                  {getString('global-text-value-list-tier', {
-                    tier: PeakListTier.expert,
-                  })}
-                </option>
-                <option value={PeakListTier.mountaineer}>
-                  {getString('global-text-value-list-tier', {
-                    tier: PeakListTier.mountaineer,
-                  })}
-                </option>
-              </SelectBox>
-            </div>
-            <div>
-              <LabelContainer htmlFor={'create-peak-list-select-privacy'}>
-                <Label>
-                  {getString('global-text-value-privacy')}
-                </Label>
-              </LabelContainer>
-              <SelectBox
-                id={'create-peak-list-select-privacy'}
-                value={privacy || ''}
-                onChange={e => setStringToListPrivacy(e.target.value)}
-                placeholder={getString('global-text-value-privacy')}
-              >
-                <option value={ListPrivacy.Public}>
-                  {ListPrivacy.Public}
-                </option>
-                <option value={ListPrivacy.Private}>
-                  {ListPrivacy.Private}
-                </option>
-              </SelectBox>
-            </div>
-          </Grid>
-        </DetailBoxWithMargin>
         <CollapsibleDetailBox
           title={
             <>
@@ -542,25 +451,23 @@ const PeakListForm = (props: Props) => {
 
       </Wrapper>
 
-      <ActionButtons>
-        <ButtonWrapper>
-          {deleteButton}
-          <GhostButton
-            onClick={onCancel}
-            mobileExtend={true}
-          >
-            {getString('global-text-value-modal-cancel')}
-          </GhostButton>
-          <SaveButton
-            disabled={!verify()}
-            onClick={validateAndSave}
-            mobileExtend={true}
-          >
-            <BasicIconInText icon={faCheck} />
-            {saveButtonText}
-          </SaveButton>
-        </ButtonWrapper>
-      </ActionButtons>
+      <ButtonWrapper>
+        {deleteButton}
+        <CancelButton
+          onClick={onCancel}
+          mobileExtend={true}
+        >
+          {getString('global-text-value-modal-cancel')}
+        </CancelButton>
+        <SaveButton
+          disabled={!verify()}
+          onClick={validateAndSave}
+          mobileExtend={true}
+        >
+          <BasicIconInText icon={faCheck} />
+          {saveButtonText}
+        </SaveButton>
+      </ButtonWrapper>
       {parentModal}
       {areYouSureModal}
       {createMountainModal}

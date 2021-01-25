@@ -117,6 +117,11 @@ export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
+export const HelpUnderline = styled.u`
+  text-decoration: none;
+  border-bottom: dashed 1px ${lightBaseColor};
+`;
+
 export const Section = styled.div`
   margin-bottom: 1rem;
 `;
@@ -572,6 +577,38 @@ export const CompactGhostButton = styled(GhostButton)`
 export const CompactGhostButtonLink = styled(GhostButtonLink)`
   font-size: 0.7rem;
   padding: 0.35rem;
+`;
+
+export const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: sticky;
+  bottom: -1rem;
+  margin: 0 -1rem -1rem;
+  margin-top: auto;
+  background-color: ${tertiaryColor};
+  border-top: solid 1px ${lightBorderColor};
+  padding: 0.7rem 1rem;
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+
+  @media(max-width: ${mobileSize}px) {
+    position: fixed;
+    bottom: 1.4rem;
+    border-bottom: solid 1px ${lightBorderColor};
+    margin-bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    align-items: stretch;
+    z-index: 500;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+  }
+`;
+
+export const CancelButton = styled(GhostButton)`
+  margin-right: auto;
 `;
 
 export const FloatingButtonContainer = styled.div`
