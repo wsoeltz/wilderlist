@@ -85,6 +85,7 @@ const PeakListForm = (props: Props) => {
   const [shortName, setShortName] = useState<string>(initialData.shortName);
   const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
   const [tier, setTier] = useState<PeakListTier | null>(initialData.tier);
+  const [privacy, setPrivacy] = useState<ListPrivacy | null>(initialData.privacy);
   const [description, setDescription] = useState<string>(initialData.description ? initialData.description : '');
   const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
   const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
@@ -155,7 +156,7 @@ const PeakListForm = (props: Props) => {
     ? true : false;
 
   const validateAndSave = () => {
-    if (verify() && tier) {
+    if (verify() && tier && privacy) {
       const mountainIds = mountains.map(mtn => mtn.id);
       const optionalMountainIds = optionalMountains.map(mtn => mtn.id);
       const stateIds = statesArray.map(state => state.id);
@@ -178,7 +179,7 @@ const PeakListForm = (props: Props) => {
         states: stateIds,
         tier,
         resources,
-        privacy: ListPrivacy.Public,
+        privacy,
         center: center.geometry.coordinates.map((c: number) => parseFloat(c.toFixed(3))),
         bbox,
       });
@@ -196,6 +197,15 @@ const PeakListForm = (props: Props) => {
       return setTier(PeakListTier.mountaineer);
     }
     return setTier(null);
+  };
+
+  const setStringToListPrivacy = (value: string) => {
+    if (value === 'public') {
+      return setPrivacy(ListPrivacy.Public);
+    } else if (value === 'private') {
+      return setPrivacy(ListPrivacy.Private);
+    }
+    return setPrivacy(null);
   };
 
   const saveButtonText = loadingSubmit === true
@@ -353,6 +363,26 @@ const PeakListForm = (props: Props) => {
                   {getString('global-text-value-list-tier', {
                     tier: PeakListTier.mountaineer,
                   })}
+                </option>
+              </SelectBox>
+            </div>
+            <div>
+              <LabelContainer htmlFor={'create-peak-list-select-privacy'}>
+                <Label>
+                  {getString('global-text-value-privacy')}
+                </Label>
+              </LabelContainer>
+              <SelectBox
+                id={'create-peak-list-select-privacy'}
+                value={privacy || ''}
+                onChange={e => setStringToListPrivacy(e.target.value)}
+                placeholder={getString('global-text-value-privacy')}
+              >
+                <option value={ListPrivacy.Public}>
+                  {ListPrivacy.Public}
+                </option>
+                <option value={ListPrivacy.Private}>
+                  {ListPrivacy.Private}
                 </option>
               </SelectBox>
             </div>
