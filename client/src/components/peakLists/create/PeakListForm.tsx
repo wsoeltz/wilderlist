@@ -3,7 +3,6 @@ const centroid = require('@turf/centroid').default;
 const getBbox = require('@turf/bbox').default;
 import {
   faCheck,
-  faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import {Types} from 'mongoose';
@@ -19,8 +18,6 @@ import {
   BasicIconInText,
   ButtonWrapper,
   CancelButton,
-  Section,
-  SmallTextNote,
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
@@ -32,11 +29,9 @@ import CreateMountainModal from '../../mountains/create/CreateMountainModal';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
-import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
 import {
   DeleteButton,
   SaveButton,
-  Wrapper,
 } from '../../sharedComponents/formUtils';
 import AddItems, {
   CampsiteDatum,
@@ -344,34 +339,14 @@ const PeakListForm = (props: Props) => {
         externalResources={externalResources}
         setExternalResources={setExternalResources}
       />
-      <Wrapper>
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faMountain} />
-              {getString('global-text-value-mountains')}
-              {' '}({mountains.length})
-            </>
-          }
-        >
-          <Section>
-            <SmallTextNote>
-              {getString('create-peak-list-peak-list-mountains-note', {
-                'number-mountains': mountains.length,
-              })}
-            </SmallTextNote>
-          </Section>
-          <AddItems
-            selectedMountains={mountains}
-            setSelectedMountains={setMountains}
-            selectedTrails={trails}
-            setSelectedTrails={setTrails}
-            selectedCampsites={campsites}
-            setSelectedCampsites={setCampsites}
-          />
-        </CollapsibleDetailBox>
-
-      </Wrapper>
+      <AddItems
+        selectedMountains={mountains}
+        setSelectedMountains={setMountains}
+        selectedTrails={trails}
+        setSelectedTrails={setTrails}
+        selectedCampsites={campsites}
+        setSelectedCampsites={setCampsites}
+      />
 
       <ButtonWrapper>
         {deleteButton}

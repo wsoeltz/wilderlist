@@ -114,6 +114,7 @@ const SearchInput = (props: Props) => {
         display: value || isFocused ? undefined : 'none',
         fontSize: compact ? 1 + 'rem' : undefined,
         padding: compact ? '0.6rem 0.3rem' : undefined,
+        top: !compact ? '0.2rem' : undefined,
       }}
       onClick={clearSearch}
     >

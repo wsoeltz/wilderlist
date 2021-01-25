@@ -1,6 +1,7 @@
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import { Campsite, Mountain, State, Trail } from '../../../types/graphQLTypes';
+import DetailSegment from '../../sharedComponents/detailComponents/DetailSegment';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import ItemSelector from './ItemSelector';
 
@@ -65,39 +66,64 @@ const AddItems = (props: Props) => {
 
   const getString = useFluent();
 
+  const panels = [
+    {
+      title: `${getString('global-text-value-mountains')} (${selectedMountains.length})`,
+      reactNode: (
+        <ItemSelector
+          selectedList={selectedMountains}
+          setSelectedList={setSelectedMountains}
+          getSubtitleFromDatum={getMountainSubtitle}
+          icon={mountainNeutralSvg}
+          title={getString('global-text-value-mountains')}
+          note={getString('trip-report-add-additional-mtns-desc')}
+          searchPlaceholder={getString('global-text-value-search-mountains-to-add')}
+          endpoint={'/api/mountain-search'}
+        />
+      ),
+      customIcon: true,
+      icon: mountainNeutralSvg,
+    },
+    {
+      title: `${getString('global-text-value-trails')} (${selectedTrails.length})`,
+      reactNode: (
+        <ItemSelector
+          selectedList={selectedTrails}
+          setSelectedList={setSelectedTrails}
+          getSubtitleFromDatum={getTrailSubtitle}
+          icon={trailDefaultSvg}
+          title={getString('global-text-value-trails')}
+          note={getString('trip-report-add-additional-trails-desc')}
+          searchPlaceholder={getString('global-text-value-search-trails-to-add')}
+          endpoint={'/api/trail-search'}
+        />
+      ),
+      customIcon: true,
+      icon: mountainNeutralSvg,
+    },
+    {
+      title: `${getString('global-text-value-campsites')} (${selectedCampsites.length})`,
+      reactNode: (
+        <ItemSelector
+          selectedList={selectedCampsites}
+          setSelectedList={setSelectedCampsites}
+          getSubtitleFromDatum={getCampsiteSubtitle}
+          icon={tentNeutralSvg}
+          title={getString('global-text-value-campsites')}
+          note={getString('trip-report-add-additional-campsites-desc')}
+          searchPlaceholder={getString('global-text-value-search-campsites-to-add')}
+          endpoint={'/api/campsite-search'}
+        />
+      ),
+      customIcon: true,
+      icon: mountainNeutralSvg,
+    },
+  ];
+
   return (
-    <>
-      <ItemSelector
-        selectedList={selectedMountains}
-        setSelectedList={setSelectedMountains}
-        getSubtitleFromDatum={getMountainSubtitle}
-        icon={mountainNeutralSvg}
-        title={getString('global-text-value-mountains')}
-        note={getString('trip-report-add-additional-mtns-desc')}
-        searchPlaceholder={getString('global-text-value-search-mountains')}
-        endpoint={'/api/mountain-search'}
-      />
-      <ItemSelector
-        selectedList={selectedTrails}
-        setSelectedList={setSelectedTrails}
-        getSubtitleFromDatum={getTrailSubtitle}
-        icon={trailDefaultSvg}
-        title={getString('global-text-value-trails')}
-        note={getString('trip-report-add-additional-trails-desc')}
-        searchPlaceholder={getString('global-text-value-search-trails')}
-        endpoint={'/api/trail-search'}
-      />
-      <ItemSelector
-        selectedList={selectedCampsites}
-        setSelectedList={setSelectedCampsites}
-        getSubtitleFromDatum={getCampsiteSubtitle}
-        icon={tentNeutralSvg}
-        title={getString('global-text-value-campsites')}
-        note={getString('trip-report-add-additional-campsites-desc')}
-        searchPlaceholder={getString('global-text-value-search-campsites')}
-        endpoint={'/api/campsite-search'}
-      />
-    </>
+    <DetailSegment
+      panels={panels}
+    />
   );
 
 };

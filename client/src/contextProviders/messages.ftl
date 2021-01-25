@@ -66,6 +66,10 @@ global-text-value-generic-user = Wilderlist User
 global-text-value-private = Private
 
 
+global-text-value-search-mountains-to-add = Search for mountains to add
+global-text-value-search-trails-to-add = Search for trails to add
+global-text-value-search-campsites-to-add = Search for campsites to add
+
 global-text-value-no-results-found = No results found.
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
@@ -995,6 +999,8 @@ create-peak-list-peak-list-optional-mountains-note = Optional mountains allow fo
 create-peak-list-peak-list-optional-description-label = Optional Mountains Description
 create-peak-list-select-parent-modal-button = Copy Mountains From Another List
 create-peak-list-copy-mountains-button = Copy Mountains
+
+create-peak-list-copy-from-list-button = Copy From Another List
 
 create-peak-list-has-parent-mountains = This list will reflect the same mountains as the selected parent
 create-peak-list-has-parent-optional-mountains = This list will reflect the same optional mountains as the selected parent

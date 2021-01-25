@@ -1,17 +1,37 @@
+import {faMap} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
 import {
-  Basket,
-  BasketTitle,
+  BasicIconInText,
+  CompactButtonSecondary,
   IconContainer,
-  lightBaseColor,
-  SmallTextNote,
+  primaryColor,
 } from '../../../styling/styleUtils';
 import Search from '../../sharedComponents/search';
 import SelectedItem from './SelectedItem';
 
-const Title = styled(BasketTitle)`
-  padding-bottom: 0;
+const Root = styled.div`
+  min-height: 100vh;
+`;
+
+const NoteText = styled.div`
+  padding: 1.75rem 1rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  text-align: center;
+`;
+
+const SearchGrid = styled.div`
+  padding: 0 1rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-gap: 1rem;
 `;
 
 interface Props<T> {
@@ -28,8 +48,10 @@ interface Props<T> {
 function ItemSelector<T>(props: Props<T>) {
   const {
     selectedList, setSelectedList, getSubtitleFromDatum,
-    icon, title, note, searchPlaceholder, endpoint,
+    note, searchPlaceholder, endpoint,
   } = props;
+
+  const getString = useFluent();
 
   const addItemToList = (newItem: {datum: T}) => {
     if (!selectedList.find((item: any) => item.id === (newItem.datum as any).id)) {
@@ -61,32 +83,31 @@ function ItemSelector<T>(props: Props<T>) {
     />
   ));
 
-  const texNote = selectedList.length ? null : (
-    <SmallTextNote>
-      {note}
-    </SmallTextNote>
-  );
-
   return (
     <>
-      <Basket>
-        <Title>
-          <IconContainer $color={lightBaseColor} dangerouslySetInnerHTML={{__html: icon}} />
-          {title}
-        </Title>
-        {texNote}
+      <Root>
+        <NoteText>
+          <IconContainer $color={primaryColor}>
+            <BasicIconInText icon={faMap} />
+          </IconContainer>
+          {note}
+        </NoteText>
+        <SearchGrid>
+          <Search
+            endpoint={endpoint}
+            ignore={selectedList.map((item: any) => item.id)}
+            onSelect={addItemToList}
+            keepFocusOnSelect={true}
+            placeholder={searchPlaceholder}
+          />
+          <CompactButtonSecondary>
+            {getString('create-peak-list-copy-from-list-button')}
+          </CompactButtonSecondary>
+        </SearchGrid>
         <div>
           {selectedItemList}
         </div>
-        <Search
-          endpoint={endpoint}
-          ignore={selectedList.map((item: any) => item.id)}
-          onSelect={addItemToList}
-          keepFocusOnSelect={true}
-          compact={true}
-          placeholder={searchPlaceholder}
-        />
-      </Basket>
+      </Root>
     </>
   );
 }
