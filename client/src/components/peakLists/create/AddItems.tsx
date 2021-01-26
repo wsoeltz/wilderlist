@@ -1,12 +1,12 @@
 const {lineString} = require('@turf/helpers');
 const length = require('@turf/length').default;
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import { Campsite, Mountain, State, Trail } from '../../../types/graphQLTypes';
 import DetailSegment from '../../sharedComponents/detailComponents/DetailSegment';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import ItemSelector from './ItemSelector';
-import upperFirst from 'lodash/upperFirst';
 
 export interface MountainDatum {
   id: Mountain['id'];
@@ -25,7 +25,7 @@ export interface TrailDatum {
   name: Trail['name'];
   type: Trail['type'];
   center: Trail['center'];
-  line: Trail['line']
+  line: Trail['line'];
   states: Array<{
     id: State['id'];
     abbreviation: State['abbreviation'];
@@ -67,7 +67,7 @@ const AddItems = (props: Props) => {
     ...mtn,
     stateAbbreviation: mtn.state ? mtn.state.abbreviation : '',
     elevationDisplay: mtn.elevation + 'ft',
-  }))
+  }));
   const mountainDataFieldKeys = [
     {
       displayKey: 'stateAbbreviation',
@@ -77,8 +77,8 @@ const AddItems = (props: Props) => {
       displayKey: 'elevationDisplay',
       sortKey: 'elevation',
       label: getString('global-text-value-elevation'),
-    }
-  ]
+    },
+  ];
 
   const trails = selectedTrails.map(trail => {
     const trailLength = trail.line && trail.line.length ? length(lineString(trail.line)) : 0;
@@ -91,7 +91,7 @@ const AddItems = (props: Props) => {
         : '',
       trailLength,
       trailLengthDisplay: parseFloat(trailLength.toFixed(3)) + 'mi',
-    }
+    };
   });
   const trailDataFieldKeys = [
     {
@@ -106,8 +106,8 @@ const AddItems = (props: Props) => {
       displayKey: 'formattedType',
       sortKey: 'formattedType',
       label: getString('global-text-value-type'),
-    }
-  ]
+    },
+  ];
 
   const campsites = selectedCampsites.map(campsite => ({
     ...campsite,
@@ -116,7 +116,7 @@ const AddItems = (props: Props) => {
       : upperFirst(getString('global-formatted-campsite-type', {type: campsite.type})),
     formattedType: upperFirst(getString('global-formatted-campsite-type', {type: campsite.type})),
     stateAbbreviation: campsite.state ? campsite.state.abbreviation : '',
-  }))
+  }));
   const campsiteDataFieldKeys = [
     {
       displayKey: 'stateAbbreviation',
@@ -126,8 +126,8 @@ const AddItems = (props: Props) => {
       displayKey: 'formattedType',
       sortKey: 'formattedType',
       label: getString('global-text-value-type'),
-    }
-  ]
+    },
+  ];
 
   const panels = [
     {

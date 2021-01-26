@@ -8,8 +8,8 @@ import {
   IconContainer,
   primaryColor,
 } from '../../../styling/styleUtils';
-import Search from '../../sharedComponents/search';
 import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
+import Search from '../../sharedComponents/search';
 
 const Root = styled.div`
   min-height: 100vh;
@@ -90,7 +90,6 @@ function ItemSelector<T>(props: Props<T>) {
           onChange={() => toggleOptional(i)}
         />
       ),
-      removeSort: undefined,
       removeNode: (
         <RemoveItem
           key={'create-list-remove-item-' + item.id}
@@ -98,13 +97,13 @@ function ItemSelector<T>(props: Props<T>) {
         >
           ×
         </RemoveItem>),
-    }
+    };
   });
 
   const actionFieldKeys = [
     {displayKey: 'optionalNode', sortKey: 'optionalSort', label: 'Optional'},
-    {displayKey: 'removeNode', sortKey: 'removeSort', label: 'Remove'}
-  ]
+    {displayKey: 'removeNode', sortKey: null, label: 'Remove'},
+  ];
 
   return (
     <>
