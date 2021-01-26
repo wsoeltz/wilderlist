@@ -48,9 +48,9 @@ const REMOVE_PEAK_LIST_FROM_USER = gql`
 
 export type AddRemovePeakListSuccessResponse = null | {
   id: User['id'];
-  peakLists: {
+  peakLists: Array<{
     id: PeakList['id'];
-  };
+  }>;
 };
 
 export interface AddRemovePeakListVariables {

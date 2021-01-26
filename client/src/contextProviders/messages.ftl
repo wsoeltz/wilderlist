@@ -293,6 +293,7 @@ global-text-value-clear = Clear
 global-text-value-edit = Edit
 global-text-value-save-and-add = Save and Add Another
 global-text-value-save = Save
+global-text-value-saved = Saved
 global-text-value-save-changes = Save Changes
 global-text-value-saving = Saving
 global-text-value-all-changes-saved = All Changes Saved
@@ -304,7 +305,7 @@ global-text-value-selected = Selected
 global-text-value-delete = Delete
 global-text-value-remove = Remove
 
-global-text-value-flag = Flag
+global-text-value-flag = Report Issue
 global-text-value-optional = Optional
 global-text-value-parent = Parent
 

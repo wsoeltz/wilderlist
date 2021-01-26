@@ -81,6 +81,7 @@ export type Panel = {
 
 interface Props {
   panels: Panel[];
+  // panelCounts as seperate prop prevents rerender of panels reactNodes every time the number changes
   panelCounts?: Array<{index: number, count: number}>;
 }
 

@@ -13,13 +13,10 @@ import {
 } from '../../../queries/lists/usePeakListDetail';
 import { editPeakListLink } from '../../../routing/Utils';
 import {
-  BasicIconInText,
-  CardBase,
-  CompactButtonPrimary,
-  CompactButtonSecondary,
-  CompactGhostButton,
+  BasicIconInTextCompact,
   CompactGhostButtonLink,
   lightBorderColor,
+  LinkButtonCompact,
   StackableCardFooter,
 } from '../../../styling/styleUtils';
 import {
@@ -29,8 +26,8 @@ import {
 } from '../../../types/graphQLTypes';
 import { completedPeaks, formatDate, getLatestAscent, getType } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
-import AreYouSureModal from '../../sharedComponents/AreYouSureModal';
 import SignUpModal from '../../sharedComponents/SignUpModal';
+import StarButton from '../../sharedComponents/StarButton';
 import {
   TextRight,
 } from '../list/PeakListCard';
@@ -41,12 +38,12 @@ import FlagModal from './FlagModal';
 
 const mobileWidth = 500; // in px
 
-const Root = styled(CardBase)`
+const Root = styled.div`
+  margin: 0 -1rem 1rem;
   display: grid;
-  grid-template-columns: minmax(10%, 12.5rem) minmax(12rem, 1fr) auto;
+  grid-template-columns: 120px 1fr auto;
   grid-template-rows: auto auto;
-  grid-column-gap: 1rem;
-  grid-row-gap: 0rem;
+  grid-column-gap: 0.35rem;
   border-bottom: none;
 
   @media (max-width: ${mobileWidth}px) {
@@ -77,21 +74,17 @@ const TitleContent = styled.div`
 
 const ListSettings = styled.div`
   grid-column: 3;
-  grid-row: 1;
-
-  @media (max-width: ${mobileWidth}px) {
-    grid-column: 2;
-  }
-`;
-
-const BeginRemoveListButtonContainer = styled.div`
-  text-align: right;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
 `;
 
 const EditFlagButtonContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
-  text-align: right;
+  padding-right: 1rem;
 `;
 
 const Title = styled.h1`
@@ -159,29 +152,34 @@ const Header = (props: Props) => {
   const addPeakListToUser = useAddPeakListToUser();
   const removePeakListFromUser = useRemovePeakListFromUser();
 
-  const [isRemoveListModalOpen, setIsRemoveListModalOpen] = useState<boolean>(false);
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
 
-  const openRemoveListModal = useCallback(() => setIsRemoveListModalOpen(true), []);
   const openFlagModal = useCallback(() => setIsFlagModalOpen(true), []);
   const closeFlagModal = useCallback(() => setIsFlagModalOpen(false), []);
 
-  const openSignUpModal = () => {
-    setIsSignUpModal(true);
-  };
-  const closeSignUpModal = () => {
-    setIsSignUpModal(false);
-  };
-  const closeAreYouSureModal = () => {
-    setIsRemoveListModalOpen(false);
-  };
+  const usersLists = user ? user.peakLists.map((list) => list.id) : [];
+  const active = user ? usersLists.includes(peakList.id) : null;
 
-  const confirmRemove = () => {
-    if (user && user.id) {
-      removePeakListFromUser({variables: {userId: user.id,  peakListId: id}});
+  const openSignUpModal = () => setIsSignUpModal(true);
+  const closeSignUpModal = () => setIsSignUpModal(false);
+
+  const toggleActive = () => {
+    if (user) {
+      if (active) {
+        removePeakListFromUser({
+          variables: {userId: user.id,  peakListId: id},
+          optimisticResponse: {id: user.id, peakLists: user.peakLists.filter(list => list.id !== peakList.id)},
+        });
+      } else {
+        addPeakListToUser({
+          variables: {userId: user.id,  peakListId: id},
+          optimisticResponse: {id: user.id, peakLists: [...user.peakLists, {id: peakList.id}]},
+        });
+      }
+    } else {
+      openSignUpModal();
     }
-    closeAreYouSureModal();
   };
 
   const signUpModal = isSignUpModal === false ? null : (
@@ -192,40 +190,6 @@ const Header = (props: Props) => {
       onCancel={closeSignUpModal}
     />
   );
-
-  const areYouSureModal = isRemoveListModalOpen === false ? null : (
-    <AreYouSureModal
-      onConfirm={confirmRemove}
-      onCancel={closeAreYouSureModal}
-      title={getString('global-text-value-are-you-sure-modal')}
-      text={getString('peak-list-detail-text-modal-remove-confirm', {
-        'peak-list-name': name + getType(type),
-      })}
-      confirmText={getString('global-text-value-modal-confirm')}
-      cancelText={getString('global-text-value-modal-cancel')}
-    />
-  );
-
-  const usersLists = user ? user.peakLists.map((list) => list.id) : [];
-  const active = user ? usersLists.includes(peakList.id) : null;
-
-  const beginList = () => {
-    if (user) {
-      addPeakListToUser({variables: {userId: user.id,  peakListId: id}});
-    } else {
-      openSignUpModal();
-    }
-  };
-
-  const beginRemoveButton = active === false || !user ? (
-    <CompactButtonPrimary onClick={beginList}>
-      {getString('peak-list-detail-text-begin-list')}
-    </CompactButtonPrimary>
-   ) : (
-    <CompactButtonSecondary onClick={openRemoveListModal}>
-      {getString('peak-list-detail-text-remove-list')}
-    </CompactButtonSecondary>
-   ) ;
 
   let editFlagButton: React.ReactElement<any> | null;
   if (!user) {
@@ -238,18 +202,19 @@ const Header = (props: Props) => {
         {getString('global-text-value-edit')}
       </CompactGhostButtonLink>
     ) : (
-      <CompactGhostButton onClick={openFlagModal}>
-        <BasicIconInText icon={faFlag} />
+      <LinkButtonCompact onClick={openFlagModal}>
+        <BasicIconInTextCompact icon={faFlag} />
         {getString('global-text-value-flag')}
-      </CompactGhostButton>
+      </LinkButtonCompact>
     );
   }
 
   const topLevelHeading = isOtherUser === true && user !== null ? null : (
       <>
-        <BeginRemoveListButtonContainer>
-          {beginRemoveButton}
-        </BeginRemoveListButtonContainer>
+        <StarButton
+          starred={Boolean(active)}
+          toggleStarred={toggleActive}
+        />
         <EditFlagButtonContainer>
           {editFlagButton}
         </EditFlagButtonContainer>
@@ -306,7 +271,7 @@ const Header = (props: Props) => {
         {totalRequiredAscents} {getString('peak-list-text-total-ascents')}
       </ListInfo>
     );
-  } else if (active === true) {
+  } else {//if (active === true) {
     const latestDate = getLatestAscent(mountains, completedAscents, type);
 
     let latestDateText: React.ReactElement<any>;
@@ -329,8 +294,8 @@ const Header = (props: Props) => {
       <>
         <ProgressBarContainer>
           <PeakProgressBar
-            variant={active === true ? type : null}
-            completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
+            variant={type}
+            completed={numCompletedAscents ? numCompletedAscents : 0}
             total={totalRequiredAscents}
             id={id}
           />
@@ -348,13 +313,6 @@ const Header = (props: Props) => {
         </ListInfo>
       </>
     );
-  } else {
-    listInfoContent = null;
-    listCount = (
-      <ListInfo>
-        {totalRequiredAscents} {getString('peak-list-text-total-ascents')}
-      </ListInfo>
-    );
   }
 
   const mountainLogoId = parent === null ? id : parent.id;
@@ -366,7 +324,7 @@ const Header = (props: Props) => {
           <ListInfo>
             {stateOrRegionString}
           </ListInfo>
-          {listCount}
+          {listInfoContent}
         </TitleContent>
         <LogoContainer>
           <MountainLogo
@@ -374,21 +332,20 @@ const Header = (props: Props) => {
             title={name}
             shortName={shortName}
             variant={type}
-            active={active}
+            active={true}
             completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
           />
         </LogoContainer>
         <ListSettings>
           {topLevelHeading}
         </ListSettings>
-        {listInfoContent}
       </Root>
+      {listCount}
       <Footer>
         <VariantLinks
           peakList={peakList}
         />
       </Footer>
-      {areYouSureModal}
       {signUpModal}
       {flagModal}
     </>

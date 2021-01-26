@@ -15,6 +15,9 @@ const Root = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-column-gap: 0.5rem;
+  transform: translateX(-0.5rem);
+  padding-right: 0.65rem;
 `;
 
 const Percentage = styled.div<{colorSet: ColorSet}>`
@@ -24,7 +27,8 @@ const Percentage = styled.div<{colorSet: ColorSet}>`
   z-index: 100;
   font-family: ${secondaryFont};
   padding: 2px;
-  font-size: 2rem;
+  font-size: 1.25rem;
+  line-height: 0;
   color: ${({colorSet}) => colorSet.secondary};
 `;
 

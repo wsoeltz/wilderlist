@@ -178,6 +178,15 @@ export const LinkButton = styled.button`
   ${linkStyles}
 `;
 
+export const LinkButtonCompact = styled.button`
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 0.7rem;
+
+  ${linkStyles}
+`;
+
 export const CardBase = styled.div`
   padding: 0.7rem;
   border: solid 1px ${lightBorderColor};
@@ -724,6 +733,9 @@ const IconInTextBase = styled(FontAwesomeIcon)`
   top: -1px;
 `;
 
+export const BasicIconInTextCompact = styled(IconInTextBase)`
+  margin-right: 0.25rem;
+`;
 export const BasicIconInText = styled(IconInTextBase)`
   margin-right: 0.6rem;
 `;

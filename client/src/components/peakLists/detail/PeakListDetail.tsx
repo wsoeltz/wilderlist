@@ -1,4 +1,4 @@
-import { faAlignLeft, faEdit, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAlignLeft, faEdit } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
 import React, {useCallback, useEffect, useState} from 'react';
 import Helmet from 'react-helmet';
@@ -30,7 +30,6 @@ import {
   LinkButton,
   PlaceholderText,
   PreFormattedDiv,
-  PreFormattedParagraph,
   ResourceItem,
   ResourceList,
   SectionTitle,
@@ -134,7 +133,7 @@ const PeakListDetail = (props: Props) => {
       );
     } else {
       const {
-        type, description, optionalPeaksDescription, resources, parent,
+        type, description, resources, parent,
         stateOrRegionString,
       } = peakList;
       const requiredMountains: MountainDatum[] = peakList.mountains ? peakList.mountains : [];
@@ -244,27 +243,6 @@ const PeakListDetail = (props: Props) => {
         }
       };
 
-      const optionalMountainsText = optionalPeaksDescription && optionalPeaksDescription.length
-        ? optionalPeaksDescription : getString('peak-list-detail-text-optional-mountains-desc');
-
-      const optionalMountainsTable = optionalMountainsWithDates.length > 0 ? (
-        <>
-          <h2>{getString('peak-list-detail-text-optional-mountains')}</h2>
-          <PreFormattedParagraph>{optionalMountainsText}</PreFormattedParagraph>
-          <MountainTable
-            user={user}
-            mountains={optionalMountainsWithDates}
-            type={type}
-            peakListId={peakList.id}
-            peakListShortName={peakList.shortName}
-            isOtherUser={isOtherUser}
-            showImportExport={false}
-            isExportModalOpen={isExportModalOpen}
-            setIsExportModalOpen={setIsExportModalOpen}
-          />
-        </>
-      ) : null;
-
       let title: string;
       if (isOtherUser === true && user !== null) {
         title = user.name + ' | ' + peakList.name;
@@ -343,10 +321,6 @@ const PeakListDetail = (props: Props) => {
             completedAscents={userMountains}
             isOtherUser={isOtherUser}
           />
-          <DetailBoxTitle>
-            <BasicIconInText icon={faMapMarkedAlt} />
-            {getString('map-list-title', {'short-name': peakList.name})}
-          </DetailBoxTitle>
         </>
       );
 
@@ -391,7 +365,6 @@ const PeakListDetail = (props: Props) => {
             isExportModalOpen={isExportModalOpen}
             setIsExportModalOpen={setIsExportModalOpen}
           />
-          {optionalMountainsTable}
           <MapRenderProp
             id={id}
             mountains={mountainsForMap}
