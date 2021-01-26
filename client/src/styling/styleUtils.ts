@@ -653,6 +653,7 @@ export const TextareaBase = styled.textarea`
   box-sizing: border-box;
   border: solid 1px ${lightBorderColor};
   font-size: 1rem;
+  line-height: 1.25;
   font-weight: ${lightFontWeight};
   width: 100%;
   resize: vertical;

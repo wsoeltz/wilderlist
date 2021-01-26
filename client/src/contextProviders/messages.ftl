@@ -70,6 +70,14 @@ global-text-value-search-mountains-to-add = Search for mountains to add
 global-text-value-search-trails-to-add = Search for trails to add
 global-text-value-search-campsites-to-add = Search for campsites to add
 
+global-text-value-fitler-items = Filter {
+  $type ->
+    [mountain] mountains
+    [campsite] campsites
+    [trail] trails
+    *[other] items
+} on list
+
 global-text-value-no-results-found = No results found.
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>

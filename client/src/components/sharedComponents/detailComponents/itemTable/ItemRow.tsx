@@ -3,18 +3,26 @@ import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { LinkButton } from '../../../../styling/styleUtils';
 import {
+  lightBaseColor,
   lightBorderColor,
   SemiBold,
+  tertiaryColor,
 } from '../../../../styling/styleUtils';
 
 const Row = styled.tr`
   border-bottom: 1px solid ${lightBorderColor};
   background-color: #f8f8f8;
   font-size: 0.85rem;
+
+  &:hover {
+    background-color: ${tertiaryColor};
+  }
 `;
 
 const IndexCell = styled.td`
   padding: 0.35rem 0 0.35rem 0.3rem;
+  font-size: 0.75rem;
+  color: ${lightBaseColor};
 `;
 
 const BaseCell = styled.td`
@@ -23,6 +31,8 @@ const BaseCell = styled.td`
 
 const InnerCell = styled(BaseCell)`
   text-align: center;
+  font-size: 0.75rem;
+  color: ${lightBaseColor};
 `;
 
 interface Props {

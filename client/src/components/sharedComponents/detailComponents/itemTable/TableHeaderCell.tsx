@@ -11,7 +11,12 @@ import {
 const Cell = styled.th<{$sortable: boolean, $align?: 'left' | 'right' | 'center'}>`
   ${({$sortable}) => $sortable ? 'cursor: pointer;' : ''}
   text-align: ${({$align}) => $align ? $align : 'center'};
-  padding: 0.5rem 0.45rem 0;
+  background-color: #fff;
+  padding: 0.5rem 1rem 0 0.45rem;
+  position: sticky;
+  top: -1px;
+  height: 2rem;
+  box-sizing: border-box;
 `;
 
 const SortIconContainer = styled.div`

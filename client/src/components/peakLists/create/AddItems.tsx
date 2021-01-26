@@ -4,6 +4,7 @@ import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import { Campsite, Mountain, State, Trail } from '../../../types/graphQLTypes';
+import {CoreItem} from '../../../types/itemTypes';
 import DetailSegment from '../../sharedComponents/detailComponents/DetailSegment';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import ItemSelector from './ItemSelector';
@@ -131,45 +132,51 @@ const AddItems = (props: Props) => {
 
   const panels = [
     {
-      title: `${getString('global-text-value-mountains')} (${selectedMountains.length})`,
+      title: `${getString('global-text-value-mountains')}`,
       reactNode: (
         <ItemSelector
+          key={'create-list-panel-items-mountains'}
           selectedList={mountains}
           setSelectedList={setSelectedMountains}
           dataFieldKeys={mountainDataFieldKeys}
           note={getString('trip-report-add-additional-mtns-desc')}
           searchPlaceholder={getString('global-text-value-search-mountains-to-add')}
           endpoint={'/api/mountain-search'}
+          type={CoreItem.mountain}
         />
       ),
       customIcon: true,
       icon: mountainNeutralSvg,
     },
     {
-      title: `${getString('global-text-value-trails')} (${selectedTrails.length})`,
+      title: `${getString('global-text-value-trails')}`,
       reactNode: (
         <ItemSelector
+          key={'create-list-panel-items-trails'}
           selectedList={trails}
           setSelectedList={setSelectedTrails}
           dataFieldKeys={trailDataFieldKeys}
           note={getString('trip-report-add-additional-trails-desc')}
           searchPlaceholder={getString('global-text-value-search-trails-to-add')}
           endpoint={'/api/trail-search'}
+          type={CoreItem.trail}
         />
       ),
       customIcon: true,
       icon: trailDefaultSvg,
     },
     {
-      title: `${getString('global-text-value-campsites')} (${selectedCampsites.length})`,
+      title: `${getString('global-text-value-campsites')}`,
       reactNode: (
         <ItemSelector
+          key={'create-list-panel-items-campsites'}
           selectedList={campsites}
           setSelectedList={setSelectedCampsites}
           dataFieldKeys={campsiteDataFieldKeys}
           note={getString('trip-report-add-additional-campsites-desc')}
           searchPlaceholder={getString('global-text-value-search-campsites-to-add')}
           endpoint={'/api/campsite-search'}
+          type={CoreItem.campsite}
         />
       ),
       customIcon: true,
@@ -177,9 +184,16 @@ const AddItems = (props: Props) => {
     },
   ];
 
+  const panelCounts = [
+    {index: 0, count: mountains.length},
+    {index: 1, count: trails.length},
+    {index: 2, count: campsites.length},
+  ];
+
   return (
     <DetailSegment
       panels={panels}
+      panelCounts={panelCounts}
     />
   );
 

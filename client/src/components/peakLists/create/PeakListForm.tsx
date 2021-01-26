@@ -216,7 +216,10 @@ const PeakListForm = (props: Props) => {
       });
       const stateIds = statesArray.map(state => state.id);
       setLoadingSubmit(true);
-      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
+      const resources = externalResources
+        .filter(resource => resource.title.length && resource.url.length)
+        // Map is required to remove any unknown keys added to the resource object
+        .map(resource => ({title: resource.title, url: resource.url}));
       const allPoints = featureCollection([
         ...mountains.map(mtn => point(mtn.location)),
         ...campsites.map(campsite => point(campsite.location)),

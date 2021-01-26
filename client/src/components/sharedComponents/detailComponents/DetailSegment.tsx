@@ -81,10 +81,11 @@ export type Panel = {
 
 interface Props {
   panels: Panel[];
+  panelCounts?: Array<{index: number, count: number}>;
 }
 
 const DetailSegment = (props: Props) => {
-  const {panels} = props;
+  const {panels, panelCounts} = props;
   const [panelIndex, setPanelIndex] = useState<number>(0);
 
   const buttons: Array<React.ReactElement<any>> = [];
@@ -113,13 +114,17 @@ const DetailSegment = (props: Props) => {
     } else {
       icon = null;
     }
+
+    const titleCount = panelCounts ? panelCounts.find(p => p.index === i) : undefined;
+    const title = titleCount ? `${panel.title} (${titleCount.count})` : panel.title;
+
     buttons.push(
       <Button
         key={'panel-nav-button' + panel.title + i}
         onClick={selectPanel}
       >
         {icon}
-        {panel.title}
+        {title}
       </Button>,
     );
 

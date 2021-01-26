@@ -8,11 +8,12 @@ import {
   IconContainer,
   primaryColor,
 } from '../../../styling/styleUtils';
+import {CoreItem} from '../../../types/itemTypes';
 import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import Search from '../../sharedComponents/search';
 
 const Root = styled.div`
-  min-height: 100vh;
+  min-height: 50vh;
 `;
 
 const NoteText = styled.div`
@@ -48,12 +49,13 @@ interface Props<T> {
   note: string;
   searchPlaceholder: string;
   endpoint: string;
+  type: CoreItem;
 }
 
 function ItemSelector<T>(props: Props<T>) {
   const {
     selectedList, setSelectedList, dataFieldKeys,
-    note, searchPlaceholder, endpoint,
+    note, searchPlaceholder, endpoint, type,
   } = props;
 
   const getString = useFluent();
@@ -132,6 +134,7 @@ function ItemSelector<T>(props: Props<T>) {
             items={selectedItemList}
             dataFieldKeys={dataFieldKeys}
             actionFieldKeys={actionFieldKeys}
+            type={type}
           />
         </div>
       </Root>
