@@ -15,8 +15,8 @@ const GET_BASIC_LIST_DETAILS = gql`
       numMountains
       numTrails
       numCampsites
-      numCompletedAscents(userId: $userId)
-      latestAscent(userId: $userId, raw: true)
+      numCompletedTrips(userId: $userId)
+      latestTrip(userId: $userId, raw: true)
       isActive(userId: $userId)
       parent {
         id
@@ -46,9 +46,9 @@ interface PeakListDatum {
   numMountains: PeakList['numMountains'];
   numTrails: PeakList['numTrails'];
   numCampsites: PeakList['numCampsites'];
-  numCompletedAscents: PeakList['numCompletedAscents'];
+  numCompletedTrips: PeakList['numCompletedTrips'];
   isActive: PeakList['isActive'];
-  latestAscent: PeakList['latestAscent'];
+  latestTrip: PeakList['latestTrip'];
   parent: null | {id: PeakList['id'], type: PeakList['type']};
   children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
   siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
@@ -63,6 +63,8 @@ interface Variables {
   id: string;
   userId: string | null;
 }
+
+export const refetchBasicListDetails = (variables: Variables) => ({query: GET_BASIC_LIST_DETAILS, variables});
 
 export const useBasicListDetails = (id: string, userId: string | null) => useQuery<SuccessResponse, Variables>(
   GET_BASIC_LIST_DETAILS, {variables: { id, userId }},

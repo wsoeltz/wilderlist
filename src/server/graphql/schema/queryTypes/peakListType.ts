@@ -13,7 +13,9 @@ import {
   completedPeaks,
   formatDate,
   getLatestAscent,
+  RawCompletedCampsite,
   RawCompletedMountain,
+  RawCompletedTrail,
 } from '../../../utilities/peakListUtils';
 import { PeakList as IPeakList } from '../../graphQLTypes';
 import {getStatesOrRegion} from '../../Utils';
@@ -455,10 +457,108 @@ const PeakListType: any = new GraphQLObjectType({
           }
 
           if (completedMountains && completedMountains.length && mountains && mountains.length && parentValue.type) {
-            return completedPeaks(mountains, completedMountains, parentValue.type);
+            return completedPeaks(mountains, completedMountains, parentValue.type, 'mountain');
           } else {
             return 0;
           }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    numCompletedTrips: {
+      type: GraphQLInt,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return 0;
+        }
+        try {
+          let completedMountains: RawCompletedMountain[];
+          let completedTrails: RawCompletedTrail[];
+          let completedCampsites: RawCompletedCampsite[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedMountains = user.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+              mountain: mountain.toString(), dates,
+            }));
+            completedTrails = user.trails.map(({trail, dates}: RawCompletedTrail) => ({
+              trail: trail.toString(), dates,
+            }));
+            completedCampsites = user.campsites.map(({campsite, dates}: RawCompletedCampsite) => ({
+              campsite: campsite.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.mountains && res.mountains.length) {
+              completedMountains = res.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+                mountain: mountain.toString(), dates,
+              }));
+            } else {
+              completedMountains = [];
+            }
+            if (res && res.trails && res.trails.length) {
+              completedTrails = res.trails.map(({trail, dates}: RawCompletedTrail) => ({
+                trail: trail.toString(), dates,
+              }));
+            } else {
+              completedTrails = [];
+            }
+            if (res && res.campsites && res.campsites.length) {
+              completedCampsites = res.campsites.map(({campsite, dates}: RawCompletedCampsite) => ({
+                campsite: campsite.toString(), dates,
+              }));
+            } else {
+              completedCampsites = [];
+            }
+          }
+
+          let mountains: string[] = [];
+          let trails: string[] = [];
+          let campsites: string[] = [];
+          if (parentValue.mountains && parentValue.mountains.length) {
+            mountains = parentValue.mountains.map((mtn: string) => mtn.toString());
+          }
+          if (parentValue.trails && parentValue.trails.length) {
+            trails = parentValue.trails.map((trail: string) => trail.toString());
+          }
+          if (parentValue.campsites && parentValue.campsites.length) {
+            campsites = parentValue.campsites.map((campsite: string) => campsite.toString());
+          }
+
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.mountains && res.mountains.length) {
+              mountains = res.mountains.map((mtn: string) => mtn.toString());
+            } else {
+              mountains = [];
+            }
+            if (res && res.trails && res.trails.length) {
+              trails = res.trails.map((trail: string) => trail.toString());
+            } else {
+              trails = [];
+            }
+            if (res && res.campsites && res.campsites.length) {
+              campsites = res.campsites.map((mtn: string) => mtn.toString());
+            } else {
+              campsites = [];
+            }
+          }
+
+          let numberCompletedMountains = 0;
+          if (completedMountains && completedMountains.length && mountains && mountains.length && parentValue.type) {
+            numberCompletedMountains = completedPeaks(mountains, completedMountains, parentValue.type, 'mountain');
+          }
+          let numberCompletedTrails = 0;
+          if (completedTrails && completedTrails.length && trails && trails.length && parentValue.type) {
+            numberCompletedTrails = completedPeaks(trails, completedTrails, parentValue.type, 'trail');
+          }
+          let numberCompletedCampsites = 0;
+          if (completedCampsites && completedCampsites.length && campsites && campsites.length && parentValue.type) {
+            numberCompletedCampsites = completedPeaks(campsites, completedCampsites, parentValue.type, 'campsite');
+          }
+          return numberCompletedMountains + numberCompletedTrails + numberCompletedCampsites;
         } catch (err) {
           return err;
         }
@@ -506,7 +606,119 @@ const PeakListType: any = new GraphQLObjectType({
           }
 
           if (completedMountains && completedMountains.length && mountains && mountains.length && parentValue.type) {
-            const latestDate = getLatestAscent(mountains, completedMountains, parentValue.type);
+            const latestDate = getLatestAscent(mountains, completedMountains, parentValue.type, 'mountain');
+            if (latestDate !== undefined) {
+              if (raw) {
+                return latestDate.original;
+              }
+              return formatDate(latestDate);
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    latestTrip: {
+      type: GraphQLString,
+      args: {
+        userId: {type: GraphQLID },
+        raw: {type: GraphQLBoolean},
+      },
+      async resolve(parentValue, {userId, raw}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return null;
+        }
+        try {
+          let completedMountains: RawCompletedMountain[];
+          let completedTrails: RawCompletedTrail[];
+          let completedCampsites: RawCompletedCampsite[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedMountains = user.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+              mountain: mountain.toString(), dates,
+            }));
+            completedTrails = user.trails.map(({trail, dates}: RawCompletedTrail) => ({
+              trail: trail.toString(), dates,
+            }));
+            completedCampsites = user.campsites.map(({campsite, dates}: RawCompletedCampsite) => ({
+              campsite: campsite.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.mountains && res.mountains.length) {
+              completedMountains = res.mountains.map(({mountain, dates}: RawCompletedMountain) => ({
+                mountain: mountain.toString(), dates,
+              }));
+            } else {
+              completedMountains = [];
+            }
+            if (res && res.trails && res.trails.length) {
+              completedTrails = res.trails.map(({trail, dates}: RawCompletedTrail) => ({
+                trail: trail.toString(), dates,
+              }));
+            } else {
+              completedTrails = [];
+            }
+            if (res && res.campsites && res.campsites.length) {
+              completedCampsites = res.campsites.map(({campsite, dates}: RawCompletedCampsite) => ({
+                campsite: campsite.toString(), dates,
+              }));
+            } else {
+              completedCampsites = [];
+            }
+          }
+
+          let mountains: string[] = [];
+          let trails: string[] = [];
+          let campsites: string[] = [];
+          if (parentValue.mountains && parentValue.mountains.length) {
+            mountains = parentValue.mountains.map((mtn: string) => mtn.toString());
+          }
+          if (parentValue.trails && parentValue.trails.length) {
+            trails = parentValue.trails.map((trail: string) => trail.toString());
+          }
+          if (parentValue.campsites && parentValue.campsites.length) {
+            campsites = parentValue.campsites.map((campsite: string) => campsite.toString());
+          }
+
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.mountains && res.mountains.length) {
+              mountains = res.mountains.map((mtn: string) => mtn.toString());
+            } else {
+              mountains = [];
+            }
+            if (res && res.trails && res.trails.length) {
+              trails = res.trails.map((trail: string) => trail.toString());
+            } else {
+              trails = [];
+            }
+            if (res && res.campsites && res.campsites.length) {
+              campsites = res.campsites.map((mtn: string) => mtn.toString());
+            } else {
+              campsites = [];
+            }
+          }
+
+          if (parentValue.type && (
+              (completedMountains && completedMountains.length && mountains && mountains.length) ||
+              (completedTrails && completedTrails.length && trails && trails.length) ||
+              (completedCampsites && completedCampsites.length && campsites && campsites.length)
+            )) {
+            const latestDate = getLatestAscent(
+              [...mountains, ...trails, ...campsites],
+              [
+                ...completedMountains.map(({mountain, dates}) => ({any: mountain, dates})),
+                ...completedTrails.map(({trail, dates}) => ({any: trail, dates})),
+                ...completedCampsites.map(({campsite, dates}) => ({any: campsite, dates})),
+              ],
+              parentValue.type,
+              'any',
+            );
             if (latestDate !== undefined) {
               if (raw) {
                 return latestDate.original;

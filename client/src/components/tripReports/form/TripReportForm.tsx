@@ -174,12 +174,7 @@ const TripReportForm = (props: PropsWithConditions) => {
     removeTrailCompletion,
     addEditTripReport,
     deleteTripReport,
-  } = useTripReportMutations({
-      mountain: initialMountainId,
-      campsite: initialCampsiteId,
-      trail: initialTrailId,
-      pageNumber: 1,
-    });
+  } = useTripReportMutations();
 
   const [completionDay, setCompletionDay] = useState<string>
     (initialCompletionDay !== null ? initialCompletionDay : '');

@@ -1,26 +1,8 @@
-import { DocumentNode, gql, useMutation} from '@apollo/client';
-import useCurrentUser from '../../hooks/useCurrentUser';
+import {gql, useApolloClient, useMutation} from '@apollo/client';
 import {
   TripReport,
   User,
 } from '../../types/graphQLTypes';
-import {
-  refetchGeoNearPeakLists,
-  useGeoNearVariables,
-} from '../lists/getGeoNearPeakLists';
-import {
-  refetchUsersPeakLists,
-} from '../lists/getUsersPeakLists';
-import {
-  refetchUsersNotifications,
-} from '../notifications/useGetNotifications';
-import {
-  refetchUsersProgress,
-} from '../users/useUsersProgress';
-import {
-  Input as RefetchInput,
-  refetchLatestTripReports,
-} from './useLatestTripReports';
 
 const ADD_MOUNTAIN_COMPLETION = gql`
   mutation addMountainCompletion(
@@ -218,122 +200,6 @@ export interface AscentNotificationsVariables {
   friendId: string;
 }
 
-const addTripReportVariableDeclerations = `
-  $date: String!,
-  $author: ID!,
-  $mountains: [ID],
-  $trails: [ID],
-  $campsites: [ID],
-  $users: [ID],
-  $privacy: String,
-  $notes: String,
-  $link: String,
-  $mudMinor: Boolean,
-  $mudMajor: Boolean,
-  $waterSlipperyRocks: Boolean,
-  $waterOnTrail: Boolean,
-  $leavesSlippery: Boolean,
-  $iceBlack: Boolean,
-  $iceBlue: Boolean,
-  $iceCrust: Boolean,
-  $snowIceFrozenGranular: Boolean,
-  $snowIceMonorailStable: Boolean,
-  $snowIceMonorailUnstable: Boolean,
-  $snowIcePostholes: Boolean,
-  $snowMinor: Boolean,
-  $snowPackedPowder: Boolean,
-  $snowUnpackedPowder: Boolean,
-  $snowDrifts: Boolean,
-  $snowSticky: Boolean,
-  $snowSlush: Boolean,
-  $obstaclesBlowdown: Boolean,
-  $obstaclesOther: Boolean,
-`;
-const addTripReportVariableParameters = `
-  date: $date,
-  author: $author,
-  mountains: $mountains,
-  trails: $trails,
-  campsites: $campsites,
-  users: $users,
-  privacy: $privacy,
-  notes: $notes,
-  link: $link,
-  mudMinor: $mudMinor,
-  mudMajor: $mudMajor,
-  waterSlipperyRocks: $waterSlipperyRocks,
-  waterOnTrail: $waterOnTrail,
-  leavesSlippery: $leavesSlippery,
-  iceBlack: $iceBlack,
-  iceBlue: $iceBlue,
-  iceCrust: $iceCrust,
-  snowIceFrozenGranular: $snowIceFrozenGranular,
-  snowIceMonorailStable: $snowIceMonorailStable,
-  snowIceMonorailUnstable: $snowIceMonorailUnstable,
-  snowIcePostholes: $snowIcePostholes,
-  snowMinor: $snowMinor,
-  snowPackedPowder: $snowPackedPowder,
-  snowUnpackedPowder: $snowUnpackedPowder,
-  snowDrifts: $snowDrifts,
-  snowSticky: $snowSticky,
-  snowSlush: $snowSlush,
-  obstaclesBlowdown: $obstaclesBlowdown,
-  obstaclesOther: $obstaclesOther,
-`;
-
-const ADD_TRIP_REPORT = gql`
-  mutation addTripReport( ${addTripReportVariableDeclerations} ) {
-    tripReport: addTripReport( ${addTripReportVariableParameters} ) {
-      id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      trails {
-        id
-        name
-        type
-      }
-      campsites {
-        id
-        name
-        type
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
-    }
-  }
-`;
-
 export interface AddTripReportVariables {
   date: TripReport['date'];
   author: string;
@@ -368,59 +234,6 @@ export interface AddTripReportVariables {
 export interface AddTripReportSuccess {
   tripReport: TripReport;
 }
-
-const EDIT_TRIP_REPORT = gql`
-  mutation editTripReport( $id: ID!, ${addTripReportVariableDeclerations} ) {
-    tripReport: editTripReport( id: $id, ${addTripReportVariableParameters} ) {
-      id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      trails {
-        id
-        name
-        type
-      }
-      campsites {
-        id
-        name
-        type
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
-    }
-  }
-`;
 
 export interface EditTripReportVariables extends AddTripReportVariables {
   id: TripReport['id'];
@@ -500,51 +313,6 @@ const ADD_EDIT_TRIP_REPORT = gql`
       originalCampsites: $originalCampsites,
     ) {
       id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      trails {
-        id
-        name
-        type
-      }
-      campsites {
-        id
-        name
-        type
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
     }
   }
 `;
@@ -591,51 +359,6 @@ const DELETE_TRIP_REPORT = gql`
   mutation deleteTripReport($id: ID!) {
     tripReport: deleteTripReport(id: $id) {
       id
-      date
-      author {
-        id
-        name
-      }
-      mountains {
-        id
-        name
-      }
-      trails {
-        id
-        name
-        type
-      }
-      campsites {
-        id
-        name
-        type
-      }
-      users {
-        id
-        name
-      }
-      notes
-      link
-      mudMinor
-      mudMajor
-      waterSlipperyRocks
-      waterOnTrail
-      leavesSlippery
-      iceBlack
-      iceBlue
-      iceCrust
-      snowIceFrozenGranular
-      snowIceMonorailStable
-      snowIceMonorailUnstable
-      snowIcePostholes
-      snowMinor
-      snowPackedPowder
-      snowUnpackedPowder
-      snowDrifts
-      snowSticky
-      snowSlush
-      obstaclesBlowdown
-      obstaclesOther
     }
   }
 `;
@@ -644,67 +367,46 @@ export interface DeleteTripReportVariables {
   id: TripReport['id'];
 }
 
-export const useTripReportMutations = (input?: RefetchInput) => {
-  const currentUser = useCurrentUser();
-  const userId = currentUser ? currentUser._id : null;
-  const geoNearVariables = useGeoNearVariables();
-  const refetchArray: Array<{query: DocumentNode, variables: any}> = [refetchGeoNearPeakLists(geoNearVariables)];
-  if (input && (input.mountain || input.trail || input.campsite) && input.pageNumber) {
-    refetchArray.push(refetchLatestTripReports(input));
-  }
-  if (userId) {
-    refetchArray.push(refetchUsersPeakLists({userId}));
-    refetchArray.push(refetchUsersProgress({userId}));
-    refetchArray.push(refetchUsersNotifications(userId));
-  }
+export const useTripReportMutations = () => {
+  const client = useApolloClient();
   const [addMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(ADD_MOUNTAIN_COMPLETION, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [removeMountainCompletion] =
     useMutation<MountainCompletionSuccessResponse, MountainCompletionVariables>(REMOVE_MOUNTAIN_COMPLETION, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [addTrailCompletion] =
     useMutation<TrailCompletionSuccessResponse, TrailCompletionVariables>(ADD_TRAIL_COMPLETION, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [removeTrailCompletion] =
     useMutation<TrailCompletionSuccessResponse, TrailCompletionVariables>(REMOVE_TRAIL_COMPLETION, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [addCampsiteCompletion] =
     useMutation<CampsiteCompletionSuccessResponse, CampsiteCompletionVariables>(ADD_CAMPSITE_COMPLETION, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [removeCampsiteCompletion] =
     useMutation<CampsiteCompletionSuccessResponse, CampsiteCompletionVariables>(REMOVE_CAMPSITE_COMPLETION, {
-      refetchQueries: refetchArray,
-  });
-
-  const [addTripReport] =
-    useMutation<AddTripReportSuccess, AddTripReportVariables>(ADD_TRIP_REPORT, {
-      refetchQueries: refetchArray,
-  });
-
-  const [editTripReport] =
-    useMutation<AddTripReportSuccess, EditTripReportVariables>(EDIT_TRIP_REPORT, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [addEditTripReport] =
     useMutation<AddTripReportSuccess, AddEditTripReportVariables>(ADD_EDIT_TRIP_REPORT, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   const [deleteTripReport] =
     useMutation<AddTripReportSuccess, DeleteTripReportVariables>(DELETE_TRIP_REPORT, {
-      refetchQueries: refetchArray,
+      onCompleted: client.resetStore,
   });
 
   return {
@@ -714,8 +416,6 @@ export const useTripReportMutations = (input?: RefetchInput) => {
     removeTrailCompletion,
     addCampsiteCompletion,
     removeCampsiteCompletion,
-    addTripReport,
-    editTripReport,
     addEditTripReport,
     deleteTripReport,
   };

@@ -153,7 +153,7 @@ const Header = (props: Props) => {
   let numTrails: number = 0;
   let numCampsites: number = 0;
   let totalRequiredAscents: number = 0;
-  let numCompletedAscents: number = 0;
+  let numCompletedTrips: number = 0;
   let latestDateText: React.ReactElement<any> | null = (<>---</>);
   let variantList: React.ReactElement<any> | null = null;
   if (loading === true) {
@@ -163,7 +163,7 @@ const Header = (props: Props) => {
   } else if (data !== undefined) {
     const {
       peakList: {
-        parent, latestAscent,
+        parent, latestTrip,
       },
       peakList,
     } = data;
@@ -171,7 +171,7 @@ const Header = (props: Props) => {
     numTrails = peakList.numTrails;
     numCampsites = peakList.numCampsites;
     type = peakList.type;
-    numCompletedAscents = peakList.numCompletedAscents;
+    numCompletedTrips = peakList.numCompletedTrips;
     stateOrRegionString = peakList.stateOrRegionString;
     name = peakList.name;
     shortName = peakList.shortName;
@@ -220,7 +220,7 @@ const Header = (props: Props) => {
       failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
     }
 
-    const latestDate = latestAscent ? parseDate(latestAscent) : undefined;
+    const latestDate = latestTrip ? parseDate(latestTrip) : undefined;
 
     if (latestDate !== undefined) {
       const {day, month, year} = latestDate;
@@ -358,7 +358,7 @@ const Header = (props: Props) => {
           <ProgressBarContainer>
             <PeakProgressBar
               variant={type}
-              completed={numCompletedAscents ? numCompletedAscents : 0}
+              completed={numCompletedTrips ? numCompletedTrips : 0}
               total={totalRequiredAscents}
               id={peakListId}
             />
@@ -371,7 +371,7 @@ const Header = (props: Props) => {
             shortName={shortName ? shortName : ''}
             variant={type ? type : PeakListVariants.standard}
             active={Boolean(type)}
-            completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
+            completed={totalRequiredAscents > 0 && numCompletedTrips === totalRequiredAscents}
           />
         </LogoContainer>
         <ListSettings>

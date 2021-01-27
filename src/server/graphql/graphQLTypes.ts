@@ -118,7 +118,9 @@ export interface PeakList {
   numTrails: number;
   numCampsites: number;
   numCompletedAscents: number;
+  numCompletedTrips: number;
   latestAscent: string | null;
+  latestTrip: string | null;
   isActive: boolean | null;
   stateOrRegionString: string | null;
   center: Coordinate | null;
