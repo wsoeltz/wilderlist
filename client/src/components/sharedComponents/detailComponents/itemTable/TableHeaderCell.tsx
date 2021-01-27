@@ -8,11 +8,11 @@ import {
   BasicIconAtEndOfText,
 } from '../../../../styling/styleUtils';
 
-const Cell = styled.th<{$sortable: boolean, $align?: 'left' | 'right' | 'center'}>`
+const Cell = styled.th<{$sortable: boolean, $align?: 'left' | 'right' | 'center', $compact: boolean}>`
   ${({$sortable}) => $sortable ? 'cursor: pointer;' : ''}
   text-align: ${({$align}) => $align ? $align : 'center'};
   background-color: #fff;
-  padding: 0.5rem 1rem 0 0.45rem;
+  padding: ${({$compact}) => !$compact ? '0.5rem 1rem 0 0.45rem' : '0.5rem 0.5rem 0 0.45rem'};
   position: sticky;
   top: -1px;
   height: 2rem;
@@ -25,10 +25,10 @@ const SortIconContainer = styled.div`
   height: 0.7rem;
 `;
 
-const Icon = styled(BasicIconAtEndOfText)`
+const Icon = styled(BasicIconAtEndOfText)<{$compact: boolean}>`
   position: absolute;
-  right: -0.85rem;
-  top: 0;
+  right: ${({$compact}) => !$compact ? '-0.85rem' : '-0.5rem'};
+  top: ${({$compact}) => !$compact ? 0 : '0.15rem'};;
 `;
 
 const IconBackground = styled(Icon)`
@@ -42,11 +42,12 @@ interface Props {
   isSorting?: boolean;
   sortAsc?: boolean;
   align?: 'left' | 'right' | 'center';
+  compactView: boolean;
 }
 
 const TableHeaderCell = (props: Props) => {
   const {
-    toggleSorting, label, sortField, isSorting, sortAsc, align,
+    toggleSorting, label, sortField, isSorting, sortAsc, align, compactView,
   } = props;
 
   const sortable = Boolean(toggleSorting && sortField !== null);
@@ -59,12 +60,12 @@ const TableHeaderCell = (props: Props) => {
 
   const iconForeground = !isSorting
     ? null
-    : (sortAsc ? <Icon icon={faSortUp} /> : <Icon icon={faSortDown} />);
+    : (sortAsc ? <Icon $compact={compactView} icon={faSortUp} /> : <Icon $compact={compactView} icon={faSortDown} />);
 
   const sortIcon = sortable ? (
     <SortIconContainer>
       {iconForeground}
-      <IconBackground icon={faSort} />
+      <IconBackground $compact={compactView} icon={faSort} />
     </SortIconContainer>
   ) : null;
 
@@ -73,8 +74,9 @@ const TableHeaderCell = (props: Props) => {
       onClick={onClick}
       $sortable={sortable}
       $align={align}
+      $compact={compactView}
     >
-      <ItemTitle>
+      <ItemTitle style={{fontSize: compactView ? '0.65rem' : undefined}}>
         {label}
         {sortIcon}
       </ItemTitle>

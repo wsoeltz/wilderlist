@@ -1,4 +1,5 @@
-import { CompletedMountain, PeakListVariants } from '../../../types/graphQLTypes';
+import { PeakListVariants } from '../../../types/graphQLTypes';
+import { CoreItem } from '../../../types/itemTypes';
 import {
   DateObject,
   getFourSeasonCompletion,
@@ -40,18 +41,19 @@ export type VariableDate = {
 
 interface Input {
   type: PeakListVariants;
-  mountain: {id: string};
-  userMountains: CompletedMountain[];
+  item: {id: string};
+  field: CoreItem;
+  userItems: any[];
 }
 
-const getGridCompletionDates = (input: Input) => {
+const getCompletionDates = (input: Input) => {
   const {
-    userMountains, mountain, type,
+    userItems, field, item, type,
   } = input;
 
   let allDates: VariableDate | null;
-  const completedDates = userMountains.find(
-    (completedMountain) => completedMountain.mountain && completedMountain.mountain.id === mountain.id);
+  const completedDates = userItems.find(
+    (completedMountain) => completedMountain[field] && completedMountain[field].id === item.id);
   if (completedDates !== undefined) {
     if (type === PeakListVariants.standard) {
       const completedDate = getStandardCompletion(completedDates);
@@ -115,4 +117,4 @@ const getGridCompletionDates = (input: Input) => {
   return allDates;
 };
 
-export default getGridCompletionDates;
+export default getCompletionDates;

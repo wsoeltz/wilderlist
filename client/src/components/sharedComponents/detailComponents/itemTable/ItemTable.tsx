@@ -8,9 +8,11 @@ import StandardSearch from '../../StandardSearch';
 import ItemRow from './ItemRow';
 import TableHeaderCell from './TableHeaderCell';
 
-const Root = styled.table`
+const Table = styled.table`
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
+  overflow-x: scroll;
 `;
 
 const Row = styled.tr`
@@ -56,12 +58,13 @@ interface Props {
   items: Item[];
   dataFieldKeys: KeySortPair[];
   actionFieldKeys: KeySortPair[];
+  completionFieldKeys: KeySortPair[];
   showIndex?: boolean;
   type: CoreItem;
 }
 
 const ItemTable = (props: Props) => {
-  const {items, showIndex, dataFieldKeys, actionFieldKeys, type} = props;
+  const {items, showIndex, dataFieldKeys, actionFieldKeys, completionFieldKeys, type} = props;
   const getString = useFluent();
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [sorting, setSorting] = useState<{field: string, asc: boolean}>({field: 'name', asc: false});
@@ -76,10 +79,19 @@ const ItemTable = (props: Props) => {
     });
   }, [setSorting]);
 
+  // + 1 for name column
+  let totalColumns = dataFieldKeys.length + actionFieldKeys.length + completionFieldKeys.length + 1;
+  if (showIndex) {
+    totalColumns += 1;
+  }
+
+  const compactView = totalColumns > 6;
+
   const rows = orderBy(items, [sorting.field], [sorting.asc ? 'asc' : 'desc'])
     .filter(item => item.name.toLowerCase().includes(filterQuery))
     .map((item, i) => {
       const dataFields = dataFieldKeys.map(({displayKey}) => item[displayKey]);
+      const completionFields = completionFieldKeys.map(({displayKey}) => item[displayKey]);
       const actionFields = actionFieldKeys.map(({displayKey}) => item[displayKey]);
       return (
         <ItemRow
@@ -88,8 +100,9 @@ const ItemTable = (props: Props) => {
           name={item.name}
           destination={item.destination}
           dataFields={dataFields}
-          completionFields={[]}
+          completionFields={completionFields}
           actionFields={actionFields}
+          compactView={compactView}
         />
       );
     });
@@ -97,32 +110,40 @@ const ItemTable = (props: Props) => {
   const indexHeader = showIndex ? <IndexHeader /> : null;
   const dataFieldHeaders = dataFieldKeys.map(({label, sortKey}) => (
     <TableHeaderCell
-      key={'item-table-header-' + label}
+      key={'item-table-header-' + label + type}
       label={label}
       toggleSorting={toggleSorting}
       sortField={sortKey}
       isSorting={sorting.field === sortKey}
       sortAsc={sorting.asc}
+      compactView={compactView}
+    />
+  ));
+  const completionFieldHeaders = completionFieldKeys.map(({label, sortKey}) => (
+    <TableHeaderCell
+      key={'item-table-header-' + label + type}
+      label={label}
+      toggleSorting={toggleSorting}
+      sortField={sortKey}
+      isSorting={sorting.field === sortKey}
+      sortAsc={sorting.asc}
+      compactView={compactView}
     />
   ));
   const actionFieldHeaders = actionFieldKeys.map(({label, sortKey}) => (
     <TableHeaderCell
-      key={'item-table-header-' + label}
+      key={'item-table-header-' + label + type}
       label={label}
       toggleSorting={toggleSorting}
       sortField={sortKey}
       isSorting={sorting.field === sortKey}
       sortAsc={sorting.asc}
+      compactView={compactView}
     />
   ));
 
-  let totalColumns = dataFieldHeaders.length + actionFieldHeaders.length + 1; // + 1 for name column
-  if (showIndex) {
-    totalColumns += 1;
-  }
-
   return (
-    <Root>
+    <Table>
       <thead>
         <Row>
           {indexHeader}
@@ -133,8 +154,10 @@ const ItemTable = (props: Props) => {
             isSorting={sorting.field === 'name'}
             sortAsc={sorting.asc}
             align={'left'}
+            compactView={compactView}
           />
           {dataFieldHeaders}
+          {completionFieldHeaders}
           {actionFieldHeaders}
         </Row>
         <tr>
@@ -152,7 +175,7 @@ const ItemTable = (props: Props) => {
       <tbody>
         {rows}
       </tbody>
-    </Root>
+    </Table>
   );
 };
 

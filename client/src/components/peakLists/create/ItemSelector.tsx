@@ -133,6 +133,7 @@ function ItemSelector<T>(props: Props<T>) {
             showIndex={true}
             items={selectedItemList}
             dataFieldKeys={dataFieldKeys}
+            completionFieldKeys={[]}
             actionFieldKeys={actionFieldKeys}
             type={type}
           />

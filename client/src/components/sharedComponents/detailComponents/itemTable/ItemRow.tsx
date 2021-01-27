@@ -19,19 +19,21 @@ const Row = styled.tr`
   }
 `;
 
-const IndexCell = styled.td`
+const IndexCell = styled.td<{$compact: boolean}>`
   padding: 0.35rem 0 0.35rem 0.3rem;
-  font-size: 0.75rem;
+  padding: ${({$compact}) => !$compact ?  '0.35rem 0 0.35rem 0.3rem' : '0.35rem 0 0.35rem 0.2rem'};
+  font-size: ${({$compact}) => !$compact ?  '0.75rem' : '0.6rem'};
   color: ${lightBaseColor};
 `;
 
-const BaseCell = styled.td`
-  padding: 0.35rem 0.45rem;
+const BaseCell = styled.td<{$compact: boolean}>`
+  padding: ${({$compact}) => !$compact ?  '0.35rem 0.45rem' : '0.35rem 0.25rem'};
+  ${({$compact}) => !$compact ?  '' : 'font-size: 0.75rem'};
 `;
 
 const InnerCell = styled(BaseCell)`
   text-align: center;
-  font-size: 0.75rem;
+  font-size: ${({$compact}) => !$compact ?  '0.75rem' : '0.6rem'};
   color: ${lightBaseColor};
 `;
 
@@ -40,25 +42,23 @@ interface Props {
   name: string;
   destination?: string | (() => void);
   dataFields: Array<string | number>;
-  completionFields: Array<{
-    value: string;
-    onClick: null | (() => void);
-  }>;
+  completionFields: Array<string | React.ReactNode>;
   actionFields: React.ReactNode[];
+  compactView: boolean;
 }
 
 const ItemRow = (props: Props) => {
   const {
-    index, name, destination, dataFields, completionFields, actionFields,
+    index, name, destination, dataFields, completionFields, actionFields, compactView,
   } = props;
 
-  const indexColumn = index !== undefined ? <IndexCell>{index}</IndexCell> : null;
+  const indexColumn = index !== undefined ? <IndexCell $compact={compactView}>{index}</IndexCell> : null;
 
   let nameColumn: React.ReactElement<any>;
   if (destination !== undefined) {
     if (typeof destination === 'string') {
       nameColumn = (
-        <BaseCell>
+        <BaseCell $compact={compactView}>
           <Link to={destination}>
             <SemiBold>{name}</SemiBold>
           </Link>
@@ -66,7 +66,7 @@ const ItemRow = (props: Props) => {
       );
     } else if (typeof destination === 'function') {
       nameColumn = (
-        <BaseCell>
+        <BaseCell $compact={compactView}>
           <LinkButton onClick={destination}>
             <SemiBold>{name}</SemiBold>
           </LinkButton>
@@ -74,41 +74,27 @@ const ItemRow = (props: Props) => {
       );
     } else {
       nameColumn = (
-        <BaseCell>
+        <BaseCell $compact={compactView}>
           <SemiBold>{name}</SemiBold>
         </BaseCell>
       );
     }
   } else {
     nameColumn = (
-      <BaseCell>
+      <BaseCell $compact={compactView}>
         <SemiBold>{name}</SemiBold>
       </BaseCell>
     );
   }
 
   const dataColumns = dataFields.map((value, i) => (
-    <InnerCell key={'item-list-data-td-' + name + value + i}>{value}</InnerCell>
+    <InnerCell $compact={compactView} key={'item-list-data-td-' + name + value + i}>{value}</InnerCell>
   ));
-  const completionColumns = completionFields.map(({value, onClick}, i) => {
-    if (onClick === null) {
-      return <InnerCell key={'item-list-completion-td-' + name + value + i}>{value}</InnerCell>;
-    } else {
-      return (
-        <InnerCell key={'item-list-completion-button-' + name + value + i}>
-          <LinkButton
-            key={'item-list-completion-button-td-' + name + value + i}
-            onClick={onClick}
-          >
-            {value}
-          </LinkButton>
-        </InnerCell>
-      );
-    }
-  });
-
+  const completionColumns = completionFields.map((value, i) => (
+    <InnerCell $compact={compactView} key={'item-list-completion-td-' + name + value + i}>{value}</InnerCell>
+  ));
   const actionColumns = actionFields.map((n, i) => (
-    <InnerCell key={'item-list-action-node-td-' + name + i}>{n}</InnerCell>
+    <InnerCell $compact={compactView} key={'item-list-action-node-td-' + name + i}>{n}</InnerCell>
   ));
 
   return (

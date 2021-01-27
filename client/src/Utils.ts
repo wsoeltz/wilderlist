@@ -169,6 +169,28 @@ export enum Seasons {
   spring = 'spring',
 }
 
+export const monthsArray = [
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
+];
+
+export const seasonsArray = [
+  'summer',
+  'fall',
+  'winter',
+  'spring',
+];
+
 export const getSeason = (year: number, month: number, day: number): Seasons | undefined => {
   const season = getSeasonUtility(year, month, day);
   if (season === 'summer') {

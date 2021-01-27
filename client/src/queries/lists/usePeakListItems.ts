@@ -5,6 +5,7 @@ const GET_PEAK_LIST_ITEMS = gql`
   query GetPeakListItems($id: ID!) {
     peakList(id: $id) {
       id
+      type
       mountains {
         id
         name
@@ -77,6 +78,7 @@ interface CampsiteDatum {
 interface SuccessResponse {
   peakList: {
     id: PeakList['id'];
+    type: PeakList['type'];
     mountains: MountainDatum[];
     trails: TrailDatum[];
     campsites: CampsiteDatum[];
