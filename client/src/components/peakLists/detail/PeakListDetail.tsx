@@ -1,6 +1,7 @@
 import React from 'react';
 import DescriptionAndNotes from './DescriptionAndNotes';
 import Header from './Header';
+import ItemsTables from './ItemsTables';
 
 interface Props {
   userId: string | null;
@@ -18,6 +19,9 @@ const PeakListDetail = (props: Props) => {
         setOwnMetaData={setOwnMetaData}
       />
       <DescriptionAndNotes
+        peakListId={id}
+      />
+      <ItemsTables
         peakListId={id}
       />
     </>

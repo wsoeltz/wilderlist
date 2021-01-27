@@ -123,6 +123,7 @@ const DetailSegment = (props: Props) => {
       <Button
         key={'panel-nav-button' + panel.title + i}
         onClick={selectPanel}
+        style={panels.length === 1 ? {outline: 'none', cursor: 'default'} : undefined}
       >
         {icon}
         {title}

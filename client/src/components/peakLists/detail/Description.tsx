@@ -115,7 +115,7 @@ const Description = ({loading, description, resources}: Props) => {
     <Root>
       <DescriptionContainer
         ref={descRef}
-        style={{minHeight: showAll ? 0 : undefined}}
+        style={{minHeight: showAll && !loading ? 0 : undefined}}
       >
         <DescriptionContent
           style={{position: showAll ? 'static' : undefined}}
