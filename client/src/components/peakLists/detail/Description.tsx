@@ -15,7 +15,7 @@ import {
 import { ExternalResource } from '../../../types/graphQLTypes';
 
 const Root = styled.div`
-  padding: 0 1rem;
+  padding: 1rem 1rem;
   display: flex;
 `;
 

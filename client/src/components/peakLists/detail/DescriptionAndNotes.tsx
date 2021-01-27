@@ -1,4 +1,4 @@
-import { faAlignLeft } from '@fortawesome/free-solid-svg-icons';
+import { faAlignLeft, faUserEdit } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import {
@@ -9,8 +9,10 @@ import useFluent from '../../../hooks/useFluent';
 import {useBasicListDetails} from '../../../queries/lists/useBasicListDetails';
 import {usePeakListItems} from '../../../queries/lists/usePeakListItems';
 import { ExternalResource } from '../../../types/graphQLTypes';
+import {AggregateItem} from '../../../types/itemTypes';
 import { isState } from '../../../utilities/dateUtils';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
+import UsersNotes from '../../sharedComponents/detailComponents/usersNotes';
 import Description from './Description';
 import IntroText from './IntroText';
 
@@ -73,6 +75,18 @@ const DescriptionAndNotes = (props: Props) => {
       ),
       renderHiddenContent: true,
       icon: faAlignLeft,
+      customIcon: false,
+    }, {
+      title: getString('user-notes-title'),
+      reactNode: (
+        <UsersNotes
+          id={peakListId}
+          name={name}
+          type={AggregateItem.list}
+          isAlone={true}
+        />
+      ),
+      icon: faUserEdit,
       customIcon: false,
     },
   ];

@@ -122,7 +122,7 @@ export const NotesTitle = styled(ItemTitle)`
 `;
 
 export const TopLevelColumns = styled.div`
-  margin: 0 -1rem 0.5rem;
+  margin: 0 -1rem 1.5rem;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;

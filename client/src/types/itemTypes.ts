@@ -4,6 +4,10 @@ export enum CoreItem {
   campsite = 'campsite',
 }
 
+export enum AggregateItem {
+  list = 'list',
+}
+
 export enum CoreItems {
   mountains = 'mountains',
   trails = 'trails',
