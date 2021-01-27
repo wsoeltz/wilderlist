@@ -31,9 +31,6 @@ import {
   MountainDatumWithDate,
   smallPadding,
 } from './MountainRow';
-import {
-  friendHeaderHeight,
-} from './PeakListDetail';
 
 const smallColumnMediaQuery = `(min-width: ${mobileSize}px) and (max-width: 1350px)`;
 
@@ -303,7 +300,7 @@ const MountainTable = (props: Props) => {
   const setSortToState = () => setSorting(SortingCategories.state);
   const setSortToDate = () => setSorting(SortingCategories.date);
 
-  const top = isOtherUser === true ? (friendHeaderHeight + topOfPageBuffer) + 'rem' : topOfPageBuffer + 'rem';
+  const top = isOtherUser === true ? (topOfPageBuffer) + 'rem' : topOfPageBuffer + 'rem';
 
   const openExportModal = useCallback(() => {
     if (setIsExportModalOpen) {

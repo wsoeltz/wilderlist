@@ -10,6 +10,7 @@ interface DateObject {
   day: number;
   hour: number;
   minute: number;
+  original: string;
 }
 
 enum Months {
@@ -195,6 +196,7 @@ const getDates = (dates: RawCompletedMountain['dates']) => {
         day: parseInt(dateParts[2], 10),
         hour: parseInt(dateParts[3], 10),
         minute: parseInt(dateParts[4], 10),
+        original: date,
       };
     });
     return sortBy(parsedDates, ({dateAsNumber}) => dateAsNumber);

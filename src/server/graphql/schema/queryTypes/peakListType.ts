@@ -372,6 +372,48 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    numTrails: {
+      type: GraphQLInt,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.trails && parentValue.trails.length) {
+            return parentValue.trails.length;
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.trails && res.trails.length) {
+                return res.trails.length;
+              } else {
+                return 0;
+              }
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    numCampsites: {
+      type: GraphQLInt,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.campsites && parentValue.campsites.length) {
+            return parentValue.campsites.length;
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.campsites && res.campsites.length) {
+                return res.campsites.length;
+              } else {
+                return 0;
+              }
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
     numCompletedAscents: {
       type: GraphQLInt,
       args: {
@@ -426,10 +468,11 @@ const PeakListType: any = new GraphQLObjectType({
       type: GraphQLString,
       args: {
         userId: {type: GraphQLID },
+        raw: {type: GraphQLBoolean},
       },
-      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+      async resolve(parentValue, {userId, raw}, {dataloaders: {userLoader, peakListLoader}, user}) {
         if (!user || !user._id) {
-          return 0;
+          return null;
         }
         try {
           let completedMountains: RawCompletedMountain[];
@@ -465,6 +508,9 @@ const PeakListType: any = new GraphQLObjectType({
           if (completedMountains && completedMountains.length && mountains && mountains.length && parentValue.type) {
             const latestDate = getLatestAscent(mountains, completedMountains, parentValue.type);
             if (latestDate !== undefined) {
+              if (raw) {
+                return latestDate.original;
+              }
               return formatDate(latestDate);
             } else {
               return null;

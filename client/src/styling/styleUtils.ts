@@ -122,6 +122,10 @@ export const HelpUnderline = styled.u`
   border-bottom: dashed 1px ${lightBaseColor};
 `;
 
+export const SmallSemiBold = styled(SemiBold)`
+  font-size: 0.85rem;
+`;
+
 export const Section = styled.div`
   margin-bottom: 1rem;
 `;
@@ -730,7 +734,6 @@ export const PlusIcon = styled.span`
 
 const IconInTextBase = styled(FontAwesomeIcon)`
   position: relative;
-  top: -1px;
 `;
 
 export const BasicIconInTextCompact = styled(IconInTextBase)`

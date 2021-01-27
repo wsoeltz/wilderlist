@@ -25,7 +25,7 @@ export enum DateType {
   none = 'none',
 }
 
-const parseDate = (rawDate: string): DateObject => {
+export const parseDate = (rawDate: string): DateObject => {
   const dateParts = rawDate.split('-');
   const dateAsNumber = parseInt(rawDate.replace(/X/g, '0').split('-').join(''), 10);
   return {

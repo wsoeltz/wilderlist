@@ -65,9 +65,9 @@ interface Props {
 const PeakProgressBar = (props: Props) => {
   const { id, total, completed, variant } = props;
   const percentage = (completed / total) * 100;
-  const roundedPercentage = roundPercentToSingleDecimal(completed, total);
+  const roundedPercentage = isNaN(percentage) ? 0 : roundPercentToSingleDecimal(completed, total);
   const colorSet = variant === null ? colorSetGray : getColorSetFromVariant(variant);
-  const percentageElm = roundedPercentage > 0 ? <Percentage colorSet={colorSet}>{roundedPercentage}%</Percentage> : null;
+  const percentageElm = <Percentage colorSet={colorSet}>{roundedPercentage}%</Percentage>;
   return (
     <Root>
       <SvgContainer>
@@ -75,7 +75,7 @@ const PeakProgressBar = (props: Props) => {
            viewBox='0 0 545 29.8'>
           <defs>
             <clipPath id={`${clipPathId}${id}`}>
-              <rect x='0' y='0' width={`${percentage}%`} height='100%'></rect>
+              <rect x='0' y='0' width={`${isNaN(percentage) ? 0 : percentage}%`} height='100%'></rect>
             </clipPath>
           </defs>
           <g className={`${clipPathId}background`}>

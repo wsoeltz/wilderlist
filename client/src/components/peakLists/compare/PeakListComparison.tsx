@@ -41,8 +41,8 @@ const ComparePeakListPage = (props: Props) => {
       );
     } else {
       const mountains: MountainDatum[] = peakList.mountains !== null ? peakList.mountains : [];
-      const userCompletedAscents = user.mountains !== null ? user.mountains : [];
-      const myCompletedAscents = me.mountains !== null ? me.mountains : [];
+      // const userCompletedAscents = user.mountains !== null ? user.mountains : [];
+      // const myCompletedAscents = me.mountains !== null ? me.mountains : [];
 
       return (
         <>
@@ -54,12 +54,8 @@ const ComparePeakListPage = (props: Props) => {
             })}</title>
           </Helmet>
           <Header
-            user={me}
-            mountains={mountains}
-            peakList={peakList}
-            completedAscents={myCompletedAscents}
-            comparisonUser={user}
-            comparisonAscents={userCompletedAscents}
+            peakListId={peakList.id}
+            setOwnMetaData={false}
           />
           <ComparisonTable
             user={user}

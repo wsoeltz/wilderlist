@@ -1,47 +1,45 @@
-import { faFlag } from '@fortawesome/free-solid-svg-icons';
+import {faCalendarAlt, faCheck, faFlag, faMapMarkerAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
-import {
-  useAddPeakListToUser,
-  useRemovePeakListFromUser,
-} from '../../../queries/lists/addRemovePeakListsToUser';
-import {
-  MountainDatum,
-  PeakListDatum,
-  UserDatum,
-} from '../../../queries/lists/usePeakListDetail';
+import {useBasicListDetails} from '../../../queries/lists/useBasicListDetails';
 import { editPeakListLink } from '../../../routing/Utils';
 import {
+  Column,
+  ItemTitle,
+  TopLevelColumns,
+} from '../../../styling/sharedContentStyles';
+import {
+  BasicIconInText,
   BasicIconInTextCompact,
   CompactGhostButtonLink,
-  lightBorderColor,
+  completeColor,
+  HelpUnderline,
+  incompleteColor,
   LinkButtonCompact,
-  StackableCardFooter,
+  SmallSemiBold,
+  tertiaryColor,
 } from '../../../styling/styleUtils';
 import {
-  CompletedMountain,
   PeakListVariants,
   PermissionTypes,
 } from '../../../types/graphQLTypes';
-import { completedPeaks, formatDate, getLatestAscent, getType } from '../../../utilities/dateUtils';
+import { formatDate, getType, parseDate } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
-import SignUpModal from '../../sharedComponents/SignUpModal';
-import StarButton from '../../sharedComponents/StarButton';
-import {
-  TextRight,
-} from '../list/PeakListCard';
+import Tooltip from '../../sharedComponents/Tooltip';
 import PeakProgressBar from '../list/PeakProgressBar';
-import VariantLinks from '../list/VariantLinks';
+import VariantLinkDropdown from '../list/VariantLinkDropdown';
 import MountainLogo from '../mountainLogo';
 import FlagModal from './FlagModal';
+import StarListButton from './StarListButton';
 
 const mobileWidth = 500; // in px
 
 const Root = styled.div`
   margin: 0 -1rem 1rem;
   display: grid;
-  grid-template-columns: 120px 1fr auto;
+  grid-template-columns: 120px 1fr 5.625rem;
   grid-template-rows: auto auto;
   grid-column-gap: 0.35rem;
   border-bottom: none;
@@ -52,12 +50,6 @@ const Root = styled.div`
     grid-column-gap: 0.4rem;
     grid-row-gap: 0;
   }
-`;
-
-const Footer = styled(StackableCardFooter)`
-  border-bottom: solid 1px ${lightBorderColor};
-  border-right: solid 1px ${lightBorderColor};
-  height: 2.2rem;
 `;
 
 const TitleContent = styled.div`
@@ -111,17 +103,6 @@ const LogoContainer = styled.div`
   }
 `;
 
-const ActiveListContentContainer = styled(ListInfo)`
-  display: flex;
-  justify-content: space-between;
-  grid-column: 1 / -1;
-  grid-row: 2;
-
-  @media (max-width: ${mobileWidth}px) {
-    grid-row: 3;
-  }
-`;
-
 const ProgressBarContainer = styled.div`
   grid-column: 1 / -1;
   grid-row: 2;
@@ -131,89 +112,93 @@ const ProgressBarContainer = styled.div`
   }
 `;
 
+const CompletedText = styled(SmallSemiBold)`
+  color: ${completeColor};
+`;
+const NotCompletedText = styled(SmallSemiBold)`
+  color: ${incompleteColor};
+`;
+
 interface Props {
-  mountains: MountainDatum[];
-  peakList: PeakListDatum;
-  user: UserDatum | null;
-  completedAscents: CompletedMountain[];
-  isOtherUser?: boolean;
-  comparisonUser?: UserDatum;
-  comparisonAscents?: CompletedMountain[];
+  peakListId: string;
+  setOwnMetaData: boolean | undefined;
 }
 
 const Header = (props: Props) => {
-  const {
-    mountains, user, peakList: { name, id, shortName, type, parent, stateOrRegionString}, peakList,
-    completedAscents, comparisonUser, comparisonAscents, isOtherUser,
-  } = props;
+  const {peakListId} = props;
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const {loading, error, data} = useBasicListDetails(peakListId, userId);
 
   const getString = useFluent();
 
-  const addPeakListToUser = useAddPeakListToUser();
-  const removePeakListFromUser = useRemovePeakListFromUser();
-
-  const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
 
   const openFlagModal = useCallback(() => setIsFlagModalOpen(true), []);
   const closeFlagModal = useCallback(() => setIsFlagModalOpen(false), []);
 
-  const usersLists = user ? user.peakLists.map((list) => list.id) : [];
-  const active = user ? usersLists.includes(peakList.id) : null;
+  // const usersLists = user ? user.peakLists.map((list) => list.id) : [];
+  // const active = user ? usersLists.includes(peakList.id) : null;
 
-  const openSignUpModal = () => setIsSignUpModal(true);
-  const closeSignUpModal = () => setIsSignUpModal(false);
-
-  const toggleActive = () => {
-    if (user) {
-      if (active) {
-        removePeakListFromUser({
-          variables: {userId: user.id,  peakListId: id},
-          optimisticResponse: {id: user.id, peakLists: user.peakLists.filter(list => list.id !== peakList.id)},
-        });
-      } else {
-        addPeakListToUser({
-          variables: {userId: user.id,  peakListId: id},
-          optimisticResponse: {id: user.id, peakLists: [...user.peakLists, {id: peakList.id}]},
-        });
-      }
-    } else {
-      openSignUpModal();
+  let shortName: string | undefined;
+  let name: string = '-----';
+  let stateOrRegionString: string | null = '-----';
+  let topLevelHeading: React.ReactElement<any> | null = null;
+  let mountainLogoId: string = peakListId;
+  let type: PeakListVariants | null = null;
+  let numMountains: number = 0;
+  let numTrails: number = 0;
+  let numCampsites: number = 0;
+  let totalRequiredAscents: number = 0;
+  let numCompletedAscents: number = 0;
+  let latestDateText: React.ReactElement<any> | null = (<>---</>);
+  let variantList: React.ReactElement<any> | null = null;
+  if (loading === true) {
+    name = '-----';
+  } else if (error !== undefined) {
+    console.error(error);
+  } else if (data !== undefined) {
+    const {
+      peakList: {
+        parent, latestAscent,
+      },
+      peakList,
+    } = data;
+    numMountains = peakList.numMountains;
+    numTrails = peakList.numTrails;
+    numCampsites = peakList.numCampsites;
+    type = peakList.type;
+    numCompletedAscents = peakList.numCompletedAscents;
+    stateOrRegionString = peakList.stateOrRegionString;
+    name = peakList.name;
+    shortName = peakList.shortName;
+    if (parent && parent.id) {
+      mountainLogoId = parent.id;
     }
-  };
 
-  const signUpModal = isSignUpModal === false ? null : (
-    <SignUpModal
-      text={getString('global-text-value-modal-sign-up-today', {
-        'list-short-name': shortName,
-      })}
-      onCancel={closeSignUpModal}
-    />
-  );
+    let editFlagButton: React.ReactElement<any> | null;
+    if (!user) {
+      editFlagButton = null;
+    } else {
+      editFlagButton = (user && peakList.author && user.id === peakList.author.id
+            && user.peakListPermissions !== -1)
+        || (user && user.permissions === PermissionTypes.admin) ? (
+        <CompactGhostButtonLink to={editPeakListLink(peakList.id)}>
+          {getString('global-text-value-edit')}
+        </CompactGhostButtonLink>
+      ) : (
+        <LinkButtonCompact onClick={openFlagModal}>
+          <BasicIconInTextCompact icon={faFlag} />
+          {getString('global-text-value-flag')}
+        </LinkButtonCompact>
+      );
+    }
 
-  let editFlagButton: React.ReactElement<any> | null;
-  if (!user) {
-    editFlagButton = null;
-  } else {
-    editFlagButton = (user && peakList.author && user.id === peakList.author.id
-          && user.peakListPermissions !== -1)
-      || (user && user.permissions === PermissionTypes.admin) ? (
-      <CompactGhostButtonLink to={editPeakListLink(peakList.id)}>
-        {getString('global-text-value-edit')}
-      </CompactGhostButtonLink>
-    ) : (
-      <LinkButtonCompact onClick={openFlagModal}>
-        <BasicIconInTextCompact icon={faFlag} />
-        {getString('global-text-value-flag')}
-      </LinkButtonCompact>
-    );
-  }
-
-  const topLevelHeading = isOtherUser === true && user !== null ? null : (
+    topLevelHeading = (
       <>
-        <StarButton
-          starred={Boolean(active)}
-          toggleStarred={toggleActive}
+        <StarListButton
+          peakListId={peakListId}
+          peakListName={name}
         />
         <EditFlagButtonContainer>
           {editFlagButton}
@@ -221,118 +206,129 @@ const Header = (props: Props) => {
       </>
     );
 
+    if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+      totalRequiredAscents = numMountains;
+    } else if (type === PeakListVariants.fourSeason) {
+      totalRequiredAscents = numMountains * 4;
+    } else if (type === PeakListVariants.grid) {
+      totalRequiredAscents = numMountains * 12;
+    } else {
+      totalRequiredAscents = 0;
+      failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
+    }
+
+    const latestDate = latestAscent ? parseDate(latestAscent) : undefined;
+
+    if (latestDate !== undefined) {
+      const {day, month, year} = latestDate;
+      let textDate: string;
+      if (!isNaN(month) && !isNaN(year)) {
+        if (!isNaN(day)) {
+          textDate = getString('global-formatted-text-date', {
+            day, month, year: year.toString(),
+          });
+        } else {
+          textDate = getString('global-formatted-text-month-year', {
+            month, year: year.toString(),
+          });
+        }
+      } else {
+        textDate = formatDate(latestDate);
+      }
+      latestDateText = (
+        <CompletedText>
+          <BasicIconInTextCompact icon={faCheck} />
+          {textDate}
+        </CompletedText>
+      );
+    } else {
+       latestDateText = (
+         <NotCompletedText>{getString('peak-list-text-no-completed-ascent')}</NotCompletedText>
+       );
+    }
+
+    variantList = (
+      <VariantLinkDropdown
+        key={type}
+        peakList={peakList}
+      />
+    );
+  } else {
+    name = '';
+  }
+
   const flagModal = isFlagModalOpen === false ? null : (
     <FlagModal
       onClose={closeFlagModal}
-      peakListId={peakList.id}
-      peakListName={peakList.name}
+      peakListId={peakListId}
+      peakListName={name}
     />
   );
 
-  const numCompletedAscents = completedPeaks(mountains, completedAscents, type);
-  let totalRequiredAscents: number;
-  if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-    totalRequiredAscents = mountains.length;
-  } else if (type === PeakListVariants.fourSeason) {
-    totalRequiredAscents = mountains.length * 4;
-  } else if (type === PeakListVariants.grid) {
-    totalRequiredAscents = mountains.length * 12;
-  } else {
-    totalRequiredAscents = 0;
-    failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
-  }
+  const numMountainsText = numMountains
+    ? (
+      <SmallSemiBold>
+        {
+          numMountains + ' ' +
+          (numMountains === 1
+            ? getString('global-text-value-mountain') : getString('global-text-value-mountains'))
+        }
+      </SmallSemiBold>)
+    : '';
+  const numTrailsText = numTrails
+    ? (
+      <SmallSemiBold>
+        {
+          numTrails + ' ' +
+          (numTrails === 1
+            ? getString('global-text-value-trail') : getString('global-text-value-trails'))
+        }
+      </SmallSemiBold>)
+    : '';
+  const numCampsitesText = numCampsites
+    ? (
+      <SmallSemiBold>
+        {
+          numCampsites + ' ' +
+          (numCampsites === 1
+            ? getString('global-text-value-campsite') : getString('global-text-value-campsites'))
+        }
+      </SmallSemiBold>)
+    : '';
 
-  let listCount: React.ReactElement<any>;
-  let listInfoContent: React.ReactElement<any> | null;
-  if (user && comparisonUser !== undefined && comparisonAscents !== undefined) {
-
-    const numFriendsCompletedAscents = completedPeaks(mountains, comparisonAscents, type);
-
-    listInfoContent = (
-      <ActiveListContentContainer>
-        <div>
-          <strong>{numFriendsCompletedAscents}/{totalRequiredAscents}</strong>
-          {' '}
-          {getString('user-profile-compare-completed-by', {
-            'user-name': comparisonUser.name,
-          })}
-        </div>
-        <TextRight>
-          <strong>{numCompletedAscents}/{totalRequiredAscents}</strong>
-          {' '}
-          {getString('user-profile-compare-completed-by', {
-            'user-name': user.name,
-          })}
-        </TextRight>
-      </ActiveListContentContainer>
-    );
-    listCount = (
-      <ListInfo>
-        {totalRequiredAscents} {getString('peak-list-text-total-ascents')}
-      </ListInfo>
-    );
-  } else {//if (active === true) {
-    const latestDate = getLatestAscent(mountains, completedAscents, type);
-
-    let latestDateText: React.ReactElement<any>;
-    if (latestDate !== undefined) {
-      const latestAscentText = getString('peak-list-text-latest-ascent', {
-        'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': ( !(isNaN(latestDate.day) || isNaN(latestDate.month)) // incomplete date is false
-          || (isNaN(latestDate.day) && isNaN(latestDate.month) && isNaN(latestDate.year)) // NO date is true
-          ).toString(),
-      });
-      latestDateText = (
-        <>
-          {latestAscentText} {formatDate(latestDate)}
-        </>
-      );
-    } else {
-      latestDateText = <>{getString('peak-list-text-no-completed-ascent')}</>;
-    }
-    listInfoContent = (
-      <>
-        <ProgressBarContainer>
-          <PeakProgressBar
-            variant={type}
-            completed={numCompletedAscents ? numCompletedAscents : 0}
-            total={totalRequiredAscents}
-            id={id}
-          />
-        </ProgressBarContainer>
-      </>
-    );
-
-    listCount = (
-      <>
-        <ListInfo>
-          {`${numCompletedAscents}/${totalRequiredAscents}`} {getString('peak-list-text-total-ascents')}
-        </ListInfo>
-        <ListInfo>
-          {latestDateText}
-        </ListInfo>
-      </>
-    );
-  }
-
-  const mountainLogoId = parent === null ? id : parent.id;
   return (
     <>
       <Root>
         <TitleContent>
-          <Title>{name}{getType(type)}</Title>
-          <ListInfo>
+          <Title
+            style={loading ? {
+              width: '75%', backgroundColor: tertiaryColor, color: 'transparent',
+            } : undefined}
+          >
+            {name}{type ? getType(type) : ''}
+          </Title>
+          <ListInfo
+            style={loading ? {
+              width: '35%', backgroundColor: tertiaryColor, color: 'transparent',
+            } : undefined}>
             {stateOrRegionString}
           </ListInfo>
-          {listInfoContent}
+          <ProgressBarContainer>
+            <PeakProgressBar
+              variant={type}
+              completed={numCompletedAscents ? numCompletedAscents : 0}
+              total={totalRequiredAscents}
+              id={peakListId}
+            />
+          </ProgressBarContainer>
         </TitleContent>
         <LogoContainer>
           <MountainLogo
             id={mountainLogoId}
-            title={name}
-            shortName={shortName}
-            variant={type}
-            active={true}
+            title={!loading ? name : ''}
+            shortName={shortName ? shortName : ''}
+            variant={type ? type : PeakListVariants.standard}
+            active={Boolean(type)}
             completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
           />
         </LogoContainer>
@@ -340,13 +336,35 @@ const Header = (props: Props) => {
           {topLevelHeading}
         </ListSettings>
       </Root>
-      {listCount}
-      <Footer>
-        <VariantLinks
-          peakList={peakList}
-        />
-      </Footer>
-      {signUpModal}
+      <TopLevelColumns>
+        <Column>
+          <ItemTitle>
+            <BasicIconInText icon={faTasks} />
+            <Tooltip
+              explanation={'about tracking types'}
+            >
+              <HelpUnderline>{getString('global-text-value-tracking-type')}</HelpUnderline>
+            </Tooltip>
+          </ItemTitle>
+          {variantList}
+        </Column>
+        <Column>
+          <ItemTitle>
+            <BasicIconInText icon={faMapMarkerAlt} />
+            {getString('peak-list-text-total-points')}
+          </ItemTitle>
+          {numMountainsText}
+          {numTrailsText}
+          {numCampsitesText}
+        </Column>
+        <Column>
+          <ItemTitle>
+            <BasicIconInText icon={faCalendarAlt} />
+            {getString('peak-list-text-last-hiked')}
+          </ItemTitle>
+          {latestDateText}
+        </Column>
+      </TopLevelColumns>
       {flagModal}
     </>
   );

@@ -128,6 +128,7 @@ global-text-value-unsaved-changes = You have changes that won't be saved if you 
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
 global-text-value-trails = Trails
+global-text-value-campsite = Campsite
 global-text-value-campsites = Campsites
 global-text-value-ascents = ascents
 global-text-value-dates = Dates
@@ -320,6 +321,7 @@ global-text-value-add-external-resources = Add Another Resource
 global-text-value-resource-title = Resource Title
 global-text-value-resource-url = http://example.com
 
+global-text-value-tracking-type = Tracking Type
 global-text-value-type = Type
 global-text-value-list-type = {
   $type ->
@@ -490,10 +492,13 @@ peak-list-text-latest-ascent = {
     *[false] in
     [true] on
 }
-peak-list-text-no-completed-ascent = No completed ascents yet
+peak-list-text-no-completed-ascent = No logged hikes yet
 peak-list-text-completed-ascent = Completed Ascents
+peak-list-text-total-points = Total Points
 peak-list-text-total-ascents = Total Ascents
 peak-list-text-across-the-us = Across the US
+
+peak-list-text-last-hiked = You last hiked on
 
 peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-name }</strong>&#32;from your active lists?
 peak-list-detail-text-begin-list = Start Tracking

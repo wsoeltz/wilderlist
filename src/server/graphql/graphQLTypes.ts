@@ -115,6 +115,8 @@ export interface PeakList {
   flag: PeakListFlag | null;
   tier: PeakListTier | null;
   numMountains: number;
+  numTrails: number;
+  numCampsites: number;
   numCompletedAscents: number;
   latestAscent: string | null;
   isActive: boolean | null;

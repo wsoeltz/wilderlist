@@ -120,3 +120,17 @@ export const DetailBox = styled(DetailBoxBase)`
 export const NotesTitle = styled(ItemTitle)`
   margin-bottom: 0.5rem;
 `;
+
+export const TopLevelColumns = styled.div`
+  margin: 0 -1rem 0.5rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+`;
+
+export const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+`;
