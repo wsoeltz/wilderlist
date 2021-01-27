@@ -1,10 +1,13 @@
 import {faCalendarAlt, faCheck, faFlag, faMapMarkerAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {useBasicListDetails} from '../../../queries/lists/useBasicListDetails';
+import { setPeakListOgImageUrl } from '../../../routing/routes';
 import { editPeakListLink } from '../../../routing/Utils';
+import { listDetailLink } from '../../../routing/Utils';
 import {
   Column,
   ItemTitle,
@@ -125,7 +128,7 @@ interface Props {
 }
 
 const Header = (props: Props) => {
-  const {peakListId} = props;
+  const {peakListId, setOwnMetaData} = props;
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const {loading, error, data} = useBasicListDetails(peakListId, userId);
@@ -296,8 +299,47 @@ const Header = (props: Props) => {
       </SmallSemiBold>)
     : '';
 
+  let areaText: string | null;
+  if (stateOrRegionString === 'Across the US') {
+    areaText = ' across the US';
+  } else if (stateOrRegionString) {
+    areaText = ' throughout ' + stateOrRegionString;
+  } else {
+    areaText = null;
+  }
+
+  const metaDescription = name && type && shortName && areaText
+    ? getString('meta-data-peak-list-detail-description', {
+      'list-name': name,
+      'type': type,
+      'num-mountains': numMountains,
+      'list-short-name': shortName,
+      'state-or-region-string': areaText,
+    })
+    : null;
+
+  const metaData = setOwnMetaData === true && metaDescription && name && type ? (
+    <Helmet>
+      <title>{getString('meta-data-detail-default-title', {
+        title: name, type,
+      })}</title>
+      <meta
+        name='description'
+        content={metaDescription}
+      />
+      <meta property='og:title' content='Wilderlist' />
+      <meta
+        property='og:description'
+        content={metaDescription}
+      />
+      <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink(peakListId)} />
+      <meta property='og:image' content={setPeakListOgImageUrl(peakListId)} />
+    </Helmet>
+  ) : null;
+
   return (
     <>
+      {metaData}
       <Root>
         <TitleContent>
           <Title
