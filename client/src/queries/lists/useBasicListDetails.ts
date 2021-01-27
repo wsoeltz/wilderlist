@@ -11,6 +11,7 @@ const GET_BASIC_LIST_DETAILS = gql`
       name
       shortName
       type
+      description
       stateOrRegionString
       numMountains
       numTrails
@@ -18,6 +19,10 @@ const GET_BASIC_LIST_DETAILS = gql`
       numCompletedTrips(userId: $userId)
       latestTrip(userId: $userId, raw: true)
       isActive(userId: $userId)
+      resources {
+        title
+        url
+      }
       parent {
         id
         type
@@ -42,6 +47,8 @@ interface PeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  description: PeakList['description'];
+  resources: PeakList['resources'];
   stateOrRegionString: PeakList['stateOrRegionString'];
   numMountains: PeakList['numMountains'];
   numTrails: PeakList['numTrails'];

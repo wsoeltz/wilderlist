@@ -1,4 +1,5 @@
 import React from 'react';
+import DescriptionAndNotes from './DescriptionAndNotes';
 import Header from './Header';
 
 interface Props {
@@ -15,6 +16,9 @@ const PeakListDetail = (props: Props) => {
       <Header
         peakListId={id}
         setOwnMetaData={setOwnMetaData}
+      />
+      <DescriptionAndNotes
+        peakListId={id}
       />
     </>
   );

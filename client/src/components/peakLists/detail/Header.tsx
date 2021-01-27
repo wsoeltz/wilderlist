@@ -140,9 +140,6 @@ const Header = (props: Props) => {
   const openFlagModal = useCallback(() => setIsFlagModalOpen(true), []);
   const closeFlagModal = useCallback(() => setIsFlagModalOpen(false), []);
 
-  // const usersLists = user ? user.peakLists.map((list) => list.id) : [];
-  // const active = user ? usersLists.includes(peakList.id) : null;
-
   let shortName: string | undefined;
   let name: string = '-----';
   let stateOrRegionString: string | null = '-----';

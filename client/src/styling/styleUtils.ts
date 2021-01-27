@@ -902,13 +902,13 @@ export const SimpleListItem = styled.li`
 `;
 
 export const ResourceItem = styled(SimpleListItem)`
-  padding-left: 1rem;
+  padding-left: 0.7rem;
   position: relative;
 
   &:before {
     content: '›';
     position: absolute;
-    left: 0.5rem;
+    left: 0;
   }
 `;
 
