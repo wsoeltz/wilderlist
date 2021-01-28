@@ -4,7 +4,6 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {MountainDatum} from '../../../queries/lists/usePeakListMountains';
 import { baseColor, InputBase, lightBorderColor, warningColor } from '../../../styling/styleUtils';
-import { TableCellBase } from '../detail/MountainRow';
 import { DateDatum } from './index';
 
 export const gridCols = {
@@ -13,6 +12,13 @@ export const gridCols = {
   userDate: 3,
   expectedDate: 4,
 };
+const TableCellBase = styled.div`
+  font-weight: 600;
+  padding: 0.8rem 0.6rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+`;
 
 const TableCell = styled(TableCellBase)`
   justify-content: center;

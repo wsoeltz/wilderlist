@@ -10,10 +10,10 @@ import {
   successColor,
 } from '../../../styling/styleUtils';
 import { Mountain } from '../../../types/graphQLTypes';
-import {
-  NameCell,
-  TableCellBase,
-} from '../detail/MountainRow';
+// import {
+//   NameCell,
+//   TableCellBase,
+// } from '../detail/MountainRow';
 import {
   AscentGoals,
   getGoalText,
@@ -24,7 +24,8 @@ export interface MountainDatumLite {
   name: Mountain['name'];
 }
 
-const TableCell = styled(TableCellBase)`
+// const TableCell = styled(TableCellBase)`
+const TableCell = styled.div`
   justify-content: center;
   text-align: center;
 `;
@@ -94,13 +95,13 @@ const ComparisonRow = (props: Props) => {
 
   return (
     <>
-      <NameCell style={{backgroundColor}}>
+      <TableCell style={{backgroundColor}}>
         <Link
           to={mountainDetailLink(mountain.id)}
          >
           <SemiBold>{mountain.name}</SemiBold>
         </Link>
-      </NameCell>
+      </TableCell>
       <TableCell style={{ gridColumn: 2, backgroundColor}}>
         <span style={userStyles}>
           {userText}

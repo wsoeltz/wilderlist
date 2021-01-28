@@ -14,17 +14,13 @@ import {
 import {PeakListVariants} from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
 import {
-  formatDate,
-  formatGridDate,
-} from '../../../utilities/dateUtils';
-import {
   monthsArray,
   seasonsArray,
 } from '../../../Utils';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
 import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
-import getCompletionDates from './getCompletionDates';
+import getDates from './getDates';
 
 const Root = styled.div`
   min-height: 60vh;
@@ -81,33 +77,9 @@ const ItemsSelection = (props: Props) => {
     }
 
     const mountains = items.data.peakList.mountains.map(mtn => {
-      const dateObjects = getCompletionDates({
-        type, item: mtn, field: CoreItem.mountain, userItems: progressMountains,
+      const dates = getDates({
+        type, item: mtn, field: CoreItem.mountain, userItems: progressMountains, completionFieldKeys,
       });
-      const dates: {[key: string]: string | number} = {};
-      if (dateObjects !== null) {
-        const format = dateObjects.type === PeakListVariants.grid ? formatGridDate : formatDate;
-        if (dateObjects.type === PeakListVariants.standard || dateObjects.type === PeakListVariants.winter) {
-          // @ts-expect-error: value can be used to index object
-          dates.hikedDisplayValue = dateObjects[dateObjects.type] ? format(dateObjects[dateObjects.type]) : '--';
-          // @ts-expect-error: value can be used to index object
-          dates.hikedSortValue = dateObjects[dateObjects.type] ? dateObjects[dateObjects.type].dateAsNumber : 0;
-        } else {
-          for (const key in dateObjects) {
-            if (dateObjects.hasOwnProperty(key)) {
-              // @ts-expect-error: value can be used to index object
-              dates[key + 'DisplayValue'] = dateObjects[key] ? format(dateObjects[key]) : '--';
-              // @ts-expect-error: value can be used to index object
-              dates[key + 'SortValue'] = dateObjects[key] ? dateObjects[key].dateAsNumber : 0;
-            }
-          }
-        }
-      } else {
-        completionFieldKeys.forEach(({displayKey, sortKey}) => {
-          dates[displayKey] = '--';
-          dates[sortKey as string] = 0;
-        });
-      }
       return {
         ...mtn,
         destination: mountainDetailLink(mtn.id),
@@ -146,33 +118,9 @@ const ItemsSelection = (props: Props) => {
     }
 
     const trails = items.data.peakList.trails.map(trail => {
-      const dateObjects = getCompletionDates({
-        type, item: trail, field: CoreItem.trail, userItems: progressTrails,
+      const dates = getDates({
+        type, item: trail, field: CoreItem.trail, userItems: progressTrails, completionFieldKeys,
       });
-      const dates: {[key: string]: string | number} = {};
-      if (dateObjects !== null) {
-        const format = dateObjects.type === PeakListVariants.grid ? formatGridDate : formatDate;
-        if (dateObjects.type === PeakListVariants.standard || dateObjects.type === PeakListVariants.winter) {
-          // @ts-expect-error: value can be used to index object
-          dates.hikedDisplayValue = dateObjects[dateObjects.type] ? format(dateObjects[dateObjects.type]) : '--';
-          // @ts-expect-error: value can be used to index object
-          dates.hikedSortValue = dateObjects[dateObjects.type] ? dateObjects[dateObjects.type].dateAsNumber : 0;
-        } else {
-          for (const key in dateObjects) {
-            if (dateObjects.hasOwnProperty(key)) {
-              // @ts-expect-error: value can be used to index object
-              dates[key + 'DisplayValue'] = dateObjects[key] ? format(dateObjects[key]) : '--';
-              // @ts-expect-error: value can be used to index object
-              dates[key + 'SortValue'] = dateObjects[key] ? dateObjects[key].dateAsNumber : 0;
-            }
-          }
-        }
-      } else {
-        completionFieldKeys.forEach(({displayKey, sortKey}) => {
-          dates[displayKey] = '--';
-          dates[sortKey as string] = 0;
-        });
-      }
       const trailLength = trail.line && trail.line.length ? length(lineString(trail.line)) : 0;
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type: trail.type}));
       let name: string = trail.name ? trail.name : formattedType;
@@ -228,40 +176,16 @@ const ItemsSelection = (props: Props) => {
     }
 
     const campsites = items.data.peakList.campsites.map(campsite => {
-      const dateObjects = getCompletionDates({
-        type, item: campsite, field: CoreItem.campsite, userItems: progressCampsites,
+      const dates = getDates({
+        type, item: campsite, field: CoreItem.campsite, userItems: progressCampsites, completionFieldKeys,
       });
-      const dates: {[key: string]: string | number} = {};
-      if (dateObjects !== null) {
-        const format = dateObjects.type === PeakListVariants.grid ? formatGridDate : formatDate;
-        if (dateObjects.type === PeakListVariants.standard || dateObjects.type === PeakListVariants.winter) {
-          // @ts-expect-error: value can be used to index object
-          dates.hikedDisplayValue = dateObjects[dateObjects.type] ? format(dateObjects[dateObjects.type]) : '--';
-          // @ts-expect-error: value can be used to index object
-          dates.hikedSortValue = dateObjects[dateObjects.type] ? dateObjects[dateObjects.type].dateAsNumber : 0;
-        } else {
-          for (const key in dateObjects) {
-            if (dateObjects.hasOwnProperty(key)) {
-              // @ts-expect-error: value can be used to index object
-              dates[key + 'DisplayValue'] = dateObjects[key] ? format(dateObjects[key]) : '--';
-              // @ts-expect-error: value can be used to index object
-              dates[key + 'SortValue'] = dateObjects[key] ? dateObjects[key].dateAsNumber : 0;
-            }
-          }
-        }
-      } else {
-        completionFieldKeys.forEach(({displayKey, sortKey}) => {
-          dates[displayKey] = '--';
-          dates[sortKey as string] = 0;
-        });
-      }
+      const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: campsite.type}));
+      const name: string = campsite.name ? campsite.name : formattedType;
       return {
         ...campsite,
-        name: campsite.name
-          ? campsite.name
-          : upperFirst(getString('global-formatted-campsite-type', {type: campsite.type})),
+        name,
         destination: campsiteDetailLink(campsite.id),
-        formattedType: upperFirst(getString('global-formatted-campsite-type', {type: campsite.type})),
+        formattedType,
         stateAbbreviation: campsite.state ? campsite.state.abbreviation : '',
         ...dates,
       };

@@ -1,15 +1,48 @@
 import React, {useState} from 'react';
+import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import { UserDatum } from '../../../queries/lists/useComparePeakList';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import {
-  FilterBar,
-  MountainColumnTitleName,
-  Root,
-  TitleCell,
-} from '../detail/MountainTable';
 import ComparisonRow, {MountainDatumLite} from './ComparisonRow';
 import { getAscentGoals } from './Utils';
+
+const Root = styled.div`
+  display: grid;
+`;
+
+const TitleBase = styled.h4`
+  text-transform: uppercase;
+  font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0.6rem;
+  border-bottom: solid 2px #dfdfdf;
+  position: sticky;
+  background-color: #fff;
+  z-index: 50;
+  margin: 0;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #efefef;
+  }
+`;
+
+const MountainColumnTitleName = styled(TitleBase)`
+  align-items: center;
+  font-size: 1.1rem;
+`;
+
+const TitleCell = styled(TitleBase)`
+  padding: 0.6rem 0.1rem;
+  justify-content: center;
+`;
+
+const FilterBar = styled.div`
+  margin-bottom: 1rem;
+  font-size: 75%;
+`;
 
 const gridColumns = {
   friendColumn: 2,

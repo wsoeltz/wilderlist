@@ -25,13 +25,13 @@ import {
 import { Mountain } from '../../../types/graphQLTypes';
 import { asyncForEach, convertFieldsToDate, roundPercentToSingleDecimal } from '../../../Utils';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
-import {
-  horizontalPadding,
-} from '../detail/MountainRow';
-import {
-  Root as Table,
-} from '../detail/MountainTable';
 import MountainItem, { gridCols } from './MountainItem';
+
+const horizontalPadding = 0.6; // in rem
+
+const Table = styled.div`
+  display: grid;
+`;
 
 const TitleBase = styled.div`
   text-transform: uppercase;

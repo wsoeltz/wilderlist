@@ -4,6 +4,9 @@ import { CSVLink } from 'react-csv';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
+  MountainDatum,
+} from '../../../queries/lists/usePeakListDetail';
+import {
   ButtonSecondary,
 } from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
@@ -13,7 +16,9 @@ import {
 } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import Modal from '../../sharedComponents/Modal';
-import { MountainDatumWithDate } from '../detail/MountainRow';
+import {VariableDate} from '../detail/getDates';
+
+type MountainDatumWithDate = MountainDatum & {completionDates: VariableDate | null};
 
 const ButtonWrapper = styled.div`
   display: flex;
