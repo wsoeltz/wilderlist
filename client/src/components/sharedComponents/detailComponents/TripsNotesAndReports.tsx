@@ -27,6 +27,7 @@ const TripsNotesAndReports = (props: Props) => {
   return (
     <DetailSegment
       panels={panels}
+      panelId={'tripsNotesAndReportsPanelId'}
     />
   );
 };

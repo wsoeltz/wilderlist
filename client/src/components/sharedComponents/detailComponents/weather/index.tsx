@@ -42,6 +42,7 @@ const WeatherSegment = (props: Props) => {
   return (
     <DetailSegment
       panels={panels}
+      panelId={'weatherSegmentPanelId'}
     />
   );
 };

@@ -194,6 +194,7 @@ const AddItems = (props: Props) => {
     <DetailSegment
       panels={panels}
       panelCounts={panelCounts}
+      panelId={'createListAddItemsId'}
     />
   );
 

@@ -94,6 +94,7 @@ const DescriptionAndNotes = (props: Props) => {
   return (
     <DetailSegment
       panels={panels}
+      panelId={'descriptionAndNotesPanelId'}
     />
   );
 };

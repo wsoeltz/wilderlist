@@ -230,6 +230,7 @@ const ItemsSelection = (props: Props) => {
         <DetailSegment
           panels={panels}
           panelCounts={panelCounts}
+          panelId={'listDetailPanel'}
         />
       </Root>
     );

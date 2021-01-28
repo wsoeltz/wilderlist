@@ -83,11 +83,20 @@ interface Props {
   panels: Panel[];
   // panelCounts as seperate prop prevents rerender of panels reactNodes every time the number changes
   panelCounts?: Array<{index: number, count: number}>;
+  panelId: string;
 }
 
+const localStorageId = (id: string) => 'detailPanel_' + id;
+
 const DetailSegment = (props: Props) => {
-  const {panels, panelCounts} = props;
-  const [panelIndex, setPanelIndex] = useState<number>(0);
+  const {panels, panelCounts, panelId} = props;
+
+  const initialPanelValue = localStorage.getItem(localStorageId(panelId));
+  const initialPanelIndex = initialPanelValue ? parseInt(initialPanelValue, 10) : 0;
+
+  const [panelIndex, setPanelIndex] = useState<number>(
+    initialPanelIndex && initialPanelIndex < panels.length ? initialPanelIndex : 0,
+  );
 
   const buttons: Array<React.ReactElement<any>> = [];
   const panelContents: Array<React.ReactElement<any>> = [];
@@ -95,7 +104,10 @@ const DetailSegment = (props: Props) => {
     const active = panelIndex === i;
 
     const Button = active ? ActiveNavButton : NavButton;
-    const selectPanel = () => setPanelIndex(i);
+    const selectPanel = () => {
+      localStorage.setItem(localStorageId(panelId), i.toString());
+      setPanelIndex(i);
+    };
     let icon: React.ReactElement<any> | null;
     if (panel.customIcon === true) {
       icon = (
