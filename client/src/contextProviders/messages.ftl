@@ -115,7 +115,7 @@ global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
 global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } with a free account
-global-text-value-modal-sign-up-today-import = Import your data for { $list-short-name } in just a few clicks
+global-text-value-modal-sign-up-today-import = Import your data and start tracking your progress in just a few clicks
 global-text-value-modal-sign-up-today-export = Export your data for { $list-short-name } with a free account
 global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
 
@@ -562,6 +562,9 @@ peak-list-detail-friend-view-your-progress-button = View your progress
 peak-list-detail-text-optional-mountains = Optional Mountains
 peak-list-detail-text-optional-mountains-desc = The following mountains are considered optional for this list. They fit the criteria needed to be on here, but for one reason or another they are not required for completion. Common reasons include the peak being on private property or requiring special permissions to be able to climb. Optional peaks do not count towards a 100% completion for this list.
 
+peak-list-detail-text-optional-toggle = Show optional { $type }s
+peak-list-detail-text-optional-items-desc = Optional { $type }s are included below but do not count towards 100% completion for this list. Common reasons include the { $type } being on private property or requiring special permissions to be able to access.
+
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
 user-notes-title = Your Notes
@@ -613,10 +616,10 @@ trip-log-add-another = Log & Add Next Day
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
-mountain-table-import-button = Import Ascents from Spreadsheet
-mountain-table-export-button = Download Ascent Data
+mountain-table-import-button = Import dates from a spreadsheet
+mountain-table-export-button = Download your data
 download-csv-button = Download CSV
-download-official-grid-xlsx-button = Download Official Grid Application
+download-official-grid-xlsx-button = Download Grid application with your dates
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent

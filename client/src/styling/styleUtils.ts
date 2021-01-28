@@ -191,6 +191,8 @@ export const LinkButtonCompact = styled.button`
   padding: 0;
   background: transparent;
   font-size: 0.7rem;
+  display: flex;
+  align-items: center;
 
   ${linkStyles}
 `;

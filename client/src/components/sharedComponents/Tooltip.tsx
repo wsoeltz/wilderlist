@@ -16,6 +16,7 @@ const Root = styled.span`
   justify-content: center;
   border-radius: 10000px;
   margin-left: 0.5rem;
+  font-size: 0.9rem;
 `;
 
 const MoreInformationI = styled.span`
@@ -23,7 +24,6 @@ const MoreInformationI = styled.span`
   font-style: italic;
   font-weight: 600;
   text-transform: none;
-  font-size: 0.9rem;
 `;
 
 const TooltipBase = styled.div`
@@ -52,10 +52,11 @@ interface Props {
   explanation: React.ReactNode;
   children?: React.ReactNode;
   cursor?: string;
+  compactI?: boolean;
 }
 
 const Tooltip = (props: Props) => {
-  const {explanation, children, cursor} = props;
+  const {explanation, children, cursor, compactI} = props;
   const rootEl = useRef<HTMLDivElement | null>(null);
   const tooltipEl = useRef<HTMLDivElement | null>(null);
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
@@ -132,12 +133,18 @@ const Tooltip = (props: Props) => {
       </GenericSpan>
     );
   } else {
+    const  style = compactI ? {
+      cursor,
+      fontSize: '0.6rem',
+      width: '0.75rem',
+      height: '0.75rem',
+    } : {cursor};
     return (
       <Root
         onMouseEnter={onMouseEnter}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        style={{cursor}}
+        style={style}
         ref={rootEl}
       >
         <MoreInformationI>i</MoreInformationI>

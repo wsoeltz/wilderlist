@@ -1,5 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
 import {
   CheckboxInput,
   secondaryColor,
@@ -7,23 +8,43 @@ import {
 import {PeakListVariants} from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
 import ItemTable, {Item, KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
+import Tooltip from '../../sharedComponents/Tooltip';
+import ImportButton from '../import/ImportButton';
 
 const UtilityBar = styled.div`
   display: flex;
+  padding: 0.5rem 0 0.5rem 1rem;
+  align-items: center;
+`;
+
+const SoloUtilityBar = styled(UtilityBar)`
+  padding-top: 0;
+`;
+
+const Checkbox = styled(CheckboxInput)`
+  left: 0;
 `;
 
 const CheckboxRoot = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  padding: 0.5rem 0 0.5rem 0.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  margin-left: auto;
 `;
 
 const CheckboxLabel = styled.label`
   font-size: 0.75rem;
   cursor: pointer;
-  padding-left: 1rem;
+  padding-left: 1.5rem;
   color: ${secondaryColor};
+  position: relative;
+
+  &:before {
+    content: '*';
+    position: absolute;
+    transform: translate(-100%);
+  }
 `;
 
 interface Props {
@@ -34,12 +55,18 @@ interface Props {
   type: CoreItem;
   variant: PeakListVariants;
   hasOptionalItems: boolean;
+  soloPanel: boolean;
 }
 
 const storageCheckedKeyId = (type: string) => 'localstorageKeyForOptionalCheckedItems_' + type;
 
 const ItemsListTable = (props: Props) => {
-  const {items, dataFieldKeys, completionFieldKeys, type, variant, hasOptionalItems} = props;
+  const {
+    peakListId, items, dataFieldKeys, completionFieldKeys, type, variant, hasOptionalItems,
+    soloPanel,
+  } = props;
+
+  const getString = useFluent();
 
   const initialChecked = localStorage.getItem(storageCheckedKeyId(type));
 
@@ -52,23 +79,40 @@ const ItemsListTable = (props: Props) => {
 
   const optionalCheckbox = hasOptionalItems ? (
     <CheckboxRoot>
-      <CheckboxInput
-        type='checkbox'
-        id={`checkbox-show-optional-${type}`}
-        checked={checked}
-        onChange={onChange}
-      />
-      <CheckboxLabel htmlFor={`checkbox-show-optional-${type}`}>*Show optional {type}s</CheckboxLabel>
+        <Checkbox
+          type='checkbox'
+          id={`checkbox-show-optional-${type}`}
+          checked={checked}
+          onChange={onChange}
+        />
+        <CheckboxLabel htmlFor={`checkbox-show-optional-${type}`}>
+          {getString('peak-list-detail-text-optional-toggle', {type})}
+          <Tooltip
+            explanation={getString('peak-list-detail-text-optional-items-desc', {type})}
+            compactI={true}
+          />
+        </CheckboxLabel>
     </CheckboxRoot>
   ) : null;
 
   const filteredItems = checked ? items : items.filter(item => !item.optional);
 
+  const importButton = type === CoreItem.mountain ? (
+    <ImportButton
+      peakListId={peakListId}
+      variant={variant}
+      mountains={items as any}
+    />
+  ) : null;
+
+  const UtilityBarRoot = soloPanel && !hasOptionalItems ? SoloUtilityBar : UtilityBar;
+
   return (
     <>
-      <UtilityBar>
+      <UtilityBarRoot>
+        {importButton}
         {optionalCheckbox}
-      </UtilityBar>
+      </UtilityBarRoot>
       <ItemTable
         showIndex={true}
         items={filteredItems}
