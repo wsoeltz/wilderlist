@@ -82,7 +82,7 @@ export type Panel = {
 interface Props {
   panels: Panel[];
   // panelCounts as seperate prop prevents rerender of panels reactNodes every time the number changes
-  panelCounts?: Array<{index: number, count: number}>;
+  panelCounts?: Array<{index: number, count: number, numerator?: number}>;
   panelId: string;
 }
 
@@ -129,7 +129,8 @@ const DetailSegment = (props: Props) => {
     }
 
     const titleCount = panelCounts ? panelCounts.find(p => p.index === i) : undefined;
-    const title = titleCount ? `${panel.title} (${titleCount.count})` : panel.title;
+    const numerator = titleCount && titleCount.numerator !== undefined ? titleCount.numerator + '/' : '';
+    const title = titleCount ? `${panel.title} (${numerator}${titleCount.count})` : panel.title;
 
     buttons.push(
       <Button

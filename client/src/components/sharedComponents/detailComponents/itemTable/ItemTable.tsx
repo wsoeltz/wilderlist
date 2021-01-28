@@ -33,6 +33,7 @@ const Row = styled.tr`
 const IndexHeader = styled.th`
   position: sticky;
   top: -1px;
+  z-index: 10;
   background-color: #fff;
   height: 2rem;
   box-sizing: border-box;
@@ -53,7 +54,7 @@ const SearchCell = styled.th`
   }
 `;
 
-interface Item {
+export interface Item {
   id: string;
   name: string;
   destination?: string | (() => void);
@@ -138,9 +139,9 @@ const ItemTable = (props: Props) => {
     });
 
   const indexHeader = showIndex ? <IndexHeader /> : null;
-  const dataFieldHeaders = dataFieldKeys.map(({label, sortKey}) => (
+  const dataFieldHeaders = dataFieldKeys.map(({label, sortKey}, i) => (
     <TableHeaderCell
-      key={'item-table-header-' + label + type}
+      key={'item-table-header-' + label + type + i}
       label={label}
       toggleSorting={toggleSorting}
       sortField={sortKey}
@@ -149,9 +150,9 @@ const ItemTable = (props: Props) => {
       compactView={compactView}
     />
   ));
-  const completionFieldHeaders = completionFieldKeys.map(({label, sortKey}) => (
+  const completionFieldHeaders = completionFieldKeys.map(({label, sortKey}, i) => (
     <TableHeaderCell
-      key={'item-table-header-' + label + type}
+      key={'item-table-header-' + label + type + i}
       label={label}
       toggleSorting={toggleSorting}
       sortField={sortKey}

@@ -19,9 +19,10 @@ import {
 } from '../../../Utils';
 import {mobileSize} from '../../../Utils';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
-import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
+import {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import getDates from './getDates';
+import ItemsListTable from './ItemsListTable';
 
 const Root = styled.div`
   min-height: 60vh;
@@ -33,13 +34,13 @@ interface Props {
   peakListId: string;
 }
 
-const ItemsSelection = (props: Props) => {
+const AllItems = (props: Props) => {
   const {peakListId} = props;
 
   const getString = useFluent();
   const items = usePeakListItems(peakListId);
   const usersProgress = useUsersProgress();
-  const panelCounts: Array<{index: number, count: number}> = [];
+  const panelCounts: Array<{index: number, count: number, numerator?: number}> = [];
 
   if (items.loading || usersProgress.loading) {
     return null;
@@ -85,10 +86,12 @@ const ItemsSelection = (props: Props) => {
       optional: true,
     }));
     const requiredMountains = items.data.peakList.mountains;
+    let completedMountains = 0;
     const mountains = [...requiredMountains, ...optionalMountains].map(mtn => {
-      const dates = getDates({
+      const {dates, completedCount} = getDates({
         type, item: mtn, field: CoreItem.mountain, userItems: progressMountains, completionFieldKeys,
       });
+      completedMountains += completedCount;
       return {
         ...mtn,
         destination: mountainDetailLink(mtn.id),
@@ -112,20 +115,31 @@ const ItemsSelection = (props: Props) => {
       panels.push({
         title: `${getString('global-text-value-mountains')}`,
         reactNode: (
-          <ItemTable
-            showIndex={true}
+          <ItemsListTable
+            peakListId={peakListId}
             items={mountains}
             dataFieldKeys={mountainDataFieldKeys}
             completionFieldKeys={completionFieldKeys}
-            actionFieldKeys={[]}
             type={CoreItem.mountain}
             variant={type}
+            hasOptionalItems={Boolean(optionalMountains.length)}
           />
         ),
         customIcon: true,
         icon: mountainNeutralSvg,
       });
-      panelCounts.push({index: panelCounts.length, count: requiredMountains.length});
+      let totalCount: number = requiredMountains.length;
+      if (type === PeakListVariants.grid) {
+        totalCount = totalCount * 12;
+      }
+      if (type === PeakListVariants.fourSeason) {
+        totalCount = totalCount * 4;
+      }
+      panelCounts.push({
+        index: panelCounts.length,
+        count: totalCount,
+        numerator: completedMountains,
+      });
     }
 
     const optionalTrails = items.data.peakList.optionalTrails.map(trail => ({
@@ -133,10 +147,12 @@ const ItemsSelection = (props: Props) => {
       optional: true,
     }));
     const requiredTrails = items.data.peakList.trails;
+    let completedTrails = 0;
     const trails = [...requiredTrails, ...optionalTrails].map(trail => {
-      const dates = getDates({
+      const {dates, completedCount} = getDates({
         type, item: trail, field: CoreItem.trail, userItems: progressTrails, completionFieldKeys,
       });
+      completedTrails += completedCount;
       const trailLength = trail.line && trail.line.length ? length(lineString(trail.line)) : 0;
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type: trail.type}));
       let name: string = trail.name ? trail.name : formattedType;
@@ -177,20 +193,31 @@ const ItemsSelection = (props: Props) => {
       panels.push({
         title: `${getString('global-text-value-trails')}`,
         reactNode: (
-          <ItemTable
-            showIndex={true}
+          <ItemsListTable
+            peakListId={peakListId}
             items={trails}
             dataFieldKeys={trailDataFieldKeys}
             completionFieldKeys={completionFieldKeys}
-            actionFieldKeys={[]}
             type={CoreItem.trail}
             variant={type}
+            hasOptionalItems={Boolean(optionalTrails.length)}
           />
         ),
         customIcon: true,
         icon: trailDefaultSvg,
       });
-      panelCounts.push({index: panelCounts.length, count: requiredTrails.length});
+      let totalCount: number = requiredTrails.length;
+      if (type === PeakListVariants.grid) {
+        totalCount = totalCount * 12;
+      }
+      if (type === PeakListVariants.fourSeason) {
+        totalCount = totalCount * 4;
+      }
+      panelCounts.push({
+        index: panelCounts.length,
+        count: totalCount,
+        numerator: completedTrails,
+      });
     }
 
     const optionalCampsites = items.data.peakList.optionalCampsites.map(campsite => ({
@@ -198,10 +225,12 @@ const ItemsSelection = (props: Props) => {
       optional: true,
     }));
     const requiredCampsites = items.data.peakList.campsites;
+    let completedCampsites = 0;
     const campsites = [...requiredCampsites, ...optionalCampsites].map(campsite => {
-      const dates = getDates({
+      const {dates, completedCount} = getDates({
         type, item: campsite, field: CoreItem.campsite, userItems: progressCampsites, completionFieldKeys,
       });
+      completedCampsites += completedCount;
       const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: campsite.type}));
       const name: string = campsite.name ? campsite.name : formattedType;
       return {
@@ -228,20 +257,31 @@ const ItemsSelection = (props: Props) => {
       panels.push({
         title: `${getString('global-text-value-campsites')}`,
         reactNode: (
-          <ItemTable
-            showIndex={true}
+          <ItemsListTable
+            peakListId={peakListId}
             items={campsites}
             dataFieldKeys={campsiteDataFieldKeys}
             completionFieldKeys={completionFieldKeys}
-            actionFieldKeys={[]}
             type={CoreItem.campsite}
             variant={type}
+            hasOptionalItems={Boolean(optionalCampsites.length)}
           />
         ),
         customIcon: true,
         icon: tentNeutralSvg,
       });
-      panelCounts.push({index: panelCounts.length, count: requiredCampsites.length});
+      let totalCount: number = requiredCampsites.length;
+      if (type === PeakListVariants.grid) {
+        totalCount = totalCount * 12;
+      }
+      if (type === PeakListVariants.fourSeason) {
+        totalCount = totalCount * 4;
+      }
+      panelCounts.push({
+        index: panelCounts.length,
+        count: totalCount,
+        numerator: completedCampsites,
+      });
     }
 
     return (
@@ -260,4 +300,4 @@ const ItemsSelection = (props: Props) => {
 
 };
 
-export default ItemsSelection;
+export default AllItems;

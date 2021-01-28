@@ -149,17 +149,28 @@ interface Input extends BaseInput {
   completionFieldKeys: KeySortPair[];
 }
 
-const getDates = (input: Input): {[key: string]: string | number | React.ReactElement<any>} => {
+interface Output {
+  dates: {[key: string]: string | number | React.ReactElement<any>};
+  completedCount: number;
+}
+
+const getDates = (input: Input): Output => {
   const {completionFieldKeys} = input;
   const dateObjects = getCompletionDates(input);
   const dates: {[key: string]: string | number | React.ReactElement<any>} = {};
+  let completedCount = 0;
   if (dateObjects !== null) {
     const format = dateObjects.type === PeakListVariants.grid ? formatGridDate : formatDate;
     if (dateObjects.type === PeakListVariants.standard || dateObjects.type === PeakListVariants.winter) {
       // @ts-expect-error: value can be used to index object
-      dates.hikedDisplayValue = dateObjects[dateObjects.type]
+      if (dateObjects[dateObjects.type]) {
         // @ts-expect-error: value can be used to index object
-        ? <Completed>{format(dateObjects[dateObjects.type])}</Completed> : (
+        dates.hikedDisplayValue = <Completed>{format(dateObjects[dateObjects.type])}</Completed>;
+        // @ts-expect-error: value can be used to index object
+        dates.hikedSortValue = dateObjects[dateObjects.type].dateAsNumber;
+        completedCount = 1;
+      } else {
+        dates.hikedDisplayValue = (
           <LogTripButton
             to={addTripReportLink({
               refpath: window.location.pathname,
@@ -170,29 +181,34 @@ const getDates = (input: Input): {[key: string]: string | number | React.ReactEl
             <FontAwesomeIcon icon={faCalendarAlt} />
           </LogTripButton>
         );
-      // @ts-expect-error: value can be used to index object
-      dates.hikedSortValue = dateObjects[dateObjects.type] ? dateObjects[dateObjects.type].dateAsNumber : 0;
+        dates.hikedSortValue = 0;
+      }
     } else {
       for (const key in dateObjects) {
         if (dateObjects.hasOwnProperty(key)) {
           // @ts-expect-error: value can be used to index object
-          dates[key + 'DisplayValue'] = dateObjects[key]
+          if (dateObjects[key] && typeof dateObjects[key] !== 'string') {
             // @ts-expect-error: value can be used to index object
-            ? <Completed>{format(dateObjects[key])}</Completed> : (
-            <LogTripButton
-              to={addTripReportLink({
-                refpath: window.location.pathname,
-                [input.field + 's']: [input.item.id],
-                listtype: input.type,
-                month: key as Months,
-                season: key as Seasons,
-              })}
-            >
-              <FontAwesomeIcon icon={faCalendarAlt} />
-            </LogTripButton>
-          );
-          // @ts-expect-error: value can be used to index object
-          dates[key + 'SortValue'] = dateObjects[key] ? dateObjects[key].dateAsNumber : 0;
+            dates[key + 'DisplayValue'] = <Completed>{format(dateObjects[key])}</Completed>;
+            // @ts-expect-error: value can be used to index object
+            dates[key + 'SortValue'] = dateObjects[key].dateAsNumber;
+            completedCount++;
+          } else {
+            dates[key + 'DisplayValue'] = (
+              <LogTripButton
+                to={addTripReportLink({
+                  refpath: window.location.pathname,
+                  [input.field + 's']: [input.item.id],
+                  listtype: input.type,
+                  month: key as Months,
+                  season: key as Seasons,
+                })}
+              >
+                <FontAwesomeIcon icon={faCalendarAlt} />
+              </LogTripButton>
+            );
+            dates[key + 'SortValue'] = 0;
+          }
         }
       }
     }
@@ -215,7 +231,7 @@ const getDates = (input: Input): {[key: string]: string | number | React.ReactEl
     });
   }
 
-  return dates;
+  return {dates, completedCount};
 };
 
 export default getDates;

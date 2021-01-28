@@ -1,7 +1,7 @@
 import React from 'react';
+import AllItems from './AllItems';
 import DescriptionAndNotes from './DescriptionAndNotes';
 import Header from './Header';
-import ItemsTables from './ItemsTables';
 
 interface Props {
   userId: string | null;
@@ -21,7 +21,7 @@ const PeakListDetail = (props: Props) => {
       <DescriptionAndNotes
         peakListId={id}
       />
-      <ItemsTables
+      <AllItems
         peakListId={id}
       />
     </>

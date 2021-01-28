@@ -34,7 +34,7 @@ const Icon = styled(BasicIconAtEndOfText)<{$compact: boolean}>`
 `;
 
 const IconBackground = styled(Icon)`
-  opacity: 0.35;
+  opacity: 0.2;
 `;
 
 interface Props {
