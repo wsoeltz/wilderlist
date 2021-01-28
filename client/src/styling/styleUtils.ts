@@ -126,6 +126,10 @@ export const SmallSemiBold = styled(SemiBold)`
   font-size: 0.85rem;
 `;
 
+export const SmallLink = styled(Link)`
+  font-size: 0.7rem;
+`;
+
 export const Section = styled.div`
   margin-bottom: 1rem;
 `;

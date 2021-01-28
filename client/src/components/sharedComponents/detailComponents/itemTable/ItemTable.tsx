@@ -4,15 +4,25 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {lightBorderColor} from '../../../../styling/styleUtils';
 import {CoreItem} from '../../../../types/itemTypes';
+import {mobileSize} from '../../../../Utils';
 import StandardSearch from '../../StandardSearch';
 import ItemRow from './ItemRow';
 import TableHeaderCell from './TableHeaderCell';
+
+const Root = styled.div`
+  display: contents;
+
+  @media (max-width: ${mobileSize}px) {
+    display: block;
+    width: 100%;
+    overflow-x: scroll;
+  }
+`;
 
 const Table = styled.table`
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
-  overflow-x: scroll;
 `;
 
 const Row = styled.tr`
@@ -32,6 +42,7 @@ const SearchCell = styled.th`
   top: calc(2rem - 1px);
   background-color: #fff;
   padding: 0;
+  z-index: 10;
 
   input {
     border-left: none;
@@ -85,7 +96,7 @@ const ItemTable = (props: Props) => {
     totalColumns += 1;
   }
 
-  const compactView = totalColumns > 6;
+  const compactView = totalColumns > 9;
 
   const rows = orderBy(items, [sorting.field], [sorting.asc ? 'asc' : 'desc'])
     .filter(item => item.name.toLowerCase().includes(filterQuery))
@@ -98,6 +109,7 @@ const ItemTable = (props: Props) => {
           key={'item-row-' + item.id + i}
           index={showIndex ? i + 1 : undefined}
           name={item.name}
+          optional={item.optional ? true : false}
           destination={item.destination}
           dataFields={dataFields}
           completionFields={completionFields}
@@ -143,39 +155,41 @@ const ItemTable = (props: Props) => {
   ));
 
   return (
-    <Table>
-      <thead>
-        <Row>
-          {indexHeader}
-          <TableHeaderCell
-            label={getString('global-text-value-name')}
-            toggleSorting={toggleSorting}
-            sortField='name'
-            isSorting={sorting.field === 'name'}
-            sortAsc={sorting.asc}
-            align={'left'}
-            compactView={compactView}
-          />
-          {dataFieldHeaders}
-          {completionFieldHeaders}
-          {actionFieldHeaders}
-        </Row>
-        <tr>
-          <SearchCell colSpan={totalColumns}>
-            <StandardSearch
-              placeholder={getString('global-text-value-fitler-items', {type})}
-              setSearchQuery={setFilterQuery}
-              initialQuery={filterQuery}
-              focusOnMount={false}
-              noSearchIcon={true}
+    <Root>
+      <Table>
+        <thead>
+          <Row>
+            {indexHeader}
+            <TableHeaderCell
+              label={getString('global-text-value-name')}
+              toggleSorting={toggleSorting}
+              sortField='name'
+              isSorting={sorting.field === 'name'}
+              sortAsc={sorting.asc}
+              align={'left'}
+              compactView={compactView}
             />
-          </SearchCell>
-        </tr>
-      </thead>
-      <tbody>
-        {rows}
-      </tbody>
-    </Table>
+            {dataFieldHeaders}
+            {completionFieldHeaders}
+            {actionFieldHeaders}
+          </Row>
+          <tr>
+            <SearchCell colSpan={totalColumns}>
+              <StandardSearch
+                placeholder={getString('global-text-value-fitler-items', {type})}
+                setSearchQuery={setFilterQuery}
+                initialQuery={filterQuery}
+                focusOnMount={false}
+                noSearchIcon={true}
+              />
+            </SearchCell>
+          </tr>
+        </thead>
+        <tbody>
+          {rows}
+        </tbody>
+      </Table>
+    </Root>
   );
 };
 

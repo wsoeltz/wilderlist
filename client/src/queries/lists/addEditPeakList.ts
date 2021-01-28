@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import {
   Campsite,
   Coordinate,
@@ -250,7 +250,10 @@ export const useGetPeakList = (id: string | null) => useQuery<SuccessResponse, {
 });
 
 const useAddEditPeakList = () => {
-  const [addEditPeakList] = useMutation<SuccessResponse, Variables>(ADD_EDIT_PEAK_LIST);
+  const client = useApolloClient();
+  const [addEditPeakList] = useMutation<SuccessResponse, Variables>(ADD_EDIT_PEAK_LIST, {
+      onCompleted: client.resetStore,
+  });
   return addEditPeakList;
 };
 

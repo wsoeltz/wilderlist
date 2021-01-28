@@ -37,6 +37,37 @@ const GET_PEAK_LIST_ITEMS = gql`
           abbreviation
         }
       }
+      optionalMountains {
+        id
+        name
+        elevation
+        location
+        state {
+          id
+          abbreviation
+        }
+      }
+      optionalTrails {
+        id
+        name
+        type
+        center
+        line
+        states {
+          id
+          abbreviation
+        }
+      }
+      optionalCampsites {
+        id
+        name
+        type
+        location
+        state {
+          id
+          abbreviation
+        }
+      }
     }
   }
 `;
@@ -82,6 +113,9 @@ interface SuccessResponse {
     mountains: MountainDatum[];
     trails: TrailDatum[];
     campsites: CampsiteDatum[];
+    optionalMountains: MountainDatum[];
+    optionalTrails: TrailDatum[];
+    optionalCampsites: CampsiteDatum[];
   };
 }
 

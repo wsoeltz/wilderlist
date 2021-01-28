@@ -24,8 +24,8 @@ interface Input {
   numberOfPeaks: number;
   isStateOrRegion: 'state' | 'region';
   stateRegionName: string;
-  highestMountain: {name: string, elevation: number};
-  smallestMountain: {name: string, elevation: number};
+  highestMountain: {name: string, elevation: number} | undefined;
+  smallestMountain: {name: string, elevation: number} | undefined;
 }
 
 export const getSentences = (input: {getString: GetString } & Input) => {
@@ -46,7 +46,7 @@ export const getSentences = (input: {getString: GetString } & Input) => {
   let secondParagraph: string = '';
   let thirdParagraph: string = '';
   if (type === PeakListVariants.standard || !parent) {
-    firstParagraph = getString('peak-list-detail-list-standard-para-1', {
+    firstParagraph = highestMountain && smallestMountain ? getString('peak-list-detail-list-standard-para-1', {
       'list-name': listName,
       'number-of-peaks': '' + numberOfPeaks,
       'state-or-region': isStateOrRegion.toString(),
@@ -56,14 +56,15 @@ export const getSentences = (input: {getString: GetString } & Input) => {
       'smallest-mountain-name': smallestMountain.name,
       'smallest-mountain-elevation': '' + smallestMountain.elevation,
       type,
-    });
+    }) : '';
     secondParagraph = getString('peak-list-detail-list-standard-para-2', {
       'list-name': listName,
     });
     thirdParagraph = '';
   }
   if (type === PeakListVariants.winter) {
-    firstParagraph = !parent ? firstParagraph : getString('peak-list-detail-list-winter-has-parent-para-1', {
+    firstParagraph = !parent || !highestMountain || !smallestMountain ? firstParagraph : getString(
+      'peak-list-detail-list-winter-has-parent-para-1', {
       'list-name': listName,
       'short-name': shortName,
       'parent-list-name': parent.name,
@@ -87,7 +88,8 @@ export const getSentences = (input: {getString: GetString } & Input) => {
       'list-name': listName,
     });
   } else if (type === PeakListVariants.fourSeason) {
-    firstParagraph = !parent ? firstParagraph : getString('peak-list-detail-list-4-season-has-parent-para-1', {
+    firstParagraph = !parent || !highestMountain || !smallestMountain ? firstParagraph : getString(
+      'peak-list-detail-list-4-season-has-parent-para-1', {
       'list-name': listName,
       'short-name': shortName,
       'parent-list-name': parent.name,
@@ -112,7 +114,8 @@ export const getSentences = (input: {getString: GetString } & Input) => {
       'list-name': listName,
     });
   } else if (type === PeakListVariants.grid) {
-    firstParagraph = !parent ? firstParagraph : getString('peak-list-detail-list-grid-has-parent-para-1', {
+    firstParagraph = !parent || !highestMountain || !smallestMountain ? firstParagraph : getString(
+      'peak-list-detail-list-grid-has-parent-para-1', {
       'list-name': listName,
       'short-name': shortName,
       'parent-list-name': parent.name,

@@ -1,4 +1,11 @@
-import {faCalendarAlt, faCheck, faFlag, faMapMarkerAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarAlt,
+  faCheck,
+  faFlag,
+  faMapMarkerAlt,
+  faPencilAlt,
+  faTasks,
+} from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useState} from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
@@ -16,11 +23,11 @@ import {
 import {
   BasicIconInText,
   BasicIconInTextCompact,
-  CompactGhostButtonLink,
   completeColor,
   HelpUnderline,
   incompleteColor,
   LinkButtonCompact,
+  SmallLink,
   SmallSemiBold,
   tertiaryColor,
 } from '../../../styling/styleUtils';
@@ -180,12 +187,13 @@ const Header = (props: Props) => {
     if (!user) {
       editFlagButton = null;
     } else {
-      editFlagButton = (user && peakList.author && user.id === peakList.author.id
+      editFlagButton = (user && peakList.author && user._id === peakList.author.id
             && user.peakListPermissions !== -1)
         || (user && user.permissions === PermissionTypes.admin) ? (
-        <CompactGhostButtonLink to={editPeakListLink(peakList.id)}>
+        <SmallLink to={editPeakListLink(peakList.id)}>
+          <BasicIconInTextCompact icon={faPencilAlt} />
           {getString('global-text-value-edit')}
-        </CompactGhostButtonLink>
+        </SmallLink>
       ) : (
         <LinkButtonCompact onClick={openFlagModal}>
           <BasicIconInTextCompact icon={faFlag} />
@@ -206,12 +214,13 @@ const Header = (props: Props) => {
       </>
     );
 
+    const numItems = numMountains + numTrails + numCampsites;
     if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-      totalRequiredAscents = numMountains;
+      totalRequiredAscents = numItems;
     } else if (type === PeakListVariants.fourSeason) {
-      totalRequiredAscents = numMountains * 4;
+      totalRequiredAscents = numItems * 4;
     } else if (type === PeakListVariants.grid) {
-      totalRequiredAscents = numMountains * 12;
+      totalRequiredAscents = numItems * 12;
     } else {
       totalRequiredAscents = 0;
       failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);

@@ -17,6 +17,8 @@ const Cell = styled.th<{$sortable: boolean, $align?: 'left' | 'right' | 'center'
   top: -1px;
   height: 2rem;
   box-sizing: border-box;
+  z-index: 10;
+  white-space: nowrap;
 `;
 
 const SortIconContainer = styled.div`

@@ -17,6 +17,7 @@ import {
   monthsArray,
   seasonsArray,
 } from '../../../Utils';
+import {mobileSize} from '../../../Utils';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
 import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
@@ -25,6 +26,8 @@ import getDates from './getDates';
 const Root = styled.div`
   min-height: 60vh;
 `;
+
+const monthSliceValue = window.innerWidth < 1250 && window.innerWidth > mobileSize ? 1 : 3;
 
 interface Props {
   peakListId: string;
@@ -36,6 +39,7 @@ const ItemsSelection = (props: Props) => {
   const getString = useFluent();
   const items = usePeakListItems(peakListId);
   const usersProgress = useUsersProgress();
+  const panelCounts: Array<{index: number, count: number}> = [];
 
   if (items.loading || usersProgress.loading) {
     return null;
@@ -72,11 +76,16 @@ const ItemsSelection = (props: Props) => {
       completionFieldKeys = monthsArray.map(month => ({
         displayKey: month + 'DisplayValue',
         sortKey: month + 'SortValue',
-        label: month.slice(0, 3),
+        label: month.slice(0, monthSliceValue),
       }));
     }
 
-    const mountains = items.data.peakList.mountains.map(mtn => {
+    const optionalMountains = items.data.peakList.optionalMountains.map(mtn => ({
+      ...mtn,
+      optional: true,
+    }));
+    const requiredMountains = items.data.peakList.mountains;
+    const mountains = [...requiredMountains, ...optionalMountains].map(mtn => {
       const dates = getDates({
         type, item: mtn, field: CoreItem.mountain, userItems: progressMountains, completionFieldKeys,
       });
@@ -115,9 +124,15 @@ const ItemsSelection = (props: Props) => {
         customIcon: true,
         icon: mountainNeutralSvg,
       });
+      panelCounts.push({index: panelCounts.length, count: requiredMountains.length});
     }
 
-    const trails = items.data.peakList.trails.map(trail => {
+    const optionalTrails = items.data.peakList.optionalTrails.map(trail => ({
+      ...trail,
+      optional: true,
+    }));
+    const requiredTrails = items.data.peakList.trails;
+    const trails = [...requiredTrails, ...optionalTrails].map(trail => {
       const dates = getDates({
         type, item: trail, field: CoreItem.trail, userItems: progressTrails, completionFieldKeys,
       });
@@ -173,9 +188,15 @@ const ItemsSelection = (props: Props) => {
         customIcon: true,
         icon: trailDefaultSvg,
       });
+      panelCounts.push({index: panelCounts.length, count: requiredTrails.length});
     }
 
-    const campsites = items.data.peakList.campsites.map(campsite => {
+    const optionalCampsites = items.data.peakList.optionalCampsites.map(campsite => ({
+      ...campsite,
+      optional: true,
+    }));
+    const requiredCampsites = items.data.peakList.campsites;
+    const campsites = [...requiredCampsites, ...optionalCampsites].map(campsite => {
       const dates = getDates({
         type, item: campsite, field: CoreItem.campsite, userItems: progressCampsites, completionFieldKeys,
       });
@@ -217,17 +238,13 @@ const ItemsSelection = (props: Props) => {
         customIcon: true,
         icon: tentNeutralSvg,
       });
+      panelCounts.push({index: panelCounts.length, count: requiredCampsites.length});
     }
-
-    const panelCounts = [
-      {index: 0, count: mountains.length},
-      {index: 1, count: trails.length},
-      {index: 2, count: campsites.length},
-    ];
 
     return (
       <Root>
         <DetailSegment
+          key={peakListId}
           panels={panels}
           panelCounts={panelCounts}
           panelId={'listDetailPanel'}
