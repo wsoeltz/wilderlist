@@ -119,6 +119,7 @@ const ItemsSelection = (props: Props) => {
             completionFieldKeys={completionFieldKeys}
             actionFieldKeys={[]}
             type={CoreItem.mountain}
+            variant={type}
           />
         ),
         customIcon: true,
@@ -183,6 +184,7 @@ const ItemsSelection = (props: Props) => {
             completionFieldKeys={completionFieldKeys}
             actionFieldKeys={[]}
             type={CoreItem.trail}
+            variant={type}
           />
         ),
         customIcon: true,
@@ -233,6 +235,7 @@ const ItemsSelection = (props: Props) => {
             completionFieldKeys={completionFieldKeys}
             actionFieldKeys={[]}
             type={CoreItem.campsite}
+            variant={type}
           />
         ),
         customIcon: true,

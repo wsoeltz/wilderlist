@@ -10,7 +10,6 @@ import {
   semiBoldFontBoldWeight,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
-// import useFluent from '../../../../hooks/useFluent';
 
 const Row = styled.tr`
   border-bottom: 1px solid ${lightBorderColor};

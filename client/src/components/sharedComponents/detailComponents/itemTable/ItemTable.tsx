@@ -3,6 +3,7 @@ import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {lightBorderColor} from '../../../../styling/styleUtils';
+import {PeakListVariants} from '../../../../types/graphQLTypes';
 import {CoreItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import StandardSearch from '../../StandardSearch';
@@ -72,15 +73,32 @@ interface Props {
   completionFieldKeys: KeySortPair[];
   showIndex?: boolean;
   type: CoreItem;
+  variant?: PeakListVariants;
 }
+
+const storageSortFieldKey = (type: string, variant: string) => 'itemTableSortingFieldKey_' + type + variant;
+const storageDirectionKey = (type: string, variant: string) => 'itemTableSortingDirectionKey_' + type + variant;
 
 const ItemTable = (props: Props) => {
   const {items, showIndex, dataFieldKeys, actionFieldKeys, completionFieldKeys, type} = props;
   const getString = useFluent();
+
+  const variant = props.variant ? props.variant : 'default';
+  const initialSortField = localStorage.getItem(storageSortFieldKey(type, variant));
+  const initialSortDirection = localStorage.getItem(storageDirectionKey(type, variant));
+
+  const [sorting, setSorting] = useState<{field: string, asc: boolean}>({
+    field: initialSortField ? initialSortField : 'name',
+    asc: initialSortDirection === 'true' ? true : false,
+  });
+
   const [filterQuery, setFilterQuery] = useState<string>('');
-  const [sorting, setSorting] = useState<{field: string, asc: boolean}>({field: 'name', asc: false});
 
   const toggleSorting = useCallback((field: string) => {
+    localStorage.setItem(storageSortFieldKey(type, variant), field);
+    if (field === sorting.field) {
+      localStorage.setItem(storageDirectionKey(type, variant), (!sorting.asc).toString());
+    }
     setSorting(cur => {
       if (cur.field === field) {
         return {field: cur.field, asc: !cur.asc};
@@ -88,7 +106,7 @@ const ItemTable = (props: Props) => {
         return {field, asc: cur.asc};
       }
     });
-  }, [setSorting]);
+  }, [setSorting, variant, type, sorting]);
 
   // + 1 for name column
   let totalColumns = dataFieldKeys.length + actionFieldKeys.length + completionFieldKeys.length + 1;
