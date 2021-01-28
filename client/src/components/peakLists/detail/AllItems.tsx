@@ -60,6 +60,7 @@ const AllItems = (props: Props) => {
     const progressCampsites = progress && progress.campsites ? progress.campsites : [];
 
     let completionFieldKeys: KeySortPair[] = [];
+    let stringDateFields: KeySortPair[] = [];
     if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
       completionFieldKeys = [
         {
@@ -68,18 +69,39 @@ const AllItems = (props: Props) => {
           label: 'Hiked On',
         },
       ];
+      stringDateFields = [
+        {
+          displayKey: 'hikedStringValue',
+          sortKey: null,
+          label: 'Hiked On',
+        },
+      ];
     } else if (type === PeakListVariants.fourSeason) {
-      completionFieldKeys = seasonsArray.map(season => ({
-        displayKey: season + 'DisplayValue',
-        sortKey: season + 'SortValue',
-        label: season,
-      }));
+      seasonsArray.forEach(season => {
+        completionFieldKeys.push({
+          displayKey: season + 'DisplayValue',
+          sortKey: season + 'SortValue',
+          label: upperFirst(season),
+        });
+        stringDateFields.push({
+          displayKey: season + 'StringValue',
+          sortKey: null,
+          label: upperFirst(season),
+        });
+      });
     } else if (type === PeakListVariants.grid) {
-      completionFieldKeys = monthsArray.map(month => ({
-        displayKey: month + 'DisplayValue',
-        sortKey: month + 'SortValue',
-        label: month.slice(0, monthSliceValue),
-      }));
+      monthsArray.forEach(month => {
+        completionFieldKeys.push({
+          displayKey: month + 'DisplayValue',
+          sortKey: month + 'SortValue',
+          label: upperFirst(month.slice(0, monthSliceValue)),
+        });
+        stringDateFields.push({
+          displayKey: month + 'StringValue',
+          sortKey: null,
+          label: upperFirst(month),
+        });
+      });
     }
 
     const optionalMountains = items.data.peakList.optionalMountains.map(mtn => ({
@@ -91,6 +113,7 @@ const AllItems = (props: Props) => {
     const mountains = [...requiredMountains, ...optionalMountains].map(mtn => {
       const {dates, completedCount} = getDates({
         type, item: mtn, field: CoreItem.mountain, userItems: progressMountains, completionFieldKeys,
+        stringDateFields,
       });
       completedMountains += completedCount;
       return {
@@ -110,6 +133,7 @@ const AllItems = (props: Props) => {
     const campsites = [...requiredCampsites, ...optionalCampsites].map(campsite => {
       const {dates, completedCount} = getDates({
         type, item: campsite, field: CoreItem.campsite, userItems: progressCampsites, completionFieldKeys,
+        stringDateFields,
       });
       completedCampsites += completedCount;
       const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: campsite.type}));
@@ -132,6 +156,7 @@ const AllItems = (props: Props) => {
     const trails = [...requiredTrails, ...optionalTrails].map(trail => {
       const {dates, completedCount} = getDates({
         type, item: trail, field: CoreItem.trail, userItems: progressTrails, completionFieldKeys,
+        stringDateFields,
       });
       completedTrails += completedCount;
       const trailLength = trail.line && trail.line.length ? length(lineString(trail.line)) : 0;
@@ -177,6 +202,7 @@ const AllItems = (props: Props) => {
             items={mountains}
             dataFieldKeys={mountainDataFieldKeys}
             completionFieldKeys={completionFieldKeys}
+            stringDateFields={stringDateFields}
             type={CoreItem.mountain}
             variant={type}
             hasOptionalItems={Boolean(optionalMountains.length)}
@@ -224,6 +250,7 @@ const AllItems = (props: Props) => {
             items={trails}
             dataFieldKeys={trailDataFieldKeys}
             completionFieldKeys={completionFieldKeys}
+            stringDateFields={stringDateFields}
             type={CoreItem.trail}
             variant={type}
             hasOptionalItems={Boolean(optionalTrails.length)}
@@ -267,6 +294,7 @@ const AllItems = (props: Props) => {
             items={campsites}
             dataFieldKeys={campsiteDataFieldKeys}
             completionFieldKeys={completionFieldKeys}
+            stringDateFields={stringDateFields}
             type={CoreItem.campsite}
             variant={type}
             hasOptionalItems={Boolean(optionalCampsites.length)}

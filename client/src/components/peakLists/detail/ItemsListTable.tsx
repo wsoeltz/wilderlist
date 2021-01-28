@@ -9,6 +9,7 @@ import {PeakListVariants} from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
 import ItemTable, {Item, KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import Tooltip from '../../sharedComponents/Tooltip';
+import ExportButton from '../export/ExportButton';
 import ImportButton from '../import/ImportButton';
 
 const UtilityBar = styled.div`
@@ -52,6 +53,7 @@ interface Props {
   items: Item[];
   dataFieldKeys: KeySortPair[];
   completionFieldKeys: KeySortPair[];
+  stringDateFields: KeySortPair[];
   type: CoreItem;
   variant: PeakListVariants;
   hasOptionalItems: boolean;
@@ -63,7 +65,7 @@ const storageCheckedKeyId = (type: string) => 'localstorageKeyForOptionalChecked
 const ItemsListTable = (props: Props) => {
   const {
     peakListId, items, dataFieldKeys, completionFieldKeys, type, variant, hasOptionalItems,
-    soloPanel,
+    soloPanel, stringDateFields,
   } = props;
 
   const getString = useFluent();
@@ -105,11 +107,17 @@ const ItemsListTable = (props: Props) => {
     />
   ) : null;
 
-  const UtilityBarRoot = soloPanel && !hasOptionalItems ? SoloUtilityBar : UtilityBar;
+  const UtilityBarRoot = soloPanel ? SoloUtilityBar : UtilityBar;
 
   return (
     <>
       <UtilityBarRoot>
+        <ExportButton
+          items={items}
+          dataFieldKeys={dataFieldKeys}
+          stringDateFields={stringDateFields}
+          peakListId={peakListId}
+        />
         {importButton}
         {optionalCheckbox}
       </UtilityBarRoot>

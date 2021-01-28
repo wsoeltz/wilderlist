@@ -616,8 +616,8 @@ trip-log-add-another = Log & Add Next Day
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
-mountain-table-import-button = Import dates from a spreadsheet
-mountain-table-export-button = Download your data
+mountain-table-import-button = Import from spreadsheet
+mountain-table-export-button = Download data
 download-csv-button = Download CSV
 download-official-grid-xlsx-button = Download Grid application with your dates
 

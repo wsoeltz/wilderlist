@@ -147,6 +147,7 @@ const getCompletionDates = (input: BaseInput) => {
 
 interface Input extends BaseInput {
   completionFieldKeys: KeySortPair[];
+  stringDateFields: KeySortPair[];
 }
 
 interface Output {
@@ -155,7 +156,7 @@ interface Output {
 }
 
 const getDates = (input: Input): Output => {
-  const {completionFieldKeys} = input;
+  const {completionFieldKeys, stringDateFields} = input;
   const dateObjects = getCompletionDates(input);
   const dates: {[key: string]: string | number | React.ReactElement<any>} = {};
   let completedCount = 0;
@@ -165,7 +166,9 @@ const getDates = (input: Input): Output => {
       // @ts-expect-error: value can be used to index object
       if (dateObjects[dateObjects.type]) {
         // @ts-expect-error: value can be used to index object
-        dates.hikedDisplayValue = <Completed>{format(dateObjects[dateObjects.type])}</Completed>;
+        const stringDate = format(dateObjects[dateObjects.type]);
+        dates.hikedDisplayValue = <Completed>{stringDate}</Completed>;
+        dates.hikedStringValue = stringDate;
         // @ts-expect-error: value can be used to index object
         dates.hikedSortValue = dateObjects[dateObjects.type].dateAsNumber;
         completedCount = 1;
@@ -182,6 +185,7 @@ const getDates = (input: Input): Output => {
           </LogTripButton>
         );
         dates.hikedSortValue = 0;
+        dates.hikedStringValue = '';
       }
     } else {
       for (const key in dateObjects) {
@@ -189,9 +193,11 @@ const getDates = (input: Input): Output => {
           // @ts-expect-error: value can be used to index object
           if (dateObjects[key] && typeof dateObjects[key] !== 'string') {
             // @ts-expect-error: value can be used to index object
-            dates[key + 'DisplayValue'] = <Completed>{format(dateObjects[key])}</Completed>;
+            const stringDate = format(dateObjects[key]);
+            dates[key + 'DisplayValue'] = <Completed>{stringDate}</Completed>;
             // @ts-expect-error: value can be used to index object
             dates[key + 'SortValue'] = dateObjects[key].dateAsNumber;
+            dates[key + 'StringValue'] = stringDate;
             completedCount++;
           } else {
             dates[key + 'DisplayValue'] = (
@@ -208,6 +214,7 @@ const getDates = (input: Input): Output => {
               </LogTripButton>
             );
             dates[key + 'SortValue'] = 0;
+            dates[key + 'StringValue'] = '';
           }
         }
       }
@@ -228,6 +235,9 @@ const getDates = (input: Input): Output => {
         </LogTripButton>
       );
       dates[sortKey as string] = 0;
+    });
+    stringDateFields.forEach(({displayKey}) => {
+      dates[displayKey as string] = '';
     });
   }
 
