@@ -29,7 +29,9 @@ const PeakListNote = ({id, name}: Props) => {
 
   const peakListNote = data && data.user && data.user.peakListNote ? data.user.peakListNote : null;
   const defaultNoteText = peakListNote && peakListNote.text ? peakListNote.text : '';
-  const notesPlaceholderText = getString('user-notes-placeholder', {name});
+  const notesPlaceholderText = userId
+    ? getString('user-notes-placeholder', {name})
+    : getString('user-notes-placeholder-not-logged-in', {name});
 
   const saveNote = (text: string) => {
     if (userId) {

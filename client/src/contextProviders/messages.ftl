@@ -116,9 +116,11 @@ global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
 global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-save = Save { $list-short-name } for later with a free account
 global-text-value-modal-sign-up-today-import = Import your data and start tracking your progress in just a few clicks
-global-text-value-modal-sign-up-today-export = Export your data for { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-export = Export your data with a free account
 global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
+global-text-value-modal-sign-up-log-trips = Start logging trips with a free account
 
 global-text-value-modal-cancel-request-text = This will cancel your request to have { $name } deleted.
 global-text-value-modal-request-delete-title = Request delete
@@ -572,6 +574,7 @@ peak-list-export-grid-special-link = Export your Wilderlist ascents to the offic
 user-notes-title = Your Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
+user-notes-placeholder-not-logged-in = Create a free account to keep your own personal notes for { $name } here.
 
 mountain-search-no-results-mobile = No mountains found near { $map-center-text }. Use the search above or go to the map view to explore.
 mountain-search-no-results-map = No mountains found here. Try moving the map or using the search above.

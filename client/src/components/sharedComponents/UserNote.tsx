@@ -75,6 +75,11 @@ const Textarea = styled.textarea`
   &:focus {
     border-color: ${lightBorderColor};
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
 `;
 
 export const PlaceholderTextarea = styled(Textarea)`
@@ -102,12 +107,16 @@ const LoginButton = styled(LoginButtonBase)`
   max-width: 200px;
   max-height: 50px;
   border: 1px solid ${lightBorderColor};
+  flex-grow: 1;
 `;
 
 const LoginText = styled(LoginTextBase)`
-  @media (max-width: 500px) {
-    font-size: 0.9rem;
-  }
+  font-size: 0.8rem;
+`;
+
+const LoginButtonsContainer = styled.div`
+  margin: 0 -0.5rem;
+  display: flex;
 `;
 
 const charLimit = 5000;
@@ -172,7 +181,7 @@ const UserNote = (props: Props) => {
   }
 
   const buttons = !user ? (
-    <ButtonContainer>
+    <LoginButtonsContainer>
       <LoginButton href='/auth/google'>
         <BrandIcon
           icon={faGoogle as IconDefinition}
@@ -200,7 +209,7 @@ const UserNote = (props: Props) => {
           {getString('header-text-login-with-reddit')}
         </LoginText>
       </LoginButton>
-    </ButtonContainer>
+    </LoginButtonsContainer>
     ) : (
     <ButtonContainer
       style={defaultValue === value ? {} : openContainerStyles}
@@ -229,6 +238,7 @@ const UserNote = (props: Props) => {
         onChange={onChange}
         maxLength={charLimit}
         ref={textAreaRef}
+        disabled={!user}
         style={{height, borderColor: defaultValue !== value ? lowWarningColor : undefined}}
       />
       {buttons}

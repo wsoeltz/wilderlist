@@ -52,8 +52,8 @@ const StarListButton = ({peakListId, peakListName}: Props) => {
 
   const signUpModal = isSignUpModal === false ? null : (
     <SignUpModal
-      text={getString('global-text-value-modal-sign-up-today', {
-        'list-short-name': peakListName ? peakListName : 'Wilderlist',
+      text={getString('global-text-value-modal-sign-up-today-save', {
+        'list-short-name': peakListName ? peakListName : 'this',
       })}
       onCancel={closeSignUpModal}
     />

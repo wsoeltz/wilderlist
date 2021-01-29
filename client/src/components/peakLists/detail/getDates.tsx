@@ -1,12 +1,9 @@
-import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import React from 'react';
-import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
   addTripReportLink,
 } from '../../../routing/Utils';
-import {secondaryColor, successColor} from '../../../styling/styleUtils';
+import {successColor} from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import { CoreItem } from '../../../types/itemTypes';
 import {
@@ -28,15 +25,10 @@ import {
   Seasons,
 } from '../../../Utils';
 import {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
+import LogTripButton from './LogTripButton';
 
 const Completed = styled.strong`
   color: ${successColor};
-`;
-
-const LogTripButton = styled(Link)`
-  position: relative;
-  font-size: 0.75rem;
-  color: ${secondaryColor};
 `;
 
 export type VariableDate = {
@@ -180,9 +172,7 @@ const getDates = (input: Input): Output => {
               [input.field + 's']: [input.item.id],
               listtype: input.type,
             })}
-          >
-            <FontAwesomeIcon icon={faCalendarAlt} />
-          </LogTripButton>
+          />
         );
         dates.hikedSortValue = 0;
         dates.hikedStringValue = '';
@@ -209,9 +199,7 @@ const getDates = (input: Input): Output => {
                   month: key as Months,
                   season: key as Seasons,
                 })}
-              >
-                <FontAwesomeIcon icon={faCalendarAlt} />
-              </LogTripButton>
+              />
             );
             dates[key + 'SortValue'] = 0;
             dates[key + 'StringValue'] = '';
@@ -230,9 +218,7 @@ const getDates = (input: Input): Output => {
             month: displayKey.replace('DisplayValue', '') as Months,
             season: displayKey.replace('DisplayValue', '') as Seasons,
           })}
-        >
-          <FontAwesomeIcon icon={faCalendarAlt} />
-        </LogTripButton>
+        />
       );
       dates[sortKey as string] = 0;
     });

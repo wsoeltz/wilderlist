@@ -59,7 +59,7 @@ const ExportButton = (props: Props) => {
   } else if (isExportModalOpen === true) {
     exportDataModal = (
         <SignUpModal
-          text={getString('global-text-value-modal-sign-up-today-import')}
+          text={getString('global-text-value-modal-sign-up-today-export')}
           onCancel={() => setIsExportModalOpen(false)}
         />
     );
