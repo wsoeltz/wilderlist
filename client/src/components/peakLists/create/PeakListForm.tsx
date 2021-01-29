@@ -286,7 +286,6 @@ const PeakListForm = (props: Props) => {
   const deleteButton = !initialData.id || source === FormSource.Create ? null : (
     <DeleteButton
       onClick={openDeleteModal}
-      mobileExtend={true}
     >
       <BasicIconInText icon={faTrash} />
       {deleteButtonText}
@@ -336,14 +335,12 @@ const PeakListForm = (props: Props) => {
         {deleteButton}
         <CancelButton
           onClick={onCancel}
-          mobileExtend={true}
         >
           {getString('global-text-value-modal-cancel')}
         </CancelButton>
         <SaveButton
           disabled={!verify()}
           onClick={validateAndSave}
-          mobileExtend={true}
         >
           <BasicIconInText icon={faCheck} />
           {saveButtonText}

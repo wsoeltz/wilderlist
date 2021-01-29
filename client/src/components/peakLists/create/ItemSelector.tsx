@@ -23,6 +23,10 @@ const NoteText = styled.div`
   box-sizing: border-box;
   justify-content: center;
   text-align: center;
+
+  div {
+    display: inline-block;
+  }
 `;
 
 const SearchGrid = styled.div`
@@ -116,10 +120,12 @@ function ItemSelector<T>(props: Props<T>) {
     <>
       <Root>
         <NoteText>
-          <IconContainer $color={primaryColor}>
-            <BasicIconInText icon={faMap} />
-          </IconContainer>
-          {note}
+          <span>
+            <IconContainer $color={primaryColor}>
+              <BasicIconInText icon={faMap} />
+            </IconContainer>
+            {note}
+          </span>
         </NoteText>
         <SearchGrid>
           <Search

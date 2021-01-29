@@ -28,9 +28,14 @@ const Root = styled.div`
   margin: 0 0 1rem -1rem;
   display: grid;
   grid-template-columns: 2fr 1.5fr;
-  grid-column-gap: 0.5rem;
+  grid-gap: 0.5rem;
   border-top: solid 1px ${lightBorderColor};
   padding: 1rem;
+
+  @media (max-width: 650px) {
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+  }
 `;
 
 interface Props {

@@ -25,6 +25,8 @@ import DelayedInput from '../../sharedComponents/DelayedInput';
 import Tooltip from '../../sharedComponents/Tooltip';
 import MountainLogo from '../mountainLogo';
 
+const mobileSize = 650; // in px
+
 const Root = styled.div`
   margin: 0 0 1rem -1rem;
   display: grid;
@@ -32,6 +34,12 @@ const Root = styled.div`
   grid-template-rows: auto auto;
   grid-column-gap: 0.5rem;
   align-items: center;
+
+  @media (max-width: ${mobileSize}px) {
+    grid-template-columns: 6rem 1fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    grid-row-gap: 0.5rem;
+  }
 `;
 
 const LogoContainer = styled.div`
@@ -48,21 +56,40 @@ const CycleImageContainer = styled.small`
 const TitleContainer = styled.div`
   grid-column: 2;
   grid-row: 1;
+
+  @media (max-width: ${mobileSize}px) {
+    grid-column: 2 / -1;
+  }
 `;
 
 const AbbreviationContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
+
+  @media (max-width: ${mobileSize}px) {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
 `;
 
 const ImageAndDifficultyContainer = styled.div`
   grid-column: 2;
   grid-row: 2;
+
+  @media (max-width: ${mobileSize}px) {
+    grid-column: 2;
+    grid-row: 3;
+  }
 `;
 
 const VisibilityContainer = styled.div`
   grid-column: 3;
   grid-row: 2;
+
+  @media (max-width: ${mobileSize}px) {
+    grid-column: 3;
+    grid-row: 3;
+  }
 `;
 
 const ThinSelect = styled(SelectBox)`
