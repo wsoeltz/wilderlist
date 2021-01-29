@@ -75,13 +75,14 @@ interface Props {
   ignore: string[];
   onSelect: (datum: SearchResultDatum) => boolean | void;
   placeholder: string;
+  onClear?: () => void;
   hideIcon?: boolean;
   keepFocusOnSelect?: boolean;
   compact?: boolean;
 }
 
 const Search = (props: Props) => {
-  const {endpoint, ignore, onSelect, hideIcon, keepFocusOnSelect, compact, placeholder} = props;
+  const {endpoint, ignore, onSelect, hideIcon, keepFocusOnSelect, compact, placeholder, onClear} = props;
   const center = useMapCenter();
   const [state, updateState] = useState<SearchState>({value: '', suggestions: [], loading: false});
 
@@ -122,8 +123,13 @@ const Search = (props: Props) => {
   }, [updateState]);
 
   const clearSearch = useCallback(
-    () => updateState({suggestions: [], value: '', loading: false}),
-    [updateState],
+    () => {
+      updateState({suggestions: [], value: '', loading: false});
+      if (onClear) {
+        onClear();
+      }
+    },
+    [updateState, onClear],
   );
 
   const onSuggestionSelected = useCallback((_event: any, {suggestion}: {suggestion: SearchResultDatum}) => {

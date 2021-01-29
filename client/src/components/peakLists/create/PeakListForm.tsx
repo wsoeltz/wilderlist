@@ -40,7 +40,6 @@ import AddItems, {
 } from './AddItems';
 import FormDetails from './FormDetails';
 import FormHeader from './FormHeader';
-import ParentModal from './ParentModal';
 
 export enum FormSource {
   Create = 'create',
@@ -83,7 +82,6 @@ const PeakListForm = (props: Props) => {
   const [listId, setListId] = useState<string | Types.ObjectId>(initialData.id);
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
-  const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
   const [tier, setTier] = useState<PeakListTier | null>(initialData.tier);
   const [privacy, setPrivacy] = useState<ListPrivacy | null>(
     initialData.privacy ? initialData.privacy : ListPrivacy.Public,
@@ -118,8 +116,6 @@ const PeakListForm = (props: Props) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const closeAreYouSureModal = useCallback(() => setDeleteModalOpen(false), []);
   const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
-  // const openParentModal = useCallback(() => setParentModalOpen(true), []);
-  const closeParentModal = useCallback(() => setParentModalOpen(false), []);
   const closeCreateMountainModal = useCallback(() => setCreateMountainModalOpen(false), []);
 
   const updatePeakListFlag = useUpdatePeakListFlag();
@@ -297,21 +293,6 @@ const PeakListForm = (props: Props) => {
     </DeleteButton>
   );
 
-  const copyMountains = (mountainArray: MountainDatum[] /*optionalMountainArray: MountainDatum[]*/) => {
-    const uniqueMountains = mountainArray.filter(mtn1 => !mountains.find(mtn2 => mtn1.id === mtn2.id));
-    setMountains([...mountains, ...uniqueMountains]);
-    // const uniqueOptionalMountains =
-    //   optionalMountainArray.filter(mtn1 => !optionalMountains.find(mtn2 => mtn1.id === mtn2.id));
-    // setOptionalMountains([...optionalMountains, ...uniqueOptionalMountains]);
-  };
-
-  const parentModal = parentModalOpen === false ? null : (
-    <ParentModal
-      copyMountains={copyMountains}
-      onCancel={closeParentModal}
-    />
-  );
-
   const onNewMountainCreate = (mtn: MountainDatum) => setMountains([...mountains, mtn]);
   const createMountainModal = createMountainModalOpen === false ? null : (
     <CreateMountainModal
@@ -368,7 +349,6 @@ const PeakListForm = (props: Props) => {
           {saveButtonText}
         </SaveButton>
       </ButtonWrapper>
-      {parentModal}
       {areYouSureModal}
       {createMountainModal}
     </>

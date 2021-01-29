@@ -1,16 +1,15 @@
 import {faMap} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components/macro';
-import useFluent from '../../../hooks/useFluent';
 import {
   BasicIconInText,
-  CompactButtonSecondary,
   IconContainer,
   primaryColor,
 } from '../../../styling/styleUtils';
 import {CoreItem} from '../../../types/itemTypes';
 import ItemTable, {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import Search from '../../sharedComponents/search';
+import CopyItems from './CopyItems';
 
 const Root = styled.div`
   min-height: 50vh;
@@ -31,7 +30,7 @@ const SearchGrid = styled.div`
   width: 100%;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 6rem;
   grid-gap: 1rem;
 `;
 
@@ -58,8 +57,6 @@ function ItemSelector<T>(props: Props<T>) {
     note, searchPlaceholder, endpoint, type,
   } = props;
 
-  const getString = useFluent();
-
   const addItemToList = (newItem: {datum: T}) => {
     if (!selectedList.find((item: any) => item.id === (newItem.datum as any).id)) {
       setSelectedList([...selectedList, {...newItem.datum, optional: false}]);
@@ -70,6 +67,14 @@ function ItemSelector<T>(props: Props<T>) {
   const removeItemFromList = (itemToRemove: T) => {
     const updatedMtnList = selectedList.filter((item: any) => item.id !== (itemToRemove as any).id);
     setSelectedList([...updatedMtnList]);
+  };
+
+  const copyItems = (items: T[]) => {
+    const newList = [
+      ...selectedList.filter((d1: any) => !(items as any).find((d2: any) => d1.id === d2.id)),
+      ...items,
+    ];
+    setSelectedList([...newList]);
   };
 
   const toggleOptional = (index: number) => {
@@ -124,9 +129,10 @@ function ItemSelector<T>(props: Props<T>) {
             keepFocusOnSelect={true}
             placeholder={searchPlaceholder}
           />
-          <CompactButtonSecondary>
-            {getString('create-peak-list-copy-from-list-button')}
-          </CompactButtonSecondary>
+          <CopyItems
+            type={type}
+            copyItems={copyItems}
+          />
         </SearchGrid>
         <div>
           <ItemTable

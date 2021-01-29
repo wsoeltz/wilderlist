@@ -14,6 +14,7 @@ import getGlobalSearch from './api/getGlobalSearch';
 import getMountain from './api/getMountain';
 import getNearestTrail from './api/getNearestTrail';
 import getSearchCampsites from './api/getSearchCampsites';
+import getSearchLists from './api/getSearchLists';
 import getSearchMountains from './api/getSearchMountains';
 import getSearchTrails from './api/getSearchTrails';
 import getTrail, {
@@ -181,6 +182,24 @@ app.post('/api/campsite-search', async (req, res) => {
     const ignore = req.body && req.body.ignore ? req.body.ignore : [];
     if (lat !== undefined && lng !== undefined && search !== undefined) {
       const searchData = await getSearchCampsites({lat, lng, search, ignore});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/hiking-list-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    const ignore = req.body && req.body.ignore ? req.body.ignore : [];
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getSearchLists({lat, lng, search, ignore});
       res.json(searchData);
     } else {
       throw new Error('Missing parameters');

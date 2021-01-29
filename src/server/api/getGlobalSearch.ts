@@ -283,6 +283,8 @@ const fetchValuesAsync = (input: Input) => {
           name: list.name,
           type: 'list',
           numPeaks: list.mountains.length,
+          numTrails: list.trails.length,
+          numCampsites: list.campsites.length,
           distance: distance(point(list.center), sourcePoint, {units: 'miles'}),
           coordinates: list.center,
           stateText: states,

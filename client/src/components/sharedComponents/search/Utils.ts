@@ -34,6 +34,8 @@ export type SearchResultDatum = {
   {
     type: SearchResultType.list,
     numPeaks: number,
+    numTrails: number,
+    numCampsites: number,
     stateText: string[],
   } |
   {

@@ -14,6 +14,9 @@ export enum CoreItems {
   campsites = 'campsites',
 }
 
+export const coreItemToCoreItems = (item: CoreItem): CoreItems => item + 's' as CoreItems;
+export const coreItemsToCoreItem = (item: CoreItems): CoreItem => item.replace('s', '') as CoreItem;
+
 export enum SearchResultType {
   mountain = 'mountain',
   trail = 'trail',

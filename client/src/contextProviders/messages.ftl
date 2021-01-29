@@ -79,6 +79,7 @@ global-text-value-fitler-items = Filter {
 } on list
 
 global-text-value-no-results-found = No results found.
+global-text-value-no-items-found = No { $type } found.
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
@@ -291,6 +292,7 @@ global-text-value-mountain-not-being-pursued = This mountain is not being pursue
 global-text-value-submit = Submit
 global-text-value-clear = Clear
 
+global-text-value-copy = Copy
 global-text-value-edit = Edit
 global-text-value-save-and-add = Save and Add Another
 global-text-value-save = Save
@@ -563,7 +565,7 @@ peak-list-detail-text-optional-mountains = Optional Mountains
 peak-list-detail-text-optional-mountains-desc = The following mountains are considered optional for this list. They fit the criteria needed to be on here, but for one reason or another they are not required for completion. Common reasons include the peak being on private property or requiring special permissions to be able to climb. Optional peaks do not count towards a 100% completion for this list.
 
 peak-list-detail-text-optional-toggle = Show optional { $type }s
-peak-list-detail-text-optional-items-desc = Optional { $type }s are included below but do not count towards 100% completion for this list. Common reasons include the { $type } being on private property or requiring special permissions to be able to access.
+peak-list-detail-text-optional-items-desc = Optional { $type }s are included below but do not count towards 100% completion for this list. Common reasons include the { $type } being on private property or requiring special permissions to be able to access, or they might just be fun or informative add ons to the list.
 
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
@@ -1016,6 +1018,7 @@ create-peak-list-peak-list-optional-mountains = OPTIONAL: Optional Mountains
 create-peak-list-peak-list-optional-mountains-note = Optional mountains allow for additional mountains to be on this list that do not count towards 100% completion.
 create-peak-list-peak-list-optional-description-label = Optional Mountains Description
 create-peak-list-select-parent-modal-button = Copy Mountains From Another List
+create-peak-list-select-parent-title = Copy { $type } From Another List
 create-peak-list-copy-mountains-button = Copy Mountains
 
 create-peak-list-copy-from-list-button = Copy From Another List

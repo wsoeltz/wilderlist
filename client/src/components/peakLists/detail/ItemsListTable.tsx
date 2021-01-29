@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
   CheckboxInput,
+  HelpUnderline,
   secondaryColor,
 } from '../../../styling/styleUtils';
 import {PeakListVariants} from '../../../types/graphQLTypes';
@@ -88,11 +89,15 @@ const ItemsListTable = (props: Props) => {
           onChange={onChange}
         />
         <CheckboxLabel htmlFor={`checkbox-show-optional-${type}`}>
-          {getString('peak-list-detail-text-optional-toggle', {type})}
           <Tooltip
             explanation={getString('peak-list-detail-text-optional-items-desc', {type})}
             compactI={true}
-          />
+            cursor={'pointer'}
+          >
+            <HelpUnderline>
+              {getString('peak-list-detail-text-optional-toggle', {type})}
+            </HelpUnderline>
+          </Tooltip>
         </CheckboxLabel>
     </CheckboxRoot>
   ) : null;
