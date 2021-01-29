@@ -903,8 +903,9 @@ export const ResourceList = styled.ul`
 `;
 
 export const SimpleListItem = styled.li`
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-bottom: 0.5rem;
+  line-height: 1.5;
 `;
 
 export const ResourceItem = styled(SimpleListItem)`

@@ -14,9 +14,15 @@ import {
 } from '../../../styling/styleUtils';
 import { ExternalResource } from '../../../types/graphQLTypes';
 
+const mobileWidth = 500; // in px
+
 const Root = styled.div`
   padding: 1rem 1rem;
   display: flex;
+
+  @media (max-width: ${mobileWidth}px) {
+    flex-direction: column;
+  }
 `;
 
 const DescriptionContainer = styled(PreFormattedDiv)`
@@ -43,6 +49,16 @@ const ResourceContainer = styled.div`
   margin-left: 2rem;
   width: 180px;
   flex-shrink: 0;
+
+  @media (max-width: 1290px) and (min-width: 900px) {
+    width: 150px;
+  }
+
+  @media (max-width: ${mobileWidth}px) {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+  }
 `;
 
 const ShowMoreContainer = styled.div`

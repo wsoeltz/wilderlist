@@ -55,10 +55,7 @@ const Root = styled.div`
   border-bottom: none;
 
   @media (max-width: ${mobileWidth}px) {
-    grid-template-rows: auto auto auto;
-    grid-template-columns: minmax(10%, 10.5rem) minmax(6rem, 1fr);
-    grid-column-gap: 0.4rem;
-    grid-row-gap: 0;
+    grid-template-columns: 85px 1fr 5.45rem;
   }
 `;
 
@@ -70,7 +67,6 @@ const TitleContent = styled.div`
   justify-content: center;
 
   @media (max-width: ${mobileWidth}px) {
-    grid-row: 2;
   }
 `;
 
@@ -87,6 +83,10 @@ const EditFlagButtonContainer = styled.div`
   grid-column: 3;
   grid-row: 1;
   padding-right: 1rem;
+
+  @media (max-width: ${mobileWidth}px) {
+    padding-right: 0.5rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -109,7 +109,6 @@ const LogoContainer = styled.div`
   align-items: center;
 
   @media (max-width: ${mobileWidth}px) {
-    grid-row: 2;
   }
 `;
 
@@ -118,7 +117,7 @@ const ProgressBarContainer = styled.div`
   grid-row: 2;
 
   @media (max-width: ${mobileWidth}px) {
-    grid-row: 3;
+
   }
 `;
 

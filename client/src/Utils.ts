@@ -267,29 +267,6 @@ export const convertDMS = (lat: number, lng: number) => {
     return { lat: `${latitude} ${latitudeCardinal}`, long: `${longitude} ${longitudeCardinal}`};
 };
 
-export const getBrowser = () => {
-  const { userAgent } = navigator;
-  let tem;
-  let M = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-  if ( /trident/i.test(M[1]) ) {
-    tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
-    return { browser: 'IE', version: parseFloat(`${(tem[1] || '')}`) };
-  }
-  if ( M[1] === 'Chrome' ) {
-      tem = userAgent.match(/\b(OPR|Edge)\/(\d+)/);
-      if (tem !== null) {
-        return { browser: tem[1], version: parseFloat(tem[2]) };
-      }
-  }
-
-  M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-  tem = userAgent.match(/version\/(\d+)/i);
-  if ( tem !== null) {
-    M.splice(1, 1, tem[1]);
-  }
-  return { browser: M[0], version: parseFloat(M[1]) };
-};
-
 export const states = [
   'alabama',
   'alaska',
