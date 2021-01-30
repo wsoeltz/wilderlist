@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import useFluent from '../../../../../hooks/useFluent';
-import {useSavedMountains} from '../../../../../queries/mountains/useSavedMountains';
+import {useSavedCampsites} from '../../../../../queries/campsites/useSavedCampsites';
 import SignUpModal from '../../../SignUpModal';
 import StarButton from '../../../StarButton';
 
@@ -10,20 +10,20 @@ interface Props {
   name: string;
 }
 
-const StarMountainButton = ({name, id}: Props) => {
+const StarCampsiteButton = ({name, id}: Props) => {
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const getString = useFluent();
 
-  const {response: {loading, data}, saveMountainToUser, removeSavedMountainFromUser} = useSavedMountains();
+  const {response: {loading, data}, saveCampsiteToUser, removeSavedCampsiteFromUser} = useSavedCampsites();
 
   const [isActive, setIsActive] = useState<boolean>(
-    data && data.user ? Boolean(data.user.savedMountains.find(n => n.id === id)) : false,
+    data && data.user ? Boolean(data.user.savedCampsites.find(n => n.id === id)) : false,
   );
 
   useEffect(() => {
     if (data && data.user) {
-      setIsActive(Boolean(data.user.savedMountains.find(n => n.id === id)));
+      setIsActive(Boolean(data.user.savedCampsites.find(n => n.id === id)));
     }
   }, [data, id]);
 
@@ -36,10 +36,10 @@ const StarMountainButton = ({name, id}: Props) => {
     if (userId && data) {
       if (isActive) {
         setIsActive(false);
-        removeSavedMountainFromUser({variables: {userId,  mountainId: id}});
+        removeSavedCampsiteFromUser({variables: {userId,  campsiteId: id}});
       } else {
         setIsActive(true);
-        saveMountainToUser({variables: {userId,  mountainId: id}});
+        saveCampsiteToUser({variables: {userId,  campsiteId: id}});
       }
     } else {
       openSignUpModal();
@@ -66,4 +66,4 @@ const StarMountainButton = ({name, id}: Props) => {
   );
 };
 
-export default StarMountainButton;
+export default StarCampsiteButton;

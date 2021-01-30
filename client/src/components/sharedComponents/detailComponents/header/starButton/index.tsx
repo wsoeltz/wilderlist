@@ -1,6 +1,8 @@
 import React from 'react';
 import {CoreItem} from '../../../../../types/itemTypes';
+import StarCampsiteButton from './StarCampsiteButton';
 import StarMountainButton from './StarMountainButton';
+import StarTrailButton from './StarTrailButton';
 
 const StarButtonWrapper = ({type, id, name}: {type: CoreItem, id: string, name: string}) => {
   if (type === CoreItem.mountain) {
@@ -11,9 +13,19 @@ const StarButtonWrapper = ({type, id, name}: {type: CoreItem, id: string, name: 
       />
     );
   } else if (type === CoreItem.trail) {
-    return null;
+    return (
+      <StarTrailButton
+        id={id}
+        name={name}
+      />
+    );
   } else if (type === CoreItem.campsite) {
-    return null;
+    return (
+      <StarCampsiteButton
+        id={id}
+        name={name}
+      />
+    );
   } else {
     return null;
   }
