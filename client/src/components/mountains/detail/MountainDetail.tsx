@@ -8,7 +8,6 @@ import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
 import {CoreItem} from '../../../types/itemTypes';
-// import Header from './Header';
 import SimpleHeader from '../../sharedComponents/detailComponents/header/SimpleHeader';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import {mountainNeutralSvg} from '../../sharedComponents/svgIcons';
@@ -26,16 +25,13 @@ const MountainDetail = (props: Props) => {
 
   const {loading, error, data} = useMountainDetail(id);
 
-  // let header: React.ReactElement<any> | null;
   let title: string = '----';
   let subtitle: string = '----';
   let authorId: null | string = null;
   let body: React.ReactElement<any> | null;
   if (id === null) {
-    // header = null;
     body = null;
   } else if (loading === true) {
-    // header = <LoadingSpinner />;
     body = <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
@@ -44,7 +40,6 @@ const MountainDetail = (props: Props) => {
         {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-    // body = null;
   } else if (data !== undefined) {
     const { mountain } = data;
     if (!mountain) {
@@ -61,18 +56,6 @@ const MountainDetail = (props: Props) => {
       subtitle = state.name;
       authorId = mountain.author ? mountain.author.id : null;
 
-      // header = (
-      //   <Header
-      //     setOwnMetaData={setOwnMetaData ? setOwnMetaData : false}
-      //     authorId={author ? author.id : null}
-      //     id={id}
-      //     name={name}
-      //     elevation={elevation}
-      //     state={state}
-      //     status={status}
-      //   />
-      // );
-
       body = (
         <Content
           setOwnMetaData={setOwnMetaData === true ? true : false}
@@ -81,11 +64,6 @@ const MountainDetail = (props: Props) => {
       );
     }
   } else {
-    // header = (
-    //   <PlaceholderText>
-    //     {getString('global-error-retrieving-data')}
-    //   </PlaceholderText>
-    // );
     body = null;
   }
 

@@ -12,6 +12,7 @@ const GET_CAMPSITE_DETAIL = gql`
       name
       location
       type
+      ownership
       state {
         id
         name
@@ -27,6 +28,7 @@ interface QuerySuccessResponse {
     name: Campsite['name'];
     location: Campsite['location'];
     type: Campsite['type'];
+    ownership: Campsite['ownership'];
     state: {
       id: State['id'];
       name: State['name'];

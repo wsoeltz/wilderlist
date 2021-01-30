@@ -698,6 +698,18 @@ trail-child-segments = This route is the connecting parent for { $count } other 
 trail-parent-links = Part of
 trail-parent-full-trail = full trail
 
+campsite-detail-subtitle = {
+  $ownership ->
+    [private] Privately run
+    [federal] Federally run
+    [state] State run
+    *[else] {""}
+} { $type } {
+  $location ->
+    [null] {""}
+    *[else] in { $location }
+}
+
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
 user-profile-requests-remove-friend = Remove Friend
