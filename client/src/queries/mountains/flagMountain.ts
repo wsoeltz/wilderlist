@@ -1,11 +1,10 @@
 import { gql, useMutation } from '@apollo/client';
 import {
   Mountain,
-  MountainFlag,
 } from '../../types/graphQLTypes';
 
 const FLAG_MOUNTAIN = gql`
-  mutation($id: ID!, $flag: MountainFlag) {
+  mutation($id: ID!, $flag: String) {
     mountain: updateMountainFlag(id: $id, flag: $flag) {
       id
       flag
@@ -22,7 +21,7 @@ interface FlagSuccessResponse {
 
 interface FlagVariables {
   id: string;
-  flag: MountainFlag | null;
+  flag: string | null;
 }
 
 export const useUpdateMountainFlag = () => {

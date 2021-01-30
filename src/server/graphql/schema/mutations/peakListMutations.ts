@@ -13,7 +13,6 @@ import {
   ExternalResource,
   Mountain as IMountain,
   PeakList as IPeakList,
-  PeakListFlag as PeakListFlagEnum,
   PeakListVariants as VariantsEnum,
   PermissionTypes,
   State as IState,
@@ -23,7 +22,6 @@ import { getType, removeConnections } from '../../Utils';
 import { CreatedItemStatus, Mountain } from '../queryTypes/mountainType';
 import PeakListType, {
   PeakList,
-  PeakListFlag,
   PeakListTier,
   PeakListVariants,
 } from '../queryTypes/peakListType';
@@ -782,10 +780,10 @@ const peakListMutations: any = {
     type: PeakListType,
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
-      flag: { type: PeakListFlag },
+      flag: { type: GraphQLString },
     },
     async resolve(_unused: any,
-                  { id, flag }: { id: string , flag: PeakListFlagEnum | null},
+                  { id, flag }: { id: string , flag: string | null},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isLoggedIn(user)) {
         throw new Error('You must be logged in');

@@ -23,7 +23,6 @@ import {
 import {
   ExternalResource,
   Mountain,
-  MountainFlag,
   State,
 } from '../../../types/graphQLTypes';
 import AreYouSureModal, {
@@ -69,7 +68,7 @@ export interface InitialMountainDatum {
   longitude: string;
   elevation: string;
   state: null | { id: State['id']};
-  flag: MountainFlag | null;
+  flag: string | null;
   description: string;
   resources: ExternalResource[];
 }
@@ -156,7 +155,7 @@ const MountainForm = (props: Props) => {
   const updateMountainFlag = useUpdateMountainFlag();
   const flagForDeletion = (id: string) => {
     if (id) {
-      updateMountainFlag({variables: {id, flag: MountainFlag.deleteRequest}});
+      updateMountainFlag({variables: {id, flag: 'DELETE REQUEST'}});
     }
     closeAreYouSureModal();
   };
@@ -167,7 +166,7 @@ const MountainForm = (props: Props) => {
     closeAreYouSureModal();
   };
 
-  const areYouSureProps: AreYouSureModalProps = initialData.flag === MountainFlag.deleteRequest ? {
+  const areYouSureProps: AreYouSureModalProps = initialData.flag === 'DELETE REQUEST' ? {
     onConfirm: () => clearFlag(initialData.id),
     onCancel: closeAreYouSureModal,
     title: getString('global-text-value-cancel-delete-request'),
@@ -284,7 +283,7 @@ const MountainForm = (props: Props) => {
   const saveButtonText = loadingSubmit === true
     ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
 
-  const deleteButtonText = initialData.flag !== MountainFlag.deleteRequest
+  const deleteButtonText = initialData.flag !== 'DELETE REQUEST'
     ? getString('global-text-value-delete')
     : getString('global-text-value-cancel-delete-request');
 

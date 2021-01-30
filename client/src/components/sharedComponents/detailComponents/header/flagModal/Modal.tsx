@@ -1,26 +1,25 @@
-import React, { useCallback, useState } from 'react';
-import useFluent from '../../../hooks/useFluent';
-import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
-import { ButtonPrimary, InputBase, Label } from '../../../styling/styleUtils';
-import {AggregateItem} from '../../../types/itemTypes';
+import React, {useCallback, useState} from 'react';
+import useFluent from '../../../../../hooks/useFluent';
+import { ButtonPrimary, InputBase, Label } from '../../../../../styling/styleUtils';
+import {AggregateItem, CoreItem} from '../../../../../types/itemTypes';
 import {
   ButtonWrapper,
   CancelButton,
-} from '../../sharedComponents/AreYouSureModal';
-import Modal from '../../sharedComponents/Modal';
+} from '../../../AreYouSureModal';
+import Modal from '../../../Modal';
 
 interface Props {
   onClose: () => void;
-  peakListName: string;
-  peakListId: string;
+  name: string;
+  id: string;
+  onSave: (flag: string) => void;
+  type: CoreItem | AggregateItem;
 }
 
 const FlagModal = (props: Props) => {
-  const { onClose, peakListId, peakListName } = props;
+  const { onClose, id, name, onSave, type } = props;
 
   const getString = useFluent();
-
-  const updatePeakListFlag = useUpdatePeakListFlag();
 
   const [flag, setFlag] = useState<string>('');
   const updateFlagValue = useCallback((e: React.ChangeEvent<HTMLInputElement>) =>
@@ -28,8 +27,8 @@ const FlagModal = (props: Props) => {
   const [flagSubmitted, setFlagSubmitted] = useState<boolean>(false);
 
   const onSubmit = () => {
-    if (peakListId && flag) {
-      updatePeakListFlag({variables: {id: peakListId, flag}});
+    if (id && flag) {
+      onSave(flag);
     }
     setFlagSubmitted(true);
   };
@@ -52,7 +51,7 @@ const FlagModal = (props: Props) => {
   );
 
   const text = flagSubmitted === false
-    ? getString('flag-item-text', {type: AggregateItem.list}) : getString('flag-mountain-thanks');
+    ? getString('flag-item-text', {type}) : getString('flag-mountain-thanks');
 
   const flagOptions = flagSubmitted === false ? (
     <>
@@ -71,7 +70,7 @@ const FlagModal = (props: Props) => {
       width={'600px'}
       height={'auto'}
     >
-      <h3>{getString('flag-mountain-title', {name: peakListName})}</h3>
+      <h3>{getString('flag-mountain-title', {name})}</h3>
       <p>{text}</p>
       {flagOptions}
 

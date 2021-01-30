@@ -2,7 +2,7 @@ import {
   faFlag,
   faPencilAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
 import {
@@ -12,14 +12,21 @@ import {
 } from '../../../../styling/styleUtils';
 import {PermissionTypes} from '../../../../types/graphQLTypes';
 import {CoreItem} from '../../../../types/itemTypes';
+import FlagModal from './flagModal';
 
 interface Props {
   authorId: null | string;
   type: CoreItem;
+  name: string;
+  id: string;
 }
 
 const EditFlagButton = (props: Props) => {
-  const {authorId} = props;
+  const {id, name, type, authorId} = props;
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const openModal = useCallback(() => setModalOpen(true), [setModalOpen]);
+  const closeModal = useCallback(() => setModalOpen(false), [setModalOpen]);
 
   const user = useCurrentUser();
   const getString = useFluent();
@@ -27,6 +34,14 @@ const EditFlagButton = (props: Props) => {
   if (!user) {
     return null;
   } else {
+    const flagModal = modalOpen ? (
+      <FlagModal
+        id={id}
+        name={name}
+        type={type}
+        onClose={closeModal}
+      />
+    ) : null;
     return (user && authorId && user._id === authorId
           && user.peakListPermissions !== -1)
       || (user && user.permissions === PermissionTypes.admin) ? (
@@ -35,10 +50,13 @@ const EditFlagButton = (props: Props) => {
         {getString('global-text-value-edit')}
       </SmallLink>
     ) : (
-      <LinkButtonCompact>
-        <BasicIconInTextCompact icon={faFlag} />
-        {getString('global-text-value-flag')}
-      </LinkButtonCompact>
+      <>
+        <LinkButtonCompact onClick={openModal}>
+          <BasicIconInTextCompact icon={faFlag} />
+          {getString('global-text-value-flag')}
+        </LinkButtonCompact>
+        {flagModal}
+      </>
     );
   }
 };

@@ -10,7 +10,6 @@ import {CoreItem} from '../../../types/itemTypes';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
-import IncludedLists from './IncludedLists';
 
 interface Props {
   setOwnMetaData: boolean;
@@ -33,7 +32,7 @@ interface Props {
 
 const Content = (props: Props) => {
   const  {
-    setOwnMetaData, mountain: {location, name, id, state, lists},
+    mountain: {location, name, id, state},
     mountain,
   } = props;
 
@@ -53,11 +52,6 @@ const Content = (props: Props) => {
         id={id}
         name={name}
         item={CoreItem.mountain}
-      />
-      <IncludedLists
-        mountainDatum={mountain}
-        numLists={lists.length}
-        setMetaDescription={setOwnMetaData}
       />
       <MapRenderProp
         id={mountain.id}

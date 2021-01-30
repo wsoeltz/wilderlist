@@ -109,6 +109,8 @@ const SimpleHeader = (props: Props) => {
           <EditFlagButton
             authorId={authorId}
             type={type}
+            id={id}
+            name={title}
           />
         </EditFlagButtonContainer>
       </Settings>

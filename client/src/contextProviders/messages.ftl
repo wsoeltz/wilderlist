@@ -993,11 +993,10 @@ create-mountain-optional-description = Enter an optional description for the mou
 
 create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (in gray) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
 
-flag-mountain-title = Submit a Flag for { $name }
-flag-mountain-text = If something seems wrong about this mountain, submit a flag and an administrator will take a look at it ASAP
-flag-mountain-thanks = Thank you for submitting your flag. An administrator will be looking into it shortly.
+flag-mountain-title = Report an issue for { $name }
+flag-mountain-thanks = Thank you for submitting your report. An administrator will be looking into it shortly.
 
-flag-mountain-select-issue = Please select an issue from the box below
+flag-mountain-select-issue = Please describe the issue below
 flag-mountain-select-issue-description = {
   $issue ->
     [location] Location - The location (latitude/longitude) is incorrect
@@ -1009,7 +1008,7 @@ flag-mountain-select-issue-description = {
     *[other] Other - There is a problem not specified in this list
 }
 
-flag-peak-list-text = If something seems wrong about this list, submit a flag and an administrator will take a look at it ASAP
+flag-item-text = If something seems wrong about this { $type }, submit an issue report and an administrator will take a look at it ASAP
 
 flag-peak-list-select-issue = Please select an issue from the box below
 flag-peak-list-select-issue-description = {

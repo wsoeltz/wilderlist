@@ -76,7 +76,7 @@ const TrailDetail = (props: Props) => {
       } else if (parents.length) {
         const links = parents.map((p, i) => {
           let seperator = ' ';
-          if (i === parents.length - 2) {
+          if (i === parents.length - 1 && parents.length > 1) {
             // second to last link, use amersand
             seperator = ' & ';
           } else if (i < parents.length - 2 && i !== 0) {

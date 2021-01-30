@@ -22,7 +22,6 @@ import {
 import {
   ExternalResource,
   ListPrivacy,
-  PeakListFlag,
   PeakListTier,
 } from '../../../types/graphQLTypes';
 import CreateMountainModal from '../../mountains/create/CreateMountainModal';
@@ -121,7 +120,7 @@ const PeakListForm = (props: Props) => {
   const updatePeakListFlag = useUpdatePeakListFlag();
   const flagForDeletion = (id: string | undefined) => {
     if (id) {
-      updatePeakListFlag({variables: {id, flag: PeakListFlag.deleteRequest}});
+      updatePeakListFlag({variables: {id, flag: 'DELETE REQUEST'}});
     }
     closeAreYouSureModal();
   };
@@ -133,7 +132,7 @@ const PeakListForm = (props: Props) => {
   };
 
   const areYouSureProps: AreYouSureModalProps =
-    initialData.flag === PeakListFlag.deleteRequest ? {
+    initialData.flag === 'DELETE REQUEST' ? {
     onConfirm: () => clearFlag(initialData.id),
     onCancel: closeAreYouSureModal,
     title: getString('global-text-value-cancel-delete-request'),
@@ -279,7 +278,7 @@ const PeakListForm = (props: Props) => {
   const saveButtonText = loadingSubmit === true
     ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
 
-  const deleteButtonText = initialData.flag !== PeakListFlag.deleteRequest
+  const deleteButtonText = initialData.flag !== 'DELETE REQUEST'
     ? getString('global-text-value-delete')
     : getString('global-text-value-cancel-delete-request');
 

@@ -10,7 +10,6 @@ import { isAdmin, isCorrectUser, isLoggedIn } from '../../authorization';
 import {
   CreatedItemStatus as CreatedItemStatusEnum,
   Mountain as IMountain,
-  MountainFlag as MountainFlagEnum,
   PermissionTypes,
   User as IUser,
 } from '../../graphQLTypes';
@@ -18,7 +17,6 @@ import { removeConnections } from '../../Utils';
 import MountainType, {
   CreatedItemStatus,
   Mountain,
-  MountainFlag,
 } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
@@ -263,10 +261,10 @@ const mountainMutations: any = {
     type: MountainType,
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
-      flag: { type: MountainFlag },
+      flag: { type: GraphQLString },
     },
     async resolve(_unused: any,
-                  { id, flag }: { id: string , flag: MountainFlagEnum | null},
+                  { id, flag }: { id: string , flag: string | null},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isLoggedIn(user)) {
         throw new Error('You must be logged in');

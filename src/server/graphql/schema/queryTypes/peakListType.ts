@@ -120,27 +120,6 @@ export const ExternalResourcesType: any = new GraphQLObjectType({
   }),
 });
 
-export const PeakListFlag = new GraphQLEnumType({
-  name: 'PeakListFlag',
-  values: {
-    duplicate: {
-      value: 'duplicate',
-    },
-    data: {
-      value: 'data',
-    },
-    abuse: {
-      value: 'abuse',
-    },
-    other: {
-      value: 'other',
-    },
-    deleteRequest: {
-      value: 'deleteRequest',
-    },
-  },
-});
-
 export const PeakListTier = new GraphQLEnumType({
   name: 'PeakListTier',
   values: {
@@ -351,7 +330,7 @@ const PeakListType: any = new GraphQLObjectType({
       },
     },
     status: { type: CreatedItemStatus },
-    flag: { type: PeakListFlag },
+    flag: { type: GraphQLString },
     tier: { type: PeakListTier },
     numMountains: {
       type: GraphQLInt,

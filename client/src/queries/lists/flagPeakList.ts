@@ -1,11 +1,10 @@
 import { gql, useMutation } from '@apollo/client';
 import {
   PeakList,
-  PeakListFlag,
 } from '../../types/graphQLTypes';
 
 export const FLAG_PEAK_LIST = gql`
-  mutation($id: ID!, $flag: PeakListFlag) {
+  mutation($id: ID!, $flag: String) {
     peakList: updatePeakListFlag(id: $id, flag: $flag) {
       id
       flag
@@ -22,7 +21,7 @@ export interface FlagSuccessResponse {
 
 export interface FlagVariables {
   id: string;
-  flag: PeakListFlag | null;
+  flag: string | null;
 }
 
 export const useUpdatePeakListFlag = () => {

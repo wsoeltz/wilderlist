@@ -78,36 +78,6 @@ export const CreatedItemStatus = new GraphQLEnumType({
   },
 });
 
-export const MountainFlag = new GraphQLEnumType({
-  name: 'MountainFlag',
-  values: {
-    location: {
-      value: 'location',
-    },
-    elevation: {
-      value: 'elevation',
-    },
-    state: {
-      value: 'state',
-    },
-    duplicate: {
-      value: 'duplicate',
-    },
-    data: {
-      value: 'data',
-    },
-    abuse: {
-      value: 'abuse',
-    },
-    other: {
-      value: 'other',
-    },
-    deleteRequest: {
-      value: 'deleteRequest',
-    },
-  },
-});
-
 const MountainType: any = new GraphQLObjectType({
   name:  'MountainType',
   fields: () => ({
@@ -170,7 +140,7 @@ const MountainType: any = new GraphQLObjectType({
       },
     },
     status: { type: CreatedItemStatus },
-    flag: { type: MountainFlag },
+    flag: { type: GraphQLString },
     description: { type: GraphQLString },
     resources: { type: new GraphQLList(ExternalResourcesType) },
     location: { type: new GraphQLList(GraphQLFloat) },

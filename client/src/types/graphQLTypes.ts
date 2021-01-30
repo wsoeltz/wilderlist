@@ -22,17 +22,6 @@ export enum CreatedItemStatus {
   accepted = 'accepted',
 }
 
-export enum MountainFlag {
-  location = 'location',
-  elevation = 'elevation',
-  state = 'state',
-  duplicate = 'duplicate',
-  data = 'data',
-  abuse = 'abuse',
-  other = 'other',
-  deleteRequest = 'deleteRequest',
-}
-
 export type Longitude = number;
 export type Latitude = number;
 export type Coordinate = [Longitude, Latitude];
@@ -49,7 +38,7 @@ export interface Mountain {
   optionalLists: null | Array<PeakList | null>;
   author: User | null;
   status: CreatedItemStatus | null;
-  flag: MountainFlag | null;
+  flag: string | null;
   description: string | null;
   resources: ExternalResource[] | null;
   location: Coordinate;
@@ -66,14 +55,6 @@ export enum PeakListVariants {
 export interface ExternalResource {
   title: string;
   url: string;
-}
-
-export enum PeakListFlag {
-  duplicate = 'duplicate',
-  data = 'data',
-  abuse = 'abuse',
-  other = 'other',
-  deleteRequest = 'deleteRequest',
 }
 
 export enum PeakListTier {
@@ -112,7 +93,7 @@ export interface PeakList {
   resources: ExternalResource[] | null;
   author: User | null;
   status: CreatedItemStatus | null;
-  flag: PeakListFlag | null;
+  flag: string | null;
   tier: PeakListTier | null;
   numMountains: number;
   numTrails: number;
@@ -164,6 +145,7 @@ export interface Trail {
   waterCrossing: string | null;
   skiTrail: boolean | null;
   trailLength: number;
+  flag: string | null;
 }
 
 export enum CampsiteType {
@@ -220,6 +202,7 @@ export interface Campsite {
   status: CreatedItemStatus | null;
   description: string | null;
   resources: ExternalResource[] | null;
+  flag: string | null;
 }
 
 export enum PermissionTypes {
