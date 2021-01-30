@@ -163,6 +163,132 @@ const userMutations: any = {
       }
     },
   },
+  saveMountainToUser: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, mountainId}: {userId: string, mountainId: string},
+                  context: {user: IUser | undefined | null, dataloaders: any}) {
+      try {
+        if (!isCorrectUser({_id: userId}, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        return await User.findOneAndUpdate(
+          { _id: userId, savedMountains: { $ne: mountainId }},
+          { $push: {savedMountains: mountainId} },
+        );
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeSavedMountainFromUser: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      mountainId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, mountainId}: {userId: string, mountainId: string},
+                  context: {user: IUser | undefined | null}) {
+      try {
+        if (!isCorrectUser({_id: userId}, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        return await User.findOneAndUpdate(
+          { _id: userId},
+          { $pull: {savedMountains: mountainId} },
+        );
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  saveTrailToUser: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      trailId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, trailId}: {userId: string, trailId: string},
+                  context: {user: IUser | undefined | null, dataloaders: any}) {
+      try {
+        if (!isCorrectUser({_id: userId}, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        return await User.findOneAndUpdate(
+          { _id: userId, savedTrails: { $ne: trailId }},
+          { $push: {savedTrails: trailId} },
+        );
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeSavedTrailFromUser: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      trailId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, trailId}: {userId: string, trailId: string},
+                  context: {user: IUser | undefined | null}) {
+      try {
+        if (!isCorrectUser({_id: userId}, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        return await User.findOneAndUpdate(
+          { _id: userId},
+          { $pull: {savedTrails: trailId} },
+        );
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  saveCampsiteToUser: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      campsiteId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, campsiteId}: {userId: string, campsiteId: string},
+                  context: {user: IUser | undefined | null, dataloaders: any}) {
+      try {
+        if (!isCorrectUser({_id: userId}, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        return await User.findOneAndUpdate(
+          { _id: userId, savedCampsites: { $ne: campsiteId }},
+          { $push: {savedCampsites: campsiteId} },
+        );
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  removeSavedCampsiteFromUser: {
+    type: UserType,
+    args: {
+      userId: { type: GraphQLNonNull(GraphQLID) },
+      campsiteId: { type: GraphQLNonNull(GraphQLID) },
+    },
+    async resolve(_unused: any, {userId, campsiteId}: {userId: string, campsiteId: string},
+                  context: {user: IUser | undefined | null}) {
+      try {
+        if (!isCorrectUser({_id: userId}, context.user)) {
+          throw new Error('Invalid user match');
+        }
+        return await User.findOneAndUpdate(
+          { _id: userId},
+          { $pull: {savedCampsites: campsiteId} },
+        );
+      } catch (err) {
+        return err;
+      }
+    },
+  },
   addMountainCompletion: {
     type: UserType,
     args: {

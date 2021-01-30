@@ -1,11 +1,7 @@
-import React, {/*useEffect,*/ useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import useFluent from '../../../../../hooks/useFluent';
-// import {
-//   useAddPeakListToUser,
-//   useRemovePeakListFromUser,
-// } from '../../../../../queries/lists/addRemovePeakListsToUser';
-// import {useUsersPeakLists} from '../../../../../queries/lists/getUsersPeakLists';
+import {useSavedMountains} from '../../../../../queries/mountains/useSavedMountains';
 import SignUpModal from '../../../SignUpModal';
 import StarButton from '../../../StarButton';
 
@@ -14,22 +10,22 @@ interface Props {
   name: string;
 }
 
-const StarListButton = ({name}: Props) => {
+const StarListButton = ({name, id}: Props) => {
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const getString = useFluent();
-  // const {data} = useUsersPeakLists({userId});
 
-  const [isActive, setIsActive] = useState<boolean>(false);
+  const {response: {loading, data}, saveMountainToUser, removeSavedMountainFromUser} = useSavedMountains();
 
-  // useEffect(() => {
-  //   if (data && data.user) {
-  //     setIsActive(Boolean(data.user.peakLists.find(n => n.id === id)));
-  //   }
-  // }, [data, id]);
+  const [isActive, setIsActive] = useState<boolean>(
+    data && data.user ? Boolean(data.user.savedMountains.find(n => n.id === id)) : false,
+  );
 
-  // const addPeakListToUser = useAddPeakListToUser();
-  // const removePeakListFromUser = useRemovePeakListFromUser();
+  useEffect(() => {
+    if (data && data.user) {
+      setIsActive(Boolean(data.user.savedMountains.find(n => n.id === id)));
+    }
+  }, [data, id]);
 
   const [isSignUpModal, setIsSignUpModal] = useState<boolean>(false);
 
@@ -37,15 +33,13 @@ const StarListButton = ({name}: Props) => {
   const closeSignUpModal = () => setIsSignUpModal(false);
 
   const toggleActive = async () => {
-    if (userId
-      // && data
-      ) {
+    if (userId && data) {
       if (isActive) {
         setIsActive(false);
-        // removePeakListFromUser({variables: {userId,  id}});
+        removeSavedMountainFromUser({variables: {userId,  mountainId: id}});
       } else {
         setIsActive(true);
-        // addPeakListToUser({variables: {userId,  id}});
+        saveMountainToUser({variables: {userId,  mountainId: id}});
       }
     } else {
       openSignUpModal();
@@ -62,13 +56,13 @@ const StarListButton = ({name}: Props) => {
   );
 
   return (
-    <>
+    <div style={loading ? {visibility: 'hidden'} : undefined}>
       <StarButton
         starred={Boolean(isActive)}
         toggleStarred={toggleActive}
       />
       {signUpModal}
-    </>
+    </div>
   );
 };
 

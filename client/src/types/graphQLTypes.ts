@@ -313,6 +313,9 @@ export interface User {
   friends: Friend[] | null;
   friendRequests: Friend[] | null;
   peakLists: Array<PeakList | null> | null;
+  savedMountains: Array<Mountain | null> | null;
+  savedTrails: Array<Trail | null> | null;
+  savedCampsites: Array<Campsite | null> | null;
   mountains: CompletedMountain[] | null;
   trails: CompletedTrail[] | null;
   campsites: CompletedCampsite[] | null;

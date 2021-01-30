@@ -15,6 +15,7 @@ const Root = styled.div`
   grid-template-columns: 1fr 5.625rem;
   grid-column-gap: 0.35rem;
   margin-bottom: 1rem;
+  margin-right: -1rem;
 `;
 
 const IconHeader = styled.h1`
@@ -41,6 +42,10 @@ const Settings = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
+`;
+
+const EditFlagButtonContainer = styled.div`
+  margin-right: 0.5rem;
 `;
 
 interface Props {
@@ -100,10 +105,12 @@ const SimpleHeader = (props: Props) => {
           name={title}
           type={type}
         />
-        <EditFlagButton
-          authorId={authorId}
-          type={type}
-        />
+        <EditFlagButtonContainer>
+          <EditFlagButton
+            authorId={authorId}
+            type={type}
+          />
+        </EditFlagButtonContainer>
       </Settings>
     </Root>
   );

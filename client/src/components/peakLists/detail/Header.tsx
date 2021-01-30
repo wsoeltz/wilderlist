@@ -108,6 +108,9 @@ const CompletedText = styled(SmallSemiBold)`
 const NotCompletedText = styled(SmallSemiBold)`
   color: ${incompleteColor};
 `;
+const StarListButtonContainer = styled.div`
+  transform: translateY(-50%);
+`;
 
 interface Props {
   peakListId: string;
@@ -184,10 +187,12 @@ const Header = (props: Props) => {
 
     topLevelHeading = (
       <>
-        <StarListButton
-          peakListId={peakListId}
-          peakListName={name}
-        />
+        <StarListButtonContainer>
+          <StarListButton
+            peakListId={peakListId}
+            peakListName={name}
+          />
+        </StarListButtonContainer>
         <EditFlagButtonContainer>
           {editFlagButton}
         </EditFlagButtonContainer>

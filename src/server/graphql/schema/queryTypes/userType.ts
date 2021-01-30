@@ -47,6 +47,18 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'list',
   }],
+  savedMountains: [{
+    type: Schema.Types.ObjectId,
+    ref: 'mountain',
+  }],
+  savedTrails: [{
+    type: Schema.Types.ObjectId,
+    ref: 'trail',
+  }],
+  savedCampsites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'campsite',
+  }],
   mountains: [{
     mountain: {
       type: Schema.Types.ObjectId,
@@ -408,6 +420,36 @@ const UserType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
         try {
           return await peakListLoader.loadMany(parentValue.peakLists);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    savedMountains: {
+      type: new GraphQLList(MountainType),
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        try {
+          return await mountainLoader.loadMany(parentValue.savedMountains);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    savedTrails: {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.loadMany(parentValue.savedTrails);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    savedCampsites: {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.loadMany(parentValue.savedCampsites);
         } catch (err) {
           return err;
         }

@@ -11,19 +11,9 @@ const StarButtonWrapper = ({type, id, name}: {type: CoreItem, id: string, name: 
       />
     );
   } else if (type === CoreItem.trail) {
-    return (
-      <StarMountainButton
-        id={id}
-        name={name}
-      />
-    );
+    return null;
   } else if (type === CoreItem.campsite) {
-    return (
-      <StarMountainButton
-        id={id}
-        name={name}
-      />
-    );
+    return null;
   } else {
     return null;
   }
