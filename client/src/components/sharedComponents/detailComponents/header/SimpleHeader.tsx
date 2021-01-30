@@ -55,7 +55,7 @@ interface Props {
   customIcon: boolean;
   icon: string | any;
   subtitle: string;
-  actionLine?: React.ReactElement<any>;
+  actionLine?: React.ReactElement<any> | null;
   authorId: null | string;
   type: CoreItem;
 }

@@ -689,6 +689,14 @@ mountain-detail-snow-depth = Last 7-Day Snowfall & Snow Depth
 mountain-detail-notes-and-ascents = Notes & Ascents
 mountain-detail-get-weather = Get Weather
 
+trail-detail-subtitle = { $type } { 
+  $segment ->
+    [0] {""}
+    *[else] segment
+} in { $state }
+trail-child-segments = This route is the connecting parent for { $count } other trails
+trail-parent-links = Part of
+trail-parent-full-trail = full trail
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
