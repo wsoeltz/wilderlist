@@ -99,7 +99,9 @@ const GlobalStyles = createGlobalStyle`
 
   h1 {
     font-weight: ${semiBoldFontBoldWeight};
-    font-size: 1.7rem;
+   margin-bottom: 0.5rem;
+    margin-top: 0;
+    font-size: 1.25rem;
   }
 
   a {

@@ -52,7 +52,6 @@ const Root = styled.div`
   grid-template-columns: 120px 1fr 5.625rem;
   grid-template-rows: auto auto;
   grid-column-gap: 0.35rem;
-  border-bottom: none;
 
   @media (max-width: ${mobileWidth}px) {
     grid-template-columns: 85px 1fr 5.45rem;
@@ -65,9 +64,6 @@ const TitleContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-
-  @media (max-width: ${mobileWidth}px) {
-  }
 `;
 
 const ListSettings = styled.div`
@@ -80,19 +76,11 @@ const ListSettings = styled.div`
 `;
 
 const EditFlagButtonContainer = styled.div`
-  grid-column: 3;
-  grid-row: 1;
   padding-right: 1rem;
 
   @media (max-width: ${mobileWidth}px) {
     padding-right: 0.5rem;
   }
-`;
-
-const Title = styled.h1`
-  margin-bottom: 0.5rem;
-  margin-top: 0;
-  font-size: 1.25rem;
 `;
 
 const ListInfo = styled.h3`
@@ -107,18 +95,11 @@ const LogoContainer = styled.div`
   grid-row: 1;
   display: flex;
   align-items: center;
-
-  @media (max-width: ${mobileWidth}px) {
-  }
 `;
 
 const ProgressBarContainer = styled.div`
   grid-column: 1 / -1;
   grid-row: 2;
-
-  @media (max-width: ${mobileWidth}px) {
-
-  }
 `;
 
 const CompletedText = styled(SmallSemiBold)`
@@ -347,13 +328,13 @@ const Header = (props: Props) => {
       {metaData}
       <Root>
         <TitleContent>
-          <Title
+          <h1
             style={loading ? {
               width: '75%', backgroundColor: tertiaryColor, color: 'transparent',
             } : undefined}
           >
             {name}{type ? getType(type) : ''}
-          </Title>
+          </h1>
           <ListInfo
             style={loading ? {
               width: '35%', backgroundColor: tertiaryColor, color: 'transparent',

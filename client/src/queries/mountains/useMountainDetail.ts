@@ -45,7 +45,6 @@ interface QuerySuccessResponse {
     state: {
       id: State['id'];
       name: State['name'];
-      abbreviation: State['abbreviation'];
     };
     lists: Array<{
       id: PeakList['id'];

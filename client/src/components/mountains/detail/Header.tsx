@@ -43,7 +43,6 @@ interface Props {
   elevation: Mountain['elevation'];
   state: {
     name: State['name'];
-    abbreviation: State['abbreviation'];
   };
   status: Mountain['status'];
 }
@@ -66,7 +65,7 @@ const Header = (props: Props) => {
   );
 
   const metaDescription = getString('meta-data-mountain-detail-description', {
-    name, elevation, state: state && state.abbreviation ? ', ' + state.abbreviation : '',
+    name, elevation, state: state && state.name ? ', ' + state.name : '',
     additionaltext: '',
   });
 

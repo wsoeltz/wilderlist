@@ -626,6 +626,8 @@ mountain-table-export-button = Download data
 download-csv-button = Download CSV
 download-official-grid-xlsx-button = Download Grid application with your dates
 
+mountain-detail-summit-view = View from summit
+
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent
 mountain-detail-add-ascent-date = Add Ascent Date

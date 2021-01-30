@@ -1,13 +1,21 @@
+import {faEye} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import {useMountainDetail} from '../../../queries/mountains/useMountainDetail';
-import { PlaceholderText } from '../../../styling/styleUtils';
+import {
+  BasicIconInTextCompact,
+  LinkButtonCompact,
+  PlaceholderText,
+} from '../../../styling/styleUtils';
+import {CoreItem} from '../../../types/itemTypes';
+// import Header from './Header';
+import SimpleHeader from '../../sharedComponents/detailComponents/header/SimpleHeader';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
+import {mountainNeutralSvg} from '../../sharedComponents/svgIcons';
 import Content from './Content';
-import Header from './Header';
 
 interface Props {
-  id: string | null;
+  id: string;
   setOwnMetaData?: boolean;
 }
 
@@ -18,22 +26,25 @@ const MountainDetail = (props: Props) => {
 
   const {loading, error, data} = useMountainDetail(id);
 
-  let header: React.ReactElement<any> | null;
+  // let header: React.ReactElement<any> | null;
+  let title: string = '----';
+  let subtitle: string = '----';
+  let authorId: null | string = null;
   let body: React.ReactElement<any> | null;
   if (id === null) {
-    header = null;
+    // header = null;
     body = null;
   } else if (loading === true) {
-    header = <LoadingSpinner />;
-    body = null;
+    // header = <LoadingSpinner />;
+    body = <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
-    header =  (
+    body =  (
       <PlaceholderText>
         {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-    body = null;
+    // body = null;
   } else if (data !== undefined) {
     const { mountain } = data;
     if (!mountain) {
@@ -44,20 +55,23 @@ const MountainDetail = (props: Props) => {
       );
     } else {
       const {
-        name, elevation, state, author, status,
+        name, state,
       } = mountain;
+      title = name;
+      subtitle = state.name;
+      authorId = mountain.author ? mountain.author.id : null;
 
-      header = (
-        <Header
-          setOwnMetaData={setOwnMetaData ? setOwnMetaData : false}
-          authorId={author ? author.id : null}
-          id={id}
-          name={name}
-          elevation={elevation}
-          state={state}
-          status={status}
-        />
-      );
+      // header = (
+      //   <Header
+      //     setOwnMetaData={setOwnMetaData ? setOwnMetaData : false}
+      //     authorId={author ? author.id : null}
+      //     id={id}
+      //     name={name}
+      //     elevation={elevation}
+      //     state={state}
+      //     status={status}
+      //   />
+      // );
 
       body = (
         <Content
@@ -67,17 +81,34 @@ const MountainDetail = (props: Props) => {
       );
     }
   } else {
-    header = (
-      <PlaceholderText>
-        {getString('global-error-retrieving-data')}
-      </PlaceholderText>
-    );
+    // header = (
+    //   <PlaceholderText>
+    //     {getString('global-error-retrieving-data')}
+    //   </PlaceholderText>
+    // );
     body = null;
   }
 
+  const summitViewButton = (
+    <LinkButtonCompact>
+      <BasicIconInTextCompact icon={faEye} />
+      {getString('mountain-detail-summit-view')}
+    </LinkButtonCompact>
+  );
+
   return (
     <>
-      {header}
+      <SimpleHeader
+        id={id}
+        loading={loading}
+        title={title}
+        subtitle={subtitle}
+        customIcon={true}
+        icon={mountainNeutralSvg}
+        actionLine={summitViewButton}
+        authorId={authorId}
+        type={CoreItem.mountain}
+      />
       {body}
     </>
   );

@@ -22,7 +22,6 @@ interface Props {
     state: {
       id: State['id'];
       name: State['name'];
-      abbreviation: State['abbreviation'];
     };
     lists: Array<{
       id: PeakList['id'];
@@ -40,7 +39,7 @@ const Content = (props: Props) => {
 
   const getString = useFluent();
 
-  const stateAbbreviation = state && state.abbreviation ? state.abbreviation : '';
+  const stateAbbreviation = state && state.name ? state.name : '';
 
   return (
     <>

@@ -30,7 +30,7 @@ interface Props {
   mountainDatum: {
     id: string,
     name: string,
-    state: {abbreviation: string},
+    state: {name: string},
     elevation: number,
   };
   numLists: number;
@@ -130,7 +130,7 @@ const IncludedLists = (props: Props) => {
     const metaDescription = getString('meta-data-mountain-detail-description', {
       name: mountainDatum.name,
       elevation: mountainDatum.elevation,
-      state: mountainDatum.state && mountainDatum.state.abbreviation ? ', ' + mountainDatum.state.abbreviation : '',
+      state: mountainDatum.state && mountainDatum.state.name ? ', ' + mountainDatum.state.name : '',
       additionaltext,
     });
 
