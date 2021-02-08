@@ -45,6 +45,9 @@ const CampsiteSchema = new Schema({
   fire: { type: Boolean },
   maxtents: { type: Number },
   flag: { type: String },
+  locationText: { type: String },
+  locationTextShort: { type: String },
+  elevation: { type: Number },
 });
 
 CampsiteSchema.index({ center: '2dsphere' });
@@ -92,6 +95,9 @@ const CampsiteType: any = new GraphQLObjectType({
     fire: { type: GraphQLBoolean },
     maxtents: { type: GraphQLInt },
     flag: { type: GraphQLString },
+    elevation: { type: GraphQLFloat },
+    locationText: { type: GraphQLString },
+    locationTextShort: { type: GraphQLString },
   }),
 });
 

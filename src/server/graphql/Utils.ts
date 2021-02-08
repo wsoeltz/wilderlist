@@ -1,8 +1,9 @@
 /* tslint:disable:await-promise */
 import sortBy from 'lodash/sortBy';
 import mongoose from 'mongoose';
-import { PeakListVariants, Region as IRegion, State } from './graphQLTypes';
+import { PeakListVariants, Region as IRegion, State as IState } from './graphQLTypes';
 import {Region} from './schema/queryTypes/regionType';
+import {State} from './schema/queryTypes/stateType';
 
 export async function asyncForEach(array: any[], callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -130,15 +131,15 @@ const formatDate = ({ day, month, year }: { day: number, month: number, year: nu
 export const formatStringDate = (date: string) => formatDate(parseDate(date));
 
 export interface RawStateDatum {
-  _id: State['id'];
-  name: State['name'];
+  _id: IState['id'];
+  name: IState['name'];
   regions: Array<IRegion['id']>;
 }
 
 export interface RawRegionDatum {
-  _id: State['id'];
-  name: State['name'];
-  states: Array<State['id']>;
+  _id: IState['id'];
+  name: IState['name'];
+  states: Array<IState['id']>;
 }
 
 export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoader: any, id: string) => {
@@ -215,4 +216,87 @@ export const getStatesOrRegion = async (statesArray: RawStateDatum[], regionLoad
     }
   }
   return null;
+};
+
+export const getLocationStrings = async (stateIds: string[], id: string) => {
+  const regionsData = await Region.find({});
+  const statesData = await State.find({});
+  const statesArray = stateIds.map(state => statesData.find(s => s._id.toString() === state.toString()));
+  const nonNullStates = statesArray.filter(state => state !== null && state !== undefined);
+  const sortedStates = sortBy(nonNullStates, ['name']) as IState[];
+  const locationTextShort = sortedStates.length < 20 ? sortedStates.map(s => s.abbreviation).join(', ') : 'USA';
+  // If there are 3 or less states, just show the states
+  if (sortedStates.length === 1) {
+    return {locationText: sortedStates[0].name, locationTextShort};
+  } else if (sortedStates.length === 2) {
+    return {locationText: sortedStates[0].name + ' & ' + sortedStates[1].name, locationTextShort};
+  } else if (sortedStates.length === 3) {
+    return {
+      locationText:
+        sortedStates[0].name + ', ' +
+        sortedStates[1].name + ' & ' +
+        sortedStates[2].name,
+      locationTextShort,
+    };
+  } else if (sortedStates.length > 2) {
+    const regionsArray: IRegion[] = [];
+    sortedStates.forEach(({regions}) =>
+      regions.forEach(
+        r1 => {
+          if (r1 && !regionsArray.find(r2 => r1.toString() === r2.toString())) {
+            regionsArray.push(r1);
+          }
+      }),
+    );
+    if (regionsArray.length) {
+      try {
+        let output = '';
+        if (regionsData) {
+          const nonNullRegions
+            = regionsData.filter(region => region !== null && region !== undefined);
+                // Else if they all belong to the same region, show that region
+          if (nonNullRegions.length === 0) {
+            return {locationText: null, locationTextShort};
+          } else if (nonNullRegions.length === 1) {
+            output = nonNullRegions[0].name;
+          } else {
+            const inclusiveRegions = nonNullRegions.filter(
+              (region) => sortedStates.every(
+                ({regions}) => regions.find(_region => _region && region._id.toString() === _region.toString())));
+            if (inclusiveRegions.length === 1) {
+              output = inclusiveRegions[0].name;
+            } else if (nonNullRegions.length > 1) {
+              // If they all belong to more than one region, show the more exclusive one
+              const exclusiveRegions = sortBy(inclusiveRegions, ({states}) => states.length );
+              if (exclusiveRegions && exclusiveRegions[0]) {
+                output = exclusiveRegions[0].name;
+              } else if (inclusiveRegions.length === 0) {
+                // if there are no inclusive regions
+                if (nonNullRegions.length === 2) {
+                  // if only 2 regions, show them both
+                  output = nonNullRegions[0].name + ' & ' + nonNullRegions[1].name;
+                } else if (nonNullRegions.length === 3) {
+                  // if only 3 regions, show them all
+                  output = nonNullRegions[0].name + ', ' + nonNullRegions[1].name + ' & ' + nonNullRegions[2].name;
+                } else {
+                  // otherwise just say Across the US
+                  output = 'Across the US';
+                }
+              }
+            }
+          }
+        }
+        if (output.length) {
+          const the = output.startsWith('New England') || output.startsWith('Across') ? '' : 'the ';
+          return {locationText: the + output, locationTextShort};
+        } else {
+          return {locationText: null, locationTextShort};
+        }
+      } catch (e) {
+        console.error(e);
+        return {locationText: null, locationTextShort};
+      }
+    }
+  }
+  return {locationText: null, locationTextShort};
 };

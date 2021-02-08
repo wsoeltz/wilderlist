@@ -51,6 +51,8 @@ const MountainSchema = new Schema({
   }],
   location: [{type: Number}],
   trailAccessible: {type: Boolean},
+  locationText: { type: String },
+  locationTextShort: { type: String },
 });
 
 MountainSchema.index({ location: '2dsphere' });
@@ -145,6 +147,8 @@ const MountainType: any = new GraphQLObjectType({
     resources: { type: new GraphQLList(ExternalResourcesType) },
     location: { type: new GraphQLList(GraphQLFloat) },
     trailAccessible: { type: GraphQLBoolean },
+    locationText: { type: GraphQLString },
+    locationTextShort: { type: GraphQLString },
   }),
 });
 

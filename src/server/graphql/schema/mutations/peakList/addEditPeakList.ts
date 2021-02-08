@@ -9,6 +9,7 @@ import {
   PermissionTypes,
   User as IUser,
 } from '../../../graphQLTypes';
+import {getLocationStrings} from '../../../Utils';
 import {
   PeakList,
 } from '../../queryTypes/peakListType';
@@ -42,6 +43,7 @@ const addEditPeakList = async (input: Input) => {
   } = input;
 
   const searchString = input.name + ' ' + input.shortName;
+  const {locationText, locationTextShort} = await getLocationStrings(fields.states, id);
 
   const doc = await PeakList.findById(id);
   if (doc) {
@@ -65,6 +67,8 @@ const addEditPeakList = async (input: Input) => {
     doc.center = fields.center;
     doc.bbox = fields.bbox;
     doc.searchString = searchString;
+    doc.locationText = locationText;
+    doc.locationTextShort = locationTextShort;
     await doc.save();
     return doc;
   } else if (user) {
@@ -87,6 +91,7 @@ const addEditPeakList = async (input: Input) => {
       status,
       numUsers: 0,
       type: PeakListVariants.standard,
+      locationText, locationTextShort,
     });
     return newPeakList.save();
   } else {

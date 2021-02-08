@@ -85,6 +85,8 @@ const PeakListSchema = new Schema({
   bbox: [{type: Number}],
   classification:  { type: String },
   privacy: { type: String },
+  locationText: { type: String },
+  locationTextShort: { type: String },
 });
 
 export const PeakList: PeakListModelType = mongoose.model<PeakListModelType, any>('list', PeakListSchema);
@@ -782,6 +784,8 @@ const PeakListType: any = new GraphQLObjectType({
       },
     },
     classification:  { type: GraphQLString },
+    locationText: { type: GraphQLString },
+    locationTextShort: { type: GraphQLString },
   }),
 });
 

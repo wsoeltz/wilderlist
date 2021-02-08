@@ -43,6 +43,8 @@ export interface Mountain {
   resources: ExternalResource[] | null;
   location: Coordinate;
   trailAccessible: boolean;
+  locationText: string | null;
+  locationTextShort: string | null;
 }
 
 export enum PeakListVariants {
@@ -108,6 +110,8 @@ export interface PeakList {
   bbox: [Longitude, Latitude, Longitude, Latitude] | null;
   classification: string | null;
   privacy: ListPrivacy | null;
+  locationText: string | null;
+  locationTextShort: string | null;
 }
 
 export enum TrailType {
@@ -144,8 +148,11 @@ export interface Trail {
   children: Array<Trail | null> | null;
   waterCrossing: string | null;
   skiTrail: boolean | null;
-  trailLength: number;
   flag: string | null;
+  locationText: string | null;
+  locationTextShort: string | null;
+  trailLength: number | null;
+  avgSlope: number | null;
 }
 
 export enum CampsiteType {
@@ -203,6 +210,9 @@ export interface Campsite {
   description: string | null;
   resources: ExternalResource[] | null;
   flag: string | null;
+  elevation: number;
+  locationText: string | null;
+  locationTextShort: string | null;
 }
 
 export enum PermissionTypes {

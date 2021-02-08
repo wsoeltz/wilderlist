@@ -38,7 +38,7 @@ const NavButton = styled.button`
 `;
 
 const ActiveNavButton = styled(NavButton)`
-  background-color: #fff;
+  background-color: transparent;
   color: ${baseColor};
   border-bottom: none;
 `;

@@ -42,6 +42,10 @@ const TrailSchema = new Schema({
   waterCrossing: { type: String },
   skiTrail: { type: Boolean },
   flag: { type: String },
+  locationText: { type: String },
+  locationTextShort: { type: String },
+  trailLength: { type: Number },
+  avgSlope: { type: Number },
 });
 
 TrailSchema.index({ center: '2dsphere' });
@@ -111,6 +115,10 @@ const TrailType: any = new GraphQLObjectType({
       },
     },
     flag: { type: GraphQLString },
+    locationText: { type: GraphQLString },
+    locationTextShort: { type: GraphQLString },
+    trailLength: { type: GraphQLFloat },
+    avgSlope: { type: GraphQLFloat },
   }),
 });
 
