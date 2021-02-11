@@ -1,8 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 import {
   Mountain,
-  PeakList,
-  State,
   User,
 } from '../../types/graphQLTypes';
 
@@ -13,19 +11,7 @@ const GET_MOUNTAIN_DETAIL = gql`
       name
       elevation
       location
-      description
-      resources {
-        title
-        url
-      }
-      state {
-        id
-        name
-        abbreviation
-      }
-      lists {
-        id
-      }
+      locationText
       author {
         id
       }
@@ -40,15 +26,7 @@ interface QuerySuccessResponse {
     name: Mountain['name'];
     elevation: Mountain['elevation'];
     location: Mountain['location'];
-    description: Mountain['description'];
-    resources: Mountain['resources'];
-    state: {
-      id: State['id'];
-      name: State['name'];
-    };
-    lists: Array<{
-      id: PeakList['id'];
-    }>;
+    locationText: Mountain['locationText'];
     author: null | { id: User['id'] };
     status: Mountain['status'];
   };
@@ -58,7 +36,7 @@ interface QueryVariables {
   id: string | null;
 }
 
-export const useMountainDetail = (id: string | null) => useQuery<QuerySuccessResponse, QueryVariables>(
+export const useBasicMountainDetails = (id: string | null) => useQuery<QuerySuccessResponse, QueryVariables>(
   GET_MOUNTAIN_DETAIL, {
     variables: { id },
   });

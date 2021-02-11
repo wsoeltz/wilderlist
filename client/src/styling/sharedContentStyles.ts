@@ -134,3 +134,12 @@ export const Column = styled.div`
   align-items: center;
   text-align: center;
 `;
+
+export const LoadableText = styled.div<{$loading: boolean}>`
+  ${({$loading}) => $loading
+    ? 'width: 75%;' +
+      'background-color:' + tertiaryColor + ';' +
+      'color: transparent;'
+    : ''
+  }
+`;

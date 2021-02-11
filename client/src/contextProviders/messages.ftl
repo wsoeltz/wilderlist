@@ -145,6 +145,7 @@ global-text-value-high-point = Highest Point
 global-text-value-low-point = Lowest Point
 global-text-value-trail = Trail
 global-text-value-feet = feet
+global-text-value-meters = meters
 global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence

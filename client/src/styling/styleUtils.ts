@@ -130,6 +130,13 @@ export const SmallLink = styled(Link)`
   font-size: 0.7rem;
 `;
 
+export const IncompleteText = styled.span`
+  color: ${incompleteColor};
+`;
+export const CompleteText = styled.span`
+  color: ${completeColor};
+`;
+
 export const Section = styled.div`
   margin-bottom: 1rem;
 `;
@@ -191,7 +198,7 @@ export const LinkButtonCompact = styled.button`
   padding: 0;
   background: transparent;
   font-size: 0.7rem;
-  display: flex;
+  display: inline-flex;
   align-items: center;
 
   ${linkStyles}

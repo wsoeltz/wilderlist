@@ -10,7 +10,7 @@ const MountainDetailPage = () => {
   if (mountainId === 'search') {
     return <MountainList />;
   } else {
-    return <MountainDetail id={mountainId} setOwnMetaData={true} />;
+    return <MountainDetail id={mountainId} />;
   }
 };
 
