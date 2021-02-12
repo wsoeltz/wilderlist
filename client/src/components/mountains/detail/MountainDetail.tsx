@@ -1,4 +1,5 @@
 import React from 'react';
+import Content from './Content';
 import Header from './Header';
 
 interface Props {
@@ -9,7 +10,10 @@ const MountainDetail = (props: Props) => {
   const { id } = props;
 
   return (
-    <Header id={id} />
+    <>
+      <Header id={id} />
+      <Content id={id} />
+    </>
   );
 };
 

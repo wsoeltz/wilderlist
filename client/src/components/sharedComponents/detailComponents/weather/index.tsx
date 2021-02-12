@@ -9,6 +9,7 @@ interface Props {
   forecastTabs: Array<{
     title: string;
     location: Coordinate;
+    valley?: boolean;
   }>;
   snowReport?: {
     stateAbbr: string;
@@ -22,7 +23,7 @@ const WeatherSegment = (props: Props) => {
   const panels: Panel[] = forecastTabs.map(f => {
     return {
       title: f.title,
-      reactNode: <PointForecast latitude={f.location[1]} longitude={f.location[0]} />,
+      reactNode: <PointForecast latitude={f.location[1]} longitude={f.location[0]} valley={f.valley} />,
     };
   });
 

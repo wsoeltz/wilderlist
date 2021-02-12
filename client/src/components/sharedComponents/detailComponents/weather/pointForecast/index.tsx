@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import useFluent from '../../../../../hooks/useFluent';
+import {getWeatherAtPointURL} from '../../../../../routing/services';
 import getWeather from '../../../../../utilities/getWeather';
-import LoadingSpinner from '../../..//LoadingSpinner';
+import LoadingSpinner from '../../../LoadingSpinner';
 import NWSForecast from './NWSForecast';
 import OpenWeatherForecast from './OpenWeatherForecast';
 import {
@@ -23,9 +24,13 @@ interface LatLong {
   longitude: number;
 }
 
-const WeatherReport = ({latitude, longitude}: LatLong) => {
+interface Input extends LatLong {
+  valley?: boolean;
+}
 
-  const intialCachedWeather = readWeatherCache(latitude, longitude);
+const WeatherReport = ({latitude, longitude, valley}: Input) => {
+
+  const intialCachedWeather = readWeatherCache(latitude, longitude, Boolean(valley));
   const [forecast, setForecast] = useState<Forecast | null>(intialCachedWeather ? intialCachedWeather.data : null);
   const [error, setError] = useState<any | null>(null);
 
@@ -36,13 +41,14 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
     let ignoreResult: boolean = false;
     const getWeatherData = async () => {
       try {
-        const res = await getWeather(`/api/weather?lat=${latitude}&lng=${longitude}`);
+        const url = getWeatherAtPointURL({coord: [longitude, latitude], valley});
+        const res = await getWeather(url);
         if (ignoreResult) {
           console.warn('Weather report promise canceled for unmounted component');
           return undefined;
         }
         if (res && res.data) {
-          writeWeatherCache(latitude, longitude, res.data);
+          writeWeatherCache(latitude, longitude, Boolean(valley), res.data);
           setForecast(res.data);
         } else {
           setError('Weather for this location is not available at this time.');
@@ -55,7 +61,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
       }
     };
     if (currentUser !== null) {
-      const cachedWeather = readWeatherCache(latitude, longitude);
+      const cachedWeather = readWeatherCache(latitude, longitude, Boolean(valley));
       if (!cachedWeather) {
         getWeatherData();
       } else {
@@ -64,7 +70,7 @@ const WeatherReport = ({latitude, longitude}: LatLong) => {
     }
 
     return () => {ignoreResult = true; };
-  }, [setForecast, latitude, longitude, currentUser]);
+  }, [setForecast, latitude, longitude, currentUser, valley]);
 
   let output: React.ReactElement<any> | null;
   if (error !== null) {

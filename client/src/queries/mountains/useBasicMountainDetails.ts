@@ -12,6 +12,7 @@ const GET_MOUNTAIN_DETAIL = gql`
       elevation
       location
       locationText
+      locationTextShort
       author {
         id
       }
@@ -27,6 +28,7 @@ interface QuerySuccessResponse {
     elevation: Mountain['elevation'];
     location: Mountain['location'];
     locationText: Mountain['locationText'];
+    locationTextShort: Mountain['locationTextShort'];
     author: null | { id: User['id'] };
     status: Mountain['status'];
   };

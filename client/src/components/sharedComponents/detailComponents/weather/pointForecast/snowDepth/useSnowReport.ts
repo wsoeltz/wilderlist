@@ -63,7 +63,7 @@ const isDirections = (word: string) => word.length <= 3 && word.match(/^[WENS]+$
 const useSnowReport = (input: Input) => {
   const currentUser = useCurrentUser();
 
-  const initialReport = readSnowReportCache(input.latitude, input.longitude);
+  const initialReport = readSnowReportCache(input.latitude, input.longitude, false);
 
   const [output, setOutput] = useState<Output>(initialReport
     ? {loading: false, error: undefined, data: initialReport.data}
@@ -227,7 +227,7 @@ const useSnowReport = (input: Input) => {
             console.warn('Snow report promise canceled for unmounted component');
             return undefined;
           }
-          writeSnowReportCache(latitude, longitude, {snowfall, snowdepth});
+          writeSnowReportCache(latitude, longitude, false, {snowfall, snowdepth});
           setOutput({loading: false, error: undefined, data: {snowfall, snowdepth}});
         } else {
           throw new Error('Unable to get snow report right now');
@@ -240,7 +240,7 @@ const useSnowReport = (input: Input) => {
       }
     };
     if (currentUser !== null) {
-      const cachedSnowReport = readSnowReportCache(latitude, longitude);
+      const cachedSnowReport = readSnowReportCache(latitude, longitude, false);
       if (!cachedSnowReport) {
         fetchSnowReport();
       } else {
