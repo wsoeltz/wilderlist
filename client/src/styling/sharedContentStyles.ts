@@ -1,4 +1,5 @@
 import { rgba } from 'polished';
+import ScrollContainer from 'react-indiana-drag-scroll';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import {
@@ -8,6 +9,7 @@ import {
   lightBaseColor,
   lightBlue,
   lightBorderColor,
+  offWhite,
   semiBoldFontBoldWeight,
   tertiaryColor,
 } from './styleUtils';
@@ -142,4 +144,99 @@ export const LoadableText = styled.div<{$loading: boolean}>`
       'color: transparent;'
     : ''
   }
+`;
+
+export const HorizontalScrollContainer = styled(ScrollContainer)<{$noScroll?: boolean}>`
+  display: flex;
+  width: 100%;
+  min-height: 10rem;
+  overflow: auto;
+  padding: 1rem 0 1rem 1rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  ${({$noScroll}) => $noScroll ? '' : 'cursor: move;'}
+
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .3);
+  }
+  ::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+  /* Required for padding at end of box to work */
+  &:after {
+    content: '.';
+    display: block;
+    padding-right: 1rem;
+    width: 0;
+    overflow: hidden;
+    color: transparent;
+    visibility: hidden;
+  }
+`;
+
+export const HorizontalBlock = styled.div`
+  flex-grow: 1;
+  padding: 0.5rem;
+  background-color: ${offWhite};
+  border: solid 1px ${lightBorderColor};
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:not(:last-of-type) {
+    margin-right: 1rem;
+  }
+
+  /* Required for padding at end of box to work */
+  &:after {
+    content: '';
+    display: block;
+    min-width: 10.5rem;
+    color: transparent;
+    visibility: hidden;
+  }
+`;
+
+export const EmptyBlock = styled(HorizontalBlock)`
+  justify-content: center;
+`;
+
+export const BlockHeader = styled.h3`
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 0;
+`;
+
+export const CenteredHeader = styled(BlockHeader)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const InlineColumns = styled.div`
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const SimpleTitle = styled.div`
+  text-transform: uppercase;
+  font-size: 0.9em;
+  font-weight: ${boldFontWeight};
+  padding-right: 0.25rem;
+`;
+
+export const Details = styled.div`
+  margin: 0.5rem 0 0;
 `;

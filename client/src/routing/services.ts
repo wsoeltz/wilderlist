@@ -17,3 +17,18 @@ enum ServicesRoutes {
 export const getWeatherAtPointURL = ({coord, valley}: {coord: Coordinate, valley?: boolean}) => valley
   ? `${baseUrl}${ServicesRoutes.weatherAtValley}?lat=${coord[1]}&lng=${coord[0]}`
   : `${baseUrl}${ServicesRoutes.weatherAtPoint}?lat=${coord[1]}&lng=${coord[0]}`;
+
+export interface RoutesToPointInput {
+  coord: Coordinate;
+  altCoord?: Coordinate;
+  destination?: 'parking' | 'campsites' | 'mountains';
+}
+export const getRoutesToPointURL = ({coord, altCoord, destination}: RoutesToPointInput) => {
+  let altCoordsParam: string = '';
+  if (altCoord) {
+    altCoordsParam = `&lat=${altCoord[1]}&lng=${altCoord[0]}`;
+  }
+  const destinationParam = destination ? `&${destination}` : '';
+  return `${baseUrl}${ServicesRoutes.routesToPoint}` +
+    `?lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}`;
+};

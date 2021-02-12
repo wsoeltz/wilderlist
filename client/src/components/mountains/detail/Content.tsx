@@ -5,6 +5,7 @@ import {useBasicMountainDetails} from '../../../queries/mountains/useBasicMounta
 import {CoreItem} from '../../../types/itemTypes';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
+import RoutesAndDirections from './RoutesAndDirections';
 
 interface Props {
   id: string;
@@ -31,6 +32,9 @@ const Content = (props: Props) => {
             {title: getString('weather-forecast-valley-weather'), location, valley: true},
           ]}
           snowReport={locationTextShort ? {location, stateAbbr: locationTextShort} : undefined}
+        />
+        <RoutesAndDirections
+          location={location}
         />
         <TripsNotesAndReports
           id={id}

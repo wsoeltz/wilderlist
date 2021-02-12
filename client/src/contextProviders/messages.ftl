@@ -895,6 +895,10 @@ snow-report-location-details = { $distance }mi away, elevation of { $elevation }
 snow-report-new-snow = New snow
 snow-report-current-depth = Current depth
 
+detail-route-to-summit = Routes to Summit
+detail-nearby-camping = Nearby Camping
+detail-nearby-mountains = Nearby Mountains
+
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes
 local-trails-hiking-project-beta = Beta

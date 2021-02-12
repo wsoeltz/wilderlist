@@ -8,8 +8,10 @@ import {
   faSnowflake,
   faSun,
 } from '@fortawesome/free-solid-svg-icons';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import styled from 'styled-components/macro';
+import {
+  HorizontalScrollContainer,
+} from '../../../../../styling/sharedContentStyles';
 import {
   baseColor,
   ButtonSecondary,
@@ -191,7 +193,7 @@ export const DetailPrecip = styled.div`
   color: ${lightBaseColor};
 `;
 
-export const ForecastRootContainer = styled(ScrollContainer)`
+export const ForecastRootContainer = styled(HorizontalScrollContainer)`
   display: flex;
   width: 100%;
   min-height: 129px;

@@ -24,7 +24,9 @@ export enum CreatedItemStatus {
 
 export type Longitude = number;
 export type Latitude = number;
+export type Elevation = number;
 export type Coordinate = [Longitude, Latitude];
+export type CoordinateWithElevation = [Longitude, Latitude, Elevation];
 
 export interface Mountain {
   id: string;

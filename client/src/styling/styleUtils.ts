@@ -19,6 +19,7 @@ export const primaryHoverColor = '#0580ca'; // hover variant of primaryColor
 export const secondaryHoverColor = '#908d8d'; // hover variant of secondaryColor
 
 export const tertiaryColor = '#f3f3f3'; // really light gray color for use as a hover background color on cards
+export const offWhite = '#fdfdfd';
 
 export const linkColor = primaryColor; // greenish blue color for use with links
 export const linkHoverColor = primaryHoverColor; // hover color for links, light green
@@ -128,6 +129,10 @@ export const SmallSemiBold = styled(SemiBold)`
 
 export const SmallLink = styled(Link)`
   font-size: 0.7rem;
+`;
+
+export const Subtext = styled.small`
+color: ${lightBaseColor};
 `;
 
 export const IncompleteText = styled.span`
