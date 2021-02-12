@@ -149,7 +149,7 @@ export const LoadableText = styled.div<{$loading: boolean}>`
 export const HorizontalScrollContainer = styled(ScrollContainer)<{$noScroll?: boolean}>`
   display: flex;
   width: 100%;
-  min-height: 10rem;
+  min-height: 11.15rem;
   overflow: auto;
   padding: 1rem 0 1rem 1rem;
   margin-bottom: 1rem;
@@ -214,6 +214,7 @@ export const EmptyBlock = styled(HorizontalBlock)`
 export const BlockHeader = styled.h3`
   font-size: 0.8rem;
   margin: 0;
+  margin-bottom: auto;
   padding: 0;
 `;
 
@@ -221,6 +222,7 @@ export const CenteredHeader = styled(BlockHeader)`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0;
 `;
 
 export const InlineColumns = styled.div`

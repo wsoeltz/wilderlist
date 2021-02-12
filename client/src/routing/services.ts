@@ -28,7 +28,7 @@ export const getRoutesToPointURL = ({coord, altCoord, destination}: RoutesToPoin
   if (altCoord) {
     altCoordsParam = `&lat=${altCoord[1]}&lng=${altCoord[0]}`;
   }
-  const destinationParam = destination ? `&${destination}` : '';
+  const destinationParam = destination ? `&destination=${destination}` : '';
   return `${baseUrl}${ServicesRoutes.routesToPoint}` +
     `?lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}`;
 };

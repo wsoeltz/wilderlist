@@ -5,8 +5,9 @@ import {
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import {Coordinate} from '../../../types/graphQLTypes';
+import {CoreItem} from '../../../types/itemTypes';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
-import RoutesToMe from '../../sharedComponents/detailComponents/routesToMe';
+import RoutesToPoint from '../../sharedComponents/detailComponents/routesToPoint';
 import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
 
 interface Props {
@@ -19,13 +20,13 @@ const RoutesAndDirections = (props: Props) => {
   const panels: Panel[] = [
     {
       title: getString('detail-route-to-summit'),
-      reactNode: <RoutesToMe coordinate={location} />,
+      reactNode: <RoutesToPoint coordinate={location} item={CoreItem.mountain} />,
       customIcon: false,
       icon: faRoute,
     },
     {
       title: getString('detail-nearby-camping'),
-      reactNode: <div>Camping</div>,
+      reactNode: <RoutesToPoint coordinate={location} item={CoreItem.campsite} destination={'campsites'} />,
       customIcon: true,
       icon: tentNeutralSvg,
     },

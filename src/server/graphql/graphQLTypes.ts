@@ -157,6 +157,17 @@ export interface Trail {
   avgSlope: number | null;
 }
 
+export enum ParkingType {
+  informationBoard = 'information_board',
+  informationMap = 'information_map',
+  picnicSite = 'picnic_site',
+  park = 'park',
+  trailhead = 'trailhead',
+  parkingSpace = 'parking_space',
+  intersection = 'intersection',
+  parking = 'parking',
+}
+
 export enum CampsiteType {
   campSite = 'camp_site',
   caravanSite = 'caravan_site',

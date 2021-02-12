@@ -1,10 +1,9 @@
 import orderBy from 'lodash/orderBy';
-import partition from 'lodash/partition';
-import uniqBy from 'lodash/uniqBy';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
-import {Link} from 'react-router-dom';
 import useRoutesToPoint from '../../../../hooks/servicesHooks/pathfinding/useRoutesToPoint';
+import useFluent from '../../../../hooks/useFluent';
+import {RoutesToPointInput} from '../../../../routing/services';
 import {
   BlockHeader,
   CenteredHeader,
@@ -16,35 +15,58 @@ import {
   SimpleTitle,
 } from '../../../../styling/sharedContentStyles';
 import {
+  SmallLink,
   Subtext,
 } from '../../../../styling/styleUtils';
-import {Coordinate, TrailType} from '../../../../types/graphQLTypes';
+import {Coordinate} from '../../../../types/graphQLTypes';
+import {CoreItem} from '../../../../types/itemTypes';
 import {slopeToSteepnessClass} from '../../../../utilities/trailUtils';
 import LoadingSimple from '../../LoadingSimple';
+import Title from './Title';
 
 interface Props {
   coordinate: Coordinate;
+  item: CoreItem;
+  altCoordinate?: Coordinate;
+  destination?: RoutesToPointInput['destination'];
 }
 
-const RoutesToMe = ({coordinate}: Props) => {
-  const {loading, error, data} = useRoutesToPoint({lat: coordinate[1], lng: coordinate[0]});
+const RoutesToPoint = (props: Props) => {
+  const {coordinate, altCoordinate, destination, item} = props;
+  const getString = useFluent();
+  const {loading, error, data} = useRoutesToPoint({
+    lat: coordinate[1],
+    lng: coordinate[0],
+    altLat: altCoordinate ? altCoordinate[1] : undefined,
+    altLng: altCoordinate ? altCoordinate[0] : undefined,
+    destination,
+  });
   if (loading) {
+    let loadingText: string;
+    if (destination === 'campsites') {
+      loadingText = getString('global-text-value-loading-campsites');
+    } else if (destination === 'mountains') {
+      loadingText = getString('global-text-value-loading-mountains');
+    } else {
+      loadingText = getString('global-text-value-loading-routes');
+    }
     return (
         <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
           <EmptyBlock>
             <CenteredHeader>
               <LoadingSimple />
-              Finding routes...
+              {loadingText}...
             </CenteredHeader>
           </EmptyBlock>
         </HorizontalScrollContainer>
     );
   } else if (error !== undefined) {
+    console.error(error);
     return (
         <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
           <EmptyBlock>
             <BlockHeader>
-              There was an error
+              {getString('global-error-retrieving-data')}
             </BlockHeader>
           </EmptyBlock>
         </HorizontalScrollContainer>
@@ -53,49 +75,14 @@ const RoutesToMe = ({coordinate}: Props) => {
     if (data.features.length) {
       const sortedRoutes = orderBy(data.features, ['properties.routeLength']);
       const routes = sortedRoutes.map(({properties}, i) => {
-        const {routeLength, elevationGain, elevationLoss, avgSlope, destination, trails} = properties;
-        let title: string | React.ReactElement<any>;
-        if (trails && trails.length) {
-          const uniqueTrails = uniqBy(trails.filter(t => t.name), 'name');
-          const [justTrails, justRoads] =
-            partition(uniqueTrails, t => t.type && t.type !== TrailType.road && t.type !== TrailType.dirtroad);
-          const topTrailsString = justTrails.length
-            ? justTrails.slice(0, 2).map(t => t.name).join(', ___')
-            : justRoads.slice(0, 2).map(t => t.name).join(', ___');
-          if (topTrailsString.length) {
-            const nameComponents = topTrailsString.split('___').map((t, ii) => (
-              <React.Fragment key={'trail-name' + destination._id + t + ii}>
-                {t}
-                <wbr />
-              </React.Fragment>
-            ));
-            const remaining = uniqueTrails.length - nameComponents.length;
-            if (remaining) {
-              const s = remaining > 1 ? 's' : '';
-              nameComponents.push((
-                <React.Fragment key={'trail-name-others' + destination._id + remaining}>
-                  <wbr />&nbsp;&amp; {remaining} other{s}
-                </React.Fragment>
-              ));
-            }
-            title = <>{nameComponents}</>;
-          } else {
-            title = trails.length + ' trails';
-          }
-        } else if (destination.name) {
-          title = destination.name;
-        } else if (destination.type) {
-          title = destination.type.split('_').join(' ');
-        } else {
-          title = trails.length + ' trails';
-        }
+        const {routeLength, elevationGain, elevationLoss, avgSlope, trails} = properties;
         let elevationDetails: React.ReactElement<any> | null;
         if (elevationGain && elevationLoss && avgSlope) {
           elevationDetails = (
             <>
               <InlineColumns>
                 <Subtext>
-                  <SimpleTitle>Elevation:</SimpleTitle>
+                  <SimpleTitle>{getString('global-text-value-elevation')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
                   <strong>↑</strong> {Math.round(elevationGain) + 'ft'}
@@ -106,7 +93,7 @@ const RoutesToMe = ({coordinate}: Props) => {
 
               <InlineColumns>
                 <Subtext>
-                  <SimpleTitle>Incline:</SimpleTitle>
+                  <SimpleTitle>{getString('global-text-value-incline')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
                   {upperFirst(slopeToSteepnessClass(avgSlope))},
@@ -119,22 +106,38 @@ const RoutesToMe = ({coordinate}: Props) => {
         } else {
           elevationDetails = null;
         }
+        const linkToRoute = (
+        // const linkToRoute = !destination || destination === 'parking' ? null : (
+          <Details>
+            <SmallLink to={'#'}>
+              {getString('global-text-value-view-route')}
+            </SmallLink>
+          </Details>
+        );
         return (
-          <HorizontalBlock key={'route-to-summit-' + i + destination._id}>
+          <HorizontalBlock key={'route-to-summit-' + i + properties.destination._id}>
             <BlockHeader>
-              <Link to={'#'}><em>via</em> {title}</Link>
+              <Title
+                item={item}
+                trails={trails}
+                destination={properties.destination}
+                destinationType={destination}
+              />
             </BlockHeader>
             <Details>
               <InlineColumns>
                 <Subtext>
-                  <SimpleTitle>Length:</SimpleTitle>
+                  <SimpleTitle>{getString('global-text-value-length')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
-                  <strong>{parseFloat(routeLength.toFixed(1))}</strong> miles to summit
+                  <strong>{parseFloat(routeLength.toFixed(1))}</strong> {getString('global-text-value-miles-to', {
+                    type: item,
+                  })}
                 </Subtext>
               </InlineColumns>
               {elevationDetails}
             </Details>
+            {linkToRoute}
           </HorizontalBlock>
         );
       });
@@ -148,7 +151,7 @@ const RoutesToMe = ({coordinate}: Props) => {
         <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
           <EmptyBlock>
             <BlockHeader>
-              No routes to summit found
+              {getString('global-text-value-no-routes-to', {type: item})}
             </BlockHeader>
           </EmptyBlock>
         </HorizontalScrollContainer>
@@ -160,4 +163,4 @@ const RoutesToMe = ({coordinate}: Props) => {
 
 };
 
-export default RoutesToMe;
+export default RoutesToPoint;

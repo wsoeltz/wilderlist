@@ -65,10 +65,11 @@ global-text-value-search-users = Search users
 global-text-value-generic-user = Wilderlist User
 global-text-value-private = Private
 
-
 global-text-value-search-mountains-to-add = Search for mountains to add
 global-text-value-search-trails-to-add = Search for trails to add
 global-text-value-search-campsites-to-add = Search for campsites to add
+
+global-text-value-view-route = View route
 
 global-text-value-fitler-items = Filter {
   $type ->
@@ -77,6 +78,22 @@ global-text-value-fitler-items = Filter {
     [trail] trails
     *[other] items
 } on list
+
+global-text-value-miles-to = miles to {
+  $type ->
+    [mountain] summit
+    [campsite] campsite
+    [trail] trail
+    *[other] point
+}
+
+global-text-value-no-routes-to = No routes to {
+  $type ->
+    [mountain] summit
+    [campsite] campsite
+    [trail] trail
+    *[other] point
+} found
 
 global-text-value-no-results-found = No results found.
 global-text-value-no-items-found = No { $type } found.
@@ -94,9 +111,18 @@ global-text-value-modal-mark-complete = Log Trip
 global-text-value-description = Description
 global-text-value-directions = Directions
 global-text-value-more = more
+global-text-value-others = {
+  $count ->
+    [1] other
+    *[other] others
+}
 global-text-value-on = on
 global-text-value-back = Back
 global-text-value-loading = Loading
+global-text-value-loading-routes = Finding routes
+global-text-value-loading-campsites = Finding campsites
+global-text-value-loading-mountains = Finding mountains
+global-text-value-loading-directions = Finding directions
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at help@wilderlist.app if these loading times continue
@@ -104,7 +130,6 @@ global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Cont
 global-text-value-contact = Contact
 global-text-value-phone = Phone
 global-text-value-website = Website
-
 
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at help@wilderlist.app
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
@@ -139,6 +164,7 @@ global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-length = Length
+global-text-value-incline = Incline
 global-text-value-elevation = Elevation
 global-text-value-elevation-gain = Elevation Gain
 global-text-value-high-point = Highest Point
@@ -272,6 +298,42 @@ global-formatted-campsite-type = {
   [alpine_hut] alpine hut
   [basic_hut] hut
   [rock_shelter] rock shelter
+}
+
+global-formatted-anything-type = {
+  $type ->
+  [camp_site] campsite
+  [caravan_site] campground
+  [weather_shelter] shelter
+  [camp_pitch] tentsite
+  [lean_to] lean-to
+  [wilderness_hut] wilderness hut
+  [alpine_hut] alpine hut
+  [basic_hut] hut
+  [rock_shelter] rock shelter
+  [trail] trail
+  [dirtroad] dirt road
+  [path] path
+  [stairs] path
+  [cycleway] bike trail
+  [road] road
+  [hiking] trail
+  [bridleway] trail
+  [demanding_mountain_hiking] trail
+  [mountain_hiking] trail
+  [herdpath] herd path
+  [alpine_hiking] alpine trail
+  [demanding_alpine_hiking] alpine trail
+  [difficult_alpine_hiking] alpine trail
+  [parent_trail] trail
+  [information_board] information board
+  [information_map] information map
+  [picnic_site] picnic site
+  [park] park
+  [trailhead] trailhead
+  [parking_space] parking space
+  [intersection] trail/road crossing
+  *[other] point
 }
 
 global-text-value-weeks = weeks
