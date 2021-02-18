@@ -61,6 +61,7 @@ global-text-value-search-mountains = Search mountains
 global-text-value-search-trails = Search trails
 global-text-value-search-campsites = Search campsites
 global-text-value-search-users = Search users
+global-text-value-search-geo = Search for a location
 
 global-text-value-generic-user = Wilderlist User
 global-text-value-private = Private
@@ -111,6 +112,9 @@ global-text-value-modal-mark-complete = Log Trip
 global-text-value-description = Description
 global-text-value-directions = Directions
 global-text-value-more = more
+global-text-value-or = or
+global-text-value-to = to
+global-text-value-from = from
 global-text-value-others = {
   $count ->
     [1] other
@@ -164,6 +168,8 @@ global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
 global-text-value-length = Length
+global-text-value-distance = Distance
+global-text-value-duration = Duration
 global-text-value-incline = Incline
 global-text-value-elevation = Elevation
 global-text-value-elevation-gain = Elevation Gain
@@ -359,6 +365,7 @@ global-text-value-clear = Clear
 
 global-text-value-copy = Copy
 global-text-value-edit = Edit
+global-text-value-change = Change
 global-text-value-save-and-add = Save and Add Another
 global-text-value-save = Save
 global-text-value-saved = Saved
@@ -369,6 +376,8 @@ global-text-value-all-changes-saved = All Changes Saved
 global-form-html-required-note = <span class="red-text">*</span> Indicates a required field
 
 global-text-value-selected = Selected
+
+global-text-value-your-location = Your Location
 
 global-text-value-delete = Delete
 global-text-value-remove = Remove
@@ -724,6 +733,11 @@ item-detail-no-ascents-text = You have not yet {
     [campsite] camped at
     *[else] been to
 } { $name }.
+
+directions-select-origin = Select your starting point
+directions-your-location = Use your location
+directions-nothing-found = Could not find directions to point
+directions-open-in-google-maps = Open in Google Maps
 
 mountain-detail-enable-driving-distances = Enable Driving Distances
 mountain-detail-driving-distance = {

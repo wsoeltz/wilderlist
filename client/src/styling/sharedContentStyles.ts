@@ -207,6 +207,16 @@ export const HorizontalBlock = styled.div`
   }
 `;
 
+export const DarkBlock = styled(HorizontalBlock)`
+  background-color: ${tertiaryColor};
+  max-width: 7rem;
+  width: 7rem;
+  white-space: normal;
+  &:after {
+    display: none;
+  }
+`;
+
 export const EmptyBlock = styled(HorizontalBlock)`
   justify-content: center;
 `;
@@ -216,6 +226,7 @@ export const BlockHeader = styled.h3`
   margin: 0;
   margin-bottom: auto;
   padding: 0;
+  font-weight: 400;
 `;
 
 export const CenteredHeader = styled(BlockHeader)`
@@ -237,6 +248,10 @@ export const SimpleTitle = styled.div`
   font-size: 0.9em;
   font-weight: ${boldFontWeight};
   padding-right: 0.25rem;
+`;
+
+export const BlockTitle = styled(SimpleTitle)`
+  margin-bottom: 0.5rem;
 `;
 
 export const Details = styled.div`

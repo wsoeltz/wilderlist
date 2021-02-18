@@ -63,13 +63,13 @@ const RoutesToPoint = (props: Props) => {
   } else if (error !== undefined) {
     console.error(error);
     return (
-        <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
-          <EmptyBlock>
-            <BlockHeader>
-              {getString('global-error-retrieving-data')}
-            </BlockHeader>
-          </EmptyBlock>
-        </HorizontalScrollContainer>
+      <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
+        <EmptyBlock>
+          <CenteredHeader>
+            {getString('global-error-retrieving-data')}
+          </CenteredHeader>
+        </EmptyBlock>
+      </HorizontalScrollContainer>
     );
   } else if (data !== undefined) {
     if (data.features.length) {
@@ -152,9 +152,9 @@ const RoutesToPoint = (props: Props) => {
       return (
         <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
           <EmptyBlock>
-            <BlockHeader>
+            <CenteredHeader>
               {getString('global-text-value-no-routes-to', {type: item})}
-            </BlockHeader>
+            </CenteredHeader>
           </EmptyBlock>
         </HorizontalScrollContainer>
       );

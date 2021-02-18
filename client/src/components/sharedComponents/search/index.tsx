@@ -79,10 +79,15 @@ interface Props {
   hideIcon?: boolean;
   keepFocusOnSelect?: boolean;
   compact?: boolean;
+  // customIcon is any due to FontAwesomeIcon Props overloading node
+  customIcon?: any;
 }
 
 const Search = (props: Props) => {
-  const {endpoint, ignore, onSelect, hideIcon, keepFocusOnSelect, compact, placeholder, onClear} = props;
+  const {
+    endpoint, ignore, onSelect, hideIcon, keepFocusOnSelect, compact, placeholder, onClear,
+    customIcon,
+  } = props;
   const center = useMapCenter();
   const [state, updateState] = useState<SearchState>({value: '', suggestions: [], loading: false});
 
@@ -179,8 +184,9 @@ const Search = (props: Props) => {
       value={state.value}
       hideIcon={hideIcon}
       compact={compact}
+      customIcon={customIcon}
     />
-  ), [state.loading, state.value, clearSearch, hideIcon, compact]);
+  ), [state.loading, state.value, clearSearch, hideIcon, compact, customIcon]);
 
   const renderSuggestionCallback = useCallback((suggestion: SearchResultDatum, {query}: {query: string}) =>
     <SearchResult suggestion={suggestion} query={query} compact={compact} />, [compact]);

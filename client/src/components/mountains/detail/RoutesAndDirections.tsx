@@ -7,6 +7,7 @@ import useFluent from '../../../hooks/useFluent';
 import {Coordinate} from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
+import PanelDirections from '../../sharedComponents/detailComponents/directions/PanelDirections';
 import RoutesToPoint from '../../sharedComponents/detailComponents/routesToPoint';
 import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
 
@@ -23,16 +24,18 @@ const RoutesAndDirections = (props: Props) => {
       reactNode: <RoutesToPoint coordinate={location} item={CoreItem.mountain} />,
       customIcon: false,
       icon: faRoute,
+      renderHiddenContent: true,
     },
     {
       title: getString('detail-nearby-camping'),
       reactNode: <RoutesToPoint coordinate={location} item={CoreItem.campsite} destination={'campsites'} />,
       customIcon: true,
       icon: tentNeutralSvg,
+      renderHiddenContent: true,
     },
     {
       title: getString('global-text-value-directions'),
-      reactNode: <div>{location}</div>,
+      reactNode: <PanelDirections />,
       customIcon: false,
       icon: faCar,
     },

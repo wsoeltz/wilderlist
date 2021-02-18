@@ -10,6 +10,7 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import getCampsite from './api/getCampsite';
+import getGeoSearch from './api/getGeoSearch';
 import getGlobalSearch from './api/getGlobalSearch';
 import getMountain from './api/getMountain';
 import getNearestTrail from './api/getNearestTrail';
@@ -200,6 +201,23 @@ app.post('/api/hiking-list-search', async (req, res) => {
     const ignore = req.body && req.body.ignore ? req.body.ignore : [];
     if (lat !== undefined && lng !== undefined && search !== undefined) {
       const searchData = await getSearchLists({lat, lng, search, ignore});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/geo-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getGeoSearch({lat, lng, search});
       res.json(searchData);
     } else {
       throw new Error('Missing parameters');

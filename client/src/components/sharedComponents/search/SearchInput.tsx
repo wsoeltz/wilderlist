@@ -82,11 +82,14 @@ interface Props {
   value: string;
   hideIcon: boolean | undefined;
   compact: boolean | undefined;
+  // customIcon is any due to FontAwesomeIcon Props overloading node
+  customIcon: any | undefined;
 }
 
 const SearchInput = (props: Props) => {
   const {
     inputProps, clearSearch, loading, value, hideIcon, compact,
+    customIcon,
   } = props;
 
   const [isFocused, setIsFocused] = useState(false);
@@ -124,7 +127,7 @@ const SearchInput = (props: Props) => {
 
   const searchIcon = hideIcon ? null : (
     <SearchIcon
-      icon='search'
+      icon={customIcon ? customIcon : 'search'}
       style={{
         fontSize: compact ? magnifyingGlassSize * 0.5 + 'rem' : undefined,
       }}
