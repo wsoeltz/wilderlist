@@ -49,3 +49,25 @@ export const writeRoutesCache = (url: string, data: FeatureCollection) => {
 export const readRoutesCache = (url: string) => {
   return ROUTES_CACHE.find(d => d.key === url);
 };
+
+const QUEUED_URLS: string[] = [];
+
+export const isUrlQueued = (url: string) => {
+  if (QUEUED_URLS.includes(url)) {
+    return true;
+  }
+  return false;
+};
+
+export const pushUrlToQueue = (url: string) => {
+  if (!QUEUED_URLS.includes(url)) {
+    QUEUED_URLS.push(url);
+  }
+};
+
+export const removeUrlFromQueue = (url: string) => {
+  const index = QUEUED_URLS.indexOf(url);
+  if (index > -1) {
+    QUEUED_URLS.splice(index, 1);
+  }
+};

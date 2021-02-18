@@ -4,7 +4,10 @@ import {useEffect, useState} from 'react';
 import {getRoutesToPointURL, RoutesToPointInput} from '../../../routing/services';
 import {
   FeatureCollection,
+  isUrlQueued,
+  pushUrlToQueue,
   readRoutesCache,
+  removeUrlFromQueue,
   writeRoutesCache,
 } from './simpleCache';
 
@@ -35,23 +38,48 @@ const useRoutesToPoint = (input: Input): Output => {
   const [output, setOutput] = useState<Output>({loading: true, error: undefined, data: undefined});
 
   useEffect(() => {
+    let mounted = true;
     const url = getRoutesToPointURL({
       coord: [lng, lat],
       altCoord: altLat && altLng ? [altLng, altLat] : undefined,
       destination,
     });
-    const cached = readRoutesCache(url);
-    if (cached) {
-      setOutput({loading: false, error: undefined, data: cached.data});
-    } else {
-      setOutput(curr => ({...curr, loading: true}));
-      getRoutesToPoint(url)
-        .then(response => {
-          setOutput({loading: false, error: undefined, data: response.data});
-          writeRoutesCache(url, response.data);
-        })
-        .catch(error => setOutput({loading: false, error, data: undefined}));
-    }
+    let attempts = 0;
+    const fetchRoutes = () => {
+      const cached = readRoutesCache(url);
+      if (cached) {
+        if (mounted) {
+          setOutput({loading: false, error: undefined, data: cached.data});
+        }
+      } else {
+        if (!isUrlQueued(url) || attempts > 100) {
+          pushUrlToQueue(url);
+          if (mounted) {
+            setOutput(curr => ({...curr, loading: true}));
+          }
+          getRoutesToPoint(url)
+            .then(response => {
+              if (mounted) {
+                setOutput({loading: false, error: undefined, data: response.data});
+              }
+              writeRoutesCache(url, response.data);
+              removeUrlFromQueue(url);
+            })
+            .catch(error => {
+              if (mounted) {
+                setOutput({loading: false, error, data: undefined});
+              }
+            });
+        } else {
+          attempts++;
+          setTimeout(fetchRoutes, 100);
+        }
+      }
+    };
+    fetchRoutes();
+    return () => {
+      mounted = false;
+    };
   }, [lat, lng, altLat, altLng, destination]);
 
   return output;

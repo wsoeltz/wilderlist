@@ -77,7 +77,9 @@ const RoutesToPoint = (props: Props) => {
       const routes = sortedRoutes.map(({properties}, i) => {
         const {routeLength, elevationGain, elevationLoss, avgSlope, trails} = properties;
         let elevationDetails: React.ReactElement<any> | null;
-        if (elevationGain && elevationLoss && avgSlope) {
+        if (elevationGain !== undefined && elevationGain !== null &&
+            elevationLoss !== undefined && elevationLoss !== null &&
+            avgSlope !== undefined && avgSlope !== null) {
           elevationDetails = (
             <>
               <InlineColumns>
