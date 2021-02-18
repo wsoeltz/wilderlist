@@ -32,3 +32,12 @@ export const getRoutesToPointURL = ({coord, altCoord, destination}: RoutesToPoin
   return `${baseUrl}${ServicesRoutes.routesToPoint}` +
     `?lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}`;
 };
+export const getRoutesToPointRawDataURL = ({coord, altCoord, destination}: RoutesToPointInput) => {
+  let altCoordsParam: string = '';
+  if (altCoord) {
+    altCoordsParam = `&lat=${altCoord[1]}&lng=${altCoord[0]}`;
+  }
+  const destinationParam = destination ? `&destination=${destination}` : '';
+  return `${baseUrl}${ServicesRoutes.routesToPoint}` +
+    `?raw=true&lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}`;
+};
