@@ -106,11 +106,8 @@ const NWSForecast = (props: Props) => {
     if (name !== undefined && shortForecast !== undefined && high !== undefined && low !== undefined &&
         precip !== undefined && onClick !== undefined) {
       const sunTimes = SunCalc.getTimes(date, latitude, longitude);
-      // const sunriseStr = sunTimes.sunrise.getHours() + ':' + sunTimes.sunrise.getMinutes();
-      // const sunsetStr = sunTimes.sunset.getHours() + ':' + sunTimes.sunset.getMinutes();
       const sunriseStr = formatAMPM(sunTimes.sunrise);
       const sunsetStr = formatAMPM(sunTimes.sunset);
-
       forecastDays.push(
         <HorizontalBlock key={name}>
           <CenteredHeader>
@@ -128,15 +125,15 @@ const NWSForecast = (props: Props) => {
           </Temperatures>
           <InlineColumns>
             <Subtext>
-              <SimpleTitle>precipitation:</SimpleTitle>
+              <SimpleTitle>{getString('weather-forecast-precipitation')}:</SimpleTitle>
             </Subtext>
             <Subtext>
-              {precip}% chance
+              {precip}% {getString('weather-forecast-chance')}
             </Subtext>
           </InlineColumns>
           <InlineColumns>
             <Subtext>
-              <SimpleTitle>Sunrise &amp; set:</SimpleTitle>
+              <SimpleTitle>{getString('weather-forecast-sunrise-and-set')}:</SimpleTitle>
             </Subtext>
             <Subtext>
               <strong>↑</strong> {sunriseStr}

@@ -1,3 +1,4 @@
+import {Coordinate} from '../../../../../types/graphQLTypes';
 import {NWSForecastDatum} from './NWSForecast';
 import {OpenWeatherForecastDatum} from './OpenWeatherForecast';
 
@@ -8,9 +9,11 @@ export enum ForecastSource {
 
 export type Forecast = {
   source: ForecastSource.OpenWeatherMap;
+  location: Coordinate,
   data: OpenWeatherForecastDatum;
 } | {
   source: ForecastSource.NWS;
+  location: Coordinate,
   data: NWSForecastDatum[];
 };
 

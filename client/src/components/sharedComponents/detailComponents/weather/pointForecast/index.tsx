@@ -98,14 +98,16 @@ const WeatherReport = ({latitude, longitude, valley}: Input) => {
     if (forecast.source === ForecastSource.NWS && forecast.data && forecast.data.length) {
       output = (
         <NWSForecast
-          latitude={latitude}
-          longitude={longitude}
+          latitude={forecast.location[1]}
+          longitude={forecast.location[0]}
           forecast={forecast.data}
         />
       );
     } else if (forecast.source === ForecastSource.OpenWeatherMap) {
       output = (
         <OpenWeatherForecast
+          latitude={forecast.location[1]}
+          longitude={forecast.location[0]}
           forecast={forecast.data}
         />
       );

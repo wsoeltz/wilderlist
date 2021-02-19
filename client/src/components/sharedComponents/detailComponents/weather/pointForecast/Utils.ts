@@ -102,7 +102,7 @@ export const TempHigh = styled.div`
 export const TempLow = styled.div`
   margin-left: 0.5rem;
   font-size: 0.85rem;
-  transform: translateY(-0.2rem);
+  transform: translateY(-0.1rem);
 `;
 export const AdditionalInfo = styled.div`
   color: ${lightBaseColor};

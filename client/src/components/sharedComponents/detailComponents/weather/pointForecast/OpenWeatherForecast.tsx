@@ -1,15 +1,23 @@
 import React, {useCallback, useState} from 'react';
+import SunCalc from 'suncalc';
 import useFluent from '../../../../../hooks/useFluent';
 import {
+  CenteredHeader,
+  Details,
+  HorizontalBlock,
+  InlineColumns,
+  SimpleTitle,
+} from '../../../../../styling/sharedContentStyles';
+import {
   BasicIconInText,
+  LinkButtonCompact,
+  Subtext,
 } from '../../../../../styling/styleUtils';
 import OpenWeatherDetailModal from './OpenWeatherDetailModal';
 import {
-  AdditionalInfo,
   degToCompass,
-  DetailModalButton,
-  ForecastBlock,
   ForecastShort,
+  formatAMPM,
   getDayAsText,
   getFaIcon,
   Temperatures,
@@ -81,10 +89,12 @@ export interface OpenWeatherForecastDatum {
 
 interface Props {
   forecast: OpenWeatherForecastDatum;
+  latitude: number;
+  longitude: number;
 }
 
 const OpenWeatherForecast = (props: Props) => {
-  const {forecast: {daily, hourly}} = props;
+  const {forecast: {daily, hourly}, latitude, longitude} = props;
 
   const [weatherDetail, setWeatherDetail] = useState<WeatherReportDatum | null>(null);
   const closeWeatherDetail = useCallback(() => setWeatherDetail(null), []);
@@ -108,27 +118,49 @@ const OpenWeatherForecast = (props: Props) => {
     const dateText = getDayAsText(date);
     const description = weather[0].description.charAt(0).toUpperCase() + weather[0].description.slice(1);
     const onClick = () => setWeatherDetail(report);
+
+    const sunTimes = SunCalc.getTimes(date, latitude, longitude);
+    const sunriseStr = formatAMPM(sunTimes.sunrise);
+    const sunsetStr = formatAMPM(sunTimes.sunset);
     return (
-      <ForecastBlock key={dt}>
-        <strong>{dateText}</strong>
-        <ForecastShort>
-          <BasicIconInText icon={getFaIcon(weather[0].id)} />
-          {description}
-        </ForecastShort>
+      <HorizontalBlock key={dt}>
+        <CenteredHeader>
+          <div>
+            <strong>
+              <BasicIconInText icon={getFaIcon(weather[0].id)} />
+              {dateText}
+            </strong>
+            <ForecastShort>{description}</ForecastShort>
+          </div>
+        </CenteredHeader>
         <Temperatures>
           <TempHigh>{Math.round(temp.max)}°F</TempHigh>
-          /
           <TempLow>{Math.round(temp.min)}°F</TempLow>
         </Temperatures>
-        <AdditionalInfo>
-          {getString('weather-forecast-wind')} {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
-        </AdditionalInfo>
-        <DetailModalButton
-          onClick={onClick}
-        >
-          {getString('weather-forecast-detailed-report')}
-        </DetailModalButton>
-      </ForecastBlock>
+        <InlineColumns>
+          <Subtext>
+            <SimpleTitle>{getString('weather-forecast-wind')}:</SimpleTitle>
+          </Subtext>
+          <Subtext>
+            {Math.round(wind_speed)} mph {degToCompass(wind_deg)}
+          </Subtext>
+        </InlineColumns>
+        <InlineColumns>
+          <Subtext>
+            <SimpleTitle>{getString('weather-forecast-sunrise-and-set')}:</SimpleTitle>
+          </Subtext>
+          <Subtext>
+            <strong>↑</strong> {sunriseStr}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <strong>↓</strong> {sunsetStr}
+          </Subtext>
+        </InlineColumns>
+        <Details>
+          <LinkButtonCompact onClick={onClick}>
+            {getString('weather-forecast-detailed-report')}
+          </LinkButtonCompact>
+        </Details>
+      </HorizontalBlock>
     );
   });
 
