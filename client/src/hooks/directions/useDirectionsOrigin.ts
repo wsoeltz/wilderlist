@@ -59,7 +59,7 @@ const useDirectionsOrigin = () => {
         console.error(error);
         updateLocation(null, false, 'Unable to retrieve your location');
       },
-      {timeout: 5000},
+      {timeout: 10000},
     );
     }
   }, [updateLocation]);

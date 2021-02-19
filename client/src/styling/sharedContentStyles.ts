@@ -211,6 +211,7 @@ export const DarkBlock = styled(HorizontalBlock)`
   background-color: ${tertiaryColor};
   max-width: 7rem;
   width: 7rem;
+  flex-shrink: 0;
   white-space: normal;
   &:after {
     display: none;

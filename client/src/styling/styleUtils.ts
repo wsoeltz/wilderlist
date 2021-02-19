@@ -131,6 +131,10 @@ export const SmallLink = styled(Link)`
   font-size: 0.7rem;
 `;
 
+export const SmallExternalLink = styled.a`
+  font-size: 0.7rem;
+`;
+
 export const Subtext = styled.small`
 color: ${lightBaseColor};
 `;

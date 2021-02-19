@@ -14,10 +14,17 @@ import {
 import {
   LinkButtonCompact,
 } from '../../../../styling/styleUtils';
+import {Coordinate} from '../../../../types/graphQLTypes';
 import LoadingSimple from '../../LoadingSimple';
+import Destinations from './Destinations';
 import SetOrigin from './SetOrigin';
 
-const PanelDirections = () => {
+interface Props {
+  destination: Coordinate;
+}
+
+const PanelDirections = (props: Props) => {
+  const {destination} = props;
   const {location, updateLocation, getUsersLocation} = useDirectionsOrigin();
   const clearLocation = () => updateLocation(null);
   const getString = useFluent();
@@ -55,6 +62,10 @@ const PanelDirections = () => {
               <img src={FromIconImgSrc} />
             </Details>
           </DarkBlock>
+          <Destinations
+            start={location.data.coordinates}
+            end={destination}
+          />
       </HorizontalScrollContainer>
     );
   } else {

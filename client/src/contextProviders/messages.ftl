@@ -337,7 +337,8 @@ global-formatted-anything-type = {
   [picnic_site] picnic site
   [park] park
   [trailhead] trailhead
-  [parking_space] parking space
+  [parking_space] parking area
+  [parking] parking lot
   [intersection] trail/road crossing
   *[other] point
 }
@@ -738,6 +739,22 @@ directions-select-origin = Select your starting point
 directions-your-location = Use your location
 directions-nothing-found = Could not find directions to point
 directions-open-in-google-maps = Open in Google Maps
+directions-driving-duration = {
+  $hours ->
+    [0] {""}
+    [1] 1 hr
+    *[else] { $hours } hrs
+} {
+  $minutes ->
+    [0] {""}
+    [1] 1 min
+    *[else] { $minutes } mins
+}
+directions-driving-distance = {
+  $miles ->
+    [1] 1 mile
+    *[else] { $miles } miles
+}
 
 mountain-detail-enable-driving-distances = Enable Driving Distances
 mountain-detail-driving-distance = {

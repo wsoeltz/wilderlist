@@ -41,3 +41,14 @@ export const getRoutesToPointRawDataURL = ({coord, altCoord, destination}: Route
   return `${baseUrl}${ServicesRoutes.routesToPoint}` +
     `?raw=true&lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}`;
 };
+
+export interface DirectionToParkingInput {
+  start: Coordinate;
+  end: Coordinate;
+  considerDirect?: boolean;
+}
+export const getDirectionToParkingURL = ({start, end, considerDirect}: DirectionToParkingInput) => {
+  const direct = considerDirect ? `&direct=true` : '';
+  return `${baseUrl}${ServicesRoutes.directionsToParking}` +
+    `?lat1=${start[1]}&lng1=${start[0]}&lat2=${end[1]}&lng2=${end[0]}${direct}`;
+};

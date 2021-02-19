@@ -35,7 +35,7 @@ const RoutesAndDirections = (props: Props) => {
     },
     {
       title: getString('global-text-value-directions'),
-      reactNode: <PanelDirections />,
+      reactNode: <PanelDirections destination={location} />,
       customIcon: false,
       icon: faCar,
     },
