@@ -88,12 +88,12 @@ global-text-value-miles-to = miles to {
     *[other] point
 }
 
-global-text-value-no-routes-to = No routes to {
+global-text-value-no-routes-to = No {
   $type ->
-    [mountain] summit
-    [campsite] campsite
-    [trail] trail
-    *[other] point
+    [mountain] routes to summit
+    [campsite] nearby campsites
+    [trail] nearby mountains
+    *[other] routes to point
 } found
 
 global-text-value-no-results-found = No results found.

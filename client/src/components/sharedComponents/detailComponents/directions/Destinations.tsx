@@ -98,7 +98,7 @@ const Destinations = ({start, end, considerDirect}: Props) => {
                   <SimpleTitle>{getString('global-text-value-duration')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
-                  <strong>{getString('directions-driving-duration', {hours, minutes})}</strong>
+                  {getString('directions-driving-duration', {hours, minutes})}
                 </Subtext>
               </InlineColumns>
 
@@ -107,7 +107,7 @@ const Destinations = ({start, end, considerDirect}: Props) => {
                   <SimpleTitle>{getString('global-text-value-distance')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
-                  <strong>{getString('directions-driving-distance', {miles})}</strong>
+                  {getString('directions-driving-distance', {miles})}
                 </Subtext>
               </InlineColumns>
             </Details>

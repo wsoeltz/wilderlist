@@ -91,18 +91,18 @@ export const ForecastBlock = styled.div`
 
 export const Temperatures = styled.div`
   display: flex;
-  margin: 0.4rem 0;
+  margin: 0.2rem auto;
   align-items: flex-end;
+  font-weight: 200;
 `;
 export const TempHigh = styled.div`
-  color: ${warmRedColor};
-  margin-right: 2px;
-  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  font-size: 1.4rem;
 `;
 export const TempLow = styled.div`
-  color: ${coolBlueColor};
-  margin-left: 2px;
-  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  transform: translateY(-0.2rem);
 `;
 export const AdditionalInfo = styled.div`
   color: ${lightBaseColor};
@@ -111,9 +111,10 @@ export const AdditionalInfo = styled.div`
 `;
 export const ForecastShort = styled.div`
   margin-top: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
+  min-height: 1.5rem;
   font-style: italic;
-  color: ${lightBaseColor};
+  white-space: normal;
 `;
 
 export const DetailModalButton = styled(LinkButton)`

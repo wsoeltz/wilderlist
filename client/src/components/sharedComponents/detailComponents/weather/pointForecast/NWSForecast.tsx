@@ -1,10 +1,22 @@
 import React, {useState} from 'react';
+import SunCalc from 'suncalc';
 import useFluent from '../../../../../hooks/useFluent';
 import {
-  AdditionalInfo,
-  DetailModalButton,
-  ForecastBlock,
+  CenteredHeader,
+  Details,
+  HorizontalBlock,
+  InlineColumns,
+  SimpleTitle,
+} from '../../../../../styling/sharedContentStyles';
+import {
+  BasicIconInText,
+  LinkButtonCompact,
+  Subtext,
+} from '../../../../../styling/styleUtils';
+import getIcon from './getIcon';
+import {
   ForecastShort,
+  formatAMPM,
   Temperatures,
   TempHigh,
   TempLow,
@@ -29,11 +41,13 @@ interface DetailForecastState {
 
 interface Props {
   forecast: NWSForecastDatum[];
+  latitude: number;
+  longitude: number;
 }
 
 const NWSForecast = (props: Props) => {
   const {
-    forecast,
+    forecast, latitude, longitude,
   } = props;
   const [weatherDetail, setWeatherDetail] = useState<DetailForecastState | null>(null);
 
@@ -50,89 +64,95 @@ const NWSForecast = (props: Props) => {
       tonight={weatherDetail.tonight}
     />
   );
+  const date = new Date();
 
   const start = forecast[0].isDaytime === true ? 0 : -1;
   const forecastDays: Array<React.ReactElement<any>> = [];
   let i = start;
   while (i < forecast.length) {
+    let name: string | undefined;
+    let shortForecast: string | undefined;
+    let high: string | number | undefined;
+    let low: string | number | undefined;
+    let precip: number | undefined;
+    let onClick: (() => void) | undefined;
     if (i === -1) {
       const tonight = forecast[i + 1];
-      const onClick = () => setWeatherDetail({today: null, tonight});
-      const tonightPrecip = tonight.precipitation ? (
-      <AdditionalInfo>
-          {tonight.precipitation}% {getString('weather-forecast-chance-precip')}
-      </AdditionalInfo>
-      ) : null;
-      forecastDays.push(
-        <ForecastBlock key={tonight.name}>
-          <strong>{tonight.name}</strong>
-          <ForecastShort>{tonight.shortForecast}</ForecastShort>
-          <Temperatures>
-            <TempHigh>{getString('weather-forecast-high')} --°F</TempHigh>
-            /
-            <TempLow>{getString('weather-forecast-low')} {tonight.temperature}°F</TempLow>
-          </Temperatures>
-          {tonightPrecip}
-          <DetailModalButton
-            onClick={onClick}
-          >
-            {getString('weather-forecast-detailed-report')}
-          </DetailModalButton>
-        </ForecastBlock>,
-      );
+      name = tonight.name;
+      shortForecast = tonight.shortForecast;
+      high = '--';
+      low = tonight.temperature;
+      precip = tonight.precipitation;
+      onClick = () => setWeatherDetail({today: null, tonight});
     } else {
       const today = forecast[i];
       const tonight = forecast[i + 1];
       if (today && tonight) {
-        const onClick = () => setWeatherDetail({today, tonight});
-        const todayPrecip = today.precipitation ? (
-          <AdditionalInfo>
-            {today.precipitation}% {getString('weather-forecast-chance-precip')}
-          </AdditionalInfo>
-        ) : null;
-        forecastDays.push(
-          <ForecastBlock key={today.name}>
-            <strong>{today.name}</strong>
-            <ForecastShort>{today.shortForecast}</ForecastShort>
-            <Temperatures>
-              <TempHigh>{today.temperature}°F</TempHigh>
-              /
-              <TempLow>{tonight.temperature}°F</TempLow>
-            </Temperatures>
-            {todayPrecip}
-            <DetailModalButton
-              onClick={onClick}
-            >
-              {getString('weather-forecast-detailed-report')}
-            </DetailModalButton>
-          </ForecastBlock>,
-        );
+        name = today.name;
+        shortForecast = today.shortForecast;
+        high = today.temperature;
+        low = tonight.temperature;
+        precip = today.precipitation;
+        onClick = () => setWeatherDetail({today, tonight});
       } else if (today) {
-        const onClick = () => setWeatherDetail({today, tonight: null});
-        const todayPrecip = today.precipitation ? (
-          <AdditionalInfo>
-            {today.precipitation}% {getString('weather-forecast-chance-precip')}
-          </AdditionalInfo>
-        ) : null;
-        forecastDays.push(
-          <ForecastBlock key={today.name}>
-            <strong>{today.name}</strong>
-            <ForecastShort>{today.shortForecast}</ForecastShort>
-            <Temperatures>
-              <TempHigh>{today.temperature}°F</TempHigh>
-              /
-              <TempLow>--°F</TempLow>
-            </Temperatures>
-            {todayPrecip}
-            <DetailModalButton
-              onClick={onClick}
-            >
-              {getString('weather-forecast-detailed-report')}
-            </DetailModalButton>
-          </ForecastBlock>,
-        );
+        name = today.name;
+        shortForecast = today.shortForecast;
+        high = today.temperature;
+        low = '--';
+        precip = today.precipitation;
+        onClick = () => setWeatherDetail({today, tonight: null});
       }
     }
+    if (name !== undefined && shortForecast !== undefined && high !== undefined && low !== undefined &&
+        precip !== undefined && onClick !== undefined) {
+      const sunTimes = SunCalc.getTimes(date, latitude, longitude);
+      // const sunriseStr = sunTimes.sunrise.getHours() + ':' + sunTimes.sunrise.getMinutes();
+      // const sunsetStr = sunTimes.sunset.getHours() + ':' + sunTimes.sunset.getMinutes();
+      const sunriseStr = formatAMPM(sunTimes.sunrise);
+      const sunsetStr = formatAMPM(sunTimes.sunset);
+
+      forecastDays.push(
+        <HorizontalBlock key={name}>
+          <CenteredHeader>
+            <div>
+              <strong>
+                <BasicIconInText icon={getIcon(shortForecast)} />
+                {name}
+              </strong>
+              <ForecastShort>{shortForecast}</ForecastShort>
+            </div>
+          </CenteredHeader>
+          <Temperatures>
+            <TempHigh>{high}°F</TempHigh>
+            <TempLow>{low}°F</TempLow>
+          </Temperatures>
+          <InlineColumns>
+            <Subtext>
+              <SimpleTitle>precipitation:</SimpleTitle>
+            </Subtext>
+            <Subtext>
+              {precip}% chance
+            </Subtext>
+          </InlineColumns>
+          <InlineColumns>
+            <Subtext>
+              <SimpleTitle>Sunrise &amp; set:</SimpleTitle>
+            </Subtext>
+            <Subtext>
+              <strong>↑</strong> {sunriseStr}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <strong>↓</strong> {sunsetStr}
+            </Subtext>
+          </InlineColumns>
+          <Details>
+            <LinkButtonCompact onClick={onClick}>
+              {getString('weather-forecast-detailed-report')}
+            </LinkButtonCompact>
+          </Details>
+        </HorizontalBlock>,
+      );
+    }
+    date.setDate(date.getDate() + 1);
     i = i + 2;
   }
 

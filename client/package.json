@@ -15,6 +15,7 @@
     "@sentry/react": "^5.29.2",
     "@types/react-autosuggest": "^10.0.1",
     "@types/react-beforeunload": "^2.1.0",
+    "@types/suncalc": "^1.8.0",
     "cross-fetch": "^3.0.4",
     "csvtojson": "^2.0.10",
     "d3": "^5.15.0",
@@ -38,6 +39,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
     "styled-components": "^5.2.1",
+    "suncalc": "^1.8.0",
     "tinyqueue": "^2.0.3",
     "typescript": "^4.0.3",
     "worker-loader": "^3.0.7"

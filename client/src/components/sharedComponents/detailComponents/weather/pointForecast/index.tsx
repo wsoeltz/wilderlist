@@ -1,23 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import useFluent from '../../../../../hooks/useFluent';
 import {getWeatherAtPointURL} from '../../../../../routing/services';
+import {
+  CenteredHeader,
+  EmptyBlock,
+  HorizontalScrollContainer,
+} from '../../../../../styling/sharedContentStyles';
 import getWeather from '../../../../../utilities/getWeather';
-import LoadingSpinner from '../../../LoadingSpinner';
+import LoadingSimple from '../../../LoadingSimple';
 import NWSForecast from './NWSForecast';
 import OpenWeatherForecast from './OpenWeatherForecast';
 import {
+  isUrlQueued,
+  pushUrlToQueue,
   readWeatherCache,
+  removeUrlFromQueue,
   writeWeatherCache,
 } from './simpleCache';
 import {
   Forecast,
   ForecastSource,
 } from './types';
-import {
-  ForecastRootContainer,
-  LoadingContainer,
-} from './Utils';
 
 interface LatLong {
   latitude: number;
@@ -34,64 +37,69 @@ const WeatherReport = ({latitude, longitude, valley}: Input) => {
   const [forecast, setForecast] = useState<Forecast | null>(intialCachedWeather ? intialCachedWeather.data : null);
   const [error, setError] = useState<any | null>(null);
 
-  const currentUser = useCurrentUser();
   const getString = useFluent();
 
   useEffect(() => {
     let ignoreResult: boolean = false;
+    let attempts = 0;
     const getWeatherData = async () => {
-      try {
-        const url = getWeatherAtPointURL({coord: [longitude, latitude], valley});
-        const res = await getWeather(url);
-        if (ignoreResult) {
-          console.warn('Weather report promise canceled for unmounted component');
-          return undefined;
-        }
-        if (res && res.data) {
-          writeWeatherCache(latitude, longitude, Boolean(valley), res.data);
-          setForecast(res.data);
-        } else {
-          setError('Weather for this location is not available at this time.');
-        }
-      } catch (err) {
-        console.error(err);
-        if (!ignoreResult) {
-          setError(err);
-        }
-      }
-    };
-    if (currentUser !== null) {
       const cachedWeather = readWeatherCache(latitude, longitude, Boolean(valley));
       if (!cachedWeather) {
-        getWeatherData();
+
+        const url = getWeatherAtPointURL({coord: [longitude, latitude], valley});
+        if (!isUrlQueued(url) || attempts > 100) {
+          pushUrlToQueue(url);
+          try {
+            const res = await getWeather(url);
+            if (res && res.data) {
+              writeWeatherCache(latitude, longitude, Boolean(valley), res.data);
+              removeUrlFromQueue(url);
+              if (ignoreResult) {
+                console.warn('Weather report promise canceled for unmounted component');
+                return undefined;
+              }
+              setForecast(res.data);
+            } else {
+              setError('Weather for this location is not available at this time.');
+            }
+          } catch (err) {
+            removeUrlFromQueue(url);
+            console.error(err);
+            if (!ignoreResult) {
+              setError(err);
+            }
+          }
+        } else {
+          attempts++;
+          setTimeout(getWeatherData, 100);
+        }
       } else {
         setForecast(cachedWeather.data);
       }
-    }
+    };
+    getWeatherData();
 
     return () => {ignoreResult = true; };
-  }, [setForecast, latitude, longitude, currentUser, valley]);
+  }, [setForecast, latitude, longitude, valley]);
 
   let output: React.ReactElement<any> | null;
   if (error !== null) {
     output = <>{getString('weather-forecast-network-error')}</>;
   } else if (forecast === null) {
     output = (
-      <LoadingContainer>
-        <LoadingSpinner
-          message={{
-            basic: getString('weather-loading-report'),
-            medium: getString('weather-loading-report'),
-            long: getString('weather-loading-report'),
-            extraLong: getString('weather-loading-report'),
-          }}
-        />
-      </LoadingContainer>
+      <EmptyBlock>
+        <CenteredHeader>
+          <LoadingSimple />
+          {getString('weather-loading-report')}...
+        </CenteredHeader>
+      </EmptyBlock>
     );
   } else if (forecast) {
     if (forecast.source === ForecastSource.NWS && forecast.data && forecast.data.length) {
       output = (
         <NWSForecast
+          latitude={latitude}
+          longitude={longitude}
           forecast={forecast.data}
         />
       );
@@ -102,7 +110,13 @@ const WeatherReport = ({latitude, longitude, valley}: Input) => {
         />
       );
     } else {
-      output = <>{getString('weather-forecast-network-error')}</>;
+      output = (
+        <EmptyBlock>
+          <CenteredHeader>
+            {getString('weather-forecast-network-error')}
+          </CenteredHeader>
+        </EmptyBlock>
+      );
     }
   } else {
     output = null;
@@ -110,9 +124,9 @@ const WeatherReport = ({latitude, longitude, valley}: Input) => {
 
   return (
     <>
-      <ForecastRootContainer hideScrollbars={false}>
+      <HorizontalScrollContainer hideScrollbars={false}>
         {output}
-      </ForecastRootContainer>
+      </HorizontalScrollContainer>
     </>
   );
 };

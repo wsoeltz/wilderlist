@@ -36,3 +36,25 @@ export const readSnowReportCache = (lat: number, lng: number, valley: boolean) =
   const key = keyFromLatLng(lat, lng, valley);
   return SNOW_REPORT_CACHE.find(d => d.key === key);
 };
+
+const QUEUED_URLS: string[] = [];
+
+export const isUrlQueued = (url: string) => {
+  if (QUEUED_URLS.includes(url)) {
+    return true;
+  }
+  return false;
+};
+
+export const pushUrlToQueue = (url: string) => {
+  if (!QUEUED_URLS.includes(url)) {
+    QUEUED_URLS.push(url);
+  }
+};
+
+export const removeUrlFromQueue = (url: string) => {
+  const index = QUEUED_URLS.indexOf(url);
+  if (index > -1) {
+    QUEUED_URLS.splice(index, 1);
+  }
+};
