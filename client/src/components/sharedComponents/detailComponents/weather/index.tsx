@@ -32,8 +32,8 @@ const WeatherSegment = (props: Props) => {
       title: getString('snow-report-title'),
       reactNode: (
         <SnowDepth
-          latitude={snowReport.location[1]}
-          longitude={snowReport.location[0]}
+          lat={snowReport.location[1]}
+          lng={snowReport.location[0]}
           stateAbbr={snowReport.stateAbbr}
         />
       ),

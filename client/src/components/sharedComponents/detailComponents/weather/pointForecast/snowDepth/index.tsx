@@ -1,178 +1,199 @@
-import {faSnowflake} from '@fortawesome/free-solid-svg-icons';
+import {
+  faChartBar,
+  faSnowflake,
+} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
+import {StationDatum} from '../../../../../../hooks/servicesHooks/weather/simpleCache';
+import useSnowReport from '../../../../../../hooks/servicesHooks/weather/useSnowReport';
 import useFluent from '../../../../../../hooks/useFluent';
-import {ItemTitle} from '../../../../../../styling/sharedContentStyles';
 import {
+  CenteredHeader,
+  EmptyBlock,
+  HorizontalBlock,
+  HorizontalScrollContainer,
+  InlineColumns,
+  SimpleTitle,
+} from '../../../../../../styling/sharedContentStyles';
+import {
+  baseColor,
   BasicIconInText,
-  lightBaseColor,
+  SmallExternalLink,
+  Subtext,
 } from '../../../../../../styling/styleUtils';
-import LoadingSpinner from '../../../../../sharedComponents/LoadingSpinner';
+import LoadingSimple from '../../../../LoadingSimple';
 import {
-  ForecastBlock,
-  ForecastRootContainer,
-  LoadingContainer,
+  Temperatures,
+  TempHigh,
 } from '../Utils';
-import useSnowReport, {Input} from './useSnowReport';
 
-const Root = styled(ForecastRootContainer)`
-  margin-top: 1rem;
-  min-height: 60px;
-`;
-
-const PanelTitle = styled(ItemTitle)`
-  padding: 1rem 1rem 0;
-`;
-
-const Title = styled.strong`
-  margin: 0.2rem;
-  white-space: nowrap;
-`;
-
-const AttributionContainer = styled.div`
-  padding: 0 1rem 0;
-`;
-
-const Attribution = styled.small`
+const StationName = styled(Subtext)`
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: block;
-  margin-top: 0.3rem;
+  flex-shrink: 1;
 `;
 
-const SnowItem = styled.p`
-  margin: 0.1rem 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-column-gap: 0.4rem;
-  color: ${lightBaseColor};
-  font-size: 0.75rem;
-  white-space: nowrap;
+const Title = styled(CenteredHeader)`
+  margin-bottom: 0.5rem;
+  color: ${baseColor};
+  font-size: 1rem;
+  font-weight: 600;
 `;
 
-const Value = styled.strong`
-  margin-left: 0.15rem;
-  text-transform: uppercase;
-  text-align: right;
-`;
+const getSnowValue = (data: StationDatum[]) => {
+  const closestStations = data && data.length ? data.slice(0, 3) : [];
+  const topValues = closestStations.map(({mostRecentValue}) => {
+    const numberValue = parseFloat(mostRecentValue);
+    if (isNaN(numberValue)) {
+      return mostRecentValue === 'T' ? 'Trace Amounts' : 'No data';
+    } else {
+      return numberValue;
+    }
+  });
+  const topNumbers = topValues.filter(val => typeof val === 'number') as number[];
+  let min: number | string | null = topNumbers.length ? Math.min(...topNumbers) : null;
+  if (min === null) {
+    if (topValues.includes('Trace Amounts')) {
+      min = 'Trace Amounts';
+    }
+  }
+  let max: number | string | null = topNumbers.length ? Math.max(...topNumbers) : null;
+  if (max === null) {
+    if (topValues.includes('Trace Amounts')) {
+      max = 'Trace Amounts';
+    }
+  }
+  if (max === null && min === null) {
+    return 'No data';
+  }
+  if (max === min || min === null) {
+    if (typeof max === 'number') {
+      return max + '"';
+    } else {
+      return max;
+    }
+  }
+  const maxString = typeof max === 'number' ? max + '"' : max;
+  return min + ' - ' + maxString;
+};
 
-const SnowDepth = (input: Input) => {
+interface Props {
+  lat: number;
+  lng: number;
+  stateAbbr: string;
+}
+
+const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
   const getString = useFluent();
 
-  const {loading, error, data} = useSnowReport(input);
+  const {loading, error, data} = useSnowReport({coord: [lng, lat], stateAbbr});
 
   let output: React.ReactElement<any> | null;
-  if (error !== undefined) {
-    return null;
+  if (error) {
+    output = <>{getString('snow-report-network-error')}</>;
   } else if (loading) {
     output = (
-      <Root hideScrollbars={false}>
-        <LoadingContainer>
-          <LoadingSpinner
-            message={{
-              basic: getString('snow-report-loading'),
-              medium: getString('snow-report-loading'),
-              long: getString('snow-report-loading'),
-              extraLong: getString('snow-report-loading'),
-            }}
-          />
-        </LoadingContainer>
-      </Root>
+      <EmptyBlock>
+        <CenteredHeader>
+          <LoadingSimple />
+          {getString('Getting your snow report')}...
+        </CenteredHeader>
+      </EmptyBlock>
     );
   } else if (data) {
-    const {snowfall, snowdepth} = data;
-    const attributions = snowfall.stationName === snowdepth.stationName ? (
-      <AttributionContainer>
-        <Attribution>
-          {getString('snow-report-full-attr', {
-            station: snowfall.stationName,
-            county: snowfall.county,
-            state: input.stateAbbr,
-          })}
-          <br />
-          {getString('snow-report-location-details', {
-            distance: parseFloat(snowfall.distance.toFixed(2)),
-            elevation: snowfall.elevation,
-          })}
-        </Attribution>
-      </AttributionContainer>
-    ) : (
-      <>
-        <AttributionContainer>
-          <Attribution>
-            {getString('snow-report-snowfall-attr', {
-              station: snowfall.stationName,
-              county: snowfall.county,
-              state: input.stateAbbr,
-            })}
-            <br />
-            {getString('snow-report-location-details', {
-              distance: parseFloat(snowfall.distance.toFixed(2)),
-              elevation: snowfall.elevation,
-            })}
-          </Attribution>
-        </AttributionContainer>
-        <AttributionContainer>
-          <Attribution>
-            {getString('snow-report-snowdepth-attr', {
-              station: snowdepth.stationName,
-              county: snowdepth.county,
-              state: input.stateAbbr,
-            })}
-            <br />
-            {getString('snow-report-location-details', {
-              distance: parseFloat(snowdepth.distance.toFixed(2)),
-              elevation: snowdepth.elevation,
-            })}
-          </Attribution>
-        </AttributionContainer>
-      </>
-    );
+    const snowFall = getSnowValue(data.snowFall);
+    const snowFallSourceStations = data.snowFall && data.snowFall.length ? data.snowFall.slice(0, 3).map((station) => (
+      <InlineColumns key={'snow-fall-source-station-' + station.ghcnid}>
+        <StationName>
+          <SmallExternalLink href={station.url} target={'_blank'}>{station.name}</SmallExternalLink>
+        </StationName>
+        <Subtext>
+          {getString('snow-report-distance', {miles:  Math.round(station.distance), elevation: station.elevation})}
+        </Subtext>
+      </InlineColumns>
+    )) : null;
+    const snowFallDate = data.snowFall && data.snowFall[0]
+      ? getString('snow-report-7-day-total', {date: getString('global-formatted-text-date-day-month', {
+          day: data.snowFall[0].day, month: data.snowFall[0].month,
+        })})
+      : '';
 
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const reportDays = snowfall.values.map((report, i) => {
-      const { date, value } = report;
-      const dateAsText = getString('global-formatted-text-date-day-month', {
-        day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear().toString(),
-      });
-
-      const yesterdayText = date.getDate() === yesterday.getDate()
-        ? getString('global-text-value-yesterday') + ', ' : '';
-
-      const snowfallVal = typeof value === 'number' ? value + '"' : <small>{value}</small>;
-      const snowdepthVal = typeof snowdepth.values[i].value === 'number'
-        ? snowdepth.values[i].value + '"' : <small>{snowdepth.values[i].value}</small>;
-      return (
-        <ForecastBlock key={dateAsText}>
-          <Title>{yesterdayText} {dateAsText}</Title>
-          <SnowItem>
-            <span>{getString('snow-report-new-snow')}:</span> <Value>{snowfallVal}</Value>
-            <span>{(getString('snow-report-current-depth'))}:</span> <Value>{snowdepthVal}</Value>
-          </SnowItem>
-        </ForecastBlock>
-      );
-    });
+    const snowDepth = getSnowValue(data.snowDepth);
+    const snowDepthSourceStations = data.snowDepth && data.snowDepth.length ? data.snowDepth.slice(0, 3).map((station) => (
+      <InlineColumns key={'snow-Depth-source-station-' + station.ghcnid}>
+        <StationName>
+          <SmallExternalLink href={station.url} target={'_blank'}>{station.name}</SmallExternalLink>
+        </StationName>
+        <Subtext>
+          {getString('snow-report-distance', {miles:  Math.round(station.distance), elevation: station.elevation})}
+        </Subtext>
+      </InlineColumns>
+    )) : null;
+    const snowDepthDate = data.snowDepth && data.snowDepth[0]
+      ? getString('snow-report-as-of', {date: getString('global-formatted-text-date-day-month', {
+          day: data.snowDepth[0].day, month: data.snowDepth[0].month,
+        })})
+      : '';
     output = (
       <>
-        {attributions}
-        <Root hideScrollbars={false}>
-          {reportDays}
-        </Root>
+        <HorizontalBlock>
+          <Title>
+            <div>
+              <BasicIconInText icon={faSnowflake} />
+              {getString('snow-report-new-snow')}
+            </div>
+          </Title>
+          <Temperatures>
+            <TempHigh>{snowFall}</TempHigh>
+          </Temperatures>
+          <em>
+            {snowFallDate}
+          </em>
+          <InlineColumns>
+            <Subtext>
+              <SimpleTitle>{getString('snow-report-source-stations')}:</SimpleTitle>
+            </Subtext>
+          </InlineColumns>
+          {snowFallSourceStations}
+        </HorizontalBlock>
+
+        <HorizontalBlock>
+          <Title>
+            <div>
+              <BasicIconInText icon={faChartBar} />
+              {getString('snow-report-current-depth')}
+            </div>
+          </Title>
+          <Temperatures>
+            <TempHigh>{snowDepth}</TempHigh>
+          </Temperatures>
+          <em>
+            {snowDepthDate}
+          </em>
+          <InlineColumns>
+            <Subtext>
+              <SimpleTitle>{getString('snow-report-source-stations')}:</SimpleTitle>
+            </Subtext>
+          </InlineColumns>
+          {snowDepthSourceStations}
+        </HorizontalBlock>
       </>
     );
+
   } else {
-    output = <Root />;
+    output = null;
   }
 
   return (
     <>
-      <PanelTitle>
-        <BasicIconInText icon={faSnowflake} />{getString('mountain-detail-snow-depth')}
-      </PanelTitle>
-      {output}
+      <HorizontalScrollContainer hideScrollbars={false}>
+        {output}
+      </HorizontalScrollContainer>
     </>
   );
+
 };
 
 export default React.memo(SnowDepth);

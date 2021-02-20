@@ -988,8 +988,12 @@ snow-report-snowfall-attr = Snowfall is for { $station } Station, { $county } Co
 snow-report-snowdepth-attr = Snow depth is for { $station } Station, { $county } County, { $state }
 snow-report-full-attr = Snow report is for { $station } Station, { $county } County, { $state }
 snow-report-location-details = { $distance }mi away, elevation of { $elevation }ft
-snow-report-new-snow = New snow
-snow-report-current-depth = Current depth
+snow-report-new-snow = New Snowfall
+snow-report-current-depth = Total Snow Depth
+snow-report-7-day-total = 7 day total, as of { $date }
+snow-report-as-of = as of { $date }
+snow-report-source-stations = Source Stations
+snow-report-distance = { $miles }mi away, ele. { $elevation }ft
 
 detail-route-to-summit = Routes to Summit
 detail-nearby-camping = Nearby Camping

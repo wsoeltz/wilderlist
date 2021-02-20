@@ -9,6 +9,7 @@ enum ServicesRoutes {
   directionsToParking = '/api/directions-to-parking',
   weatherAtPoint = '/api/weather-at-point',
   weatherAtValley = '/api/weather-at-valley',
+  snowReport = '/api/snow-report',
   localParking = '/api/local-parking',
   localLinestrings = '/api/local-linestrings',
   routesToPoint = '/api/routes-to-point',
@@ -51,4 +52,13 @@ export const getDirectionToParkingURL = ({start, end, considerDirect}: Direction
   const direct = considerDirect ? `&direct=true` : '';
   return `${baseUrl}${ServicesRoutes.directionsToParking}` +
     `?lat1=${start[1]}&lng1=${start[0]}&lat2=${end[1]}&lng2=${end[0]}${direct}`;
+};
+
+export interface SnowReportInput {
+  coord: Coordinate;
+  stateAbbr: string;
+}
+export const getSnowReportURL = ({coord, stateAbbr}: SnowReportInput) => {
+  return `${baseUrl}${ServicesRoutes.snowReport}` +
+    `?lat=${coord[1]}&lng=${coord[0]}&state_abbr=${stateAbbr}`;
 };

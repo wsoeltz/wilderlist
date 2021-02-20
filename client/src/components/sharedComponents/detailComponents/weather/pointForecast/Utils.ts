@@ -96,11 +96,10 @@ export const Temperatures = styled.div`
   font-weight: 200;
 `;
 export const TempHigh = styled.div`
-  margin-right: 0.5rem;
   font-size: 1.4rem;
 `;
 export const TempLow = styled.div`
-  margin-left: 0.5rem;
+  margin-left: 1rem;
   font-size: 0.85rem;
   transform: translateY(-0.1rem);
 `;
