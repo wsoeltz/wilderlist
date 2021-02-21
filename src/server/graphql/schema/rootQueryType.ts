@@ -51,6 +51,16 @@ const RootQuery = new GraphQLObjectType({
         return PeakList.find({});
       },
     },
+    appearsIn: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        id: { type: GraphQLID },
+        field: { type: GraphQLString },
+      },
+      async resolve(parentValue, {id, field}) {
+        return PeakList.find({[field]: id});
+      },
+    },
     peakListsSearch: {
       type: new GraphQLList(PeakListType),
       args: {

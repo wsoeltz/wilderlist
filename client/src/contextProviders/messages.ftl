@@ -361,6 +361,8 @@ global-text-value-completed-in-every-month = Completed in every month
 global-text-value-completed-in-every-season = Completed in every season
 global-text-value-mountain-not-being-pursued = This mountain is not being pursued
 
+global-text-value-appears-on = Find { $name } on:
+
 global-text-value-submit = Submit
 global-text-value-clear = Clear
 

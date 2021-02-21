@@ -1,8 +1,8 @@
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
-
 import {useBasicMountainDetails} from '../../../queries/mountains/useBasicMountainDetails';
-import {CoreItem} from '../../../types/itemTypes';
+import {CoreItem, CoreItems} from '../../../types/itemTypes';
+import AppearsIn from '../../sharedComponents/detailComponents/appearsIn';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
 import RoutesAndDirections from './RoutesAndDirections';
@@ -40,6 +40,11 @@ const Content = (props: Props) => {
           id={id}
           name={name}
           item={CoreItem.mountain}
+        />
+        <AppearsIn
+          id={id}
+          name={name}
+          field={CoreItems.mountains}
         />
       </>
     );

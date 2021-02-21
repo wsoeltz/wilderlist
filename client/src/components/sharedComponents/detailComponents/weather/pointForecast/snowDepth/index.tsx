@@ -18,6 +18,7 @@ import {
 import {
   baseColor,
   BasicIconInText,
+  lightBaseColor,
   SmallExternalLink,
   Subtext,
 } from '../../../../../../styling/styleUtils';
@@ -36,10 +37,17 @@ const StationName = styled(Subtext)`
 `;
 
 const Title = styled(CenteredHeader)`
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: ${baseColor};
   font-size: 1rem;
   font-weight: 600;
+  color: ${lightBaseColor};
+`;
+
+const DateText = styled.em`
+  color: ${lightBaseColor};
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
 `;
 
 const getSnowValue = (data: StationDatum[]) => {
@@ -76,7 +84,7 @@ const getSnowValue = (data: StationDatum[]) => {
     }
   }
   const maxString = typeof max === 'number' ? max + '"' : max;
-  return min + ' - ' + maxString;
+  return min + ' – ' + maxString;
 };
 
 interface Props {
@@ -121,16 +129,17 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
       : '';
 
     const snowDepth = getSnowValue(data.snowDepth);
-    const snowDepthSourceStations = data.snowDepth && data.snowDepth.length ? data.snowDepth.slice(0, 3).map((station) => (
-      <InlineColumns key={'snow-Depth-source-station-' + station.ghcnid}>
-        <StationName>
-          <SmallExternalLink href={station.url} target={'_blank'}>{station.name}</SmallExternalLink>
-        </StationName>
-        <Subtext>
-          {getString('snow-report-distance', {miles:  Math.round(station.distance), elevation: station.elevation})}
-        </Subtext>
-      </InlineColumns>
-    )) : null;
+    const snowDepthSourceStations = data.snowDepth && data.snowDepth.length
+      ? data.snowDepth.slice(0, 3).map((station) => (
+        <InlineColumns key={'snow-Depth-source-station-' + station.ghcnid}>
+          <StationName>
+            <SmallExternalLink href={station.url} target={'_blank'}>{station.name}</SmallExternalLink>
+          </StationName>
+          <Subtext>
+            {getString('snow-report-distance', {miles:  Math.round(station.distance), elevation: station.elevation})}
+          </Subtext>
+        </InlineColumns>
+      )) : null;
     const snowDepthDate = data.snowDepth && data.snowDepth[0]
       ? getString('snow-report-as-of', {date: getString('global-formatted-text-date-day-month', {
           day: data.snowDepth[0].day, month: data.snowDepth[0].month,
@@ -148,9 +157,9 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
           <Temperatures>
             <TempHigh>{snowFall}</TempHigh>
           </Temperatures>
-          <em>
+          <DateText>
             {snowFallDate}
-          </em>
+          </DateText>
           <InlineColumns>
             <Subtext>
               <SimpleTitle>{getString('snow-report-source-stations')}:</SimpleTitle>
@@ -169,9 +178,9 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
           <Temperatures>
             <TempHigh>{snowDepth}</TempHigh>
           </Temperatures>
-          <em>
+          <DateText>
             {snowDepthDate}
-          </em>
+          </DateText>
           <InlineColumns>
             <Subtext>
               <SimpleTitle>{getString('snow-report-source-stations')}:</SimpleTitle>
