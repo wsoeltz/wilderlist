@@ -28,9 +28,10 @@ interface Props {
   start: Coordinate;
   end: Coordinate;
   considerDirect?: boolean;
+  destinationName?: string;
 }
 
-const Destinations = ({start, end, considerDirect}: Props) => {
+const Destinations = ({start, end, considerDirect, destinationName}: Props) => {
   const {loading, error, data} = useDirectionsToParking({start, end, considerDirect});
   const getString = useFluent();
   if (loading) {
@@ -78,7 +79,11 @@ const Destinations = ({start, end, considerDirect}: Props) => {
           </Details>
         );
         const formattedType = getString('global-formatted-anything-type', {type: originType});
-        const name = originName ? originName : upperFirst(formattedType);
+        let name = originName ? originName : upperFirst(formattedType);
+        const subtitle = name === 'SOURCE' ? '' : getString('global-text-nearby') + ' ' + formattedType;
+        if (name === 'SOURCE') {
+          name = destinationName ? destinationName : 'Destination';
+        }
         return (
           <HorizontalBlock
             key={
@@ -89,7 +94,7 @@ const Destinations = ({start, end, considerDirect}: Props) => {
               <BlockTitle>{getString('global-text-value-to')}</BlockTitle>
               {name}
               <div>
-                <small>Nearby {formattedType}</small>
+                <small>{subtitle}</small>
               </div>
             </BlockHeader>
             <Details>

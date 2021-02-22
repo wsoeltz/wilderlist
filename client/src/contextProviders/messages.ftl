@@ -459,6 +459,8 @@ global-3d-mode-on = Turn&nbsp;on 3D&nbsp;Mode
 global-3d-mode-off = Turn&nbsp;off 3D&nbsp;Mode
 global-map-layers = Map Layers
 global-tools-and-settings = Tools&nbsp;&amp; Settings
+global-text-details = Details
+global-text-nearby = Nearby
 
 header-text-login-with-google = Login With Google
 header-text-login-with-reddit = Login With Reddit

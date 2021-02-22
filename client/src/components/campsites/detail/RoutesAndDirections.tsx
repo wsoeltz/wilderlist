@@ -1,6 +1,6 @@
 import {
+  faAlignLeft,
   faCar,
-  faRoute,
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
@@ -12,18 +12,20 @@ import RoutesToPoint from '../../sharedComponents/detailComponents/routesToPoint
 import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
 
 interface Props {
+  name: string;
+  type: string;
   location: Coordinate;
 }
 
 const RoutesAndDirections = (props: Props) => {
-  const {location} = props;
+  const {name, type, location} = props;
   const getString = useFluent();
   const panels: Panel[] = [
     {
-      title: getString('detail-route-to-summit'),
-      reactNode: <RoutesToPoint coordinate={location} item={CoreItem.mountain} />,
+      title: type + ' ' + getString('global-text-details'),
+      reactNode: <div />,
       customIcon: false,
-      icon: faRoute,
+      icon: faAlignLeft,
       renderHiddenContent: true,
     },
     {
@@ -35,7 +37,7 @@ const RoutesAndDirections = (props: Props) => {
     },
     {
       title: getString('global-text-value-directions'),
-      reactNode: <PanelDirections destination={location} />,
+      reactNode: <PanelDirections destination={location} considerDirect={true} destinationName={name} />,
       customIcon: false,
       icon: faCar,
     },

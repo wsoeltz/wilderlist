@@ -21,10 +21,12 @@ import SetOrigin from './SetOrigin';
 
 interface Props {
   destination: Coordinate;
+  considerDirect?: boolean;
+  destinationName?: string;
 }
 
 const PanelDirections = (props: Props) => {
-  const {destination} = props;
+  const {destination, considerDirect, destinationName} = props;
   const {location, updateLocation, getUsersLocation} = useDirectionsOrigin();
   const clearLocation = () => updateLocation(null);
   const getString = useFluent();
@@ -65,6 +67,8 @@ const PanelDirections = (props: Props) => {
           <Destinations
             start={location.data.coordinates}
             end={destination}
+            considerDirect={considerDirect}
+            destinationName={destinationName}
           />
       </HorizontalScrollContainer>
     );

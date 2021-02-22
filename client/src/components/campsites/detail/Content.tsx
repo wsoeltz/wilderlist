@@ -6,6 +6,7 @@ import {CoreItem, CoreItems} from '../../../types/itemTypes';
 import AppearsIn from '../../sharedComponents/detailComponents/appearsIn';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
+import RoutesAndDirections from './RoutesAndDirections';
 
 interface Props {
   id: string;
@@ -33,6 +34,11 @@ const Content = (props: Props) => {
             {title: getString('weather-forecast-weather'), location},
           ]}
           snowReport={{location, stateAbbr: locationTextShort}}
+        />
+        <RoutesAndDirections
+          location={location}
+          name={name}
+          type={formattedType}
         />
         <TripsNotesAndReports
           id={campsite.id}
