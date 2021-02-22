@@ -258,3 +258,10 @@ export const BlockTitle = styled(SimpleTitle)`
 export const Details = styled.div`
   margin: 0.5rem 0 0;
 `;
+
+export const LimitedLink = styled.a`
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 0.25rem;
+`;

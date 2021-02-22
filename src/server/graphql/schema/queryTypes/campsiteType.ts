@@ -9,7 +9,9 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { Campsite as ICampsite } from '../../graphQLTypes';
+import {CreatedItemStatus} from './mountainType';
 import StateType from './stateType';
+import UserType from './userType';
 
 type CampsiteSchemaType = mongoose.Document & ICampsite & {
   findState: (id: string) => any;
@@ -48,6 +50,11 @@ const CampsiteSchema = new Schema({
   locationText: { type: String },
   locationTextShort: { type: String },
   elevation: { type: Number },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+  },
+  status: { type: String },
 });
 
 CampsiteSchema.index({ center: '2dsphere' });
@@ -98,6 +105,25 @@ const CampsiteType: any = new GraphQLObjectType({
     elevation: { type: GraphQLFloat },
     locationText: { type: GraphQLString },
     locationTextShort: { type: GraphQLString },
+    author: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          if (parentValue.author) {
+            const res = await userLoader.load(parentValue.author);
+            if (res._id.toString() !== parentValue.author.toString()) {
+              throw new Error('IDs do not match' + res);
+            }
+            return res;
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    status: { type: CreatedItemStatus },
   }),
 });
 

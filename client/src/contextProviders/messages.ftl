@@ -113,6 +113,7 @@ global-text-value-description = Description
 global-text-value-directions = Directions
 global-text-value-more = more
 global-text-value-or = or
+global-text-value-in = in
 global-text-value-to = to
 global-text-value-from = from
 global-text-value-others = {
@@ -138,6 +139,7 @@ global-text-value-website = Website
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at help@wilderlist.app
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
 global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at help@wilderlist.app
+global-text-value-none-avail = None Available
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
@@ -206,6 +208,13 @@ global-text-value-not-done-dynamic = {
     [campsites] Not yet camped
     [trails] Not yet hiked
     *[other] Not yet visited
+}
+global-text-value-last-trip-dynamic = {
+  $type ->
+    [mountains] You last hiked on
+    [campsites] You last camped on
+    [trails] You last hiked on
+    *[other] Your last trip on
 }
 global-text-value-today = Today
 global-text-value-yesterday = Yesterday
@@ -796,9 +805,9 @@ trail-parent-full-trail = full trail
 
 campsite-detail-subtitle = {
   $ownership ->
-    [private] Privately run
-    [federal] Federally run
-    [state] State run
+    [private] Privately Run
+    [federal] Federally Run
+    [state] State Run
     *[else] {""}
 } { $type } {
   $location ->

@@ -10,7 +10,7 @@ const CampsiteDetailPage = () => {
   if (campsiteId === 'search') {
     return <CampsiteList />;
   } else {
-    return <CampsiteDetail id={campsiteId} setOwnMetaData={true} />;
+    return <CampsiteDetail id={campsiteId} />;
   }
 };
 

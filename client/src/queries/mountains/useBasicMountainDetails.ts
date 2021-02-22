@@ -23,7 +23,7 @@ const GET_MOUNTAIN_DETAIL = gql`
 
 interface QuerySuccessResponse {
   mountain: null | {
-    id: Mountain['name'];
+    id: Mountain['id'];
     name: Mountain['name'];
     elevation: Mountain['elevation'];
     location: Mountain['location'];

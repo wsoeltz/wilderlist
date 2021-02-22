@@ -1,23 +1,26 @@
 import { gql, useQuery } from '@apollo/client';
 import {
   Campsite,
-  State,
   User,
 } from '../../types/graphQLTypes';
 
-const GET_CAMPSITE_DETAIL = gql`
+const GET_BASIC_CAMPSITE_DETAIL = gql`
   query getCampsite($id: ID) {
     campsite(id: $id) {
       id
       name
-      location
       type
       ownership
-      state {
+      website
+      email
+      phone
+      location
+      locationText
+      locationTextShort
+      author {
         id
-        name
-        abbreviation
       }
+      status
     }
   }
 `;
@@ -26,14 +29,14 @@ interface QuerySuccessResponse {
   campsite: null | {
     id: Campsite['id'];
     name: Campsite['name'];
-    location: Campsite['location'];
     type: Campsite['type'];
     ownership: Campsite['ownership'];
-    state: {
-      id: State['id'];
-      name: State['name'];
-      abbreviation: State['abbreviation'];
-    };
+    website: Campsite['website'];
+    email: Campsite['email'];
+    phone: Campsite['phone'];
+    location: Campsite['location'];
+    locationText: Campsite['locationText'];
+    locationTextShort: Campsite['locationTextShort'];
     author: null | { id: User['id'] };
     status: Campsite['status'];
   };
@@ -43,7 +46,7 @@ interface QueryVariables {
   id: string | null;
 }
 
-export const useCampsiteDetail = (id: string | null) => useQuery<QuerySuccessResponse, QueryVariables>(
-  GET_CAMPSITE_DETAIL, {
+export const useBasicCampsiteDetails = (id: string | null) => useQuery<QuerySuccessResponse, QueryVariables>(
+  GET_BASIC_CAMPSITE_DETAIL, {
     variables: { id },
   });
