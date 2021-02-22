@@ -225,7 +225,7 @@ export interface Campsite {
   flag: string | null;
   elevation: number;
   locationText: string | null;
-  locationTextShort: string | null;
+  locationTextShort: string;
 }
 
 export enum PermissionTypes {

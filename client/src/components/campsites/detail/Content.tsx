@@ -1,53 +1,54 @@
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
-import {
-  Campsite,
-} from '../../../types/graphQLTypes';
-import {CoreItem} from '../../../types/itemTypes';
+import {useBasicCampsiteDetails} from '../../../queries/campsites/useBasicCampsiteDetails';
+import {CoreItem, CoreItems} from '../../../types/itemTypes';
+import AppearsIn from '../../sharedComponents/detailComponents/appearsIn';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
-import MapRenderProp from '../../sharedComponents/MapRenderProp';
 
 interface Props {
-  campsite: {
-    id: Campsite['id'];
-    name: Campsite['name'];
-    type: Campsite['type'];
-    location: Campsite['location'];
-  };
-  stateAbbreviation: string;
+  id: string;
 }
 
 const Content = (props: Props) => {
-  const  {
-    campsite: {location, type},
-    campsite, stateAbbreviation,
-  } = props;
+  const  {id} = props;
+  const {loading, error, data} = useBasicCampsiteDetails(id);
 
   const getString = useFluent();
 
-  const name = campsite.name ? campsite.name : getString('global-formatted-campsite-type', {type});
-
-  return (
-    <>
-      <Weather
-        forecastTabs={[
-          {title: getString('weather-forecast-weather'), location},
-        ]}
-        snowReport={{location, stateAbbr: stateAbbreviation}}
-      />
-      <TripsNotesAndReports
-        id={campsite.id}
-        name={name}
-        item={CoreItem.campsite}
-      />
-      <MapRenderProp
-        id={campsite.id}
-        campsites={[campsite]}
-        center={location}
-      />
-    </>
-  );
+  if (loading) {
+    return null;
+  } else if (error !== undefined) {
+    return <p>{error.message}</p>;
+  } else if (data !== undefined && data.campsite) {
+    const {campsite} = data;
+    const {locationTextShort, location} = campsite;
+    const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: campsite.type}));
+    const name = campsite.name ? campsite.name : formattedType;
+    return (
+      <>
+        <Weather
+          forecastTabs={[
+            {title: getString('weather-forecast-weather'), location},
+          ]}
+          snowReport={{location, stateAbbr: locationTextShort}}
+        />
+        <TripsNotesAndReports
+          id={campsite.id}
+          name={name}
+          item={CoreItem.campsite}
+        />
+        <AppearsIn
+          id={campsite.id}
+          name={name}
+          field={CoreItems.campsites}
+        />
+      </>
+    );
+  } else {
+    return null;
+  }
 };
 
 export default Content;

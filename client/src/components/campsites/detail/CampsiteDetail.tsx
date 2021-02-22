@@ -1,4 +1,5 @@
 import React from 'react';
+import Content from './Content';
 import Header from './Header';
 
 interface Props {
@@ -11,6 +12,7 @@ const CampsiteDetail = (props: Props) => {
   return (
     <>
       <Header id={id} />
+      <Content id={id} />
     </>
   );
 };
