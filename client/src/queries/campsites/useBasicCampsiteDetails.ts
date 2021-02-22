@@ -17,6 +17,18 @@ const GET_BASIC_CAMPSITE_DETAIL = gql`
       location
       locationText
       locationTextShort
+      electricity
+      toilets
+      drinking_water
+      reservation
+      showers
+      fee
+      tents
+      capacity
+      internet_access
+      fire
+      maxtents
+      elevation
       author {
         id
       }
@@ -39,6 +51,18 @@ interface QuerySuccessResponse {
     locationTextShort: Campsite['locationTextShort'];
     author: null | { id: User['id'] };
     status: Campsite['status'];
+    electricity: Campsite['electricity'];
+    toilets: Campsite['toilets'];
+    drinking_water: Campsite['drinking_water'];
+    reservation: Campsite['reservation'];
+    showers: Campsite['showers'];
+    fee: Campsite['fee'];
+    tents: Campsite['tents'];
+    capacity: Campsite['capacity'];
+    internet_access: Campsite['internet_access'];
+    fire: Campsite['fire'];
+    maxtents: Campsite['maxtents'];
+    elevation: Campsite['elevation'];
   };
 }
 

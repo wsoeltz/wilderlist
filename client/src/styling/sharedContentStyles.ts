@@ -180,6 +180,10 @@ export const HorizontalScrollContainer = styled(ScrollContainer)<{$noScroll?: bo
   }
 `;
 
+export const CollapsedScrollContainer = styled(HorizontalScrollContainer)`
+  min-height: 0;
+`;
+
 export const HorizontalBlock = styled.div`
   flex-grow: 1;
   padding: 0.5rem;
@@ -207,6 +211,14 @@ export const HorizontalBlock = styled.div`
   }
 `;
 
+export const FittedBlock = styled(HorizontalBlock)`
+  flex-shrink: 0;
+  white-space: normal;
+  &:after {
+    display: none;
+  }
+`;
+
 export const DarkBlock = styled(HorizontalBlock)`
   background-color: ${tertiaryColor};
   max-width: 7rem;
@@ -228,6 +240,10 @@ export const BlockHeader = styled.h3`
   margin-bottom: auto;
   padding: 0;
   font-weight: 400;
+`;
+
+export const BlockHeaderNoPush = styled(BlockHeader)`
+  margin: 0;
 `;
 
 export const CenteredHeader = styled(BlockHeader)`
@@ -259,9 +275,26 @@ export const Details = styled.div`
   margin: 0.5rem 0 0;
 `;
 
+export const DetailsTop = styled.div`
+  margin-bottom: auto;
+`;
+
 export const LimitedLink = styled.a`
   display: flex;
   justify-content: center;
   text-align: center;
   margin-bottom: 0.25rem;
+`;
+
+export const LargeText = styled.div`
+  font-weight: 200;
+  color: ${baseColor};
+  font-size: 1.15rem;
+`;
+
+export const Paragraph = styled.p`
+  white-space: normal;
+  margin: auto 0 auto;
+  color: ${lightBaseColor};
+  font-size: 0.8rem;
 `;

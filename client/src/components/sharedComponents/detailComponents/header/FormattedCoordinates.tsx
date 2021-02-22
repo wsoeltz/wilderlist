@@ -10,6 +10,7 @@ import {convertDMS} from '../../../../Utils';
 
 const Root = styled.div`
   white-space: nowrap;
+  padding-left: 0.45rem;
 `;
 
 interface Props {

@@ -10,20 +10,21 @@ import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/Deta
 import PanelDirections from '../../sharedComponents/detailComponents/directions/PanelDirections';
 import RoutesToPoint from '../../sharedComponents/detailComponents/routesToPoint';
 import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
+import MoreInformationPanel from './moreInformationPanel';
 
 interface Props {
+  id: string;
   name: string;
-  type: string;
   location: Coordinate;
 }
 
 const RoutesAndDirections = (props: Props) => {
-  const {name, type, location} = props;
+  const {id, name, location} = props;
   const getString = useFluent();
   const panels: Panel[] = [
     {
-      title: type + ' ' + getString('global-text-details'),
-      reactNode: <div />,
+      title: getString('global-text-details'),
+      reactNode: <MoreInformationPanel id={id} />,
       customIcon: false,
       icon: faAlignLeft,
       renderHiddenContent: true,

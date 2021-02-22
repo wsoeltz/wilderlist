@@ -108,14 +108,7 @@ const RoutesToPoint = (props: Props) => {
         } else {
           elevationDetails = null;
         }
-        const linkToRoute = (
-        // const linkToRoute = !destination || destination === 'parking' ? null : (
-          <Details>
-            <SmallLink to={'#'}>
-              {getString('global-text-value-view-route')}
-            </SmallLink>
-          </Details>
-        );
+
         return (
           <HorizontalBlock key={'route-to-summit-' + i + properties.destination._id}>
             <BlockHeader>
@@ -139,7 +132,11 @@ const RoutesToPoint = (props: Props) => {
               </InlineColumns>
               {elevationDetails}
             </Details>
-            {linkToRoute}
+            <Details>
+              <SmallLink to={'#'}>
+                {getString('global-text-value-view-route')}
+              </SmallLink>
+            </Details>
           </HorizontalBlock>
         );
       });

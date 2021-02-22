@@ -38,15 +38,15 @@ const Content = (props: Props) => {
         <RoutesAndDirections
           location={location}
           name={name}
-          type={formattedType}
+          id={id}
         />
         <TripsNotesAndReports
-          id={campsite.id}
+          id={id}
           name={name}
           item={CoreItem.campsite}
         />
         <AppearsIn
-          id={campsite.id}
+          id={id}
           name={name}
           field={CoreItems.campsites}
         />

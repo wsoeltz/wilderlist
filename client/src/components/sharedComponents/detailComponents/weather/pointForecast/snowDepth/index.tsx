@@ -10,7 +10,7 @@ import useFluent from '../../../../../../hooks/useFluent';
 import {
   CenteredHeader,
   EmptyBlock,
-  HorizontalBlock,
+  FittedBlock,
   HorizontalScrollContainer,
   InlineColumns,
   SimpleTitle,
@@ -29,11 +29,12 @@ import {
 } from '../Utils';
 
 const StationName = styled(Subtext)`
-  max-width: 45%;
+  max-width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
   flex-shrink: 1;
+  text-align: left;
 `;
 
 const Title = styled(CenteredHeader)`
@@ -147,7 +148,7 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
       : '';
     output = (
       <>
-        <HorizontalBlock>
+        <FittedBlock>
           <Title>
             <div>
               <BasicIconInText icon={faSnowflake} />
@@ -166,9 +167,9 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
             </Subtext>
           </InlineColumns>
           {snowFallSourceStations}
-        </HorizontalBlock>
+        </FittedBlock>
 
-        <HorizontalBlock>
+        <FittedBlock>
           <Title>
             <div>
               <BasicIconInText icon={faChartBar} />
@@ -187,7 +188,7 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
             </Subtext>
           </InlineColumns>
           {snowDepthSourceStations}
-        </HorizontalBlock>
+        </FittedBlock>
       </>
     );
 
@@ -197,7 +198,7 @@ const SnowDepth = ({lat, lng, stateAbbr}: Props) => {
 
   return (
     <>
-      <HorizontalScrollContainer hideScrollbars={false}>
+      <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
         {output}
       </HorizontalScrollContainer>
     </>

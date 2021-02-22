@@ -111,6 +111,8 @@ global-text-value-modal-close-menu = Close Menu
 global-text-value-modal-mark-complete = Log Trip
 global-text-value-description = Description
 global-text-value-directions = Directions
+global-text-value-yes = Yes
+global-text-value-no = No
 global-text-value-more = more
 global-text-value-or = or
 global-text-value-in = in
@@ -140,6 +142,7 @@ global-error-retrieving-data = There was an error retrieving the data. Please tr
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
 global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at help@wilderlist.app
 global-text-value-none-avail = None Available
+global-text-value-no-data = No Data
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
@@ -164,6 +167,8 @@ global-text-value-mountains = Mountains
 global-text-value-trails = Trails
 global-text-value-campsite = Campsite
 global-text-value-campsites = Campsites
+global-text-value-camping = Camping
+global-text-value-parking = Parking
 global-text-value-ascents = ascents
 global-text-value-dates = Dates
 global-text-value-date = Date
@@ -319,12 +324,12 @@ global-formatted-anything-type = {
   $type ->
   [camp_site] campsite
   [caravan_site] campground
-  [weather_shelter] shelter
+  [weather_shelter] weather shelter
   [camp_pitch] tentsite
   [lean_to] lean-to
   [wilderness_hut] wilderness hut
   [alpine_hut] alpine hut
-  [basic_hut] hut
+  [basic_hut] basic hut
   [rock_shelter] rock shelter
   [trail] trail
   [dirtroad] dirt road
@@ -351,6 +356,82 @@ global-formatted-anything-type = {
   [intersection] trail/road crossing
   *[other] point
 }
+
+global-type-official-classification = {
+  $type ->
+  [camp_site] campsite
+  [caravan_site] campground
+  [weather_shelter] weather shelter
+  [camp_pitch] tentsite
+  [lean_to] lean-to
+  [wilderness_hut] wilderness hut
+  [alpine_hut] alpine hut
+  [basic_hut] basic hut
+  [rock_shelter] rock shelter
+  [trail] trail
+  [dirtroad] dirt road
+  [path] path
+  [stairs] stairs
+  [cycleway] bike trail
+  [road] road
+  [hiking] hiking trail
+  [bridleway] horse trail
+  [demanding_mountain_hiking] demanding mountain hiking trail
+  [mountain_hiking] mountain hiking trail
+  [herdpath] herd path
+  [alpine_hiking] alpine trail
+  [demanding_alpine_hiking] demanding alpine trail
+  [difficult_alpine_hiking] difficult alpine trail
+  [parent_trail] parent route
+  [information_board] information board
+  [information_map] information map
+  [picnic_site] picnic site
+  [park] park
+  [trailhead] trailhead
+  [parking_space] parking area
+  [parking] parking lot
+  [intersection] trail/road crossing
+  *[other] point
+}
+
+global-type-official-classification-description = {
+  $type ->
+  [camp_site] An area that has space for multiple tents.
+  [caravan_site] A vehicle accessible camping area. It likely has at least some basic facilities and RVs may be allowed.
+  [weather_shelter] Designed to protect people from the elements.
+  [camp_pitch] An area for a single tent or a few small tents.
+  [lean_to] A simple shelter for sleeping in, typically designed with three walls and a roof.
+  [wilderness_hut] A backcountry building designed for sleeping in. It often includes some basic amenities.
+  [alpine_hut] A backcountry building designed for sleeping in. It often includes some basic amenities.
+  [basic_hut] A building designed for sleeping in. It may includes some basic amenities.
+  [rock_shelter] A basic structure designed to protect from the elements.
+  [trail] A primarily foot-accessible pathway.
+  [dirtroad] An unpaved road. Vehicles may be allowed.
+  [path] A foot-accessible pathway that could be a trail, sidewalk, road or other.
+  [stairs] A vertical series of steps over an incline.
+  [cycleway] A bike-accessible trail or road.
+  [road] A vehicle accessible road. Foot travel may also be permitted.
+  [hiking] A primarily foot-accessible trail.
+  [bridleway] A horse-accessible trail or road.
+  [demanding_mountain_hiking] A very difficult hiking trail in the mountains.
+  [mountain_hiking] A difficult hiking trail in the mountains.
+  [herdpath] A trail that has formed primarily by the repeated use of people or animals. Often not maintained.
+  [alpine_hiking] An advanced hiking trail in the mountains. Use of hands may be necessary.
+  [demanding_alpine_hiking] An advanced hiking trail in the mountains. May require climbing equipment.
+  [difficult_alpine_hiking] An expert level hiking trail in the mountains. Requires climbing equipment and experience.
+  [parent_trail] A feature route linking together a number of other trails.
+  [information_board] A board with information about the area.
+  [information_map] A board with a map of the area.
+  [picnic_site] A place with picnic tables.
+  [park] A place with greenspace for people to hang out or walk around in.
+  [trailhead] The start of a trail.
+  [parking_space] A spot for a one or a very small number of cars.
+  [parking] An area for a number of cars to be parked.
+  [intersection] A point at which a trail and a road cross each other.
+  *[other] A point on the map.
+}
+
+global-view-all-classifications = View all classifications
 
 global-text-value-weeks = weeks
 global-text-value-week = week
@@ -459,8 +540,13 @@ global-3d-mode-on = Turn&nbsp;on 3D&nbsp;Mode
 global-3d-mode-off = Turn&nbsp;off 3D&nbsp;Mode
 global-map-layers = Map Layers
 global-tools-and-settings = Tools&nbsp;&amp; Settings
+
 global-text-details = Details
 global-text-nearby = Nearby
+global-text-classification = Classification
+global-text-information = Information
+global-text-amenities = Amenities
+
 
 header-text-login-with-google = Login With Google
 header-text-login-with-reddit = Login With Reddit
@@ -816,6 +902,20 @@ campsite-detail-subtitle = {
     [null] {""}
     *[else] in { $location }
 }
+
+campsite-detail-elevation = Elevation
+campsite-detail-reservation = Reservation
+campsite-detail-required-fee = Required Fee
+campsite-detail-allows-tents = Allows Tents
+campsite-detail-max-capacity = Max Capacity
+campsite-detail-max-tents = Max Tents
+
+campsite-detail-electricity = Electricity
+campsite-detail-toilets = Toilets
+campsite-detail-drinking-water = Drinking Water
+campsite-detail-showers = Showers
+campsite-detail-internet-access = Internet Access
+campsite-detail-allows-fires = Allows Fires
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
