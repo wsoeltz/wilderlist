@@ -1070,6 +1070,7 @@ import-ascents-notification-text = Already have a spreadsheet of ascents?
 weather-forecast-summit-weather = Summit Forecast
 weather-forecast-valley-weather = Valley Forecast
 weather-forecast-weather = Weather
+weather-forecast-weather-forecast = Weather Forecast
 weather-forecast-weather-trail-center = Weather (at trail center)
 weather-forecast-high = High
 weather-forecast-low = Low

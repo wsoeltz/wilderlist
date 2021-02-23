@@ -26,7 +26,7 @@ import {CoreItems} from '../../../../types/itemTypes';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../svgIcons';
 
 const Root = styled.div`
-  margin: 0 -1rem -1rem;
+  margin: auto -1rem -1rem;
   border-top: solid 1px ${lightBorderColor};
   background-color: ${tertiaryColor};
   position: relative;

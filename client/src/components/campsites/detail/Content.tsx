@@ -31,7 +31,7 @@ const Content = (props: Props) => {
       <>
         <Weather
           forecastTabs={[
-            {title: getString('weather-forecast-weather'), location},
+            {title: getString('weather-forecast-weather-forecast'), location},
           ]}
           snowReport={{location, stateAbbr: locationTextShort}}
         />
