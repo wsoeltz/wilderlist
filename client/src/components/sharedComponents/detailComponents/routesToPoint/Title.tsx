@@ -82,6 +82,11 @@ const Title = (props: Props) => {
     }
     if (destinationType === 'mountains') {
       url = mountainDetailLink(destination._id);
+      optionalSubtitle = (
+        <div>
+          <small>{(destination as any).elevation}ft</small>
+        </div>
+      );
     }
   }
   return (

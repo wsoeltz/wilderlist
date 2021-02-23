@@ -34,7 +34,7 @@ const AllClassification = () => {
       <div>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'trail'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'trail'}))}
           </strong>
           <br />
           <small>
@@ -43,7 +43,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'dirtroad'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'dirtroad'}))}
           </strong>
           <br />
           <small>
@@ -52,7 +52,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'path'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'path'}))}
           </strong>
           <br />
           <small>
@@ -61,7 +61,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'stairs'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'stairs'}))}
           </strong>
           <br />
           <small>
@@ -70,7 +70,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'cycleway'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'cycleway'}))}
           </strong>
           <br />
           <small>
@@ -79,7 +79,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'road'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'road'}))}
           </strong>
           <br />
           <small>
@@ -88,7 +88,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'hiking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'hiking'}))}
           </strong>
           <br />
           <small>
@@ -97,7 +97,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'bridleway'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'bridleway'}))}
           </strong>
           <br />
           <small>
@@ -106,16 +106,16 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'demanding_mountain_hiking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'demanding_mountain_hiking'}))}
           </strong>
           <br />
           <small>
-            {getString('global-type-official-classification-description', {type: 'demanding_mountain_hiing'})}:
+            {getString('global-type-official-classification-description', {type: 'demanding_mountain_hiing'})}
           </small>
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'mountain_hiking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'mountain_hiking'}))}
           </strong>
           <br />
           <small>
@@ -124,7 +124,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'herdpath'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'herdpath'}))}
           </strong>
           <br />
           <small>
@@ -133,7 +133,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'alpine_hiking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'alpine_hiking'}))}
           </strong>
           <br />
           <small>
@@ -142,25 +142,25 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'demanding_alpine_hiking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'demanding_alpine_hiking'}))}
           </strong>
           <br />
           <small>
-            {getString('global-type-official-classification-description', {type: 'demanding_alpine_hikig'})}:
+            {getString('global-type-official-classification-description', {type: 'demanding_alpine_hikig'})}
           </small>
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'difficult_alpine_hiking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'difficult_alpine_hiking'}))}
           </strong>
           <br />
           <small>
-            {getString('global-type-official-classification-description', {type: 'difficult_alpine_hikig'})}:
+            {getString('global-type-official-classification-description', {type: 'difficult_alpine_hikig'})}
           </small>
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'parent_trail'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'parent_trail'}))}
           </strong>
           <br />
           <small>
@@ -173,7 +173,7 @@ const AllClassification = () => {
       <div>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'camp_site'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'camp_site'}))}
           </strong>
           <br />
           <small>
@@ -182,7 +182,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'caravan_site'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'caravan_site'}))}
           </strong>
           <br />
           <small>
@@ -191,7 +191,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'weather_shelter'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'weather_shelter'}))}
           </strong>
           <br />
           <small>
@@ -200,7 +200,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'camp_pitch'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'camp_pitch'}))}
           </strong>
           <br />
           <small>
@@ -209,7 +209,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'lean_to'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'lean_to'}))}
           </strong>
           <br />
           <small>
@@ -218,7 +218,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'wilderness_hut'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'wilderness_hut'}))}
           </strong>
           <br />
           <small>
@@ -227,7 +227,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'alpine_hut'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'alpine_hut'}))}
           </strong>
           <br />
           <small>
@@ -236,7 +236,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'basic_hut'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'basic_hut'}))}
           </strong>
           <br />
           <small>
@@ -245,7 +245,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'rock_shelter'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'rock_shelter'}))}
           </strong>
           <br />
           <small>
@@ -258,7 +258,7 @@ const AllClassification = () => {
       <div>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'information_board'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'information_board'}))}
           </strong>
           <br />
           <small>
@@ -267,7 +267,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'information_map'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'information_map'}))}
           </strong>
           <br />
           <small>
@@ -276,7 +276,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'picnic_site'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'picnic_site'}))}
           </strong>
           <br />
           <small>
@@ -285,7 +285,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'park'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'park'}))}
           </strong>
           <br />
           <small>
@@ -294,7 +294,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'trailhead'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'trailhead'}))}
           </strong>
           <br />
           <small>
@@ -303,7 +303,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'parking_space'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'parking_space'}))}
           </strong>
           <br />
           <small>
@@ -312,7 +312,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'parking'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'parking'}))}
           </strong>
           <br />
           <small>
@@ -321,7 +321,7 @@ const AllClassification = () => {
         </p>
         <p>
           <strong>
-            {upperFirst(getString('global-type-official-classification', {type: 'intersection'}))}:
+            {upperFirst(getString('global-type-official-classification', {type: 'intersection'}))}
           </strong>
           <br />
           <small>

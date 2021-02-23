@@ -80,11 +80,15 @@ global-text-value-fitler-items = Filter {
     *[other] items
 } on list
 
-global-text-value-miles-to = miles to {
+global-text-value-miles-to = {
+  $miles ->
+    [1] mile
+    *[else] miles
+} to {
   $type ->
     [mountain] summit
     [campsite] campsite
-    [trail] trail
+    [trail] summit
     *[other] point
 }
 

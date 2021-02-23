@@ -109,6 +109,8 @@ const RoutesToPoint = (props: Props) => {
           elevationDetails = null;
         }
 
+        const miles = parseFloat(routeLength.toFixed(1));
+
         return (
           <HorizontalBlock key={'route-to-summit-' + i + properties.destination._id}>
             <BlockHeader>
@@ -125,7 +127,8 @@ const RoutesToPoint = (props: Props) => {
                   <SimpleTitle>{getString('global-text-value-length')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
-                  <strong>{parseFloat(routeLength.toFixed(1))}</strong> {getString('global-text-value-miles-to', {
+                  <strong>{miles}</strong> {getString('global-text-value-miles-to', {
+                    miles,
                     type: item,
                   })}
                 </Subtext>
