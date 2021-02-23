@@ -22,13 +22,13 @@ export const slopeToSteepnessClass = (slope: number) => {
     return SteepnessClass.GentleSlope;
   } else if (slope < 8) {
     return SteepnessClass.ModerateSlope;
-  } else if (slope < 16.5) {
+  } else if (slope < 13) {
     return SteepnessClass.StrongSlope;
-  } else if (slope < 24) {
+  } else if (slope < 18) {
     return SteepnessClass.VeryStrongSlope;
-  } else if (slope < 35) {
+  } else if (slope < 25) {
     return SteepnessClass.ExtremeSlope;
-  } else if (slope < 45) {
+  } else if (slope < 35) {
     return SteepnessClass.SteepSlope;
   } else {
     return SteepnessClass.VerySteepSlope;

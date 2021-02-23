@@ -143,6 +143,7 @@ export interface Trail {
   type: TrailType;
   states: Array<State | null> | null;
   line: Coordinate[];
+  bbox: [Longitude, Latitude, Longitude, Latitude] | null;
   center: Coordinate;
   allowsBikes: boolean | null;
   allowsHorses: boolean | null;
@@ -155,6 +156,7 @@ export interface Trail {
   locationTextShort: string | null;
   trailLength: number | null;
   avgSlope: number | null;
+  childrenCount: number;
 }
 
 export enum ParkingType {

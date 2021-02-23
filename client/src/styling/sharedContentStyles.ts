@@ -22,6 +22,11 @@ export const ItemTitle = styled.h2`
   margin: 0 0 0.45rem;
 `;
 
+export const FlexTitle = styled(ItemTitle)`
+  display: flex;
+  align-items: center;
+`;
+
 export const ContentItem = styled.div`
   border-bottom: solid 1px ${lightBorderColor};
   padding: 0.5rem 0;

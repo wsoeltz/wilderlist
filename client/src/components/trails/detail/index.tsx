@@ -10,7 +10,7 @@ const TrailDetailPage = () => {
   if (trailId === 'search') {
     return <TrailList />;
   } else {
-    return <TrailDetail id={trailId} setOwnMetaData={true} />;
+    return <TrailDetail id={trailId} />;
   }
 };
 

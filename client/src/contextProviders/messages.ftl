@@ -177,6 +177,8 @@ global-text-value-state = State
 global-text-value-length = Length
 global-text-value-distance = Distance
 global-text-value-duration = Duration
+global-text-value-average-incline = Average Incline
+global-text-value-total-segments = Total Segments
 global-text-value-incline = Incline
 global-text-value-elevation = Elevation
 global-text-value-elevation-gain = Elevation Gain
@@ -304,7 +306,7 @@ global-formatted-trail-type = {
   [alpine_hiking] alpine trail
   [demanding_alpine_hiking] alpine trail
   [difficult_alpine_hiking] alpine trail
-  [parent_trail] trail
+  [parent_trail] feature route
 }
 
 global-formatted-campsite-type = {
@@ -345,7 +347,7 @@ global-formatted-anything-type = {
   [alpine_hiking] alpine trail
   [demanding_alpine_hiking] alpine trail
   [difficult_alpine_hiking] alpine trail
-  [parent_trail] trail
+  [parent_trail] feature route
   [information_board] information board
   [information_map] information map
   [picnic_site] picnic site
