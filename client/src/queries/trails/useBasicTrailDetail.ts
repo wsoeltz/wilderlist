@@ -17,6 +17,7 @@ const GET_BASIC_TRAIL_DETAIL = gql`
       avgSlope
       locationText
       locationTextShort
+      latestTrip(raw: true)
       parents {
         id
         name
@@ -38,6 +39,7 @@ interface QuerySuccessResponse {
     avgSlope: Trail['avgSlope'];
     locationText: Trail['locationText'];
     locationTextShort: Trail['locationTextShort'];
+    latestTrip: Trail['latestTrip'];
     parents: Array<{
       id: Trail['id'];
       name: Trail['name'];

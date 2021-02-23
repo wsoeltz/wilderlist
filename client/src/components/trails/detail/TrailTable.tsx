@@ -8,6 +8,7 @@ import {PeakListVariants} from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
 import getDates from '../../peakLists/detail/getDates';
 import ItemTable from '../../sharedComponents/detailComponents/itemTable/ItemTable';
+import LoadingSimple, {LoadingContainer} from '../../sharedComponents/LoadingSimple';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 
 interface Props {
@@ -39,7 +40,11 @@ const Content = (props: Props) => {
   ];
 
   if (loading) {
-    return <div>Loading</div>;
+    return (
+      <LoadingContainer>
+        <LoadingSimple />
+      </LoadingContainer>
+    );
   } else if (data && data.trail) {
     const trails = data.trail.children.map(t => {
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type: t.type}));

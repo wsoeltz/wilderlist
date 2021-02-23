@@ -157,6 +157,7 @@ export interface Trail {
   trailLength: number | null;
   avgSlope: number | null;
   childrenCount: number;
+  latestTrip: string | null;
 }
 
 export enum ParkingType {

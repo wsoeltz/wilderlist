@@ -8,7 +8,12 @@ import {
   GraphQLString,
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
-import { Trail as ITrail } from '../../graphQLTypes';
+import {
+  formatDate,
+  getLatestAscent,
+  RawCompletedTrail,
+} from '../../../utilities/peakListUtils';
+import { PeakListVariants, Trail as ITrail } from '../../graphQLTypes';
 import StateType from './stateType';
 
 type TrailSchemaType = mongoose.Document & ITrail & {
@@ -137,6 +142,64 @@ const TrailType: any = new GraphQLObjectType({
             }
           }
           return await parentValue.bbox;
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+
+    latestTrip: {
+      type: GraphQLString,
+      args: {
+        userId: {type: GraphQLID },
+        raw: {type: GraphQLBoolean},
+      },
+      async resolve(parentValue, {userId, raw}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return null;
+        }
+        try {
+          let completedTrails: RawCompletedTrail[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedTrails = user.trails.map(({trail, dates}: RawCompletedTrail) => ({
+              trail: trail.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.trails && res.trails.length) {
+              completedTrails = res.trails.map(({trail, dates}: RawCompletedTrail) => ({
+                trail: trail.toString(), dates,
+              }));
+            } else {
+              completedTrails = [];
+            }
+          }
+
+          let trails: string[] = [];
+          if (parentValue.children && parentValue.children.length) {
+            trails = parentValue.children.map((trail: string) => trail.toString());
+          } else {
+            trails = [parentValue._id.toString()];
+          }
+
+          if (completedTrails && completedTrails.length && trails && trails.length) {
+            const latestDate = getLatestAscent(
+              trails,
+              completedTrails.map(({trail, dates}) => ({any: trail, dates})),
+              PeakListVariants.standard,
+              'any',
+            );
+            if (latestDate !== undefined) {
+              if (raw) {
+                return latestDate.original;
+              }
+              return formatDate(latestDate);
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
         } catch (err) {
           return err;
         }

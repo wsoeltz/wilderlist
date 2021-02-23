@@ -40,6 +40,15 @@ const ThirdChild = styled(ChildBase)`
   animation-delay: -0.15s;
 `;
 
+export const LoadingContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 11.5rem;
+`;
+
 interface Props {
   color?: string;
   size?: number; // in px

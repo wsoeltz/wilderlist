@@ -4,6 +4,7 @@ import {faRoute} from '@fortawesome/free-solid-svg-icons';
 import {
   faCalendarAlt,
   faChartLine,
+  faCheck,
   faShoePrints,
   faSquare,
 } from '@fortawesome/free-solid-svg-icons';
@@ -22,13 +23,17 @@ import {
 } from '../../../styling/sharedContentStyles';
 import {
   BasicIconInText,
+  BasicIconInTextCompact,
+  CompleteText,
   IconContainer,
+  IncompleteText,
   lightBaseColor,
   PlaceholderText,
   SmallSemiBold,
 } from '../../../styling/styleUtils';
 import {TrailType} from '../../../types/graphQLTypes';
 import {CoreItem, CoreItems} from '../../../types/itemTypes';
+import { formatDate, parseDate } from '../../../utilities/dateUtils';
 import {slopeToSteepnessClass} from '../../../utilities/trailUtils';
 import LastHikedText from '../../sharedComponents/detailComponents/header/LastHikedText';
 import SimpleHeader from '../../sharedComponents/detailComponents/header/SimpleHeader';
@@ -65,6 +70,13 @@ const TrailDetail = (props: Props) => {
       </LoadableText>
     </Column>
   );
+  let lastHikedText: React.ReactElement<any> = (
+    <LastHikedText
+      id={id}
+      item={CoreItem.trail}
+      loading={loading}
+    />
+  );
   if (data !== undefined) {
     const { trail } = data;
     if (!trail) {
@@ -75,7 +87,7 @@ const TrailDetail = (props: Props) => {
       );
     } else {
       const {
-        childrenCount, parents, locationText,
+        childrenCount, parents, locationText, latestTrip,
       } = trail;
 
       hasChildren = Boolean(childrenCount);
@@ -87,7 +99,9 @@ const TrailDetail = (props: Props) => {
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type}));
       name = trail.name ? trail.name : formattedType;
 
-      subtitle = hasChildren ? formattedType + ' in ' + locationText : getString('trail-detail-subtitle', {
+      const _in = locationText && locationText.toLowerCase().includes('across') ? ' ' : ' in ';
+
+      subtitle = hasChildren ? formattedType + _in + locationText : getString('trail-detail-subtitle', {
           type: formattedType, segment: parents.length, state: locationText,
         });
       if (trail.avgSlope) {
@@ -126,8 +140,37 @@ const TrailDetail = (props: Props) => {
               </SmallSemiBold>
             </LoadableText>
           </Column>
-
         );
+
+        const latestDate = latestTrip ? parseDate(latestTrip) : undefined;
+
+        if (latestDate !== undefined) {
+          const {day, month, year} = latestDate;
+          let textDate: string;
+          if (!isNaN(month) && !isNaN(year)) {
+            if (!isNaN(day)) {
+              textDate = getString('global-formatted-text-date', {
+                day, month, year: year.toString(),
+              });
+            } else {
+              textDate = getString('global-formatted-text-month-year', {
+                month, year: year.toString(),
+              });
+            }
+          } else {
+            textDate = formatDate(latestDate);
+          }
+          lastHikedText = (
+            <CompleteText>
+              <BasicIconInTextCompact icon={faCheck} />
+              {textDate}
+            </CompleteText>
+          );
+        } else {
+           lastHikedText = (
+             <IncompleteText>{getString('peak-list-text-no-completed-ascent')}</IncompleteText>
+           );
+        }
       } else if (parents.length) {
         const links = parents.map((p, i) => {
           let seperator = ' ';
@@ -173,9 +216,8 @@ const TrailDetail = (props: Props) => {
           />
         );
       }
-
+    }
   }
- }
 
   return (
     <>
@@ -210,11 +252,7 @@ const TrailDetail = (props: Props) => {
           </ItemTitle>
           <LoadableText $loading={loading}>
             <SmallSemiBold>
-              <LastHikedText
-                id={id}
-                item={CoreItem.trail}
-                loading={loading}
-              />
+              {lastHikedText}
             </SmallSemiBold>
           </LoadableText>
         </Column>
