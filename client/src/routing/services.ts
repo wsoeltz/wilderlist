@@ -62,3 +62,7 @@ export const getSnowReportURL = ({coord, stateAbbr}: SnowReportInput) => {
   return `${baseUrl}${ServicesRoutes.snowReport}` +
     `?lat=${coord[1]}&lng=${coord[0]}&state_abbr=${stateAbbr}`;
 };
+
+export const getLineElevationUrl = () => {
+  return `${baseUrl}${ServicesRoutes.lineElevation}`;
+};

@@ -22,14 +22,9 @@ const AllClassification = () => {
       {getString('global-text-value-modal-close')}
     </ButtonSecondary>
   );
+  const trailClassifications = (
+    <>
 
-  const modal = modalOpen === false ? null : (
-    <Modal
-      onClose={closeModal}
-      width={'600px'}
-      height={'auto'}
-      actions={actions}
-    >
       <h2>{getString('global-text-value-trails')}</h2>
       <div>
         <p>
@@ -169,6 +164,11 @@ const AllClassification = () => {
         </p>
       </div>
       <hr />
+    </>
+  );
+
+  const campsiteClassifications = (
+    <>
       <h2>{getString('global-text-value-camping')}</h2>
       <div>
         <p>
@@ -254,6 +254,29 @@ const AllClassification = () => {
         </p>
       </div>
       <hr />
+    </>
+  );
+
+  const orderedClassifications = window.location.pathname.includes('campsite') ? (
+    <>
+      {campsiteClassifications}
+      {trailClassifications}
+    </>
+  ) : (
+    <>
+      {trailClassifications}
+      {campsiteClassifications}
+    </>
+  );
+
+  const modal = modalOpen === false ? null : (
+    <Modal
+      onClose={closeModal}
+      width={'600px'}
+      height={'auto'}
+      actions={actions}
+    >
+      {orderedClassifications}
       <h2>{getString('global-text-value-parking')}</h2>
       <div>
         <p>

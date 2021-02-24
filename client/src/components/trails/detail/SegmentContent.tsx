@@ -6,6 +6,7 @@ import {CoreItem, CoreItems} from '../../../types/itemTypes';
 import AppearsIn from '../../sharedComponents/detailComponents/appearsIn';
 import TripsNotesAndReports from '../../sharedComponents/detailComponents/TripsNotesAndReports';
 import Weather from '../../sharedComponents/detailComponents/weather';
+import MoreInformationPanel from './moreInformationPanel';
 import RoutesAndDirections from './RoutesAndDirections';
 
 interface Props {
@@ -25,6 +26,9 @@ const Content = (props: Props) => {
     const name = data.trail.name ? data.trail.name : formattedType;
     return (
       <>
+        <MoreInformationPanel
+          id={id}
+          />
         <Weather
           forecastTabs={[
             {title: getString('weather-forecast-weather-trail-center'), location: center},

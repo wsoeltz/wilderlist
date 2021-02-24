@@ -18,6 +18,10 @@ const GET_BASIC_TRAIL_DETAIL = gql`
       locationText
       locationTextShort
       latestTrip(raw: true)
+      allowsBikes
+      allowsHorses
+      waterCrossing
+      skiTrail
       parents {
         id
         name
@@ -40,6 +44,10 @@ interface QuerySuccessResponse {
     locationText: Trail['locationText'];
     locationTextShort: Trail['locationTextShort'];
     latestTrip: Trail['latestTrip'];
+    allowsBikes: Trail['allowsBikes'];
+    allowsHorses: Trail['allowsHorses'];
+    waterCrossing: Trail['waterCrossing'];
+    skiTrail: Trail['skiTrail'];
     parents: Array<{
       id: Trail['id'];
       name: Trail['name'];

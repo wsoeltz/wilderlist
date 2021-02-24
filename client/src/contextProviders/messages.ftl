@@ -184,6 +184,8 @@ global-text-value-duration = Duration
 global-text-value-average-incline = Average Incline
 global-text-value-total-segments = Total Segments
 global-text-value-incline = Incline
+global-text-value-max-incline = Max. Incline
+global-text-value-min-incline = Min. Incline
 global-text-value-elevation = Elevation
 global-text-value-elevation-gain = Elevation Gain
 global-text-value-high-point = Highest Point
@@ -897,6 +899,12 @@ trail-detail-subtitle = { $type } {
 trail-child-segments = This route is the connecting parent for { $count } other trails
 trail-parent-links = Part of
 trail-parent-full-trail = full trail
+trail-detail-allows-bikes = Allows Bikes
+trail-detail-allows-horses = Allows Horses
+trail-detail-water-crossing = Water Crossing
+trail-detail-ski-trail = Ski Trail
+trail-detail-elevation-profile = Elevation Profile
+trail-detail-download-trail = Download Trail
 
 campsite-detail-subtitle = {
   $ownership ->
