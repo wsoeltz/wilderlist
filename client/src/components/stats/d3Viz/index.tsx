@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
+import createElevationProfile, {Datum as ElevationProfileDatum} from './createElevationProfile';
 import createLineChart, {Datum as LineChartDatum} from './createLineChart';
 
 const Root = styled.div`
@@ -20,10 +21,12 @@ export enum VizType {
   HorizontalBarChart = 'HorizontalBarChart',
   BubbleChart = 'BubbleChart',
   LineChart = 'LineChart',
+  ElevationProfile = 'ElevationProfile',
 }
 
 interface BaseProps {
   id: string;
+  height?: number;
   vizType: VizType;
 }
 
@@ -39,19 +42,25 @@ type Props = BaseProps & (
   {
     vizType: VizType.LineChart;
     data: LineChartDatum[];
+  } |
+  {
+    vizType: VizType.ElevationProfile;
+    data: ElevationProfileDatum[];
   }
 );
 
 const D3Viz = (props: Props) => {
-  const { id } = props;
+  const { id, height } = props;
   const sizingNodeRef = useRef<HTMLDivElement | null>(null);
   const svgNodeRef = useRef<any>(null);
   const windowWidth = useWindowWidth();
 
   useEffect(() => {
+    let svgNode: HTMLDivElement | null = null;
     if (svgNodeRef && svgNodeRef.current && sizingNodeRef && sizingNodeRef.current) {
       const sizingNode = sizingNodeRef.current;
-      const svg = select(svgNodeRef.current);
+      svgNode = svgNodeRef.current;
+      const svg = select(svgNode);
       if (props.vizType === VizType.HorizontalBarChart) {
         createBarGraph({
           svg, data: props.data, size: {
@@ -70,12 +79,23 @@ const D3Viz = (props: Props) => {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
           },
         });
+      } else if (props.vizType === VizType.ElevationProfile) {
+        createElevationProfile({
+          svg, data: props.data, size: {
+            width: sizingNode.clientWidth, height: sizingNode.clientHeight,
+          },
+        });
       }
     }
+    return () => {
+      if (svgNode) {
+        svgNode.innerHTML = '';
+      }
+    };
   }, [svgNodeRef, sizingNodeRef, windowWidth, props.vizType, props.data]);
 
   return (
-    <Root ref={sizingNodeRef}>
+    <Root ref={sizingNodeRef} style={{height}}>
       <svg ref={svgNodeRef}  key={id + windowWidth} />
     </Root>
   );

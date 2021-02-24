@@ -7,6 +7,7 @@ import React from 'react';
 import useFluent from '../../../../hooks/useFluent';
 import DetailSegment, {Panel} from '../../../sharedComponents/detailComponents/DetailSegment';
 import DownloadGPX from './DownloadGPX';
+import ElevationProfile from './ElevationProfile';
 import TrailDetails from './TrailDetails';
 
 interface Props {
@@ -19,7 +20,7 @@ const RoutesAndDirections = (props: Props) => {
   const panels: Panel[] = [
     {
       title: getString('trail-detail-elevation-profile'),
-      reactNode: <div>Elevation Profile</div>,
+      reactNode: <ElevationProfile id={id} />,
       customIcon: false,
       icon: faChartArea,
     },
