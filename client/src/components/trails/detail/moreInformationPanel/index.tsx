@@ -42,7 +42,7 @@ const RoutesAndDirections = (props: Props) => {
   return (
     <DetailSegment
       panels={panels}
-      panelId={'routesAndDirectionsPanelId'}
+      panelId={'trailElevationProfilePanelId'}
     />
   );
 };

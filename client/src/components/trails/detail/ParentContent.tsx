@@ -46,7 +46,7 @@ const Content = (props: Props) => {
 
   return (
     <DetailSegment
-      key={'parentTrailDetailPanel' + id}
+      key={'trailParentTrailDetailPanel'}
       panels={panels}
       panelCounts={panelCounts}
       panelId={'parentTrailDetailPanel'}
