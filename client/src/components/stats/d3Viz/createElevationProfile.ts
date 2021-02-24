@@ -194,10 +194,10 @@ const createLineChart = (input: Input) => {
         .attr('y2', y(selectedData.elevation));
 
       focusMileText
-        .html(selectedData.mile.toFixed(2) + 'ft')
+        .html(selectedData.mile.toFixed(2) + 'mi')
         .attr('x', x(selectedData.mile) + 5);
       focusElevationText
-        .html(Math.round(selectedData.elevation).toString() + 'mi')
+        .html(Math.round(selectedData.elevation).toString() + 'ft')
         .attr('y', y(selectedData.elevation) - 10);
     }
   }
