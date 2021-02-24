@@ -7,8 +7,8 @@ import {
   scaleLinear,
 } from 'd3-scale';
 import {
-  mouse,
   // @ts-expect-error d3 typing is inaccurate, mouse is in fact exported from this module
+  mouse,
   Selection,
 } from 'd3-selection';
 import { line } from 'd3-shape';
