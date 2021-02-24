@@ -6,6 +6,7 @@ import {
 import React from 'react';
 import useFluent from '../../../../hooks/useFluent';
 import DetailSegment, {Panel} from '../../../sharedComponents/detailComponents/DetailSegment';
+import DownloadGPX from './DownloadGPX';
 import TrailDetails from './TrailDetails';
 
 interface Props {
@@ -31,7 +32,7 @@ const RoutesAndDirections = (props: Props) => {
     },
     {
       title: getString('trail-detail-download-trail'),
-      reactNode: <div>Downloads</div>,
+      reactNode: <DownloadGPX id={id} />,
       customIcon: false,
       icon: faDownload,
     },

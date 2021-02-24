@@ -805,6 +805,7 @@ mountain-table-grid-date-note-text =
 mountain-table-import-button = Import from spreadsheet
 mountain-table-export-button = Download data
 download-csv-button = Download CSV
+download-gpx-button = Download GPX file
 download-official-grid-xlsx-button = Download Grid application with your dates
 
 mountain-detail-summit-view = View from summit

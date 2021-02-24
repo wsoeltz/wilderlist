@@ -1,3 +1,7 @@
+const {lineString} = require('@turf/helpers');
+import togpx from 'togpx';
+import {Coordinate, CoordinateWithElevation} from '../types/graphQLTypes';
+
 enum SteepnessClass {
   Level = 'flat',
   NearlyLevel = 'nearly flat',
@@ -33,4 +37,39 @@ export const slopeToSteepnessClass = (slope: number) => {
   } else {
     return SteepnessClass.VerySteepSlope;
   }
+};
+
+interface GPXInput {
+  name: string;
+  line: Array<Coordinate | CoordinateWithElevation>;
+  url: string;
+}
+
+export const downloadGPXString = ({name, line, url}: GPXInput) => {
+  const strippedLine = line.map(([lng, lat]) => [lng, lat]);
+  const geojson = lineString(strippedLine, {name, url});
+  const gpx = togpx(geojson, {
+    creator: 'Wilderlist',
+    metadata: {
+      copyright: 'Wilderlist, Open Street Map',
+      source: 'https://wilderlist.app/',
+      time: new Date(),
+    },
+    featureTitle: () => name,
+    featureLink: () => url,
+  });
+
+  const filename = name + '.gpx';
+  const link = document.createElement('a');
+  const blob = new Blob([gpx], {type: 'text/plain'});
+
+  link.setAttribute('href', window.URL.createObjectURL(blob));
+  link.setAttribute('download', filename);
+
+  link.dataset.downloadurl = ['text/plain', link.download, link.href].join(':');
+  link.draggable = true;
+  link.classList.add('dragout');
+
+  link.click();
+  link.remove();
 };
