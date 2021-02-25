@@ -1,21 +1,22 @@
-import { GetString } from 'fluent-react/compat';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
-import MountainIcon from '../../../../../../assets/images/icons/mountain-highlighted.svg';
-import TentIcon from '../../../../../../assets/images/icons/tent-highlighted.svg';
-import TrailIcon from '../../../../../../assets/images/icons/trail-highlighted.svg';
+import MountainIcon from '../../../../../assets/images/icons/mountain-highlighted.svg';
+import TentIcon from '../../../../../assets/images/icons/tent-highlighted.svg';
+import TrailIcon from '../../../../../assets/images/icons/trail-highlighted.svg';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   campsiteDetailLink,
   mountainDetailLink,
   trailDetailLink,
-} from '../../../../../../routing/Utils';
+} from '../../../../../routing/Utils';
 import {
   tertiaryColor,
-} from '../../../../../../styling/styleUtils';
-import {Coordinate} from '../../../../../../types/graphQLTypes';
-import LoadingSimple from '../../../../../sharedComponents/LoadingSimple';
-import {ItemType} from '../../interactions';
+} from '../../../../../styling/styleUtils';
+import {Coordinate} from '../../../../../types/graphQLTypes';
+import {CoreItems} from '../../../../../types/itemTypes';
+import LoadingSimple from '../../../../sharedComponents/LoadingSimple';
 import ActionButtons from './ActionButtons';
 import DrivingDirections from './DrivingDirections';
 import LastTrip from './LastTrip';
@@ -35,18 +36,18 @@ interface Props {
   name: string | null;
   location: Coordinate;
   id: string | null;
-  push: (url: string) => void;
-  itemType: ItemType;
-  getString: GetString;
+  itemType: CoreItems;
   close: () => void;
 }
 
 const ClickedPopup = (props: Props) => {
   const {
-    push, itemType, location, getString, close,
+    itemType, location, close,
   } = props;
 
   const {loading, error, data} = usePopupData(itemType, props.id, location, props.name);
+  const getString = useFluent();
+  const {push} = useHistory();
 
   let output: React.ReactElement<any> | null;
   if (loading) {
@@ -60,11 +61,11 @@ const ClickedPopup = (props: Props) => {
   } else if (data !== undefined) {
     const {id, type} = data;
     const onClick = () => {
-      if (itemType === ItemType.mountain) {
+      if (itemType === CoreItems.mountains) {
         push(mountainDetailLink(id));
-      } else if (itemType === ItemType.campsite) {
+      } else if (itemType === CoreItems.campsites) {
         push(campsiteDetailLink(id));
-      } else if (itemType === ItemType.trail) {
+      } else if (itemType === CoreItems.trails) {
         push(trailDetailLink(id));
       }
       close();
@@ -72,11 +73,11 @@ const ClickedPopup = (props: Props) => {
     let name: string;
     let subtitle: string;
     let imgSrc: string;
-    if (itemType === ItemType.mountain) {
+    if (itemType === CoreItems.mountains) {
       name = data.name ? data.name : 'Unnamed Peak';
       subtitle = data.subtitle ? data.subtitle : '';
       imgSrc = MountainIcon;
-    } else if (itemType === ItemType.trail) {
+    } else if (itemType === CoreItems.trails) {
       name = data.name ? data.name : upperFirst(getString('global-formatted-trail-type', {type}));
       subtitle = data.subtitle
         ? data.subtitle + ' long ' + getString('global-formatted-trail-type', {type})
@@ -85,7 +86,7 @@ const ClickedPopup = (props: Props) => {
         subtitle += ' segment';
       }
       imgSrc = TrailIcon;
-    } else if (itemType === ItemType.campsite) {
+    } else if (itemType === CoreItems.campsites) {
       name = data.name ? data.name : upperFirst(getString('global-formatted-campsite-type', {type}));
       subtitle = upperFirst(getString('global-formatted-campsite-type', {type}));
       imgSrc = TentIcon;

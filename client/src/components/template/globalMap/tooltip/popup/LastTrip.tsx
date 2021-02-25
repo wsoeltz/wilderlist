@@ -6,8 +6,8 @@ import {
   ButtonOutline,
   incompleteColor,
   primaryColor,
-} from '../../../../../../styling/styleUtils';
-import {ItemType} from '../../interactions';
+} from '../../../../../styling/styleUtils';
+import {CoreItems} from '../../../../../types/itemTypes';
 import {
   Icon,
   Root,
@@ -39,7 +39,7 @@ const AscentIcon = styled(Icon)`
 
 interface Props {
   id: string;
-  itemType: ItemType;
+  itemType: CoreItems;
   getString: GetString;
 }
 

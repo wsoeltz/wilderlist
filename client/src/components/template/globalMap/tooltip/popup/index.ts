@@ -1,6 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 import ReactDOM from 'react-dom';
-import {Coordinate} from '../../../../../../types/graphQLTypes';
+import {Coordinate} from '../../../../../types/graphQLTypes';
 
 export enum PopupStyle {
   expanded = 'mapbox-gl-popup-expanded',

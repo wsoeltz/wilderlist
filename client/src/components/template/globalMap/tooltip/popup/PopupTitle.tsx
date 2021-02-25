@@ -6,7 +6,7 @@ import {
   primaryFont,
   primaryHoverColor,
   tertiaryColor,
-} from '../../../../../../styling/styleUtils';
+} from '../../../../../styling/styleUtils';
 
 const Root = styled.div`
   padding: 0.4rem 1rem 0.4rem 0.5rem;

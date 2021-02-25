@@ -4,8 +4,8 @@ import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import orderBy from 'lodash/orderBy';
 import {useEffect, useState} from 'react';
-import {ItemType} from '../';
-import {Coordinate} from '../../../../../../types/graphQLTypes';
+import {Coordinate} from '../../../../../types/graphQLTypes';
+import {CoreItems} from '../../../../../types/itemTypes';
 
 const cacheItem: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
@@ -22,7 +22,7 @@ const getNearestTrail = axios.create({
 });
 
 interface PopupData {
-  itemType: ItemType;
+  itemType: CoreItems;
   id: string;
   name: string;
   subtitle: string;
@@ -36,7 +36,7 @@ interface Output {
   data: undefined | PopupData;
 }
 
-const usePopupData = (itemType: ItemType, id: string | null, coordinate: Coordinate, name: string | null) => {
+const usePopupData = (itemType: CoreItems, id: string | null, coordinate: Coordinate, name: string | null) => {
   const [output, setOutput] = useState<Output>({loading: true, error: undefined, data: undefined});
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const usePopupData = (itemType: ItemType, id: string | null, coordinate: Coordin
           id: res.data._id,
           name: res.data.name,
           type: res.data.type,
-          subtitle: itemType === ItemType.mountain ? res.data.elevation + 'ft' : res.data.type,
+          subtitle: itemType === CoreItems.mountains ? res.data.elevation + 'ft' : res.data.type,
         }});
       }).catch(error => setOutput({loading: false, error, data: undefined}));
     } else {

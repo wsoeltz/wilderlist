@@ -3,8 +3,8 @@ import { GetString } from 'fluent-react/compat';
 import React from 'react';
 import {
   LinkButton,
-} from '../../../../../../styling/styleUtils';
-import {Coordinate} from '../../../../../../types/graphQLTypes';
+} from '../../../../../styling/styleUtils';
+import {Coordinate} from '../../../../../types/graphQLTypes';
 import {
   Icon,
   Root,

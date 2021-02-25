@@ -7,7 +7,7 @@ import {
   primaryColor,
   primaryHoverColor,
   tertiaryColor,
-} from '../../../../../../styling/styleUtils';
+} from '../../../../../styling/styleUtils';
 import {
   Icon,
 } from './Utils';

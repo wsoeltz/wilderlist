@@ -7,6 +7,7 @@ import useFluent from '../../../hooks/useFluent';
 import useUsersLocation from '../../../hooks/useUsersLocation';
 import {Routes} from '../../../routing/routes';
 import initMap from './map';
+import Tooltip, {Props as TooltipState} from './tooltip';
 
 const Root = styled.div`
   position: fixed;
@@ -17,6 +18,7 @@ const Root = styled.div`
 const GlobalMap = ({children}: {children: React.ReactNode}) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [mapState, setMapState] = useState<MapState>({intialized: false});
+  const [tootlipState, setTooltipState] = useState<TooltipState>({node: null});
   const {location: initialCenter} = useUsersLocation();
   const {push} = useHistory();
   const getString = useFluent();
@@ -24,7 +26,11 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     const container = rootRef.current;
     if (container && !mapState.intialized && getString) {
-      const mapOutput = initMap({container, push, getString});
+      const mapOutput = initMap({
+        container, push, getString,
+        onTooltipOpen: setTooltipState,
+        onTooltipClose: () => setTooltipState({node: null}),
+      });
       setMapState({intialized: true, ...mapOutput});
     }
   }, [rootRef, mapState, push, getString]);
@@ -54,6 +60,14 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
 
   return (
     <>
+      <Tooltip
+        node={tootlipState.node}
+        item={tootlipState.item}
+        id={tootlipState.id}
+        name={tootlipState.name}
+        location={tootlipState.location}
+        closePopup={tootlipState.closePopup}
+      />
       <Root ref={rootRef} />
       <MapContext.Provider value={mapState}>
         {children}

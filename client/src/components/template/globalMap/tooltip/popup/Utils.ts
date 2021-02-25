@@ -2,7 +2,7 @@ import styled from 'styled-components/macro';
 import {
   BasicIconInText,
   secondaryColor,
-} from '../../../../../../styling/styleUtils';
+} from '../../../../../styling/styleUtils';
 
 export const Root = styled.div`
   display: flex;

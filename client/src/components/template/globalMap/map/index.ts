@@ -13,6 +13,7 @@ import {
 import {Coordinate, Latitude, Longitude} from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
+import {Props as TooltipState} from '../tooltip';
 import initInteractions from './interactions';
 import initLayers, {
   defaultGeoJsonLineString,
@@ -29,6 +30,8 @@ interface Input {
   container: HTMLElement;
   push: (url: string) => void;
   getString: GetString;
+  onTooltipOpen: (tooltipState: TooltipState) => void;
+  onTooltipClose: () => void;
 }
 
 const getRectFromBounds = (bounds: mapboxgl.LngLatBounds): [Longitude, Latitude, Longitude, Latitude] => {
@@ -49,7 +52,7 @@ export interface Output {
   clearMap: () => void;
 }
 
-const initMap = ({container, push, getString}: Input): Output => {
+const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
     mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
   }
@@ -67,7 +70,7 @@ const initMap = ({container, push, getString}: Input): Output => {
   map.on('load', () => {
     mapLoaded = true;
     initLayers({map});
-    initInteractions({map, push, getString});
+    initInteractions({map, push, getString, onTooltipOpen, onTooltipClose});
   });
 
   const setPadding = () => {
