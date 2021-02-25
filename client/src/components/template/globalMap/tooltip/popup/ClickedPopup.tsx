@@ -112,7 +112,7 @@ const ClickedPopup = (props: Props) => {
           <LastTrip
             id={id}
             itemType={itemType}
-            getString={getString}
+            close={close}
           />
         </Content>
         <ActionButtons

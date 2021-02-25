@@ -48,6 +48,8 @@ const AddTripReport = () => {
     }
   }
 
+  const key = 'tripReportKey' + JSON.stringify({mountainIds, trailIds, campsiteIds});
+
   const {loading, error, data} = useItemsFromIdLists({mountainIds, trailIds, campsiteIds});
 
   const onSave = useCallback(() => {
@@ -99,6 +101,7 @@ const AddTripReport = () => {
       if (listtype && listtype === PeakListVariants.fourSeason && season) {
         return (
           <NewAscentReport
+            key={key}
             date={date ? date : undefined}
             initialMountainList={initialMountainList}
             initialTrailList={initialTrailList}
@@ -116,6 +119,7 @@ const AddTripReport = () => {
       if (listtype && listtype === PeakListVariants.grid && month) {
         return (
           <NewAscentReport
+            key={key}
             date={date ? date : undefined}
             initialMountainList={initialMountainList}
             initialTrailList={initialTrailList}
@@ -133,6 +137,7 @@ const AddTripReport = () => {
         const variant = listtype === PeakListVariants.winter ? listtype : PeakListVariants.standard;
         return (
           <NewAscentReport
+            key={key}
             date={date ? date : undefined}
             initialMountainList={initialMountainList}
             initialTrailList={initialTrailList}

@@ -7,7 +7,7 @@ import ClickedPopup from './popup/ClickedPopup';
 export interface Props {
   node: HTMLElement | null;
   item?: CoreItems;
-  id?: string;
+  id?: string | null;
   name?: string | null;
   location?: Coordinate;
   closePopup?: () => void;

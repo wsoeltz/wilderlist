@@ -983,7 +983,7 @@ map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Location To Center
 
 map-get-directions = Show Directions
-last-trip-dynamic = Last {
+last-trip-dynamic = You last {
   $type ->
     [mountains] hiked
     [campsites] camped
