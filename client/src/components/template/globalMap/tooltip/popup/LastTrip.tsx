@@ -1,28 +1,28 @@
 import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useFluent from '../../../../../hooks/useFluent';
+import useUsersProgress from '../../../../../queries/users/useUsersProgress';
+import {
+  addTripReportLink,
+} from '../../../../../routing/Utils';
 import {
   ButtonOutline,
-  primaryColor,
-  IncompleteText,
   CompleteText,
+  IncompleteText,
+  primaryColor,
 } from '../../../../../styling/styleUtils';
-import {CoreItems, CoreItem} from '../../../../../types/itemTypes';
-import {
-  Icon,
-  Root,
-} from './Utils';
-import useUsersProgress from '../../../../../queries/users/useUsersProgress';
-import SimpleTextLoading from '../../../../sharedComponents/SimpleTextLoading';
-import useFluent from '../../../../../hooks/useFluent';
+import {CoreItem, CoreItems} from '../../../../../types/itemTypes';
 import {
   formatDate,
   getDates,
 } from '../../../../../utilities/dateUtils';
+import SimpleTextLoading from '../../../../sharedComponents/SimpleTextLoading';
 import {
-  addTripReportLink,
-} from '../../../../../routing/Utils';
-import {useHistory} from 'react-router-dom';
+  Icon,
+  Root,
+} from './Utils';
 
 const Content = styled.div`
   line-height: 1.2;
@@ -58,7 +58,7 @@ const LastTrip = ({id, itemType, close}: Props) => {
 
   let lastHikedText: React.ReactElement<any> | null;
   if (loading) {
-    lastHikedText = <SimpleTextLoading />
+    lastHikedText = <SimpleTextLoading />;
   } else if (data !== undefined) {
     const target = data.progress && data.progress[itemType] !== null
       ? (data.progress[itemType] as any).find((d: any) => d[item] && d[item].id && d[item].id === id) : undefined;
@@ -107,17 +107,17 @@ const LastTrip = ({id, itemType, close}: Props) => {
   const onAddAscent = () => {
     let tripReportUrl: string;
     if (itemType === CoreItems.mountains) {
-      tripReportUrl = addTripReportLink({mountains: id})
+      tripReportUrl = addTripReportLink({mountains: id});
     } else if (itemType === CoreItems.trails) {
-      tripReportUrl = addTripReportLink({trails: id})
+      tripReportUrl = addTripReportLink({trails: id});
     } else if (itemType === CoreItems.campsites) {
-      tripReportUrl = addTripReportLink({campsites: id})
+      tripReportUrl = addTripReportLink({campsites: id});
     } else {
-      tripReportUrl = addTripReportLink({})
+      tripReportUrl = addTripReportLink({});
     }
     history.push(tripReportUrl);
     close();
-  }
+  };
   return (
     <Root>
       <Icon icon={faCalendarAlt} />
