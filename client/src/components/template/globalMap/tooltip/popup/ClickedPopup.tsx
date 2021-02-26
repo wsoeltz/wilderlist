@@ -117,7 +117,7 @@ const ClickedPopup = (props: Props) => {
         </Content>
         <ActionButtons
           detailAction={onClick}
-          getString={getString}
+          location={location}
         />
       </>
     );

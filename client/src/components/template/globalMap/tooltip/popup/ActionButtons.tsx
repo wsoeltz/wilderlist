@@ -1,13 +1,15 @@
 import {faArrowRight, faCloudSun, faRoute} from '@fortawesome/free-solid-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
+import useFluent from '../../../../../hooks/useFluent';
 import {
   lightBorderColor,
   primaryColor,
   primaryHoverColor,
   tertiaryColor,
 } from '../../../../../styling/styleUtils';
+import {Coordinate} from '../../../../../types/graphQLTypes';
+import WeatherModal from '../../../../sharedComponents/detailComponents/weather/WeatherModal';
 import {
   Icon,
 } from './Utils';
@@ -60,17 +62,29 @@ const WhiteIcon = styled(Icon)`
 
 interface Props {
   detailAction: () => void;
-  getString: GetString;
+  location: Coordinate;
 }
 
 const ActionButtons = (props: Props) => {
   const {
-    getString, detailAction,
+    detailAction, location,
   } = props;
-
+  const getString = useFluent();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+  const weather = modalOpen ? (
+    <WeatherModal
+      onClose={closeModal}
+      latitude={location[1]}
+      longitude={location[0]}
+    />
+  ) : null;
   return (
     <Root>
-      <Button>
+      <Button
+        onClick={openModal}
+      >
         <BlueIcon icon={faCloudSun} />
         {getString('mountain-detail-get-weather')}
       </Button>
@@ -82,6 +96,7 @@ const ActionButtons = (props: Props) => {
         {getString('mountain-card-view-details')}
         <WhiteIcon icon={faArrowRight} />
       </DetailButton>
+      {weather}
     </Root>
   );
 
