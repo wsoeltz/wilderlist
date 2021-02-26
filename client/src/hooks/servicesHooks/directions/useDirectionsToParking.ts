@@ -25,8 +25,25 @@ interface Output {
   data: undefined | Destination[];
 }
 
-const useDirectionsToParking = (input: DirectionToParkingInput): Output => {
+export const retrieveCachedDirections = (input: DirectionToParkingInput) => {
   const {start, end, considerDirect} = input;
+  // coordinate values are broken out to prevent rerenders
+  const [lng1, lat1] = start;
+  const [lng2, lat2] = end;
+  const url = getDirectionToParkingURL({
+    start: [lng1, lat1],
+    end: [lng2, lat2],
+    considerDirect,
+  });
+  const cached = readRoutesCache(url);
+  if (cached) {
+    return cached.data;
+  }
+  return null;
+};
+
+const useDirectionsToParking = (input: DirectionToParkingInput): Output => {
+  const {start, end, considerDirect, totalResults} = input;
   // coordinate values are broken out to prevent rerenders
   const [lng1, lat1] = start;
   const [lng2, lat2] = end;
@@ -38,6 +55,7 @@ const useDirectionsToParking = (input: DirectionToParkingInput): Output => {
       start: [lng1, lat1],
       end: [lng2, lat2],
       considerDirect,
+      totalResults,
     });
     let attempts = 0;
     const fetchRoutes = () => {
@@ -75,7 +93,7 @@ const useDirectionsToParking = (input: DirectionToParkingInput): Output => {
     return () => {
       mounted = false;
     };
-  }, [lat1, lng1, lat2, lng2, considerDirect]);
+  }, [lat1, lng1, lat2, lng2, considerDirect, totalResults]);
 
   return output;
 };

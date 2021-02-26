@@ -18,7 +18,7 @@ import {Coordinate} from '../../../../../types/graphQLTypes';
 import {CoreItems} from '../../../../../types/itemTypes';
 import LoadingSimple from '../../../../sharedComponents/LoadingSimple';
 import ActionButtons from './ActionButtons';
-import DrivingDirections from './DrivingDirections';
+import DrivingDirections from './directions';
 import LastTrip from './LastTrip';
 import PopupTitle from './PopupTitle';
 import usePopupData from './usePopupData';
@@ -106,7 +106,7 @@ const ClickedPopup = (props: Props) => {
         />
         <Content>
           <DrivingDirections
-            getString={getString}
+            itemType={itemType}
             destination={location}
           />
           <LastTrip

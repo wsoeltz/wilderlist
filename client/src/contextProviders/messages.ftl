@@ -852,6 +852,7 @@ directions-select-origin = Select your starting point
 directions-your-location = Use your location
 directions-nothing-found = Could not find directions to point
 directions-open-in-google-maps = Open in Google Maps
+directions-google-maps = Open in Google Maps
 directions-driving-duration = {
   $hours ->
     [0] {""}
@@ -982,7 +983,7 @@ map-all-months = 12
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Location To Center
 
-map-get-directions = Show Directions
+map-get-directions = Get Directions
 last-trip-dynamic = You last {
   $type ->
     [mountains] hiked

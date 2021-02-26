@@ -47,11 +47,13 @@ export interface DirectionToParkingInput {
   start: Coordinate;
   end: Coordinate;
   considerDirect?: boolean;
+  totalResults?: number;
 }
-export const getDirectionToParkingURL = ({start, end, considerDirect}: DirectionToParkingInput) => {
+export const getDirectionToParkingURL = ({start, end, considerDirect, totalResults}: DirectionToParkingInput) => {
   const direct = considerDirect ? `&direct=true` : '';
+  const limit = totalResults ? `&limit=${totalResults}` : '';
   return `${baseUrl}${ServicesRoutes.directionsToParking}` +
-    `?lat1=${start[1]}&lng1=${start[0]}&lat2=${end[1]}&lng2=${end[0]}${direct}`;
+    `?lat1=${start[1].toFixed(4)}&lng1=${start[0].toFixed(4)}&lat2=${end[1].toFixed(4)}&lng2=${end[0].toFixed(4)}${direct}${limit}`;
 };
 
 export interface SnowReportInput {
