@@ -767,6 +767,9 @@ export const BasicIconInText = styled(IconInTextBase)`
 export const BasicIconAtEndOfText = styled(IconInTextBase)`
   margin-left: 0.6rem;
 `;
+export const BasicIconAtEndOfTextCompact = styled(IconInTextBase)`
+  margin-left: 0.25rem;
+`;
 
 export const IconContainer = styled.div<{$color: string}>`
   margin-right: 0.25rem;

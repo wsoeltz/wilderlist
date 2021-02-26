@@ -1,4 +1,4 @@
-import {faExternalLinkAlt} from '@fortawesome/free-solid-svg-icons';
+import {faExternalLinkAlt, faPencilAlt} from '@fortawesome/free-solid-svg-icons';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import styled from 'styled-components/macro';
@@ -6,7 +6,7 @@ import {OriginLocation} from '../../../../../../hooks/directions/useDirectionsOr
 import useDirectionsToParking from '../../../../../../hooks/servicesHooks/directions/useDirectionsToParking';
 import useFluent from '../../../../../../hooks/useFluent';
 import {
-  BasicIconAtEndOfText,
+  BasicIconAtEndOfTextCompact,
   lightBaseColor,
   LinkButton,
 } from '../../../../../../styling/styleUtils';
@@ -91,15 +91,15 @@ const DirectionsText = (props: Props) => {
             {timeRange}
           </Time>
           <From>
-            {getString('global-text-value-from')} {origin.name}&nbsp;&nbsp;&nbsp;
+            {getString('global-text-value-from')} {origin.name}
             <LinkButton onClick={changeOrigin}>
-              {getString('global-text-value-change')}
+              <BasicIconAtEndOfTextCompact icon={faPencilAlt} />
             </LinkButton>
           </From>
           <GoogleMapsLink>
             <a rel='noreferrer' href={googleUrl} target={'_blank'}>
               {getString('directions-google-maps')}
-              <BasicIconAtEndOfText icon={faExternalLinkAlt} />
+              <BasicIconAtEndOfTextCompact icon={faExternalLinkAlt} />
             </a>
           </GoogleMapsLink>
         </Root>

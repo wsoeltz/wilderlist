@@ -852,7 +852,7 @@ directions-select-origin = Select your starting point
 directions-your-location = Use your location
 directions-nothing-found = Could not find directions to point
 directions-open-in-google-maps = Open in Google Maps
-directions-google-maps = Open in Google Maps
+directions-google-maps = Google Maps
 directions-driving-duration = {
   $hours ->
     [0] {""}
