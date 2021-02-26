@@ -12,7 +12,8 @@ const GET_BASIC_LIST_DETAILS = gql`
       shortName
       type
       description
-      stateOrRegionString
+      locationText
+      bbox
       numMountains
       numTrails
       numCampsites
@@ -49,13 +50,14 @@ interface PeakListDatum {
   type: PeakList['type'];
   description: PeakList['description'];
   resources: PeakList['resources'];
-  stateOrRegionString: PeakList['stateOrRegionString'];
+  locationText: PeakList['locationText'];
   numMountains: PeakList['numMountains'];
   numTrails: PeakList['numTrails'];
   numCampsites: PeakList['numCampsites'];
   numCompletedTrips: PeakList['numCompletedTrips'];
   isActive: PeakList['isActive'];
   latestTrip: PeakList['latestTrip'];
+  bbox: PeakList['bbox'];
   parent: null | {id: PeakList['id'], type: PeakList['type']};
   children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
   siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;

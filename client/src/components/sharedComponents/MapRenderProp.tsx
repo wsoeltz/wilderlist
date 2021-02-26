@@ -3,6 +3,12 @@ import {useEffect} from 'react';
 import useMapContext from '../../hooks/useMapContext';
 import usePrevious from '../../hooks/usePrevious';
 import {
+  completeColor,
+  completionColorScale,
+  incompleteColor,
+  primaryColor,
+} from '../../styling/styleUtils';
+import {
   Campsite,
   Coordinate,
   Mountain,
@@ -53,6 +59,50 @@ const getPercentIcon = (label: string, type: PeakListVariants, count: number | u
     }
   } else {
     return `${label}-perc-0`;
+  }
+};
+
+const getPercentColor = (type: PeakListVariants, count: number | undefined) => {
+  if (count === undefined) {
+    return primaryColor;
+  } else if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
+    return count === 0 ? incompleteColor : completeColor;
+  } else if (type === PeakListVariants.fourSeason) {
+    // @ts-expect-error this is can be used to index completeColorScale
+    return completionColorScale[count / 4 * 100];
+  } else if (type === PeakListVariants.grid) {
+    switch (count) {
+      case 0:
+        return completionColorScale[0];
+      case 1:
+        return completionColorScale[8];
+      case 2:
+        return completionColorScale[17];
+      case 3:
+        return completionColorScale[25];
+      case 4:
+        return completionColorScale[33];
+      case 5:
+        return completionColorScale[42];
+      case 6:
+        return completionColorScale[50];
+      case 7:
+        return completionColorScale[58];
+      case 8:
+        return completionColorScale[67];
+      case 9:
+        return completionColorScale[75];
+      case 10:
+        return completionColorScale[83];
+      case 11:
+        return completionColorScale[92];
+      case 12:
+        return completionColorScale[100];
+      default:
+        return completionColorScale[0];
+    }
+  } else {
+    return incompleteColor;
   }
 };
 
@@ -141,6 +191,7 @@ const MapRenderProp = (props: Props) => {
               type: trail.type,
               subtitle: trail.type,
               id: trail.id,
+              color: getPercentColor(type, trail.hikedCount),
             });
             if (trail.type === TrailType.road || trail.type === TrailType.dirtroad) {
               roads.push(line);

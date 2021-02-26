@@ -36,7 +36,7 @@ const DescriptionAndNotes = (props: Props) => {
     const {mountains} = items.data.peakList;
     name = peakList.name;
     resources = peakList.resources ? peakList.resources : [];
-    const stateOrRegionString = peakList.stateOrRegionString;
+    const stateOrRegionString = peakList.locationText;
     if (peakList.description && peakList.description.length) {
       description = peakList.description;
     } else {

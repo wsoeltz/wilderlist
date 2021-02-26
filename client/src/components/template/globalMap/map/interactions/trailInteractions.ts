@@ -4,6 +4,7 @@ import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import orderBy from 'lodash/orderBy';
 import mapboxgl from 'mapbox-gl';
+import {primaryColor} from '../../../../../styling/styleUtils';
 import {
   Coordinate,
   TrailType,
@@ -104,7 +105,7 @@ const mountainInteractions = (input: Input) => {
                 distance: pointToLineDistance([lng, lat], lineString(t.line)),
               }));
               const trail = orderBy(withDistance, ['distance'], ['asc'])[0];
-              (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(trail.line));
+              (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(trail.line, {color: primaryColor}));
             }
           })
           .catch(err => console.error(err));

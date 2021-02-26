@@ -132,7 +132,7 @@ const initLayers = ({map}: Input) => {
       'line-cap': 'round',
     },
     paint: {
-      'line-color': '#206ca6',
+      'line-color': ['get', 'color'],
       'line-width': [
           'interpolate',
           ['exponential', 1.96],
@@ -183,7 +183,7 @@ const initLayers = ({map}: Input) => {
       'line-cap': 'round',
     },
     paint: {
-      'line-color': '#206ca6',
+      'line-color': ['get', 'color'],
       'line-width': [
           'interpolate',
           ['exponential', 1.96],
@@ -234,7 +234,7 @@ const initLayers = ({map}: Input) => {
       'line-cap': 'round',
     },
     paint: {
-      'line-color': '#206ca6',
+      'line-color': ['get', 'color'],
       'line-width': [
           'interpolate',
           ['exponential', 1.96],
@@ -287,7 +287,7 @@ const initLayers = ({map}: Input) => {
       'line-cap': 'round',
     },
     paint: {
-      'line-color': '#206ca6',
+      'line-color': ['get', 'color'],
       'line-width': [
           'interpolate',
           ['exponential', 1.96],

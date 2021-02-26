@@ -37,6 +37,7 @@ import {
 } from '../../../types/graphQLTypes';
 import { formatDate, getType, parseDate } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import Tooltip from '../../sharedComponents/Tooltip';
 import PeakProgressBar from '../list/PeakProgressBar';
 import VariantLinkDropdown from '../list/VariantLinkDropdown';
@@ -114,11 +115,10 @@ const StarListButtonContainer = styled.div`
 
 interface Props {
   peakListId: string;
-  setOwnMetaData: boolean | undefined;
 }
 
 const Header = (props: Props) => {
-  const {peakListId, setOwnMetaData} = props;
+  const {peakListId} = props;
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const {loading, error, data} = useBasicListDetails(peakListId, userId);
@@ -159,7 +159,7 @@ const Header = (props: Props) => {
     numCampsites = peakList.numCampsites;
     type = peakList.type;
     numCompletedTrips = peakList.numCompletedTrips;
-    stateOrRegionString = peakList.stateOrRegionString;
+    stateOrRegionString = peakList.locationText;
     name = peakList.name;
     shortName = peakList.shortName;
     if (parent && parent.id) {
@@ -309,7 +309,7 @@ const Header = (props: Props) => {
     })
     : null;
 
-  const metaData = setOwnMetaData === true && metaDescription && name && type ? (
+  const metaData = metaDescription && name && type ? (
     <Helmet>
       <title>{getString('meta-data-detail-default-title', {
         title: name, type,
@@ -326,6 +326,13 @@ const Header = (props: Props) => {
       <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + listDetailLink(peakListId)} />
       <meta property='og:image' content={setPeakListOgImageUrl(peakListId)} />
     </Helmet>
+  ) : null;
+
+  const map = data && data.peakList && data.peakList.bbox && data.peakList.bbox.length === 4 ? (
+    <MapRenderProp
+      id={'simple' + peakListId}
+      bbox={data.peakList.bbox}
+    />
   ) : null;
 
   return (
@@ -399,6 +406,7 @@ const Header = (props: Props) => {
         </Column>
       </TopLevelColumns>
       {flagModal}
+      {map}
     </>
   );
 };

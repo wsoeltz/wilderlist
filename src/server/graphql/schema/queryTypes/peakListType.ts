@@ -783,9 +783,54 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
-    classification:  { type: GraphQLString },
-    locationText: { type: GraphQLString },
-    locationTextShort: { type: GraphQLString },
+    classification:  {
+      type: GraphQLString,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.classification) {
+              return res.classification;
+            }
+          }
+          return await parentValue.classification;
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    locationText:  {
+      type: GraphQLString,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.locationText) {
+              return res.locationText;
+            }
+          }
+          return await parentValue.locationText;
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    locationTextShort:  {
+      type: GraphQLString,
+      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
+        try {
+          if (parentValue.parent) {
+            const res = await peakListLoader.load(parentValue.parent);
+            if (res && res.locationTextShort) {
+              return res.locationTextShort;
+            }
+          }
+          return await parentValue.locationTextShort;
+        } catch (err) {
+          return err;
+        }
+      },
+    },
   }),
 });
 

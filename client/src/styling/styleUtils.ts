@@ -80,7 +80,7 @@ export const completeColor = '#145500';
 
 export const completionColorScale = {
   0: incompleteColor,
-  8: '#d17728,',
+  8: '#d17728',
   17: '#cd932b',
   25: '#c99e2c',
   33: '#c7ab2d',

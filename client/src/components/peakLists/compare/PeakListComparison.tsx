@@ -55,7 +55,6 @@ const ComparePeakListPage = (props: Props) => {
           </Helmet>
           <Header
             peakListId={peakList.id}
-            setOwnMetaData={false}
           />
           <ComparisonTable
             user={user}

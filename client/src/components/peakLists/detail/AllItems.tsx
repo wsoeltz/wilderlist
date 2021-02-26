@@ -1,5 +1,3 @@
-const {lineString} = require('@turf/helpers');
-const length = require('@turf/length').default;
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import styled from 'styled-components/macro';
@@ -20,6 +18,7 @@ import {
 import {mobileSize} from '../../../Utils';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
 import {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import getDates from './getDates';
 import ItemsListTable from './ItemsListTable';
@@ -119,8 +118,9 @@ const AllItems = (props: Props) => {
       return {
         ...mtn,
         destination: mountainDetailLink(mtn.id),
-        stateAbbreviation: mtn.state ? mtn.state.abbreviation : '',
+        stateAbbreviation: mtn.locationTextShort ? mtn.locationTextShort : '',
         elevationDisplay: mtn.elevation + 'ft',
+        ascentCount: completedCount,
         ...dates,
       };
     });
@@ -143,7 +143,8 @@ const AllItems = (props: Props) => {
         name,
         destination: campsiteDetailLink(campsite.id),
         formattedType,
-        stateAbbreviation: campsite.state ? campsite.state.abbreviation : '',
+        stateAbbreviation: campsite.locationTextShort ? campsite.locationTextShort : '',
+        campedCount: completedCount,
         ...dates,
       };
     });
@@ -159,24 +160,23 @@ const AllItems = (props: Props) => {
         stringDateFields,
       });
       completedTrails += completedCount;
-      const trailLength = trail.line && trail.line.length ? length(lineString(trail.line)) : 0;
+      const trailLength = trail.trailLength ? trail.trailLength : 0;
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type: trail.type}));
       let name: string = trail.name ? trail.name : formattedType;
       if (type === PeakListVariants.grid || type === PeakListVariants.fourSeason) {
-        name = `${name} - ${parseFloat(trailLength.toFixed(2))} mi`;
+        name = `${name} - ${parseFloat(trailLength.toFixed(1))} mi`;
       }
       return {
         ...trail,
         name,
         destination: trailDetailLink(trail.id),
         formattedType,
-        stateAbbreviation: trail.states
-          ? (trail.states
-              .filter(s => s !== null) as Array<{id: string, abbreviation: string}>)
-              .map(s => s.abbreviation).join(', ')
+        stateAbbreviation: trail.locationTextShort
+          ? trail.locationTextShort
           : '',
         trailLength,
-        trailLengthDisplay: parseFloat(trailLength.toFixed(2)) + ' mi',
+        trailLengthDisplay: parseFloat(trailLength.toFixed(1)) + ' mi',
+        hikedCount: completedCount,
         ...dates,
       };
     });
@@ -325,6 +325,13 @@ const AllItems = (props: Props) => {
           panels={panels}
           panelCounts={panelCounts}
           panelId={'listDetailPanel'}
+        />
+        <MapRenderProp
+          id={'detail' + peakListId}
+          mountains={mountains}
+          campsites={campsites}
+          trails={trails}
+          type={type}
         />
       </Root>
     );

@@ -54,7 +54,7 @@ const mountainInteractions = (input: Input) => {
         if (node) {
           onTooltipOpen({
             node,
-            item: CoreItems.mountains,
+            item: itemType,
             id,
             name,
             location: coordinates,
@@ -67,7 +67,7 @@ const mountainInteractions = (input: Input) => {
 
   let hoveredId: string | undefined;
   // Change the cursor to a pointer when the mouse is over the places layer.
-  map.on('mouseenter', highlightedPointsLayerId, function(e) {
+  map.on('mousemove', highlightedPointsLayerId, function(e) {
     map.getCanvas().style.cursor = 'pointer';
     if (e && e.features && e.features.length > 0) {
       hoveredId = e.features[0].id as string;
