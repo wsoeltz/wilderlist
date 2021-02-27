@@ -55,6 +55,7 @@ interface Props {
   index?: number | undefined;
   name: string;
   center?: Coordinate;
+  line?: Coordinate[];
   subtitle?: string;
   type: CoreItem;
   destination?: string | (() => void);
@@ -73,9 +74,9 @@ const ItemRow = (props: Props) => {
   const mapContext = useMapContext();
 
   const onMouseEnter = useCallback(() => {
-    if (mapContext.intialized && props.center) {
+    if (mapContext.intialized && props.center && props.center.length >= 2) {
       const subtitle = props.subtitle ? props.subtitle : '';
-      mapContext.setExternalHoveredPopup(props.name, props.type, subtitle, props.center);
+      mapContext.setExternalHoveredPopup(props.name, props.type, subtitle, props.center, props.line);
     }
   }, [mapContext, props]);
 

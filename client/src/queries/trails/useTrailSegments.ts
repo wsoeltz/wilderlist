@@ -11,6 +11,7 @@ const GET_TRAIL_SEGMENTS = gql`
         id
         name
         line
+        center
         type
         locationTextShort
         trailLength
@@ -27,6 +28,7 @@ interface QuerySuccessResponse {
       id: Trail['id'];
       name: Trail['name'];
       line: Trail['line'];
+      center: Trail['center'];
       type: Trail['type'];
       locationTextShort: Trail['locationTextShort'];
       trailLength: Trail['trailLength'];

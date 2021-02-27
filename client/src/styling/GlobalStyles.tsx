@@ -53,6 +53,7 @@ import {
   faTrophy,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
+import {rgba} from 'polished';
 import { createGlobalStyle } from 'styled-components/macro';
 import {
   baseColor,
@@ -78,6 +79,8 @@ library.add(
   faLeaf, faSnowflake, faTh, faMapMarkedAlt, faCrow,
   faArrowRight, faExclamationTriangle,
 );
+
+export const mapboxHoverPopupClassName = 'mapbox-gl-hovered-popup-container';
 
 const GlobalStyles = createGlobalStyle`
 
@@ -161,6 +164,21 @@ const GlobalStyles = createGlobalStyle`
     .mapboxgl-popup-tip {
       border-top-color: ${tertiaryColor};
       border-bottom-color: ${tertiaryColor};
+    }
+
+    &.${mapboxHoverPopupClassName} {
+      background-color: transparent;
+      backdrop-filter: blur(1px);
+
+      .mapboxgl-popup-content {
+        background-color: ${rgba(tertiaryColor, 0.75)};
+      }
+      .mapboxgl-popup-tip {
+        opacity: 0.95;
+        position: absolute;
+        bottom: 0;
+        transform: translate(0, 100%);
+      }
     }
   }
 `;

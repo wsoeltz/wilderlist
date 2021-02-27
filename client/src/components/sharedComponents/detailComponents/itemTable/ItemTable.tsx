@@ -126,20 +126,16 @@ const ItemTable = (props: Props) => {
       const actionFields = actionFieldKeys.map(({displayKey}) => item[displayKey]);
       let subtitle: string | undefined;
       if (type === CoreItem.mountain) {
-        const elevationField = dataFieldKeys.find(d => d.sortKey === 'elevation');
-        if (elevationField) {
-          subtitle = item[elevationField.displayKey];
+        if (item.elevation) {
+          subtitle = item.elevation + 'ft';
         }
       } else if (type === CoreItem.trail) {
-        const typeField = dataFieldKeys.find(d => d.sortKey === 'formattedType');
-        const lengthField = dataFieldKeys.find(d => d.sortKey === 'trailLength');
-        if (typeField && lengthField) {
-          subtitle = item[lengthField.displayKey] + ' long ' + item[typeField.displayKey];
+        if (item.formattedType && item.trailLength) {
+          subtitle = parseFloat(item.trailLength.toFixed(1)) + ' mi long ' + item.formattedType.toLowerCase();
         }
       } else if (type === CoreItem.campsite) {
-        const typeField = dataFieldKeys.find(d => d.sortKey === 'formattedType');
-        if (typeField) {
-          subtitle = item[typeField.displayKey];
+        if (item.formattedType) {
+          subtitle = item.formattedType;
         }
       }
       return (
@@ -148,6 +144,7 @@ const ItemTable = (props: Props) => {
           index={showIndex ? i + 1 : undefined}
           name={item.name}
           center={item.center}
+          line={item.line}
           type={type}
           subtitle={subtitle}
           optional={item.optional ? true : false}

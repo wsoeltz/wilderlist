@@ -1,15 +1,17 @@
-const {point} = require('@turf/helpers');
+const {point, lineString} = require('@turf/helpers');
 const distance = require('@turf/distance').default;
 const centroid = require('@turf/centroid').default;
 const bboxPolygon = require('@turf/bbox-polygon').default;
 const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 import { GetString } from 'fluent-react/compat';
 import mapboxgl from 'mapbox-gl';
+import {mapboxHoverPopupClassName} from '../../../../styling/GlobalStyles';
 import {
   contentColumnIdeal,
   contentColumnMax,
   contentColumnMin,
 } from '../../../../styling/Grid';
+import {primaryColor} from '../../../../styling/styleUtils';
 import {Coordinate, Latitude, Longitude} from '../../../../types/graphQLTypes';
 import {CoreItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
@@ -23,6 +25,7 @@ import initLayers, {
   highlightedPointsLayerId,
   highlightedRoadsLayerId,
   highlightedTrailsLayerId,
+  hoveredTrailsLayerId,
 } from './layers';
 
 // eslint-disable-next-line
@@ -52,7 +55,8 @@ export interface Output {
   setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   clearMap: () => void;
-  setExternalHoveredPopup: (name: string, type: CoreItem, subtitle: string, coords: Coordinate) => void;
+  setExternalHoveredPopup: (
+    name: string, type: CoreItem, subtitle: string, coords: Coordinate, line?: Coordinate[]) => void;
   clearExternalHoveredPopup: () => void;
 }
 
@@ -203,14 +207,26 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   const externalHoverPopup = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
+    offset: [0, -20],
+    className: mapboxHoverPopupClassName,
   });
 
-  const setExternalHoveredPopup = (name: string, type: CoreItem, subtitle: string, coords: Coordinate) => {
+  const setExternalHoveredPopup = (
+    name: string, type: CoreItem, subtitle: string, coords: Coordinate, line?: Coordinate[],
+  ) => {
     if (mapLoaded) {
       externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
+      if (line) {
+        (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(line, {color: primaryColor}));
+      }
     }
   };
-  const clearExternalHoveredPopup = () => externalHoverPopup.remove();
+  const clearExternalHoveredPopup = () => {
+    externalHoverPopup.remove();
+    if (mapLoaded) {
+      (map.getSource(hoveredTrailsLayerId) as any).setData(defaultGeoJsonLineString);
+    }
+  };
 
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,

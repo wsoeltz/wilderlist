@@ -1,7 +1,7 @@
 import MountainIcon from '../../../../../assets/images/icons/mountain-highlighted.svg';
 import TentIcon from '../../../../../assets/images/icons/tent-highlighted.svg';
 import TrailIcon from '../../../../../assets/images/icons/trail-highlighted.svg';
-import { primaryColor, primaryFont, tertiaryColor } from '../../../../../styling/styleUtils';
+import { primaryColor, primaryFont } from '../../../../../styling/styleUtils';
 import { CoreItem } from '../../../../../types/itemTypes';
 
 const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem) => {
@@ -22,7 +22,6 @@ const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem) => {
       display: grid;
       grid-template-columns: 1.5rem 1fr;
       grid-column-gap: 0.4rem;
-      background-color: ${tertiaryColor};
       font-size: 0.85rem;
       align-items: center;
     '>

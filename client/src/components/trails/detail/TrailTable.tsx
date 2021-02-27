@@ -39,7 +39,7 @@ const Content = (props: Props) => {
     },
   ];
 
-  if (loading) {
+  if (loading || usersProgress.loading) {
     return (
       <LoadingContainer>
         <LoadingSimple />
@@ -52,7 +52,7 @@ const Content = (props: Props) => {
       const trailLength = t.trailLength ? parseFloat(t.trailLength.toFixed(1)) : 0;
       const trailLengthDisplay = getString('directions-driving-distance', {miles: trailLength});
       const avgSlopeDisplay = t.avgSlope ? parseFloat(t.avgSlope.toFixed(1)) + '°' : '0°';
-      const {dates} = getDates({
+      const {dates, completedCount} = getDates({
         type: PeakListVariants.standard,
         item: t,
         field: CoreItem.trail,
@@ -63,9 +63,13 @@ const Content = (props: Props) => {
       return {
         ...t,
         name,
+        line: t.line,
+        center: t.center,
         formattedType,
+        trailLength,
         trailLengthDisplay,
         avgSlopeDisplay,
+        hikedCount: completedCount,
         destination: trailDetailLink(t.id),
         ...dates,
       };
