@@ -10,6 +10,7 @@ export enum AggregateItem {
 
 export enum MapItem {
   route = 'route',
+  directions = 'directions',
 }
 
 export enum CoreItems {

@@ -6,6 +6,7 @@ import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import useDirectionsToParking from '../../../../hooks/servicesHooks/directions/useDirectionsToParking';
 import useFluent from '../../../../hooks/useFluent';
+import useMapContext from '../../../../hooks/useMapContext';
 import {
   BlockHeader,
   BlockTitle,
@@ -22,6 +23,7 @@ import {
   Subtext,
 } from '../../../../styling/styleUtils';
 import {Coordinate} from '../../../../types/graphQLTypes';
+import {MapItem} from '../../../../types/itemTypes';
 import LoadingSimple from '../../LoadingSimple';
 
 interface Props {
@@ -33,6 +35,14 @@ interface Props {
 
 const Destinations = ({start, end, considerDirect, destinationName}: Props) => {
   const {loading, error, data} = useDirectionsToParking({start, end, considerDirect});
+  const mapContext = useMapContext();
+
+  const onMouseLeave = () => {
+    if (mapContext.intialized) {
+      mapContext.clearExternalHoveredPopup();
+    }
+  };
+
   const getString = useFluent();
   if (loading) {
     return (
@@ -84,11 +94,26 @@ const Destinations = ({start, end, considerDirect, destinationName}: Props) => {
         if (name === 'SOURCE') {
           name = destinationName ? destinationName : 'Destination';
         }
+
+        const onMouseEnter = () => {
+          if (mapContext.intialized) {
+            mapContext.setExternalHoveredPopup(
+              name,
+              MapItem.directions,
+              getString('directions-driving-duration', {hours, minutes}) + ', ' +
+                getString('directions-driving-distance', {miles}),
+              [destination.originLng, destination.originLat],
+            );
+          }
+        };
+
         return (
           <HorizontalBlock
             key={
               'driving-to-parking-' + i + hours + minutes + miles + originName + originType + originLat + originLng
             }
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
           >
             <BlockHeader>
               <BlockTitle>{getString('global-text-value-to')}</BlockTitle>

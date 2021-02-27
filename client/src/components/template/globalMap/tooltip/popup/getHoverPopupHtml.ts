@@ -1,3 +1,4 @@
+import DirectionsIcon from '../../../../../assets/images/icons/car-highlighted.svg';
 import MountainIcon from '../../../../../assets/images/icons/mountain-highlighted.svg';
 import RouteIcon from '../../../../../assets/images/icons/route-highlighted.svg';
 import TentIcon from '../../../../../assets/images/icons/tent-highlighted.svg';
@@ -15,6 +16,8 @@ const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem | MapI
     imgSrc = TentIcon;
   } else if (type === MapItem.route) {
     imgSrc = RouteIcon;
+  } else if (type === MapItem.directions) {
+    imgSrc = DirectionsIcon;
   } else {
     imgSrc = MountainIcon;
   }
