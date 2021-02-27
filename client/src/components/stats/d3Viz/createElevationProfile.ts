@@ -1,4 +1,4 @@
-import { extent, max, min } from 'd3-array';
+import { bisector, extent, max, min } from 'd3-array';
 import {
   axisBottom,
   axisLeft,
@@ -7,7 +7,8 @@ import {
   scaleLinear,
 } from 'd3-scale';
 import {
-  // mouse,
+  // @ts-expect-error d3 typing is inaccurate, mouse is in fact exported from this module
+  mouse,
   Selection,
 } from 'd3-selection';
 import { line } from 'd3-shape';
@@ -105,107 +106,107 @@ const createLineChart = (input: Input) => {
   g.style('transform', 'scale(0.95) translateY(' + margin.top + 'px)')
    .style('transform-origin', 'center');
 
-  // const bisect = bisector(function(d: any) { return d.mile; }).left;
-  // // Create the circle that travels along the curve of chart
-  // const focusLineVertical = g
-  //   .append('line')
-  //     .style('fill', 'none')
-  //     .attr('stroke', '#a7a7a7')
-  //     .attr('stroke-width', '0.5px')
-  //     .attr('x1', 0)
-  //     .attr('x2', 0)
-  //     .attr('y1', 0)
-  //     .attr('y2', height)
-  //     .style('opacity', 0);
-  // const focusLineHorizontal = g
-  //   .append('line')
-  //     .style('fill', 'none')
-  //     .attr('stroke', '#a7a7a7')
-  //     .attr('stroke-width', '0.5px')
-  //     .attr('x1', margin.left)
-  //     .attr('x2', size.width)
-  //     .attr('y1', 0)
-  //     .attr('y2', 0)
-  //     .style('opacity', 0);
+  const bisect = bisector(function(d: any) { return d.mile; }).left;
+  // Create the circle that travels along the curve of chart
+  const focusLineVertical = g
+    .append('line')
+      .style('fill', 'none')
+      .attr('stroke', '#a7a7a7')
+      .attr('stroke-width', '0.5px')
+      .attr('x1', 0)
+      .attr('x2', 0)
+      .attr('y1', 0)
+      .attr('y2', height)
+      .style('opacity', 0);
+  const focusLineHorizontal = g
+    .append('line')
+      .style('fill', 'none')
+      .attr('stroke', '#a7a7a7')
+      .attr('stroke-width', '0.5px')
+      .attr('x1', margin.left)
+      .attr('x2', size.width)
+      .attr('y1', 0)
+      .attr('y2', 0)
+      .style('opacity', 0);
 
-  // // Create the text that travels along the curve of chart
-  // const focusMileText = g
-  //   .append('g')
-  //   .append('text')
-  //     .style('opacity', 0)
-  //     .attr('y', height - 7)
-  //     .attr('text-anchor', 'left')
-  //     .attr('alignment-baseline', 'middle')
-  //     .style('font-weight', '600')
-  //     .style('font-size', '12px')
-  //     .attr('fill', '#333')
-  //     .attr('stroke', '#fff')
-  //     .attr('stroke-width', '5px')
-  //     .attr('paint-order', 'stroke');
-  // const focusElevationText = g
-  //   .append('g')
-  //   .append('text')
-  //     .style('opacity', 0)
-  //     .attr('x', margin.left + 5)
-  //     .attr('text-anchor', 'left')
-  //     .attr('alignment-baseline', 'middle')
-  //     .style('font-weight', '600')
-  //     .style('font-size', '12px')
-  //     .attr('fill', '#333')
-  //     .attr('stroke', '#fff')
-  //     .attr('stroke-width', '5px')
-  //     .attr('paint-order', 'stroke');
+  // Create the text that travels along the curve of chart
+  const focusMileText = g
+    .append('g')
+    .append('text')
+      .style('opacity', 0)
+      .attr('y', height - 7)
+      .attr('text-anchor', 'left')
+      .attr('alignment-baseline', 'middle')
+      .style('font-weight', '600')
+      .style('font-size', '12px')
+      .attr('fill', '#333')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', '5px')
+      .attr('paint-order', 'stroke');
+  const focusElevationText = g
+    .append('g')
+    .append('text')
+      .style('opacity', 0)
+      .attr('x', margin.left + 5)
+      .attr('text-anchor', 'left')
+      .attr('alignment-baseline', 'middle')
+      .style('font-weight', '600')
+      .style('font-size', '12px')
+      .attr('fill', '#333')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', '5px')
+      .attr('paint-order', 'stroke');
 
-  // // Create a rect on top of the svg area: this rectangle recovers mouse position
-  // g
-  //   .append('rect')
-  //   .style('fill', 'none')
-  //   .style('pointer-events', 'all')
-  //   .attr('width', size.width * 2)
-  //   .attr('height', size.height * 2)
-  //   .attr('x', -margin.left)
-  //   .attr('y', -margin.top * 2)
-  //   .attr('transform', 'translate(' + margin.left + ', 0)')
-  //   .on('mouseover', mouseover)
-  //   .on('mousemove', mousemove)
-  //   .on('mouseout', mouseout);
+  // Create a rect on top of the svg area: this rectangle recovers mouse position
+  g
+    .append('rect')
+    .style('fill', 'none')
+    .style('pointer-events', 'all')
+    .attr('width', size.width * 2)
+    .attr('height', size.height * 2)
+    .attr('x', -margin.left)
+    .attr('y', -margin.top * 2)
+    .attr('transform', 'translate(' + margin.left + ', 0)')
+    .on('mouseover', mouseover)
+    .on('mousemove', mousemove)
+    .on('mouseout', mouseout);
 
-  //   // What happens when the mouse move -> show the annotations at the right positions.
-  // function mouseover() {
-  //   focusLineVertical.style('opacity', 1);
-  //   focusLineHorizontal.style('opacity', 1);
-  //   focusMileText.style('opacity', 1);
-  //   focusElevationText.style('opacity', 1);
-  // }
+    // What happens when the mouse move -> show the annotations at the right positions.
+  function mouseover() {
+    focusLineVertical.style('opacity', 1);
+    focusLineHorizontal.style('opacity', 1);
+    focusMileText.style('opacity', 1);
+    focusElevationText.style('opacity', 1);
+  }
 
-  // function mousemove() {
-  //   // recover coordinate we need
-  //   // @ts-expect-error this is correct
-  //   const x0 = x.invert(mouse(this)[0]);
-  //   const i = bisect(data, x0, 1);
-  //   const selectedData = data[i];
-  //   if (selectedData) {
-  //     focusLineVertical
-  //       .attr('x1', x(selectedData.mile) + margin.left)
-  //       .attr('x2', x(selectedData.mile) + margin.left);
-  //     focusLineHorizontal
-  //       .attr('y1', y(selectedData.elevation))
-  //       .attr('y2', y(selectedData.elevation));
+  function mousemove() {
+    // recover coordinate we need
+    // @ts-expect-error this is correct
+    const x0 = x.invert(mouse(this)[0]);
+    const i = bisect(data, x0, 1);
+    const selectedData = data[i];
+    if (selectedData) {
+      focusLineVertical
+        .attr('x1', x(selectedData.mile) + margin.left)
+        .attr('x2', x(selectedData.mile) + margin.left);
+      focusLineHorizontal
+        .attr('y1', y(selectedData.elevation))
+        .attr('y2', y(selectedData.elevation));
 
-  //     focusMileText
-  //       .html(selectedData.mile.toFixed(2) + 'mi')
-  //       .attr('x', x(selectedData.mile) + 5);
-  //     focusElevationText
-  //       .html(Math.round(selectedData.elevation).toString() + 'ft')
-  //       .attr('y', y(selectedData.elevation) - 10);
-  //   }
-  // }
-  // function mouseout() {
-  //   focusMileText.style('opacity', 0);
-  //   focusElevationText.style('opacity', 0);
-  //   focusLineVertical.style('opacity', 0);
-  //   focusLineHorizontal.style('opacity', 0);
-  // }
+      focusMileText
+        .html(selectedData.mile.toFixed(2) + 'mi')
+        .attr('x', x(selectedData.mile) + 5);
+      focusElevationText
+        .html(Math.round(selectedData.elevation).toString() + 'ft')
+        .attr('y', y(selectedData.elevation) - 10);
+    }
+  }
+  function mouseout() {
+    focusMileText.style('opacity', 0);
+    focusElevationText.style('opacity', 0);
+    focusLineVertical.style('opacity', 0);
+    focusLineHorizontal.style('opacity', 0);
+  }
 };
 
 export default createLineChart;
