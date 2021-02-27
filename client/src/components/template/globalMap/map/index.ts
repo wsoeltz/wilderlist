@@ -12,8 +12,8 @@ import {
   contentColumnMin,
 } from '../../../../styling/Grid';
 import {primaryColor} from '../../../../styling/styleUtils';
-import {Coordinate, Latitude, Longitude} from '../../../../types/graphQLTypes';
-import {CoreItem} from '../../../../types/itemTypes';
+import {Coordinate, CoordinateWithElevation, Latitude, Longitude} from '../../../../types/graphQLTypes';
+import {CoreItem, MapItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
 import {Props as TooltipState} from '../tooltip';
@@ -56,7 +56,11 @@ export interface Output {
   setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   clearMap: () => void;
   setExternalHoveredPopup: (
-    name: string, type: CoreItem, subtitle: string, coords: Coordinate, line?: Coordinate[]) => void;
+    name: string,
+    type: CoreItem | MapItem,
+    subtitle: string,
+    coords: Coordinate,
+    line?: Array<Coordinate | CoordinateWithElevation>) => void;
   clearExternalHoveredPopup: () => void;
 }
 
@@ -212,7 +216,11 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   });
 
   const setExternalHoveredPopup = (
-    name: string, type: CoreItem, subtitle: string, coords: Coordinate, line?: Coordinate[],
+    name: string,
+    type: CoreItem | MapItem,
+    subtitle: string,
+    coords: Coordinate,
+    line?: Array<Coordinate | CoordinateWithElevation>,
   ) => {
     if (mapLoaded) {
       externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);

@@ -20,7 +20,7 @@ interface Feature {
       _id: string,
       name?: string | null,
       type?: string | null,
-      location: [Coordinate],
+      location: Coordinate,
     },
   };
   geometry: {

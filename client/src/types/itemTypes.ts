@@ -8,6 +8,10 @@ export enum AggregateItem {
   list = 'list',
 }
 
+export enum MapItem {
+  route = 'route',
+}
+
 export enum CoreItems {
   mountains = 'mountains',
   trails = 'trails',

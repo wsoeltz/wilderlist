@@ -1,10 +1,11 @@
 import MountainIcon from '../../../../../assets/images/icons/mountain-highlighted.svg';
+import RouteIcon from '../../../../../assets/images/icons/route-highlighted.svg';
 import TentIcon from '../../../../../assets/images/icons/tent-highlighted.svg';
 import TrailIcon from '../../../../../assets/images/icons/trail-highlighted.svg';
 import { primaryColor, primaryFont } from '../../../../../styling/styleUtils';
-import { CoreItem } from '../../../../../types/itemTypes';
+import { CoreItem, MapItem } from '../../../../../types/itemTypes';
 
-const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem) => {
+const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem | MapItem) => {
   let imgSrc: string = '';
   if (type === CoreItem.mountain) {
     imgSrc = MountainIcon;
@@ -12,6 +13,8 @@ const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem) => {
     imgSrc = TrailIcon;
   } else if (type === CoreItem.campsite) {
     imgSrc = TentIcon;
+  } else if (type === MapItem.route) {
+    imgSrc = RouteIcon;
   } else {
     imgSrc = MountainIcon;
   }
