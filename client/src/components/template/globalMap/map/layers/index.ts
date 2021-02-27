@@ -1,3 +1,5 @@
+import {primaryColor} from '../../../../../styling/styleUtils';
+
 export const highlightedPointsLayerId = 'temporary-highlight-mountains-layer-id';
 export const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
   type: 'Feature',
@@ -7,6 +9,8 @@ export const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
     coordinates: [],
   },
 };
+
+export const hoveredShapeLayerId = 'temporary-highlight-shape-layer-id';
 
 export const highlightedTrailsLayerId = 'temporary-highlight-trails-layer-id';
 const highlightedTrailsLayerTopId = 'temporary-highlight-trails-top-layer-id';
@@ -25,6 +29,15 @@ export const defaultGeoJsonLineString: mapboxgl.GeoJSONSourceOptions['data'] = {
   properties: {},
   geometry: {
     type: 'LineString',
+    coordinates: [],
+  },
+};
+
+export const defaultGeoJsonPolygon: mapboxgl.GeoJSONSourceOptions['data'] = {
+  type: 'Feature',
+  properties: {},
+  geometry: {
+    type: 'Polygon',
     coordinates: [],
   },
 };
@@ -325,6 +338,20 @@ const initLayers = ({map}: Input) => {
         'line-translate': [0, 0],
     },
   }, 'admin-1-boundary-bg');
+
+  map.addSource(hoveredShapeLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonPolygon,
+  });
+  map.addLayer({
+    id: hoveredShapeLayerId,
+    type: 'fill',
+    source: hoveredShapeLayerId,
+    paint: {
+      'fill-color': primaryColor,
+      'fill-opacity': 0.2,
+      },
+  });
 
 };
 

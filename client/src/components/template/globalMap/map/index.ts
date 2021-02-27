@@ -13,7 +13,7 @@ import {
 } from '../../../../styling/Grid';
 import {primaryColor} from '../../../../styling/styleUtils';
 import {Coordinate, CoordinateWithElevation, Latitude, Longitude} from '../../../../types/graphQLTypes';
-import {CoreItem, MapItem} from '../../../../types/itemTypes';
+import {AggregateItem, CoreItem, MapItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
 import {Props as TooltipState} from '../tooltip';
@@ -22,9 +22,11 @@ import initInteractions from './interactions';
 import initLayers, {
   defaultGeoJsonLineString,
   defaultGeoJsonPoint,
+  defaultGeoJsonPolygon,
   highlightedPointsLayerId,
   highlightedRoadsLayerId,
   highlightedTrailsLayerId,
+  hoveredShapeLayerId,
   hoveredTrailsLayerId,
 } from './layers';
 
@@ -57,10 +59,12 @@ export interface Output {
   clearMap: () => void;
   setExternalHoveredPopup: (
     name: string,
-    type: CoreItem | MapItem,
+    type: CoreItem | MapItem | AggregateItem,
     subtitle: string,
     coords: Coordinate,
-    line?: Array<Coordinate | CoordinateWithElevation>) => void;
+    line?: Array<Coordinate | CoordinateWithElevation>,
+    bbox?: [Longitude, Latitude, Longitude, Latitude],
+  ) => void;
   clearExternalHoveredPopup: () => void;
 }
 
@@ -217,15 +221,23 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   const setExternalHoveredPopup = (
     name: string,
-    type: CoreItem | MapItem,
+    type: CoreItem | MapItem | AggregateItem,
     subtitle: string,
     coords: Coordinate,
     line?: Array<Coordinate | CoordinateWithElevation>,
+    bbox?: [Longitude, Latitude, Longitude, Latitude],
   ) => {
     if (mapLoaded) {
-      externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
-      if (line) {
-        (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(line, {color: primaryColor}));
+      if (!bbox) {
+        externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
+        if (line) {
+          (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(line, {color: primaryColor}));
+        }
+      } else {
+        if (map.getZoom() < 10) {
+          externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
+          (map.getSource(hoveredShapeLayerId) as any).setData(bboxPolygon(bbox));
+        }
       }
     }
   };
@@ -233,6 +245,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     externalHoverPopup.remove();
     if (mapLoaded) {
       (map.getSource(hoveredTrailsLayerId) as any).setData(defaultGeoJsonLineString);
+      (map.getSource(hoveredShapeLayerId) as any).setData(defaultGeoJsonPolygon);
     }
   };
 

@@ -15,6 +15,7 @@ interface PeakListDatum {
   numCampsites: PeakList['numCampsites'];
   locationText: PeakList['locationText'];
   isActive: PeakList['isActive'];
+  bbox: PeakList['bbox'];
 }
 
 const GET_APPEARS_IN_LISTS = gql`
@@ -28,6 +29,7 @@ const GET_APPEARS_IN_LISTS = gql`
       numCampsites
       locationText
       isActive
+      bbox
     }
   }
 `;

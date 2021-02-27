@@ -1,11 +1,14 @@
+const {point, featureCollection} = require('@turf/helpers');
+const getCenter = require('@turf/center').default;
 import {
   faList,
 } from '@fortawesome/free-solid-svg-icons';
 import orderBy from 'lodash/orderBy';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
+import useMapContext from '../../../../hooks/useMapContext';
 import useAppearsInLists from '../../../../queries/lists/useAppearsInLists';
 import {listDetailLink} from '../../../../routing/Utils';
 import {
@@ -22,7 +25,7 @@ import {
   Subtext,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
-import {CoreItems} from '../../../../types/itemTypes';
+import {AggregateItem, CoreItems} from '../../../../types/itemTypes';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../svgIcons';
 
 const Root = styled.div`
@@ -69,6 +72,19 @@ interface Props {
 const AppearsIn = (props: Props) => {
   const {id, name, field} = props;
   const getString = useFluent();
+  const mapContext = useMapContext();
+  const onMouseLeave = () => {
+    if (mapContext.intialized) {
+      mapContext.clearExternalHoveredPopup();
+    }
+  };
+  useEffect(() => {
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearExternalHoveredPopup();
+      }
+    };
+  }, [mapContext]);
   const {data} = useAppearsInLists({id, field});
   if (data && data.appearsIn && data.appearsIn.length) {
 
@@ -121,8 +137,29 @@ const AppearsIn = (props: Props) => {
       ) : null;
       const DetailContainer = Number(Boolean(mountains)) + Number(Boolean(trails)) + Number(Boolean(campsites)) > 1
         ? Details : React.Fragment;
+
+      const onMouseEnter = () => {
+        if (mapContext.intialized && list.bbox) {
+          const center = getCenter(featureCollection([
+            point(list.bbox.slice(0, 2)),
+            point(list.bbox.slice(2, 4)),
+          ]));
+          mapContext.setExternalHoveredPopup(
+            list.name,
+            AggregateItem.list,
+            '',
+            [center.geometry.coordinates[0], list.bbox[3]],
+            undefined,
+            list.bbox,
+          );
+        }
+      };
       return (
-        <HorizontalBlock key={'appears-in-' + list.id}>
+        <HorizontalBlock
+          key={'appears-in-' + list.id}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+        >
           <div>
             <Link to={url}>
               <>{list.name}</>

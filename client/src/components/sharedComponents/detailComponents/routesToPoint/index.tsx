@@ -2,7 +2,7 @@ import orderBy from 'lodash/orderBy';
 import partition from 'lodash/partition';
 import uniqBy from 'lodash/uniqBy';
 import upperFirst from 'lodash/upperFirst';
-import React from 'react';
+import React, {useEffect} from 'react';
 import useRoutesToPoint from '../../../../hooks/servicesHooks/pathfinding/useRoutesToPoint';
 import useFluent from '../../../../hooks/useFluent';
 import useMapContext from '../../../../hooks/useMapContext';
@@ -45,6 +45,13 @@ const RoutesToPoint = (props: Props) => {
       mapContext.clearExternalHoveredPopup();
     }
   };
+  useEffect(() => {
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearExternalHoveredPopup();
+      }
+    };
+  }, [mapContext]);
 
   const {loading, error, data} = useRoutesToPoint({
     lat: coordinate[1],
@@ -78,7 +85,7 @@ const RoutesToPoint = (props: Props) => {
       <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
         <EmptyBlock>
           <CenteredHeader>
-            {getString('global-error-retrieving-data')}
+            {getString('global-text-value-no-routes-to', {type: item})}
           </CenteredHeader>
         </EmptyBlock>
       </HorizontalScrollContainer>

@@ -3,7 +3,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import orderBy from 'lodash/orderBy';
 import upperFirst from 'lodash/upperFirst';
-import React from 'react';
+import React, {useEffect} from 'react';
 import useDirectionsToParking from '../../../../hooks/servicesHooks/directions/useDirectionsToParking';
 import useFluent from '../../../../hooks/useFluent';
 import useMapContext from '../../../../hooks/useMapContext';
@@ -42,7 +42,13 @@ const Destinations = ({start, end, considerDirect, destinationName}: Props) => {
       mapContext.clearExternalHoveredPopup();
     }
   };
-
+  useEffect(() => {
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearExternalHoveredPopup();
+      }
+    };
+  }, [mapContext]);
   const getString = useFluent();
   if (loading) {
     return (
