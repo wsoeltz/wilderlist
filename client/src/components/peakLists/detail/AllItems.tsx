@@ -117,6 +117,7 @@ const AllItems = (props: Props) => {
       completedMountains += completedCount;
       return {
         ...mtn,
+        center: mtn.location,
         destination: mountainDetailLink(mtn.id),
         stateAbbreviation: mtn.locationTextShort ? mtn.locationTextShort : '',
         elevationDisplay: mtn.elevation + 'ft',
@@ -141,6 +142,7 @@ const AllItems = (props: Props) => {
       return {
         ...campsite,
         name,
+        center: campsite.location,
         destination: campsiteDetailLink(campsite.id),
         formattedType,
         stateAbbreviation: campsite.locationTextShort ? campsite.locationTextShort : '',
@@ -169,6 +171,7 @@ const AllItems = (props: Props) => {
       return {
         ...trail,
         name,
+        center: trail.center,
         destination: trailDetailLink(trail.id),
         formattedType,
         stateAbbreviation: trail.locationTextShort

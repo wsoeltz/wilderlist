@@ -11,9 +11,11 @@ import {
   contentColumnMin,
 } from '../../../../styling/Grid';
 import {Coordinate, Latitude, Longitude} from '../../../../types/graphQLTypes';
+import {CoreItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
 import {Props as TooltipState} from '../tooltip';
+import getHoverPopupHtml from '../tooltip/popup/getHoverPopupHtml';
 import initInteractions from './interactions';
 import initLayers, {
   defaultGeoJsonLineString,
@@ -50,6 +52,8 @@ export interface Output {
   setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   clearMap: () => void;
+  setExternalHoveredPopup: (name: string, type: CoreItem, subtitle: string, coords: Coordinate) => void;
+  clearExternalHoveredPopup: () => void;
 }
 
 const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: Input): Output => {
@@ -195,9 +199,22 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
+  // Create a popup, but don't add it to the map yet.
+  const externalHoverPopup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+  });
+
+  const setExternalHoveredPopup = (name: string, type: CoreItem, subtitle: string, coords: Coordinate) => {
+    if (mapLoaded) {
+      externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
+    }
+  };
+  const clearExternalHoveredPopup = () => externalHoverPopup.remove();
+
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
-    setHighlightedRoads,
+    setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup,
   };
 };
 

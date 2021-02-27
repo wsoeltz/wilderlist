@@ -85,8 +85,8 @@ const mountainInteractions = (input: Input) => {
       },
       { hover: false },
     );
+    hoveredId = undefined;
   });
-  hoveredId = undefined;
 };
 
 export default mountainInteractions;

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useMapContext from '../../../../hooks/useMapContext';
 import { LinkButton } from '../../../../styling/styleUtils';
 import {
   lightBaseColor,
@@ -10,6 +11,8 @@ import {
   semiBoldFontBoldWeight,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
+import {Coordinate} from '../../../../types/graphQLTypes';
+import {CoreItem} from '../../../../types/itemTypes';
 
 const Row = styled.tr`
   border-bottom: 1px solid ${lightBorderColor};
@@ -51,6 +54,9 @@ const OptionalText = styled.span`
 interface Props {
   index?: number | undefined;
   name: string;
+  center?: Coordinate;
+  subtitle?: string;
+  type: CoreItem;
   destination?: string | (() => void);
   optional: boolean;
   dataFields: Array<string | number>;
@@ -64,6 +70,28 @@ const ItemRow = (props: Props) => {
     index, name, destination, dataFields, completionFields, actionFields, compactView,
     optional,
   } = props;
+  const mapContext = useMapContext();
+
+  const onMouseEnter = useCallback(() => {
+    if (mapContext.intialized && props.center) {
+      const subtitle = props.subtitle ? props.subtitle : '';
+      mapContext.setExternalHoveredPopup(props.name, props.type, subtitle, props.center);
+    }
+  }, [mapContext, props]);
+
+  const onMouseLeave = useCallback(() => {
+    if (mapContext.intialized) {
+      mapContext.clearExternalHoveredPopup();
+    }
+  }, [mapContext]);
+
+  useEffect(() => {
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearExternalHoveredPopup();
+      }
+    };
+  }, [mapContext]);
 
   const optionalEl = optional ? (
     <OptionalText>
@@ -137,7 +165,10 @@ const ItemRow = (props: Props) => {
   ));
 
   return (
-    <Row>
+    <Row
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {indexColumn}
       {nameColumn}
       {dataColumns}

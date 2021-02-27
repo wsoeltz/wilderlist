@@ -3,7 +3,7 @@ import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {lightBorderColor} from '../../../../styling/styleUtils';
-import {PeakListVariants} from '../../../../types/graphQLTypes';
+import {Coordinate, PeakListVariants} from '../../../../types/graphQLTypes';
 import {CoreItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import StandardSearch from '../../StandardSearch';
@@ -57,6 +57,7 @@ const SearchCell = styled.th`
 export interface Item {
   id: string;
   name: string;
+  center?: Coordinate;
   destination?: string | (() => void);
   [key: string]: any;
 }
@@ -123,11 +124,32 @@ const ItemTable = (props: Props) => {
       const dataFields = dataFieldKeys.map(({displayKey}) => item[displayKey]);
       const completionFields = completionFieldKeys.map(({displayKey}) => item[displayKey]);
       const actionFields = actionFieldKeys.map(({displayKey}) => item[displayKey]);
+      let subtitle: string | undefined;
+      if (type === CoreItem.mountain) {
+        const elevationField = dataFieldKeys.find(d => d.sortKey === 'elevation');
+        if (elevationField) {
+          subtitle = item[elevationField.displayKey];
+        }
+      } else if (type === CoreItem.trail) {
+        const typeField = dataFieldKeys.find(d => d.sortKey === 'formattedType');
+        const lengthField = dataFieldKeys.find(d => d.sortKey === 'trailLength');
+        if (typeField && lengthField) {
+          subtitle = item[lengthField.displayKey] + ' long ' + item[typeField.displayKey];
+        }
+      } else if (type === CoreItem.campsite) {
+        const typeField = dataFieldKeys.find(d => d.sortKey === 'formattedType');
+        if (typeField) {
+          subtitle = item[typeField.displayKey];
+        }
+      }
       return (
         <ItemRow
           key={'item-row-' + item.id + i}
           index={showIndex ? i + 1 : undefined}
           name={item.name}
+          center={item.center}
+          type={type}
+          subtitle={subtitle}
           optional={item.optional ? true : false}
           destination={item.destination}
           dataFields={dataFields}
