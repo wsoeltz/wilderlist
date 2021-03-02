@@ -2,6 +2,8 @@ const {point, featureCollection} = require('@turf/helpers');
 const getCenter = require('@turf/center').default;
 import {
   faChartArea,
+  faChartLine,
+  faShoePrints,
 } from '@fortawesome/free-solid-svg-icons';
 import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
@@ -38,7 +40,7 @@ const Header = styled.div`
   display: grid;
   grid-template-columns: 1fr 5.625rem;
   grid-column-gap: 0.35rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   margin-right: -1rem;
 `;
 
@@ -92,6 +94,9 @@ export type TypeProps = BaseProps & (
     distanceToCenter: number;
   } | {
     type: CoreItem.trail,
+    formattedType: string,
+    trailLength: number;
+    slopeText: string | null;
     distanceToCenter: number;
     location: Coordinate;
   } | {
@@ -258,6 +263,31 @@ const ResultItem = (props: Props) => {
           location: props.locationText,
         })}
       </MidFlexRow>
+    );
+  } else if (props.type === CoreItem.trail) {
+    const slopeText = props.slopeText ? (
+      <PullRight>
+        <BasicIconInText icon={faChartLine} />
+        {props.slopeText}
+      </PullRight>
+    ) : null;
+    content = (
+      <>
+        <MidFlexRow>
+          {getString('trail-detail-subtitle', {
+            type: props.formattedType,
+            segment: 0,
+            state: props.locationText,
+          })}
+        </MidFlexRow>
+        <MidFlexRow>
+          <FlexRow>
+            <BasicIconInText icon={faShoePrints} />
+            {getString('directions-driving-distance', {miles: parseFloat(props.trailLength.toFixed(1))})}
+          </FlexRow>
+          {slopeText}
+        </MidFlexRow>
+      </>
     );
   } else {
     content = null;

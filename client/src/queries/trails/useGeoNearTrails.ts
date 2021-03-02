@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import useMapCenter from '../../hooks/useMapCenter';
 import usePrevious from '../../hooks/usePrevious';
 import {
-  State, Trail,
+  Trail,
  } from '../../types/graphQLTypes';
 
 const GEO_NEAR_TRAILS = gql`
@@ -20,10 +20,9 @@ const GEO_NEAR_TRAILS = gql`
     ) {
       id
       name
-      states {
-        id
-        name
-      }
+      locationText
+      trailLength
+      avgSlope
       type
       center
     }
@@ -33,11 +32,10 @@ const GEO_NEAR_TRAILS = gql`
 export interface TrailDatum {
   id: Trail['id'];
   name: Trail['name'];
-  states: null | Array<{
-    id: State['id'],
-    name: State['name'],
-  }>;
   type: Trail['type'];
+  locationText: Trail['locationText'];
+  trailLength: Trail['trailLength'];
+  avgSlope: Trail['avgSlope'];
   center: Trail['center'];
 }
 
