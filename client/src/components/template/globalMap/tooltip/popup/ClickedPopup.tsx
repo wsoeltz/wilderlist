@@ -79,8 +79,12 @@ const ClickedPopup = (props: Props) => {
       imgSrc = MountainIcon;
     } else if (itemType === CoreItems.trails) {
       name = data.name ? data.name : upperFirst(getString('global-formatted-trail-type', {type}));
-      subtitle = data.subtitle
-        ? data.subtitle + ' long ' + getString('global-formatted-trail-type', {type})
+      const trailLength = parseFloat(data.subtitle);
+      const trailLengthDisplay = trailLength < 0.1
+        ? Math.round(trailLength * 5280) + ' ft'
+        : parseFloat(trailLength.toFixed(1)) + ' mi';
+      subtitle = !isNaN(trailLength)
+        ? trailLengthDisplay + ' long ' + getString('global-formatted-trail-type', {type})
         : getString('global-formatted-trail-type', {type});
       if (data.parents && data.parents.length && data.subtitle) {
         subtitle += ' segment';

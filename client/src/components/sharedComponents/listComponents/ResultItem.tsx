@@ -99,6 +99,7 @@ export type TypeProps = BaseProps & (
     slopeText: string | null;
     distanceToCenter: number;
     location: Coordinate;
+    line: Coordinate[];
   } | {
     type: CoreItem.campsite,
     formattedType: string;
@@ -271,6 +272,9 @@ const ResultItem = (props: Props) => {
         {props.slopeText}
       </PullRight>
     ) : null;
+    const trailLength = props.trailLength < 0.1
+      ? getString('distance-feet-formatted', {feet: Math.round(props.trailLength * 5280)})
+      : getString('directions-driving-distance', {miles: parseFloat(props.trailLength.toFixed(1))});
     content = (
       <>
         <MidFlexRow>
@@ -283,7 +287,7 @@ const ResultItem = (props: Props) => {
         <MidFlexRow>
           <FlexRow>
             <BasicIconInText icon={faShoePrints} />
-            {getString('directions-driving-distance', {miles: parseFloat(props.trailLength.toFixed(1))})}
+            {trailLength}
           </FlexRow>
           {slopeText}
         </MidFlexRow>

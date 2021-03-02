@@ -52,6 +52,7 @@ const TrailSearchPage = () => {
           id: t.id,
           title: name,
           location: t.center,
+          line: t.line,
           locationText: t.locationText,
           type: CoreItem.trail,
           url: trailDetailLink(t.id),

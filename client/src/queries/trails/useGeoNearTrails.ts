@@ -25,6 +25,7 @@ const GEO_NEAR_TRAILS = gql`
       avgSlope
       type
       center
+      line
     }
   }
 `;
@@ -37,6 +38,7 @@ export interface TrailDatum {
   trailLength: Trail['trailLength'];
   avgSlope: Trail['avgSlope'];
   center: Trail['center'];
+  line: Trail['line'];
 }
 
 interface SuccessResponse {

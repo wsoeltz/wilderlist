@@ -131,7 +131,13 @@ const ItemTable = (props: Props) => {
         }
       } else if (type === CoreItem.trail) {
         if (item.formattedType && item.trailLength) {
-          subtitle = parseFloat(item.trailLength.toFixed(1)) + ' mi long ' + item.formattedType.toLowerCase();
+          const trailLength = parseFloat(item.trailLength);
+          const trailLengthDisplay = trailLength < 0.1
+            ? Math.round(trailLength * 5280) + ' ft'
+            : parseFloat(trailLength.toFixed(1)) + ' mi';
+          subtitle = !isNaN(trailLength)
+            ? trailLengthDisplay + ' long ' + getString('global-formatted-trail-type', {type})
+            : getString('global-formatted-trail-type', {type});
         }
       } else if (type === CoreItem.campsite) {
         if (item.formattedType) {

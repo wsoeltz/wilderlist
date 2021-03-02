@@ -93,8 +93,11 @@ const TrailDetail = (props: Props) => {
       hasChildren = Boolean(childrenCount);
 
       const type = childrenCount ? TrailType.parentTrail : trail.type;
-      const trailLength = trail.trailLength ? parseFloat(trail.trailLength.toFixed(2)) : 0;
-      trailLengthText = getString('directions-driving-distance', {miles: trailLength});
+      const trailLength = trail.trailLength ? parseFloat(trail.trailLength.toFixed(1)) : 0;
+
+      trailLengthText = trailLength < 0.1
+        ? getString('distance-feet-formatted', {feet: Math.round(trailLength * 5280)}) // miles to feet conversion
+        : getString('directions-driving-distance', {miles: parseFloat(trailLength.toFixed(1))});
 
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type}));
       name = trail.name ? trail.name : formattedType;

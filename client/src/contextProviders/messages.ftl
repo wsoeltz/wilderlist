@@ -91,6 +91,17 @@ global-text-value-miles-to = {
     [trail] summit
     *[other] point
 }
+global-text-value-feet-to = {
+  $feet ->
+    [1] foot
+    *[else] feet
+} to {
+  $type ->
+    [mountain] summit
+    [campsite] campsite
+    [trail] summit
+    *[other] point
+}
 
 global-text-value-no-routes-to = No {
   $type ->
@@ -889,6 +900,11 @@ directions-driving-distance = {
   $miles ->
     [1] 1 mile
     *[else] { $miles } miles
+}
+distance-feet-formatted = {
+  $feet ->
+    [1] 1 foot
+    *[else] { $feet } feet
 }
 
 mountain-detail-enable-driving-distances = Enable Driving Distances

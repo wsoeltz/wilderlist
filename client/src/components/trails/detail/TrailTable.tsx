@@ -49,8 +49,10 @@ const Content = (props: Props) => {
     const trails = data.trail.children.map(t => {
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type: t.type}));
       const name = t.name ? t.name : formattedType;
-      const trailLength = t.trailLength ? parseFloat(t.trailLength.toFixed(1)) : 0;
-      const trailLengthDisplay = getString('directions-driving-distance', {miles: trailLength});
+      const trailLength = t.trailLength ? t.trailLength : 0;
+      const trailLengthDisplay = trailLength < 0.1
+        ? getString('distance-feet-formatted', {feet: Math.round(trailLength * 5280)})
+        : getString('directions-driving-distance', {miles: parseFloat(trailLength.toFixed(1))});
       const avgSlopeDisplay = t.avgSlope ? parseFloat(t.avgSlope.toFixed(1)) + '°' : '0°';
       const {dates, completedCount} = getDates({
         type: PeakListVariants.standard,

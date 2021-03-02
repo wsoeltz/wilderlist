@@ -163,6 +163,9 @@ const AllItems = (props: Props) => {
       });
       completedTrails += completedCount;
       const trailLength = trail.trailLength ? trail.trailLength : 0;
+      const trailLengthDisplay = trailLength < 0.1
+        ? Math.round(trailLength * 5280) + ' ft'
+        : parseFloat(trailLength.toFixed(1)) + ' mi';
       const formattedType = upperFirst(getString('global-formatted-trail-type', {type: trail.type}));
       let name: string = trail.name ? trail.name : formattedType;
       if (type === PeakListVariants.grid || type === PeakListVariants.fourSeason) {
@@ -178,7 +181,7 @@ const AllItems = (props: Props) => {
           ? trail.locationTextShort
           : '',
         trailLength,
-        trailLengthDisplay: parseFloat(trailLength.toFixed(1)) + ' mi',
+        trailLengthDisplay,
         hikedCount: completedCount,
         ...dates,
       };

@@ -128,12 +128,14 @@ const RoutesToPoint = (props: Props) => {
           elevationDetails = null;
         }
 
-        const miles = parseFloat(routeLength.toFixed(1));
+        const numericDistance = routeLength < 0.1
+          ? Math.round(routeLength * 5280)
+          : parseFloat(routeLength.toFixed(1));
+        const distanceUnit = routeLength < 0.1
+          ? getString('global-text-value-feet-to', {feet: numericDistance, type: item})
+          : getString('global-text-value-miles-to', {miles: numericDistance, type: item});
 
-        const subtitle = `${miles} ${getString('global-text-value-miles-to', {
-          miles,
-          type: item,
-        })}`;
+        const subtitle = `${numericDistance} ${distanceUnit}`;
 
         const onMouseEnter = () => {
           if (mapContext.intialized) {
@@ -206,10 +208,7 @@ const RoutesToPoint = (props: Props) => {
                   <SimpleTitle>{getString('global-text-value-length')}:</SimpleTitle>
                 </Subtext>
                 <Subtext>
-                  <strong>{miles}</strong> {getString('global-text-value-miles-to', {
-                    miles,
-                    type: item,
-                  })}
+                  <strong>{numericDistance}</strong> {distanceUnit}
                 </Subtext>
               </InlineColumns>
               {elevationDetails}
