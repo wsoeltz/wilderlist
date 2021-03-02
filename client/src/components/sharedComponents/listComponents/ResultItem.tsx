@@ -149,6 +149,29 @@ const ResultItem = (props: Props) => {
           undefined,
           props.bbox,
         );
+      } else if (props.type !== AggregateItem.list) {
+        let subtitle: string = '';
+        if (props.type === CoreItem.mountain) {
+          if (props.elevation) {
+            subtitle = props.elevation + 'ft';
+          }
+        } else if (props.type === CoreItem.trail) {
+          if (props.formattedType && props.trailLength) {
+            const trailLength = props.trailLength;
+            const trailLengthDisplay = trailLength < 0.1
+              ? Math.round(trailLength * 5280) + ' ft'
+              : parseFloat(trailLength.toFixed(1)) + ' mi';
+            subtitle = !isNaN(trailLength)
+              ? trailLengthDisplay + ' long ' + getString('global-formatted-trail-type', {type})
+              : getString('global-formatted-trail-type', {type});
+          }
+        } else if (props.type === CoreItem.campsite) {
+          if (props.formattedType) {
+            subtitle = props.formattedType;
+          }
+        }
+        const line = props.type === CoreItem.trail && props.line ? props.line : undefined;
+        mapContext.setExternalHoveredPopup(props.title, props.type, subtitle, props.location, line);
       }
     }
   };
