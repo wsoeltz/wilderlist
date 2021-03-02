@@ -6,13 +6,17 @@ import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import {GhostButton, primaryColor} from '../../styling/styleUtils';
 
-const Root = styled(GhostButton)`
+const RootBase = styled(GhostButton)`
   color: ${primaryColor};
   width: 3.5rem;
 
   &:hover {
     color: ${primaryColor};
   }
+`;
+
+const RootCompact = styled(RootBase)`
+  padding-top: 0;
 `;
 
 const Icon = styled(FontAwesomeIcon)`
@@ -22,13 +26,15 @@ const Icon = styled(FontAwesomeIcon)`
 interface Props {
   starred: boolean;
   toggleStarred: () => void;
+  compact?: boolean;
 }
 
-const StarButton = ({starred, toggleStarred}: Props) => {
+const StarButton = ({starred, toggleStarred, compact}: Props) => {
   const getString = useFluent();
 
-  const text = starred ? getString('global-text-value-saved') : getString('global-text-value-save');
+  const text = compact ? '' : starred ? getString('global-text-value-saved') : getString('global-text-value-save');
   const icon = starred ? faSolidStar : faOutlineStar;
+  const Root = compact ? RootCompact : RootBase;
 
   return (
     <Root onClick={toggleStarred}>

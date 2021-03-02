@@ -7,7 +7,6 @@ import {useUserProfile} from '../../../queries/users/useUserProfile';
 import { comparePeakListIsolatedLink } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus } from '../../../types/graphQLTypes';
-import { ViewMode } from '../../peakLists/list/ListPeakLists';
 import ListPeakLists from '../../peakLists/list/ListPeakLists';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Header from './Header';
@@ -83,7 +82,6 @@ const UserProfile = (props: Props) => {
           />
           <ListContainer>
             <ListPeakLists
-              viewMode={ViewMode.Card}
               peakListData={peakLists}
               listAction={compareAscents}
               actionText={getString('user-profile-compare-ascents')}

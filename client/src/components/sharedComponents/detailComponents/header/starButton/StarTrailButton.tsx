@@ -8,9 +8,10 @@ import StarButton from '../../../StarButton';
 interface Props {
   id: string;
   name: string;
+  compact?: boolean;
 }
 
-const StarTrailButton = ({name, id}: Props) => {
+const StarTrailButton = ({name, id, compact}: Props) => {
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const getString = useFluent();
@@ -60,6 +61,7 @@ const StarTrailButton = ({name, id}: Props) => {
       <StarButton
         starred={Boolean(isActive)}
         toggleStarred={toggleActive}
+        compact={compact}
       />
       {signUpModal}
     </div>

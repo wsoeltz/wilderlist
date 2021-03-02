@@ -4,12 +4,20 @@ import StarCampsiteButton from './StarCampsiteButton';
 import StarMountainButton from './StarMountainButton';
 import StarTrailButton from './StarTrailButton';
 
-const StarButtonWrapper = ({type, id, name}: {type: CoreItem, id: string, name: string}) => {
+interface Props {
+  type: CoreItem;
+  id: string;
+  name: string;
+  compact?: boolean;
+}
+
+const StarButtonWrapper = ({type, id, name, compact}: Props) => {
   if (type === CoreItem.mountain) {
     return (
       <StarMountainButton
         id={id}
         name={name}
+        compact={compact}
       />
     );
   } else if (type === CoreItem.trail) {
@@ -17,6 +25,7 @@ const StarButtonWrapper = ({type, id, name}: {type: CoreItem, id: string, name: 
       <StarTrailButton
         id={id}
         name={name}
+        compact={compact}
       />
     );
   } else if (type === CoreItem.campsite) {
@@ -24,6 +33,7 @@ const StarButtonWrapper = ({type, id, name}: {type: CoreItem, id: string, name: 
       <StarCampsiteButton
         id={id}
         name={name}
+        compact={compact}
       />
     );
   } else {

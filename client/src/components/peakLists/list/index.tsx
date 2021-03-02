@@ -1,5 +1,8 @@
 const {point} = require('@turf/helpers');
 const distance = require('@turf/distance').default;
+import {
+  faList,
+} from '@fortawesome/free-solid-svg-icons';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import Helmet from 'react-helmet';
@@ -11,9 +14,9 @@ import { listDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
+import { AggregateItem } from '../../../types/itemTypes';
 import GhostCard from '../../sharedComponents/GhostDetailCard';
-import GeoSearchResults from './GeoSearchResults';
-import {ViewMode} from './ListPeakLists';
+import Results from '../../sharedComponents/listComponents/Results';
 
 const PeakListPage = () => {
   const getString = useFluent();
@@ -43,15 +46,28 @@ const PeakListPage = () => {
       );
     } else {
       const mapCenter = point([longitude, latitude]);
-      const sortedPeakLists = orderBy(peakLists.map(p => ({
-        ...p,
-        distance: Math.round(distance(mapCenter, point(p.center)) / 100) * 100,
-        percent: Math.round(p.numCompletedAscents / p.numMountains * 100),
-      })), ['distance', 'percent', 'numUsers'], ['asc', 'desc', 'desc']);
+      const sortedPeakLists = orderBy(peakLists.map(p => {
+        const totalItems = p.numMountains + p.numTrails + p.numCampsites;
+        return {
+          id: p.id,
+          title: p.name,
+          locationText: p.locationText,
+          type: AggregateItem.list,
+          url: listDetailLink(p.id),
+          icon: faList,
+          customIcon: false,
+          distance: Math.round(distance(mapCenter, point(p.center)) / 100) * 100,
+          percent: Math.round(p.numCompletedTrips / totalItems * 100),
+          numUsers: p.numUsers,
+          numMountains: p.numMountains,
+          numTrails: p.numTrails,
+          numCampsites: p.numCampsites,
+          bbox: p.bbox,
+        };
+      }), ['distance', 'percent', 'numUsers'], ['asc', 'desc', 'desc']);
       list = (
-        <GeoSearchResults
-          viewMode={ViewMode.Compact}
-          peakListData={sortedPeakLists}
+        <Results
+          data={sortedPeakLists}
         />
       );
     }

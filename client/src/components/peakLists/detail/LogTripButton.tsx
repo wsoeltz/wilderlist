@@ -7,20 +7,17 @@ import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {
   LinkButtonCompact,
-  secondaryColor,
 } from '../../../styling/styleUtils';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 
 const Root = styled(Link)`
   position: relative;
   font-size: 0.75rem;
-  color: ${secondaryColor};
 `;
 
 const SignUpButton = styled(LinkButtonCompact)`
   position: relative;
   font-size: 0.75rem;
-  color: ${secondaryColor};
   margin: auto;
 `;
 

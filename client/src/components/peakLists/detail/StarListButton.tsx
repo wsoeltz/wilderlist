@@ -12,9 +12,10 @@ import StarButton from '../../sharedComponents/StarButton';
 interface Props {
   peakListId: string;
   peakListName: string;
+  compact?: boolean;
 }
 
-const StarListButton = ({peakListId, peakListName}: Props) => {
+const StarListButton = ({peakListId, peakListName, compact}: Props) => {
   const user = useCurrentUser();
   const userId = user ? user._id : null;
   const getString = useFluent();
@@ -64,6 +65,7 @@ const StarListButton = ({peakListId, peakListName}: Props) => {
       <StarButton
         starred={Boolean(isActive)}
         toggleStarred={toggleActive}
+        compact={compact}
       />
       {signUpModal}
     </>

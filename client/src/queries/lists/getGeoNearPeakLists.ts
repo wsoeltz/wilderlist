@@ -6,25 +6,21 @@ import {
   PeakList,
 } from '../../types/graphQLTypes';
 
-export interface CompactPeakListDatum {
+export interface PeakListDatum {
   id: PeakList['id'];
   name: PeakList['name'];
-  shortName: PeakList['shortName'];
-  type: PeakList['type'];
-  numMountains: PeakList['numMountains'];
-  numCompletedAscents: PeakList['numCompletedAscents'];
-  latestAscent: PeakList['latestAscent'];
-  isActive: PeakList['isActive'];
-  stateOrRegionString: PeakList['stateOrRegionString'];
+  locationText: PeakList['locationText'];
   center: PeakList['center'];
+  bbox: PeakList['bbox'];
   numUsers: PeakList['numUsers'];
-  parent: null | {id: PeakList['id'], type: PeakList['type']};
-  children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
-  siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
+  numMountains: PeakList['numMountains'];
+  numTrails: PeakList['numTrails'];
+  numCampsites: PeakList['numCampsites'];
+  numCompletedTrips: PeakList['numCampsites'];
 }
 
 export interface SuccessResponse {
-  peakLists: CompactPeakListDatum[];
+  peakLists: PeakListDatum[];
 }
 
 export interface Variables {
@@ -46,27 +42,14 @@ const GEO_NEAR_PEAK_LISTS = gql`
     ) {
       id
       name
-      shortName
-      type
+      locationText
       center
-      numMountains
+      bbox
       numUsers
-      numCompletedAscents
-      latestAscent
-      isActive
-      stateOrRegionString
-      parent {
-        id
-        type
-      }
-      children {
-        id
-        type
-      }
-      siblings {
-        id
-        type
-      }
+      numMountains
+      numTrails
+      numCampsites
+      numCompletedTrips
     }
   }
 `;

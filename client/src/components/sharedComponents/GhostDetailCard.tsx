@@ -1,12 +1,14 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import {
-  Card,
   lightBorderColor,
 } from '../../styling/styleUtils';
 
-const GhostCard = styled(Card)`
+const GhostCard = styled.div`
   height: 80px;
+  margin: 0 -1rem;
+  border-top: solid 1px ${lightBorderColor};
+  padding: 1rem;
 `;
 
 const GhostTitle = styled.div`
@@ -21,12 +23,10 @@ const GhostSubtitle = styled.div`
 `;
 
 const GhostMountainCard = () => {
-  const maxWidthTitle = 300 + Math.floor((Math.random() * 100) + 1);
-  const maxWidthSubtitle = 100 + Math.floor((Math.random() * 100) + 1);
   return (
     <GhostCard>
-      <GhostTitle style={{maxWidth: maxWidthTitle}} />
-      <GhostSubtitle style={{maxWidth: maxWidthSubtitle}} />
+      <GhostTitle style={{maxWidth: '80%'}} />
+      <GhostSubtitle style={{maxWidth: '65%'}} />
     </GhostCard>
   );
 };
