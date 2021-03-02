@@ -15,7 +15,7 @@ import { CoreItem } from '../../../types/itemTypes';
 import {slopeToSteepnessClass} from '../../../utilities/trailUtils';
 import GhostCard from '../../sharedComponents/GhostDetailCard';
 import Results from '../../sharedComponents/listComponents/Results';
-import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
+import {trailDefaultSvg} from '../../sharedComponents/svgIcons';
 
 const TrailSearchPage = () => {
   const getString = useFluent();
@@ -55,7 +55,7 @@ const TrailSearchPage = () => {
           locationText: t.locationText,
           type: CoreItem.trail,
           url: trailDetailLink(t.id),
-          icon: tentNeutralSvg,
+          icon: trailDefaultSvg,
           customIcon: true,
           distanceToCenter: distance(mapCenter, point(t.center)),
           formattedType,
