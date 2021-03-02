@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import useMapCenter from '../../hooks/useMapCenter';
 import usePrevious from '../../hooks/usePrevious';
 import {
-  Mountain, State,
+  Mountain,
  } from '../../types/graphQLTypes';
 
 const GEO_NEAR_MOUNTAINS = gql`
@@ -18,10 +18,7 @@ const GEO_NEAR_MOUNTAINS = gql`
     ) {
       id
       name
-      state {
-        id
-        name
-      }
+      locationText
       elevation
       location
     }
@@ -31,10 +28,7 @@ const GEO_NEAR_MOUNTAINS = gql`
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
-  state: null | {
-    id: State['id'],
-    name: State['name'],
-  };
+  locationText: Mountain['locationText'];
   elevation: Mountain['elevation'];
   location: Mountain['location'];
 }

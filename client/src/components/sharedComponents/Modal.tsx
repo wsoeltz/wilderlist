@@ -100,6 +100,10 @@ const Actions = styled.div`
   }
 `;
 
+export const ButtonWrapper = styled.div`
+  text-align: right;
+`;
+
 const BackButtonContainer = styled.div`
   width: 100%;
 `;

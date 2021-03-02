@@ -10,17 +10,13 @@ import {
 import {Coordinate} from '../../../../../../types/graphQLTypes';
 import {CoreItems} from '../../../../../../types/itemTypes';
 import SetOrigin from '../../../../../sharedComponents/detailComponents/directions/SetOrigin';
-import Modal from '../../../../../sharedComponents/Modal';
+import Modal, {ButtonWrapper} from '../../../../../sharedComponents/Modal';
 import SimpleTextLoading from '../../../../../sharedComponents/SimpleTextLoading';
 import {
   Icon,
   Root as RootBase,
 } from '../Utils';
 import DirectionsText from './DirectionsText';
-
-const ButtonWrapper = styled.div`
-  text-align: right;
-`;
 
 const Root = styled(RootBase)`
   min-height: 1.5625rem;
@@ -74,6 +70,7 @@ const DrivingDirections = (props: Props) => {
       >
         <SetOrigin
           error={location.error}
+          loading={location.loading}
           updateLocation={updateLocation}
           getUsersLocation={getUsersLocation}
         />

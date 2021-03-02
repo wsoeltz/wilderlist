@@ -123,7 +123,7 @@ const LastTrip = ({id, itemType, close}: Props) => {
       <Icon icon={faCalendarAlt} />
       <Content>
         <small>
-          <em>{getString('last-trip-dynamic', {type: itemType})}</em>
+          <em>{getString('global-text-value-last-trip-dynamic', {type: itemType})}</em>
         </small>
         <div>
           {lastHikedText}

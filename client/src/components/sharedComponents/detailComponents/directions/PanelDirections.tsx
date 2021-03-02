@@ -76,6 +76,7 @@ const PanelDirections = (props: Props) => {
     output = (
       <SetOrigin
         error={location.error}
+        loading={location.loading}
         updateLocation={updateLocation}
         getUsersLocation={getUsersLocation}
       />

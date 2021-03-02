@@ -37,12 +37,12 @@ interface Props {
 }
 
 const MountainCard = ({ mountain }: Props) => {
-  const { name, elevation, state } = mountain;
+  const { name, elevation, locationText } = mountain;
 
-  const stateName = state !== null ? (
+  const stateName = locationText !== null ? (
     <>
       <Seperator>|</Seperator>
-      {state.name}
+      {locationText}
     </>
   ) : null;
 

@@ -68,6 +68,7 @@ const PeakListPage = () => {
       list = (
         <Results
           data={sortedPeakLists}
+          type={AggregateItem.list}
         />
       );
     }

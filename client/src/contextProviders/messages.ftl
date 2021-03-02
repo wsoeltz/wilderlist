@@ -100,8 +100,10 @@ global-text-value-no-routes-to = No {
     *[other] routes to point
 } found
 
+global-text-value-results-near-center = Showing { $type } near map center
 global-text-value-no-results-found = No results found.
 global-text-value-no-items-found = No { $type } found.
+global-text-value-no-items-found-map = No { $type } found near this location.
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
@@ -267,6 +269,22 @@ global-formatted-text-date = {
   [10] October
   [11] November
   [12] December
+} { $day }, { $year }
+
+global-formatted-text-date-compact = {
+  $month ->
+  *[1] Jan
+  [2] Feb
+  [3] Mar
+  [4] Apr
+  [5] May
+  [6] Jun
+  [7] Jul
+  [8] Aug
+  [9] Sep
+  [10] Oct
+  [11] Nov
+  [12] Dec
 } { $day }, { $year }
 
 global-formatted-text-date-day-month = {
@@ -769,9 +787,12 @@ mountain-search-map-text = Showing mountains near { $map-center-text }
 mountain-search-mobile-nav-list = List View
 mountain-search-mobile-nav-map = Map View
 
-mountain-card-crow-flies-tooltip = Caclulated as-the-Crow-flies. For driving directions, select an individual mountain.
 mountain-card-view-details = View details
 mountain-card-show-on-map = Show on map
+
+crow-flies-distance = { $distance } mi to { $name }
+crow-flies = as the crow flies
+crow-flies-tooltip = "As the crow flies" is the straight-line distance between two locations. For driving directions or route lengths, select an individual item.
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
@@ -984,13 +1005,6 @@ map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Location To Center
 
 map-get-directions = Get Directions
-last-trip-dynamic = You last {
-  $type ->
-    [mountains] hiked
-    [campsites] camped
-    [trails] hiked
-    *[other] trip
-} on
 
 map-legend-location = Your Location &amp;<br />Driving Directions
 map-legend-location-tooltip = <strong>Show the driving times and routes from your location to any mountain, trailhead, or campsite.</strong> Click on a point on the map and then click "Get Directions".

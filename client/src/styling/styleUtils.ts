@@ -140,7 +140,7 @@ color: ${lightBaseColor};
 `;
 
 export const IncompleteText = styled.span`
-  color: ${incompleteColor};
+  color: #b21616;
 `;
 export const CompleteText = styled.span`
   color: ${completeColor};

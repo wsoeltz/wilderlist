@@ -1,9 +1,13 @@
 const {point, featureCollection} = require('@turf/helpers');
 const getCenter = require('@turf/center').default;
+import {
+  faChartArea,
+} from '@fortawesome/free-solid-svg-icons';
 import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import {OriginLocation} from '../../../hooks/directions/useDirectionsOrigin';
 import useFluent from '../../../hooks/useFluent';
 import useMapContext from '../../../hooks/useMapContext';
 import {
@@ -13,11 +17,15 @@ import {
   lightBorderColor,
   primaryColor,
   SemiBold,
+  Seperator,
 } from '../../../styling/styleUtils';
+import {Coordinate} from '../../../types/graphQLTypes';
 import {AggregateItem, CoreItem} from '../../../types/itemTypes';
 import StarListButton from '../../peakLists/detail/StarListButton';
 import StarButtonWrapper from '../detailComponents/header/starButton';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../svgIcons';
+import CrowFliesDistance from './CrowFliesDistance';
+import LatestTrip from './LatestTrip';
 import SimplePercentBar from './SimplePercentBar';
 
 const InlineCard = styled.div`
@@ -76,13 +84,18 @@ interface BaseProps {
   icon: string | any;
 }
 
-export type Props = BaseProps & (
+export type TypeProps = BaseProps & (
   {
     type: CoreItem.mountain,
+    elevation: number;
+    location: Coordinate;
+    distanceToCenter: number;
   } | {
     type: CoreItem.trail,
+    distanceToCenter: number;
   } | {
     type: CoreItem.campsite,
+    distanceToCenter: number;
   } | {
     type: AggregateItem.list
     numMountains: number;
@@ -93,9 +106,16 @@ export type Props = BaseProps & (
   }
 );
 
+type Props = TypeProps & {
+  mapCenter: Coordinate;
+  usersLocation: undefined | null | OriginLocation;
+  changeUsersLocation: () => void;
+};
+
 const ResultItem = (props: Props) => {
   const {
     id, title, customIcon, icon, url, type,
+    mapCenter, usersLocation, changeUsersLocation,
   } = props;
   const getString = useFluent();
   const mapContext = useMapContext();
@@ -151,6 +171,7 @@ const ResultItem = (props: Props) => {
       id={id}
       name={title}
       type={type}
+      compact={true}
     />
   );
 
@@ -205,6 +226,36 @@ const ResultItem = (props: Props) => {
           <PullRight>
             <SimplePercentBar
               percent={props.percent}
+            />
+          </PullRight>
+        </FlexRow>
+      </>
+    );
+  } else if (props.type === CoreItem.mountain) {
+    const locationText = props.locationText ? (
+      <FlexRow>
+        {upperFirst(props.locationText)}
+      </FlexRow>
+    ) : null;
+    content = (
+      <>
+        <MidFlexRow>
+          <BasicIconInText icon={faChartArea} />
+          {props.elevation}ft
+          <Seperator>|</Seperator>
+          {locationText}
+        </MidFlexRow>
+        <FlexRow>
+          <CrowFliesDistance
+            location={props.location}
+            usersLocation={usersLocation}
+            mapCenter={mapCenter}
+            changeUsersLocation={changeUsersLocation}
+          />
+          <PullRight>
+            <LatestTrip
+              item={props.type}
+              id={id}
             />
           </PullRight>
         </FlexRow>

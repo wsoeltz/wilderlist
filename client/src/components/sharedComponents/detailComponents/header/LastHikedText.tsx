@@ -6,6 +6,7 @@ import {
   BasicIconInText,
   CompleteText,
   IncompleteText,
+  lightBaseColor,
 } from '../../../../styling/styleUtils';
 import {CoreItem, CoreItems} from '../../../../types/itemTypes';
 import {
@@ -17,10 +18,12 @@ interface Props {
   item: CoreItem;
   id: string;
   loading: boolean;
+  subtleIncomplete?: boolean;
+  subtleComplete?: boolean;
 }
 
 const LastHikedText = (props: Props) => {
-  const {item, id, loading} = props;
+  const {item, id, loading, subtleIncomplete, subtleComplete} = props;
   const {data} = useUsersProgress();
   const getString = useFluent();
 
@@ -40,7 +43,8 @@ const LastHikedText = (props: Props) => {
         let textDate: string;
         if (!isNaN(month) && !isNaN(year)) {
           if (!isNaN(day)) {
-            textDate = getString('global-formatted-text-date', {
+            textDate = getString(subtleComplete
+              ? 'global-formatted-text-date-compact' : 'global-formatted-text-date', {
               day, month, year: year.toString(),
             });
           } else {
@@ -51,22 +55,23 @@ const LastHikedText = (props: Props) => {
         } else {
           textDate = formatDate(dates[dates.length - 1]);
         }
+        const icon = subtleComplete ? null : <BasicIconInText icon={faCheck} />;
         output = (
           <CompleteText>
-            <BasicIconInText icon={faCheck} />
+            {icon}
             {textDate}
           </CompleteText>
         );
       } else {
         output = (
-          <IncompleteText>
+          <IncompleteText style={{color: subtleIncomplete ? lightBaseColor : undefined}}>
             {getString('global-text-value-not-done-dynamic', {type: field})}
           </IncompleteText>
         );
       }
     } else {
       output = (
-        <IncompleteText>
+        <IncompleteText style={{color: subtleIncomplete ? lightBaseColor : undefined}}>
           {getString('global-text-value-not-done-dynamic', {type: field})}
         </IncompleteText>
       );

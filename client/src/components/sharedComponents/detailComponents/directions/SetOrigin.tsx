@@ -15,6 +15,7 @@ import {
   BasicIconInText,
   ButtonPrimary,
 } from '../../../../styling/styleUtils';
+import LoadingSimple from '../../LoadingSimple';
 import Search from '../../search';
 
 const Root = styled.div`
@@ -41,13 +42,14 @@ const Container = styled.div`
 
 interface Props {
   error: string | undefined;
+  loading: boolean;
   updateLocation: (d: OriginLocation | null) => void;
   getUsersLocation: () => void;
 }
 
 const SetOrigin = (props: Props) => {
   const getString = useFluent();
-  const {error, updateLocation, getUsersLocation} = props;
+  const {error, updateLocation, getUsersLocation, loading} = props;
   const button = error ? (
     <div>{error}</div>
   ) : (
@@ -56,6 +58,17 @@ const SetOrigin = (props: Props) => {
       {getString('directions-your-location')}
     </ButtonPrimary>
   );
+  if (loading) {
+    return (
+      <Root>
+        <EmptyBlock>
+          <CenteredHeader>
+            <LoadingSimple />
+          </CenteredHeader>
+        </EmptyBlock>
+      </Root>
+    );
+  }
   return (
     <Root>
       <EmptyBlock>

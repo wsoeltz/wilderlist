@@ -1,3 +1,5 @@
+const {point} = require('@turf/helpers');
+const distance = require('@turf/distance').default;
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
@@ -8,13 +10,15 @@ import { mountainDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
+import { CoreItem } from '../../../types/itemTypes';
 import GhostDetailCard from '../../sharedComponents/GhostDetailCard';
-import ListMountains from './ListMountains';
+import Results from '../../sharedComponents/listComponents/Results';
+import {mountainNeutralSvg} from '../../sharedComponents/svgIcons';
 
 const MountainSearchPage = () => {
   const getString = useFluent();
 
-  const {loading, error, data} = useGeoNearMountains();
+  const {loading, error, data, latitude, longitude} = useGeoNearMountains();
 
   let list: React.ReactElement<any> | null;
   if (loading === true && data === undefined) {
@@ -38,13 +42,26 @@ const MountainSearchPage = () => {
       }
       list = <>{loadingCards}</>;
     } else {
+      const mapCenter = point([longitude, latitude]);
+      const mountains = data.mountains.map(m => {
+        return {
+          id: m.id,
+          title: m.name,
+          location: m.location,
+          locationText: m.locationText,
+          elevation: m.elevation,
+          type: CoreItem.mountain,
+          url: mountainDetailLink(m.id),
+          icon: mountainNeutralSvg,
+          customIcon: true,
+          distanceToCenter: distance(mapCenter, point(m.location)),
+        };
+      });
       list = (
-        <>
-          <ListMountains
-            mountainData={data.mountains}
-            noResultsText={getString('global-text-value-no-results-found')}
-          />
-        </>
+        <Results
+          data={mountains}
+          type={CoreItem.mountain}
+        />
       );
     }
   } else {
