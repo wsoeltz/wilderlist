@@ -59,7 +59,7 @@ const MountainSearchPage = () => {
       });
       list = (
         <Results
-          data={mountains}
+          data={mountains as any}
           type={CoreItem.mountain}
         />
       );

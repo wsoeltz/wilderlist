@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import useMapCenter from '../../hooks/useMapCenter';
 import usePrevious from '../../hooks/usePrevious';
 import {
-  Campsite, State,
+  Campsite,
  } from '../../types/graphQLTypes';
 
 const GEO_NEAR_CAMPSITES = gql`
@@ -19,11 +19,9 @@ const GEO_NEAR_CAMPSITES = gql`
     ) {
       id
       name
-      state {
-        id
-        name
-      }
       type
+      locationText
+      ownership
       location
     }
   }
@@ -32,11 +30,9 @@ const GEO_NEAR_CAMPSITES = gql`
 export interface CampsiteDatum {
   id: Campsite['id'];
   name: Campsite['name'];
-  state: null | {
-    id: State['id'],
-    name: State['name'],
-  };
+  locationText: Campsite['locationText'];
   type: Campsite['type'];
+  ownership: Campsite['ownership'];
   location: Campsite['location'];
 }
 

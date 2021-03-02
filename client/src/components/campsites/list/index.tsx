@@ -1,3 +1,6 @@
+const {point} = require('@turf/helpers');
+const distance = require('@turf/distance').default;
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
@@ -8,13 +11,15 @@ import { campsiteDetailLink } from '../../../routing/Utils';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
+import { CoreItem } from '../../../types/itemTypes';
 import GhostCard from '../../sharedComponents/GhostDetailCard';
-import ListCampsites from './ListCampsites';
+import Results from '../../sharedComponents/listComponents/Results';
+import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
 
 const CampsiteSearchPage = () => {
   const getString = useFluent();
 
-  const {loading, error, data} = useGeoNearCampsites();
+  const {loading, error, data, latitude, longitude} = useGeoNearCampsites();
 
   let list: React.ReactElement<any> | null;
   if (loading === true && data === undefined) {
@@ -38,13 +43,29 @@ const CampsiteSearchPage = () => {
       }
       list = <>{loadingCards}</>;
     } else {
+      const mapCenter = point([longitude, latitude]);
+      const campsites = data.campsites.map(c => {
+        const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: c.type}));
+        const name = c.name ? c.name : formattedType;
+        return {
+          id: c.id,
+          title: name,
+          location: c.location,
+          locationText: c.locationText,
+          type: CoreItem.campsite,
+          url: campsiteDetailLink(c.id),
+          icon: tentNeutralSvg,
+          customIcon: true,
+          distanceToCenter: distance(mapCenter, point(c.location)),
+          formattedType,
+          ownership: c.ownership,
+        };
+      });
       list = (
-        <>
-          <ListCampsites
-            campsiteData={data.campsites}
-            noResultsText={getString('global-text-value-no-results-found')}
-          />
-        </>
+        <Results
+          data={campsites as any}
+          type={CoreItem.campsite}
+        />
       );
     }
   } else {

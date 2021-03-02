@@ -19,7 +19,7 @@ import {
   SemiBold,
   Seperator,
 } from '../../../styling/styleUtils';
-import {Coordinate} from '../../../types/graphQLTypes';
+import {CampsiteOwnership, Coordinate} from '../../../types/graphQLTypes';
 import {AggregateItem, CoreItem} from '../../../types/itemTypes';
 import StarListButton from '../../peakLists/detail/StarListButton';
 import StarButtonWrapper from '../detailComponents/header/starButton';
@@ -93,9 +93,13 @@ export type TypeProps = BaseProps & (
   } | {
     type: CoreItem.trail,
     distanceToCenter: number;
+    location: Coordinate;
   } | {
     type: CoreItem.campsite,
+    formattedType: string;
+    ownership: CampsiteOwnership | null;
     distanceToCenter: number;
+    location: Coordinate;
   } | {
     type: AggregateItem.list
     numMountains: number;
@@ -238,32 +242,43 @@ const ResultItem = (props: Props) => {
       </FlexRow>
     ) : null;
     content = (
-      <>
-        <MidFlexRow>
-          <BasicIconInText icon={faChartArea} />
-          {props.elevation}ft
-          <Seperator>|</Seperator>
-          {locationText}
-        </MidFlexRow>
-        <FlexRow>
-          <CrowFliesDistance
-            location={props.location}
-            usersLocation={usersLocation}
-            mapCenter={mapCenter}
-            changeUsersLocation={changeUsersLocation}
-          />
-          <PullRight>
-            <LatestTrip
-              item={props.type}
-              id={id}
-            />
-          </PullRight>
-        </FlexRow>
-      </>
+      <MidFlexRow>
+        <BasicIconInText icon={faChartArea} />
+        {props.elevation}ft
+        <Seperator>|</Seperator>
+        {locationText}
+      </MidFlexRow>
+    );
+  } else if (props.type === CoreItem.campsite) {
+    content = (
+      <MidFlexRow>
+        {getString('campsite-detail-subtitle', {
+          ownership: props.ownership,
+          type: props.formattedType,
+          location: props.locationText,
+        })}
+      </MidFlexRow>
     );
   } else {
     content = null;
   }
+
+  const distanceAndLastHiked = props.type !== AggregateItem.list ? (
+    <FlexRow>
+      <CrowFliesDistance
+        location={props.location}
+        usersLocation={usersLocation}
+        mapCenter={mapCenter}
+        changeUsersLocation={changeUsersLocation}
+      />
+      <PullRight>
+        <LatestTrip
+          item={props.type}
+          id={id}
+        />
+      </PullRight>
+    </FlexRow>
+  ) : null;
 
   return (
     <InlineCard
@@ -288,6 +303,7 @@ const ResultItem = (props: Props) => {
         </div>
       </Header>
       {content}
+      {distanceAndLastHiked}
     </InlineCard>
   );
 };
