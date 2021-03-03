@@ -26,6 +26,7 @@ import initLayers, {
   highlightedPointsLayerId,
   highlightedRoadsLayerId,
   highlightedTrailsLayerId,
+  hoveredPointLayerId,
   hoveredShapeLayerId,
   hoveredTrailsLayerId,
 } from './layers';
@@ -54,9 +55,11 @@ export interface Output {
   setNewCenter: (center: Coordinate, zoom: number) => void;
   setNewBounds: (bbox: [Longitude, Latitude, Longitude, Latitude]) => void;
   setHighlightedPoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
+  setHoveredPrimitivePoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   clearMap: () => void;
+  clearHoveredPoints: () => void;
   setExternalHoveredPopup: (
     name: string,
     type: CoreItem | MapItem | AggregateItem,
@@ -154,8 +157,15 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     (map.getSource(highlightedRoadsLayerId) as any).setData(defaultGeoJsonLineString);
   };
 
+  const clearHoveredPrimitivePoints = () => {
+    (map.getSource(hoveredPointLayerId) as any).setData(defaultGeoJsonPoint);
+  };
+
   const updatePointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
     (map.getSource(highlightedPointsLayerId) as any).setData(data);
+
+  const updatePrimitiveHoverPointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
+    (map.getSource(hoveredPointLayerId) as any).setData(data);
 
   const updateTrailSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
     (map.getSource(highlightedTrailsLayerId) as any).setData(data);
@@ -184,6 +194,30 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
         map.off('load', updatePointsSourceOnLoad);
       };
       map.on('load', updatePointsSourceOnLoad);
+    }
+  };
+
+  const setHoveredPrimitivePoints = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    if (mapLoaded) {
+      updatePrimitiveHoverPointsSource(data);
+    } else {
+      const updatePointsSourceOnLoad = () => {
+        updatePrimitiveHoverPointsSource(data);
+        map.off('load', updatePointsSourceOnLoad);
+      };
+      map.on('load', updatePointsSourceOnLoad);
+    }
+  };
+
+  const clearHoveredPoints = () => {
+    if (mapLoaded) {
+      clearHoveredPrimitivePoints();
+    } else {
+      const clearSourceOnLoad = () => {
+        clearHoveredPrimitivePoints();
+        map.off('load', clearSourceOnLoad);
+      };
+      map.on('load', clearSourceOnLoad);
     }
   };
 
@@ -251,7 +285,8 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
-    setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup,
+    setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
+    clearHoveredPoints,
   };
 };
 

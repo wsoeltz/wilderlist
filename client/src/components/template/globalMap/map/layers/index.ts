@@ -11,6 +11,7 @@ export const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
 };
 
 export const hoveredShapeLayerId = 'temporary-highlight-shape-layer-id';
+export const hoveredPointLayerId = 'temporary-hovered-point-layer-id';
 
 export const highlightedTrailsLayerId = 'temporary-highlight-trails-layer-id';
 const highlightedTrailsLayerTopId = 'temporary-highlight-trails-top-layer-id';
@@ -350,6 +351,34 @@ const initLayers = ({map}: Input) => {
     paint: {
       'fill-color': primaryColor,
       'fill-opacity': 0.2,
+      },
+  });
+
+  map.addSource(hoveredPointLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonPoint,
+  });
+  map.addLayer({
+    id: hoveredPointLayerId,
+    type: 'circle',
+    source: hoveredPointLayerId,
+    paint: {
+      'circle-color': '#fff',
+      'circle-stroke-color': primaryColor,
+      'circle-stroke-width': [
+          'interpolate',
+          ['linear', 1.96],
+          ['zoom'],
+          0, 1,
+          22, 5,
+        ],
+      'circle-radius': [
+          'interpolate',
+          ['linear', 1.96],
+          ['zoom'],
+          0, 1,
+          22, 8,
+        ],
       },
   });
 

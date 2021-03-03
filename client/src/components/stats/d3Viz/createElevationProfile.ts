@@ -30,6 +30,8 @@ interface Input {
   svg: Selection<any, unknown, null, undefined>;
   data: Datum[];
   size: Dimensions;
+  onMouseMove: (d: Datum) => void;
+  onMouseOut: () => void;
 }
 
 const formatNumber = (n: number) => {
@@ -41,7 +43,7 @@ const formatMileage = (n: number) => {
 };
 
 const createLineChart = (input: Input) => {
-  const { svg, data, size } = input;
+  const { svg, data, size, onMouseMove, onMouseOut } = input;
 
   const margin = {top: 5, right: 0, bottom: 22, left: 37};
   const width = size.width - margin.left - margin.right;
@@ -199,6 +201,7 @@ const createLineChart = (input: Input) => {
       focusElevationText
         .html(Math.round(selectedData.elevation).toString() + 'ft')
         .attr('y', y(selectedData.elevation) - 10);
+      onMouseMove(selectedData);
     }
   }
   function mouseout() {
@@ -206,6 +209,7 @@ const createLineChart = (input: Input) => {
     focusElevationText.style('opacity', 0);
     focusLineVertical.style('opacity', 0);
     focusLineHorizontal.style('opacity', 0);
+    onMouseOut();
   }
 };
 

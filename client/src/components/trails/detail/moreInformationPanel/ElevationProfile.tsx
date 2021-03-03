@@ -1,9 +1,11 @@
 const distance = require('@turf/distance').default;
-const {point} = require('@turf/helpers');
-import React from 'react';
+const along = require('@turf/along').default;
+const {point, lineString} = require('@turf/helpers');
+import React, {useEffect} from 'react';
 import styled from 'styled-components/macro';
 import useLineStringElevation from '../../../../hooks/servicesHooks/elevation/useLineStringElevation';
 import useFluent from '../../../../hooks/useFluent';
+import useMapContext from '../../../../hooks/useMapContext';
 import {useBasicTrailDetail} from '../../../../queries/trails/useBasicTrailDetail';
 import {
   CenteredHeader,
@@ -23,6 +25,7 @@ import LoadingSimple from '../../../sharedComponents/LoadingSimple';
 import DataViz, {
   VizType,
 } from '../../../stats/d3Viz';
+import {Datum as ElevationDatum} from '../../../stats/d3Viz/createElevationProfile';
 
 const ChartContainer = styled(EmptyBlock)`
   padding: 0;
@@ -55,6 +58,24 @@ const TrailDetails = (props: Props) => {
     includeIncline: true,
     includeMinMax: true,
   });
+  const mapContext = useMapContext();
+  const onMouseLeave = () => {
+    if (mapContext.intialized) {
+      mapContext.clearHoveredPoints();
+    }
+  };
+  const onMouseMove = (d: ElevationDatum) => {
+    if (mapContext.intialized && data && data.trail && data.trail.line) {
+      mapContext.setHoveredPrimitivePoints(along(lineString(data.trail.line), d.mile, {units: 'miles'}));
+    }
+  };
+  useEffect(() => {
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearHoveredPoints();
+      }
+    };
+  }, [mapContext]);
   if (loading || elevationData.loading) {
     return (
         <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
@@ -148,6 +169,8 @@ const TrailDetails = (props: Props) => {
             vizType={VizType.ElevationProfile}
             data={chartData}
             height={180}
+            onMouseOut={onMouseLeave}
+            onMouseMove={onMouseMove}
           />
         </ChartContainer>
       </CollapsedScrollContainer>

@@ -46,6 +46,8 @@ type Props = BaseProps & (
   {
     vizType: VizType.ElevationProfile;
     data: ElevationProfileDatum[];
+    onMouseMove: (d: ElevationProfileDatum) => void;
+    onMouseOut: () => void;
   }
 );
 
@@ -84,6 +86,8 @@ const D3Viz = (props: Props) => {
           svg, data: props.data, size: {
             width: sizingNode.clientWidth, height: sizingNode.clientHeight,
           },
+          onMouseMove: props.onMouseMove,
+          onMouseOut: props.onMouseOut,
         });
       }
     }
@@ -92,7 +96,7 @@ const D3Viz = (props: Props) => {
         svgNode.innerHTML = '';
       }
     };
-  }, [svgNodeRef, sizingNodeRef, windowWidth, props.vizType, props.data]);
+  }, [svgNodeRef, sizingNodeRef, windowWidth, props]);
 
   return (
     <Root ref={sizingNodeRef} style={{height}}>
