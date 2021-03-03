@@ -107,6 +107,7 @@ export const ContentBody = styled.div`
   @media(max-width: ${mobileSize}px) {
     height: auto;
     min-height: 100vh;
+    padding-top: 1rem;
     padding-bottom: 150px;
     border-top: solid 1px ${lightBorderColor};
     border-right: none;

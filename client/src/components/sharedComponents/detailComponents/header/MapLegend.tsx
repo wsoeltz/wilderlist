@@ -19,7 +19,7 @@ import {mobileSize} from '../../../../Utils';
 
 const Root = styled.div`
   @media(max-width: ${mobileSize}px) {
-    margin: 0 -1rem 1rem;
+    margin: -0.7rem -1rem 0.7rem;
   }
 
   @media(min-width: ${mobileSize + 1}px) {

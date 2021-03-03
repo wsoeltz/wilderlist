@@ -1,6 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import {useLocation} from 'react-router-dom';
 import {mobileTopPadding} from '../../../styling/Grid';
+import MobileTab from './MobileTab';
 
 const viewBoxId = 'mobile-map-viewbox-id';
 
@@ -34,6 +35,7 @@ const MobileMapViewBox = () => {
        ref={mobileMidViewboxRef}
        style={{height: `calc(80vh - ${mobileTopPadding * 2.1}px)`}}
      />
+     <MobileTab />
    </>
   );
 };
