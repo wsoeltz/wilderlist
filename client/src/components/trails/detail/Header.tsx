@@ -31,11 +31,12 @@ import {
   PlaceholderText,
   SmallSemiBold,
 } from '../../../styling/styleUtils';
-import {TrailType} from '../../../types/graphQLTypes';
+import {PeakListVariants, TrailType} from '../../../types/graphQLTypes';
 import {CoreItem, CoreItems} from '../../../types/itemTypes';
 import { formatDate, parseDate } from '../../../utilities/dateUtils';
 import {slopeToSteepnessClass} from '../../../utilities/trailUtils';
 import LastHikedText from '../../sharedComponents/detailComponents/header/LastHikedText';
+import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
 import SimpleHeader from '../../sharedComponents/detailComponents/header/SimpleHeader';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import {trailDefaultSvg} from '../../sharedComponents/svgIcons';
@@ -222,8 +223,13 @@ const TrailDetail = (props: Props) => {
     }
   }
 
+  const completionLeged = hasChildren ? (
+      <MapLegend type={PeakListVariants.standard} />
+  ) : null;
+
   return (
     <>
+      {completionLeged}
       <SimpleHeader
         id={id}
         loading={loading}

@@ -78,20 +78,35 @@ export const colorSetGray: ColorSet = {
 export const incompleteColor = '#d94728';
 export const completeColor = '#145500';
 
+export const completionColorScaleArray = [
+  incompleteColor,
+  '#d17728',
+  '#cd932b',
+  '#c99e2c',
+  '#c7ab2d',
+  '#c4b52f',
+  '#b4bf35',
+  '#99ba3c',
+  '#89b13f',
+  '#7caa41',
+  '#619a41',
+  '#4b8a3f',
+  '#145500',
+];
 export const completionColorScale = {
-  0: incompleteColor,
-  8: '#d17728',
-  17: '#cd932b',
-  25: '#c99e2c',
-  33: '#c7ab2d',
-  42: '#c4b52f',
-  50: '#b4bf35',
-  58: '#99ba3c',
-  67: '#89b13f',
-  75: '#7caa41',
-  83: '#619a41',
-  92: '#4b8a3f',
-  100: '#145500',
+  0: completionColorScaleArray[0],
+  8: completionColorScaleArray[1],
+  17: completionColorScaleArray[2],
+  25: completionColorScaleArray[3],
+  33: completionColorScaleArray[4],
+  42: completionColorScaleArray[5],
+  50: completionColorScaleArray[6],
+  58: completionColorScaleArray[7],
+  67: completionColorScaleArray[8],
+  75: completionColorScaleArray[9],
+  83: completionColorScaleArray[10],
+  92: completionColorScaleArray[11],
+  100: completionColorScaleArray[12],
 };
 
 export const getColorSetFromVariant = (variant: PeakListVariants) => {

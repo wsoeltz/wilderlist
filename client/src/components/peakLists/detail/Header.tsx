@@ -37,6 +37,7 @@ import {
 } from '../../../types/graphQLTypes';
 import { formatDate, getType, parseDate } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
+import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import Tooltip from '../../sharedComponents/Tooltip';
 import PeakProgressBar from '../list/PeakProgressBar';
@@ -338,6 +339,7 @@ const Header = (props: Props) => {
   return (
     <>
       {metaData}
+      <MapLegend type={data ? data.peakList.type : null} />
       <Root>
         <TitleContent>
           <h1

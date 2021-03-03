@@ -1010,10 +1010,12 @@ map-completed = You Completed On
 map-completed-other-user = Completed On
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
-map-number-of-seasons = Number of Seasons Hiked
+map-number-of-seasons = Points colored by number of seasons you’ve hiked
 map-no-seasons = 0
 map-all-seasons = 4
-map-number-of-months = Number of Months Hiked
+map-number-of-months = Points colored by number of months you’ve hiked
+map-completed-colored = Points colored by Completion
+map-completed-colored-winter = Points colored by Completion in Winter
 map-no-months = 0
 map-all-months = 12
 
