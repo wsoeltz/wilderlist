@@ -136,11 +136,13 @@ const TripReportForm = (props: PropsWithConditions) => {
   const {
     onClose, onSave, userId, textNote,
     initialCompletionDay, initialCompletionMonth,
-    initialCompletionYear, initialStartDate, initialDateType,
+    initialCompletionYear, initialStartDate,
     initialUserList, initialConditions, initialTripNotes, initialLink,
     initialMountainList, tripReportId, refetchQuery, initialPrivacy,
     initialTrailList, initialCampsiteList, origin,
   } = props;
+
+  const initialDateType = props.variant === PeakListVariants.standard ? props.initialDateType : DateType.full;
 
   const {push} = useHistory();
 

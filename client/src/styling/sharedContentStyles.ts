@@ -303,3 +303,36 @@ export const Paragraph = styled.p`
   color: ${lightBaseColor};
   font-size: 0.8rem;
 `;
+
+export const ScrollContainerDarkRoot = styled.div`
+  margin: 1rem 0;
+  border-top: solid 1px ${lightBorderColor};
+  border-bottom: solid 1px ${lightBorderColor};
+  background-color: ${tertiaryColor};
+  position: relative;
+`;
+
+export const CenterdLightTitle = styled.h4`
+  padding: 0.75rem 0.5rem 0rem 1rem;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  color: ${lightBaseColor};
+`;
+
+export const ScrollContainerDarkTitle = styled(CenterdLightTitle)`
+  margin: 0;
+  position: absolute;
+  pointer-events: none;
+  left: 0;
+  right: 0;
+  top: 0;
+`;
+
+export const ScrollContainerDark = styled(HorizontalScrollContainer)`
+  min-height: 10rem;
+  margin-bottom: 0;
+  padding-top: 3rem;
+  padding-bottom: 1.5rem;
+`;

@@ -103,6 +103,8 @@ export interface PeakList {
   numTrails: number;
   numCampsites: number;
   numCompletedAscents: number;
+  numCompletedTrails: number;
+  numCompletedCampsites: number;
   numCompletedTrips: number;
   latestAscent: string | null;
   latestTrip: string | null;

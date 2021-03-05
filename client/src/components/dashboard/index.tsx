@@ -1,17 +1,17 @@
 import React from 'react';
 import useCurrentUser from '../../hooks/useCurrentUser';
-import SavedLists from './SavedLists';
+import Dashboard from './Dashboard';
 
-const Dashboard = () => {
+const DashboardWrapper = () => {
   const user = useCurrentUser();
 
   if (!user) {
     return null;
   } else {
     return (
-      <SavedLists userId={user._id} />
+      <Dashboard userId={user._id} />
     );
   }
 };
 
-export default Dashboard;
+export default DashboardWrapper;

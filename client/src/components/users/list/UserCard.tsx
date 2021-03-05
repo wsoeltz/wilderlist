@@ -96,20 +96,26 @@ const getListsInProgress =
   (peakLists: CardPeakListDatum[]) => {
     const completedLists: string[] = [];
     const listsInProgress: string[] = [];
-    peakLists.forEach(({numMountains, numCompletedAscents, type, shortName}) => {
-      let totalRequiredAscents: number;
+    peakLists.forEach(peakList => {
+      const {numCompletedTrips, type, shortName} = peakList;
+      const numMountains = peakList.numMountains ? peakList.numMountains : 0;
+      const numTrails = peakList.numTrails ? peakList.numTrails : 0;
+      const numCampsites = peakList.numCampsites ? peakList.numCampsites : 0;
+      const numItems = numMountains + numTrails + numCampsites;
+
+      let totalRequiredTrips: number;
       if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        totalRequiredAscents = numMountains;
+        totalRequiredTrips = numItems;
       } else if (type === PeakListVariants.fourSeason) {
-        totalRequiredAscents = numMountains * 4;
+        totalRequiredTrips = numItems * 4;
       } else if (type === PeakListVariants.grid) {
-        totalRequiredAscents = numMountains * 12;
+        totalRequiredTrips = numItems * 12;
       } else {
-        totalRequiredAscents = 0;
+        totalRequiredTrips = 0;
         failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
       }
 
-      if (totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {// list complete
+      if (totalRequiredTrips > 0 && numCompletedTrips === totalRequiredTrips) {// list complete
         completedLists.push(shortName + getType(type));
       } else { // list is incomplete
         listsInProgress.push(shortName + getType(type));

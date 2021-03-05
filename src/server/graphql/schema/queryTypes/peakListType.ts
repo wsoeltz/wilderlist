@@ -447,6 +447,106 @@ const PeakListType: any = new GraphQLObjectType({
         }
       },
     },
+    numCompletedTrails: {
+      type: GraphQLInt,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return 0;
+        }
+        try {
+          let completedTrails: RawCompletedTrail[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedTrails = user.trails.map(({trail, dates}: RawCompletedTrail) => ({
+              trail: trail.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.trails && res.trails.length) {
+              completedTrails = res.trails.map(({trail, dates}: RawCompletedTrail) => ({
+                trail: trail.toString(), dates,
+              }));
+            } else {
+              completedTrails = [];
+            }
+          }
+
+          let trails: string[];
+          if (parentValue.trails && parentValue.trails.length) {
+            trails = parentValue.trails.map((trail: string) => trail.toString());
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.trails && res.trails.length) {
+                trails = res.trails.map((trail: string) => trail.toString());
+              } else {
+                trails = [];
+              }
+          } else {
+            trails = [];
+          }
+
+          if (completedTrails && completedTrails.length && trails && trails.length && parentValue.type) {
+            return completedPeaks(trails, completedTrails, parentValue.type, 'trail');
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    numCompletedCampsites: {
+      type: GraphQLInt,
+      args: {
+        userId: {type: GraphQLID },
+      },
+      async resolve(parentValue, {userId}, {dataloaders: {userLoader, peakListLoader}, user}) {
+        if (!user || !user._id) {
+          return 0;
+        }
+        try {
+          let completedCampsites: RawCompletedCampsite[];
+          if (!userId || userId.toString() === user._id.toString()) {
+            completedCampsites = user.campsites.map(({campsite, dates}: RawCompletedCampsite) => ({
+              campsite: campsite.toString(), dates,
+            }));
+          } else {
+            const res = await userLoader.load(userId);
+            if (res && res.campsites && res.campsites.length) {
+              completedCampsites = res.campsites.map(({campsite, dates}: RawCompletedCampsite) => ({
+                campsite: campsite.toString(), dates,
+              }));
+            } else {
+              completedCampsites = [];
+            }
+          }
+
+          let campsites: string[];
+          if (parentValue.campsites && parentValue.campsites.length) {
+            campsites = parentValue.campsites.map((campsite: string) => campsite.toString());
+          } else if (parentValue.parent) {
+              const res = await peakListLoader.load(parentValue.parent);
+              if (res && res.campsites && res.campsites.length) {
+                campsites = res.campsites.map((campsite: string) => campsite.toString());
+              } else {
+                campsites = [];
+              }
+          } else {
+            campsites = [];
+          }
+
+          if (completedCampsites && completedCampsites.length && campsites && campsites.length && parentValue.type) {
+            return completedPeaks(campsites, completedCampsites, parentValue.type, 'campsite');
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
     numCompletedTrips: {
       type: GraphQLInt,
       args: {

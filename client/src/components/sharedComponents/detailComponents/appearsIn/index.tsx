@@ -14,47 +14,22 @@ import {listDetailLink} from '../../../../routing/Utils';
 import {
   Details,
   HorizontalBlock,
-  HorizontalScrollContainer,
+  ScrollContainerDark,
+  ScrollContainerDarkRoot,
+  ScrollContainerDarkTitle,
   SimpleTitle,
 } from '../../../../styling/sharedContentStyles';
 import {
   BasicIconInText,
   IconContainer,
   lightBaseColor,
-  lightBorderColor,
   Subtext,
-  tertiaryColor,
 } from '../../../../styling/styleUtils';
 import {AggregateItem, CoreItems} from '../../../../types/itemTypes';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../svgIcons';
 
-const Root = styled.div`
+const Root = styled(ScrollContainerDarkRoot)`
   margin: auto -1rem -1rem;
-  border-top: solid 1px ${lightBorderColor};
-  background-color: ${tertiaryColor};
-  position: relative;
-`;
-
-const Title = styled.h4`
-  padding: 0.75rem 0.5rem 0rem 1rem;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-align: center;
-  margin: 0;
-  color: ${lightBaseColor};
-  position: absolute;
-  pointer-events: none;
-  left: 0;
-  right: 0;
-  top: 0;
-`;
-
-const ScrollContainer = styled(HorizontalScrollContainer)`
-  min-height: 10rem;
-  margin-bottom: 0;
-  padding-top: 3rem;
-  padding-bottom: 1.5rem;
 `;
 
 const FlexRow = styled.div`
@@ -178,13 +153,13 @@ const AppearsIn = (props: Props) => {
 
     return (
       <Root>
-        <ScrollContainer hideScrollbars={false} $noScroll={data.appearsIn.length < 3}>
-          <Title>
+        <ScrollContainerDark hideScrollbars={false} $noScroll={data.appearsIn.length < 3}>
+          <ScrollContainerDarkTitle>
             <BasicIconInText icon={faList} />
             {getString('global-text-value-appears-on', {name})}
-          </Title>
+          </ScrollContainerDarkTitle>
           {lists}
-        </ScrollContainer>
+        </ScrollContainerDark>
       </Root>
     );
 

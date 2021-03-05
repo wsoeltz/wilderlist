@@ -5,12 +5,17 @@ import useFluent from '../../hooks/useFluent';
 import {useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
+  CenteredHeader,
+  EmptyBlock,
+  HorizontalScrollContainer,
+} from '../../styling/sharedContentStyles';
+import {
   ButtonPrimaryLink,
   PlaceholderText,
   SectionTitleH3,
 } from '../../styling/styleUtils';
 import ListPeakLists from '../peakLists/list/ListPeakLists';
-import LoadingSpinner from '../sharedComponents/LoadingSpinner';
+import LoadingSimple from '../sharedComponents/LoadingSimple';
 
 const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
@@ -31,7 +36,16 @@ const SavedLists = ({userId}: Props) => {
 
   let peakListsList: React.ReactElement<any> | null;
   if (listLoading === true) {
-    peakListsList = <LoadingSpinner />;
+    peakListsList = (
+      <HorizontalScrollContainer hideScrollbars={false} $noScroll={true}>
+        <EmptyBlock>
+          <CenteredHeader>
+            <LoadingSimple />
+            {getString('global-text-value-loading')}...
+          </CenteredHeader>
+        </EmptyBlock>
+      </HorizontalScrollContainer>
+    );
   } else if (listsError !== undefined) {
     console.error(listsError);
     peakListsList = (

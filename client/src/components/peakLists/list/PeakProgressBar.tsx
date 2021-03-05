@@ -17,7 +17,6 @@ const Root = styled.div`
   grid-template-columns: 1fr auto;
   grid-column-gap: 0.5rem;
   transform: translateX(-0.5rem);
-  padding-right: 0.65rem;
 `;
 
 const Percentage = styled.div<{colorSet: ColorSet}>`
@@ -47,7 +46,7 @@ const SvgBase = styled.svg`
   }
 
   .${clipPathId}background {
-    opacity: 0.3;
+    opacity: 0.2;
     transition: all 0.2s ease-in-out;
   }
   .${clipPathId}foreground {
@@ -60,14 +59,15 @@ interface Props {
   completed: number;
   total: number;
   id: string;
+  hidePercentage?: boolean;
 }
 
 const PeakProgressBar = (props: Props) => {
-  const { id, total, completed, variant } = props;
+  const { id, total, completed, variant, hidePercentage } = props;
   const percentage = (completed / total) * 100;
   const roundedPercentage = isNaN(percentage) ? 0 : roundPercentToSingleDecimal(completed, total);
   const colorSet = variant === null ? colorSetGray : getColorSetFromVariant(variant);
-  const percentageElm = <Percentage colorSet={colorSet}>{roundedPercentage}%</Percentage>;
+  const percentageElm = !hidePercentage ? <Percentage colorSet={colorSet}>{roundedPercentage}%</Percentage> : null;
   return (
     <Root>
       <SvgContainer>

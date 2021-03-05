@@ -247,6 +247,7 @@ global-text-value-last-trip-dynamic = {
     [trails] You last hiked on
     *[other] Your last trip on
 }
+global-text-value-last-trip = Last trip
 global-text-value-today = Today
 global-text-value-yesterday = Yesterday
 global-text-value-summer = Summer
@@ -614,6 +615,8 @@ header-text-menu-terms-of-use = Terms of Use
 
 notification-bar-ascent-marked = marked you as hiking
 notification-bar-camped-marked = marked you as camping at
+
+dashboard-title = Dashboard & Saved Items
 
 login-page-plan-your-trip-title = Plan your trip
 login-page-plan-your-trip-desc = ● Maps ● Trails ● Camping ● Weather Forecasts ● Trip Reports ● Driving Directions

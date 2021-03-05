@@ -1,122 +1,90 @@
-import React from 'react';
+const {point, featureCollection} = require('@turf/helpers');
+const getCenter = require('@turf/center').default;
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import useMapContext from '../../../hooks/useMapContext';
 import { CardPeakListDatum } from '../../../queries/lists/getUsersPeakLists';
 import {
   listDetailLink,
   otherUserPeakListLink,
-  preventNavigation,
 } from '../../../routing/Utils';
 import {
-  Card,
-  CompactButtonPrimary,
+  SimpleTitle,
+} from '../../../styling/sharedContentStyles';
+import {
+  BasicIconInTextCompact,
+  CompleteText,
+  IconContainer,
+  lightBaseColor,
+  lightBorderColor,
+  SemiBold,
+  Subtext,
 } from '../../../styling/styleUtils';
+import {PeakListVariants} from '../../../types/graphQLTypes';
+import {AggregateItem} from '../../../types/itemTypes';
 import { getType } from '../../../utilities/dateUtils';
-import {mediumSize, mobileSize} from '../../../Utils';
+import StarListButton from '../../peakLists/detail/StarListButton';
+import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import MountainLogo from '../mountainLogo';
 import PeakProgressBar from './PeakProgressBar';
 
-const LinkWrapper = styled(Link)`
-  display: block;
-  color: inherit;
-  text-decoration: inherit;
-
-  &:hover {
-    color: inherit;
-  }
-`;
-
-const smallCardBreakpoint = 600; // in px
-
-export const Root = styled(Card)`
+const Root = styled.div`
+  padding: 1rem 1rem 0.5rem 0;
+  border-top: solid 1px ${lightBorderColor};
   display: grid;
-  grid-template-columns: 11.875rem 1fr;
-  grid-column-gap: 1rem;
-  grid-template-rows: auto auto;
-  position: relative;
-
-  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
-    grid-template-columns: 6.875rem 1fr;
-  }
-
-  @media(max-width: ${smallCardBreakpoint}px) {
-    grid-template-columns: 8rem 1fr;
-  }
+  grid-template-columns: 8rem 1fr;
+  grid-template-rows: auto;
 `;
 
 const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
   grid-column: 2;
   grid-row: 1;
 `;
 
-const ProgressBarRow = styled.div`
-  grid-row: 2;
-  grid-column: 2;
-
-  @media(max-width: ${smallCardBreakpoint}px) {
-    grid-column: 1 / -1;
-  }
-`;
-
-const TitleBase = styled.h1`
-  margin: 2rem 0 0.5rem;
-  font-size: 1.25rem;
-`;
-
-export const TitleFull = styled.h1`
-  margin: 2rem 0 0.5rem;
-  font-size: 1.25rem;
-`;
-
-const ActionButtonContainer = styled.div`
-  text-align: right;
-  position: absolute;
-  top: 0;
-  right: 0;
-`;
-
-export const ListInfo = styled.h3`
-  display: flex;
-  justify-content: space-between;
-  margin: 0.25rem 0;
-  font-size: 0.9rem;
-  font-weight: 400;
-  text-transform: capitalize;
-
-  @media(max-width: ${smallCardBreakpoint}px) {
-    flex-direction: column-reverse;
-  }
-`;
-
-export const LogoContainer = styled.div`
+const LogoContainer = styled.div`
   grid-column: 1;
   grid-row: 1 / -1;
+`;
+
+const ProgressContainer = styled.div`
+  margin-top: 1rem;
+`;
+
+const Header = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 5.625rem;
+  grid-column-gap: 0.35rem;
+  margin-bottom: 0.25rem;
+  margin-right: -1rem;
+`;
+
+const SavedContainer = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+`;
+
+const FlexRow = styled.div`
+  display: flex;
+  font-size: 0.875rem;
+  color: ${lightBaseColor};
+`;
+
+const MidFlexRow = styled(FlexRow)`
+  margin-bottom: 0.5rem;
+`;
+
+const ListItem = styled(FlexRow)`
+  margin-right: 1rem;
+`;
+
+const PullRight = styled(FlexRow)`
+  margin-left: auto;
   align-items: center;
-
-  @media(max-width: ${smallCardBreakpoint}px) {
-    grid-row: 1;
-  }
-`;
-
-export const ProgressBarContainer = styled.div`
-  height: 3.125rem;
-`;
-
-export const TextRight = styled.div`
-  text-align: right;
-  margin-left: 1rem;
-
-  @media(max-width: ${smallCardBreakpoint}px) {
-    margin-left: 0;
-    margin-bottom: 0.5rem;
-    text-align: left;
-  }
 `;
 
 interface Props {
@@ -124,8 +92,8 @@ interface Props {
   active: boolean | null;
   listAction: ((peakListId: string) => void) | null;
   actionText: string;
-  numCompletedAscents: number;
-  totalRequiredAscents: number;
+  numCompletedTrips: number;
+  totalRequiredTrips: number;
   latestDate: string | null;
   profileId?: string;
   setActionDisabled?: (peakListId: string) => boolean;
@@ -133,118 +101,161 @@ interface Props {
 
 const PeakListCard = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type, parent, stateOrRegionString},
-    active, listAction, actionText, numCompletedAscents,
-    totalRequiredAscents, profileId,
-    latestDate, setActionDisabled,
+    peakList: {
+      id, name, shortName, locationText, type,
+      numMountains, numTrails, numCampsites,
+      numCompletedAscents, numCompletedTrails, numCompletedCampsites,
+      latestTrip, parent, bbox,
+    },
+    profileId,
+    numCompletedTrips, totalRequiredTrips,
   } = props;
 
   const getString = useFluent();
-
-  const actionButtonOnClick = (e: React.SyntheticEvent) => {
-    preventNavigation(e);
-    if (listAction !== null) {
-      listAction(id);
+  const mapContext = useMapContext();
+  useEffect(() => {
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearExternalHoveredPopup();
+      }
+    };
+  }, [mapContext]);
+  const onMouseLeave = () => {
+    if (mapContext.intialized) {
+      mapContext.clearExternalHoveredPopup();
     }
   };
-
-  const isDisabled = () => {
-    if (setActionDisabled) {
-      return setActionDisabled(id);
-    }
-    return false;
-  };
-
-  const actionButton = (active === false || profileId !== undefined) && listAction !== null
-    ? (
-      <ActionButtonContainer>
-        <CompactButtonPrimary onClick={actionButtonOnClick} disabled={isDisabled()}>
-          {actionText}
-        </CompactButtonPrimary>
-      </ActionButtonContainer> ) : null;
-
-  const Title = (active === false || profileId !== undefined) && listAction !== null
-    ? TitleBase : TitleFull;
-
-  let listInfoContent: React.ReactElement<any>;
-  if (active === true) {
-
-    let latestDateText: React.ReactElement<any>;
-    if (latestDate !== null) {
-      const latestAscentText = getString('peak-list-text-latest-ascent', {
-        'completed': (numCompletedAscents === totalRequiredAscents).toString(),
-        'has-full-date': 'true',
-      });
-      latestDateText = (
-        <>
-          {latestAscentText} {latestDate}
-        </>
+  const onMouseEnter = () => {
+    if (mapContext.intialized && bbox) {
+      const center = getCenter(featureCollection([
+        point(bbox.slice(0, 2)),
+        point(bbox.slice(2, 4)),
+      ]));
+      mapContext.setExternalHoveredPopup(
+        name,
+        AggregateItem.list,
+        '',
+        [center.geometry.coordinates[0], bbox[3]],
+        undefined,
+        bbox,
       );
-    } else {
-      latestDateText = <>{getString('peak-list-text-no-completed-ascent')}</>;
     }
-    listInfoContent = (
-      <>
-        <span>
-          {numCompletedAscents}/{totalRequiredAscents}
-          {' '}
-          {getString('peak-list-text-completed-ascent')}
-        </span>
-        <TextRight>{latestDateText}</TextRight>
-      </>
-    );
-  } else {
-    listInfoContent = (
-      <>
-        <span>
-          {totalRequiredAscents}
-          {' '}
-          {getString('peak-list-text-total-ascents')}
-        </span>
-      </>
-    );
+  };
+
+  let multiplier: number = 1;
+  if (type === PeakListVariants.fourSeason) {
+    multiplier = 4;
+  } else if (type === PeakListVariants.grid) {
+    multiplier = 12;
   }
+
+  const numMountainsCompleted = numMountains ? (
+    <ListItem>
+      <IconContainer
+        $color={lightBaseColor}
+        dangerouslySetInnerHTML={{__html: mountainNeutralSvg}}
+      />
+      {numCompletedAscents}/{numMountains * multiplier}
+    </ListItem>
+  ) : null;
+  const numTrailsCompleted = numTrails ? (
+    <ListItem>
+      <IconContainer
+        $color={lightBaseColor}
+        dangerouslySetInnerHTML={{__html: trailDefaultSvg}}
+      />
+      {numCompletedTrails}/{numTrails * multiplier}
+    </ListItem>
+  ) : null;
+  const numCampsitesCompleted = numCampsites ? (
+    <ListItem>
+      <IconContainer
+        $color={lightBaseColor}
+        dangerouslySetInnerHTML={{__html: tentNeutralSvg}}
+      />
+      {numCompletedCampsites}/{numCampsites * multiplier}
+    </ListItem>
+  ) : null;
+
+  const percentageComplete = parseFloat((numCompletedTrips / totalRequiredTrips * 100).toFixed(1));
+
   const mountainLogoId = parent === null ? id : parent.id;
 
   const url = profileId !== undefined
     ? otherUserPeakListLink(profileId, id) : listDetailLink(id);
   return (
-    <LinkWrapper to={url}>
-      <Root>
+      <Root
+        onMouseLeave={onMouseLeave}
+        onMouseEnter={onMouseEnter}
+      >
         <LogoContainer>
-          <MountainLogo
-            id={mountainLogoId}
-            title={name}
-            shortName={shortName}
-            variant={type}
-            active={active}
-            completed={totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents}
-          />
+          <Link to={url}>
+            <MountainLogo
+              id={mountainLogoId}
+              title={name}
+              shortName={shortName}
+              variant={type}
+              active={true}
+              completed={false}
+            />
+          </Link>
         </LogoContainer>
         <Content>
-          <Title>
-            {name}{getType(type)}
-          </Title>
-          <ListInfo>
-            {stateOrRegionString}
-          </ListInfo>
-          <ListInfo>
-            {listInfoContent}
-          </ListInfo>
-          {actionButton}
-        </Content>
-        <ProgressBarRow>
-          <ProgressBarContainer>
+          <Header>
+            <div>
+              <Link to={url}>
+                <SemiBold>{name}{getType(type)}</SemiBold>
+              </Link>
+            </div>
+            <div>
+              <SavedContainer>
+                <StarListButton
+                  peakListId={id}
+                  peakListName={name}
+                  compact={true}
+                />
+              </SavedContainer>
+            </div>
+          </Header>
+          <MidFlexRow>
+            {numMountainsCompleted}
+            {numTrailsCompleted}
+            {numCampsitesCompleted}
+            <PullRight>
+              <SimpleTitle>
+                <BasicIconInTextCompact icon={faCalendarAlt} />
+                <Subtext>
+                  {getString('global-text-value-last-trip')}:
+                </Subtext>
+              </SimpleTitle>
+              <CompleteText>
+                <SemiBold>{latestTrip}</SemiBold>
+              </CompleteText>
+            </PullRight>
+          </MidFlexRow>
+          <MidFlexRow>
+            {locationText}
+            <PullRight>
+              <strong>{percentageComplete}%</strong>
+              <SimpleTitle>
+                &nbsp;
+                <Subtext>
+                  {getString('global-text-value-complete')}
+                </Subtext>
+              </SimpleTitle>
+            </PullRight>
+          </MidFlexRow>
+          <ProgressContainer>
             <PeakProgressBar
-              variant={active === true ? type : null}
-              completed={active === true && numCompletedAscents ? numCompletedAscents : 0}
-              total={totalRequiredAscents}
-              id={id}
+              variant={type}
+              completed={numCompletedTrips}
+              total={totalRequiredTrips}
+              id={mountainLogoId}
+              hidePercentage={true}
             />
-          </ProgressBarContainer>
-        </ProgressBarRow>
+          </ProgressContainer>
+        </Content>
       </Root>
-    </LinkWrapper>
   );
 };
 

@@ -9,12 +9,18 @@ export interface CardPeakListDatum {
   name: PeakList['name'];
   shortName: PeakList['shortName'];
   type: PeakList['type'];
+  locationText: PeakList['locationText'];
   numMountains: PeakList['numMountains'];
+  numTrails: PeakList['numTrails'];
+  numCampsites: PeakList['numCampsites'];
+  numCompletedTrips: PeakList['numCompletedTrips'];
   numCompletedAscents: PeakList['numCompletedAscents'];
-  latestAscent: PeakList['latestAscent'];
+  numCompletedTrails: PeakList['numCompletedTrails'];
+  numCompletedCampsites: PeakList['numCompletedCampsites'];
+  latestTrip: PeakList['latestTrip'];
+  bbox: PeakList['bbox'];
   isActive: PeakList['isActive'];
   parent: null | {id: PeakList['id']};
-  stateOrRegionString: PeakList['stateOrRegionString'];
 }
 
 const GET_USERS_PEAK_LISTS = gql`
@@ -26,13 +32,19 @@ const GET_USERS_PEAK_LISTS = gql`
         name
         shortName
         type
+        locationText
         parent {
           id
         }
+        bbox
         numMountains
-        stateOrRegionString
+        numTrails
+        numCampsites
+        numCompletedTrips(userId: $userId)
         numCompletedAscents(userId: $userId)
-        latestAscent(userId: $userId)
+        numCompletedTrails(userId: $userId)
+        numCompletedCampsites(userId: $userId)
+        latestTrip(userId: $userId)
         isActive(userId: $userId)
       }
     }
