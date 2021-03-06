@@ -12,7 +12,9 @@ const GET_USERS_SAVED_MOUNTAINS = gql`
       savedMountains {
         id
         name
+        location
         elevation
+        locationTextShort
       }
     }
   }
@@ -25,7 +27,9 @@ const SAVE_MOUNTAIN_TO_USER = gql`
       savedMountains {
         id
         name
+        location
         elevation
+        locationTextShort
       }
     }
   }
@@ -38,7 +42,9 @@ const REMOVED_SAVED_MOUNTAIN_FROM_USER = gql`
       savedMountains {
         id
         name
+        location
         elevation
+        locationTextShort
       }
     }
   }
@@ -60,6 +66,8 @@ interface SuccessResponse {
       id: Mountain['id'];
       name: Mountain['name'];
       elevation: Mountain['elevation'];
+      location: Mountain['location'];
+      locationTextShort: Mountain['locationTextShort'];
     }>;
   };
 }

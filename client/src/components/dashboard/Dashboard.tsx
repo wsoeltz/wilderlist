@@ -5,6 +5,7 @@ import {HighlightedIconInText} from '../../styling/styleUtils';
 import DetailSegment, {Panel} from '../sharedComponents/detailComponents/DetailSegment';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../sharedComponents/svgIcons';
 import SavedLists from './SavedLists';
+import SavedMountains from './SavedMountains';
 
 interface Props {
   userId: string;
@@ -22,7 +23,7 @@ const Dashboard = ({userId}: Props) => {
     },
     {
       title: getString('global-text-value-mountains'),
-      reactNode: <div>Mountains</div>,
+      reactNode: <SavedMountains />,
       customIcon: true,
       icon: mountainNeutralSvg,
     },
