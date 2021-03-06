@@ -17,6 +17,7 @@ const GET_USERS_SAVED_TRAILS = gql`
         avgSlope
         line
         center
+        locationTextShort
       }
     }
   }
@@ -34,6 +35,7 @@ const SAVE_MOUNTAIN_TO_USER = gql`
         avgSlope
         line
         center
+        locationTextShort
       }
     }
   }
@@ -51,6 +53,7 @@ const REMOVED_SAVED_MOUNTAIN_FROM_USER = gql`
         avgSlope
         line
         center
+        locationTextShort
       }
     }
   }
@@ -76,6 +79,7 @@ interface SuccessResponse {
       avgSlope: Trail['avgSlope'];
       line: Trail['line'];
       center: Trail['center'];
+      locationTextShort: Trail['locationTextShort'];
     }>;
   };
 }

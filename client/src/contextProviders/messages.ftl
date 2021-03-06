@@ -648,10 +648,21 @@ settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>help@wilderlist.app</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
 
 dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them by clicking the blue star button to save them to your account. Any mountains, trails, or campsites you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+
+dashboard-empty-state-no-saved-mountains-text = You haven't saved any mountains yet. Search for mountains and add them by clicking the blue star button to save them to your account.
+
+dashboard-empty-state-no-saved-trails-text = You haven't saved any trails yet. Search for trails and add them by clicking the blue star button to save them to your account.
+
+dashboard-empty-state-no-saved-campsites-text = You haven't saved any campsites yet. Search for campsites and add them by clicking the blue star button to save them to your account.
+
 dashboard-empty-state-no-active-lists-button = Find Hiking Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 dashboard-suggested-lists = Suggested Lists
+
+dashboard-empty-state-no-saved-mountains = Find Mountains
+dashboard-empty-state-no-saved-trails = Find Trails
+dashboard-empty-state-no-saved-campsites = Find Campsites
 
 dashboard-back-to-dashboard = Back to Dashboard
 

@@ -5,6 +5,12 @@ import useFluent from '../../hooks/useFluent';
 import {useSavedMountains} from '../../queries/mountains/useSavedMountains';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {mountainDetailLink} from '../../routing/Utils';
+import {
+  BasicContentContainer,
+} from '../../styling/sharedContentStyles';
+import {
+  ButtonPrimaryLink,
+} from '../../styling/styleUtils';
 import {PeakListVariants} from '../../types/graphQLTypes';
 import {CoreItem} from '../../types/itemTypes';
 import getDates from '../peakLists/detail/getDates';
@@ -41,7 +47,7 @@ const SavedMountains = () => {
         <LoadingSimple />
       </LoadingContainer>
     );
-  } else if (data && data.user && data.user.savedMountains) {
+  } else if (data && data.user && data.user.savedMountains && data.user.savedMountains.length) {
     const allPoints: any[] = [];
     const mountains = data.user.savedMountains.filter(t => t).map(t => {
       const name = t.name;
@@ -69,40 +75,60 @@ const SavedMountains = () => {
       };
     });
 
-    const bbox = getBbox(featureCollection(allPoints));
+    if (mountains.length) {
+      const bbox = getBbox(featureCollection(allPoints));
 
-    return (
-      <>
-        <ItemTable
-          showIndex={true}
-          items={mountains}
-          dataFieldKeys={[
-            {
-              displayKey: 'locationTextShort',
-              sortKey: 'locationTextShort',
-              label: getString('global-text-value-state'),
-            }, {
-              displayKey: 'elevationDisplay',
-              sortKey: 'elevation',
-              label: getString('global-text-value-elevation'),
-            },
-          ]}
-          completionFieldKeys={completionFieldKeys}
-          actionFieldKeys={[]}
-          type={CoreItem.mountain}
-          variant={PeakListVariants.standard}
-        />
-        <MapRenderProp
-          id={'dashboard-saved-mountains' + mountains.length}
-          mountains={mountains}
-          bbox={bbox}
-        />
-      </>
-    );
-  } else {
-    return null;
+      return (
+        <>
+          <ItemTable
+            showIndex={true}
+            items={mountains}
+            dataFieldKeys={[
+              {
+                displayKey: 'locationTextShort',
+                sortKey: 'locationTextShort',
+                label: getString('global-text-value-state'),
+              }, {
+                displayKey: 'elevationDisplay',
+                sortKey: 'elevation',
+                label: getString('global-text-value-elevation'),
+              },
+            ]}
+            completionFieldKeys={completionFieldKeys}
+            actionFieldKeys={[]}
+            type={CoreItem.mountain}
+            variant={PeakListVariants.standard}
+          />
+          <MapRenderProp
+            id={'dashboard-saved-mountains' + mountains.length}
+            mountains={mountains}
+            bbox={bbox}
+          />
+        </>
+      );
+
+    }
   }
 
+  return (
+    <div>
+      <BasicContentContainer>
+        <p>
+          {getString('dashboard-empty-state-no-saved-mountains-text')}
+        </p>
+      </BasicContentContainer>
+      <p style={{textAlign: 'center'}}>
+        <ButtonPrimaryLink
+          to={mountainDetailLink('search')}
+        >
+          {getString('dashboard-empty-state-no-saved-mountains')}
+        </ButtonPrimaryLink>
+      </p>
+      <MapRenderProp
+        id={'dashboard-saved-mountains'}
+      />
+    </div>
+  );
 };
 
 export default SavedMountains;

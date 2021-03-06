@@ -1,18 +1,15 @@
 import {faCheckDouble} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import Helmet from 'react-helmet';
-import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import {useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
   BasicContentContainer,
+  CenterdLightTitle,
   CenteredHeader,
   EmptyBlock,
   HorizontalScrollContainer,
-} from '../../styling/sharedContentStyles';
-import {
-  CenterdLightTitle,
 } from '../../styling/sharedContentStyles';
 import {
   BasicIconInText,
@@ -21,11 +18,8 @@ import {
 } from '../../styling/styleUtils';
 import ListPeakLists from '../peakLists/list/ListPeakLists';
 import LoadingSimple from '../sharedComponents/LoadingSimple';
+import MapRenderProp from '../sharedComponents/MapRenderProp';
 import AllSavedListItemsMapRenderProp from './AllSavedListItemsMapRenderProp';
-
-const PlaceholderButton = styled(ButtonPrimaryLink)`
-  font-style: normal;
-`;
 
 interface Props {
   userId: string;
@@ -74,12 +68,15 @@ const SavedLists = ({userId}: Props) => {
             </p>
           </BasicContentContainer>
           <p style={{textAlign: 'center'}}>
-            <PlaceholderButton
+            <ButtonPrimaryLink
               to={listDetailLink('search')}
             >
               {getString('dashboard-empty-state-no-active-lists-button')}
-            </PlaceholderButton>
+            </ButtonPrimaryLink>
           </p>
+          <MapRenderProp
+            id={'dashboard-saved-lists-empty'}
+          />
         </div>
       );
     } else {

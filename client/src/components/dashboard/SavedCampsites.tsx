@@ -6,6 +6,12 @@ import useFluent from '../../hooks/useFluent';
 import {useSavedCampsites} from '../../queries/campsites/useSavedCampsites';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {campsiteDetailLink} from '../../routing/Utils';
+import {
+  BasicContentContainer,
+} from '../../styling/sharedContentStyles';
+import {
+  ButtonPrimaryLink,
+} from '../../styling/styleUtils';
 import {PeakListVariants} from '../../types/graphQLTypes';
 import {CoreItem} from '../../types/itemTypes';
 import getDates from '../peakLists/detail/getDates';
@@ -42,7 +48,7 @@ const SavedCampsites = () => {
         <LoadingSimple />
       </LoadingContainer>
     );
-  } else if (data && data.user && data.user.savedCampsites) {
+  } else if (data && data.user && data.user.savedCampsites && data.user.savedCampsites.length) {
     const allPoints: any[] = [];
     const campsites = data.user.savedCampsites.filter(t => t).map(t => {
 
@@ -69,39 +75,58 @@ const SavedCampsites = () => {
       };
     });
 
-    const bbox = getBbox(featureCollection(allPoints));
+    if (campsites.length) {
+      const bbox = getBbox(featureCollection(allPoints));
 
-    return (
-      <>
-        <ItemTable
-          showIndex={true}
-          items={campsites}
-          dataFieldKeys={[
-            {
-              displayKey: 'locationTextShort',
-              sortKey: 'locationTextShort',
-              label: getString('global-text-value-state'),
-            }, {
-              displayKey: 'formattedType',
-              sortKey: 'formattedType',
-              label: getString('global-text-value-type'),
-            },
-          ]}
-          completionFieldKeys={completionFieldKeys}
-          actionFieldKeys={[]}
-          type={CoreItem.campsite}
-          variant={PeakListVariants.standard}
-        />
-        <MapRenderProp
-          id={'dashboard-saved-campsites' + campsites.length}
-          campsites={campsites}
-          bbox={bbox}
-        />
-      </>
-    );
-  } else {
-    return null;
+      return (
+        <>
+          <ItemTable
+            showIndex={true}
+            items={campsites}
+            dataFieldKeys={[
+              {
+                displayKey: 'locationTextShort',
+                sortKey: 'locationTextShort',
+                label: getString('global-text-value-state'),
+              }, {
+                displayKey: 'formattedType',
+                sortKey: 'formattedType',
+                label: getString('global-text-value-type'),
+              },
+            ]}
+            completionFieldKeys={completionFieldKeys}
+            actionFieldKeys={[]}
+            type={CoreItem.campsite}
+            variant={PeakListVariants.standard}
+          />
+          <MapRenderProp
+            id={'dashboard-saved-campsites' + campsites.length}
+            campsites={campsites}
+            bbox={bbox}
+          />
+        </>
+      );
+    }
   }
+  return (
+    <div>
+      <BasicContentContainer>
+        <p>
+          {getString('dashboard-empty-state-no-saved-campsites-text')}
+        </p>
+      </BasicContentContainer>
+      <p style={{textAlign: 'center'}}>
+        <ButtonPrimaryLink
+          to={campsiteDetailLink('search')}
+        >
+          {getString('dashboard-empty-state-no-saved-campsites')}
+        </ButtonPrimaryLink>
+      </p>
+      <MapRenderProp
+        id={'dashboard-saved-campsites'}
+      />
+    </div>
+  );
 
 };
 

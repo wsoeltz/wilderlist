@@ -6,7 +6,13 @@ import useFluent from '../../hooks/useFluent';
 import {useSavedTrails} from '../../queries/trails/useSavedTrails';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {trailDetailLink} from '../../routing/Utils';
-import {PeakListVariants} from '../../types/graphQLTypes';
+import {
+  BasicContentContainer,
+} from '../../styling/sharedContentStyles';
+import {
+  ButtonPrimaryLink,
+} from '../../styling/styleUtils';
+import {PeakListVariants, Trail} from '../../types/graphQLTypes';
 import {CoreItem} from '../../types/itemTypes';
 import getDates from '../peakLists/detail/getDates';
 import ItemTable from '../sharedComponents/detailComponents/itemTable/ItemTable';
@@ -42,16 +48,25 @@ const SavedTrails = () => {
         <LoadingSimple />
       </LoadingContainer>
     );
-  } else if (data && data.user && data.user.savedTrails) {
+  } else if (data && data.user && data.user.savedTrails && data.user.savedTrails.length) {
     const allPoints: any[] = [];
+    const trailsForMap: Array<{
+      id: Trail['id'];
+      name: Trail['name'];
+      type: Trail['type'];
+      line: Trail['line'];
+      hikedCount: number;
+    }> = [];
     const trails = data.user.savedTrails.filter(t => t).map(t => {
-      const formattedType = upperFirst(getString('global-formatted-trail-type', {type: t.type}));
+      const formattedType = upperFirst(getString('global-formatted-trail-type', {
+        type: t.type ? t.type : 'parent_trail',
+      }));
       const name = t.name ? t.name : formattedType;
       const trailLength = t.trailLength ? t.trailLength : 0;
       const trailLengthDisplay = trailLength < 0.1
         ? getString('distance-feet-formatted', {feet: Math.round(trailLength * 5280)})
         : getString('directions-driving-distance', {miles: parseFloat(trailLength.toFixed(1))});
-      const avgSlopeDisplay = t.avgSlope ? parseFloat(t.avgSlope.toFixed(1)) + '°' : '0°';
+      const avgSlopeDisplay = t.avgSlope !== null ? parseFloat(t.avgSlope.toFixed(1)) + '°' : '---';
       const {dates, completedCount} = getDates({
         type: PeakListVariants.standard,
         item: t,
@@ -60,8 +75,7 @@ const SavedTrails = () => {
         completionFieldKeys,
         stringDateFields,
       });
-      allPoints.push(lineString(t.line));
-      return {
+      const baseDatum = {
         ...t,
         name,
         line: t.line,
@@ -72,48 +86,80 @@ const SavedTrails = () => {
         avgSlopeDisplay,
         hikedCount: completedCount,
         destination: trailDetailLink(t.id),
-        ...dates,
       };
+      if (t.line && t.line.length) {
+        allPoints.push(lineString(t.line));
+        trailsForMap.push(baseDatum);
+        return {...baseDatum, ...dates};
+      }
+      return baseDatum;
     });
 
-    const bbox = getBbox(featureCollection(allPoints));
+    if (trails.length) {
+      const bbox = getBbox(featureCollection(allPoints));
 
-    return (
-      <>
-        <ItemTable
-          showIndex={true}
-          items={trails}
-          dataFieldKeys={[
-            {
-              displayKey: 'locationTextShort',
-              sortKey: 'locationTextShort',
-              label: getString('global-text-value-state'),
-            }, {
-              displayKey: 'trailLengthDisplay',
-              sortKey: 'trailLength',
-              label: getString('global-text-value-length'),
-            }, {
-              displayKey: 'avgSlopeDisplay',
-              sortKey: 'avgSlope',
-              label: getString('global-text-value-incline'),
-            },
-          ]}
-          completionFieldKeys={completionFieldKeys}
-          actionFieldKeys={[]}
-          type={CoreItem.trail}
-          variant={PeakListVariants.standard}
-        />
+      const map = trailsForMap.length ? (
         <MapRenderProp
           id={'dashboard-saved-trails' + trails.length}
-          trails={trails}
+          trails={trailsForMap}
           bbox={bbox}
         />
-      </>
-    );
-  } else {
-    return null;
+      ) : null;
+
+      return (
+        <>
+          <ItemTable
+            showIndex={true}
+            items={trails}
+            dataFieldKeys={[
+              {
+                displayKey: 'locationTextShort',
+                sortKey: 'locationTextShort',
+                label: getString('global-text-value-state'),
+              }, {
+                displayKey: 'trailLengthDisplay',
+                sortKey: 'trailLength',
+                label: getString('global-text-value-length'),
+              }, {
+                displayKey: 'avgSlopeDisplay',
+                sortKey: 'avgSlope',
+                label: getString('global-text-value-incline'),
+              }, {
+                displayKey: 'formattedType',
+                sortKey: 'formattedType',
+                label: getString('global-text-value-type'),
+              },
+            ]}
+            completionFieldKeys={completionFieldKeys}
+            actionFieldKeys={[]}
+            type={CoreItem.trail}
+            variant={PeakListVariants.standard}
+          />
+          {map}
+        </>
+      );
+    }
   }
 
+  return (
+    <div>
+      <BasicContentContainer>
+        <p>
+          {getString('dashboard-empty-state-no-saved-trails-text')}
+        </p>
+      </BasicContentContainer>
+      <p style={{textAlign: 'center'}}>
+        <ButtonPrimaryLink
+          to={trailDetailLink('search')}
+        >
+          {getString('dashboard-empty-state-no-saved-trails')}
+        </ButtonPrimaryLink>
+      </p>
+      <MapRenderProp
+        id={'dashboard-saved-trails'}
+      />
+    </div>
+  );
 };
 
 export default SavedTrails;
