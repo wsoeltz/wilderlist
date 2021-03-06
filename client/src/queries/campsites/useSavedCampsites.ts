@@ -13,6 +13,8 @@ const GET_USERS_SAVED_CAMPSITES = gql`
         id
         name
         type
+        location
+        locationTextShort
       }
     }
   }
@@ -26,6 +28,8 @@ const SAVE_MOUNTAIN_TO_USER = gql`
         id
         name
         type
+        location
+        locationTextShort
       }
     }
   }
@@ -39,6 +43,8 @@ const REMOVED_SAVED_MOUNTAIN_FROM_USER = gql`
         id
         name
         type
+        location
+        locationTextShort
       }
     }
   }
@@ -60,6 +66,8 @@ interface SuccessResponse {
       id: Campsite['id'];
       name: Campsite['name'];
       type: Campsite['type'];
+      location: Campsite['location'];
+      locationTextShort: Campsite['locationTextShort'];
     }>;
   };
 }

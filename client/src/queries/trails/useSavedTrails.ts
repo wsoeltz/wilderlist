@@ -13,6 +13,10 @@ const GET_USERS_SAVED_TRAILS = gql`
         id
         name
         type
+        trailLength
+        avgSlope
+        line
+        center
       }
     }
   }
@@ -26,6 +30,10 @@ const SAVE_MOUNTAIN_TO_USER = gql`
         id
         name
         type
+        trailLength
+        avgSlope
+        line
+        center
       }
     }
   }
@@ -39,6 +47,10 @@ const REMOVED_SAVED_MOUNTAIN_FROM_USER = gql`
         id
         name
         type
+        trailLength
+        avgSlope
+        line
+        center
       }
     }
   }
@@ -60,6 +72,10 @@ interface SuccessResponse {
       id: Trail['id'];
       name: Trail['name'];
       type: Trail['type'];
+      trailLength: Trail['trailLength'];
+      avgSlope: Trail['avgSlope'];
+      line: Trail['line'];
+      center: Trail['center'];
     }>;
   };
 }

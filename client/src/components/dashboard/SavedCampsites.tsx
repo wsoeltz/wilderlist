@@ -1,10 +1,11 @@
 const {point, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import useFluent from '../../hooks/useFluent';
-import {useSavedMountains} from '../../queries/mountains/useSavedMountains';
+import {useSavedCampsites} from '../../queries/campsites/useSavedCampsites';
 import useUsersProgress from '../../queries/users/useUsersProgress';
-import {mountainDetailLink} from '../../routing/Utils';
+import {campsiteDetailLink} from '../../routing/Utils';
 import {PeakListVariants} from '../../types/graphQLTypes';
 import {CoreItem} from '../../types/itemTypes';
 import getDates from '../peakLists/detail/getDates';
@@ -12,13 +13,13 @@ import ItemTable from '../sharedComponents/detailComponents/itemTable/ItemTable'
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
 
-const SavedMountains = () => {
+const SavedCampsites = () => {
   const getString = useFluent();
-  const {response: {loading, data}} = useSavedMountains();
+  const {response: {loading, data}} = useSavedCampsites();
   const usersProgress = useUsersProgress();
 
-  const progressMountains = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.mountains
-    ? usersProgress.data.progress.mountains : [];
+  const progressCampsites = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.campsites
+    ? usersProgress.data.progress.campsites : [];
 
   const completionFieldKeys = [
     {
@@ -41,17 +42,17 @@ const SavedMountains = () => {
         <LoadingSimple />
       </LoadingContainer>
     );
-  } else if (data && data.user && data.user.savedMountains) {
+  } else if (data && data.user && data.user.savedCampsites) {
     const allPoints: any[] = [];
-    const mountains = data.user.savedMountains.filter(t => t).map(t => {
-      const name = t.name;
-      const elevation = t.elevation ? t.elevation : 0;
-      const elevationDisplay = elevation + 'ft';
+    const campsites = data.user.savedCampsites.filter(t => t).map(t => {
+
+      const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: t.type}));
+      const name = t.name ? t.name : formattedType;
       const {dates, completedCount} = getDates({
         type: PeakListVariants.standard,
         item: t,
-        field: CoreItem.mountain,
-        userItems: progressMountains,
+        field: CoreItem.campsite,
+        userItems: progressCampsites,
         completionFieldKeys,
         stringDateFields,
       });
@@ -61,10 +62,9 @@ const SavedMountains = () => {
         name,
         center: t.location,
         locationTextShort: t.locationTextShort,
-        elevation,
-        elevationDisplay,
-        ascentCount: completedCount,
-        destination: mountainDetailLink(t.id),
+        formattedType,
+        campedCount: completedCount,
+        destination: campsiteDetailLink(t.id),
         ...dates,
       };
     });
@@ -75,26 +75,26 @@ const SavedMountains = () => {
       <>
         <ItemTable
           showIndex={true}
-          items={mountains}
+          items={campsites}
           dataFieldKeys={[
             {
               displayKey: 'locationTextShort',
               sortKey: 'locationTextShort',
               label: getString('global-text-value-state'),
             }, {
-              displayKey: 'elevationDisplay',
-              sortKey: 'elevation',
-              label: getString('global-text-value-elevation'),
+              displayKey: 'formattedType',
+              sortKey: 'formattedType',
+              label: getString('global-text-value-type'),
             },
           ]}
           completionFieldKeys={completionFieldKeys}
           actionFieldKeys={[]}
-          type={CoreItem.mountain}
+          type={CoreItem.campsite}
           variant={PeakListVariants.standard}
         />
         <MapRenderProp
-          id={'dashboard-saved-mountains' + mountains.length}
-          mountains={mountains}
+          id={'dashboard-saved-campsites' + campsites.length}
+          campsites={campsites}
           bbox={bbox}
         />
       </>
@@ -105,4 +105,4 @@ const SavedMountains = () => {
 
 };
 
-export default SavedMountains;
+export default SavedCampsites;

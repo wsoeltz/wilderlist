@@ -4,8 +4,10 @@ import useFluent from '../../hooks/useFluent';
 import {HighlightedIconInText} from '../../styling/styleUtils';
 import DetailSegment, {Panel} from '../sharedComponents/detailComponents/DetailSegment';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../sharedComponents/svgIcons';
+import SavedCampsites from './SavedCampsites';
 import SavedLists from './SavedLists';
 import SavedMountains from './SavedMountains';
+import SavedTrails from './SavedTrails';
 
 interface Props {
   userId: string;
@@ -29,13 +31,13 @@ const Dashboard = ({userId}: Props) => {
     },
     {
       title: getString('global-text-value-trails'),
-      reactNode: <div>Trails</div>,
+      reactNode: <SavedTrails />,
       customIcon: true,
       icon: trailDefaultSvg,
     },
     {
       title: getString('global-text-value-campsites'),
-      reactNode: <div>Campsites</div>,
+      reactNode: <SavedCampsites />,
       customIcon: true,
       icon: tentNeutralSvg,
     },

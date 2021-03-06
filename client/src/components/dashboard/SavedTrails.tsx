@@ -1,10 +1,11 @@
-const {point, featureCollection} = require('@turf/helpers');
+const {lineString, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import useFluent from '../../hooks/useFluent';
-import {useSavedMountains} from '../../queries/mountains/useSavedMountains';
+import {useSavedTrails} from '../../queries/trails/useSavedTrails';
 import useUsersProgress from '../../queries/users/useUsersProgress';
-import {mountainDetailLink} from '../../routing/Utils';
+import {trailDetailLink} from '../../routing/Utils';
 import {PeakListVariants} from '../../types/graphQLTypes';
 import {CoreItem} from '../../types/itemTypes';
 import getDates from '../peakLists/detail/getDates';
@@ -12,13 +13,13 @@ import ItemTable from '../sharedComponents/detailComponents/itemTable/ItemTable'
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
 
-const SavedMountains = () => {
+const SavedTrails = () => {
   const getString = useFluent();
-  const {response: {loading, data}} = useSavedMountains();
+  const {response: {loading, data}} = useSavedTrails();
   const usersProgress = useUsersProgress();
 
-  const progressMountains = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.mountains
-    ? usersProgress.data.progress.mountains : [];
+  const progressTrails = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.trails
+    ? usersProgress.data.progress.trails : [];
 
   const completionFieldKeys = [
     {
@@ -41,30 +42,36 @@ const SavedMountains = () => {
         <LoadingSimple />
       </LoadingContainer>
     );
-  } else if (data && data.user && data.user.savedMountains) {
+  } else if (data && data.user && data.user.savedTrails) {
     const allPoints: any[] = [];
-    const mountains = data.user.savedMountains.filter(t => t).map(t => {
-      const name = t.name;
-      const elevation = t.elevation ? t.elevation : 0;
-      const elevationDisplay = elevation + 'ft';
+    const trails = data.user.savedTrails.filter(t => t).map(t => {
+      const formattedType = upperFirst(getString('global-formatted-trail-type', {type: t.type}));
+      const name = t.name ? t.name : formattedType;
+      const trailLength = t.trailLength ? t.trailLength : 0;
+      const trailLengthDisplay = trailLength < 0.1
+        ? getString('distance-feet-formatted', {feet: Math.round(trailLength * 5280)})
+        : getString('directions-driving-distance', {miles: parseFloat(trailLength.toFixed(1))});
+      const avgSlopeDisplay = t.avgSlope ? parseFloat(t.avgSlope.toFixed(1)) + '°' : '0°';
       const {dates, completedCount} = getDates({
         type: PeakListVariants.standard,
         item: t,
-        field: CoreItem.mountain,
-        userItems: progressMountains,
+        field: CoreItem.trail,
+        userItems: progressTrails,
         completionFieldKeys,
         stringDateFields,
       });
-      allPoints.push(point(t.location));
+      allPoints.push(lineString(t.line));
       return {
         ...t,
         name,
-        center: t.location,
-        locationTextShort: t.locationTextShort,
-        elevation,
-        elevationDisplay,
-        ascentCount: completedCount,
-        destination: mountainDetailLink(t.id),
+        line: t.line,
+        center: t.center,
+        formattedType,
+        trailLength,
+        trailLengthDisplay,
+        avgSlopeDisplay,
+        hikedCount: completedCount,
+        destination: trailDetailLink(t.id),
         ...dates,
       };
     });
@@ -75,26 +82,30 @@ const SavedMountains = () => {
       <>
         <ItemTable
           showIndex={true}
-          items={mountains}
+          items={trails}
           dataFieldKeys={[
             {
               displayKey: 'locationTextShort',
               sortKey: 'locationTextShort',
               label: getString('global-text-value-state'),
             }, {
-              displayKey: 'elevationDisplay',
-              sortKey: 'elevation',
-              label: getString('global-text-value-elevation'),
+              displayKey: 'trailLengthDisplay',
+              sortKey: 'trailLength',
+              label: getString('global-text-value-length'),
+            }, {
+              displayKey: 'avgSlopeDisplay',
+              sortKey: 'avgSlope',
+              label: getString('global-text-value-incline'),
             },
           ]}
           completionFieldKeys={completionFieldKeys}
           actionFieldKeys={[]}
-          type={CoreItem.mountain}
+          type={CoreItem.trail}
           variant={PeakListVariants.standard}
         />
         <MapRenderProp
-          id={'dashboard-saved-mountains' + mountains.length}
-          mountains={mountains}
+          id={'dashboard-saved-trails' + trails.length}
+          trails={trails}
           bbox={bbox}
         />
       </>
@@ -105,4 +116,4 @@ const SavedMountains = () => {
 
 };
 
-export default SavedMountains;
+export default SavedTrails;
