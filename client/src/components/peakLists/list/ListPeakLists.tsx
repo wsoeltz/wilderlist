@@ -1,7 +1,7 @@
 import {faCheckDouble, faTrophy} from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
-// import styled from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {CardPeakListDatum} from '../../../queries/lists/getUsersPeakLists';
 import {
@@ -20,6 +20,11 @@ import {
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import PeakListCard from './PeakListCard';
 import PeakListTrophy from './PeakListTrophy';
+
+const TrophyContainer = styled(ScrollContainerDark)`
+  padding: 2rem 0 0;
+  overflow-y: hidden;
+`;
 
 interface BaseProps {
   listAction: ((peakListId: string) => void) | null;
@@ -113,23 +118,21 @@ const ListPeakLists = (props: Props) => {
 
   const trophyContent = showTrophies === true && trophies.length > 0 ? (
     <ScrollContainerDarkRoot>
-      <ScrollContainerDark hideScrollbars={false} $noScroll={trophies.length < 4}>
+      <TrophyContainer hideScrollbars={false} $noScroll={trophies.length < 4}>
         <ScrollContainerDarkTitle>
           <BasicIconInText icon={faTrophy} />
           {getString('user-profile-lists-completed')} ({trophies.length})
         </ScrollContainerDarkTitle>
         {trophies}
-      </ScrollContainerDark>
+      </TrophyContainer>
     </ScrollContainerDarkRoot>
   ) : null;
 
   const inProgressTitle = showTrophies === true ? (
-    <>
-      <CenterdLightTitle>
-        <BasicIconInText icon={faCheckDouble} />
-        {getString('user-profile-lists-in-progress')}
-      </CenterdLightTitle>
-    </>
+    <CenterdLightTitle>
+      <BasicIconInText icon={faCheckDouble} />
+      {getString('user-profile-lists-in-progress')}
+    </CenterdLightTitle>
   ) : null;
   return (
     <>

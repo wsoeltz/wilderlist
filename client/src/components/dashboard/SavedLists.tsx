@@ -1,3 +1,4 @@
+import {faCheckDouble} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
@@ -5,17 +6,22 @@ import useFluent from '../../hooks/useFluent';
 import {useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
+  BasicContentContainer,
   CenteredHeader,
   EmptyBlock,
   HorizontalScrollContainer,
 } from '../../styling/sharedContentStyles';
 import {
+  CenterdLightTitle,
+} from '../../styling/sharedContentStyles';
+import {
+  BasicIconInText,
   ButtonPrimaryLink,
   PlaceholderText,
-  SectionTitleH3,
 } from '../../styling/styleUtils';
 import ListPeakLists from '../peakLists/list/ListPeakLists';
 import LoadingSimple from '../sharedComponents/LoadingSimple';
+import AllSavedListItemsMapRenderProp from './AllSavedListItemsMapRenderProp';
 
 const PlaceholderButton = styled(ButtonPrimaryLink)`
   font-style: normal;
@@ -58,12 +64,15 @@ const SavedLists = ({userId}: Props) => {
     if (peakLists.length === 0) {
       peakListsList = (
         <div>
-          <SectionTitleH3>{
-            getString('user-profile-lists-in-progress')}
-          </SectionTitleH3>
-          <p>
-            {getString('dashboard-empty-state-no-active-lists-text')}
-          </p>
+          <CenterdLightTitle>
+            <BasicIconInText icon={faCheckDouble} />
+            {getString('user-profile-lists-in-progress')}
+          </CenterdLightTitle>
+          <BasicContentContainer>
+            <p>
+              {getString('dashboard-empty-state-no-active-lists-text')}
+            </p>
+          </BasicContentContainer>
           <p style={{textAlign: 'center'}}>
             <PlaceholderButton
               to={listDetailLink('search')}
@@ -101,6 +110,9 @@ const SavedLists = ({userId}: Props) => {
         <title>{getString('meta-data-dashboard-default-title')}</title>
       </Helmet>
       {peakListsList}
+      <AllSavedListItemsMapRenderProp
+        userId={userId}
+      />
     </>
   );
 };

@@ -74,6 +74,13 @@ const Results = (props: Props) => {
         })}</Subtext>
       </NoResults>
       {reults}
+      <br />
+      <br />
+      <NoResults>
+        <Subtext>{getString('global-text-value-results-bottom-of-results', {
+          type: props.type ? props.type + 's' : 'results',
+        })}</Subtext>
+      </NoResults>
       {setOriginModal}
     </>
   ) :

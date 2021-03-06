@@ -304,6 +304,10 @@ export const Paragraph = styled.p`
   font-size: 0.8rem;
 `;
 
+export const BasicContentContainer = styled.div`
+  padding: 1rem;
+`;
+
 export const ScrollContainerDarkRoot = styled.div`
   margin: 1rem 0;
   border-top: solid 1px ${lightBorderColor};

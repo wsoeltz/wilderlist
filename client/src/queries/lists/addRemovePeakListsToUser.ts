@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import { PeakList, User } from '../../types/graphQLTypes';
+import {refetchAllInProgressItems} from '../users/useAllInProgressItems';
 import {refetchGeoNearPeakLists, useGeoNearVariables} from './getGeoNearPeakLists';
 import {refetchUsersPeakLists} from './getUsersPeakLists';
 
@@ -69,6 +70,7 @@ export const useAddPeakListToUser = () => {
       refetchQueries: () => [
         refetchGeoNearPeakLists(variables),
         refetchUsersPeakLists({userId}),
+        refetchAllInProgressItems(userId ? userId : ''),
       ],
     });
   return addPeakListToUser;
@@ -85,6 +87,7 @@ export const useRemovePeakListFromUser = () => {
       refetchQueries: () => [
         refetchGeoNearPeakLists(variables),
         refetchUsersPeakLists({userId}),
+        refetchAllInProgressItems(userId ? userId : ''),
       ],
     });
   return removePeakListFromUser;

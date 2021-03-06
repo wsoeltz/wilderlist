@@ -348,6 +348,8 @@ export interface User {
   peakListPermissions: number | null;
   latestAscent: CompletedMountain | null;
   allInProgressMountains: Mountain[] | null;
+  allInProgressTrails: Trail[] | null;
+  allInProgressCampsites: Campsite[] | null;
   authoredMountains: Mountain[] | null;
   authoredPeakLists: PeakList[] | null;
   authoredTripReports: TripReport[] | null;

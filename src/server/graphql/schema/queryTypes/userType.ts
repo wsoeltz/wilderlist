@@ -672,6 +672,96 @@ const UserType: any = new GraphQLObjectType({
         return null;
       },
     },
+    allInProgressTrails: {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, _args, {dataloaders: {peakListLoader, trailLoader}}) {
+        const trailIds: string[] = [];
+        try {
+          const { peakLists, trails } = parentValue;
+          if (trails) {
+            trails.forEach(({trail, dates}: {trail: any, dates: any[]}) => {
+              if (dates.length) {
+                trailIds.push(trail);
+              }
+            });
+          }
+          if (peakLists) {
+            const listData = await peakListLoader.loadMany(peakLists);
+            if (listData) {
+              await asyncForEach(listData,
+                async (list: {trails: any[], optionalTrails: any[], parent: any}) => {
+                  if (list.parent) {
+                    const hasParent = peakLists.find(
+                      (parentList: any) => parentList.toString() === list.parent.toString(),
+                    );
+                    if (!hasParent) {
+                      const parentListData = await peakListLoader.load(list.parent);
+                      if (parentListData) {
+                        trailIds.push(...parentListData.trails);
+                        trailIds.push(...parentListData.optionalTrails);
+                      }
+                    }
+                  } else {
+                    trailIds.push(...list.trails);
+                    trailIds.push(...list.optionalTrails);
+                  }
+                },
+              );
+            }
+            const uniqueTrailIds = uniqBy(trailIds, (id) => id.toString());
+            return await trailLoader.loadMany(uniqueTrailIds);
+          }
+        } catch (err) {
+          return err;
+        }
+        return null;
+      },
+    },
+    allInProgressCampsites: {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, _args, {dataloaders: {peakListLoader, campsiteLoader}}) {
+        const campsiteIds: string[] = [];
+        try {
+          const { peakLists, campsites } = parentValue;
+          if (campsites) {
+            campsites.forEach(({campsite, dates}: {campsite: any, dates: any[]}) => {
+              if (dates.length) {
+                campsiteIds.push(campsite);
+              }
+            });
+          }
+          if (peakLists) {
+            const listData = await peakListLoader.loadMany(peakLists);
+            if (listData) {
+              await asyncForEach(listData,
+                async (list: {campsites: any[], optionalCampsites: any[], parent: any}) => {
+                  if (list.parent) {
+                    const hasParent = peakLists.find(
+                      (parentList: any) => parentList.toString() === list.parent.toString(),
+                    );
+                    if (!hasParent) {
+                      const parentListData = await peakListLoader.load(list.parent);
+                      if (parentListData) {
+                        campsiteIds.push(...parentListData.campsites);
+                        campsiteIds.push(...parentListData.optionalCampsites);
+                      }
+                    }
+                  } else {
+                    campsiteIds.push(...list.campsites);
+                    campsiteIds.push(...list.optionalCampsites);
+                  }
+                },
+              );
+            }
+            const uniqueCampsiteIds = uniqBy(campsiteIds, (id) => id.toString());
+            return await campsiteLoader.loadMany(uniqueCampsiteIds);
+          }
+        } catch (err) {
+          return err;
+        }
+        return null;
+      },
+    },
   }),
 });
 
