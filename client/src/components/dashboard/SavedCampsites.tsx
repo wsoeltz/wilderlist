@@ -1,8 +1,9 @@
 const {point, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
 import upperFirst from 'lodash/upperFirst';
-import React from 'react';
+import React, {useEffect} from 'react';
 import useFluent from '../../hooks/useFluent';
+import useMapContext from '../../hooks/useMapContext';
 import {useSavedCampsites} from '../../queries/campsites/useSavedCampsites';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {campsiteDetailLink} from '../../routing/Utils';
@@ -23,6 +24,13 @@ const SavedCampsites = () => {
   const getString = useFluent();
   const {response: {loading, data}} = useSavedCampsites();
   const usersProgress = useUsersProgress();
+  const mapContext = useMapContext();
+
+  useEffect(() => () => {
+    if (mapContext.intialized) {
+      mapContext.clearMap();
+    }
+  }, [mapContext]);
 
   const progressCampsites = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.campsites
     ? usersProgress.data.progress.campsites : [];

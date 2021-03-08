@@ -1,7 +1,8 @@
 import {faCheckDouble} from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
+import useMapContext from '../../hooks/useMapContext';
 import {useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
@@ -27,6 +28,13 @@ interface Props {
 
 const SavedLists = ({userId}: Props) => {
   const getString = useFluent();
+  const mapContext = useMapContext();
+
+  useEffect(() => () => {
+    if (mapContext.intialized) {
+      mapContext.clearMap();
+    }
+  }, [mapContext]);
 
   const {
     loading: listLoading,

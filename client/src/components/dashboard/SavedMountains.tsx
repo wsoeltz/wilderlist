@@ -1,7 +1,8 @@
 const {point, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
-import React from 'react';
+import React, {useEffect} from 'react';
 import useFluent from '../../hooks/useFluent';
+import useMapContext from '../../hooks/useMapContext';
 import {useSavedMountains} from '../../queries/mountains/useSavedMountains';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {mountainDetailLink} from '../../routing/Utils';
@@ -22,6 +23,13 @@ const SavedMountains = () => {
   const getString = useFluent();
   const {response: {loading, data}} = useSavedMountains();
   const usersProgress = useUsersProgress();
+  const mapContext = useMapContext();
+
+  useEffect(() => () => {
+    if (mapContext.intialized) {
+      mapContext.clearMap();
+    }
+  }, [mapContext]);
 
   const progressMountains = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.mountains
     ? usersProgress.data.progress.mountains : [];

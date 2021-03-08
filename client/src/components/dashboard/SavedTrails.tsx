@@ -1,8 +1,9 @@
 const {lineString, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
 import upperFirst from 'lodash/upperFirst';
-import React from 'react';
+import React, {useEffect} from 'react';
 import useFluent from '../../hooks/useFluent';
+import useMapContext from '../../hooks/useMapContext';
 import {useSavedTrails} from '../../queries/trails/useSavedTrails';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {trailDetailLink} from '../../routing/Utils';
@@ -23,7 +24,13 @@ const SavedTrails = () => {
   const getString = useFluent();
   const {response: {loading, data}} = useSavedTrails();
   const usersProgress = useUsersProgress();
+  const mapContext = useMapContext();
 
+  useEffect(() => () => {
+    if (mapContext.intialized) {
+      mapContext.clearMap();
+    }
+  }, [mapContext]);
   const progressTrails = usersProgress.data && usersProgress.data.progress && usersProgress.data.progress.trails
     ? usersProgress.data.progress.trails : [];
 

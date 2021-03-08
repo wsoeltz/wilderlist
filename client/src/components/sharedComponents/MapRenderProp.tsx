@@ -144,7 +144,6 @@ const MapRenderProp = (props: Props) => {
       const {center, bbox} = props;
       const type = props.type ? props.type : PeakListVariants.standard;
       if (mapContext.intialized) {
-        mapContext.clearMap();
         if (center) {
           mapContext.setNewCenter(center, 12);
         } else if (bbox) {

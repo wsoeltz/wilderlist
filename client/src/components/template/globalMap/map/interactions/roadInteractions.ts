@@ -11,7 +11,7 @@ import {
 } from '../../../../../types/graphQLTypes';
 import {CoreItems} from '../../../../../types/itemTypes';
 import {Props as TooltipState} from '../../tooltip';
-import {defaultGeoJsonLineString, hoveredTrailsLayerId} from '../layers';
+import {defaultGeoJsonLineString, hoveredRoadsLayerId} from '../layers';
 
 const cacheNearestTrail: any = setupCache({
   maxAge: 60 * 60 * 1000, // minutes * seconds * milliseconds
@@ -118,7 +118,7 @@ const mountainInteractions = (input: Input) => {
               }));
               const trail = orderBy(withDistance, ['distance'], ['asc'])[0];
               nearestTrailId = trail && trail._id ? trail._id : undefined;
-              (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(trail.line, {color: primaryColor}));
+              (map.getSource(hoveredRoadsLayerId) as any).setData(lineString(trail.line, {color: primaryColor}));
             }
           })
           .catch(err => console.error(err));
@@ -129,7 +129,7 @@ const mountainInteractions = (input: Input) => {
   // Change it back to a pointer when it leaves.
   map.on('mouseleave', 'roads-background', function() {
     map.getCanvas().style.cursor = '';
-    (map.getSource(hoveredTrailsLayerId) as any).setData(defaultGeoJsonLineString);
+    (map.getSource(hoveredRoadsLayerId) as any).setData(defaultGeoJsonLineString);
     map.setFeatureState(
       {
         source: 'composite',
