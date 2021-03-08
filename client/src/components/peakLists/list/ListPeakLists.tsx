@@ -27,11 +27,7 @@ const TrophyContainer = styled(ScrollContainerDark)`
 `;
 
 interface BaseProps {
-  listAction: ((peakListId: string) => void) | null;
-  actionText: string;
   noResultsText: string;
-  showTrophies: boolean;
-  setActionDisabled?: (peakListId: string) => boolean;
 }
 
 type Props = BaseProps & (
@@ -42,9 +38,8 @@ type Props = BaseProps & (
 
 const ListPeakLists = (props: Props) => {
   const {
-    listAction, actionText,
-    noResultsText, showTrophies,
-    profileId, setActionDisabled,
+    noResultsText,
+    profileId,
   } = props;
 
   const getString = useFluent();
@@ -55,8 +50,7 @@ const ListPeakLists = (props: Props) => {
   const trophiesDatum: CardPeakListDatum[] = [];
   const peakLists = props.peakListData.map(peakList => {
     const {
-      type, numCompletedTrips, latestTrip,
-      isActive,
+      type, numCompletedTrips,
     } = peakList;
 
     const numMountains = peakList.numMountains ? peakList.numMountains : 0;
@@ -76,34 +70,27 @@ const ListPeakLists = (props: Props) => {
       failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
     }
 
-    if (showTrophies === true && totalRequiredTrips > 0 && numCompletedTrips === totalRequiredTrips) {
+    if (totalRequiredTrips > 0 && numCompletedTrips === totalRequiredTrips) {
       trophiesDatum.push(peakList);
       return null;
     }
     return (
       <PeakListCard
-        peakList={peakList}
-        active={isActive}
-        listAction={listAction}
-        actionText={actionText}
-        profileId={profileId}
         key={peakList.id}
-        latestDate={latestTrip}
+        peakList={peakList}
+        profileId={profileId}
         numCompletedTrips={numCompletedTrips}
         totalRequiredTrips={totalRequiredTrips}
-        setActionDisabled={setActionDisabled}
       />
     );
   });
 
-  const sortedPeakLists = showTrophies === true
-    ? sortBy(peakLists, (list) => {
-      if (list !== null) {
-        const { numCompletedTrips, totalRequiredTrips } = list.props;
-        return numCompletedTrips / totalRequiredTrips;
-      }
-    }).reverse()
-    : peakLists;
+  const sortedPeakLists = sortBy(peakLists, (list) => {
+    if (list !== null) {
+      const { numCompletedTrips, totalRequiredTrips } = list.props;
+      return numCompletedTrips / totalRequiredTrips;
+    }
+  }).reverse();
 
   const sortedTrophies =
     sortBy(trophiesDatum, ({latestTrip}) => latestTrip ? new Date(latestTrip) : 0).reverse();
@@ -116,7 +103,7 @@ const ListPeakLists = (props: Props) => {
     />
   ));
 
-  const trophyContent = showTrophies === true && trophies.length > 0 ? (
+  const trophyContent = trophies.length > 0 ? (
     <ScrollContainerDarkRoot>
       <TrophyContainer hideScrollbars={false} $noScroll={trophies.length < 4}>
         <ScrollContainerDarkTitle>
@@ -128,17 +115,19 @@ const ListPeakLists = (props: Props) => {
     </ScrollContainerDarkRoot>
   ) : null;
 
-  const inProgressTitle = showTrophies === true ? (
+  const inProgressTitle = (
     <CenterdLightTitle>
       <BasicIconInText icon={faCheckDouble} />
       {getString('user-profile-lists-in-progress')}
     </CenterdLightTitle>
-  ) : null;
+  );
   return (
     <>
       {trophyContent}
       {inProgressTitle}
-      {sortedPeakLists}
+      <div>
+        {sortedPeakLists}
+      </div>
     </>
   );
 };

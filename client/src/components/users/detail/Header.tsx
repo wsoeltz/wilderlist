@@ -13,11 +13,10 @@ import {
   useSendFriendRequestMutation,
 } from '../../../queries/users/friendRequestMutations';
 import { UserDatum } from '../../../queries/users/useUserProfile';
-import { comparePeakListIsolatedLink, preventNavigation } from '../../../routing/Utils';
+import { preventNavigation } from '../../../routing/Utils';
 import {
   boldFontWeight,
   ButtonPrimary,
-  ButtonPrimaryLink,
   GhostButton,
   Label,
   placeholderColor,
@@ -30,7 +29,7 @@ const contactLinkMobileSize = 950;
 
 const Root = styled.div`
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 7rem 1fr auto;
   grid-template-rows: auto auto auto;
 `;
 
@@ -84,34 +83,20 @@ const ProfilePictureContainer = styled.div`
 `;
 
 const ProfilePicture = styled.img`
-  max-width: 10rem;
+  max-width: 100%;
   border-radius: 4000px;
-
-  @media(max-width: ${mediumSize}px) and (min-width: ${mobileSize}px) {
-    max-width: 3rem;
-  }
-
-  @media(max-width: 550px) {
-    max-width: 6rem;
-  }
 `;
 
 const BoldLink = styled.a`
-  font-weight: ${boldFontWeight};
   white-space: nowrap;
-
-  @media(max-width: ${contactLinkMobileSize}px) {
-    font-size: 0.9rem;
-  }
+  font-size: 0.9rem;
 `;
 
 const ContactLabel = styled(Label)`
   margin-right: 1rem;
   display: inline-block;
-
-  @media(max-width: ${contactLinkMobileSize}px) {
-    font-size: 0.9rem;
-  }
+  font-size: 0.8rem;
+  font-weight: ${boldFontWeight};
 `;
 
 const EmailIcon = styled(FontAwesomeIcon)`
@@ -251,16 +236,6 @@ const Header = (props: Props) => {
     failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
   }
 
-  const compareAllAscentsBtn = user.id === currentUserId ? null : (
-    <div>
-      <ButtonPrimaryLink
-        to={comparePeakListIsolatedLink(user.id, 'all')}
-      >
-        {getString('user-profile-compare-all-ascents')}
-      </ButtonPrimaryLink>
-    </div>
-  );
-
   let emailOutput: React.ReactElement<any> | null;
   if (user.hideEmail === true) {
     emailOutput = null;
@@ -337,7 +312,6 @@ const Header = (props: Props) => {
         <ActionButtonContainer>
           {actionButtons}
         </ActionButtonContainer>
-        {compareAllAscentsBtn}
       </ButtonContainer>
       {areYouSureModal}
     </Root>

@@ -92,11 +92,8 @@ const SavedLists = ({userId}: Props) => {
         <>
           <ListPeakLists
             peakListData={peakLists}
-            listAction={null}
-            actionText={''}
             profileId={undefined}
             noResultsText={''}
-            showTrophies={true}
           />
         </>
       );

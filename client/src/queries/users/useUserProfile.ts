@@ -17,12 +17,19 @@ const GET_USER = gql`
         name
         shortName
         type
+        locationText
         parent {
           id
         }
+        bbox
         numMountains
+        numTrails
+        numCampsites
+        numCompletedTrips(userId: $profileId)
         numCompletedAscents(userId: $profileId)
-        latestAscent(userId: $profileId)
+        numCompletedTrails(userId: $profileId)
+        numCompletedCampsites(userId: $profileId)
+        latestTrip(userId: $profileId)
         isActive(userId: $profileId)
       }
     }

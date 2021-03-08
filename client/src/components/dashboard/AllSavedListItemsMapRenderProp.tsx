@@ -17,7 +17,7 @@ interface Props {
 
 const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
   const items = useAllInProgressItems(userId);
-  const progress = useUsersProgress();
+  const progress = useUsersProgress(userId);
 
   if (items.data && items.data.allItems && progress.data) {
     const allGeojsonItems: any[] = [];
@@ -46,7 +46,7 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
     items.data.allItems.mountains.forEach(m => {
       if (m) {
         const ascentCount = progressData && progressData.mountains && m && m.id &&
-          progressData.mountains.find(mm => mm.mountain && mm.mountain.id === m.id)
+          progressData.mountains.find(mm => mm.mountain && mm.mountain.id === m.id && mm.dates.length)
             ? 1
             : 0;
         mountains.push({
@@ -59,7 +59,7 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
     items.data.allItems.trails.forEach(m => {
       if (m) {
         const hikedCount = progressData && progressData.trails && m && m.id &&
-          progressData.trails.find(mm => mm.trail && mm.trail.id === m.id)
+          progressData.trails.find(mm => mm.trail && mm.trail.id === m.id && mm.dates.length)
             ? 1
             : 0;
         trails.push({
@@ -72,7 +72,7 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
     items.data.allItems.camspites.forEach(m => {
       if (m) {
         const campedCount = progressData && progressData.campsites && m && m.id &&
-          progressData.campsites.find(mm => mm.campsite && mm.campsite.id === m.id)
+          progressData.campsites.find(mm => mm.campsite && mm.campsite.id === m.id && mm.dates.length)
             ? 1
             : 0;
         allGeojsonItems.push(point(m.location));

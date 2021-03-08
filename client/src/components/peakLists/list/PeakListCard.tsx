@@ -37,6 +37,10 @@ const Root = styled.div`
   display: grid;
   grid-template-columns: 8rem 1fr;
   grid-template-rows: auto;
+
+  &:last-of-type {
+    border-bottom: solid 1px ${lightBorderColor};
+  }
 `;
 
 const Content = styled.div`
@@ -89,14 +93,9 @@ const PullRight = styled(FlexRow)`
 
 interface Props {
   peakList: CardPeakListDatum;
-  active: boolean | null;
-  listAction: ((peakListId: string) => void) | null;
-  actionText: string;
   numCompletedTrips: number;
   totalRequiredTrips: number;
-  latestDate: string | null;
   profileId?: string;
-  setActionDisabled?: (peakListId: string) => boolean;
 }
 
 const PeakListCard = (props: Props) => {
@@ -183,6 +182,19 @@ const PeakListCard = (props: Props) => {
 
   const url = profileId !== undefined
     ? otherUserPeakListLink(profileId, id) : listDetailLink(id);
+
+  const starButton = profileId !== undefined ? null : (
+    <div>
+      <SavedContainer>
+        <StarListButton
+          peakListId={id}
+          peakListName={name}
+          compact={true}
+        />
+      </SavedContainer>
+    </div>
+  );
+
   return (
       <Root
         onMouseLeave={onMouseLeave}
@@ -207,15 +219,7 @@ const PeakListCard = (props: Props) => {
                 <SemiBold>{name}{getType(type)}</SemiBold>
               </Link>
             </div>
-            <div>
-              <SavedContainer>
-                <StarListButton
-                  peakListId={id}
-                  peakListName={name}
-                  compact={true}
-                />
-              </SavedContainer>
-            </div>
+            {starButton}
           </Header>
           <MidFlexRow>
             {numMountainsCompleted}

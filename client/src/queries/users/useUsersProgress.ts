@@ -66,11 +66,15 @@ interface Variables {
 
 export const refetchUsersProgress = (variables: Variables) => ({query: GET_PROGRESS, variables});
 
-const useUsersProgress = () => {
+const useUsersProgress = (profileId?: string | null) => {
   const user = useCurrentUser();
+  let userId = user && user._id ? user._id : null;
+  if (profileId) {
+    userId = profileId;
+  }
   const response = useQuery<SuccessResponse, Variables>(GET_PROGRESS, {
     variables: {
-      userId: user && user._id ? user._id : null,
+      userId,
     },
   });
   return response;

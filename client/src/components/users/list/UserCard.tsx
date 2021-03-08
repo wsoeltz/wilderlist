@@ -49,6 +49,8 @@ const FlexRow = styled.div`
 
 const PullRight = styled.div`
   margin-left: auto;
+  padding-left: 2rem;
+  white-space: nowrap;
 `;
 
 export const Title = styled.h1`

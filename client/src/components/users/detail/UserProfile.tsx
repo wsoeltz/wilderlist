@@ -1,18 +1,17 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {useUserProfile} from '../../../queries/users/useUserProfile';
-import { comparePeakListIsolatedLink } from '../../../routing/Utils';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus } from '../../../types/graphQLTypes';
+import AllSavedListItemsMapRenderProp from '../../dashboard/AllSavedListItemsMapRenderProp';
 import ListPeakLists from '../../peakLists/list/ListPeakLists';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Header from './Header';
 
 const ListContainer = styled.div`
-  margin-top: 3rem;
+  margin: 0 -1rem;
 `;
 
 interface Props {
@@ -22,8 +21,7 @@ interface Props {
 }
 
 const UserProfile = (props: Props) => {
-  const { id, userId, setActionDisabled } = props;
-  const history = useHistory();
+  const { id, userId } = props;
   const getString = useFluent();
 
   const {loading, error, data} = useUserProfile(id, userId);
@@ -60,9 +58,6 @@ const UserProfile = (props: Props) => {
         friendStatus = null;
       }
 
-      const compareAscents = user.id === userId ? null : (peakListId: string) =>
-        history.push(comparePeakListIsolatedLink(user.id, peakListId));
-
       const noResultsText = getString('user-profile-no-lists', {
         'user-name': user.name,
       });
@@ -83,14 +78,13 @@ const UserProfile = (props: Props) => {
           <ListContainer>
             <ListPeakLists
               peakListData={peakLists}
-              listAction={compareAscents}
-              actionText={getString('user-profile-compare-ascents')}
               profileId={user.id}
               noResultsText={noResultsText}
-              showTrophies={true}
-              setActionDisabled={setActionDisabled}
             />
           </ListContainer>
+          <AllSavedListItemsMapRenderProp
+            userId={user.id}
+          />
         </>
       );
     }
