@@ -7,6 +7,7 @@ import usePrevious from '../../../hooks/usePrevious';
 import {useAddPeakListVariant} from '../../../queries/lists/useAddPeakListVariant';
 import {
   listDetailLink,
+  otherUserPeakListLink,
 } from '../../../routing/Utils';
 import {
   primaryColor,
@@ -51,11 +52,12 @@ interface PeakListDatum {
 
 interface Props {
   peakList: PeakListDatum;
+  otherUserId?: string;
 }
 
 const VariantLinks = (props: Props) => {
   const {
-    peakList: {id, name, shortName, type}, peakList,
+    peakList: {id, name, shortName, type}, peakList, otherUserId,
   } = props;
 
   const getString = useFluent();
@@ -95,7 +97,7 @@ const VariantLinks = (props: Props) => {
   const variantsLinks = allVariantsArray.map((variant) => {
     const target = allListVariants.find(list => list.type === variant);
     if (target) {
-      const url = listDetailLink(target.id);
+      const url = otherUserId ? otherUserPeakListLink(otherUserId, target.id) : listDetailLink(target.id);
       if (target.id === currentListId) {
         defaultValue = url;
       }
@@ -130,7 +132,11 @@ const VariantLinks = (props: Props) => {
           name, shortName, type: value as PeakListVariants, parent: topLevelParentId,
         }}).then(res => {
           if (res && res.data && res.data.peakList) {
-            window.location.href = listDetailLink(res.data.peakList.id);
+            if (otherUserId) {
+              window.location.href = otherUserPeakListLink(otherUserId, res.data.peakList.id);
+            } else {
+              window.location.href = listDetailLink(res.data.peakList.id);
+            }
           }
         }).catch(err => console.error(err));
       }

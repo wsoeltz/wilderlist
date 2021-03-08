@@ -9,6 +9,7 @@ import {
   PeakListVariants,
   Trail,
 } from '../../types/graphQLTypes';
+import MapLegend from '../sharedComponents/detailComponents/header/MapLegend';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
 
 interface Props {
@@ -87,15 +88,18 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
       const bbox = getBbox(featureCollection(allGeojsonItems));
 
       return (
-        <MapRenderProp
-          key={'dashboard-all-items-' + userId + allGeojsonItems.length}
-          id={'dashboard-all-items-' + userId}
-          mountains={mountains}
-          campsites={campsites}
-          trails={trails}
-          type={PeakListVariants.standard}
-          bbox={bbox}
-        />
+        <>
+          <MapRenderProp
+            key={'dashboard-all-items-' + userId + allGeojsonItems.length}
+            id={'dashboard-all-items-' + userId}
+            mountains={mountains}
+            campsites={campsites}
+            trails={trails}
+            type={PeakListVariants.standard}
+            bbox={bbox}
+          />
+          <MapLegend type={PeakListVariants.standard} />
+        </>
       );
     }
   }

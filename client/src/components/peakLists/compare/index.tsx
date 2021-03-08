@@ -1,7 +1,6 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
-import CompareAllMountains from './CompareAllMountains';
 import PeakListComparison from './PeakListComparison';
 
 const ComparePeakListPage = () => {
@@ -11,8 +10,6 @@ const ComparePeakListPage = () => {
 
   if (!peakListId) {
     return null;
-  } else if (peakListId === 'all' && userId !== null) {
-    return <CompareAllMountains userId={userId} id={profileId} />;
   } else if (userId !== null) {
     return (
       <PeakListComparison

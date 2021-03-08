@@ -7,8 +7,8 @@ import {
 } from '../../../queries/lists/usePeakListDetail';
 import { PlaceholderText } from '../../../styling/styleUtils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Header from '../detail/Header';
 import ComparisonTable from './ComparisonTable';
+import Header from './Header';
 
 interface Props {
   userId: string;
@@ -55,6 +55,8 @@ const ComparePeakListPage = (props: Props) => {
           </Helmet>
           <Header
             peakListId={peakList.id}
+            comparisonUserId={user.id}
+            comparisonUserName={user.name}
           />
           <ComparisonTable
             user={user}

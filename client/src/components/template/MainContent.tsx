@@ -26,7 +26,6 @@ const TermsOfUse = React.lazy(() => import('../termsOfUse'));
 const Dashboard = React.lazy(() => import('../dashboard'));
 const YourStats = React.lazy(() => import('../stats'));
 const UserProfile = React.lazy(() => import('../users/detail'));
-const UserProfilePeakListDetail = React.lazy(() => import('../users/peakListDetail'));
 const UserSettings = React.lazy(() => import('../users/settings'));
 const PageNotFound = React.lazy(() => import('../sharedComponents/404'));
 const CreatePeakList = React.lazy(() => import('../peakLists/create'));
@@ -61,7 +60,7 @@ const ContentRoutes = () => {
           <TrackedRoute exact path={Routes.Dashboard} component={Dashboard} />
           <TrackedRoute exact path={Routes.UserProfile} component={UserProfile} />
           <TrackedRoute exact path={Routes.UserSettings} component={UserSettings} />
-          <TrackedRoute exact path={Routes.OtherUserPeakList} component={UserProfilePeakListDetail} />
+          <TrackedRoute exact path={Routes.OtherUserPeakList} component={ComparePeakListPage} />
           <TrackedRoute exact path={Routes.ComparePeakListIsolated} component={ComparePeakListPage} />
           <TrackedRoute exact path={Routes.AddTripReport} component={AddTripReport} />
           <TrackedRoute exact path={Routes.EditTripReport} component={AddTripReport} />

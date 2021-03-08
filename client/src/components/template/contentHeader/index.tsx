@@ -28,7 +28,7 @@ const Header = () => {
     normalizedPathname = Routes.Dashboard;
   } else if  (pathname.includes('your-stats')) {
     normalizedPathname = Routes.YourStats;
-  } else if (pathname.includes('user') && !pathname.includes('settings')) {
+  } else if (pathname.includes('user') && !pathname.includes('settings') && !pathname.includes('list')) {
     normalizedPathname = Routes.SearchUsers;
   } else if (pathname.includes('list')) {
     normalizedPathname = Routes.SearchLists;
