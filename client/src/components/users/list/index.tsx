@@ -121,7 +121,7 @@ const UserList = () => {
           friendsList={friends}
           noResultsText={noResultsText}
           noFriendsText={noFriendsText}
-          sortByStatus={false}
+          sortByStatus={true}
         />
         <PaginationContainer>
           {prevBtn}

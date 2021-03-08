@@ -73,7 +73,9 @@ const Results = (props: Props) => {
           type: props.type ? props.type + 's' : 'results',
         })}</Subtext>
       </NoResults>
-      {reults}
+      <div>
+        {reults}
+      </div>
       <br />
       <br />
       <NoResults>

@@ -34,6 +34,10 @@ const InlineCard = styled.div`
   margin: 0 -1rem;
   padding: 1rem;
   border-top: solid 1px ${lightBorderColor};
+
+  &:last-of-type {
+    border-bottom: solid 1px ${lightBorderColor};
+  }
 `;
 
 const Header = styled.div`

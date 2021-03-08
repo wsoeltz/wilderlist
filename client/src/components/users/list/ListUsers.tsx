@@ -1,3 +1,4 @@
+import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { FriendDatum, UserDatum } from '../../../queries/users/useUserSearch';
 import { NoResults } from '../../../styling/styleUtils';
@@ -28,7 +29,7 @@ const ListUsers = (props: Props) => {
   }
   const usersAwaitingYourResponse: Array<React.ReactElement<any>> = [];
   const usersAwaitingTheirRespone: Array<React.ReactElement<any>> = [];
-  const users = userData.map(user => {
+  const users = sortBy(userData, ['name']).map(user => {
     if (showCurrentUser === false && currentUserId === user.id) {
       return null;
     } else {
@@ -66,11 +67,11 @@ const ListUsers = (props: Props) => {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
   return (
-    <>
+    <div>
       {usersAwaitingYourResponse}
       {users}
       {usersAwaitingTheirRespone}
-    </>
+    </div>
   );
 };
 

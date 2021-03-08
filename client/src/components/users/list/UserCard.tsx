@@ -14,9 +14,10 @@ import { UserDatum } from '../../../queries/users/useUserSearch';
 import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  Card,
   GhostButton,
   lightBaseColor,
+  lightBorderColor,
+  SemiBold,
 } from '../../../styling/styleUtils';
 import {
   FriendStatus,
@@ -28,28 +29,30 @@ import {
   getType,
 } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
+const InlineCard = styled.div`
+  margin: 0 -1rem;
+  padding: 1rem;
+  border-top: solid 1px ${lightBorderColor};
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  grid-column-gap: 1rem;
 
-const LinkWrapper = styled(Link)`
-  display: block;
-  color: inherit;
-  text-decoration: inherit;
-  grid-row: span 3;
-  grid-column: span 2;
-
-  &:hover {
-    color: inherit;
+  &:last-of-type {
+    border-bottom: solid 1px ${lightBorderColor};
   }
 `;
+const FlexRow = styled.div`
+  display: flex;
+  font-size: 0.875rem;
+  color: ${lightBaseColor};
+`;
 
-export const Root = styled(Card)`
-  display: grid;
-  grid-template-columns: 6rem 1fr;
-  grid-template-rows: 1fr auto;
-  grid-column-gap: 1.1rem;
+const PullRight = styled.div`
+  margin-left: auto;
 `;
 
 export const Title = styled.h1`
-  font-size: 1.3rem;
+  font-size: 1rem;
   margin-top: 0;
   margin-bottom: 0.4rem;
 `;
@@ -78,14 +81,6 @@ const SubtitleSmall = styled(Subtitle)`
 const TextTitle = styled.strong`
   font-size: 0.75rem;
   text-transform: uppercase;
-`;
-
-const ButtonContainer = styled.div`
-  grid-column: 2
-  grid-row: 2;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
 `;
 
 const DeclineButton = styled(GhostButton)`
@@ -162,6 +157,8 @@ const UserCard = (props: Props) => {
     preventNavigation(e);
     removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
   };
+
+  const url = userProfileLink(user.id);
 
   const numListsToShow = 3;
   let completedListsElement: React.ReactElement<any> | null;
@@ -284,27 +281,27 @@ const UserCard = (props: Props) => {
   let cardContent: React.ReactElement<any> | null;
   if (friendStatus === null) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-        <ButtonContainer>
+        <PullRight>
           <ButtonPrimary onClick={sendFriendRequest}>
             {getString('user-profile-requests-add-friend')}
           </ButtonPrimary>
-        </ButtonContainer>
-      </>
+        </PullRight>
+      </FlexRow>
     );
   } else if (friendStatus === FriendStatus.friends) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           <Subtitle>
             {ascentText}
@@ -312,14 +309,14 @@ const UserCard = (props: Props) => {
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-      </>
+      </FlexRow>
     );
   } else if (friendStatus === FriendStatus.sent) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           <Subtitle>
             {getString('user-profile-requests-pending-request')}
@@ -327,19 +324,19 @@ const UserCard = (props: Props) => {
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-        <ButtonContainer>
+        <PullRight>
           <GhostButton onClick={removeFriend}>
             {getString('user-profile-requests-cancel-request')}
           </GhostButton>
-        </ButtonContainer>
-      </>
+        </PullRight>
+      </FlexRow>
     );
   } else if (friendStatus === FriendStatus.recieved) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           <Subtitle>
             {getString('user-profile-sent-you-a-friend-request', {
@@ -349,15 +346,15 @@ const UserCard = (props: Props) => {
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-        <ButtonContainer>
+        <PullRight>
           <DeclineButton onClick={removeFriend}>
             {getString('user-profile-requests-decline-request')}
           </DeclineButton>
           <ButtonPrimary onClick={acceptFriendRequest}>
             {getString('user-profile-requests-accept-request')}
           </ButtonPrimary>
-        </ButtonContainer>
-      </>
+        </PullRight>
+      </FlexRow>
     );
   } else {
     cardContent = null;
@@ -373,10 +370,8 @@ const UserCard = (props: Props) => {
   };
 
   return (
-    <LinkWrapper
-      to={userProfileLink(user.id)}
-    >
-      <Root>
+    <InlineCard>
+      <Link to={url}>
         <ProfilePicture
           src={profilePictureUrl}
           style={{opacity}}
@@ -384,9 +379,11 @@ const UserCard = (props: Props) => {
           title={user.name}
           onError={onImageError}
         />
+      </Link>
+      <div>
         {cardContent}
-      </Root>
-    </LinkWrapper>
+      </div>
+    </InlineCard>
   );
 };
 
