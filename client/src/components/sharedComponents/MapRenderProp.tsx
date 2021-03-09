@@ -19,11 +19,22 @@ import {
 } from '../../types/graphQLTypes';
 import {ItemType} from '../template/globalMap/map/interactions';
 
-const getPercentIcon = (label: string, type: PeakListVariants, count: number | undefined) => {
+const getPercentIcon = (label: string, type: PeakListVariants | 'comparison', count: number | undefined) => {
   if (count === undefined) {
     return `${label}-highlighted`;
   } else if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     return count === 0 ? `${label}-perc-0` : `${label}-perc-100`;
+  } else if (type ===  'comparison') {
+    switch (count) {
+      case 0:
+        return `${label}-perc-0`;
+      case 1:
+        return `${label}-perc-50`;
+      case 2:
+        return `${label}-perc-100`;
+      default:
+        return `${label}-perc-0`;
+    }
   } else if (type === PeakListVariants.fourSeason) {
     return `${label}-perc-` + count / 4 * 100;
   } else if (type === PeakListVariants.grid) {
@@ -62,11 +73,22 @@ const getPercentIcon = (label: string, type: PeakListVariants, count: number | u
   }
 };
 
-const getPercentColor = (type: PeakListVariants, count: number | undefined) => {
+const getPercentColor = (type: PeakListVariants | 'comparison', count: number | undefined) => {
   if (count === undefined) {
     return primaryColor;
   } else if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
     return count === 0 ? incompleteColor : completeColor;
+  } else if (type ===  'comparison') {
+    switch (count) {
+      case 0:
+        return incompleteColor;
+      case 1:
+        return completionColorScale[50];
+      case 2:
+        return completeColor;
+      default:
+        return incompleteColor;
+    }
   } else if (type === PeakListVariants.fourSeason) {
     // @ts-expect-error this is can be used to index completeColorScale
     return completionColorScale[count / 4 * 100];
@@ -129,7 +151,7 @@ interface Props {
     line: Trail['line'];
     hikedCount?: number;
   }>;
-  type?: PeakListVariants;
+  type?: PeakListVariants | 'comparison';
   center?: Coordinate;
   bbox?: PeakList['bbox'];
 }

@@ -792,6 +792,7 @@ peak-list-detail-list-grid-para-3 = Explore the different peaks, get updates on 
 peak-list-detail-friend-viewing-list = Viewing list for
 peak-list-detail-friend-view-your-progress-button = View your progress
 peak-list-detail-your-progress = Your progress
+compare-progress-for = Compare Progress For
 
 peak-list-detail-text-optional-mountains = Optional Mountains
 peak-list-detail-text-optional-mountains-desc = The following mountains are considered optional for this list. They fit the criteria needed to be on here, but for one reason or another they are not required for completion. Common reasons include the peak being on private property or requiring special permissions to be able to climb. Optional peaks do not count towards a 100% completion for this list.

@@ -1,9 +1,18 @@
+import {
+  faCheck,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components/macro';
 import {
   addTripReportLink,
 } from '../../../routing/Utils';
-import {successColor} from '../../../styling/styleUtils';
+import {
+  CompleteText,
+  IncompleteText,
+  successColor,
+} from '../../../styling/styleUtils';
 import { PeakListVariants } from '../../../types/graphQLTypes';
 import { CoreItem } from '../../../types/itemTypes';
 import {
@@ -225,6 +234,59 @@ const getDates = (input: Input): Output => {
     stringDateFields.forEach(({displayKey}) => {
       dates[displayKey as string] = '';
     });
+  }
+
+  return {dates, completedCount};
+};
+
+interface SimpleDatesInput extends BaseInput {
+  completionFieldKey: KeySortPair;
+  monthOrSeason: Months | Seasons | null;
+}
+
+export const getSimpleDates = (input: SimpleDatesInput): Output => {
+  const {completionFieldKey, monthOrSeason} = input;
+  const dateObjects = getCompletionDates(input);
+  const dates: {[key: string]: string | number | React.ReactElement<any>} = {};
+  let completedCount = 0;
+  if (dateObjects !== null) {
+    if (dateObjects.type === PeakListVariants.standard || dateObjects.type === PeakListVariants.winter) {
+      // @ts-expect-error: value can be used to index object
+      if (dateObjects[dateObjects.type]) {
+        dates[completionFieldKey.displayKey] = <CompleteText><FontAwesomeIcon icon={faCheck} /></CompleteText>;
+        // @ts-expect-error: value can be used to index object
+        dates[completionFieldKey.sortKey as string] = dateObjects[dateObjects.type].dateAsNumber;
+        completedCount = 1;
+      } else {
+        dates[completionFieldKey.displayKey] = (
+          <IncompleteText><FontAwesomeIcon icon={faTimes} /></IncompleteText>
+        );
+        dates[completionFieldKey.sortKey as string] = 0;
+      }
+    } else {
+      for (const key in dateObjects) {
+        if (dateObjects.hasOwnProperty(key)) {
+          // @ts-expect-error: value can be used to index object
+          if (dateObjects[key] && typeof dateObjects[key] !== 'string' && key === monthOrSeason) {
+            dates[completionFieldKey.displayKey] = <CompleteText><FontAwesomeIcon icon={faCheck} /></CompleteText>;
+            // @ts-expect-error: value can be used to index object
+            dates[completionFieldKey.sortKey as string] = dateObjects[key].dateAsNumber;
+            completedCount++;
+          }
+        }
+      }
+      if (!dates[completionFieldKey.sortKey as string] && !dates[completionFieldKey.displayKey]) {
+        dates[completionFieldKey.displayKey] = (
+          <IncompleteText><FontAwesomeIcon icon={faTimes} /></IncompleteText>
+        );
+        dates[completionFieldKey.sortKey as string] = 0;
+      }
+    }
+  } else {
+      dates[completionFieldKey.displayKey] = (
+        <IncompleteText><FontAwesomeIcon icon={faTimes} /></IncompleteText>
+      );
+      dates[completionFieldKey.sortKey as string] = 0;
   }
 
   return {dates, completedCount};

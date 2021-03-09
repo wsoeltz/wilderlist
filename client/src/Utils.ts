@@ -169,26 +169,26 @@ export enum Seasons {
   spring = 'spring',
 }
 
-export const monthsArray = [
-  'january',
-  'february',
-  'march',
-  'april',
-  'may',
-  'june',
-  'july',
-  'august',
-  'september',
-  'october',
-  'november',
-  'december',
+export const monthsArray: Months[] = [
+  Months.january,
+  Months.february,
+  Months.march,
+  Months.april,
+  Months.may,
+  Months.june,
+  Months.july,
+  Months.august,
+  Months.september,
+  Months.october,
+  Months.november,
+  Months.december,
 ];
 
-export const seasonsArray = [
-  'summer',
-  'fall',
-  'winter',
-  'spring',
+export const seasonsArray: Seasons[] = [
+  Seasons.summer,
+  Seasons.fall,
+  Seasons.winter,
+  Seasons.spring,
 ];
 
 export const getSeason = (year: number, month: number, day: number): Seasons | undefined => {

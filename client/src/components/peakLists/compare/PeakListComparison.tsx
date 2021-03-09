@@ -1,14 +1,21 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
 import {useComparePeakList} from '../../../queries/lists/useComparePeakList';
 import {
-  MountainDatum,
-} from '../../../queries/lists/usePeakListDetail';
-import { PlaceholderText } from '../../../styling/styleUtils';
+  PlaceholderText,
+} from '../../../styling/styleUtils';
+import { PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  getSeason,
+  Months,
+  monthsArray,
+  Seasons,
+} from '../../../Utils';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import ComparisonTable from './ComparisonTable';
+import AllItems from './AllItems';
 import Header from './Header';
+import MonthOrSeasonSelectBox from './MonthOrSeasonSelectBox';
 
 interface Props {
   userId: string;
@@ -20,6 +27,7 @@ const ComparePeakListPage = (props: Props) => {
   const { userId, friendId, peakListId } = props;
 
   const getString = useFluent();
+  const [monthOrSeason, setMonthOrSeason] = useState<Months | Seasons | null>(null);
 
   const {loading, error, data} = useComparePeakList(peakListId, userId, friendId);
   if (loading === true) {
@@ -40,10 +48,38 @@ const ComparePeakListPage = (props: Props) => {
         </PlaceholderText>
       );
     } else {
-      const mountains: MountainDatum[] = peakList.mountains !== null ? peakList.mountains : [];
-      // const userCompletedAscents = user.mountains !== null ? user.mountains : [];
-      // const myCompletedAscents = me.mountains !== null ? me.mountains : [];
+      let value: Months | Seasons | null;
+      let dropdownBox: React.ReactElement<any> | null;
 
+      if (peakList.type === PeakListVariants.standard || peakList.type === PeakListVariants.winter) {
+        value = null;
+        dropdownBox = null;
+      } else if (peakList.type === PeakListVariants.fourSeason) {
+        const today = new Date();
+        const season = getSeason(today.getFullYear(), today.getMonth() + 1, today.getDate());
+        value = monthOrSeason === null && season ? season : monthOrSeason;
+        dropdownBox = value ? (
+          <MonthOrSeasonSelectBox
+            value={value}
+            setValue={setMonthOrSeason}
+            type={peakList.type}
+          />
+        ) : null;
+      } else if (peakList.type === PeakListVariants.grid) {
+        const today = new Date();
+        const month = monthsArray[today.getMonth()];
+        value = monthOrSeason === null ? month : monthOrSeason;
+        dropdownBox = value ? (
+          <MonthOrSeasonSelectBox
+            value={value}
+            setValue={setMonthOrSeason}
+            type={peakList.type}
+          />
+        ) : null;
+      } else {
+        value = null;
+        dropdownBox = null;
+      }
       return (
         <>
           <Helmet>
@@ -58,10 +94,14 @@ const ComparePeakListPage = (props: Props) => {
             comparisonUserId={user.id}
             comparisonUserName={user.name}
           />
-          <ComparisonTable
-            user={user}
-            me={me}
-            mountains={mountains}
+          {dropdownBox}
+          <AllItems
+            peakListId={peakList.id}
+            showOnlyFor={value}
+            secondaryUserId={user.id}
+            secondaryUserName={user.name}
+            primaryUserName={me.name}
+            bbox={peakList.bbox}
           />
         </>
       );
