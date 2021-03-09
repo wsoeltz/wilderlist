@@ -98,7 +98,12 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
             type={PeakListVariants.standard}
             bbox={bbox}
           />
-          <MapLegend type={PeakListVariants.standard} />
+          <MapLegend
+            type={PeakListVariants.standard}
+            hasMountains={Boolean(mountains.length)}
+            hasTrails={Boolean(trails.length)}
+            hasCampsites={Boolean(campsites.length)}
+          />
         </>
       );
     }

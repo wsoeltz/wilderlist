@@ -234,6 +234,11 @@ global-text-value-item-dates = Your {
 }
 global-text-value-done = Hiked
 global-text-value-not-done = Not Hiked
+
+global-text-value-neither-hiked = Neither have Hiked
+global-text-value-one-hiked = One has Hiked
+global-text-value-both-hiked = Both have Hiked
+
 global-text-value-not-done-dynamic = {
   $type ->
     [mountains] Not yet hiked
@@ -1027,12 +1032,12 @@ map-completed = You Completed On
 map-completed-other-user = Completed On
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
-map-number-of-seasons = Points colored by number of seasons you’ve hiked
+map-number-of-seasons = colored by number of seasons you’ve hiked
 map-no-seasons = 0
 map-all-seasons = 4
-map-number-of-months = Points colored by number of months you’ve hiked
-map-completed-colored = Points colored by Completion
-map-completed-colored-winter = Points colored by Completion in Winter
+map-number-of-months = colored by number of months you’ve hiked
+map-completed-colored = colored by Completion
+map-completed-colored-winter = colored by Completion in Winter
 map-no-months = 0
 map-all-months = 12
 

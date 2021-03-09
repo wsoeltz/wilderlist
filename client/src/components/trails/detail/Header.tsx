@@ -224,7 +224,12 @@ const TrailDetail = (props: Props) => {
   }
 
   const completionLeged = hasChildren ? (
-      <MapLegend type={PeakListVariants.standard} />
+      <MapLegend
+        type={PeakListVariants.standard}
+        hasTrails={true}
+        hasMountains={false}
+        hasCampsites={false}
+      />
   ) : null;
 
   return (

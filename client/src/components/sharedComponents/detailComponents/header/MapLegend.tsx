@@ -38,6 +38,7 @@ const Content = styled.div`
   background-color: #fff;
   padding: 0.5rem;
   text-align: center;
+  box-sizing: border-box;
 
   @media(max-width: ${mobileSize}px) {
     width: 100%;
@@ -70,7 +71,7 @@ const BarGrid = styled.div`
   grid-auto-flow: column;
   width: 100%;
   text-align: center;
-  max-width: 300px;
+  max-width: 375px;
   margin: auto;
 `;
 
@@ -80,15 +81,44 @@ const ColorBlock = styled.div`
   margin: auto 0;
 `;
 
-const MapLegend = ({type}: {type: PeakListVariants | null}) => {
+const ColorBlockWithText = styled(ColorBlock)`
+  margin: auto 0 1rem;
+
+  div {
+    transform: translateY(60%);
+  }
+`;
+
+interface Props {
+  type: PeakListVariants | 'comparison' | null;
+  hasMountains: boolean;
+  hasTrails: boolean;
+  hasCampsites: boolean;
+}
+
+const MapLegend = (props: Props) => {
+  const {
+    type, hasMountains, hasTrails, hasCampsites,
+  } = props;
   const getString = useFluent();
+  const whatsColoredArray: string[] = [];
+  if (hasMountains) {
+    whatsColoredArray.push(getString('global-text-value-mountains'));
+  }
+  if (hasTrails) {
+    whatsColoredArray.push(getString('global-text-value-trails'));
+  }
+  if (hasCampsites) {
+    whatsColoredArray.push(getString('global-text-value-campsites'));
+  }
+  const whatsColored = whatsColoredArray.length === 3 ? 'Points ' : whatsColoredArray.join('/') + ' ';
 
   let title = '----------------';
   let barValues: Array<React.ReactElement<any>> = [
     <ColorBlock key={'map-legend-blank-color-block'} />,
   ];
   if (type === PeakListVariants.grid) {
-    title = getString('map-number-of-months');
+    title = whatsColored + getString('map-number-of-months');
     barValues = completionColorScaleArray.map(backgroundColor => (
         <ColorBlock
           key={'MapLegendKey' + backgroundColor}
@@ -111,7 +141,7 @@ const MapLegend = ({type}: {type: PeakListVariants | null}) => {
       </LegendTitleLeft>,
     );
   } else if (type === PeakListVariants.fourSeason) {
-    title = getString('map-number-of-seasons');
+    title = whatsColored + getString('map-number-of-seasons');
     barValues = completionColorScaleArray
       .filter((_unused, i) => i === 0 || i === 3 || i === 6 || i === 9 || i === 12)
       .map(backgroundColor => (
@@ -136,7 +166,7 @@ const MapLegend = ({type}: {type: PeakListVariants | null}) => {
       </LegendTitleLeft>,
     );
   } else if (type === PeakListVariants.winter) {
-    title = getString('map-completed-colored-winter');
+    title = whatsColored + getString('map-completed-colored-winter');
     barValues = completionColorScaleArray
       .filter((_unused, i) => i === 0 || i === 12)
       .map(backgroundColor => (
@@ -161,7 +191,7 @@ const MapLegend = ({type}: {type: PeakListVariants | null}) => {
       </LegendTitleLeft>,
     );
   } else if (type === PeakListVariants.standard) {
-    title = getString('map-completed-colored');
+    title = whatsColored + getString('map-completed-colored');
     barValues = completionColorScaleArray
       .filter((_unused, i) => i === 0 || i === 12)
       .map(backgroundColor => (
@@ -185,6 +215,32 @@ const MapLegend = ({type}: {type: PeakListVariants | null}) => {
         </Subtext>
       </LegendTitleLeft>,
     );
+  } else if (type === 'comparison') {
+    title = whatsColored + getString('map-completed-colored');
+    barValues = completionColorScaleArray
+      .filter((_unused, i) => i === 0 || i === 6 || i === 12)
+      .map((backgroundColor, i) => {
+        let labelText: string;
+        if (i === 0) {
+          labelText = getString('global-text-value-neither-hiked');
+        } else if (i === 1) {
+          labelText = getString('global-text-value-one-hiked');
+        } else {
+          labelText = getString('global-text-value-both-hiked');
+        }
+        return (
+          <ColorBlockWithText
+            key={'MapLegendKey' + backgroundColor}
+            style={{backgroundColor}}
+          >
+            <Title>
+              <Subtext>
+                {labelText}
+              </Subtext>
+            </Title>
+          </ColorBlockWithText>
+        );
+    });
   }
 
   return (

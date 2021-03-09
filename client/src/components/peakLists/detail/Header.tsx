@@ -339,7 +339,12 @@ const Header = (props: Props) => {
   return (
     <>
       {metaData}
-      <MapLegend type={data ? data.peakList.type : null} />
+      <MapLegend
+        type={data ? data.peakList.type : null}
+        hasMountains={Boolean(data && data.peakList && data.peakList.numMountains)}
+        hasTrails={Boolean(data && data.peakList && data.peakList.numTrails)}
+        hasCampsites={Boolean(data && data.peakList && data.peakList.numCampsites)}
+      />
       <Root>
         <TitleContent>
           <h1

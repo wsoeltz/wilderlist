@@ -12,12 +12,9 @@ import {
 import {PeakListVariants} from '../../../types/graphQLTypes';
 import {CoreItem} from '../../../types/itemTypes';
 import {
-  // monthsArray,
-  // seasonsArray,
   Months,
   Seasons,
 } from '../../../Utils';
-// import {mobileSize} from '../../../Utils';
 import DetailSegment, {Panel} from '../../sharedComponents/detailComponents/DetailSegment';
 import {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
@@ -29,8 +26,6 @@ const Root = styled.div`
   min-height: 60vh;
   position: relative;
 `;
-
-// const monthSliceValue = window.innerWidth < 1250 && window.innerWidth > mobileSize ? 1 : 3;
 
 interface Props {
   peakListId: string;

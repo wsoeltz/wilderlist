@@ -12,6 +12,7 @@ import {
   monthsArray,
   Seasons,
 } from '../../../Utils';
+import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import AllItems from './AllItems';
 import Header from './Header';
@@ -89,6 +90,12 @@ const ComparePeakListPage = (props: Props) => {
               user: user.name,
             })}</title>
           </Helmet>
+          <MapLegend
+            type={'comparison'}
+            hasMountains={Boolean(peakList.numMountains)}
+            hasTrails={Boolean(peakList.numTrails)}
+            hasCampsites={Boolean(peakList.numCampsites)}
+          />
           <Header
             peakListId={peakList.id}
             comparisonUserId={user.id}
