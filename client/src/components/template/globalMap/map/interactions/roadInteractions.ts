@@ -32,7 +32,6 @@ const mountainInteractions = (input: Input) => {
   } = input;
 
   let hoveredId: string | undefined;
-  let nearestTrailId: string | undefined;
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
   map.on('click', 'roads-background', function(e) {
@@ -66,7 +65,7 @@ const mountainInteractions = (input: Input) => {
           onTooltipOpen({
             node,
             item: CoreItems.trails,
-            id: nearestTrailId,
+            id: null,
             name,
             location: coordinates,
             closePopup: removeFromMap,
@@ -117,7 +116,6 @@ const mountainInteractions = (input: Input) => {
                 distance: pointToLineDistance([lng, lat], lineString(t.line)),
               }));
               const trail = orderBy(withDistance, ['distance'], ['asc'])[0];
-              nearestTrailId = trail && trail._id ? trail._id : undefined;
               (map.getSource(hoveredRoadsLayerId) as any).setData(lineString(trail.line, {color: primaryColor}));
             }
           })
@@ -139,7 +137,6 @@ const mountainInteractions = (input: Input) => {
       { hover: false },
     );
     hoveredId = undefined;
-    nearestTrailId = undefined;
   });
 
 };
