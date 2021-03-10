@@ -3,6 +3,7 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
+import MobileTab from '../template/contentHeader/MobileTab';
 
 const PrivacyPolicy = () => {
   const getString = useFluent();
@@ -23,6 +24,7 @@ const PrivacyPolicy = () => {
           content={metaDescription}
         />
       </Helmet>
+      <MobileTab hideTab={true} />
       <div>
           <h1>{getString('header-text-menu-privacy-policy')}</h1>
           <p><small>Last Update: March 6, 2020</small></p>

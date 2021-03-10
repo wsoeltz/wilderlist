@@ -10,13 +10,22 @@ import {
   lightBorderColor,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import {isTouchDevice} from '../../../Utils';
+import {isTouchDevice, mobileSize} from '../../../Utils';
 import BackButton from './backButton';
 
-const Root = styled.div`
+const RootBase = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+
+  @media (min-width: ${mobileSize + 1}px) {
+    display: none;
+  }
+`;
+
+const InlineRoot = styled(RootBase)`
+  margin: -1rem -1rem 0.5rem;
+  width: auto;
 `;
 
 const Tab = styled.div`
@@ -41,7 +50,7 @@ const Icon = styled(FontAwesomeIcon)`
 const CloseButton = styled(GhostButton)`
   padding: 0.75rem 0.5rem;
   line-height: 0;
-  font-size: 1.2rem;
+  font-size: 1.75rem;
 `;
 
 interface Props {
@@ -53,9 +62,11 @@ const MobileTab = ({hideTab}: Props) => {
 
   const tab = hideTab || !isTouchDevice() ? null : <Icon icon={faGripLines} />;
 
+  const Root = hideTab ? InlineRoot : RootBase;
+
   return (
     <Root>
-      <Tab>
+      <Tab style={{backgroundColor: hideTab ? '#fff' : undefined}}>
         <BackButton
           mobileButton={true}
           key={'mobile-back-button'}

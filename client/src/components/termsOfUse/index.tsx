@@ -3,6 +3,7 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
+import MobileTab from '../template/contentHeader/MobileTab';
 
 const PrivacyPolicy = () => {
   const getString = useFluent();
@@ -11,6 +12,7 @@ const PrivacyPolicy = () => {
 
   return (
     <>
+      <MobileTab hideTab={true} />
       <Helmet>
         <title>{getString('meta-data-terms-of-use-default-title')}</title>
         <meta
