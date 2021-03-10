@@ -92,7 +92,6 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       '<a href="https://www.wilderlist.app/terms-of-use">Terms of Use</a>',
       '<a href="https://www.wilderlist.app/privacy-policy">Privacy Policy</a><wbr />',
     ],
-    logoPosition: 'bottom-right',
   });
 
   let mapLoaded = false;

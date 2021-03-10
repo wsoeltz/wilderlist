@@ -23,7 +23,18 @@ const Button = styled(GhostButton)`
   }
 `;
 
-const BackButton = ({clearSearch}: {clearSearch: () => void}) => {
+const MobileButton = styled(GhostButton)`
+  text-align: center;
+  font-size: 1.3rem;
+  padding-right: 0.75rem;
+`;
+
+interface Props {
+  mobileButton?: boolean;
+  clearSearch?: () => void;
+}
+
+const BackButton = ({clearSearch, mobileButton}: Props) => {
   const { goBack, location, push } = useHistory();
   const [firstRender, updateFirstRender] = useState<boolean>(true);
   const mapContext = useMapContext();
@@ -38,7 +49,7 @@ const BackButton = ({clearSearch}: {clearSearch: () => void}) => {
   }, [mapContext, location.pathname, prevLocation]);
 
   useEffect(() => {
-    if (location.pathname === Routes.Landing) {
+    if (location.pathname === Routes.Landing && clearSearch) {
       clearSearch();
     }
   }, [location.pathname, clearSearch]);
@@ -50,21 +61,27 @@ const BackButton = ({clearSearch}: {clearSearch: () => void}) => {
   }, [prevLocation, location.pathname, firstRender]);
 
   const onClick = useCallback(() => {
-    if (firstRender) {
+    if (firstRender && !mobileButton) {
       push(Routes.Landing);
     } else {
-      goBack();
+      if (mobileButton && !document.referrer || document.referrer.includes('wilderlist') || document.referrer.includes('localhost')) {
+        goBack();
+      } else {
+        push(Routes.Landing);
+      }
     }
-  }, [goBack, push, firstRender]);
+  }, [goBack, push, firstRender, mobileButton]);
 
   if (location.pathname === Routes.Landing) {
     return null;
   }
 
+  const Root = mobileButton ? MobileButton : Button;
+
   return (
-    <Button onClick={onClick}>
+    <Root onClick={onClick}>
       <FontAwesomeIcon icon={faArrowLeft} />
-    </Button>
+    </Root>
   );
 };
 

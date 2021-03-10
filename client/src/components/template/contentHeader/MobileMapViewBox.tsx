@@ -8,8 +8,9 @@ import MobileTab from './MobileTab';
 const LogoImg = styled.img`
   position: absolute;
   bottom: 0.5rem;
-  right: 0.5rem;
+  left: 0.5rem;
   width: 5rem;
+  pointer-events: none;
 `;
 
 const ViewBox = styled.div`

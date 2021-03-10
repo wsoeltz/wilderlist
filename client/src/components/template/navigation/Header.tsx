@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import MapBoxLogoSVG from '../../../assets/images/mapbox-logo.svg';
 import LogoPng from '../../../assets/logo/logo.png';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
@@ -68,6 +69,7 @@ const SideContent = styled.div`
   display: flex;
   justify-content: center;
   pointer-events: none;
+  position: relative;
 
   > * {
     pointer-events: all;
@@ -278,6 +280,15 @@ const LineBreak = styled.hr`
   border: solid 1px #fff;
 `;
 
+const LogoImg = styled.img`
+  position: absolute;
+  top: -0.5rem;
+  left: 0.5rem;
+  transform: translateY(-100%);
+  width: 5rem;
+  pointer-events: none;
+`;
+
 type LinkInput = {
   route: string,
   label: string,
@@ -474,6 +485,7 @@ const Header = () => {
   } else {
     const utiltyButtons = pathname === Routes.Landing ? (
       <SideContent>
+        <LogoImg src={MapBoxLogoSVG} />
         <CreateRouteButton />
         <CreateItineraryButton />
         <Toggle3dModeButton />
