@@ -1,7 +1,20 @@
 import React, {useEffect, useRef} from 'react';
 import {useLocation} from 'react-router-dom';
+import styled from 'styled-components/macro';
+import MapBoxLogoSVG from '../../../assets/images/mapbox-logo.svg';
 import {mobileTopPadding} from '../../../styling/Grid';
 import MobileTab from './MobileTab';
+
+const LogoImg = styled.img`
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  width: 5rem;
+`;
+
+const ViewBox = styled.div`
+  position: relative;
+`;
 
 const viewBoxId = 'mobile-map-viewbox-id';
 
@@ -30,11 +43,13 @@ const MobileMapViewBox = () => {
      <div
        style={{height: '20vh'}}
      />
-     <div
+     <ViewBox
        id={viewBoxId}
        ref={mobileMidViewboxRef}
        style={{height: `calc(80vh - ${mobileTopPadding * 2.1}px)`}}
-     />
+     >
+       <LogoImg src={MapBoxLogoSVG} />
+     </ViewBox>
      <MobileTab />
    </>
   );

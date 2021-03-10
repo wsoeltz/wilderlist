@@ -181,6 +181,23 @@ const GlobalStyles = createGlobalStyle`
       }
     }
   }
+
+  .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+    background-color: transparent;
+  }
+  .mapboxgl-ctrl-attrib-inner {
+    font-family: ${primaryFont};
+    max-width: 50vw;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 0.8rem;
+    text-shadow:
+       1px 1px 0 #fff,
+     -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px 1px 0 #fff,
+       1px 1px 0 #fff;
+  }
 `;
 
 export default GlobalStyles;

@@ -71,6 +71,11 @@ export interface Output {
   clearExternalHoveredPopup: () => void;
 }
 
+const styles = {
+  standard: 'mapbox://styles/wsoeltz/ckm1fn6qf8m0717qfqxf5ukpm',
+  satellite: 'mapbox://styles/wsoeltz/ckit796241naz19qmbxe4gl2l',
+};
+
 const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
     mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
@@ -78,10 +83,16 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   const map = new mapboxgl.Map({
     container,
-    style: 'mapbox://styles/wsoeltz/ckis2a1er0czp19qjthgqy9l5', // stylesheet location
+    style: styles.standard, // stylesheet location
     center: defaultCenter, // starting position [lng, lat]
     zoom: 3.5, // starting zoom
     maxZoom: 15.5,
+    customAttribution: [
+      '<a href="https://wilderlist.app/about">© Wilderlist</a>',
+      '<a href="https://www.wilderlist.app/terms-of-use">Terms of Use</a>',
+      '<a href="https://www.wilderlist.app/privacy-policy">Privacy Policy</a><wbr />',
+    ],
+    logoPosition: 'bottom-right',
   });
 
   let mapLoaded = false;
@@ -90,6 +101,13 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     mapLoaded = true;
     initLayers({map});
     initInteractions({map, push, getString, onTooltipOpen, onTooltipClose});
+    // map.addSource('mapbox-dem', {
+    // 'type': 'raster-dem',
+    // 'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+    // 'tileSize': 512,
+    // 'maxzoom': 16
+    // });
+    // map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
   });
 
   const setPadding = () => {
