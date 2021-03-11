@@ -10,6 +10,7 @@ import React, { useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import MapBoxLogoSVG from '../../../assets/images/mapbox-logo.svg';
+import LogoWhitePng from '../../../assets/logo/logo-white.png';
 import LogoPng from '../../../assets/logo/logo.png';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
@@ -35,6 +36,7 @@ import {
   trailDefaultSvg,
 } from '../../sharedComponents/svgIcons';
 import Search from '../contentHeader/search';
+import {MapStyle, storageCheckedKeyId} from '../globalMap/map';
 import NotificationBar from './NotificationBar';
 import AddAscentButton from './toolsAndSettings/AddAscentButton';
 import CreateRouteButton from './toolsAndSettings/CreateRouteButton';
@@ -311,6 +313,11 @@ const Header = () => {
 
   const windowWidth = useWindowWidth();
   const getString = useFluent();
+  const initialMapStyle = localStorage.getItem(storageCheckedKeyId);
+  const [mapStyle, setMapStyle] = useState<MapStyle>(
+    initialMapStyle && (initialMapStyle === MapStyle.standard || initialMapStyle === MapStyle.satellite)
+    ? initialMapStyle : MapStyle.standard,
+  );
 
   const createLink = useCallback((input: LinkInput) => {
     const {route, label} = input;
@@ -442,6 +449,7 @@ const Header = () => {
   }
 
   if (windowWidth > mobileSize) {
+    const logoSrc = mapStyle === MapStyle.satellite ? LogoWhitePng : LogoPng;
     return (
       <>
         <HeaderContainer>
@@ -450,7 +458,7 @@ const Header = () => {
               <LogoContainer to={Routes.Landing}>
                 {getString('global-text-value-wilderlist-name')}
                 <Logo
-                  src={LogoPng}
+                  src={logoSrc}
                   alt={getString('global-text-value-wilderlist-name')}
                   title={getString('global-text-value-wilderlist-name')}
                 />
@@ -460,7 +468,7 @@ const Header = () => {
             <CreateRouteButton />
             <LineBreak />
             <Toggle3dModeButton />
-            <LayersAndTools />
+            <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
           </SideContent>
           <CoreNav>
             {listsLink}
@@ -486,7 +494,7 @@ const Header = () => {
         <LogoImg src={MapBoxLogoSVG} />
         <CreateRouteButton />
         <Toggle3dModeButton />
-        <LayersAndTools />
+        <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
       </SideContent>
     ) : null;
 

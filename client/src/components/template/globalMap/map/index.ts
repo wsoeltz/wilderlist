@@ -50,6 +50,11 @@ const getRectFromBounds = (bounds: mapboxgl.LngLatBounds): [Longitude, Latitude,
 
 export const defaultCenter: Coordinate = [-98.5795, 39.8283];
 
+export enum MapStyle {
+  standard = 'standard',
+  satellite = 'satellite',
+}
+
 export interface Output {
   map: mapboxgl.Map;
   setNewCenter: (center: Coordinate, zoom: number) => void;
@@ -69,12 +74,20 @@ export interface Output {
     bbox?: [Longitude, Latitude, Longitude, Latitude],
   ) => void;
   clearExternalHoveredPopup: () => void;
+  setBaseMap: (style: MapStyle) => void;
 }
 
 const styles = {
-  standard: 'mapbox://styles/wsoeltz/ckm1fn6qf8m0717qfqxf5ukpm',
-  satellite: 'mapbox://styles/wsoeltz/ckit796241naz19qmbxe4gl2l',
+  [MapStyle.standard]: 'mapbox://styles/wsoeltz/ckm1fn6qf8m0717qfqxf5ukpm',
+  [MapStyle.satellite]: 'mapbox://styles/wsoeltz/ckit796241naz19qmbxe4gl2l',
 };
+
+export const storageCheckedKeyId = 'localstorageKeyForGlobalMapBaseStyle';
+const initialStyle = localStorage.getItem(storageCheckedKeyId);
+
+let highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+let highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+let highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 
 const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
@@ -83,7 +96,8 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   const map = new mapboxgl.Map({
     container,
-    style: styles.standard, // stylesheet location
+    style: initialStyle === MapStyle.standard || initialStyle === MapStyle.satellite
+      ? styles[initialStyle] : styles[MapStyle.standard],
     center: defaultCenter, // starting position [lng, lat]
     zoom: 3.5, // starting zoom
     maxZoom: 15.5,
@@ -98,7 +112,6 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   map.on('load', () => {
     mapLoaded = true;
-    initLayers({map});
     initInteractions({map, push, getString, onTooltipOpen, onTooltipClose});
     // map.addSource('mapbox-dem', {
     // 'type': 'raster-dem',
@@ -107,6 +120,24 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     // 'maxzoom': 16
     // });
     // map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+  });
+
+  map.on('style.load', function() {
+    // Triggered when `setStyle` is called.
+    const newStyle = localStorage.getItem(storageCheckedKeyId);
+    const style: MapStyle = newStyle && (newStyle === MapStyle.standard || initialStyle === MapStyle.satellite)
+      ? newStyle as MapStyle : MapStyle.standard;
+
+    initLayers({map, style});
+    if (highlightedPointsGeojson) {
+      setHighlightedPoints(highlightedPointsGeojson);
+    }
+    if (highlightedTrailsGeojson) {
+      setHighlightedTrails(highlightedTrailsGeojson);
+    }
+    if (highlightedRoadsGeojson) {
+      setHighlightedRoads(highlightedRoadsGeojson);
+    }
   });
 
   const setPadding = () => {
@@ -169,6 +200,9 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   };
 
   const clearHighlightedPoints = () => {
+    highlightedPointsGeojson = undefined;
+    highlightedTrailsGeojson = undefined;
+    highlightedRoadsGeojson = undefined;
     (map.getSource(highlightedPointsLayerId) as any).setData(defaultGeoJsonPoint);
     (map.getSource(highlightedTrailsLayerId) as any).setData(defaultGeoJsonLineString);
     (map.getSource(highlightedRoadsLayerId) as any).setData(defaultGeoJsonLineString);
@@ -202,7 +236,8 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
-  const setHighlightedPoints = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+  function setHighlightedPoints(data: mapboxgl.GeoJSONSourceOptions['data']) {
+    highlightedPointsGeojson = data;
     if (mapLoaded) {
       updatePointsSource(data);
     } else {
@@ -212,7 +247,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       };
       map.on('load', updatePointsSourceOnLoad);
     }
-  };
+  }
 
   const setHoveredPrimitivePoints = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
     if (mapLoaded) {
@@ -238,7 +273,8 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
-  const setHighlightedTrails = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+  function setHighlightedTrails(data: mapboxgl.GeoJSONSourceOptions['data']) {
+    highlightedTrailsGeojson = data;
     if (mapLoaded) {
       updateTrailSource(data);
     } else {
@@ -248,9 +284,10 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       };
       map.on('load', updateTrailSourceOnLoad);
     }
-  };
+  }
 
-  const setHighlightedRoads = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+  function setHighlightedRoads(data: mapboxgl.GeoJSONSourceOptions['data']) {
+    highlightedRoadsGeojson = data;
     if (mapLoaded) {
       updateRoadSource(data);
     } else {
@@ -260,7 +297,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       };
       map.on('load', updateRoadSourceOnLoad);
     }
-  };
+  }
 
   // Create a popup, but don't add it to the map yet.
   const externalHoverPopup = new mapboxgl.Popup({
@@ -300,10 +337,17 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
+  const setBaseMap = (style: MapStyle) => {
+    if (mapLoaded && (style === MapStyle.standard || style === MapStyle.satellite)) {
+      map.setStyle(styles[style]);
+      localStorage.setItem(storageCheckedKeyId, style);
+    }
+  };
+
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
     setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
-    clearHoveredPoints,
+    clearHoveredPoints, setBaseMap,
   };
 };
 

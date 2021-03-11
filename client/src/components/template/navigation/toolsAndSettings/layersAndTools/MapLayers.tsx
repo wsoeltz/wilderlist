@@ -10,12 +10,15 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import SatelliteMapLayerBG from '../../../../../assets/images/satellite-map-layer-icon-bg.jpg';
 import StandardMapLayerBG from '../../../../../assets/images/standard-map-layer-icon-bg.jpg';
+import useMapContext from '../../../../../hooks/useMapContext';
 import {
   lightBaseColor,
   lightBorderColor,
+  primaryColor,
   tertiaryColor,
 } from '../../../../../styling/styleUtils';
 import {mobileSize} from '../../../../../Utils';
+import {MapStyle} from '../../../globalMap/map';
 
 const Grid = styled.div`
   margin: 0;
@@ -49,7 +52,7 @@ const Grid = styled.div`
   }
 `;
 
-const Button = styled.button`
+const Button = styled.button<{$highlighted: boolean}>`
   background-color: transparent;
   border: none;
   display: flex;
@@ -61,17 +64,27 @@ const Button = styled.button`
   text-transform: uppercase;
   font-size: 0.7rem;
   margin-bottom: 0.4rem;
+  outline: none;
 
   @media (max-width: ${mobileSize}px) {
     grid-row: 2;
   }
+
+  ${({$highlighted}) => $highlighted ? `
+    color: ${primaryColor};
+    font-weight: 700;
+
+    div {
+      border-color: ${primaryColor};
+    }
+  ` : ''}
 `;
 
 const Thumnbail = styled.div`
   width: 100%;
   box-sizing: border-box;
   height: 2.75rem;
-  border: solid 2px transparent;
+  border: solid 3px transparent;
   border-radius: 8px;
   background-position: center;
   background-size: cover;
@@ -111,51 +124,90 @@ const Title = styled.div`
   }
 `;
 
-const MapLayers = () => {
+interface Props {
+  mapStyle: MapStyle;
+  setMapStyle: (style: MapStyle) => void;
+}
+
+const MapLayers = ({mapStyle, setMapStyle}: Props) => {
+  const mapContext = useMapContext();
+
+  const setToStandardStyle = () => {
+    if (mapContext.intialized) {
+      mapContext.setBaseMap(MapStyle.standard);
+      setMapStyle(MapStyle.standard);
+    }
+  };
+
+  const setToSatelliteStyle = () => {
+    if (mapContext.intialized) {
+      mapContext.setBaseMap(MapStyle.satellite);
+      setMapStyle(MapStyle.satellite);
+    }
+  };
+
   return (
     <>
       <Grid>
         <Title>Base Maps</Title>
-        <Button>
+        <Button
+          $highlighted={mapStyle === MapStyle.standard}
+          onClick={setToStandardStyle}
+        >
           <Thumnbail style={{backgroundImage: `url("${StandardMapLayerBG}")`}} />
           {'Standard'}
         </Button>
-        <Button>
+        <Button
+          $highlighted={mapStyle === MapStyle.satellite}
+          onClick={setToSatelliteStyle}
+        >
           <Thumnbail style={{backgroundImage: `url("${SatelliteMapLayerBG}")`}} />
           {'Satellite'}
         </Button>
       </Grid>
       <Grid>
         <Title>Weather Overlays</Title>
-        <Button>
+        <Button
+          $highlighted={true}
+        >
           <IconThumbnail />
           {'None'}
         </Button>
-        <Button>
+        <Button
+          $highlighted={false}
+        >
           <IconThumbnail>
             <FontAwesomeIcon icon={faTint} />
           </IconThumbnail>
           {'Precip.'}
         </Button>
-        <Button>
+        <Button
+          $highlighted={false}
+        >
           <IconThumbnail>
             <FontAwesomeIcon icon={faExchangeAlt} />
           </IconThumbnail>
           {'Pressure'}
         </Button>
-        <Button>
+        <Button
+          $highlighted={false}
+        >
           <IconThumbnail>
             <FontAwesomeIcon icon={faThermometerEmpty} />
           </IconThumbnail>
           {'Temp.'}
         </Button>
-        <Button>
+        <Button
+          $highlighted={false}
+        >
           <IconThumbnail>
             <FontAwesomeIcon icon={faWind} />
           </IconThumbnail>
           {'Wind'}
         </Button>
-        <Button>
+        <Button
+          $highlighted={false}
+        >
           <IconThumbnail>
             <FontAwesomeIcon icon={faCloud} />
           </IconThumbnail>

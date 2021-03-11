@@ -1,3 +1,4 @@
+import {MapStyle} from '../';
 import {primaryColor} from '../../../../../styling/styleUtils';
 
 export const highlightedPointsLayerId = 'temporary-highlight-mountains-layer-id';
@@ -45,9 +46,16 @@ export const defaultGeoJsonPolygon: mapboxgl.GeoJSONSourceOptions['data'] = {
 
 interface Input {
   map: mapboxgl.Map;
+  style: MapStyle;
 }
 
-const initLayers = ({map}: Input) => {
+const initLayers = ({map, style}: Input) => {
+  const textHaloColor = style === MapStyle.satellite ? 'rgba(0, 0, 0, 0.25)' : 'hsla(0, 0%, 100%, 0.77)';
+  const hoveredTextHaloColor = style === MapStyle.satellite ? '#206ca6' : 'hsla(0, 0%, 100%, 0.77)';
+  const hoveredHighlightedTextColor = style === MapStyle.satellite ? '#fff' : '#206ca6';
+  const highlightedTextColor = style === MapStyle.satellite ? '#fff' : '#5b6151';
+  // const highlightedFontSize = style === MapStyle.satellite ? '#fff' : '#5b6151';
+
   map.addSource(highlightedPointsLayerId, {
     type: 'geojson',
     data: defaultGeoJsonPoint,
@@ -113,7 +121,19 @@ const initLayers = ({map}: Input) => {
         ],
     },
     paint: {
-        'text-halo-color': 'hsla(0, 0%, 100%, 0.77)',
+        'text-halo-color': [
+          'case',
+          [
+            'boolean',
+            [
+              'feature-state',
+              'hover',
+            ],
+            false,
+          ],
+          hoveredTextHaloColor,
+          textHaloColor,
+        ],
         'text-halo-width': 0.4,
         'text-color': [
           'case',
@@ -125,8 +145,8 @@ const initLayers = ({map}: Input) => {
             ],
             false,
           ],
-          '#206ca6',
-          '#5b6151',
+          hoveredHighlightedTextColor,
+          highlightedTextColor,
         ],
         'text-opacity': ['step', ['zoom'], 0, 12, 1],
     },

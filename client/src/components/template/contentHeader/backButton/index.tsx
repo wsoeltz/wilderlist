@@ -64,7 +64,7 @@ const BackButton = ({clearSearch, mobileButton}: Props) => {
     if (firstRender && !mobileButton) {
       push(Routes.Landing);
     } else {
-      if (mobileButton && !document.referrer || document.referrer.includes('wilderlist') || document.referrer.includes('localhost')) {
+      if (!mobileButton || !document.referrer || document.referrer.includes('wilderlist') || document.referrer.includes('localhost')) {
         goBack();
       } else {
         push(Routes.Landing);

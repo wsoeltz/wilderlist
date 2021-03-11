@@ -7,6 +7,7 @@ import {
   tertiaryColor,
 } from '../../../../../styling/styleUtils';
 import {mobileSize} from '../../../../../Utils';
+import {MapStyle} from '../../../globalMap/map';
 import MapLayers from './MapLayers';
 import MapLayersButton from './MapLayersButton';
 import ToolsAndSettingsButton from './ToolsAndSettingsButton';
@@ -110,7 +111,12 @@ enum Mode {
   tools,
 }
 
-const LayersAndTools = () => {
+interface Props {
+  mapStyle: MapStyle;
+  setMapStyle: (style: MapStyle) => void;
+}
+
+const LayersAndTools = ({mapStyle, setMapStyle}: Props) => {
   const [mode, setMode] = useState<Mode>(Mode.closed);
   const getString = useFluent();
 
@@ -122,7 +128,7 @@ const LayersAndTools = () => {
   if (mode === Mode.layers) {
     content = (
       <ContentContainer>
-        <MapLayers />
+        <MapLayers mapStyle={mapStyle} setMapStyle={setMapStyle} />
         <ClosePanelButton onClick={closePanel}>
           {getString('global-text-value-modal-close-panel')}
         </ClosePanelButton>
