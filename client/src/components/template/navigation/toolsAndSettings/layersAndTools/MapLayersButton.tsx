@@ -3,27 +3,36 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import useFluent from '../../../../hooks/useFluent';
+import useFluent from '../../../../../hooks/useFluent';
 import {
-  FloatingButton,
   IconContainer,
+  PanelConnection,
   TextContainer,
-} from './Utils';
+  ToggleButton,
+} from '../Utils';
 
-const CreateRouteButton = () => {
+interface Props {
+  onClick: () => void;
+  open: boolean;
+}
+
+const MapLayersButton = ({onClick, open}: Props) => {
   const getString = useFluent();
 
+  const connection = open ? <PanelConnection /> : null;
+
   return (
-    <FloatingButton>
+    <ToggleButton onClick={onClick} $open={open}>
       <IconContainer>
         <FontAwesomeIcon icon={faLayerGroup} />
       </IconContainer>
       <TextContainer
         dangerouslySetInnerHTML={{__html: getString('global-map-layers')}}
       />
-    </FloatingButton>
+      {connection}
+    </ToggleButton>
   );
 
 };
 
-export default CreateRouteButton;
+export default MapLayersButton;

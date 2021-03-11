@@ -37,11 +37,9 @@ import {
 import Search from '../contentHeader/search';
 import NotificationBar from './NotificationBar';
 import AddAscentButton from './toolsAndSettings/AddAscentButton';
-import CreateItineraryButton from './toolsAndSettings/CreateItineraryButton';
 import CreateRouteButton from './toolsAndSettings/CreateRouteButton';
-import MapLayersButton from './toolsAndSettings/MapLayersButton';
+import LayersAndTools from './toolsAndSettings/layersAndTools';
 import Toggle3dModeButton from './toolsAndSettings/Toggle3dModeButton';
-import ToolsAndSettingsButton from './toolsAndSettings/ToolsAndSettingsButton';
 import UserMenu from './UserMenu';
 
 const HeaderContainer = styled(HeaderContainerBase)`
@@ -62,7 +60,7 @@ const HeaderContainer = styled(HeaderContainerBase)`
   }
 `;
 
-export const sideContentWidth = 175;
+export const sideContentWidth = 180;
 
 const SideContent = styled.div`
   box-sizing: border-box;
@@ -70,6 +68,7 @@ const SideContent = styled.div`
   justify-content: center;
   pointer-events: none;
   position: relative;
+  height: 40px;
 
   > * {
     pointer-events: all;
@@ -82,6 +81,7 @@ const SideContent = styled.div`
     max-width: ${sideContentWidth}px;
     padding: 1rem;
     display: block;
+    height: auto;
   }
 `;
 
@@ -103,7 +103,7 @@ const LogoContainer = styled(Link)`
   color: rgba(0, 0, 0, 0);
 `;
 
-export const logoSmallWindoWidth = 1080;
+export const logoSmallWindoWidth = 900;
 export const logoSmallWidth = 130;
 
 const Logo = styled.img`
@@ -458,11 +458,9 @@ const Header = () => {
             </SemanticLogoContainer>
             {addAscentButton}
             <CreateRouteButton />
-            <CreateItineraryButton />
             <LineBreak />
             <Toggle3dModeButton />
-            <MapLayersButton />
-            <ToolsAndSettingsButton />
+            <LayersAndTools />
           </SideContent>
           <CoreNav>
             {listsLink}
@@ -487,10 +485,8 @@ const Header = () => {
       <SideContent>
         <LogoImg src={MapBoxLogoSVG} />
         <CreateRouteButton />
-        <CreateItineraryButton />
         <Toggle3dModeButton />
-        <MapLayersButton />
-        <ToolsAndSettingsButton />
+        <LayersAndTools />
       </SideContent>
     ) : null;
 

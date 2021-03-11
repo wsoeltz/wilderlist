@@ -126,6 +126,7 @@ global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
 global-text-value-modal-close-menu = Close Menu
+global-text-value-modal-close-panel = Close Panel
 global-text-value-modal-mark-complete = Log Trip
 global-text-value-description = Description
 global-text-value-directions = Directions
@@ -582,13 +583,13 @@ global-text-value-list-tier-desc =
   </p>
 
 
-global-add-trip-report = Add&nbsp;Trip Report
-global-create-route = Create Route
-global-create-itinerary = Create Itinerary
+global-add-trip-report = Log&nbsp;a Trip
+global-create-route = Plan a Route
+global-plan-trip = Plan&nbsp;a Trip
 global-3d-mode-on = Turn&nbsp;on 3D&nbsp;Mode
 global-3d-mode-off = Turn&nbsp;off 3D&nbsp;Mode
-global-map-layers = Map Layers
-global-tools-and-settings = Tools&nbsp;&amp; Settings
+global-map-layers = Layers
+global-tools-and-settings = Tools
 
 global-text-details = Details
 global-text-nearby = Nearby
@@ -820,7 +821,7 @@ mountain-search-map-text = Showing mountains near { $map-center-text }
 mountain-search-mobile-nav-list = List View
 mountain-search-mobile-nav-map = Map View
 
-mountain-card-view-details = View details
+mountain-card-view-details = View Details
 mountain-card-show-on-map = Show on map
 
 crow-flies-distance = { $distance } mi to { $name }

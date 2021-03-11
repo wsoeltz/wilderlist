@@ -205,7 +205,7 @@ export const ForecastRootContainer = styled(HorizontalScrollContainer)`
 
   ::-webkit-scrollbar {
     -webkit-appearance: none;
-    height: 12px;
+    height: 9px;
   }
   ::-webkit-scrollbar-thumb {
     border-radius: 4px;

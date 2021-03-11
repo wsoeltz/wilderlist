@@ -19,7 +19,7 @@ const CreateRouteButton = () => {
         <FontAwesomeIcon icon={faRoute} />
       </IconContainer>
       <TextContainer
-        dangerouslySetInnerHTML={{__html: getString('global-create-route')}}
+        dangerouslySetInnerHTML={{__html: getString('global-plan-trip')}}
       />
     </FloatingButton>
   );

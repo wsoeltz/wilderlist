@@ -25,7 +25,6 @@ const Root = styled.div`
 `;
 
 const Button = styled.button`
-  text-transform: capitalize;
   font-size: 0.7rem;
   padding: 0.5rem;
   display: flex;
