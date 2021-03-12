@@ -54,7 +54,6 @@ const initLayers = ({map, style}: Input) => {
   const hoveredTextHaloColor = style === MapStyle.satellite ? '#206ca6' : 'hsla(0, 0%, 100%, 0.77)';
   const hoveredHighlightedTextColor = style === MapStyle.satellite ? '#fff' : '#206ca6';
   const highlightedTextColor = style === MapStyle.satellite ? '#fff' : '#5b6151';
-  // const highlightedFontSize = style === MapStyle.satellite ? '#fff' : '#5b6151';
 
   map.addSource(highlightedPointsLayerId, {
     type: 'geojson',

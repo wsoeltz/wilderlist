@@ -75,6 +75,7 @@ export interface Output {
   ) => void;
   clearExternalHoveredPopup: () => void;
   setBaseMap: (style: MapStyle) => void;
+  toggle3dTerrain: () => boolean;
 }
 
 const styles = {
@@ -88,6 +89,7 @@ const initialStyle = localStorage.getItem(storageCheckedKeyId);
 let highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+let is3dModeOn: boolean = false;
 
 const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: Input): Output => {
   if (process.env.REACT_APP_MAPBOX_ACCESS_TOKEN) {
@@ -113,13 +115,6 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   map.on('load', () => {
     mapLoaded = true;
     initInteractions({map, push, getString, onTooltipOpen, onTooltipClose});
-    // map.addSource('mapbox-dem', {
-    // 'type': 'raster-dem',
-    // 'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
-    // 'tileSize': 512,
-    // 'maxzoom': 16
-    // });
-    // map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
   });
 
   map.on('style.load', function() {
@@ -137,6 +132,10 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
     if (highlightedRoadsGeojson) {
       setHighlightedRoads(highlightedRoadsGeojson);
+    }
+    if (is3dModeOn) {
+      is3dModeOn = false;
+      toggle3dTerrain();
     }
   });
 
@@ -344,10 +343,52 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
+  function toggle3dTerrain() {
+    if (!is3dModeOn) {
+      map.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 16,
+      });
+      // add the DEM source as a terrain layer with exaggerated height
+      map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+
+      // add a sky layer that will show when the map is highly pitched
+      const {lat, lng} = map.getCenter();
+      map.addLayer({
+          id: 'sky',
+          type: 'sky' as any,
+          paint: {
+          ['sky-type' as any]: 'atmosphere',
+          ['sky-atmosphere-sun' as any]: [lng, lat],
+          ['sky-atmosphere-sun-intensity' as any]: 15,
+        },
+      });
+      if (!map.getPitch()) {
+        map.flyTo({
+          pitch: 75,
+        });
+      }
+      is3dModeOn = true;
+    } else {
+      map.removeLayer('sky');
+      map.setTerrain(null);
+      map.removeSource('mapbox-dem');
+      if (map.getPitch()) {
+        map.flyTo({
+          pitch: 0,
+        });
+      }
+      is3dModeOn = false;
+    }
+    return is3dModeOn;
+  }
+
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
     setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
-    clearHoveredPoints, setBaseMap,
+    clearHoveredPoints, setBaseMap, toggle3dTerrain,
   };
 };
 
