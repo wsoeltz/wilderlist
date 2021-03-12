@@ -5,6 +5,7 @@ const bboxPolygon = require('@turf/bbox-polygon').default;
 const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 import { GetString } from 'fluent-react/compat';
 import mapboxgl from 'mapbox-gl';
+import SunCalc from 'suncalc';
 import {mapboxHoverPopupClassName} from '../../../../styling/GlobalStyles';
 import {
   contentColumnIdeal,
@@ -356,12 +357,15 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
       // add a sky layer that will show when the map is highly pitched
       const {lat, lng} = map.getCenter();
+      const sunPos = SunCalc.getPosition(new Date(), lat, lng);
+      const sunAzimuth = 180 + (sunPos.azimuth * 180) / Math.PI;
+      const sunAltitude = 90 - (sunPos.altitude * 180) / Math.PI;
       map.addLayer({
           id: 'sky',
           type: 'sky' as any,
           paint: {
           ['sky-type' as any]: 'atmosphere',
-          ['sky-atmosphere-sun' as any]: [lng, lat],
+          ['sky-atmosphere-sun' as any]: [sunAzimuth, sunAltitude],
           ['sky-atmosphere-sun-intensity' as any]: 15,
         },
       });
