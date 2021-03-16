@@ -1,8 +1,12 @@
-import React from 'react';
+const getBbox = require('@turf/bbox').default;
+const {point, lineString, featureCollection} = require('@turf/helpers');
+import React, {useEffect} from 'react';
 import useFluent from '../../../../hooks/useFluent';
 import { Campsite, Mountain, State, Trail } from '../../../../types/graphQLTypes';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../../sharedComponents/svgIcons';
 import ItemSelector from './ItemSelector';
+import MapRenderProp from '../../../sharedComponents/MapRenderProp';
+import useMapContext from '../../../../hooks/useMapContext';
 
 export interface MountainDatum {
   id: Mountain['id'];
@@ -20,6 +24,7 @@ export interface TrailDatum {
   name: Trail['name'];
   type: Trail['type'];
   center: Trail['center'];
+  line: Trail['line'];
 }
 
 export interface CampsiteDatum {
@@ -52,7 +57,27 @@ const AddItems = (props: Props) => {
     selectedCampsites, setSelectedCampsites,
   } = props;
 
+  const mapContext = useMapContext();
   const getString = useFluent();
+
+  useEffect(() => {
+    if (mapContext.intialized) {
+      mapContext.clearMap({
+        points: !selectedMountains.length && !selectedCampsites.length,
+        lines: !selectedTrails.length,
+      });
+    }
+  }, [mapContext, selectedMountains, selectedTrails, selectedCampsites])
+
+  const points = [...selectedMountains, ...selectedCampsites]
+    .filter(d => d.location)
+    .map(d => point(d.location));
+  const lines = selectedTrails
+    .filter(d => d.line)
+    .map(d => lineString(d.line));
+  const bbox = lines.length || points.length
+    ? getBbox(featureCollection([...points, ...lines]))
+    : undefined;
 
   return (
     <>
@@ -85,6 +110,13 @@ const AddItems = (props: Props) => {
         note={getString('trip-report-add-additional-campsites-desc')}
         searchPlaceholder={getString('global-text-value-search-campsites')}
         endpoint={'/api/campsite-search'}
+      />
+      <MapRenderProp
+        id={'trip-report-map-' + JSON.stringify({selectedMountains, selectedTrails, selectedCampsites})}
+        mountains={selectedMountains}
+        campsites={selectedCampsites}
+        trails={selectedTrails}
+        bbox={bbox}
       />
     </>
   );

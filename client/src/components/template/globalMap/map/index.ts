@@ -65,7 +65,7 @@ export interface Output {
   setHoveredPrimitivePoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
-  clearMap: () => void;
+  clearMap: (options?: {points?: boolean, lines?: boolean}) => void;
   clearHoveredPoints: () => void;
   setExternalHoveredPopup: (
     name: string,
@@ -219,12 +219,15 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   const clearHighlightedPoints = () => {
     highlightedPointsGeojson = undefined;
-    highlightedTrailsGeojson = undefined;
-    highlightedRoadsGeojson = undefined;
     const highlightedPointsSource = map.getSource(highlightedPointsLayerId) as any;
     if (highlightedPointsSource) {
       highlightedPointsSource.setData(defaultGeoJsonPoint);
     }
+  };
+
+  const clearHighlightedLines = () => {
+    highlightedTrailsGeojson = undefined;
+    highlightedRoadsGeojson = undefined;
     const highlightedTrailsSource = map.getSource(highlightedTrailsLayerId) as any;
     if (highlightedTrailsSource) {
       highlightedTrailsSource.setData(defaultGeoJsonLineString);
@@ -270,12 +273,22 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
-  const clearMap = () => {
+  const clearMap = (options?: {points?: boolean, lines?: boolean}) => {
     if (mapLoaded) {
-      clearHighlightedPoints();
+      if (!options || options.points !== false) {
+        clearHighlightedPoints();
+      }
+      if (!options || options.lines !== false) {
+        clearHighlightedLines();
+      }
     } else {
       const clearSourceOnLoad = () => {
-        clearHighlightedPoints();
+        if (!options || options.points !== false) {
+          clearHighlightedPoints();
+        }
+        if (!options || options.lines !== false) {
+          clearHighlightedLines();
+        }
         map.off('load', clearSourceOnLoad);
       };
       map.on('load', clearSourceOnLoad);
