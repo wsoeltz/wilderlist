@@ -1,11 +1,19 @@
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
-import {useHistory} from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  useHistory,
+} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import {CallbackInput} from '../';
 import MountainIcon from '../../../../../assets/images/icons/mountain-highlighted.svg';
 import TentIcon from '../../../../../assets/images/icons/tent-highlighted.svg';
 import TrailIcon from '../../../../../assets/images/icons/trail-highlighted.svg';
 import useFluent from '../../../../../hooks/useFluent';
+import {
+  Routes,
+} from '../../../../../routing/routes';
 import {
   campsiteDetailLink,
   mountainDetailLink,
@@ -14,10 +22,11 @@ import {
 import {
   tertiaryColor,
 } from '../../../../../styling/styleUtils';
-import {Coordinate} from '../../../../../types/graphQLTypes';
+import {Coordinate, TrailType} from '../../../../../types/graphQLTypes';
 import {CoreItems} from '../../../../../types/itemTypes';
 import LoadingSimple from '../../../../sharedComponents/LoadingSimple';
 import ActionButtons from './ActionButtons';
+import AddRemoveActions from './AddRemoveActions';
 import DrivingDirections from './directions';
 import LastTrip from './LastTrip';
 import PopupTitle from './PopupTitle';
@@ -38,11 +47,17 @@ interface Props {
   id: string | null;
   itemType: CoreItems;
   close: () => void;
+  highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+  highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+  highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+  callback: ((input: CallbackInput) => void) | undefined;
 }
 
 const ClickedPopup = (props: Props) => {
   const {
     itemType, location, close,
+    highlightedPointsGeojson, highlightedTrailsGeojson, highlightedRoadsGeojson,
+    callback,
   } = props;
 
   const {loading, error, data} = usePopupData(itemType, props.id, location, props.name);
@@ -100,6 +115,31 @@ const ClickedPopup = (props: Props) => {
       imgSrc = MountainIcon;
     }
 
+    let highlighted: boolean = false;
+    if ((itemType === CoreItems.mountains || itemType === CoreItems.campsites) &&
+      highlightedPointsGeojson && (highlightedPointsGeojson as any).features) {
+      highlighted = Boolean((highlightedPointsGeojson as any).features.find((f: any) =>
+        f.properties.id === id));
+    } else if (itemType === CoreItems.trails && (type === TrailType.road || type === TrailType.dirtroad) &&
+        highlightedRoadsGeojson && (highlightedRoadsGeojson as any).features) {
+      highlighted = Boolean((highlightedRoadsGeojson as any).features.find((f: any) =>
+        f.properties.id === id));
+    } else if (itemType === CoreItems.trails && highlightedTrailsGeojson &&
+        (highlightedTrailsGeojson as any).features) {
+      highlighted = Boolean((highlightedTrailsGeojson as any).features.find((f: any) =>
+        f.properties.id === id));
+    }
+
+    const addEditRenderProp = () => (
+      <AddRemoveActions
+        id={id}
+        itemType={itemType}
+        highlighted={highlighted}
+        callback={callback}
+        close={close}
+      />
+    );
+
     output = (
       <>
         <PopupTitle
@@ -108,21 +148,30 @@ const ClickedPopup = (props: Props) => {
           imgSrc={imgSrc}
           onClick={onClick}
         />
-        <Content>
-          <DrivingDirections
-            itemType={itemType}
-            destination={location}
+        <Switch>
+          <Route exact path={Routes.AddTripReport} component={addEditRenderProp} />
+          <Route exact path={Routes.EditTripReport} component={addEditRenderProp} />
+          <Route render={() => (
+              <>
+                <Content>
+                  <DrivingDirections
+                    itemType={itemType}
+                    destination={location}
+                  />
+                  <LastTrip
+                    id={id}
+                    itemType={itemType}
+                    close={close}
+                  />
+                </Content>
+                <ActionButtons
+                  detailAction={onClick}
+                  location={location}
+                />
+              </>
+            )}
           />
-          <LastTrip
-            id={id}
-            itemType={itemType}
-            close={close}
-          />
-        </Content>
-        <ActionButtons
-          detailAction={onClick}
-          location={location}
-        />
+        </Switch>
       </>
     );
   } else {

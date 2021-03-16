@@ -4,9 +4,6 @@ import {
   useGetNotifications,
 } from '../../../queries/notifications/useGetNotifications';
 import {
-  Campsite,
-  Mountain,
-  Trail,
   TripReportPrivacy,
 } from '../../../types/graphQLTypes';
 import { DateType, getDates, getDateType } from '../../../utilities/dateUtils';
@@ -51,7 +48,7 @@ const NewAscentReport = (props: Props) => {
       n => n.date === props.date && n.campsite !== null && n.user !== null);
 
     const allUsers: string[] = [];
-    const allMountains: Mountain[] = [];
+    const allMountains: BaseProps['initialMountainList'] = [];
     sameDateMountainNotifications.forEach(n => {
       if (n.user) {
         allUsers.push(n.user.id);
@@ -60,7 +57,7 @@ const NewAscentReport = (props: Props) => {
         allMountains.push(n.mountain);
       }
     });
-    const allTrails: Trail[] = [];
+    const allTrails: BaseProps['initialTrailList'] = [];
     sameDateTrailNotifications.forEach(n => {
       if (n.user) {
         allUsers.push(n.user.id);
@@ -69,7 +66,7 @@ const NewAscentReport = (props: Props) => {
         allTrails.push(n.trail);
       }
     });
-    const allCampsites: Campsite[] = [];
+    const allCampsites: BaseProps['initialCampsiteList'] = [];
     sameDateCampsiteNotifications.forEach(n => {
       if (n.user) {
         allUsers.push(n.user.id);
@@ -80,9 +77,9 @@ const NewAscentReport = (props: Props) => {
     });
 
     const initialUserList: string[] = uniq(allUsers);
-    const initialMountainList: Mountain[] = uniqBy(allMountains, 'id');
-    const initialTrailList: Trail[] = uniqBy(allTrails, 'id');
-    const initialCampsiteList: Campsite[] = uniqBy(allCampsites, 'id');
+    const initialMountainList: BaseProps['initialMountainList'] = uniqBy(allMountains, 'id');
+    const initialTrailList: BaseProps['initialTrailList'] = uniqBy(allTrails, 'id');
+    const initialCampsiteList: BaseProps['initialCampsiteList'] = uniqBy(allCampsites, 'id');
 
     return (
       <TripReportForm

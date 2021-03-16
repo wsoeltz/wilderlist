@@ -1,5 +1,10 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { User } from '../../types/graphQLTypes';
+import {
+  Campsite,
+  Mountain,
+  Trail,
+  User,
+} from '../../types/graphQLTypes';
 import {
   ACCEPT_FRIEND_REQUEST,
   FriendRequestSuccessResponse,
@@ -26,12 +31,9 @@ const GET_NOTIFICATIONS = gql`
         mountain {
           id
           name
-          state {
-            id
-            abbreviation
-          }
-          location
+          locationTextShort
           elevation
+          location
         }
         date
       }
@@ -45,8 +47,11 @@ const GET_NOTIFICATIONS = gql`
         trail {
           id
           name
-          center
           type
+          center
+          line
+          trailLength
+          locationTextShort
         }
         date
       }
@@ -60,8 +65,9 @@ const GET_NOTIFICATIONS = gql`
         campsite {
           id
           name
-          location
           type
+          locationTextShort
+          location
         }
         date
       }
@@ -73,9 +79,44 @@ const GET_NOTIFICATIONS = gql`
 export interface SuccessResponse {
   user: null | {
     id: User['id'];
-    ascentNotifications: User['ascentNotifications'];
-    trailNotifications: User['trailNotifications'];
-    campsiteNotifications: User['campsiteNotifications'];
+    ascentNotifications: null | Array<{
+      id: string;
+      user: User | null;
+      mountain: null | {
+        id: Mountain['id'];
+        name: Mountain['name'];
+        locationTextShort: Mountain['name'];
+        elevation: Mountain['elevation'];
+        location: Mountain['location'];
+      };
+      date: string;
+    }>;
+    trailNotifications: null | Array<{
+      id: string;
+      user: User | null;
+      trail: null | {
+        id: Trail['id'];
+        name: Trail['name'];
+        type: Trail['type'];
+        center: Trail['center'];
+        line: Trail['line'];
+        trailLength: Trail['trailLength'];
+        locationTextShort: Mountain['name'];
+      };
+      date: string;
+    }>;
+    campsiteNotifications: null | Array<{
+      id: string;
+      user: User | null;
+      campsite: null | {
+        id: Campsite['id'];
+        name: Campsite['name'];
+        type: Campsite['type'];
+        locationTextShort: Mountain['name'];
+        location: Campsite['location'];
+      };
+      date: string;
+    }>;
     friendRequests: User['friendRequests'];
   };
 }

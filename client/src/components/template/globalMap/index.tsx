@@ -50,8 +50,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
           window.location.pathname === Routes.About ||
           window.location.pathname === Routes.SearchUsers ||
           window.location.pathname === Routes.CreateList ||
-          window.location.pathname === Routes.EditList ||
-          window.location.pathname === Routes.AddTripReport
+          window.location.pathname === Routes.EditList
           ) {
         mapState.setNewCenter(initialCenter, 7);
       }
@@ -67,6 +66,11 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
         name={tootlipState.name}
         location={tootlipState.location}
         closePopup={tootlipState.closePopup}
+        callback={tootlipState.callback}
+        highlighted={tootlipState.highlighted}
+        highlightedPointsGeojson={tootlipState.highlightedPointsGeojson}
+        highlightedTrailsGeojson={tootlipState.highlightedTrailsGeojson}
+        highlightedRoadsGeojson={tootlipState.highlightedRoadsGeojson}
       />
       <Root ref={rootRef} />
       <MapContext.Provider value={mapState}>

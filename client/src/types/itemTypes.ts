@@ -20,7 +20,7 @@ export enum CoreItems {
 }
 
 export const coreItemToCoreItems = (item: CoreItem): CoreItems => item + 's' as CoreItems;
-export const coreItemsToCoreItem = (item: CoreItems): CoreItem => item.replace('s', '') as CoreItem;
+export const coreItemsToCoreItem = (item: CoreItems): CoreItem => item.slice(0, item.length - 1) as CoreItem;
 
 export enum SearchResultType {
   mountain = 'mountain',

@@ -1,17 +1,23 @@
 import mapboxgl from 'mapbox-gl';
 import {CoreItems} from '../../../../../types/itemTypes';
-import {Props as TooltipState} from '../../tooltip';
+import {CallbackInput, Props as TooltipState} from '../../tooltip';
 import {highlightedPointsLayerId} from '../layers';
 
 interface Input {
   map: mapboxgl.Map;
   onTooltipOpen: (tooltipState: TooltipState) => void;
   onTooltipClose: () => void;
+  getTooltipCallback: () => undefined | ((input: CallbackInput) => void);
+  getHighlightedGeojsonData: () => {
+    highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined,
+    highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined,
+    highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined,
+  };
 }
 
 const mountainInteractions = (input: Input) => {
   const {
-    map, onTooltipOpen, onTooltipClose,
+    map, onTooltipOpen, onTooltipClose, getTooltipCallback, getHighlightedGeojsonData,
   } = input;
   // When a click event occurs on a feature in the places layer, open a popup at the
   // location of the feature, with description HTML from its properties.
@@ -59,6 +65,9 @@ const mountainInteractions = (input: Input) => {
             name,
             location: coordinates,
             closePopup: removeFromMap,
+            callback: getTooltipCallback(),
+            highlighted: true,
+            ...getHighlightedGeojsonData(),
           });
         }
       }, 0);

@@ -2,10 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import {
   Campsite,
   Mountain,
-  PeakList,
-  State,
   Trail,
-  User,
 } from '../../types/graphQLTypes';
 
 const GET_ITEMS_FROM_ID_LISTS = gql`
@@ -13,61 +10,27 @@ const GET_ITEMS_FROM_ID_LISTS = gql`
     mountains: mountainsIn(ids: $mountainIds) {
       id
       name
+      locationTextShort
       elevation
       location
-      description
-      resources {
-        title
-        url
-      }
-      state {
-        id
-        name
-        abbreviation
-      }
-      lists {
-        id
-      }
-      author {
-        id
-      }
-      status
     }
 
     campsites: campsitesIn(ids: $campsiteIds) {
       id
       name
-      location
       type
-      state {
-        id
-        name
-        abbreviation
-      }
+      locationTextShort
+      location
     }
 
     trails: trailsIn(ids: $trailIds) {
       id
       name
+      type
       center
       line
-      type
-      states {
-        id
-        name
-        abbreviation
-      }
-      children {
-        id
-        name
-        center
-        type
-        line
-      }
-      parents {
-        id
-        name
-      }
+      trailLength
+      locationTextShort
     }
   }
 
@@ -75,58 +38,27 @@ const GET_ITEMS_FROM_ID_LISTS = gql`
 
 interface QuerySuccessResponse {
   mountains: Array<{
-    id: Mountain['name'];
+    id: Mountain['id'];
     name: Mountain['name'];
+    locationTextShort: Mountain['name'];
     elevation: Mountain['elevation'];
     location: Mountain['location'];
-    description: Mountain['description'];
-    resources: Mountain['resources'];
-    state: {
-      id: State['id'];
-      name: State['name'];
-      abbreviation: State['abbreviation'];
-    };
-    lists: Array<{
-      id: PeakList['id'];
-    }>;
-    author: null | { id: User['id'] };
-    status: Mountain['status'];
   }>;
   campsites: Array<{
     id: Campsite['id'];
     name: Campsite['name'];
-    location: Campsite['location'];
     type: Campsite['type'];
-    state: {
-      id: State['id'];
-      name: State['name'];
-      abbreviation: State['abbreviation'];
-    };
-    author: null | { id: User['id'] };
-    status: Campsite['status'];
+    locationTextShort: Mountain['name'];
+    location: Campsite['location'];
   }>;
   trails: Array<{
     id: Trail['id'];
     name: Trail['name'];
+    type: Trail['type'];
     center: Trail['center'];
     line: Trail['line'];
-    type: Trail['type'];
-    states: Array<{
-      id: State['id'];
-      name: State['name'];
-      abbreviation: State['abbreviation'];
-    }>;
-    children: Array<{
-      id: Trail['id'];
-      name: Trail['name'];
-      center: Trail['center'];
-      type: Trail['type'];
-      line: Trail['line'];
-    }>;
-    parents: Array<{
-      id: Trail['id'];
-      name: Trail['name'];
-    }>;
+    trailLength: Trail['trailLength'];
+    locationTextShort: Mountain['name'];
   }>;
 }
 

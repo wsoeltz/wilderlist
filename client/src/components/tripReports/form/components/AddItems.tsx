@@ -1,20 +1,19 @@
 const getBbox = require('@turf/bbox').default;
 const {point, lineString, featureCollection} = require('@turf/helpers');
+import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
 import useFluent from '../../../../hooks/useFluent';
-import { Campsite, Mountain, State, Trail } from '../../../../types/graphQLTypes';
+import useMapContext from '../../../../hooks/useMapContext';
+import { Campsite, Mountain, Trail } from '../../../../types/graphQLTypes';
+import { CoreItems } from '../../../../types/itemTypes';
+import MapRenderProp from '../../../sharedComponents/MapRenderProp';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../../sharedComponents/svgIcons';
 import ItemSelector from './ItemSelector';
-import MapRenderProp from '../../../sharedComponents/MapRenderProp';
-import useMapContext from '../../../../hooks/useMapContext';
 
 export interface MountainDatum {
   id: Mountain['id'];
   name: Mountain['name'];
-  state: null | {
-    id: State['id'];
-    abbreviation: State['abbreviation'];
-  };
+  locationTextShort: Mountain['name'];
   elevation: Mountain['elevation'];
   location: Mountain['location'];
 }
@@ -25,21 +24,17 @@ export interface TrailDatum {
   type: Trail['type'];
   center: Trail['center'];
   line: Trail['line'];
+  trailLength: Trail['trailLength'];
+  locationTextShort: Mountain['name'];
 }
 
 export interface CampsiteDatum {
   id: Campsite['id'];
   name: Campsite['name'];
   type: Campsite['type'];
+  locationTextShort: Mountain['name'];
   location: Campsite['location'];
 }
-
-const getMountainSubtitle = (mtn: MountainDatum) =>
-  mtn.elevation + 'ft' + (mtn.state && mtn.state.abbreviation ? ', ' + mtn.state.abbreviation : '');
-
-const getTrailSubtitle = (trail: TrailDatum) => trail.type;
-
-const getCampsiteSubtitle = (campsite: CampsiteDatum) => campsite.type;
 
 interface Props {
   selectedMountains: MountainDatum[];
@@ -66,8 +61,35 @@ const AddItems = (props: Props) => {
         points: !selectedMountains.length && !selectedCampsites.length,
         lines: !selectedTrails.length,
       });
+      mapContext.setTooltipCallback(({highlighted, datum, item}) => {
+        let selectedList: any[] = [];
+        let setSelectedList: (input: any) => void = () => false;
+        if (item === CoreItems.mountains) {
+          selectedList = selectedMountains;
+          setSelectedList = setSelectedMountains;
+        } else if (item === CoreItems.trails) {
+          selectedList = selectedTrails;
+          setSelectedList = setSelectedTrails;
+        } else if (item === CoreItems.campsites) {
+          selectedList = selectedCampsites;
+          setSelectedList = setSelectedCampsites;
+        }
+        if (!highlighted) {
+          if (!selectedList.find((d: any) => d.id === (datum as any).id)) {
+            setSelectedList([...selectedList, datum]);
+          }
+        } else if (highlighted) {
+          const updatedList = selectedList.filter((d: any) => d.id !== datum.id);
+          setSelectedList([...updatedList]);
+        }
+
+      });
     }
-  }, [mapContext, selectedMountains, selectedTrails, selectedCampsites])
+  }, [
+    mapContext,
+    selectedMountains, selectedTrails, selectedCampsites,
+    setSelectedMountains, setSelectedTrails, setSelectedCampsites,
+  ]);
 
   const points = [...selectedMountains, ...selectedCampsites]
     .filter(d => d.location)
@@ -78,6 +100,22 @@ const AddItems = (props: Props) => {
   const bbox = lines.length || points.length
     ? getBbox(featureCollection([...points, ...lines]))
     : undefined;
+
+  const getMountainSubtitle = (mtn: MountainDatum) =>
+    mtn.elevation + 'ft' + (mtn.locationTextShort ? ', ' + mtn.locationTextShort : '');
+
+  const getTrailSubtitle = (trail: TrailDatum) => {
+    const trailLength = trail.trailLength ? trail.trailLength : 0;
+    const trailLengthDisplay = trailLength < 0.1
+      ? getString('distance-feet-formatted', {feet: Math.round(trailLength * 5280)})
+      : getString('directions-driving-distance', {miles: parseFloat(trailLength.toFixed(1))});
+
+    return trailLengthDisplay + ' long ' + getString('global-formatted-anything-type', {type: trail.type});
+  };
+
+  const getCampsiteSubtitle = (campsite: CampsiteDatum) =>
+    upperFirst(getString('global-formatted-anything-type', {type: campsite.type}))
+       + (campsite.locationTextShort ? ' in ' + campsite.locationTextShort : '');
 
   return (
     <>

@@ -1,6 +1,4 @@
 /* tslint:disable:await-promise */
-const {lineString} = require('@turf/helpers');
-const length = require('@turf/length').default;
 import {
   Trail as ITrail,
 } from '../graphql/graphQLTypes';
@@ -15,33 +13,35 @@ export const getNamedParent = async (trail: ITrail) => {
       name: {$eq: trail.name},
     });
     if (parent) {
-      const children = await Trail.find({_id: {$in: parent.children}});
-      const trailLength = children.reduce((sum, c) => {
-        return sum + length(lineString(c.line), {units: 'miles'});
-      }, 0);
       return {
         _id: parent._id,
         name: parent.name,
-        type: trail.name,
-        trailLength,
+        type: trail.type,
+        locationText: parent.locationText,
+        locationTextShort: parent.locationTextShort,
+        trailLength: parent.trailLength,
       };
     } else {
-      const trailLength = length(lineString(trail.line), {units: 'miles'});
       return {
         _id: trail._id,
         name: trail.name,
-        type: trail.name,
-        trailLength,
+        type: trail.type,
+        locationText: trail.locationText,
+        locationTextShort: trail.locationTextShort,
+        trailLength: trail.trailLength,
+        line: trail.line,
       };
     }
   } catch (err) {
     console.error(err);
-    const trailLength = length(lineString(trail.line), {units: 'miles'});
     return {
       _id: trail._id,
       name: trail.name,
       type: trail.type,
-      trailLength,
+      locationText: trail.locationText,
+      locationTextShort: trail.locationTextShort,
+      trailLength: trail.trailLength,
+      line: trail.line,
     };
   }
 };
@@ -50,13 +50,15 @@ const getTrail = async (_id: string) => {
   try {
     const trail = await Trail.findOne({_id});
     if (trail) {
-      const trailLength = length(lineString(trail.line), {units: 'miles'});
       return {
         _id: trail._id,
         name: trail.name,
         type: trail.type,
+        locationText: trail.locationText,
+        locationTextShort: trail.locationTextShort,
         parents: trail.parents,
-        trailLength,
+        trailLength: trail.trailLength,
+        line: trail.line,
       };
     } else {
       return null;

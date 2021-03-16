@@ -1,5 +1,12 @@
 import { gql, useQuery } from '@apollo/client';
-import { TripReport } from '../../types/graphQLTypes';
+import {
+  Campsite,
+  Conditions,
+  Mountain,
+  Trail,
+  TripReport,
+  User,
+} from '../../types/graphQLTypes';
 
 const GET_TRIP_REPORT_FOR_USER_ITEM_DATE = gql`
   query GetTripReportByAuthorDateAndItems
@@ -15,26 +22,25 @@ const GET_TRIP_REPORT_FOR_USER_ITEM_DATE = gql`
       mountains {
         id
         name
-        location
-        state {
-          id
-          abbreviation
-        }
+        locationTextShort
         elevation
-        latitude
-        longitude
+        location
       }
       trails {
         id
         name
-        center
         type
+        center
+        line
+        trailLength
+        locationTextShort
       }
       campsites {
         id
         name
-        location
         type
+        locationTextShort
+        location
       }
       users {
         id
@@ -68,7 +74,44 @@ const GET_TRIP_REPORT_FOR_USER_ITEM_DATE = gql`
 `;
 
 interface SuccessResponse {
-  tripReport: TripReport | null;
+  tripReport: null | Conditions & {
+    id: TripReport['id'];
+    date: TripReport['date'];
+    author: null | {
+      id: User['id'];
+      name: User['name'];
+    };
+    mountains: Array<{
+      id: Mountain['id'];
+      name: Mountain['name'];
+      locationTextShort: Mountain['name'];
+      elevation: Mountain['elevation'];
+      location: Mountain['location'];
+    } | null>;
+    trails: Array<{
+      id: Trail['id'];
+      name: Trail['name'];
+      type: Trail['type'];
+      center: Trail['center'];
+      line: Trail['line'];
+      trailLength: Trail['trailLength'];
+      locationTextShort: Mountain['name'];
+    } | null>;
+    campsites: Array<{
+      id: Campsite['id'];
+      name: Campsite['name'];
+      type: Campsite['type'];
+      locationTextShort: Mountain['name'];
+      location: Campsite['location'];
+    } | null>;
+    users: Array<{
+      id: User['id'];
+      name: User['name'];
+    } | null>;
+    notes: TripReport['notes'];
+    link: TripReport['link'];
+    privacy: TripReport['privacy'];
+  };
 }
 
 interface QueryVariables {

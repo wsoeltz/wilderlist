@@ -207,18 +207,22 @@ const MapRenderProp = (props: Props) => {
         const roads: any[] = [];
         if (props.trails && props.trails.length) {
           props.trails.forEach(trail => {
-            const line = lineString(trail.line, {
-              name: trail.name,
-              itemType: ItemType.mountain,
-              type: trail.type,
-              subtitle: trail.type,
-              id: trail.id,
-              color: getPercentColor(type, trail.hikedCount),
-            });
-            if (trail.type === TrailType.road || trail.type === TrailType.dirtroad) {
-              roads.push(line);
+            if (trail.line) {
+              const line = lineString(trail.line, {
+                name: trail.name,
+                itemType: ItemType.trail,
+                type: trail.type,
+                subtitle: trail.type,
+                id: trail.id,
+                color: getPercentColor(type, trail.hikedCount),
+              });
+              if (trail.type === TrailType.road || trail.type === TrailType.dirtroad) {
+                roads.push(line);
+              } else {
+                trails.push(line);
+              }
             } else {
-              trails.push(line);
+              console.error('Trail is missing proper line value', trail);
             }
           });
         }

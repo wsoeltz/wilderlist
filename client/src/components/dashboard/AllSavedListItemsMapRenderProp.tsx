@@ -1,6 +1,7 @@
 const {lineString, point, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
 import React, {useEffect} from 'react';
+import useMapContext from '../../hooks/useMapContext';
 import {useAllInProgressItems} from '../../queries/users/useAllInProgressItems';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {
@@ -11,7 +12,6 @@ import {
 } from '../../types/graphQLTypes';
 import MapLegend from '../sharedComponents/detailComponents/header/MapLegend';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
-import useMapContext from '../../hooks/useMapContext';
 
 interface Props {
   userId: string;
@@ -30,7 +30,7 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
         lines: !items.data.allItems.trails.length,
       });
     }
-  }, [mapContext, items])
+  }, [mapContext, items]);
 
   if (items.data && items.data.allItems && progress.data) {
     const allGeojsonItems: any[] = [];

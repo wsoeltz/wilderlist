@@ -26,6 +26,7 @@ const mergeAndSort = async (trailData: any[], stateData: IState[]) => {
             abbreviation: state.abbreviation,
           })) : [],
           type: val.datum.type,
+          trailLength: val.datum.trailLength,
           line: val.datum.line,
           _id: val.datum._id,
           id: val.datum._id,

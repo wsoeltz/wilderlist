@@ -17,7 +17,7 @@ import {Coordinate, CoordinateWithElevation, Latitude, Longitude} from '../../..
 import {AggregateItem, CoreItem, MapItem} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import {logoSmallWidth, logoSmallWindoWidth, sideContentWidth} from '../../navigation/Header';
-import {Props as TooltipState} from '../tooltip';
+import {CallbackInput, Props as TooltipState} from '../tooltip';
 import getHoverPopupHtml from '../tooltip/popup/getHoverPopupHtml';
 import initInteractions from './interactions';
 import initLayers, {
@@ -80,6 +80,7 @@ export interface Output {
   toggle3dTerrain: () => boolean;
   enableSummitView: (lat: number, lng: number, altitude: number) => void;
   disableSummitView: () => void;
+  setTooltipCallback: (fn: ((input: CallbackInput) => void) | undefined) => void;
 }
 
 const styles = {
@@ -116,10 +117,19 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   });
 
   let mapLoaded = false;
+  let callBack: undefined | ((input: CallbackInput) => void);
+  const setTooltipCallback = (fn: undefined | ((input: CallbackInput) => void)) => {
+    callBack = fn;
+  };
+  const getTooltipCallback = () => callBack;
+  const getHighlightedGeojsonData = () =>
+    ({highlightedPointsGeojson, highlightedTrailsGeojson, highlightedRoadsGeojson});
 
   map.on('load', () => {
     mapLoaded = true;
-    initInteractions({map, push, getString, onTooltipOpen, onTooltipClose});
+    initInteractions({
+      map, push, getString, onTooltipOpen, onTooltipClose, getTooltipCallback, getHighlightedGeojsonData,
+    });
   });
 
   map.on('style.load', function() {
@@ -545,6 +555,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
     setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
     clearHoveredPoints, setBaseMap, toggle3dTerrain, enableSummitView, disableSummitView,
+    setTooltipCallback,
   };
 };
 

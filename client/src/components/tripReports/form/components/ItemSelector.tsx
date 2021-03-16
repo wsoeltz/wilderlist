@@ -1,5 +1,7 @@
+import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import styled from 'styled-components/macro';
+import useFluent from '../../../../hooks/useFluent';
 import {
   Basket,
   BasketTitle,
@@ -28,11 +30,13 @@ interface Props<T> {
   endpoint: string;
 }
 
-function AdditionalMountains<T>(props: Props<T>) {
+function ItemSelector<T>(props: Props<T>) {
   const {
     selectedList, setSelectedList, getSubtitleFromDatum,
     icon, title, note, searchPlaceholder, endpoint,
   } = props;
+
+  const getString = useFluent();
 
   const addItemToList = (newItem: {datum: T}) => {
     if (!selectedList.find((item: any) => item.id === (newItem.datum as any).id)) {
@@ -46,14 +50,20 @@ function AdditionalMountains<T>(props: Props<T>) {
     setSelectedList([...updatedMtnList]);
   };
 
-  const selectedItemList = selectedList.map((item: any) => (
-    <SelectedItem
-      key={item.id}
-      name={item.name}
-      subtitle={getSubtitleFromDatum(item)}
-      onClose={() => removeItemFromList(item)}
-    />
-  ));
+  const selectedItemList = selectedList.map((item: any) => {
+    let name = item.name;
+    if (!name && item.type !== undefined) {
+      name = upperFirst(getString('global-formatted-anything-type', {type: item.type}));
+    }
+    return (
+      <SelectedItem
+        key={item.id}
+        name={name}
+        subtitle={getSubtitleFromDatum(item)}
+        onClose={() => removeItemFromList(item)}
+      />
+    );
+  });
 
   const texNote = selectedList.length ? null : (
     <SmallTextNote>
@@ -85,4 +95,4 @@ function AdditionalMountains<T>(props: Props<T>) {
   );
 }
 
-export default AdditionalMountains;
+export default ItemSelector;
