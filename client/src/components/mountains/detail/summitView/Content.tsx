@@ -16,6 +16,7 @@ import {
   primaryColor,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
+import {mobileSize} from '../../../../Utils';
 
 const Root = styled.div`
   width: 100%;
@@ -36,6 +37,10 @@ const Container = styled.div`
   small {
     font-weight: 400;
   }
+
+  @media(max-width: ${mobileSize}px) {
+    margin-top: 80px;
+  }
 `;
 
 const Title = styled.h1`
@@ -51,6 +56,10 @@ const HelperText = styled(Subtitle)`
   margin: 1.25rem 0 1.5rem;
   font-size: 0.875rem;
   font-style: italic;
+
+  @media(max-width: ${mobileSize}px) {
+    display: none;
+  }
 `;
 
 const linkStyles = css`

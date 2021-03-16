@@ -7,6 +7,7 @@ import React, {useEffect, useRef} from 'react';
 import {useParams} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useMapContext from '../../../../hooks/useMapContext';
+import {mobileSize} from '../../../../Utils';
 import {degToCompass} from '../../../sharedComponents/detailComponents/weather/pointForecast/Utils';
 import Content from './Content';
 
@@ -30,8 +31,12 @@ const CompassContainer = styled.div`
   width: 100%;
   text-align: center;
   margin: auto;
-
   top: 3rem;
+
+  @media(max-width: ${mobileSize}px) {
+    top: unset;
+    bottom: 80px;
+  }
 `;
 
 const Compass = styled.div`
@@ -50,20 +55,42 @@ const SummitView = () => {
     let mounted = true;
     let bearing: number = 0;
     let pitch: number = 90;
+    let prevClientX = window.innerWidth / 2;
     if (mapContext.intialized && overlayRef.current) {
       mapContext.enableSummitView(parseFloat(lat), parseFloat(lng), parseFloat(altitude));
       overlayRef.current.addEventListener('mousemove', e => {
-        const bearingScale = scaleLinear().domain([window.innerWidth, 0]).range([180, -180]);
-        const mouseX = e.pageX;
-        bearing = bearingScale(mouseX);
-        if (compassRef.current && degreeRef.current) {
-          compassRef.current.innerText = degToCompass(bearing + 360);
-          const visualDegree = bearing <= 0 ? bearing + 360 : bearing;
-          degreeRef.current.innerText = Math.round(visualDegree) + '°';
+        if (window.innerWidth > mobileSize) {
+          const bearingScale = scaleLinear().domain([window.innerWidth, 0]).range([180, -180]);
+          const mouseX = e.pageX;
+          bearing = bearingScale(mouseX);
+          if (compassRef.current && degreeRef.current) {
+            compassRef.current.innerText = degToCompass(bearing + 360);
+            const visualDegree = bearing <= 0 ? bearing + 360 : bearing;
+            degreeRef.current.innerText = Math.round(visualDegree) + '°';
+          }
+          const mouseY = e.pageY;
+          const pitchScale = scaleLinear().domain([0., window.innerHeight]).range([150, 0]);
+          pitch = pitchScale(mouseY);
         }
-        const mouseY = e.pageY;
-        const pitchScale = scaleLinear().domain([0., window.innerHeight]).range([150, 0]);
-        pitch = pitchScale(mouseY);
+      });
+      overlayRef.current.addEventListener('touchmove', e => {
+        const clientX = e.touches[0].clientX;
+        let horizontalDirection = 0;
+        if (clientX > prevClientX) {
+          horizontalDirection = 1;
+        } else {
+          horizontalDirection = -1;
+        }
+        const currentBearing = mapContext.map.getBearing();
+        if (currentBearing !== undefined && currentBearing !== null) {
+          bearing = currentBearing + (horizontalDirection * 5);
+          if (compassRef.current && degreeRef.current) {
+            compassRef.current.innerText = degToCompass(bearing + 360);
+            const visualDegree = bearing <= 0 ? bearing + 360 : bearing;
+            degreeRef.current.innerText = Math.round(visualDegree) + '°';
+          }
+        }
+        prevClientX = clientX;
       });
       const setCameraPosition = () => {
         const map = mapContext.map;
@@ -100,8 +127,8 @@ const SummitView = () => {
       <CompassContainer>
         <Compass>
           <FontAwesomeIcon icon={faAngleUp} />
-          <div><small ref={compassRef}></small></div>
-          <div><small><small ref={degreeRef}></small></small></div>
+          <div><small ref={compassRef}>N</small></div>
+          <div><small><small ref={degreeRef}>0°</small></small></div>
         </Compass>
       </CompassContainer>
     </Overlay>
