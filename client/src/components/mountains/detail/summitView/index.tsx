@@ -3,6 +3,7 @@ import React, {useEffect, useRef} from 'react';
 import {useParams} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useMapContext from '../../../../hooks/useMapContext';
+import Content from './Content';
 
 const Overlay = styled.div`
   position: fixed;
@@ -14,10 +15,11 @@ const Overlay = styled.div`
   height: 100%;
   background-color: rgba(12, 56, 76, 0.1);
   pointer-events: all;
+  cursor: crosshair;
 `;
 
 const SummitView = () => {
-  const {lat, lng, altitude}: any = useParams();
+  const {lat, lng, altitude, id}: any = useParams();
   const mapContext = useMapContext();
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
@@ -62,8 +64,12 @@ const SummitView = () => {
     };
   }, [mapContext, lat, lng, altitude]);
 
+  const content = id ? <Content id={id} /> : null;
+
   return (
-    <Overlay ref={overlayRef} />
+    <Overlay ref={overlayRef}>
+      {content}
+    </Overlay>
   );
 };
 

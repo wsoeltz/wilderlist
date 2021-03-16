@@ -176,16 +176,24 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   const setNewCenter = (center: Coordinate, zoom: number) => {
     setPadding();
-    const {lat, lng} = map.getCenter();
-    const dist = distance(point([lng, lat]), center, {units: 'miles'});
-    const mapBounds = getRectFromBounds(map.getBounds());
-    const isInBounds = booleanPointInPolygon(point(center), bboxPolygon(mapBounds));
-    if ((isInBounds && dist < 30) || dist < 5) {
-      map.flyTo({
-        center,
-        zoom,
-      });
-    } else {
+    try {
+      const {lat, lng} = map.getCenter();
+      const dist = distance(point([lng, lat]), center, {units: 'miles'});
+      const mapBounds = getRectFromBounds(map.getBounds());
+      const isInBounds = booleanPointInPolygon(point(center), bboxPolygon(mapBounds));
+      if ((isInBounds && dist < 30) || dist < 5) {
+        map.flyTo({
+          center,
+          zoom,
+        });
+      } else {
+        map.jumpTo({
+          center,
+          zoom,
+        });
+      }
+    } catch (error) {
+      console.error(error);
       map.jumpTo({
         center,
         zoom,
@@ -357,12 +365,18 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       if (!bbox) {
         externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
         if (line) {
-          (map.getSource(hoveredTrailsLayerId) as any).setData(lineString(line, {color: primaryColor}));
+          const hoveredTrailsSourceLayer = map.getSource(hoveredTrailsLayerId) as any;
+          if (hoveredTrailsSourceLayer) {
+            hoveredTrailsSourceLayer.setData(lineString(line, {color: primaryColor}));
+          }
         }
       } else {
         if (map.getZoom() < 10) {
           externalHoverPopup.setLngLat(coords).setHTML(getHoverPopupHtml(name, subtitle, type)).addTo(map);
-          (map.getSource(hoveredShapeLayerId) as any).setData(bboxPolygon(bbox));
+          const hoveredShapeSourceLayer = map.getSource(hoveredShapeLayerId) as any;
+          if (hoveredShapeSourceLayer) {
+            hoveredShapeSourceLayer.setData(bboxPolygon(bbox));
+          }
         }
       }
     }
@@ -370,8 +384,14 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   const clearExternalHoveredPopup = () => {
     externalHoverPopup.remove();
     if (mapLoaded) {
-      (map.getSource(hoveredTrailsLayerId) as any).setData(defaultGeoJsonLineString);
-      (map.getSource(hoveredShapeLayerId) as any).setData(defaultGeoJsonPolygon);
+      const hoveredTrailsSourceLayer = map.getSource(hoveredTrailsLayerId) as any;
+      if (hoveredTrailsSourceLayer) {
+        hoveredTrailsSourceLayer.setData(defaultGeoJsonLineString);
+      }
+      const hoveredShapeSourceLayer = map.getSource(hoveredShapeLayerId) as any;
+      if (hoveredShapeSourceLayer) {
+        hoveredShapeSourceLayer.setData(defaultGeoJsonPolygon);
+      }
     }
   };
 
