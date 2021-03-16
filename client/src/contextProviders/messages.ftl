@@ -868,6 +868,9 @@ download-gpx-button = Download GPX file
 download-official-grid-xlsx-button = Download Grid application with your dates
 
 mountain-detail-summit-view = Summit View
+mountain-detail-summit-view-for = Summit View for { $name }
+mountain-detail-summit-back = Back to mountain details
+mountain-detail-summit-help = Move your mouse to rotate the view
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent

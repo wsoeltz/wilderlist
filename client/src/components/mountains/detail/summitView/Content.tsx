@@ -6,6 +6,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import styled, {css} from 'styled-components/macro';
+import useFluent from '../../../../hooks/useFluent';
 import {useBasicMountainDetails} from '../../../../queries/mountains/useBasicMountainDetails';
 import {mountainDetailLink} from '../../../../routing/Utils';
 import {
@@ -87,6 +88,7 @@ const ExitLink = styled(Link)`
 const Content = ({id}: {id: string}) => {
   const {data} = useBasicMountainDetails(id);
   const { goBack, push } = useHistory();
+  const getString = useFluent();
   if (data && data.mountain) {
     const {name, locationText, elevation} = data.mountain;
     const onClick = () => {
@@ -103,14 +105,14 @@ const Content = ({id}: {id: string}) => {
           <IconContainer $color={primaryColor}>
             <BasicIconInText icon={faAlignLeft} />
           </IconContainer>
-          Back to mountain details
+          {getString('mountain-detail-summit-back')}
         </ExitButton>
       ) : (
         <ExitLink to={mountainDetailLink(id)}>
           <IconContainer $color={primaryColor}>
             <BasicIconInText icon={faAlignLeft} />
           </IconContainer>
-          Back to mountain details
+          {getString('mountain-detail-summit-back')}
         </ExitLink>
       );
 
@@ -118,11 +120,11 @@ const Content = ({id}: {id: string}) => {
       <Root>
         <Container>
           <Title>
-            Summit View for {name}
+            {getString('mountain-detail-summit-view-for', {name})}
           </Title>
           <Subtitle>{locationText}, {elevation}ft</Subtitle>
           <HelperText>
-            <BasicIconInText icon={faMousePointer} /> Move your mouse to rotate the view
+            <BasicIconInText icon={faMousePointer} /> {getString('mountain-detail-summit-help')}
           </HelperText>
           {exitButton}
         </Container>

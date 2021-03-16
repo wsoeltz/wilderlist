@@ -1,8 +1,13 @@
+import {
+  faAngleUp,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {scaleLinear} from 'd3-scale';
 import React, {useEffect, useRef} from 'react';
 import {useParams} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import useMapContext from '../../../../hooks/useMapContext';
+import {degToCompass} from '../../../sharedComponents/detailComponents/weather/pointForecast/Utils';
 import Content from './Content';
 
 const Overlay = styled.div`
@@ -18,10 +23,28 @@ const Overlay = styled.div`
   cursor: crosshair;
 `;
 
+const CompassContainer = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  margin: auto;
+
+  top: 3rem;
+`;
+
+const Compass = styled.div`
+  font-size: 1.5rem;
+  color: #fff;
+`;
+
 const SummitView = () => {
   const {lat, lng, altitude, id}: any = useParams();
   const mapContext = useMapContext();
   const overlayRef = useRef<HTMLDivElement | null>(null);
+  const compassRef = useRef<HTMLDivElement | null>(null);
+  const degreeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -30,9 +53,14 @@ const SummitView = () => {
     if (mapContext.intialized && overlayRef.current) {
       mapContext.enableSummitView(parseFloat(lat), parseFloat(lng), parseFloat(altitude));
       overlayRef.current.addEventListener('mousemove', e => {
-        const bearingScale = scaleLinear().domain([window.innerWidth, 0]).range([-180, 180]);
+        const bearingScale = scaleLinear().domain([window.innerWidth, 0]).range([180, -180]);
         const mouseX = e.pageX;
         bearing = bearingScale(mouseX);
+        if (compassRef.current && degreeRef.current) {
+          compassRef.current.innerText = degToCompass(bearing + 360);
+          const visualDegree = bearing <= 0 ? bearing + 360 : bearing;
+          degreeRef.current.innerText = Math.round(visualDegree) + '°';
+        }
         const mouseY = e.pageY;
         const pitchScale = scaleLinear().domain([0., window.innerHeight]).range([150, 0]);
         pitch = pitchScale(mouseY);
@@ -69,6 +97,13 @@ const SummitView = () => {
   return (
     <Overlay ref={overlayRef}>
       {content}
+      <CompassContainer>
+        <Compass>
+          <FontAwesomeIcon icon={faAngleUp} />
+          <div><small ref={compassRef}></small></div>
+          <div><small><small ref={degreeRef}></small></small></div>
+        </Compass>
+      </CompassContainer>
     </Overlay>
   );
 };
