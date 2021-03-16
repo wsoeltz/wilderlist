@@ -10,6 +10,13 @@ export const listDetailLink = (id: string) => Routes.ListDetail.replace(':id', i
 
 export const mountainDetailLink = (id: string) => Routes.MountainDetail.replace(':id', id);
 
+export const summitViewLink = (lat: number, lng: number, altitude: number, id: string) =>
+  Routes.SummitView
+    .replace(':id', id)
+    .replace(':lat', lat.toFixed(6))
+    .replace(':lng', lng.toFixed(6))
+    .replace(':altitude', (altitude * 0.3048).toFixed(0));
+
 export const campsiteDetailLink = (id: string) => Routes.CampsiteDetail.replace(':id', id);
 
 export const trailDetailLink = (id: string) => Routes.TrailDetail.replace(':id', id);

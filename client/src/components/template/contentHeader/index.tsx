@@ -38,12 +38,14 @@ const Header = () => {
     normalizedPathname = Routes.SearchCampsites;
   } else if (pathname.includes('trail')) {
     normalizedPathname = Routes.SearchTrails;
+  } else if (pathname.includes('summit-view')) {
+    normalizedPathname = Routes.SummitView;
   } else {
     normalizedPathname = pathname;
   }
 
   const showBackground = useMemo(
-    () => (windowWidth > mobileSize && normalizedPathname !== Routes.Landing) ||
+    () => (windowWidth > mobileSize && normalizedPathname !== Routes.Landing ) ||
                          (normalizedPathname !== Routes.Landing &&
                           normalizedPathname !== Routes.SearchLists  &&
                           normalizedPathname !== Routes.SearchTrails  &&
@@ -65,6 +67,7 @@ const Header = () => {
     <Root style={{
       backgroundColor: showBackground ? '#fff' : undefined,
       borderRight: showBackground ? `solid 1px ${lightBorderColor}` : undefined,
+      display: normalizedPathname === Routes.SummitView ? 'none' : undefined,
     }}>
       <Search />
     </Root>

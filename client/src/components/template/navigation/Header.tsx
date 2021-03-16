@@ -449,7 +449,7 @@ const Header = () => {
   }
 
   if (windowWidth > mobileSize) {
-    const logoSrc = mapStyle === MapStyle.satellite ? LogoWhitePng : LogoPng;
+    const logoSrc = mapStyle === MapStyle.satellite || pathname.includes('summit-view') ? LogoWhitePng : LogoPng;
     return (
       <>
         <HeaderContainer>
@@ -464,11 +464,13 @@ const Header = () => {
                 />
               </LogoContainer>
             </SemanticLogoContainer>
-            {addAscentButton}
-            <CreateRouteButton />
-            <LineBreak />
-            <Toggle3dModeButton />
-            <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
+            <div style={pathname.includes('summit-view') ? {display: 'none'} : undefined}>
+              {addAscentButton}
+              <CreateRouteButton />
+              <LineBreak />
+              <Toggle3dModeButton />
+              <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
+            </div>
           </SideContent>
           <CoreNav>
             {listsLink}

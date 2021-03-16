@@ -15,6 +15,7 @@ import {
 } from '../../styling/Grid';
 import CampsiteDetailPage from '../campsites/detail';
 import MountainDetailPage from '../mountains/detail';
+import SummitViewPage from '../mountains/detail/summitView';
 import PeakListDetailPage from '../peakLists/detail';
 import LoadingSuspense from '../sharedComponents/LoadingSuspense';
 import TrailDetailPage from '../trails/detail';
@@ -88,6 +89,7 @@ const MainContent = () => {
       </ContentHeader>
       <Switch>
         <TrackedRoute exact path={Routes.Landing} component={null} />
+        <TrackedRoute exact path={Routes.SummitView} component={SummitViewPage} />
         <Route component={ContentRoutes} />
       </Switch>
     </ContentContainer>

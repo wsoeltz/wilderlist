@@ -54,6 +54,7 @@ export const defaultCenter: Coordinate = [-98.5795, 39.8283];
 export enum MapStyle {
   standard = 'standard',
   satellite = 'satellite',
+  summitView = 'summitView',
 }
 
 export interface Output {
@@ -77,11 +78,14 @@ export interface Output {
   clearExternalHoveredPopup: () => void;
   setBaseMap: (style: MapStyle) => void;
   toggle3dTerrain: () => boolean;
+  enableSummitView: (lat: number, lng: number, altitude: number) => void;
+  disableSummitView: () => void;
 }
 
 const styles = {
   [MapStyle.standard]: 'mapbox://styles/wsoeltz/ckm1fn6qf8m0717qfqxf5ukpm',
   [MapStyle.satellite]: 'mapbox://styles/wsoeltz/ckit796241naz19qmbxe4gl2l',
+  [MapStyle.summitView]: 'mapbox://styles/wsoeltz/ckm6q2bxa13cb17lakdgvydva',
 };
 
 export const storageCheckedKeyId = 'localstorageKeyForGlobalMapBaseStyle';
@@ -119,24 +123,30 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   });
 
   map.on('style.load', function() {
-    // Triggered when `setStyle` is called.
-    const newStyle = localStorage.getItem(storageCheckedKeyId);
-    const style: MapStyle = newStyle && (newStyle === MapStyle.standard || initialStyle === MapStyle.satellite)
-      ? newStyle as MapStyle : MapStyle.standard;
+    if (map.getStyle().name !== 'Wilderlist Summit view') {
+      // Triggered when `setStyle` is called.
+      const newStyle = localStorage.getItem(storageCheckedKeyId);
+      const style: MapStyle = newStyle && (newStyle === MapStyle.standard || initialStyle === MapStyle.satellite)
+        ? newStyle as MapStyle : MapStyle.standard;
 
-    initLayers({map, style});
-    if (highlightedPointsGeojson) {
-      setHighlightedPoints(highlightedPointsGeojson);
-    }
-    if (highlightedTrailsGeojson) {
-      setHighlightedTrails(highlightedTrailsGeojson);
-    }
-    if (highlightedRoadsGeojson) {
-      setHighlightedRoads(highlightedRoadsGeojson);
-    }
-    if (is3dModeOn) {
-      is3dModeOn = false;
-      toggle3dTerrain();
+      initLayers({map, style});
+      if (highlightedPointsGeojson) {
+        setHighlightedPoints(highlightedPointsGeojson);
+      }
+      if (highlightedTrailsGeojson) {
+        setHighlightedTrails(highlightedTrailsGeojson);
+      }
+      if (highlightedRoadsGeojson) {
+        setHighlightedRoads(highlightedRoadsGeojson);
+      }
+      if (is3dModeOn) {
+        is3dModeOn = false;
+        toggle3dTerrain();
+      }
+    } else {
+      if (!map.getLayer('sky')) {
+        addSkyLayer();
+      }
     }
   });
 
@@ -203,26 +213,54 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     highlightedPointsGeojson = undefined;
     highlightedTrailsGeojson = undefined;
     highlightedRoadsGeojson = undefined;
-    (map.getSource(highlightedPointsLayerId) as any).setData(defaultGeoJsonPoint);
-    (map.getSource(highlightedTrailsLayerId) as any).setData(defaultGeoJsonLineString);
-    (map.getSource(highlightedRoadsLayerId) as any).setData(defaultGeoJsonLineString);
+    const highlightedPointsSource = map.getSource(highlightedPointsLayerId) as any;
+    if (highlightedPointsSource) {
+      highlightedPointsSource.setData(defaultGeoJsonPoint);
+    }
+    const highlightedTrailsSource = map.getSource(highlightedTrailsLayerId) as any;
+    if (highlightedTrailsSource) {
+      highlightedTrailsSource.setData(defaultGeoJsonLineString);
+    }
+    const highlightedRoadsSource = map.getSource(highlightedRoadsLayerId) as any;
+    if (highlightedRoadsSource) {
+      highlightedRoadsSource.setData(defaultGeoJsonLineString);
+    }
   };
 
   const clearHoveredPrimitivePoints = () => {
-    (map.getSource(hoveredPointLayerId) as any).setData(defaultGeoJsonPoint);
+    const hoveredPointSource = map.getSource(hoveredPointLayerId) as any;
+    if (hoveredPointSource) {
+      hoveredPointSource.setData(defaultGeoJsonPoint);
+    }
   };
 
-  const updatePointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
-    (map.getSource(highlightedPointsLayerId) as any).setData(data);
+  const updatePointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    const highlightedPointsSource = map.getSource(highlightedPointsLayerId) as any;
+    if (highlightedPointsSource) {
+      highlightedPointsSource.setData(data);
+    }
+  };
 
-  const updatePrimitiveHoverPointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
-    (map.getSource(hoveredPointLayerId) as any).setData(data);
+  const updatePrimitiveHoverPointsSource = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    const hoveredPointSource = map.getSource(hoveredPointLayerId) as any;
+    if (hoveredPointSource) {
+      hoveredPointSource.setData(data);
+    }
+  };
 
-  const updateTrailSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
-    (map.getSource(highlightedTrailsLayerId) as any).setData(data);
+  const updateTrailSource = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    const highlightedTrailsSource = map.getSource(highlightedTrailsLayerId) as any;
+    if (highlightedTrailsSource) {
+      highlightedTrailsSource.setData(data);
+    }
+  };
 
-  const updateRoadSource = (data: mapboxgl.GeoJSONSourceOptions['data']) =>
-    (map.getSource(highlightedRoadsLayerId) as any).setData(data);
+  const updateRoadSource = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+    const highlightedRoadsSource = map.getSource(highlightedRoadsLayerId) as any;
+    if (highlightedRoadsSource) {
+      highlightedRoadsSource.setData(data);
+    }
+  };
 
   const clearMap = () => {
     if (mapLoaded) {
@@ -338,11 +376,50 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
   };
 
   const setBaseMap = (style: MapStyle) => {
-    if (mapLoaded && (style === MapStyle.standard || style === MapStyle.satellite)) {
-      map.setStyle(styles[style]);
-      localStorage.setItem(storageCheckedKeyId, style);
+    if (style === MapStyle.standard || style === MapStyle.satellite) {
+      const setStyle = () => {
+        map.setStyle(styles[style]);
+        localStorage.setItem(storageCheckedKeyId, style);
+      };
+      if (mapLoaded) {
+        setStyle();
+      } else {
+        const setStyleAndCleanupListener = () => {
+          setStyle();
+          map.off('load', setStyleAndCleanupListener);
+        };
+        map.on('load', setStyleAndCleanupListener);
+      }
     }
   };
+
+  function addSkyLayer() {
+    // add a sky layer that will show when the map is highly pitched
+    const {lat, lng} = map.getCenter();
+    let time = new Date();
+    const sunTimes = SunCalc.getTimes(new Date(), lat, lng);
+    if (time.getHours() > sunTimes.sunset.getHours()) {
+      time = sunTimes.sunset;
+    } else if (time.getHours() < sunTimes.sunrise.getHours()) {
+      time = sunTimes.sunrise;
+    }
+    const sunPos = SunCalc.getPosition(time, lat, lng);
+    const sunAzimuth = 180 + (sunPos.azimuth * 180) / Math.PI;
+    const sunAltitude = 90 - (sunPos.altitude * 180) / Math.PI;
+    map.addLayer({
+        id: 'sky',
+        type: 'sky' as any,
+        paint: {
+        ['sky-type' as any]: 'atmosphere',
+        ['sky-atmosphere-sun' as any]: [sunAzimuth, sunAltitude],
+        ['sky-atmosphere-sun-intensity' as any]: 15,
+      },
+    });
+  }
+
+  function removeSkyLayer() {
+    map.removeLayer('sky');
+  }
 
   function toggle3dTerrain() {
     if (!is3dModeOn) {
@@ -354,21 +431,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       });
       // add the DEM source as a terrain layer with exaggerated height
       map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
-
-      // add a sky layer that will show when the map is highly pitched
-      const {lat, lng} = map.getCenter();
-      const sunPos = SunCalc.getPosition(new Date(), lat, lng);
-      const sunAzimuth = 180 + (sunPos.azimuth * 180) / Math.PI;
-      const sunAltitude = 90 - (sunPos.altitude * 180) / Math.PI;
-      map.addLayer({
-          id: 'sky',
-          type: 'sky' as any,
-          paint: {
-          ['sky-type' as any]: 'atmosphere',
-          ['sky-atmosphere-sun' as any]: [sunAzimuth, sunAltitude],
-          ['sky-atmosphere-sun-intensity' as any]: 15,
-        },
-      });
+      addSkyLayer();
       if (!map.getPitch()) {
         map.flyTo({
           pitch: 75,
@@ -376,7 +439,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       }
       is3dModeOn = true;
     } else {
-      map.removeLayer('sky');
+      removeSkyLayer();
       map.setTerrain(null);
       map.removeSource('mapbox-dem');
       if (map.getPitch()) {
@@ -389,10 +452,66 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     return is3dModeOn;
   }
 
+  function enableSummitView(lat: number, lng: number, altitude: number) {
+    map.setStyle(styles.summitView);
+
+    const setCameraPosition = () => {
+      const camera = map.getFreeCameraOptions();
+      camera.position = mapboxgl.MercatorCoordinate.fromLngLat(
+        [lng, lat],
+        altitude,
+      );
+      map.setPadding({
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 0,
+      });
+
+      camera.setPitchBearing(180, 0);
+
+      map.setFreeCameraOptions(camera);
+      map.setZoom(14);
+    };
+
+    if (mapLoaded) {
+      setCameraPosition();
+    } else {
+      const clearSourceOnLoad = () => {
+        setCameraPosition();
+        map.off('load', clearSourceOnLoad);
+      };
+      map.on('load', clearSourceOnLoad);
+    }
+  }
+
+  function disableSummitView() {
+    const newStyle = localStorage.getItem(storageCheckedKeyId);
+    setBaseMap(newStyle === MapStyle.standard || newStyle === MapStyle.satellite ? newStyle : MapStyle.standard);
+
+    const resetPitchAndBearing = () => {
+      if (!is3dModeOn) {
+        setTimeout(() => {
+          map.setPitch(0);
+          map.setBearing(0);
+        }, 0);
+      }
+    };
+    if (mapLoaded) {
+      resetPitchAndBearing();
+    } else {
+      const resetPitchAndBearingAndCleanupListener = () => {
+        resetPitchAndBearing();
+        map.off('load', resetPitchAndBearingAndCleanupListener);
+      };
+      map.on('load', resetPitchAndBearingAndCleanupListener);
+    }
+  }
+
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
     setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
-    clearHoveredPoints, setBaseMap, toggle3dTerrain,
+    clearHoveredPoints, setBaseMap, toggle3dTerrain, enableSummitView, disableSummitView,
   };
 };
 

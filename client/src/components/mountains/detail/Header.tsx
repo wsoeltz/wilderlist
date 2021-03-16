@@ -7,6 +7,7 @@ import {
 import React from 'react';
 import useFluent from '../../../hooks/useFluent';
 import {useBasicMountainDetails} from '../../../queries/mountains/useBasicMountainDetails';
+import {summitViewLink} from '../../../routing/Utils';
 import {
   Column,
   ItemTitle,
@@ -16,8 +17,8 @@ import {
 import {
   BasicIconInText,
   BasicIconInTextCompact,
-  LinkButtonCompact,
   PlaceholderText,
+  SmallLink,
   SmallSemiBold,
 } from '../../../styling/styleUtils';
 import {CoreItem} from '../../../types/itemTypes';
@@ -65,11 +66,19 @@ const MountainDetail = (props: Props) => {
     }
   }
 
+  const summitViewUrl = data && data.mountain ? summitViewLink(
+    data.mountain.location[1],
+    data.mountain.location[0],
+    data.mountain.elevation,
+    id,
+  ) : '';
   const summitViewButton = (
-    <LinkButtonCompact>
+    <SmallLink
+      to={summitViewUrl}
+    >
       <BasicIconInTextCompact icon={faEye} />
       {getString('mountain-detail-summit-view')}
-    </LinkButtonCompact>
+    </SmallLink>
   );
 
   return (
