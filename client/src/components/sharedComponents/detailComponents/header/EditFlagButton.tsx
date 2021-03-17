@@ -5,6 +5,7 @@ import {
 import React, {useCallback, useState} from 'react';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
+import {editMountainLink} from '../../../../routing/Utils';
 import {
   BasicIconInTextCompact,
   LinkButtonCompact,
@@ -42,10 +43,16 @@ const EditFlagButton = (props: Props) => {
         onClose={closeModal}
       />
     ) : null;
+    let relevantPermission: number | null = null;
+    let url: string = '#';
+    if (type === CoreItem.mountain) {
+      relevantPermission = user.mountainPermissions;
+      url = editMountainLink(id);
+    }
     return (user && authorId && user._id === authorId
-          && user.peakListPermissions !== -1)
+          && relevantPermission !== -1)
       || (user && user.permissions === PermissionTypes.admin) ? (
-      <SmallLink to={'#'}>
+      <SmallLink to={url}>
         <BasicIconInTextCompact icon={faPencilAlt} />
         {getString('global-text-value-edit')}
       </SmallLink>

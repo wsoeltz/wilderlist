@@ -15,6 +15,21 @@ enum ServicesRoutes {
   routesToPoint = '/api/routes-to-point',
 }
 
+interface PointInfoInput {
+  coord: Coordinate;
+  state?: boolean;
+  county?: boolean;
+  elevation?: boolean;
+}
+
+export const getPointInfoURL = ({coord, state, county, elevation}: PointInfoInput) => {
+  const includeState = state ? `&state=true` : '';
+  const includeCounty = county ? `&county=true` : '';
+  const includeElevation = elevation ? `&elevation=true` : '';
+  return `${baseUrl}${ServicesRoutes.pointInfo}` +
+    `?lat=${coord[1].toFixed(6)}&lng=${coord[0].toFixed(6)}${includeState}${includeCounty}${includeElevation}`;
+};
+
 export const getWeatherAtPointURL = ({coord, valley}: {coord: Coordinate, valley?: boolean}) => valley
   ? `${baseUrl}${ServicesRoutes.weatherAtValley}?lat=${coord[1]}&lng=${coord[0]}`
   : `${baseUrl}${ServicesRoutes.weatherAtPoint}?lat=${coord[1]}&lng=${coord[0]}`;

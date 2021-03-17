@@ -1,8 +1,9 @@
 import queryString from 'query-string';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
+import useMapContext from '../../../hooks/useMapContext';
 import {useMountainAndAllStates} from '../../../queries/compound/getMountainsAndStates';
 import {
   BaseMountainVariables,
@@ -12,7 +13,7 @@ import {
 import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import { ExternalResource, PermissionTypes } from '../../../types/graphQLTypes';
+import { PermissionTypes } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
 import MountainForm, {InitialMountainDatum} from './MountainForm';
@@ -38,6 +39,15 @@ const MountainCreatePage = () => {
   const { id }: any = useParams();
   const history = useHistory();
   const {lat, lng}: QueryVariables = queryString.parse(history.location.search);
+  const mapContext = useMapContext();
+
+  useEffect(() => {
+    const latitude = lat ? parseFloat(lat) : NaN;
+    const longitude = lng ? parseFloat(lng) : NaN;
+    if (mapContext.intialized && !isNaN(latitude) && !isNaN(longitude)) {
+      mapContext.setNewCenter([longitude, latitude], 12);
+    }
+  }, [mapContext, lat, lng]);
 
   const getString = useFluent();
 
@@ -113,23 +123,16 @@ const MountainCreatePage = () => {
         (data.mountain.author && data.mountain.author.id === userId) ||
         user.permissions === PermissionTypes.admin)
       ) {
-      const {mountain: {name, state, flag, description, resources}, mountain} = data;
-      const nonNullResources: ExternalResource[] = [];
-      if (resources) {
-        resources.forEach(rsrc => {
-          if (rsrc !== null && rsrc.title.length && rsrc.url.length) {
-            nonNullResources.push({title: rsrc.title, url: rsrc.url});
-          }
-        });
-      }
+      const {mountain: {name, state, flag, locationText, locationTextShort}, mountain} = data;
+
       const initialMountain: InitialMountainDatum = {
         id: mountain.id,
         name,
         latitude: mountain.latitude.toString(),
         longitude: mountain.longitude.toString(),
         elevation: mountain.elevation.toString(),
-        description: description ? description : '',
-        resources: nonNullResources,
+        locationText: locationText ? locationText : '',
+        locationTextShort: locationTextShort ? locationTextShort : '',
         state, flag,
       };
       mountainForm = (
@@ -158,8 +161,8 @@ const MountainCreatePage = () => {
         elevation: '',
         state: null,
         flag: null,
-        description: '',
-        resources: [],
+        locationText: '',
+        locationTextShort: '',
       };
       mountainForm = (
         <MountainForm

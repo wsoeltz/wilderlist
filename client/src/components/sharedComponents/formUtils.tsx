@@ -7,11 +7,19 @@ import {
   lightBorderColor,
   tertiaryColor,
 } from '../../styling/styleUtils';
+import {mobileSize} from '../../Utils';
 import {
     mobileWidth,
 } from './Modal';
 
 export const Wrapper = styled.div`
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   @media (max-width: ${mobileWidth}px) {
     padding-bottom: 15vh;
   }
@@ -39,6 +47,30 @@ export const CheckboxLabel = styled(CheckboxLabelBase)`
 
 export const ButtonWrapper = styled.div`
   display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: sticky;
+  margin: 0 -1rem -1rem;
+  bottom: -1rem;
+  margin-top: auto;
+  background-color: ${tertiaryColor};
+  border-top: solid 1px ${lightBorderColor};
+  padding: 0.7rem 1rem;
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+
+  @media(max-width: ${mobileSize}px) {
+    position: fixed;
+    bottom: 1.4rem;
+    border-bottom: solid 1px ${lightBorderColor};
+    margin-bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    align-items: stretch;
+    z-index: 500;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+  }
 `;
 
 export const SaveButton = styled(ButtonPrimary)`
@@ -66,23 +98,4 @@ export const DeleteResourceButton = styled(GhostButton)`
 
 export const Sublabel = styled.small`
   text-transform: none;
-`;
-
-export const ActionButtons = styled.div`
-  position: sticky;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
-  background-color: #fff;
-  padding: 1rem;
-  box-sizing: border-box;
-  background-color: ${tertiaryColor};
-  border: solid 1px ${lightBorderColor};
-  z-index: 100;
-
-  @media (max-width: ${mobileWidth}px) {
-    padding: 0;
-    position: fixed;
-  }
 `;

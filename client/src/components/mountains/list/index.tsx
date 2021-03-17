@@ -14,6 +14,7 @@ import { CoreItem } from '../../../types/itemTypes';
 import GhostDetailCard from '../../sharedComponents/GhostDetailCard';
 import Results from '../../sharedComponents/listComponents/Results';
 import {mountainNeutralSvg} from '../../sharedComponents/svgIcons';
+import CreateMountainButton from './CreateMountainButton';
 
 const MountainSearchPage = () => {
   const getString = useFluent();
@@ -90,6 +91,7 @@ const MountainSearchPage = () => {
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink('search')} />
       </Helmet>
       {list}
+      <CreateMountainButton />
     </>
   );
 };

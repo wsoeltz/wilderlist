@@ -51,6 +51,10 @@ const CycleImageContainer = styled.small`
   display: block;
   margin-left: 1rem;
   transform: translateY(-100%);
+
+  @media (max-width: ${mobileSize}px) {
+    transform: none;
+  }
 `;
 
 const TitleContainer = styled.div`

@@ -1310,6 +1310,30 @@ const userMutations: any = {
       }
     },
   },
+  updateCampsitePermissions: {
+    type: UserType,
+    args: {
+      id: { type: GraphQLNonNull(GraphQLID) },
+      campsitePermissions: { type: GraphQLInt },
+    },
+    async resolve(_unused: any,
+                  { id, campsitePermissions }: { id: string , campsitePermissions: number | null},
+                  context: {dataloaders: any, user: IUser | undefined | null}) {
+      if (!isAdmin(context.user)) {
+        throw new Error('Invalid permission');
+      }
+      try {
+        const user = await User.findOneAndUpdate(
+        { _id: id },
+        { campsitePermissions },
+        {new: true});
+        context.dataloaders.userLoader.clear(id).prime(id, user);
+        return user;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
   updatePeakListPermissions: {
     type: UserType,
     args: {

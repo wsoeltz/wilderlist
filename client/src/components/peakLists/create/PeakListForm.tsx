@@ -24,7 +24,6 @@ import {
   ListPrivacy,
   PeakListTier,
 } from '../../../types/graphQLTypes';
-import CreateMountainModal from '../../mountains/create/CreateMountainModal';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
@@ -92,7 +91,6 @@ const PeakListForm = (props: Props) => {
   const [externalResources, setExternalResources] =
     useState<ExternalResource[]>(
       initialData.resources ? [...initialData.resources, {title: '', url: ''}] : [{title: '', url: ''}]);
-  const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
 
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
@@ -115,7 +113,6 @@ const PeakListForm = (props: Props) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const closeAreYouSureModal = useCallback(() => setDeleteModalOpen(false), []);
   const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
-  const closeCreateMountainModal = useCallback(() => setCreateMountainModalOpen(false), []);
 
   const updatePeakListFlag = useUpdatePeakListFlag();
   const flagForDeletion = (id: string | undefined) => {
@@ -291,14 +288,6 @@ const PeakListForm = (props: Props) => {
     </DeleteButton>
   );
 
-  const onNewMountainCreate = (mtn: MountainDatum) => setMountains([...mountains, mtn]);
-  const createMountainModal = createMountainModalOpen === false ? null : (
-    <CreateMountainModal
-      onCancel={closeCreateMountainModal}
-      onSuccess={onNewMountainCreate}
-    />
-  );
-
   const toggleId = useCallback(() => setListId(new Types.ObjectId()), [setListId]);
 
   return (
@@ -346,7 +335,6 @@ const PeakListForm = (props: Props) => {
         </SaveButton>
       </ButtonWrapper>
       {areYouSureModal}
-      {createMountainModal}
     </>
   );
 };

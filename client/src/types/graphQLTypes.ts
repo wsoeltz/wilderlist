@@ -345,6 +345,7 @@ export interface User {
   trailNote: TrailNote | null;
   campsiteNote: CampsiteNote | null;
   mountainPermissions: number | null;
+  campsitePermissions: number | null;
   peakListPermissions: number | null;
   latestAscent: CompletedMountain | null;
   allInProgressMountains: Mountain[] | null;

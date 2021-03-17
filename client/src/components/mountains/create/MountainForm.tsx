@@ -1,9 +1,9 @@
-import { faCheck, faClone, faCompass, faEdit, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faClone, faCompass, faMountain, faTrash } from '@fortawesome/free-solid-svg-icons';
 import sortBy from 'lodash/sortBy';
 import React, {useCallback, useEffect, useState} from 'react';
+import usePointLocationData from '../../../hooks/servicesHooks/pointData/usePointLocationData';
 import useFluent from '../../../hooks/useFluent';
-import usePointLocationData from '../../../hooks/usePointLocationData';
-import useUsersLocation from '../../../hooks/useUsersLocation';
+import useMapContext from '../../../hooks/useMapContext';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import { BaseMountainVariables } from '../../../queries/mountains/addRemoveMountain';
 import {useUpdateMountainFlag} from '../../../queries/mountains/flagMountain';
@@ -21,27 +21,29 @@ import {
   SmallTextNoteWithMargin,
 } from '../../../styling/styleUtils';
 import {
-  ExternalResource,
+  Coordinate,
   Mountain,
   State,
 } from '../../../types/graphQLTypes';
+import {
+  CoreItem,
+} from '../../../types/itemTypes';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
-import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
 import DelayedInput from '../../sharedComponents/DelayedInput';
-import DelayedTextarea from '../../sharedComponents/DelayedTextarea';
+import Crosshairs from '../../sharedComponents/detailComponents/map/Crosshairs';
 import {
-  ActionButtons,
   ButtonWrapper,
   DeleteButton,
-  ResourceContainer,
   Root as Grid,
   SaveButton,
   Wrapper,
 } from '../../sharedComponents/formUtils';
 import Loading from '../../sharedComponents/LoadingSimple';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import {mobileWidth} from '../../sharedComponents/Modal';
+import {noClickItemId} from '../../template/globalMap/tooltip';
 
 const latitudeMin = -90;
 const latitudeMax = 90;
@@ -69,8 +71,8 @@ export interface InitialMountainDatum {
   elevation: string;
   state: null | { id: State['id']};
   flag: string | null;
-  description: string;
-  resources: ExternalResource[];
+  locationText: string;
+  locationTextShort: string;
 }
 
 interface Props {
@@ -87,18 +89,38 @@ const MountainForm = (props: Props) => {
   const getString = useFluent();
 
   const windowWidth = useWindowWidth();
-  const {location: usersLocation} = useUsersLocation();
+  const mapContext = useMapContext();
 
   const [name, setName] = useState<string>(initialData.name);
 
+  const [locationText, setLocationText] = useState<string>(initialData.locationText);
+  const [locationTextShort, setLocationTextShort] = useState<string>(initialData.locationTextShort);
+
   const [stringLat, setStringLat] = useState<string>(initialData.latitude);
+  const [autoLat, setAutoLat] = useState<string>(initialData.latitude);
   const [stringLong, setStringLong] = useState<string>(initialData.longitude);
+  const [autoLong, setAutoLong] = useState<string>(initialData.longitude);
 
   const [stringElevation, setStringElevation] = useState<string>(initialData.elevation);
   const [autoElevation, setAutoElevation] = useState<string>(initialData.elevation);
   const [selectedState, setSelectedState] = useState<State['id'] | null>(
     initialData.state === null ? null : initialData.state.id,
   );
+
+  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, 0);
+  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, 0);
+  const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
+
+  useEffect(() => {
+    if (mapContext.intialized && longitude && latitude) {
+      mapContext.setExternalHoveredPopup(name, CoreItem.mountain, elevation + 'ft', [longitude, latitude]);
+    }
+    return () => {
+      if (mapContext.intialized) {
+        mapContext.clearExternalHoveredPopup();
+      }
+    };
+  }, [mapContext, latitude, longitude, elevation, name]);
 
   const {
     loading: loadingLocationData, data: locationData, error: locationDataError,
@@ -107,45 +129,53 @@ const MountainForm = (props: Props) => {
     longitude: stringLong ? parseFloat(stringLong) : undefined,
   });
 
+  const setLatLongFromMap = (coord: Coordinate) => {
+    setStringLat(coord[1].toFixed(6));
+    setStringLong(coord[0].toFixed(6));
+    setAutoLat(coord[1].toFixed(6));
+    setAutoLong(coord[0].toFixed(6));
+  };
+
   useEffect(() => {
     if (loadingLocationData === true) {
         setSelectedState(null);
         setStringElevation('');
         setAutoElevation('');
     } else {
-      if (locationData && locationData.state !== null) {
-        const targetState = states.find(
-          state => state.name.toLowerCase() === (locationData.state as string).toLowerCase());
-        if (targetState) {
-          setSelectedState(curVal => targetState.id !== curVal ? targetState.id : curVal);
+      if (locationData) {
+        if (locationData.state !== null && locationData.state.id) {
+          const newStateId = locationData.state.id;
+          setSelectedState(curVal => newStateId !== curVal ? newStateId : curVal);
         }
-      }
-      if (locationData && locationData.elevation !== null) {
-        const newElevation = locationData.elevation.toString();
-        setStringElevation(curVal => newElevation !== curVal ? newElevation : curVal);
-        setAutoElevation(curVal => newElevation !== curVal ? newElevation : curVal);
+        if (locationData.elevation !== null) {
+          const newElevation = locationData.elevation.toFixed(0);
+          setStringElevation(curVal => newElevation !== curVal ? newElevation : curVal);
+          setAutoElevation(curVal => newElevation !== curVal ? newElevation : curVal);
+        } else {
+          setStringElevation('');
+          setAutoElevation('');
+        }
+        if (locationData.locationText !== null) {
+          const newLocationText = locationData.locationText.toString();
+          setLocationText(curVal => newLocationText !== curVal ? newLocationText : curVal);
+        } else {
+          const newLocationText = locationData.state !== null && locationData.state.name
+            ? locationData.state.name : '';
+          setLocationText(newLocationText);
+        }
+        if (locationData.locationTextShort !== null) {
+          const newLocationTextShort = locationData.locationTextShort.toString();
+          setLocationTextShort(curVal => newLocationTextShort !== curVal ? newLocationTextShort : curVal);
+        } else {
+          const newLocationTextShort = locationData.state !== null && locationData.state.abbreviation
+            ? locationData.state.abbreviation : '';
+          setLocationTextShort(newLocationTextShort);
+        }
       }
     }
   }, [locationData, loadingLocationData, states]);
 
-  const [description, setDescription] = useState<string>(initialData.description);
-  const [externalResources, setExternalResources] =
-  useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
-
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
-
-  let defaultLatitude: number;
-  let defaultLongitude: number;
-  if (usersLocation) {
-    defaultLatitude = usersLocation[1];
-    defaultLongitude = usersLocation[0];
-  } else {
-    defaultLatitude = 43.20415146;
-    defaultLongitude = -71.52769471;
-  }
-  const latitude: number = validateFloatValue(stringLat, latitudeMin, latitudeMax, defaultLatitude);
-  const longitude: number = validateFloatValue(stringLong, longitudeMin, longitudeMax, defaultLongitude);
-  const elevation: number = validateFloatValue(stringElevation, elevationMin, elevationMax);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const closeAreYouSureModal = useCallback(() => {
@@ -220,42 +250,6 @@ const MountainForm = (props: Props) => {
     ),
   );
 
-  const handleExternalResourceChange = (value: string) =>
-    (field: keyof ExternalResource, index: number) =>
-      setExternalResources(
-        externalResources.map((resource, _index) => {
-          if (resource[field] === value || index !== _index) {
-            return resource;
-          } else {
-            return {...resource, [field]: value};
-          }
-        },
-      ),
-    );
-
-  const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
-    e.preventDefault();
-    setExternalResources(externalResources.filter((_v, i) => i !== index));
-  };
-
-  const resourceInputs = externalResources.map((resource, i) => (
-    <ResourceContainer key={i}>
-      <DelayedInput
-        initialValue={resource.title}
-        setInputValue={val => handleExternalResourceChange(val)('title', i)}
-        placeholder={getString('global-text-value-resource-title')}
-      />
-      <DelayedInput
-        initialValue={resource.url}
-        setInputValue={val => handleExternalResourceChange(val)('url', i)}
-        placeholder={getString('global-text-value-resource-url')}
-      />
-      <GhostButton onClick={e => deleteResource(e)(i)}>
-        ×
-      </GhostButton>
-    </ResourceContainer>
-  ));
-
   const preventSubmit = () =>
     (name && selectedState && latitude && longitude &&
      elevation && !loadingSubmit) ? false : true;
@@ -264,9 +258,8 @@ const MountainForm = (props: Props) => {
     if (name && selectedState && latitude && longitude &&
         elevation && !loadingSubmit) {
       setLoadingSubmit(true);
-      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
       onSubmit({
-        name, latitude, longitude, elevation, state: selectedState, description, resources});
+        name, latitude, longitude, elevation, state: selectedState, locationText, locationTextShort});
     }
   };
 
@@ -274,9 +267,8 @@ const MountainForm = (props: Props) => {
     if (name && selectedState && latitude && longitude &&
         elevation && !loadingSubmit && onSubmitAndAddAnother) {
       setLoadingSubmit(true);
-      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
       onSubmitAndAddAnother({
-        name, latitude, longitude, elevation, state: selectedState, description, resources});
+        name, latitude, longitude, elevation, state: selectedState, locationText, locationTextShort});
     }
   };
 
@@ -290,7 +282,6 @@ const MountainForm = (props: Props) => {
   const deleteButton = !initialData.id ? null : (
     <DeleteButton
       onClick={openDeleteModal}
-      mobileExtend={true}
     >
       <BasicIconInText icon={faTrash} />
       {deleteButtonText}
@@ -305,11 +296,25 @@ const MountainForm = (props: Props) => {
     <CreateAnotherButton
       disabled={preventSubmit()}
       onClick={validateAndSaveAndAdd}
-      mobileExtend={true}
     >
       <BasicIconInText icon={faClone} />
       {createAnotherText}
     </CreateAnotherButton>
+  ) : null;
+
+  const center: Coordinate = [longitude, latitude];
+  const mountainForMap = {
+    id: noClickItemId,
+    name,
+    elevation,
+    location: center,
+  };
+
+  const map = latitude && longitude ? (
+    <MapRenderProp
+      id={'create-edit-mountain-' + JSON.stringify(mountainForMap)}
+      mountains={[mountainForMap]}
+    />
   ) : null;
 
   return (
@@ -334,6 +339,7 @@ const MountainForm = (props: Props) => {
         </DetailBoxTitle>
         <DetailBoxWithMargin>
           {locationError}
+          <Crosshairs getCenter={setLatLongFromMap} />
           <Grid>
             <div>
               <LabelContainer htmlFor={'create-mountain-latitude'}>
@@ -344,7 +350,7 @@ const MountainForm = (props: Props) => {
                 </Label>
               </LabelContainer>
               <DelayedInput
-                key={'latitude-' + stringLat}
+                key={'latitude-' + autoLat}
                 id={'create-mountain-latitude'}
                 type={'number'}
                 min={latitudeMin}
@@ -363,7 +369,7 @@ const MountainForm = (props: Props) => {
                 </Label>
               </LabelContainer>
               <DelayedInput
-                key={'longitude-' + stringLong}
+                key={'longitude-' + autoLong}
                 id={'create-mountain-longitude'}
                 type={'number'}
                 min={longitudeMin}
@@ -410,60 +416,15 @@ const MountainForm = (props: Props) => {
             </div>
           </Grid>
         </DetailBoxWithMargin>
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faEdit} />
-              {getString('create-mountain-optional-title')}
-            </>
-          }
-          defaultHidden={true}
-        >
-          <div style={{marginBottom: '1rem'}}>
-            <LabelContainer htmlFor={'create-peak-list-description'}>
-              <Label>
-                {getString('create-peak-list-peak-list-description-label')}
-              </Label>
-            </LabelContainer>
-            <DelayedTextarea
-              id={'create-peak-list-description'}
-              rows={6}
-              initialValue={description}
-              setInputValue={value => setDescription(value)}
-              placeholder={getString('create-mountain-optional-description')}
-              maxLength={5000}
-            />
-          </div>
-          <div>
-            <LabelContainer>
-              <Label>
-                {getString('global-text-value-external-resources')}
-              </Label>
-            </LabelContainer>
-            {resourceInputs}
-            <div>
-              <ButtonSecondary onClick={e => {
-                e.preventDefault();
-                setExternalResources([...externalResources, {title: '', url: ''}]);
-              }}>
-                {getString('global-text-value-add-external-resources')}
-              </ButtonSecondary>
-            </div>
-          </div>
-        </CollapsibleDetailBox>
-      </Wrapper>
-      <ActionButtons>
         <ButtonWrapper>
           {deleteButton}
           <GhostButton
-            mobileExtend={true}
             onClick={onCancel}
           >
             {getString('global-text-value-modal-cancel')}
           </GhostButton>
           {createAnother}
           <SaveButton
-            mobileExtend={true}
             disabled={preventSubmit()}
             onClick={validateAndSave}
           >
@@ -471,7 +432,8 @@ const MountainForm = (props: Props) => {
             {saveButtonText}
           </SaveButton>
         </ButtonWrapper>
-      </ActionButtons>
+      </Wrapper>
+      {map}
       {areYouSureModal}
     </>
   );

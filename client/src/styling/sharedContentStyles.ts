@@ -33,6 +33,11 @@ export const ContentItem = styled.div`
   margin: 0;
 `;
 
+export const DetailItem = styled.div`
+  border-top: solid 1px ${lightBorderColor};
+  padding: 1rem;
+`;
+
 export const VerticalContentItem = styled(ContentItem)`
   margin-bottom: 0.5rem;
 `;

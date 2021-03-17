@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client';
-import { ExternalResource, Mountain, User } from '../../types/graphQLTypes';
+import { Mountain, State, User } from '../../types/graphQLTypes';
 
 export const mountainQuery = `
       id
@@ -8,22 +8,11 @@ export const mountainQuery = `
       latitude
       longitude
       location
-      description
-      resources {
-        title
-        url
-      }
+      locationText
+      locationTextShort
       state {
         id
         name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
       }
       author {
         id
@@ -37,8 +26,8 @@ const mountainVariableTypes = `
   $latitude: Float!,
   $longitude: Float!,
   $state: ID!,
-  $description: String,
-  $resources: [ExternalResourcesInputType],
+  $locationText: String!,
+  $locationTextShort: String!,
 `;
 
 const mountainBaseVariables = `
@@ -47,8 +36,8 @@ const mountainBaseVariables = `
   latitude: $latitude,
   longitude: $longitude,
   state: $state,
-  description: $description,
-  resources: $resources,
+  locationText: $locationText,
+  locationTextShort: $locationTextShort,
 `;
 
 const ADD_MOUNTAIN = gql`
@@ -86,9 +75,9 @@ export interface MountainSuccessResponse {
     latitude: Mountain['latitude'];
     longitude: Mountain['longitude'];
     location: Mountain['location'];
-    state: Mountain['state'];
-    description: Mountain['description'];
-    resources: Mountain['resources'];
+    state: null | {id: State['id'], name: State['name']};
+    locationText: Mountain['locationText'];
+    locationTextShort: Mountain['locationTextShort'];
     author: null | {
       id: User['id'];
     }
@@ -102,8 +91,8 @@ export interface BaseMountainVariables {
   latitude: number;
   longitude: number;
   state: string;
-  description: string | null;
-  resources: ExternalResource[] | null;
+  locationText: string;
+  locationTextShort: string;
 }
 
 export interface AddMountainVariables extends BaseMountainVariables {

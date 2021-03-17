@@ -142,7 +142,6 @@ const UserSchema = new Schema({
     text: { type: String },
   }],
   mountainPermissions: { type: Number },
-  trailPermissions: { type: Number },
   campsitePermissions: { type: Number },
   peakListPermissions: { type: Number },
 });
@@ -608,6 +607,7 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountainPermissions: { type: GraphQLInt },
+    campsitePermissions: { type: GraphQLInt },
     peakListPermissions: { type: GraphQLInt },
     latestAscent: {
       type: CompletedMountainsType,

@@ -4,6 +4,8 @@ import {Coordinate} from '../../../../types/graphQLTypes';
 import {CoreItems} from '../../../../types/itemTypes';
 import ClickedPopup from './popup/ClickedPopup';
 
+export const noClickItemId = 'NO_CLICK_ITEM';
+
 export type CallbackInput = {
   item: CoreItems;
   highlighted: boolean;
@@ -31,6 +33,10 @@ const Tooltip = (props: Props) => {
     node, item, id, name, location, closePopup, callback,
     highlightedPointsGeojson, highlightedTrailsGeojson, highlightedRoadsGeojson,
   } = props;
+
+  if (props.id === noClickItemId) {
+    return null;
+  }
 
   let modal: React.ReactElement<any> | null;
   if (node !== null && item !== undefined && id !== undefined &&

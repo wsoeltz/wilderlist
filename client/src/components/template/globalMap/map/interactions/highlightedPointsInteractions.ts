@@ -1,6 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 import {CoreItems} from '../../../../../types/itemTypes';
-import {CallbackInput, Props as TooltipState} from '../../tooltip';
+import {CallbackInput, noClickItemId, Props as TooltipState} from '../../tooltip';
 import {highlightedPointsLayerId} from '../layers';
 
 interface Input {
@@ -34,43 +34,45 @@ const mountainInteractions = (input: Input) => {
         const id = e && e.features && e.features[0]
           ? (e.features[0].properties as any).id : '';
 
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        if (id !== noClickItemId) {
+          // Ensure that if the map is zoomed out such that multiple
+          // copies of the feature are visible, the popup appears
+          // over the copy being pointed to.
+          while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+          }
+
+          const existingPopup = document.getElementsByClassName('mapboxgl-popup');
+          if ( existingPopup.length ) {
+            existingPopup[0].remove();
         }
 
-        const existingPopup = document.getElementsByClassName('mapboxgl-popup');
-        if ( existingPopup.length ) {
-          existingPopup[0].remove();
+          const popup = new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML('<div id="mapboxgl-tooltip"></div>')
+          .addTo(map);
+
+          const removeFromMap = () => popup.remove();
+
+          popup.on('close', onTooltipClose);
+
+          setTimeout(() => {
+          const node = document.getElementById('mapboxgl-tooltip');
+          if (node) {
+            onTooltipOpen({
+              node,
+              item: itemType,
+              id,
+              name,
+              location: coordinates,
+              closePopup: removeFromMap,
+              callback: getTooltipCallback(),
+              highlighted: true,
+              ...getHighlightedGeojsonData(),
+            });
+          }
+        }, 0);
       }
-
-        const popup = new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML('<div id="mapboxgl-tooltip"></div>')
-        .addTo(map);
-
-        const removeFromMap = () => popup.remove();
-
-        popup.on('close', onTooltipClose);
-
-        setTimeout(() => {
-        const node = document.getElementById('mapboxgl-tooltip');
-        if (node) {
-          onTooltipOpen({
-            node,
-            item: itemType,
-            id,
-            name,
-            location: coordinates,
-            closePopup: removeFromMap,
-            callback: getTooltipCallback(),
-            highlighted: true,
-            ...getHighlightedGeojsonData(),
-          });
-        }
-      }, 0);
     }
   });
 

@@ -7,12 +7,12 @@ import React, {useCallback} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
 import {
+  DetailItem,
   ItemTitle,
 } from '../../../styling/sharedContentStyles';
 import {
   BasicIconInText,
   CompactButtonSecondary,
-  lightBorderColor,
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
@@ -24,13 +24,11 @@ import {
   ResourceContainer,
 } from '../../sharedComponents/formUtils';
 
-const Root = styled.div`
-  margin: 0 0 1rem -1rem;
+const Root = styled(DetailItem)`
+  margin: 0 -1rem 1rem -1rem;
   display: grid;
   grid-template-columns: 2fr 1.5fr;
   grid-gap: 0.5rem;
-  border-top: solid 1px ${lightBorderColor};
-  padding: 1rem;
 
   @media (max-width: 650px) {
     grid-template-columns: auto;
