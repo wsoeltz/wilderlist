@@ -17,6 +17,7 @@ import {
 import { AggregateItem } from '../../../types/itemTypes';
 import GhostCard from '../../sharedComponents/GhostDetailCard';
 import Results from '../../sharedComponents/listComponents/Results';
+import CreateHikingListButton from './CreateHikingListButton';
 
 const PeakListPage = () => {
   const getString = useFluent();
@@ -99,6 +100,7 @@ const PeakListPage = () => {
       </Helmet>
       <div>
         {list}
+        <CreateHikingListButton />
       </div>
     </>
   );

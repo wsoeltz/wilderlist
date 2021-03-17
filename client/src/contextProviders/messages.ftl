@@ -1317,7 +1317,7 @@ flag-peak-list-select-issue-description = {
     *[other] Other - There is a problem not specified in this list
 }
 
-create-peak-list-title-create = Create List
+create-peak-list-title-create = Create a hiking list
 
 create-peak-list-title-edit = Edit { $list-name }
 create-peak-list-peak-list-name-label = Hiking List Details

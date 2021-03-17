@@ -672,7 +672,7 @@ export const FloatingButtonContainer = styled.div`
 `;
 
 export const FloatingButton = styled(ButtonPrimaryLink)`
-  font-size: 0.75rem;
+  font-size: 1rem;
   border-radius: 15px;
   border-bottom: 3px solid ${darken(0.12, primaryColor)};
   border-right: 3px solid ${darken(0.12, primaryColor)};
