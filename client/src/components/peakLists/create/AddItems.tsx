@@ -1,12 +1,20 @@
-const {lineString} = require('@turf/helpers');
 const length = require('@turf/length').default;
+const getBbox = require('@turf/bbox').default;
+const {point, lineString, featureCollection} = require('@turf/helpers');
+import axios from 'axios';
+import partition from 'lodash/partition';
 import upperFirst from 'lodash/upperFirst';
-import React from 'react';
+import React, {useEffect} from 'react';
 import useFluent from '../../../hooks/useFluent';
-import { Campsite, Mountain, State, Trail } from '../../../types/graphQLTypes';
-import {CoreItem} from '../../../types/itemTypes';
+import useMapContext from '../../../hooks/useMapContext';
+import { Campsite, Mountain, State, Trail, TrailType } from '../../../types/graphQLTypes';
+import {CoreItem, CoreItems, coreItemsToCoreItem} from '../../../types/itemTypes';
 import DetailSegment from '../../sharedComponents/detailComponents/DetailSegment';
+import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
+import {
+  defaultGeoJsonLineString,
+} from '../../template/globalMap/map/layers';
 import ItemSelector from './ItemSelector';
 
 export interface MountainDatum {
@@ -63,11 +71,82 @@ const AddItems = (props: Props) => {
   } = props;
 
   const getString = useFluent();
+  const mapContext = useMapContext();
+
+  useEffect(() => {
+    if (mapContext.intialized) {
+      mapContext.clearMap({
+        points: !selectedMountains.length && !selectedCampsites.length,
+        lines: !selectedTrails.length,
+      });
+
+      const [totalRoads, totalTrails] = partition(selectedTrails,
+        (t => t.type === TrailType.road || t.type === TrailType.dirtroad));
+      if (totalTrails.length === 0) {
+        mapContext.setHighlightedTrails(defaultGeoJsonLineString);
+      }
+      if (totalRoads.length === 0) {
+        mapContext.setHighlightedRoads(defaultGeoJsonLineString);
+      }
+
+      mapContext.setTooltipCallback(({highlighted, datum, item}) => {
+        let selectedList: any[] = [];
+        let setSelectedList: (input: any) => void = () => false;
+        if (item === CoreItems.mountains) {
+          selectedList = selectedMountains;
+          setSelectedList = setSelectedMountains;
+        } else if (item === CoreItems.trails) {
+          selectedList = selectedTrails;
+          setSelectedList = setSelectedTrails;
+        } else if (item === CoreItems.campsites) {
+          selectedList = selectedCampsites;
+          setSelectedList = setSelectedCampsites;
+        }
+        if (highlighted) {
+          const updatedList = selectedList.filter((d: any) => d.id !== datum.id);
+          setSelectedList([...updatedList]);
+        } else if (!highlighted) {
+          if (!selectedList.find((d: any) => d.id === (datum as any).id)) {
+            const queryField = coreItemsToCoreItem(item);
+            const stateField = item === CoreItems.trails ? 'states' : 'state';
+            const query = `
+              {
+                ${queryField}(id: "${datum.id}") {
+                  ${stateField} {
+                    id
+                    abbreviation
+                  }
+                }
+              }
+            `;
+            axios.post('/graphql', {query})
+              .then(res => {
+                if (res && res.data.data && res.data.data &&
+                    res.data.data[queryField] && res.data.data[queryField][stateField]) {
+                  const mergedDatum = {
+                    ...datum,
+                    [stateField]: res.data.data[queryField][stateField],
+                  };
+                  setSelectedList([...selectedList, mergedDatum]);
+                }
+              })
+              .catch(error => console.error(error));
+          }
+        }
+
+      });
+    }
+  }, [
+    mapContext,
+    selectedMountains, selectedTrails, selectedCampsites,
+    setSelectedMountains, setSelectedTrails, setSelectedCampsites,
+  ]);
 
   const mountains = selectedMountains.map(mtn => ({
     ...mtn,
     stateAbbreviation: mtn.state ? mtn.state.abbreviation : '',
     elevationDisplay: mtn.elevation + 'ft',
+    center: mtn.location,
   }));
   const mountainDataFieldKeys = [
     {
@@ -117,6 +196,7 @@ const AddItems = (props: Props) => {
       : upperFirst(getString('global-formatted-campsite-type', {type: campsite.type})),
     formattedType: upperFirst(getString('global-formatted-campsite-type', {type: campsite.type})),
     stateAbbreviation: campsite.state ? campsite.state.abbreviation : '',
+    center: campsite.location,
   }));
   const campsiteDataFieldKeys = [
     {
@@ -190,12 +270,31 @@ const AddItems = (props: Props) => {
     {index: 2, count: campsites.length},
   ];
 
+  const points = [...selectedMountains, ...selectedCampsites]
+    .filter(d => d.location)
+    .map(d => point(d.location));
+  const lines = selectedTrails
+    .filter(d => d.line)
+    .map(d => lineString(d.line));
+  const bbox = lines.length || points.length
+    ? getBbox(featureCollection([...points, ...lines]))
+    : undefined;
+
   return (
-    <DetailSegment
-      panels={panels}
-      panelCounts={panelCounts}
-      panelId={'createListAddItemsId'}
-    />
+    <>
+      <DetailSegment
+        panels={panels}
+        panelCounts={panelCounts}
+        panelId={'createListAddItemsId'}
+      />
+      <MapRenderProp
+        id={'add-edit-peaklist-map-' + JSON.stringify({selectedMountains, selectedTrails, selectedCampsites})}
+        mountains={selectedMountains}
+        campsites={selectedCampsites}
+        trails={selectedTrails}
+        bbox={bbox}
+      />
+    </>
   );
 
 };

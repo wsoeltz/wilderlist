@@ -1,13 +1,17 @@
 const getBbox = require('@turf/bbox').default;
 const {point, lineString, featureCollection} = require('@turf/helpers');
+import partition from 'lodash/partition';
 import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
 import useFluent from '../../../../hooks/useFluent';
 import useMapContext from '../../../../hooks/useMapContext';
-import { Campsite, Mountain, Trail } from '../../../../types/graphQLTypes';
+import { Campsite, Mountain, Trail, TrailType } from '../../../../types/graphQLTypes';
 import { CoreItems } from '../../../../types/itemTypes';
 import MapRenderProp from '../../../sharedComponents/MapRenderProp';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../../sharedComponents/svgIcons';
+import {
+  defaultGeoJsonLineString,
+} from '../../../template/globalMap/map/layers';
 import ItemSelector from './ItemSelector';
 
 export interface MountainDatum {
@@ -61,6 +65,16 @@ const AddItems = (props: Props) => {
         points: !selectedMountains.length && !selectedCampsites.length,
         lines: !selectedTrails.length,
       });
+
+      const [totalRoads, totalTrails] = partition(selectedTrails,
+        (t => t.type === TrailType.road || t.type === TrailType.dirtroad));
+      if (totalTrails.length === 0) {
+        mapContext.setHighlightedTrails(defaultGeoJsonLineString);
+      }
+      if (totalRoads.length === 0) {
+        mapContext.setHighlightedRoads(defaultGeoJsonLineString);
+      }
+
       mapContext.setTooltipCallback(({highlighted, datum, item}) => {
         let selectedList: any[] = [];
         let setSelectedList: (input: any) => void = () => false;

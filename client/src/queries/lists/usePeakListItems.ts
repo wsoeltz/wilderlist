@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import {Campsite, Mountain, PeakList, Trail} from '../../types/graphQLTypes';
+import {Campsite, Mountain, PeakList, State, Trail} from '../../types/graphQLTypes';
 
 const GET_PEAK_LIST_ITEMS = gql`
   query GetPeakListItems($id: ID!) {
@@ -12,6 +12,10 @@ const GET_PEAK_LIST_ITEMS = gql`
         elevation
         location
         locationTextShort
+        state {
+          id
+          abbreviation
+        }
       }
       trails {
         id
@@ -21,6 +25,10 @@ const GET_PEAK_LIST_ITEMS = gql`
         line
         trailLength
         locationTextShort
+        states {
+          id
+          abbreviation
+        }
       }
       campsites {
         id
@@ -28,6 +36,10 @@ const GET_PEAK_LIST_ITEMS = gql`
         type
         location
         locationTextShort
+        state {
+          id
+          abbreviation
+        }
       }
       optionalMountains {
         id
@@ -35,6 +47,10 @@ const GET_PEAK_LIST_ITEMS = gql`
         elevation
         location
         locationTextShort
+        state {
+          id
+          abbreviation
+        }
       }
       optionalTrails {
         id
@@ -44,6 +60,10 @@ const GET_PEAK_LIST_ITEMS = gql`
         line
         trailLength
         locationTextShort
+        states {
+          id
+          abbreviation
+        }
       }
       optionalCampsites {
         id
@@ -51,6 +71,10 @@ const GET_PEAK_LIST_ITEMS = gql`
         type
         location
         locationTextShort
+        state {
+          id
+          abbreviation
+        }
       }
     }
   }
@@ -62,6 +86,10 @@ interface MountainDatum {
   elevation: Mountain['elevation'];
   location: Mountain['location'];
   locationTextShort: Mountain['locationTextShort'];
+  state: null | {
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  };
 }
 
 interface TrailDatum {
@@ -72,6 +100,10 @@ interface TrailDatum {
   line: Trail['line'];
   trailLength: Trail['trailLength'];
   locationTextShort: Trail['locationTextShort'];
+  states: Array<{
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  } | null>;
 }
 
 interface CampsiteDatum {
@@ -80,6 +112,10 @@ interface CampsiteDatum {
   type: Campsite['type'];
   location: Campsite['location'];
   locationTextShort: Trail['locationTextShort'];
+  state: null | {
+    id: State['id'];
+    abbreviation: State['abbreviation'];
+  };
 }
 
 interface SuccessResponse {

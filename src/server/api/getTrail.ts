@@ -29,6 +29,7 @@ export const getNamedParent = async (trail: ITrail) => {
         locationText: trail.locationText,
         locationTextShort: trail.locationTextShort,
         trailLength: trail.trailLength,
+        center: trail.center,
         line: trail.line,
       };
     }
@@ -41,6 +42,7 @@ export const getNamedParent = async (trail: ITrail) => {
       locationText: trail.locationText,
       locationTextShort: trail.locationTextShort,
       trailLength: trail.trailLength,
+      center: trail.center,
       line: trail.line,
     };
   }
@@ -58,6 +60,7 @@ const getTrail = async (_id: string) => {
         locationTextShort: trail.locationTextShort,
         parents: trail.parents,
         trailLength: trail.trailLength,
+        center: trail.center,
         line: trail.line,
       };
     } else {

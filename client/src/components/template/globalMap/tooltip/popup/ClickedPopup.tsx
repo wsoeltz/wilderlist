@@ -151,6 +151,8 @@ const ClickedPopup = (props: Props) => {
         <Switch>
           <Route exact path={Routes.AddTripReport} component={addEditRenderProp} />
           <Route exact path={Routes.EditTripReport} component={addEditRenderProp} />
+          <Route exact path={Routes.CreateList} component={addEditRenderProp} />
+          <Route exact path={Routes.EditList} component={addEditRenderProp} />
           <Route render={() => (
               <>
                 <Content>
