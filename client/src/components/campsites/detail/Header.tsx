@@ -75,7 +75,14 @@ const CampsiteDetail = (props: Props) => {
         />
       );
       if (campsite.website) {
-        const url = new URL(campsite.website);
+        let url: URL | null = null;
+        try {
+          const validUrl = new URL(campsite.website);
+          url = validUrl;
+        } catch (err) {
+          url = null;
+          console.error(err);
+        }
         let displayUrl = url && url.hostname
           ? url.hostname : campsite.website;
         if (displayUrl.length > 35) {

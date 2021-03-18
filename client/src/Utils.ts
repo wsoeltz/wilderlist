@@ -25,6 +25,15 @@ export async function asyncForEach(array: any[], callback: any) {
   }
 }
 
+export function cleanObject<T>(obj: T) {
+  for (const propName in obj) {
+    if ((obj[propName] as any) === '' || obj[propName] === null || obj[propName] === undefined) {
+      delete obj[propName];
+    }
+  }
+  return obj;
+}
+
 export const mediumSize = 1150; // in px
 export const mobileSize = 810; // in px
 

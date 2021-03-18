@@ -57,6 +57,7 @@ export const comparePeakListIsolatedLink = (friendId: string, peakListId: string
   Routes.ComparePeakListIsolated.replace(':id', friendId).replace(':peakListId', peakListId);
 
 export const editMountainLink = (id: string) => Routes.EditMountain.replace(':id', id);
+export const editCampsiteLink = (id: string) => Routes.EditCampsite.replace(':id', id);
 export const editPeakListLink = (id: string) => Routes.EditList.replace(':id', id);
 
 export const preventNavigation = (e: React.SyntheticEvent) => {

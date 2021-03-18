@@ -22,6 +22,9 @@ export enum Routes {
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',
 
+  CreateCampsite = '/create-campsite',
+  EditCampsite = '/edit-campsite/:id',
+
   CreateList = '/create-list',
   EditList = '/edit-list/:id',
 

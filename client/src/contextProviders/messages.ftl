@@ -975,6 +975,15 @@ trail-detail-ski-trail = Ski Trail
 trail-detail-elevation-profile = Elevation Profile
 trail-detail-download-trail = Download Trail
 
+global-text-value-ownership = Ownership
+campsite-formatted-ownership = {
+  $ownership ->
+    [private] Privately Run
+    [federal] Federally Run
+    [state] State Run
+    *[else] {""}
+}
+
 campsite-detail-subtitle = {
   $ownership ->
     [private] Privately Run
@@ -1262,6 +1271,8 @@ trip-reports-view-edit-button = View/Edit Report
 create-mountain-title-create = Add Mountain
 create-mountain-title-edit = Edit Mountain: { $mountain-name }
 
+create-campsite-title-create = Add Campsite
+
 create-mountain-title-create-question = Can't find the mountain you're looking for?
 create-mountain-title-create-new = Add New Mountain
 
@@ -1270,7 +1281,9 @@ create-mountain-title-create-question-optional = Can't find the optional mountai
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
+create-campsite-name-placeholder = Campsite Name
 create-mountain-name-title = Name of Mountain
+create-campsite-name-title = Name of Campsite
 create-mountain-location-title = Location Information
 create-mountain-location-loading = Determining location data...
 create-mountain-location-error = We were unable to automatically determine all of the location information. Please fill out the fields manually.
@@ -1286,6 +1299,7 @@ create-mountain-latitude-placeholder = Enter the latitude in decimal format
 create-mountain-longitude-placeholder = Enter the longitude in decimal format
 create-mountain-elevation-placeholder = Enter the elevation in feet
 create-mountain-optional-title = OPTIONAL: Additional Information
+create-item-campsite-contact-title = OPTIONAL: Campsite Contact Information
 create-mountain-optional-note = The following fields are optional and may be left blank.
 create-mountain-optional-description = Enter an optional description for the mountain here.
 

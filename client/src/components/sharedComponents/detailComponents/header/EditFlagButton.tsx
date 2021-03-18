@@ -5,7 +5,7 @@ import {
 import React, {useCallback, useState} from 'react';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
-import {editMountainLink} from '../../../../routing/Utils';
+import {editCampsiteLink, editMountainLink} from '../../../../routing/Utils';
 import {
   BasicIconInTextCompact,
   LinkButtonCompact,
@@ -48,6 +48,10 @@ const EditFlagButton = (props: Props) => {
     if (type === CoreItem.mountain) {
       relevantPermission = user.mountainPermissions;
       url = editMountainLink(id);
+    }
+    if (type === CoreItem.campsite) {
+      relevantPermission = user.campsitePermissions;
+      url = editCampsiteLink(id);
     }
     return (user && authorId && user._id === authorId
           && relevantPermission !== -1)

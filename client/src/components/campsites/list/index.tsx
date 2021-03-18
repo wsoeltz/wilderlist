@@ -15,6 +15,7 @@ import { CoreItem } from '../../../types/itemTypes';
 import GhostCard from '../../sharedComponents/GhostDetailCard';
 import Results from '../../sharedComponents/listComponents/Results';
 import {tentNeutralSvg} from '../../sharedComponents/svgIcons';
+import CreateCampsiteButton from './CreateCampsiteButton';
 
 const CampsiteSearchPage = () => {
   const getString = useFluent();
@@ -94,6 +95,7 @@ const CampsiteSearchPage = () => {
         <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + campsiteDetailLink('search')} />
       </Helmet>
       {list}
+      <CreateCampsiteButton />
     </>
   );
 };
