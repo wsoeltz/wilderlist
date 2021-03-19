@@ -58,12 +58,13 @@ interface Props {
   actionLine?: React.ReactElement<any> | null;
   authorId: null | string;
   type: CoreItem;
+  isParentTrail?: boolean;
 }
 
 const SimpleHeader = (props: Props) => {
   const {
     id, title, loading, customIcon, icon, subtitle, actionLine,
-    authorId, type,
+    authorId, type, isParentTrail,
   } = props;
 
   const iconEl = customIcon ? (
@@ -111,6 +112,7 @@ const SimpleHeader = (props: Props) => {
             type={type}
             id={id}
             name={title}
+            isParentTrail={isParentTrail}
           />
         </EditFlagButtonContainer>
       </Settings>

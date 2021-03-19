@@ -131,23 +131,7 @@ const TrailType: any = new GraphQLObjectType({
     locationTextShort: { type: GraphQLString },
     trailLength: { type: GraphQLFloat },
     avgSlope: { type: GraphQLFloat },
-    bbox:  {
-      type: new GraphQLList(GraphQLFloat),
-      async resolve(parentValue, args, {dataloaders: {peakListLoader}}) {
-        try {
-          if (parentValue.parent) {
-            const res = await peakListLoader.load(parentValue.parent);
-            if (res && res.bbox) {
-              return res.bbox;
-            }
-          }
-          return await parentValue.bbox;
-        } catch (err) {
-          return err;
-        }
-      },
-    },
-
+    bbox: {type: new GraphQLList(GraphQLFloat)},
     latestTrip: {
       type: GraphQLString,
       args: {

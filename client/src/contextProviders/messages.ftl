@@ -1288,6 +1288,9 @@ create-mountain-location-title = Location Information
 create-mountain-location-loading = Determining location data...
 create-mountain-location-error = We were unable to automatically determine all of the location information. Please fill out the fields manually.
 
+create-trail-name-title = Trail Name
+create-trail-name-placeholder = Name of trail
+
 create-mountain-location-note = Use the map {
   $position ->
     [below] below

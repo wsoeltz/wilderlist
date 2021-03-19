@@ -22,6 +22,7 @@ const GET_BASIC_TRAIL_DETAIL = gql`
       allowsHorses
       waterCrossing
       skiTrail
+      flag
       parents {
         id
         name
@@ -48,6 +49,7 @@ interface QuerySuccessResponse {
     allowsHorses: Trail['allowsHorses'];
     waterCrossing: Trail['waterCrossing'];
     skiTrail: Trail['skiTrail'];
+    flag: Trail['flag'];
     parents: Array<{
       id: Trail['id'];
       name: Trail['name'];

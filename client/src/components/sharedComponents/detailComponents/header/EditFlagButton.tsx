@@ -5,7 +5,12 @@ import {
 import React, {useCallback, useState} from 'react';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
-import {editCampsiteLink, editMountainLink} from '../../../../routing/Utils';
+import {
+  editCampsiteLink,
+  editMountainLink,
+  editTrailLink,
+  editTrailParentLink,
+} from '../../../../routing/Utils';
 import {
   BasicIconInTextCompact,
   LinkButtonCompact,
@@ -20,10 +25,11 @@ interface Props {
   type: CoreItem;
   name: string;
   id: string;
+  isParentTrail: boolean | undefined;
 }
 
 const EditFlagButton = (props: Props) => {
-  const {id, name, type, authorId} = props;
+  const {id, name, type, authorId, isParentTrail} = props;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const openModal = useCallback(() => setModalOpen(true), [setModalOpen]);
@@ -52,6 +58,14 @@ const EditFlagButton = (props: Props) => {
     if (type === CoreItem.campsite) {
       relevantPermission = user.campsitePermissions;
       url = editCampsiteLink(id);
+    }
+    if (type === CoreItem.trail) {
+      relevantPermission = -1;
+      if (isParentTrail) {
+        url = editTrailParentLink(id);
+      } else {
+        url = editTrailLink(id);
+      }
     }
     return (user && authorId && user._id === authorId
           && relevantPermission !== -1)

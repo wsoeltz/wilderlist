@@ -18,6 +18,8 @@ export enum Routes {
 
   TrailDetail = '/trail/:id',
   SearchTrails = '/trail/search',
+  EditTrail = '/edit-trail/:id',
+  EditTrailParent = '/edit-trail-parent/:id',
 
   CreateMountain = '/create-mountain',
   EditMountain = '/edit-mountain/:id',

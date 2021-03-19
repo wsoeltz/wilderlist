@@ -108,7 +108,7 @@ const TrailDetail = (props: Props) => {
       subtitle = hasChildren ? formattedType + _in + locationText : getString('trail-detail-subtitle', {
           type: formattedType, segment: parents.length, state: locationText,
         });
-      if (trail.avgSlope) {
+      if (trail.avgSlope !== undefined && trail.avgSlope !== null) {
         centerColumn = (
           <Column>
             <ItemTitle>
@@ -245,6 +245,7 @@ const TrailDetail = (props: Props) => {
         actionLine={relatedTrails}
         authorId={null}
         type={CoreItem.trail}
+        isParentTrail={hasChildren}
       />
       <TopLevelColumns>
         <Column>
