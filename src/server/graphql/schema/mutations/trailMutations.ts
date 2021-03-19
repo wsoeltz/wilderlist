@@ -91,7 +91,7 @@ const trailMutations: any = {
           throw new Error('Invalid user match');
         }
         if (trail !== null) {
-          await removeConnections(Trail, id, 'parents', Trail, 'children');
+          await removeConnections(Trail, id, 'children', Trail, 'parents');
           const {locationText, locationTextShort} = await getLocationStrings(states, id);
           const newTrail = await Trail.findOneAndUpdate(
             {_id: id},
