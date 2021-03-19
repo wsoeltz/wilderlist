@@ -12,7 +12,7 @@ import {
   TrailType as TrailTypeEnum,
   User as IUser,
 } from '../../graphQLTypes';
-import { asyncForEach, removeConnections } from '../../Utils';
+import { asyncForEach, getLocationStrings, removeConnections } from '../../Utils';
 import { PeakList } from '../queryTypes/peakListType';
 import TrailType, {
   Trail,
@@ -33,8 +33,7 @@ interface UpdateParentInput {
   name: string;
   children: string[];
   bbox: [number, number, number, number];
-  locationText: string;
-  locationTextShort: string;
+  states: string[];
   trailLength: number;
 }
 
@@ -79,13 +78,12 @@ const trailMutations: any = {
       name: { type: GraphQLNonNull(GraphQLString) },
       children: { type: new GraphQLList(GraphQLID)},
       bbox: {type: GraphQLNonNull(new GraphQLList(GraphQLFloat))},
-      locationText: { type: GraphQLNonNull(GraphQLString) },
-      locationTextShort: { type: GraphQLNonNull(GraphQLString) },
+      states: { type: new GraphQLList(GraphQLID)},
       trailLength: { type: GraphQLNonNull(GraphQLFloat) },
     },
     async resolve(_unused: any, input: UpdateParentInput, {user}: {user: IUser | undefined | null}) {
       const {
-        id, children, ...rest
+        id, children, states, ...rest
       } = input;
       try {
         const trail = await Trail.findById(id);
@@ -94,9 +92,10 @@ const trailMutations: any = {
         }
         if (trail !== null) {
           await removeConnections(Trail, id, 'parents', Trail, 'children');
+          const {locationText, locationTextShort} = await getLocationStrings(states, id);
           const newTrail = await Trail.findOneAndUpdate(
             {_id: id},
-            {children, ...rest},
+            {children, locationText, locationTextShort, ...rest},
             {new: true});
           if (children && children.length) {
             await asyncForEach(children, async (childId: string) =>

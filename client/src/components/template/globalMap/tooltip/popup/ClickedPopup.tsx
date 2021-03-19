@@ -153,6 +153,7 @@ const ClickedPopup = (props: Props) => {
           <Route exact path={Routes.EditTripReport} component={addEditRenderProp} />
           <Route exact path={Routes.CreateList} component={addEditRenderProp} />
           <Route exact path={Routes.EditList} component={addEditRenderProp} />
+          <Route exact path={Routes.EditTrailParent} component={addEditRenderProp} />
           <Route render={() => (
               <>
                 <Content>

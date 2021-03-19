@@ -53,12 +53,14 @@ interface Props<T> {
   searchPlaceholder: string;
   endpoint: string;
   type: CoreItem;
+  noOptionalField?: boolean;
 }
 
 function ItemSelector<T>(props: Props<T>) {
   const {
     selectedList, setSelectedList, dataFieldKeys,
     note, searchPlaceholder, endpoint, type,
+    noOptionalField,
   } = props;
 
   const addItemToList = (newItem: {datum: T}) => {
@@ -111,10 +113,12 @@ function ItemSelector<T>(props: Props<T>) {
     };
   });
 
-  const actionFieldKeys = [
-    {displayKey: 'optionalNode', sortKey: 'optionalSort', label: 'Optional'},
-    {displayKey: 'removeNode', sortKey: null, label: 'Remove'},
-  ];
+  const actionFieldKeys = noOptionalField
+    ? [{displayKey: 'removeNode', sortKey: null, label: 'Remove'}]
+    : [
+      {displayKey: 'optionalNode', sortKey: 'optionalSort', label: 'Optional'},
+      {displayKey: 'removeNode', sortKey: null, label: 'Remove'},
+    ];
 
   return (
     <>
