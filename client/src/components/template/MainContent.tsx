@@ -36,6 +36,7 @@ const EditTrail = React.lazy(() => import('../trails/create/basic'));
 const EditTrailParent = React.lazy(() => import('../trails/create/parent'));
 const ComparePeakListPage = React.lazy(() => import('../peakLists/compare'));
 const AddTripReport = React.lazy(() => import('../tripReports/form'));
+const AdminPanel = React.lazy(() => import('../admin'));
 
 const TrackedRoute = (props: any) => {
   useEffect(() => {
@@ -81,6 +82,7 @@ const ContentRoutes = () => {
           <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
           <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
           {/* 404 Route -> */}
+          <Route exact path={Routes.Admin} component={AdminPanel} />
           <Route component={PageNotFound} />
         </Switch>
       </Suspense>

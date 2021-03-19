@@ -19,7 +19,7 @@ import {
   lightFontWeight,
   tertiaryColor,
 } from '../../../styling/styleUtils';
-import { User } from '../../../types/graphQLTypes';
+import { PermissionTypes, User } from '../../../types/graphQLTypes';
 import {mobileSize} from '../../../Utils';
 import {
   BrandIcon as BrandIconBase,
@@ -195,6 +195,11 @@ const UserMenuList = ({user, closeUserMenu, isMobile}: UserMenuListProps) => {
         {getString('global-text-value-modal-close-menu')}
       </UserMenuAnchor>
     ) : null;
+    const adminLink = user.permissions === PermissionTypes.admin ? (
+      <UserMenuLink to={Routes.Admin}>
+        Admin Panel
+      </UserMenuLink>
+    ) : null;
     return (
       <UserMenuListContainer ref={node} onClick={closeUserMenu}>
         <UserMenuLink to={userProfileLink(userId)}>
@@ -212,6 +217,7 @@ const UserMenuList = ({user, closeUserMenu, isMobile}: UserMenuListProps) => {
         <UserMenuLink to={Routes.TermsOfUse}>
           {getString('header-text-menu-terms-of-use')}
         </UserMenuLink>
+        {adminLink}
         <UserMenuAnchor href='/api/logout'>
           {getString('header-text-menu-item-logout')}
         </UserMenuAnchor>

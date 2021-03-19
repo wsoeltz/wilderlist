@@ -44,6 +44,8 @@ export enum Routes {
   TermsOfUse = '/terms-of-use',
   YourStats = '/your-stats',
   About = '/about',
+
+  Admin = '/admin',
 }
 
 export const defaultOgImageUrl = '/og-image/default/image.jpg';
