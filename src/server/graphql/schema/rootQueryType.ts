@@ -214,6 +214,24 @@ const RootQuery = new GraphQLObjectType({
           .sort({ name: 1 });
       },
     },
+    usersSearchByNewest: {
+      type: new GraphQLList(UserType),
+      args: {
+        searchQuery: { type: new GraphQLNonNull(GraphQLString) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+        pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+        return User
+          .find({
+            hideProfileInSearch: { $ne: true },
+            name: { $regex: searchQuery, $options: 'i' },
+          })
+          .limit(nPerPage)
+          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+          .sort( [['_id', -1]] );
+      },
+    },
     mountainSearch: {
       type: new GraphQLList(MountainType),
       args: {
