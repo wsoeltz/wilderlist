@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { overlayPortalContainerId } from '../../Utils';
 import LoadingSimple from './LoadingSimple';
 

@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { borderRadius, lightBorderColor, secondaryColor } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
 

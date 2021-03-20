@@ -5,7 +5,6 @@ import styled from 'styled-components/macro';
 import {
   baseColor,
   boldFontWeight,
-  DetailBox as DetailBoxBase,
   lightBaseColor,
   lightBlue,
   lightBorderColor,
@@ -27,35 +26,14 @@ export const FlexTitle = styled(ItemTitle)`
   align-items: center;
 `;
 
-export const ContentItem = styled.div`
-  border-bottom: solid 1px ${lightBorderColor};
-  padding: 0.5rem 0;
-  margin: 0;
-`;
-
 export const DetailItem = styled.div`
   border-top: solid 1px ${lightBorderColor};
   padding: 1rem;
 `;
 
-export const VerticalContentItem = styled(ContentItem)`
-  margin-bottom: 0.5rem;
-`;
-
 export const BasicListItem = styled.div`
   font-size: 0.9rem;
   margin: 0.4rem 0;
-`;
-
-export const BasicUnorderedListContainer = styled.ul`
-  padding: 0;
-  margin: 0;
-`;
-
-export const BasicUnorderedListItem = styled.li`
-  font-size: 0.9rem;
-  margin: 0.4rem 0;
-  list-style: none;
 `;
 
 export const AscentListItem = styled(BasicListItem)`
@@ -123,14 +101,6 @@ export const ExternalLink = styled.a`
 
 export const InlineSectionContainer = styled.div`
   margin-bottom: 1.5rem;
-`;
-
-export const DetailBox = styled(DetailBoxBase)`
-  margin-bottom: 2rem;
-`;
-
-export const NotesTitle = styled(ItemTitle)`
-  margin-bottom: 0.5rem;
 `;
 
 export const TopLevelColumns = styled.div`

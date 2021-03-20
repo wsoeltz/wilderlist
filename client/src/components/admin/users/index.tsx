@@ -12,7 +12,7 @@ import { asyncForEach, notEmpty } from '../../../Utils';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import ListUsers from './ListUsers';
 
-export const GET_USERS = gql`
+const GET_USERS = gql`
   query ListUsers($searchQuery: String!) {
     users: usersSearchByNewest(searchQuery: $searchQuery, nPerPage: 30, pageNumber: 1) {
       id

@@ -15,7 +15,7 @@ interface Props {
   compact?: boolean;
 }
 
-const StandardSearch = (props: Props) => {
+const DelayedTextArea = (props: Props) => {
   const {
     id, placeholder, setInputValue, initialValue,
     maxLength, rows, compact,
@@ -51,4 +51,4 @@ const StandardSearch = (props: Props) => {
   );
 };
 
-export default StandardSearch;
+export default DelayedTextArea;

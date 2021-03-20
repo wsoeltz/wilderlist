@@ -31,7 +31,7 @@ const getMountainsQuery = `
       status
 `;
 
-export const GET_MOUNTAINS = gql`
+const GET_MOUNTAINS = gql`
   query ListMountains {
     mountains: newestMountains {
       ${getMountainsQuery}

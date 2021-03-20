@@ -10,7 +10,7 @@ import {
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {rgba} from 'polished';
 import React, {useEffect, useRef, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import useBeforeUnload from '../../hooks/useBeforeUnload';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';

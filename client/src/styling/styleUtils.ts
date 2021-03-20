@@ -165,10 +165,6 @@ export const Section = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const Block = styled.div`
-  margin: 2rem 0;
-`;
-
 export const SectionTitle = styled.div`
   padding: 0.5rem 0;
   text-transform: uppercase;
@@ -244,95 +240,6 @@ export const Card = styled(CardBase)`
   }
 `;
 
-export const CardLinkWrapper = styled(Link)`
-  display: block;
-  color: inherit;
-  text-decoration: inherit;
-
-  &:hover {
-    color: inherit;
-  }
-`;
-
-export const StackableCardSection = styled(Card)`
-  box-shadow: none;
-  border-bottom: none;
-  margin-bottom: 0;
-`;
-
-export const StackableCardFooter = styled(Card)`
-  background-color: ${tertiaryColor};
-  box-shadow: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-`;
-
-const cardFooterLinkStyles = `
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  box-sizing: border-box;
-  font-size: 0.875rem;
-  line-height: 1;
-  padding: 0.25rem;
-
-  &:not(:last-child) {
-    border-right: solid 1px ${lightBorderColor};
-  }
-`;
-
-interface ColorProps {
-  color: string;
-  $isActive: boolean;
-}
-
-export const CardFooterLink = styled(Link)<ColorProps>`
-  ${cardFooterLinkStyles}
-  color: ${(p) => p.$isActive ? '#fff' : p.color};
-  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
-  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
-
-  &:hover {
-    color: #fff;
-    background-color: ${({color}) => color};
-    text-decoration: none;
-  }
-`;
-export const CardFooterButton = styled.button<ColorProps>`
-  ${cardFooterLinkStyles}
-  color: ${(p) => p.$isActive ? '#fff' : p.color};
-  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
-  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
-
-  &:hover {
-    color: #fff;
-    background-color: ${({color}) => color};
-    text-decoration: none;
-  }
-`;
-
-export const StackedCardWrapper = styled(CardLinkWrapper)`
-  box-shadow: 0px 0px 3px -1px #b5b5b5;
-`;
-
-export const CardTitle = styled.h1`
-  font-size: 1.1rem;
-  margin-top: 0;
-  margin-bottom: 0.4rem;
-`;
-
-export const CardSubtitle = styled.div`
-  color: ${lightBaseColor};
-  font-size: 0.95rem;
-  margin: 0.4rem 0;
-  display: flex;
-  justify-content: space-between;
-`;
 export const Seperator = styled.span`
   color: ${lightBaseColor};
   opacity: 0.45;
@@ -340,22 +247,14 @@ export const Seperator = styled.span`
   margin: 0 0.2rem;
 `;
 
-export const InlineTitle = styled.h3`
-  color: ${baseColor};
-  margin: 0.5rem 0;
-`;
-
-export const DetailBox = styled.div`
+export const DetailBoxWithMargin = styled.div`
   border: 1px solid ${lightBorderColor};
   background-color: ${tertiaryColor};
   padding: 1rem;
-`;
-
-export const DetailBoxWithMargin = styled(DetailBox)`
   margin-bottom: 1rem;
 `;
 
-export const DetailBoxTitle = styled(InlineTitle)`
+export const DetailBoxTitle = styled.h3`
   border: 1px solid ${lightBorderColor};
   border-bottom: none;
   background-color: #d7d7d7;
@@ -365,15 +264,6 @@ export const DetailBoxTitle = styled(InlineTitle)`
   font-size: 0.9rem;
   display: flex;
   align-items: center;
-`;
-
-export const DetailBoxFooter = styled.h4`
-  border: 1px solid ${lightBorderColor};
-  border-top: none;
-  background-color: #d7d7d7;
-  margin: 0;
-  padding: 0.15rem 1rem;
-  color: ${baseColor};
 `;
 
 export const FullWidthBreak = styled.div`
@@ -423,7 +313,7 @@ export const SmallTextNoteWithMargin = styled(SmallTextNote)`
 
 export const borderRadius = 6; // in px
 
-export const ButtonBase = styled.button<{mobileExtend?: boolean}>`
+const ButtonBase = styled.button<{mobileExtend?: boolean}>`
   padding: 0.4rem;
   color: #fff;
   text-align: center;
@@ -452,27 +342,6 @@ export const ButtonBase = styled.button<{mobileExtend?: boolean}>`
   ` : ''}
 `;
 
-export const ExpandedButtonBase = styled.button`
-  color: #fff;
-  text-align: center;
-  font-weight: ${semiBoldFontBoldWeight};
-  letter-spacing: 0.01rem;
-  width: 100%;
-  padding: 0.9rem;
-  font-size: 1rem;
-  border-radius: 0;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-`;
-
 export const ButtonPrimary = styled(ButtonBase)`
   background-color: ${primaryColor};
 
@@ -486,30 +355,6 @@ export const ButtonSecondary = styled(ButtonBase)`
 
   &:hover {
     background-color: ${secondaryHoverColor};
-  }
-`;
-
-export const ExpandedButtonPrimary = styled(ExpandedButtonBase)`
-  background-color: ${primaryColor};
-
-  &:hover {
-    background-color: ${primaryHoverColor};
-  }
-`;
-
-export const ExpandedButtonSecondary = styled(ExpandedButtonBase)`
-  background-color: ${secondaryColor};
-
-  &:hover {
-    background-color: ${secondaryHoverColor};
-  }
-`;
-
-export const ExpandedButtonWarning = styled(ExpandedButtonBase)`
-  background-color: ${warningColor};
-
-  &:hover {
-    background-color: ${warningHoverColor};
   }
 `;
 
@@ -530,17 +375,6 @@ export const CompactButtonPrimary = styled(ButtonPrimary)`
 export const CompactButtonSecondary = styled(ButtonSecondary)`
   font-size: 0.7rem;
   padding: 0.35rem;
-`;
-
-export const ButtonTertiary = styled(ButtonBase)`
-  color: ${secondaryColor};
-  background-color: ${tertiaryColor};
-  border: solid 1px ${lightBorderColor};
-
-
-  &:hover {
-    background-color: ${lightBorderColor};
-  }
 `;
 
 export const ButtonWarning = styled(ButtonBase)`
@@ -595,22 +429,6 @@ export const CompactButtonPrimaryLink = styled(Link)`
   }
 `;
 
-export const GhostButtonLink = styled(Link)`
-  padding: 0.6rem;
-  color: ${secondaryColor};
-  text-align: center;
-  border-radius: ${borderRadius}px;
-  font-weight: ${semiBoldFontBoldWeight};
-  font-size: 0.8rem;
-  background-color: transparent;
-  display: inline-block;
-  text-decoration: none;
-
-  &:hover {
-    color: ${secondaryHoverColor};
-  }
-`;
-
 export const GhostButton = styled(ButtonBase)`
   color: ${secondaryColor};
   background-color: transparent;
@@ -618,15 +436,6 @@ export const GhostButton = styled(ButtonBase)`
   &:hover {
     color: ${secondaryHoverColor};
   }
-`;
-
-export const CompactGhostButton = styled(GhostButton)`
-  font-size: 0.7rem;
-  padding: 0.35rem;
-`;
-export const CompactGhostButtonLink = styled(GhostButtonLink)`
-  font-size: 0.7rem;
-  padding: 0.35rem;
 `;
 
 export const ButtonWrapper = styled.div`
@@ -760,15 +569,6 @@ export const Prev = styled(ButtonSecondary)`
   }
 `;
 
-export const PlusIcon = styled.span`
-  font-size: 1.3rem;
-  height: 0;
-  display: inline-block;
-  line-height: 0;
-  position: relative;
-  top: 2px;
-`;
-
 const IconInTextBase = styled(FontAwesomeIcon)`
   position: relative;
 `;
@@ -831,27 +631,12 @@ export const NoResults = styled.div`
   margin-bottom: 1.2rem;
 `;
 
-export const CheckboxRoot = styled.div`
-  display: block;
-  position: relative;
-`;
-
 export const CheckboxInput = styled.input`
   position: absolute;
   left: 4px;
   top: 0;
   bottom: 0;
   margin: auto;
-`;
-
-export const CheckboxLabel = styled.label`
-  padding: 8px 8px 8px 30px;
-  display: block;
-
-  &:hover {
-    background-color: #eee;
-    cursor: pointer;
-  }
 `;
 
 export const CheckboxList = styled.div`
@@ -885,10 +670,6 @@ export const CheckboxListItem = styled.label`
 
 export const CheckboxListCheckbox = styled.input`
   margin-right: 1rem;
-`;
-
-export const RemoveIcon = styled.div`
-  margin-left: auto;
 `;
 
 /* eslint-disable max-len */
@@ -962,10 +743,6 @@ export const RequiredNote = styled.div`
   }
 `;
 
-export const Required = styled.span`
-  color: ${warningColor};
-`;
-
 export const SvgImg = styled.img`
   height: 3rem;
   margin-right: 1rem;
@@ -985,21 +762,4 @@ export const SvgMiniImg = styled.img`
   position: relative;
   margin-right: 0.6rem;
   top: 3px;
-`;
-
-export const SecondaryNavigationContainer = styled.div`
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-auto-flow: column;
-  width: 100%;
-`;
-export const SecondaryNavigationButton = styled.button`
-  padding: 0.75rem;
-  text-align: center;
-  color: ${secondaryColor};
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  background-color: #fff;
-  border: solid 1px ${lightBorderColor};
-  border-top: none;
 `;

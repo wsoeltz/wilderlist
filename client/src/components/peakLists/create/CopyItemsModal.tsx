@@ -6,16 +6,16 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   lightBorderColor,
+  tertiaryColor,
 } from '../../../styling/styleUtils';
 import {CoreItem, coreItemToCoreItems} from '../../../types/itemTypes';
-import {
-  CheckboxContainer,
-} from '../../peakLists/create/MountainSelectionModal';
 import Modal, {mobileWidth} from '../../sharedComponents/Modal';
 import Search from '../../sharedComponents/search';
 import CopyItemsList from './CopyItemsList';
 
-const Container = styled(CheckboxContainer)`
+const Container = styled.div`
+  background-color: ${tertiaryColor};
+  overflow: hidden;
   border: 1px solid ${lightBorderColor};
   height: 300px;
   overflow: auto;
@@ -40,7 +40,7 @@ interface Props {
   copyItems: (items: any[]) => void;
 }
 
-const AreYouSureModal = (props: Props) => {
+const CopyItemsModal = (props: Props) => {
   const { onCancel, copyItems, type } = props;
 
   const getString = useFluent();
@@ -95,4 +95,4 @@ const AreYouSureModal = (props: Props) => {
   );
 };
 
-export default AreYouSureModal;
+export default CopyItemsModal;

@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { withRouter } from 'react-router';
-import { ExternalResource, PeakList, PeakListVariants, State } from '../../../types/graphQLTypes';
+import { PeakList, State } from '../../../types/graphQLTypes';
 import { failIfValidOrNonExhaustive } from '../../../Utils';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import {
@@ -59,19 +59,6 @@ const GET_PENDING_PEAK_LISTS = gql`
     }
   }
 `;
-
-export interface AddPeakListVariables {
-  name: string;
-  shortName: string;
-  type: PeakListVariants;
-  mountains: string[];
-  optionalMountains: string[];
-  states: string[];
-  parent: string | null;
-  description: string | null;
-  optionalPeaksDescription: string | null;
-  resources: ExternalResource[];
-}
 
 const DELETE_PEAK_LIST = gql`
   mutation($id: ID!) {

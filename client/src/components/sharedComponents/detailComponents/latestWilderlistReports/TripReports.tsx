@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
 import {

@@ -4,7 +4,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {
   primaryColor,

@@ -31,7 +31,7 @@ const getCampsitesQuery = `
       status
 `;
 
-export const GET_CAMPSITES = gql`
+const GET_CAMPSITES = gql`
   query ListCampsites {
     campsites: newestCampsites {
       ${getCampsitesQuery}

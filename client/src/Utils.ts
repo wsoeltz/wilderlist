@@ -25,15 +25,6 @@ export async function asyncForEach(array: any[], callback: any) {
   }
 }
 
-export function cleanObject<T>(obj: T) {
-  for (const propName in obj) {
-    if ((obj[propName] as any) === '' || obj[propName] === null || obj[propName] === undefined) {
-      delete obj[propName];
-    }
-  }
-  return obj;
-}
-
 export const mediumSize = 1150; // in px
 export const mobileSize = 810; // in px
 
@@ -148,12 +139,6 @@ export const convertFieldsToDate = (day: string, month: string, year: string) =>
   // Ignore time for now, keeping it in in case of need for it later
   // If all valid, return YYYY-MM-DD-HH-MM string. Use X for any part of the date that is empty
   return {error: undefined, date: `${validYear}-${validMonth}-${validDay}-XX-XX`};
-};
-
-export const formatNumberWithCommas = (num: number) => {
-    const parts = num.toString().split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
 };
 
 export enum Months {
@@ -366,8 +351,6 @@ export const isValidURL = (link: string) => {
   const urlRegex = new RegExp(/^(http|https)(:\/\/)?[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/, 'i');
   return urlRegex.test(link);
 };
-
-export const latLonKey = ({lat, lon}: {lat: number, lon: number}) => lat.toString() + lon.toString();
 
 // https://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
 export function isTouchDevice() {

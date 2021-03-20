@@ -1,6 +1,6 @@
 import { select } from 'd3-selection';
 import React, {useEffect, useRef} from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
