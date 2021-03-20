@@ -1,3 +1,4 @@
+import mapboxgl from 'mapbox-gl';
 import {MapStyle} from '../';
 import {primaryColor} from '../../../../../styling/styleUtils';
 

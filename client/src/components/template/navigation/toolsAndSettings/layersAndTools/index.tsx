@@ -128,7 +128,10 @@ const LayersAndTools = ({mapStyle, setMapStyle}: Props) => {
   if (mode === Mode.layers) {
     content = (
       <ContentContainer>
-        <MapLayers mapStyle={mapStyle} setMapStyle={setMapStyle} />
+        <MapLayers
+          mapStyle={mapStyle}
+          setMapStyle={setMapStyle}
+        />
         <ClosePanelButton onClick={closePanel}>
           {getString('global-text-value-modal-close-panel')}
         </ClosePanelButton>

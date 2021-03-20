@@ -31,6 +31,7 @@ import initLayers, {
   hoveredShapeLayerId,
   hoveredTrailsLayerId,
 } from './layers';
+import setWeather, {getWeatherState, WeatherOverlay, WeatherState} from './weather';
 
 // eslint-disable-next-line
 (mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
@@ -81,6 +82,7 @@ export interface Output {
   enableSummitView: (lat: number, lng: number, altitude: number) => void;
   disableSummitView: () => void;
   setTooltipCallback: (fn: ((input: CallbackInput) => void) | undefined) => void;
+  setWeatherOverlay: (value: WeatherOverlay | null) => Promise<WeatherState | null>;
 }
 
 const styles = {
@@ -152,6 +154,10 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       if (is3dModeOn) {
         is3dModeOn = false;
         toggle3dTerrain();
+      }
+      const weatherState = getWeatherState();
+      if (weatherState) {
+        setWeatherOverlay(weatherState.type);
       }
     } else {
       if (!map.getLayer('sky')) {
@@ -436,6 +442,18 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
+  async function setWeatherOverlay(value: WeatherOverlay | null) {
+    if (mapLoaded) {
+      try {
+        return await setWeather(map, value);
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+    return null;
+  }
+
   function addSkyLayer() {
     // add a sky layer that will show when the map is highly pitched
     const {lat, lng} = map.getCenter();
@@ -555,7 +573,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
     setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
     clearHoveredPoints, setBaseMap, toggle3dTerrain, enableSummitView, disableSummitView,
-    setTooltipCallback,
+    setTooltipCallback, setWeatherOverlay,
   };
 };
 
