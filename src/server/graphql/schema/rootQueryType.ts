@@ -63,6 +63,30 @@ const RootQuery = new GraphQLObjectType({
           .limit(nPerPage ? nPerPage : 50);
       },
     },
+    newestMountains: {
+      type: new GraphQLList(MountainType),
+      args: {
+        nPerPage: { type: GraphQLInt },
+      },
+      async resolve(_parentValue, {nPerPage}) {
+        return Mountain
+          .find({})
+          .sort( [['_id', -1]] )
+          .limit(nPerPage ? nPerPage : 50);
+      },
+    },
+    newestCampsites: {
+      type: new GraphQLList(CampsiteType),
+      args: {
+        nPerPage: { type: GraphQLInt },
+      },
+      async resolve(_parentValue, {nPerPage}) {
+        return Campsite
+          .find({})
+          .sort( [['_id', -1]] )
+          .limit(nPerPage ? nPerPage : 50);
+      },
+    },
     appearsIn: {
       type: new GraphQLList(PeakListType),
       args: {

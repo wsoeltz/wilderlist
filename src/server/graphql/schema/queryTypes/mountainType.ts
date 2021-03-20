@@ -129,7 +129,7 @@ const MountainType: any = new GraphQLObjectType({
         try {
           if (parentValue.author) {
             const res = await userLoader.load(parentValue.author);
-            if (res._id.toString() !== parentValue.author.toString()) {
+            if (res && res._id && res._id.toString() !== parentValue.author.toString()) {
               throw new Error('IDs do not match' + res);
             }
             return res;

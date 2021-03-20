@@ -30,6 +30,7 @@ const getPeakListsQuery = `
       flag
       author {
         id
+        name
         email
         peakListPermissions
       }

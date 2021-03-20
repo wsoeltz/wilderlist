@@ -39,6 +39,7 @@ export const UPDATE_PEAK_LIST_PERMISSIONS = gql`
     user: updatePeakListPermissions
     (id: $id, peakListPermissions: $peakListPermissions) {
       id
+      name
       email
       peakListPermissions
     }
@@ -48,6 +49,7 @@ export const UPDATE_PEAK_LIST_PERMISSIONS = gql`
 export interface PermissionsSuccessResponse {
   user: null | {
     id: User['id'];
+    name: User['id'];
     peakListPermissions: User['peakListPermissions'];
     email: User['email'];
   };
@@ -192,6 +194,10 @@ const ListPeakLists = (props: Props) => {
             {parentCopy}
             {stateCopy}
             {flag}
+            <br />Author: &nbsp;
+            <Link to={peakList.author !== null ? userProfileLink(peakList.author.id) : '#'}>
+              <strong>{peakList.author !== null ? peakList.author.name : 'N/A'}</strong>
+            </Link>
           </>
         );
         let titleColor: string | undefined;
