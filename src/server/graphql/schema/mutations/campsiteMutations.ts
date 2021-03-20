@@ -224,9 +224,12 @@ const campsiteMutations: any = {
         throw new Error('You must be logged in');
       }
       try {
+        const flagWithAuthor = user && flag
+          ? flag + '__USERID__' + user._id + '__USERNAME__' + user.name
+          : flag;
         const campsite = await Campsite.findOneAndUpdate(
         { _id: id },
-        { flag },
+        { flag: flagWithAuthor },
         {new: true});
         dataloaders.campsiteLoader.clear(id).prime(id, campsite);
         return campsite;

@@ -281,9 +281,12 @@ const mountainMutations: any = {
         throw new Error('You must be logged in');
       }
       try {
+        const flagWithAuthor = user && flag
+          ? flag + '__USERID__' + user._id + '__USERNAME__' + user.name
+          : flag;
         const mountain = await Mountain.findOneAndUpdate(
         { _id: id },
-        { flag },
+        { flag: flagWithAuthor },
         {new: true});
         dataloaders.mountainLoader.clear(id).prime(id, mountain);
         return mountain;

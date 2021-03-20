@@ -51,6 +51,18 @@ const RootQuery = new GraphQLObjectType({
         return PeakList.find({});
       },
     },
+    newestPeakLists: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        nPerPage: { type: GraphQLInt },
+      },
+      async resolve(_parentValue, {nPerPage}) {
+        return PeakList
+          .find({})
+          .sort( [['_id', -1]] )
+          .limit(nPerPage ? nPerPage : 50);
+      },
+    },
     appearsIn: {
       type: new GraphQLList(PeakListType),
       args: {

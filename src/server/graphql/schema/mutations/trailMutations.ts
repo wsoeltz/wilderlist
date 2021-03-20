@@ -140,9 +140,12 @@ const trailMutations: any = {
         throw new Error('You must be logged in');
       }
       try {
+        const flagWithAuthor = user && flag && flag
+          ? flag + '__USERID__' + user._id + '__USERNAME__' + user.name
+          : flag;
         const trail = await Trail.findOneAndUpdate(
         { _id: id },
-        { flag },
+        { flag: flagWithAuthor },
         {new: true});
         dataloaders.trailLoader.clear(id).prime(id, trail);
         return trail;

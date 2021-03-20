@@ -143,7 +143,7 @@ const TrailForm = (props: Props) => {
     closeAreYouSureModal();
   };
 
-  const areYouSureProps: AreYouSureModalProps = initialData.flag === 'DELETE REQUEST' ? {
+  const areYouSureProps: AreYouSureModalProps = initialData.flag && initialData.flag.includes('DELETE REQUEST') ? {
     onConfirm: () => clearFlag(initialData.id),
     onCancel: closeAreYouSureModal,
     title: getString('global-text-value-cancel-delete-request'),
@@ -188,7 +188,7 @@ const TrailForm = (props: Props) => {
   const saveButtonText = loadingSubmit === true
     ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
 
-  const deleteButtonText = initialData.flag !== 'DELETE REQUEST'
+  const deleteButtonText = !initialData.flag || !initialData.flag.includes('DELETE REQUEST')
     ? getString('global-text-value-delete')
     : getString('global-text-value-cancel-delete-request');
 

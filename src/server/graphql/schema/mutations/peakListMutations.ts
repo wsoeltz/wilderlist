@@ -789,9 +789,12 @@ const peakListMutations: any = {
         throw new Error('You must be logged in');
       }
       try {
+        const flagWithAuthor = user && flag
+          ? flag + '__USERID__' + user._id + '__USERNAME__' + user.name
+          : flag;
         const peakList = await PeakList.findOneAndUpdate(
         { _id: id },
-        { flag },
+        { flag: flagWithAuthor },
         {new: true});
         dataloaders.peakListLoader.clear(id).prime(id, peakList);
         return peakList;
