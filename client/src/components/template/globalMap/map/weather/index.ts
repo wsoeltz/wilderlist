@@ -1,8 +1,13 @@
 import mapboxgl from 'mapbox-gl';
+import openweatherMapLayer from './openweatherMapLayer';
 import precipitation from './precipitation';
 
 export enum WeatherOverlay {
   precipitation = 'precipitation',
+  pressure = 'pressure',
+  wind = 'wind',
+  temp = 'temp',
+  clouds = 'clouds',
 }
 
 export interface WeatherState {
@@ -33,6 +38,8 @@ const setWeatherOverlay = async (map: mapboxgl.Map, value: WeatherOverlay | null
   }
   if (value === WeatherOverlay.precipitation) {
     weatherState = await precipitation({map, sourceId});
+  } else if (value !== null) {
+    weatherState = await openweatherMapLayer({map, sourceId, type: value});
   } else {
     weatherState = null;
   }

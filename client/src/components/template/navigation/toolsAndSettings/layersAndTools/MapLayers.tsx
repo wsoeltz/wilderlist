@@ -247,24 +247,29 @@ const MapLayers = ({mapStyle, setMapStyle}: Props) => {
   const indexOfTime = mapWeather
     ? mapWeather.allTimes.findIndex(t => t.toString() === mapWeather.activeTime.toString())
     : 0;
-  const timeSelect = mapWeather && timeOptions.length
+  const dateSlider = timeOptions.length > 1 ? (
+    <>
+      <input
+        type='range'
+        min='0'
+        max={timeOptions.length - 1}
+        step='1'
+        list='weather-time-options'
+        onChange={onSlideChange}
+        defaultValue={indexOfTime !== -1 ? indexOfTime.toString() : '0'}
+      />
+      <datalist id='weather-time-options'>
+        {timeOptions}
+      </datalist>
+    </>
+  ) : null;
+  const timeSelect = mapWeather
     ? (
       <DateSliderContainer>
         <DateText>
           {formatAMPM(mapWeather.activeTime)}
         </DateText>
-        <input
-          type='range'
-          min='0'
-          max={timeOptions.length - 1}
-          step='1'
-          list='weather-time-options'
-          onChange={onSlideChange}
-          defaultValue={indexOfTime !== -1 ? indexOfTime.toString() : '0'}
-        />
-        <datalist id='weather-time-options'>
-          {timeOptions}
-        </datalist>
+        {dateSlider}
         <Legend weatherType={mapWeather.type} />
       </DateSliderContainer>
     ) : null;
@@ -307,7 +312,8 @@ const MapLayers = ({mapStyle, setMapStyle}: Props) => {
           {'Precip.'}
         </Button>
         <Button
-          $highlighted={false}
+          $highlighted={Boolean(mapWeather && mapWeather.type === WeatherOverlay.pressure)}
+          onClick={() => setWeather(WeatherOverlay.pressure)}
         >
           <IconThumbnail>
             <FontAwesomeIcon icon={faExchangeAlt} />
@@ -315,7 +321,8 @@ const MapLayers = ({mapStyle, setMapStyle}: Props) => {
           {'Pressure'}
         </Button>
         <Button
-          $highlighted={false}
+          $highlighted={Boolean(mapWeather && mapWeather.type === WeatherOverlay.temp)}
+          onClick={() => setWeather(WeatherOverlay.temp)}
         >
           <IconThumbnail>
             <FontAwesomeIcon icon={faThermometerEmpty} />
@@ -323,7 +330,8 @@ const MapLayers = ({mapStyle, setMapStyle}: Props) => {
           {'Temp.'}
         </Button>
         <Button
-          $highlighted={false}
+          $highlighted={Boolean(mapWeather && mapWeather.type === WeatherOverlay.wind)}
+          onClick={() => setWeather(WeatherOverlay.wind)}
         >
           <IconThumbnail>
             <FontAwesomeIcon icon={faWind} />
@@ -331,7 +339,8 @@ const MapLayers = ({mapStyle, setMapStyle}: Props) => {
           {'Wind'}
         </Button>
         <Button
-          $highlighted={false}
+          $highlighted={Boolean(mapWeather && mapWeather.type === WeatherOverlay.clouds)}
+          onClick={() => setWeather(WeatherOverlay.clouds)}
         >
           <IconThumbnail>
             <FontAwesomeIcon icon={faCloud} />
