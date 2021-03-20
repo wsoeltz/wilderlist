@@ -195,8 +195,6 @@ const ListMountains = (props: Props) => {
             {status}
             <small>
               Elevation: <strong>{mountain.elevation}</strong>,
-              Latitude: <strong>{mountain.latitude}</strong>,
-              Longitude: <strong>{mountain.longitude}</strong>,
               State: <strong>{state !== null ? state.name : 'N/A'}</strong>
               <br />Author: &nbsp;
               <Link to={mountain.author !== null ? userProfileLink(mountain.author.id) : '#'}>

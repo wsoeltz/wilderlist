@@ -12,8 +12,7 @@ import {
   TrailType as TrailTypeEnum,
   User as IUser,
 } from '../../graphQLTypes';
-import { asyncForEach, getLocationStrings, removeConnections } from '../../Utils';
-import { PeakList } from '../queryTypes/peakListType';
+import { asyncForEach, getLocationStrings, removeConnections, removeItemFromAllLists } from '../../Utils';
 import TrailType, {
   Trail,
 } from '../queryTypes/trailType';
@@ -118,7 +117,7 @@ const trailMutations: any = {
         throw new Error('Invalid permission');
       }
       try {
-        await removeConnections(Trail, id, 'lists', PeakList, 'trails');
+        await removeItemFromAllLists(id, 'trails');
         await removeConnections(Trail, id, 'parents', Trail, 'children');
         await removeConnections(Trail, id, 'children', Trail, 'parents');
         return Trail.findByIdAndDelete(id);

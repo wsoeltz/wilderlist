@@ -468,6 +468,24 @@ const RootQuery = new GraphQLObjectType({
         return Mountain.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
+    flaggedTrails: {
+      type: new GraphQLList(TrailType),
+      resolve() {
+        return Trail.find({ flag: { $ne: null } });
+      },
+    },
+    flaggedCampsites: {
+      type: new GraphQLList(CampsiteType),
+      resolve() {
+        return Campsite.find({ flag: { $ne: null } });
+      },
+    },
+    pendingCampsites: {
+      type: new GraphQLList(CampsiteType),
+      resolve() {
+        return Campsite.find({ status: { $eq: CreatedItemStatus.pending } });
+      },
+    },
     flaggedPeakLists: {
       type: new GraphQLList(PeakListType),
       resolve() {

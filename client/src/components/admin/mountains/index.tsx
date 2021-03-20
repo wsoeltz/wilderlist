@@ -15,10 +15,7 @@ import ListMountains from './ListMountains';
 const getMountainsQuery = `
       id
       name
-      latitude
-      longitude
       elevation
-      prominence
       state {
         id
         name
@@ -127,7 +124,7 @@ const AdminMountains = () => {
             <NavButtonLink
               onClick={() => setMountainsToShow(MountainsToShow.all)}
             >
-              All mountains
+              Newest mountains
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setMountainsToShow(MountainsToShow.pending)}

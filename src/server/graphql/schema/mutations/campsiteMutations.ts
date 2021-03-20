@@ -16,14 +16,13 @@ import {
   PermissionTypes,
   User as IUser,
 } from '../../graphQLTypes';
-import { removeConnections } from '../../Utils';
+import { removeItemFromAllLists } from '../../Utils';
 import CampsiteType, {
   Campsite,
 } from '../queryTypes/campsiteType';
 import {
   CreatedItemStatus,
 } from '../queryTypes/mountainType';
-import { PeakList } from '../queryTypes/peakListType';
 import {User} from '../queryTypes/userType';
 
 interface CoreInput {
@@ -180,7 +179,7 @@ const campsiteMutations: any = {
         throw new Error('Invalid permission');
       }
       try {
-        await removeConnections(Campsite, id, 'lists', PeakList, 'campsites');
+        await removeItemFromAllLists(id, 'campsites');
         return Campsite.findByIdAndDelete(id);
       } catch (err) {
         return err;

@@ -13,7 +13,7 @@ import {
   PermissionTypes,
   User as IUser,
 } from '../../graphQLTypes';
-import { removeConnections } from '../../Utils';
+import { removeItemFromAllLists } from '../../Utils';
 import MountainType, {
   CreatedItemStatus,
   Mountain,
@@ -100,7 +100,7 @@ const mountainMutations: any = {
         await State.findOneAndUpdate({ mountains: { $eq: id } },
           { $pull: {mountains: id} }, function(err: any, model: any) {
             if (err) { console.error(err); } } );
-        await removeConnections(Mountain, id, 'lists', PeakList, 'mountains');
+        await removeItemFromAllLists(id, 'mountains');
         return Mountain.findByIdAndDelete(id);
       } catch (err) {
         return err;

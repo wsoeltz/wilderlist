@@ -2,6 +2,7 @@
 import sortBy from 'lodash/sortBy';
 import mongoose from 'mongoose';
 import { PeakListVariants, Region as IRegion, State as IState } from './graphQLTypes';
+import {PeakList} from './schema/queryTypes/peakListType';
 import {Region} from './schema/queryTypes/regionType';
 import {State} from './schema/queryTypes/stateType';
 
@@ -40,6 +41,15 @@ export const removeConnections = (
         }
     });
   });
+};
+
+export const removeItemFromAllLists = async (id: string, field: string) => {
+    const lists = await PeakList.find({[field]: id});
+    await asyncForEach(lists, async (list: {_id: string}) => {
+      await PeakList.findByIdAndUpdate(list._id, {
+        $pull: { [field]: id},
+      });
+    });
 };
 
 // Errors out at compile time if a discriminating `switch` doesn't catch all cases
