@@ -4,6 +4,7 @@ const centroid = require('@turf/centroid').default;
 const bboxPolygon = require('@turf/bbox-polygon').default;
 const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 import { GetString } from 'fluent-react/compat';
+import debounce from 'lodash/debounce';
 import mapboxgl from 'mapbox-gl';
 import SunCalc from 'suncalc';
 import {mapboxHoverPopupClassName} from '../../../../styling/GlobalStyles';
@@ -50,8 +51,6 @@ const getRectFromBounds = (bounds: mapboxgl.LngLatBounds): [Longitude, Latitude,
   return [ne.lat, ne.lng, sw.lat, sw.lng];
 };
 
-export const defaultCenter: Coordinate = [-98.5795, 39.8283];
-
 export enum MapStyle {
   standard = 'standard',
   satellite = 'satellite',
@@ -94,6 +93,36 @@ const styles = {
 export const storageCheckedKeyId = 'localstorageKeyForGlobalMapBaseStyle';
 const initialStyle = localStorage.getItem(storageCheckedKeyId);
 
+const storedMapCenterLatKeyId = 'localstorageKeyForStoredMapCenterLatKeyId';
+const storedMapCenterLngKeyId = 'localstorageKeyForStoredMapCenterLngKeyId';
+const storedMapCenterZoomKeyId = 'localstorageKeyForStoredMapCenterZoomKeyId';
+export const getStoredMapCenter = (): {center: Coordinate, zoom: number} | null => {
+  const lat = localStorage.getItem(storedMapCenterLatKeyId);
+  const lng = localStorage.getItem(storedMapCenterLngKeyId);
+  const zoom = localStorage.getItem(storedMapCenterZoomKeyId);
+  if (lat && lng && zoom) {
+    const latAsNumber = parseFloat(lat);
+    const lngAsNumber = parseFloat(lng);
+    const zoomAsNumber = parseFloat(zoom);
+    if (!isNaN(latAsNumber) && !isNaN(lngAsNumber)) {
+      return {center: [lngAsNumber, latAsNumber], zoom: zoomAsNumber};
+    }
+  }
+  return null;
+};
+const storeMapCenter = debounce((lat: number, lng: number, zoom: number) => {
+  try {
+    localStorage.setItem(storedMapCenterLatKeyId, lat.toFixed(3));
+    localStorage.setItem(storedMapCenterLngKeyId, lng.toFixed(3));
+    localStorage.setItem(storedMapCenterZoomKeyId, zoom.toString());
+  } catch (err) {
+    console.error(err);
+  }
+}, 2000);
+const storedCenter = getStoredMapCenter();
+export const defaultCenter: Coordinate = storedCenter ? storedCenter.center : [-98.5795, 39.8283];
+const defaultZoom: number = storedCenter ? storedCenter.zoom : 3.5;
+
 let highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
@@ -109,7 +138,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     style: initialStyle === MapStyle.standard || initialStyle === MapStyle.satellite
       ? styles[initialStyle] : styles[MapStyle.standard],
     center: defaultCenter, // starting position [lng, lat]
-    zoom: 3.5, // starting zoom
+    zoom: defaultZoom, // starting zoom
     maxZoom: 15.5,
     customAttribution: [
       '<a href="https://wilderlist.app/about">© Wilderlist</a>',
@@ -131,6 +160,11 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     mapLoaded = true;
     initInteractions({
       map, push, getString, onTooltipOpen, onTooltipClose, getTooltipCallback, getHighlightedGeojsonData,
+    });
+    map.on('moveend', () => {
+      const currentCenter = map.getCenter();
+      const currentZoom = map.getZoom();
+      storeMapCenter(currentCenter.lat, currentCenter.lng, currentZoom);
     });
   });
 

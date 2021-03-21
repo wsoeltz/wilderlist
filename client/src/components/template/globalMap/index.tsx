@@ -6,7 +6,7 @@ import MapContext, {MapState} from '../../../contextProviders/mapContext';
 import useFluent from '../../../hooks/useFluent';
 import useUsersLocation from '../../../hooks/useUsersLocation';
 import {Routes} from '../../../routing/routes';
-import initMap from './map';
+import initMap, {getStoredMapCenter} from './map';
 import Tooltip, {Props as TooltipState} from './tooltip';
 
 const Root = styled.div`
@@ -14,6 +14,8 @@ const Root = styled.div`
   width: 100vw;
   height: 100vh;
 `;
+
+const storedCenter = getStoredMapCenter();
 
 const GlobalMap = ({children}: {children: React.ReactNode}) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -36,7 +38,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   }, [rootRef, mapState, push, getString]);
 
   useEffect(() => {
-    if (mapState.intialized === true && mapState.map && initialCenter !== undefined) {
+    if (mapState.intialized === true && mapState.map && initialCenter !== undefined && !storedCenter) {
       if (window.location.pathname === Routes.Landing ||
           window.location.pathname === Routes.Dashboard ||
           window.location.pathname === Routes.SearchLists ||
