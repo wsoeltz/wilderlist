@@ -4,7 +4,16 @@ import useFluent from '../../../../../../hooks/useFluent';
 import {
   ButtonSecondary,
 } from '../../../../../../styling/styleUtils';
+import PanelDirections from '../../../../../sharedComponents/detailComponents/directions/PanelDirections';
 import Modal from '../../../../../sharedComponents/Modal';
+
+const Root = styled.div`
+  width: 500px;
+
+  @media(max-width: 600px) {
+    width: 100%;
+  }
+`;
 
 const ButtonWrapper = styled.div`
   text-align: right;
@@ -32,9 +41,14 @@ const DrivingDirections = ({latitude, longitude, onClose}: Props) => {
       width={'500px'}
       height={'auto'}
       actions={actions}
-      contentStyles={{padding: 0, marginBottom: '-1rem'}}
+      contentStyles={{padding: 0, marginBottom: '-1rem', overflow: 'visible'}}
     >
-      DrivingDirections at {latitude}, {longitude}
+      <Root>
+        <PanelDirections
+          destination={[longitude, latitude]}
+          considerDirect={true}
+        />
+      </Root>
     </Modal>
   );
 
