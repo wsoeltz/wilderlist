@@ -25,7 +25,6 @@ import {getWeatherState, WeatherOverlay, WeatherState} from '../../../globalMap/
 import Legend from './Legend';
 
 const Grid = styled.div`
-  margin: 0;
   padding: 0 0.35rem 0.35rem;
   display: grid;
   grid-template-columns: 1fr 1fr;

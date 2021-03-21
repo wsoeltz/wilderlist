@@ -10,6 +10,7 @@ import {mobileSize} from '../../../../../Utils';
 import {MapStyle} from '../../../globalMap/map';
 import MapLayers from './MapLayers';
 import MapLayersButton from './MapLayersButton';
+import MapTools from './MapTools';
 import ToolsAndSettingsButton from './ToolsAndSettingsButton';
 
 const Root = styled.div`
@@ -140,7 +141,7 @@ const LayersAndTools = ({mapStyle, setMapStyle}: Props) => {
   } else if (mode === Mode.tools) {
     content = (
       <ContentContainer>
-        Map tools
+        <MapTools/>
         <ClosePanelButton onClick={closePanel}>
           {getString('global-text-value-modal-close-panel')}
         </ClosePanelButton>

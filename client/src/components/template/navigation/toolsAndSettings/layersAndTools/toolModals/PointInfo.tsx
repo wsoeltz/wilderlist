@@ -1,12 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import useFluent from '../../../../hooks/useFluent';
+import useFluent from '../../../../../../hooks/useFluent';
 import {
   ButtonSecondary,
-} from '../../../../styling/styleUtils';
-import PointForecast from './pointForecast';
-
-import Modal from '../../Modal';
+} from '../../../../../../styling/styleUtils';
+import Modal from '../../../../../sharedComponents/Modal';
 
 const ButtonWrapper = styled.div`
   text-align: right;
@@ -16,10 +14,9 @@ interface Props {
   onClose: () => void;
   latitude: number;
   longitude: number;
-  valley?: boolean;
 }
 
-const WeatherModal = ({latitude, longitude, valley, onClose}: Props) => {
+const PointInfo = ({latitude, longitude, onClose}: Props) => {
   const getString = useFluent();
   const actions = (
     <ButtonWrapper>
@@ -37,10 +34,10 @@ const WeatherModal = ({latitude, longitude, valley, onClose}: Props) => {
       actions={actions}
       contentStyles={{padding: 0, marginBottom: '-1rem'}}
     >
-      <PointForecast latitude={latitude} longitude={longitude} valley={valley} />
+      Point Information at {latitude}, {longitude}
     </Modal>
   );
 
 };
 
-export default WeatherModal;
+export default PointInfo;
