@@ -15,16 +15,25 @@ const Root = styled.div`
 
 interface Props {
   coordinates: Coordinate | undefined;
+  decimal?: boolean;
+  copyExact?: boolean;
+  noPadding?: boolean;
 }
 
-const FormattedCoordinates = ({coordinates}: Props) => {
+const FormattedCoordinates = ({coordinates, decimal, copyExact, noPadding}: Props) => {
   const formatted = coordinates ? convertDMS(coordinates[1], coordinates[0]) : undefined;
-  const text = formatted ? (<>{`${formatted.lat}, `}<wbr />{`${formatted.long}`}</>) : '----';
+  const text = decimal && coordinates
+    ? `${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`
+    : formatted
+      ? (<>{`${formatted.lat}, `}<wbr />{`${formatted.long}`}</>) : '----';
   const onCopyClick = useCallback(() => {
     if (coordinates) {
-      navigator.clipboard.writeText(coordinates[1] + ', ' + coordinates[0]);
+      const copyValue = copyExact && !decimal && formatted
+        ? `${formatted.lat}, ${formatted.long}`
+        : coordinates[1] + ', ' + coordinates[0];
+      navigator.clipboard.writeText(copyValue);
     }
-  }, [coordinates]);
+  }, [coordinates, copyExact, decimal, formatted]);
   const copyButton = coordinates ? (
     <LinkButtonCompact onClick={onCopyClick}>
       <BasicIconAtEndOfText
@@ -33,7 +42,7 @@ const FormattedCoordinates = ({coordinates}: Props) => {
     </LinkButtonCompact>
   ) : null;
   return (
-    <Root>
+    <Root style={noPadding ? {padding: 0} : undefined}>
       {text}
       {copyButton}
     </Root>
