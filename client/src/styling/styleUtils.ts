@@ -129,6 +129,10 @@ export const regularFontWeight = 400;
 export const semiBoldFontBoldWeight = 600;
 export const boldFontWeight = 700;
 
+export const FullWidthContainer = styled.div`
+  margin: 0 -1rem;
+`;
+
 export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
@@ -541,7 +545,7 @@ export const LabelContainer = styled.label`
 
 export const PaginationContainer = styled.div`
   display: flex;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 `;
 
 export const Next = styled(ButtonSecondary)`
@@ -628,6 +632,7 @@ export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};
   text-align: center;
+  margin-top: 1.2rem;
   margin-bottom: 1.2rem;
 `;
 

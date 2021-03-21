@@ -1,20 +1,37 @@
+import {
+  faUserEdit,
+} from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
 import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
 import {useHistory, useParams} from 'react-router-dom';
+import styled from 'styled-components/macro';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import { UserDatum, useUserSearch } from '../../../queries/users/useUserSearch';
 import { userProfileLink } from '../../../routing/Utils';
 import {
+  FullWidthContainer,
   Next,
   PaginationContainer,
   PlaceholderText,
   Prev,
+  primaryColor,
 } from '../../../styling/styleUtils';
 import StandardSearch from '../../sharedComponents/StandardSearch';
 import GhostUserCard from './GhostUserCard';
 import ListUsers from './ListUsers';
+
+const Root = styled.div`
+  position: relative;
+`;
+
+const SearchRoot = styled(FullWidthContainer)`
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1;
+`;
 
 const UserList = () => {
   const user = useCurrentUser();
@@ -137,15 +154,19 @@ const UserList = () => {
       <Helmet>
         <title>{getString('meta-data-friend-search-default-title')}</title>
       </Helmet>
-      <div ref={userListContainerElm}>
-        <StandardSearch
-          placeholder='Search users'
-          setSearchQuery={searchUsers}
-          focusOnMount={true}
-          initialQuery={initialSearchQuery}
-        />
+      <Root ref={userListContainerElm}>
+        <SearchRoot>
+          <StandardSearch
+            placeholder='Search users'
+            setSearchQuery={searchUsers}
+            focusOnMount={true}
+            initialQuery={initialSearchQuery}
+            icon={faUserEdit}
+            iconColor={primaryColor}
+          />
+        </SearchRoot>
         {list}
-      </div>
+      </Root>
     </>
   );
 };

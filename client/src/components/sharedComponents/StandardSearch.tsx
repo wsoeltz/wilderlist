@@ -59,10 +59,15 @@ interface Props {
   focusOnMount: boolean;
   type?: string;
   noSearchIcon?: boolean;
+  icon?: any;
+  iconColor?: string;
 }
 
 const StandardSearch = (props: Props) => {
-  const { placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon, type } = props;
+  const {
+    placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon,
+    type, icon, iconColor,
+  } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
   const clearEl = useRef<HTMLButtonElement | null>(null);
@@ -102,7 +107,12 @@ const StandardSearch = (props: Props) => {
     }
   }, [searchEl, focusOnMount, windowWidth, initialQuery]);
 
-  const searchIcon = noSearchIcon ? null : <SearchIcon icon='search' />;
+  const searchIcon = noSearchIcon ? null : (
+    <SearchIcon
+      icon={icon ? icon : 'search'}
+      style={iconColor ? {color: iconColor} : undefined}
+    />
+  );
 
   return (
     <SearchContainer>
