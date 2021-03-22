@@ -9,6 +9,7 @@ import orderBy from 'lodash/orderBy';
 import {
   Campsite as ICampsite,
   CampsiteType,
+  ListPrivacy,
   Mountain as IMountain,
   PeakList as IPeakList,
   Trail as ITrail,
@@ -44,6 +45,9 @@ interface Input {
   lng: number;
   search: string;
   favor: SearchResultType | undefined;
+  user: undefined | {
+    _id: string;
+  };
 }
 
 const mergeAndSort = async (
@@ -110,7 +114,8 @@ const listPriority = (list: IPeakList) => {
 };
 
 const fetchValuesAsync = (input: Input) => {
-  const {favor} = input;
+  const {favor, user} = input;
+  const userId = user ? user._id : null;
   const sourcePoint = point([input.lng, input.lat]);
 
   return new Promise((resolve, reject) => {
@@ -260,12 +265,19 @@ const fetchValuesAsync = (input: Input) => {
       }
     }).catch(reject);
 
-    PeakList.find({...buildNearSphereQuery({
-      locationField: 'center',
-      longitude: input.lng,
-      latitude: input.lat,
-      maxDistance: 4814016 * (favor === SearchResultType.list ? 1.75 : 1),
-    }), searchString: { $regex: input.search, $options: 'i' }}).limit(15).then(res => {
+    PeakList.find({
+      ...buildNearSphereQuery({
+        locationField: 'center',
+        longitude: input.lng,
+        latitude: input.lat,
+        maxDistance: 4814016 * (favor === SearchResultType.list ? 1.75 : 1),
+      }),
+      searchString: { $regex: input.search, $options: 'i' },
+      $or: [
+        {privacy: {$ne: ListPrivacy.Private}},
+        {author: userId},
+      ],
+    }).limit(15).then(res => {
       listData = res.map(list => {
         return {
           id: list._id,

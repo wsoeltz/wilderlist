@@ -9,7 +9,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { CreatedItemStatus, TripReportPrivacy } from '../graphQLTypes';
+import { CreatedItemStatus, ListPrivacy, TripReportPrivacy, User as IUser } from '../graphQLTypes';
 import {
   buildNearSphereQuery,
   GeoSphereInput,
@@ -542,14 +542,24 @@ const RootQuery = new GraphQLObjectType({
         maxDistance: { type: GraphQLFloat },
         limit: {type: GraphQLNonNull(GraphQLInt)},
       },
-      resolve(parentValue, { latitude, longitude, maxDistance, limit }: GeoSphereInput) {
+      resolve(
+        parentValue,
+        { latitude, longitude, maxDistance, limit }: GeoSphereInput,
+        {user}: {user: IUser | undefined | null}) {
+        const userId = user ? user._id : null;
         const query = buildNearSphereQuery({
           locationField: 'center',
           longitude,
           latitude,
           maxDistance,
         });
-        return PeakList.find(query).limit(limit);
+        return PeakList.find({
+          ...query,
+          $or: [
+            {privacy: {$ne: ListPrivacy.Private}},
+            {author: userId},
+          ],
+        }).limit(limit);
       },
     },
     geoNearTrails: {

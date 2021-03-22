@@ -128,8 +128,9 @@ app.get('/api/global-search', async (req, res) => {
     const lng = req.query && req.query.lng ? parseFloat(req.query.lng) : undefined;
     const search = req.query && req.query.search ? req.query.search : undefined;
     const favor = req.query && req.query.favor ? req.query.favor : undefined;
+    const user = req.res && req.res.req ? req.res.req.user : undefined;
     if (lat !== undefined && lng !== undefined && search !== undefined) {
-      const searchData = await getGlobalSearch({lat, lng, search, favor});
+      const searchData = await getGlobalSearch({lat, lng, search, favor, user});
       res.json(searchData);
     } else {
       throw new Error('Missing parameters');
