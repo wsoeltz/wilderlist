@@ -17,6 +17,7 @@ export interface CardPeakListDatum {
   numCompletedAscents: PeakList['numCompletedAscents'];
   numCompletedTrails: PeakList['numCompletedTrails'];
   numCompletedCampsites: PeakList['numCompletedCampsites'];
+  privacy: PeakList['privacy'];
   latestTrip: PeakList['latestTrip'];
   bbox: PeakList['bbox'];
   isActive: PeakList['isActive'];
@@ -40,6 +41,7 @@ const GET_USERS_PEAK_LISTS = gql`
         numMountains
         numTrails
         numCampsites
+        privacy
         numCompletedTrips(userId: $userId)
         numCompletedAscents(userId: $userId)
         numCompletedTrails(userId: $userId)

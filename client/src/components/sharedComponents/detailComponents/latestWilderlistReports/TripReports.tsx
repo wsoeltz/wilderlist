@@ -106,7 +106,7 @@ const TripReports = ({id, name, type}: Props) => {
       const maxCharactersArray = [2000, 1500];
       const maxCharactersDefault = 500;
       const reportList = tripReports.map((report, i) => {
-        if (report && report.privacy && report.privacy !== TripReportPrivacy.Private) {
+        if (report && report.privacy !== TripReportPrivacy.Private) {
 
           const allConditionsArray: string[] = [];
           const openReport = () => setFullReport(report);
@@ -195,7 +195,7 @@ const TripReports = ({id, name, type}: Props) => {
             </Section>
           ) : null;
 
-          const authorName = report.privacy !== TripReportPrivacy.Anonymous &&
+          const authorName = report.privacy && report.privacy !== TripReportPrivacy.Anonymous &&
             report.author !== null && report.author.hideProfileInSearch !== true
               ? report.author.name : getString('global-text-value-generic-user');
 

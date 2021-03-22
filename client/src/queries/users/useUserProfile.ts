@@ -25,6 +25,7 @@ const GET_USER = gql`
         numMountains
         numTrails
         numCampsites
+        privacy
         numCompletedTrips(userId: $profileId)
         numCompletedAscents(userId: $profileId)
         numCompletedTrails(userId: $profileId)

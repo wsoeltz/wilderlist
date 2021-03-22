@@ -65,6 +65,7 @@ global-text-value-search-geo = Search for a location
 
 global-text-value-generic-user = Wilderlist User
 global-text-value-private = Private
+global-text-value-private-list = This list is private
 
 global-text-value-search-mountains-to-add = Search for mountains to add
 global-text-value-search-trails-to-add = Search for trails to add

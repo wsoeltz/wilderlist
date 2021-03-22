@@ -17,6 +17,7 @@ const GET_BASIC_LIST_DETAILS = gql`
       numMountains
       numTrails
       numCampsites
+      privacy
       numCompletedTrips(userId: $userId)
       latestTrip(userId: $userId, raw: true)
       isActive(userId: $userId)
@@ -58,6 +59,7 @@ interface PeakListDatum {
   isActive: PeakList['isActive'];
   latestTrip: PeakList['latestTrip'];
   bbox: PeakList['bbox'];
+  privacy: PeakList['privacy'];
   parent: null | {id: PeakList['id'], type: PeakList['type']};
   children: null | Array<{id: PeakList['id'], type: PeakList['type']}>;
   siblings: null | Array<{id: PeakList['id'], type: PeakList['type']}>;

@@ -2,6 +2,7 @@ import {
   faCalendarAlt,
   faCheck,
   faFlag,
+  faLock,
   faMapMarkerAlt,
   faPencilAlt,
   faTasks,
@@ -29,9 +30,11 @@ import {
   LinkButtonCompact,
   SmallLink,
   SmallSemiBold,
+  Subtext,
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import {
+  ListPrivacy,
   PeakListVariants,
   PermissionTypes,
 } from '../../../types/graphQLTypes';
@@ -155,6 +158,12 @@ const Header = (props: Props) => {
       },
       peakList,
     } = data;
+
+    if (peakList.privacy === ListPrivacy.Private &&
+        (!user || !peakList.author || user._id !== peakList.author.id)) {
+      return null;
+    }
+
     numMountains = peakList.numMountains;
     numTrails = peakList.numTrails;
     numCampsites = peakList.numCampsites;
@@ -185,20 +194,24 @@ const Header = (props: Props) => {
         </LinkButtonCompact>
       );
     }
-
-    topLevelHeading = (
-      <>
-        <StarListButtonContainer>
-          <StarListButton
-            peakListId={peakListId}
-            peakListName={name}
-          />
-        </StarListButtonContainer>
-        <EditFlagButtonContainer>
-          {editFlagButton}
-        </EditFlagButtonContainer>
-      </>
-    );
+    if (peakList.privacy === ListPrivacy.Private &&
+        (!user || !peakList.author || user._id !== peakList.author.id)) {
+      topLevelHeading = null;
+    } else {
+      topLevelHeading = (
+        <>
+          <StarListButtonContainer>
+            <StarListButton
+              peakListId={peakListId}
+              peakListName={name}
+            />
+          </StarListButtonContainer>
+          <EditFlagButtonContainer>
+            {editFlagButton}
+          </EditFlagButtonContainer>
+        </>
+      );
+    }
 
     const numItems = numMountains + numTrails + numCampsites;
     if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
@@ -336,6 +349,15 @@ const Header = (props: Props) => {
     />
   ) : null;
 
+  const privacyIcon = data && data.peakList.privacy === ListPrivacy.Private
+    ? (
+      <Tooltip
+        explanation={getString('global-text-value-private-list')}
+      >
+        <Subtext><BasicIconInText icon={faLock} /></Subtext>
+      </Tooltip>
+    ) : null;
+
   return (
     <>
       {metaData}
@@ -352,7 +374,7 @@ const Header = (props: Props) => {
               width: '75%', backgroundColor: tertiaryColor, color: 'transparent',
             } : undefined}
           >
-            {name}{type ? getType(type) : ''}
+            {privacyIcon} {name}{type ? getType(type) : ''}
           </h1>
           <ListInfo
             style={loading ? {

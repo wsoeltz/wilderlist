@@ -1,6 +1,6 @@
 const {point, featureCollection} = require('@turf/helpers');
 const getCenter = require('@turf/center').default;
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faLock } from '@fortawesome/free-solid-svg-icons';
 import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -15,6 +15,7 @@ import {
   SimpleTitle,
 } from '../../../styling/sharedContentStyles';
 import {
+  BasicIconInText,
   BasicIconInTextCompact,
   CompleteText,
   IconContainer,
@@ -23,11 +24,12 @@ import {
   SemiBold,
   Subtext,
 } from '../../../styling/styleUtils';
-import {PeakListVariants} from '../../../types/graphQLTypes';
+import {ListPrivacy, PeakListVariants} from '../../../types/graphQLTypes';
 import {AggregateItem} from '../../../types/itemTypes';
 import { getType } from '../../../utilities/dateUtils';
 import StarListButton from '../../peakLists/detail/StarListButton';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
+import Tooltip from '../../sharedComponents/Tooltip';
 import MountainLogo from '../mountainLogo';
 import PeakProgressBar from './PeakProgressBar';
 
@@ -104,7 +106,7 @@ const PeakListCard = (props: Props) => {
       id, name, shortName, locationText, type,
       numMountains, numTrails, numCampsites,
       numCompletedAscents, numCompletedTrails, numCompletedCampsites,
-      latestTrip, parent, bbox,
+      latestTrip, parent, bbox, privacy,
     },
     profileId,
     numCompletedTrips, totalRequiredTrips,
@@ -183,6 +185,15 @@ const PeakListCard = (props: Props) => {
   const url = profileId !== undefined
     ? otherUserPeakListLink(profileId, id) : listDetailLink(id);
 
+  const privacyIcon = privacy === ListPrivacy.Private
+    ? (
+      <Tooltip
+        explanation={getString('global-text-value-private-list')}
+      >
+        <Subtext><BasicIconInText icon={faLock} /></Subtext>
+      </Tooltip>
+    ) : null;
+
   const starButton = profileId !== undefined ? null : (
     <div>
       <SavedContainer>
@@ -215,6 +226,7 @@ const PeakListCard = (props: Props) => {
         <Content>
           <Header>
             <div>
+              {privacyIcon}
               <Link to={url}>
                 <SemiBold>{name}{getType(type)}</SemiBold>
               </Link>

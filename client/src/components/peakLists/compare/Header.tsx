@@ -3,6 +3,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import {
   faFlag,
+  faLock,
   faPencilAlt,
   faTasks,
   faUser,
@@ -27,17 +28,17 @@ import {
   HelpUnderline,
   LinkButtonCompact,
   SmallLink,
+  Subtext,
   tertiaryColor,
 } from '../../../styling/styleUtils';
 import {
+  ListPrivacy,
   PeakListVariants,
   PermissionTypes,
 } from '../../../types/graphQLTypes';
 import { getType } from '../../../utilities/dateUtils';
 import { failIfValidOrNonExhaustive} from '../../../Utils';
 import SimplePercentBar from '../../sharedComponents/listComponents/SimplePercentBar';
-// import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
-// import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import Tooltip from '../../sharedComponents/Tooltip';
 import FlagModal from '../detail/FlagModal';
 import StarListButton from '../detail/StarListButton';
@@ -179,20 +180,24 @@ const Header = (props: Props) => {
         </LinkButtonCompact>
       );
     }
-
-    topLevelHeading = (
-      <>
-        <StarListButtonContainer>
-          <StarListButton
-            peakListId={peakListId}
-            peakListName={name}
-          />
-        </StarListButtonContainer>
-        <EditFlagButtonContainer>
-          {editFlagButton}
-        </EditFlagButtonContainer>
-      </>
-    );
+    if (peakList.privacy === ListPrivacy.Private &&
+        (!user || !peakList.author || user._id !== peakList.author.id)) {
+      topLevelHeading = null;
+    } else {
+      topLevelHeading = (
+        <>
+          <StarListButtonContainer>
+            <StarListButton
+              peakListId={peakListId}
+              peakListName={name}
+            />
+          </StarListButtonContainer>
+          <EditFlagButtonContainer>
+            {editFlagButton}
+          </EditFlagButtonContainer>
+        </>
+      );
+    }
 
     const numItems = numMountains + numTrails + numCampsites;
     if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
@@ -268,6 +273,15 @@ const Header = (props: Props) => {
   const secondaryPercent =
     parseFloat(((secondaryUserCompleted ? secondaryUserCompleted : 0) / totalRequiredAscents * 100).toFixed(1));
 
+  const privacyIcon = secondaryUserData.data && secondaryUserData.data.peakList.privacy === ListPrivacy.Private
+    ? (
+      <Tooltip
+        explanation={getString('global-text-value-private-list')}
+      >
+        <Subtext><BasicIconInText icon={faLock} /></Subtext>
+      </Tooltip>
+    ) : null;
+
   return (
     <>
       {metaData}
@@ -278,7 +292,7 @@ const Header = (props: Props) => {
               width: '75%', backgroundColor: tertiaryColor, color: 'transparent',
             } : undefined}
           >
-            {name}{type ? getType(type) : ''}
+            {privacyIcon} {name}{type ? getType(type) : ''}
           </h1>
           <ListInfo
             style={primaryUserData.loading || secondaryUserData.loading ? {
