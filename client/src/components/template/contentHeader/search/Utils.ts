@@ -17,23 +17,24 @@ export type SearchResultDatum = {
   {
     type: SearchResultType.mountain,
     elevation: number,
-    stateText: string[],
+    locationText: string,
   } |
   {
     type: SearchResultType.trail,
-    stateText: string[],
+    locationText: string,
     trailType: TrailType,
+    trailLength: number,
     parents: string[],
   } |
   {
     type: SearchResultType.campsite,
     campsiteType: CampsiteType,
-    stateText: string[],
+    locationText: string,
   } |
   {
     type: SearchResultType.list,
     numPeaks: number,
-    stateText: string[],
+    locationText: string,
   } |
   {
     type: SearchResultType.geolocation,

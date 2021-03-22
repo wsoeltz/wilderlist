@@ -70,8 +70,8 @@ const SearchResult = ({query, suggestion}: Props) => {
   let subtitleText: string;
   let icon: React.ReactElement<any> | null;
   if (suggestion.type === SearchResultType.mountain) {
-    subtitleText = suggestion.stateText[0]
-      ? `${suggestion.stateText[0]}, ${suggestion.elevation}ft` : `${suggestion.elevation}ft`;
+    subtitleText = suggestion.locationText
+      ? `${suggestion.elevation}ft | ${suggestion.locationText}` : `${suggestion.elevation}ft`;
     icon = (
       <IconContainer
         dangerouslySetInnerHTML={{__html: mountainNeutralSvg}}
@@ -79,9 +79,13 @@ const SearchResult = ({query, suggestion}: Props) => {
     );
   } else if (suggestion.type === SearchResultType.trail) {
     const trailType = getString('global-formatted-trail-type', {type: suggestion.trailType});
-    const states = suggestion.stateText.join(', ');
-    subtitleText = states.length
-      ? `${trailType.charAt(0).toUpperCase() + trailType.slice(1).replaceAll('_', ' ')} in ${states}`
+    const segment = suggestion.parents.length ? ' segment ' : '';
+    const trailLength = suggestion.trailLength;
+    const trailLengthDisplay = trailLength < 0.1
+      ? Math.round(trailLength * 5280) + ' ft'
+      : parseFloat(trailLength.toFixed(1)) + ' mi';
+    subtitleText = suggestion.locationText
+      ? `${trailLengthDisplay} long ${trailType}${segment} in ${suggestion.locationText}`
       : trailType.charAt(0).toUpperCase() + trailType.slice(1).replaceAll('_', ' ');
     icon = (
       <IconContainer
@@ -90,9 +94,8 @@ const SearchResult = ({query, suggestion}: Props) => {
     );
   } else if (suggestion.type === SearchResultType.campsite) {
     const campsiteType = getString('global-formatted-campsite-type', {type: suggestion.campsiteType});
-    const states = suggestion.stateText.join(', ');
-    subtitleText = states.length
-      ? `${campsiteType.charAt(0).toUpperCase() + campsiteType.slice(1).replaceAll('_', ' ')} in ${states}`
+    subtitleText = suggestion.locationText
+      ? `${campsiteType.charAt(0).toUpperCase() + campsiteType.slice(1).replaceAll('_', ' ')} in ${suggestion.locationText}`
       : campsiteType.charAt(0).toUpperCase() + campsiteType.slice(1).replaceAll('_', ' ');
     icon = (
       <IconContainer
@@ -100,8 +103,8 @@ const SearchResult = ({query, suggestion}: Props) => {
       />
     );
   } else if (suggestion.type === SearchResultType.list) {
-    const states = suggestion.stateText.join(', ');
-    subtitleText = states.length ? `${suggestion.numPeaks} peaks in ${states}` : `${suggestion.numPeaks} peaks`;
+    subtitleText = suggestion.locationText
+      ? `${suggestion.numPeaks} peaks in ${suggestion.locationText}` : `${suggestion.numPeaks} peaks`;
     icon = (
       <IconContainer>
         <FontAwesomeIcon icon={faList} />

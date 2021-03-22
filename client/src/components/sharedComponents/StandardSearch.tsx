@@ -110,7 +110,9 @@ const StandardSearch = (props: Props) => {
   const searchIcon = noSearchIcon ? null : (
     <SearchIcon
       icon={icon ? icon : 'search'}
-      style={iconColor ? {color: iconColor} : undefined}
+      style={{
+        color: iconColor ? iconColor : undefined,
+      }}
     />
   );
 
@@ -123,7 +125,10 @@ const StandardSearch = (props: Props) => {
         placeholder={placeholder}
         onChange={onChange}
         autoComplete={'off'}
-        style={{padding: noSearchIcon ? '0.4rem' : undefined}}
+        style={{
+          padding: noSearchIcon ? '0.4rem' : undefined,
+          paddingLeft: icon ? '3rem' : undefined,
+        }}
       />
       <ClearButton
         ref={clearEl}

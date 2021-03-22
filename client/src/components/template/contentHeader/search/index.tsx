@@ -115,7 +115,7 @@ const renderSuggestion = (suggestion: SearchResultDatum, {query}: {query: string
   <SearchResult suggestion={suggestion} query={query} />;
 
 const Search = () => {
-  const {push} = useHistory();
+  const {push, location} = useHistory();
   const center = useMapCenter();
   const mapContext = useMapContext();
   const [state, updateState] = useState<SearchState>({value: '', suggestions: [], loading: false});
@@ -123,11 +123,22 @@ const Search = () => {
   const loadSuggestions = useMemo(
     () => debounce((value: string) => {
       const [lng, lat] = center;
+      let favor: string = '';
+      if (location.pathname.includes(Routes.SearchMountains)) {
+        favor = '&favor=' + SearchResultType.mountain;
+      } else if (location.pathname.includes(Routes.SearchTrails)) {
+        favor = '&favor=' + SearchResultType.trail;
+      } else if (location.pathname.includes(Routes.SearchCampsites)) {
+        favor = '&favor=' + SearchResultType.campsite;
+      } else if (location.pathname.includes(Routes.SearchLists)) {
+        favor = '&favor=' + SearchResultType.list;
+      }
       const url = encodeURI(
         '/api/global-search?' +
         '&lat=' + lat.toFixed(3) +
         '&lng=' + lng.toFixed(3) +
-        '&search=' + value.replace(/[^\w\s]/gi, '').trim(),
+        '&search=' + value.replace(/[^\w\s]/gi, '').trim() +
+        favor,
       );
       getSearchResults(url).then((res: {data: SearchResultDatum[]}) => {
         updateState(curr => ({
@@ -136,7 +147,7 @@ const Search = () => {
           suggestions: res.data,
         }));
       });
-  }, 200), [updateState, center]);
+  }, 200), [updateState, center, location]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
     updateState(curr => ({...curr, value: newValue}));
@@ -194,11 +205,22 @@ const Search = () => {
     );
   }, [state.loading]);
 
+  let placeholder: string = 'Search Wilderlist';
+  if (location.pathname.includes(Routes.SearchMountains)) {
+    placeholder = 'Search mountains';
+  } else if (location.pathname.includes(Routes.SearchTrails)) {
+    placeholder = 'Search trails';
+  } else if (location.pathname.includes(Routes.SearchCampsites)) {
+    placeholder = 'Search campsites';
+  } else if (location.pathname.includes(Routes.SearchLists)) {
+    placeholder = 'Search hiking lists';
+  }
+
   const inputProps = useMemo( () => ({
-    placeholder: 'Search Wilderlist',
+    placeholder,
     value: state.value,
     onChange,
-  }), [state, onChange]);
+  }), [state, onChange, placeholder]);
 
   const clearSearch = useCallback(
     () => updateState({suggestions: [], value: '', loading: false}),
