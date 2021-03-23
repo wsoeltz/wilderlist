@@ -26,15 +26,11 @@ const TrophyContainer = styled(ScrollContainerDark)`
   overflow-y: hidden;
 `;
 
-interface BaseProps {
+interface Props {
   noResultsText: string;
+  peakListData: CardPeakListDatum[];
+  profileId: string | undefined
 }
-
-type Props = BaseProps & (
-  {
-    peakListData: CardPeakListDatum[];
-  }
-) & ({ profileId: string | undefined });
 
 const ListPeakLists = (props: Props) => {
   const {

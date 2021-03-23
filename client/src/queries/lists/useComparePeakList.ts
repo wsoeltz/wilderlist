@@ -11,6 +11,10 @@ const GET_PEAK_LIST = gql`
       numMountains
       numTrails
       numCampsites
+      privacy
+      author {
+        id
+      }
     }
     user(id: $friendId) {
       id
@@ -37,6 +41,8 @@ interface SuccessResponse {
     numMountains: PeakList['numMountains'];
     numTrails: PeakList['numTrails'];
     numCampsites: PeakList['numCampsites'];
+    privacy: PeakList['privacy'];
+    author: null | {id: string};
   };
   user: UserDatum;
   me: UserDatum;

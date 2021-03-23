@@ -60,6 +60,7 @@ export interface UserDatum {
 interface QuerySuccessResponse {
   user: UserDatum;
   me: {
+    id: string;
     friends: Array<{
       user: {
         id: User['id'];

@@ -194,6 +194,44 @@ const PeakListCard = (props: Props) => {
       </Tooltip>
     ) : null;
 
+  const title = privacy === ListPrivacy.Private && profileId !== undefined
+    ? (
+      <div>
+        {privacyIcon}
+        <SemiBold>{name}{getType(type)}</SemiBold>
+      </div>
+    ) : (
+      <div>
+        {privacyIcon}
+        <Link to={url}>
+          <SemiBold>{name}{getType(type)}</SemiBold>
+        </Link>
+      </div>
+    );
+
+  const logo = privacy === ListPrivacy.Private && profileId !== undefined
+    ? (
+      <MountainLogo
+        id={mountainLogoId}
+        title={name}
+        shortName={shortName}
+        variant={type}
+        active={false}
+        completed={false}
+      />
+    ) : (
+      <Link to={url}>
+        <MountainLogo
+          id={mountainLogoId}
+          title={name}
+          shortName={shortName}
+          variant={type}
+          active={true}
+          completed={false}
+        />
+      </Link>
+    );
+
   const starButton = profileId !== undefined ? null : (
     <div>
       <SavedContainer>
@@ -212,25 +250,11 @@ const PeakListCard = (props: Props) => {
         onMouseEnter={onMouseEnter}
       >
         <LogoContainer>
-          <Link to={url}>
-            <MountainLogo
-              id={mountainLogoId}
-              title={name}
-              shortName={shortName}
-              variant={type}
-              active={true}
-              completed={false}
-            />
-          </Link>
+          {logo}
         </LogoContainer>
         <Content>
           <Header>
-            <div>
-              {privacyIcon}
-              <Link to={url}>
-                <SemiBold>{name}{getType(type)}</SemiBold>
-              </Link>
-            </div>
+            {title}
             {starButton}
           </Header>
           <MidFlexRow>

@@ -5,7 +5,7 @@ import {useComparePeakList} from '../../../queries/lists/useComparePeakList';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import { PeakListVariants } from '../../../types/graphQLTypes';
+import { PeakListVariants, ListPrivacy } from '../../../types/graphQLTypes';
 import {
   getSeason,
   Months,
@@ -17,6 +17,7 @@ import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import AllItems from './AllItems';
 import Header from './Header';
 import MonthOrSeasonSelectBox from './MonthOrSeasonSelectBox';
+import PageNotFound from '../../sharedComponents/404';
 
 interface Props {
   userId: string;
@@ -41,6 +42,7 @@ const ComparePeakListPage = (props: Props) => {
       </PlaceholderText>
     );
   } else if (data !== undefined) {
+
     const { peakList, user, me } = data;
     if (!peakList || !user || !me) {
       return (
@@ -49,6 +51,10 @@ const ComparePeakListPage = (props: Props) => {
         </PlaceholderText>
       );
     } else {
+      if (peakList.privacy === ListPrivacy.Private &&
+          (!me || !data.peakList.author || me.id !== data.peakList.author.id)) {
+        return <PageNotFound />;
+      }
       let value: Months | Seasons | null;
       let dropdownBox: React.ReactElement<any> | null;
 

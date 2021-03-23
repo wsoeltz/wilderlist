@@ -159,11 +159,6 @@ const Header = (props: Props) => {
       peakList,
     } = data;
 
-    if (peakList.privacy === ListPrivacy.Private &&
-        (!user || !peakList.author || user._id !== peakList.author.id)) {
-      return null;
-    }
-
     numMountains = peakList.numMountains;
     numTrails = peakList.numTrails;
     numCampsites = peakList.numCampsites;
