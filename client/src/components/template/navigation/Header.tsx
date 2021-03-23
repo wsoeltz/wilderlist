@@ -16,6 +16,7 @@ import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import useWindowWidth from '../../../hooks/useWindowWidth';
 import { Routes } from '../../../routing/routes';
+import useRedirectWhenLoggedIn from '../../../routing/useRedirectWhenLoggedIn';
 import {
   HeaderContainer as HeaderContainerBase,
   headerHeight,
@@ -308,6 +309,7 @@ type LinkInput = {
 const Header = () => {
   const user = useCurrentUser();
   const { pathname } = useLocation();
+  useRedirectWhenLoggedIn();
 
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 

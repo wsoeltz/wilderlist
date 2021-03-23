@@ -1,11 +1,11 @@
 import React from 'react';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import {useBasicListDetails} from '../../../queries/lists/useBasicListDetails';
+import { ListPrivacy } from '../../../types/graphQLTypes';
+import PageNotFound from '../../sharedComponents/404';
 import AllItems from './AllItems';
 import DescriptionAndNotes from './DescriptionAndNotes';
 import Header from './Header';
-import { ListPrivacy } from '../../../types/graphQLTypes';
-import {useBasicListDetails} from '../../../queries/lists/useBasicListDetails';
-import useCurrentUser from '../../../hooks/useCurrentUser';
-import PageNotFound from '../../sharedComponents/404';
 
 interface Props {
   id: string;

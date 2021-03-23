@@ -29,7 +29,7 @@ const TrophyContainer = styled(ScrollContainerDark)`
 interface Props {
   noResultsText: string;
   peakListData: CardPeakListDatum[];
-  profileId: string | undefined
+  profileId: string | undefined;
 }
 
 const ListPeakLists = (props: Props) => {

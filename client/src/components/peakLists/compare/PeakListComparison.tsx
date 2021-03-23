@@ -5,19 +5,19 @@ import {useComparePeakList} from '../../../queries/lists/useComparePeakList';
 import {
   PlaceholderText,
 } from '../../../styling/styleUtils';
-import { PeakListVariants, ListPrivacy } from '../../../types/graphQLTypes';
+import { ListPrivacy, PeakListVariants } from '../../../types/graphQLTypes';
 import {
   getSeason,
   Months,
   monthsArray,
   Seasons,
 } from '../../../Utils';
+import PageNotFound from '../../sharedComponents/404';
 import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import AllItems from './AllItems';
 import Header from './Header';
 import MonthOrSeasonSelectBox from './MonthOrSeasonSelectBox';
-import PageNotFound from '../../sharedComponents/404';
 
 interface Props {
   userId: string;
