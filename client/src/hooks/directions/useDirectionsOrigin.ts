@@ -56,11 +56,10 @@ const useDirectionsOrigin = () => {
           coordinates: [longitude, latitude],
         });
       }, error => {
-        console.error(error);
-        updateLocation(null, false, 'Unable to retrieve your location');
+          console.error(error);
+          updateLocation(null, false, 'Unable to retrieve your location');
       },
-      {timeout: 10000},
-    );
+      {timeout: 10000});
     }
   }, [updateLocation]);
 

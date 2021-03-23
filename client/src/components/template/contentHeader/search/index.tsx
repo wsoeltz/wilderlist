@@ -22,7 +22,7 @@ import {
 import {SearchResultType} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import BackButton from '../backButton';
-import {getLocalResults, pushToLocalResults} from './localSuggestions';
+import {getLocalResults, pushToLocalResults, yourLocationDatumId} from './localSuggestions';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
 import {noResultsFoundClassName, SearchResultDatum} from './Utils';
@@ -199,9 +199,26 @@ const Search = () => {
     } else if (suggestion.type === SearchResultType.trail) {
       push(trailDetailLink(suggestion.id));
     } else if (suggestion.type === SearchResultType.geolocation && mapContext.intialized) {
-      mapContext.setNewCenter(suggestion.coordinates, 12);
+      if (suggestion.id === yourLocationDatumId) {
+
+        if (navigator.geolocation) {
+          updateState(curr => ({...curr, loading: true}));
+          navigator.geolocation.getCurrentPosition(position => {
+            const latitude  = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            mapContext.setNewCenter([longitude, latitude], 12);
+            updateState(curr => ({...curr, loading: false}));
+          }, error => {
+            console.error(error);
+            updateState(curr => ({...curr, loading: false}));
+          },
+          {timeout: 10000});
+        }
+      } else {
+        mapContext.setNewCenter(suggestion.coordinates, 12);
+      }
     }
-  }, [push, mapContext]);
+  }, [push, mapContext, updateState]);
 
   const renderSuggestionsContainer = useCallback(({ containerProps, children, query }: any) => {
     let noResults: React.ReactElement<any> | null;
