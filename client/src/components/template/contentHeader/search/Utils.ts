@@ -13,6 +13,7 @@ export type SearchResultDatum = {
   type: SearchResultType,
   distance: number,
   coordinates: Coordinate,
+  history?: boolean;
 } & (
   {
     type: SearchResultType.mountain,

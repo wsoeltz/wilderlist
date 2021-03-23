@@ -1,12 +1,14 @@
 import {
   faList,
   faMapMarkerAlt,
+  faStreetView,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {
+  historyColor,
   primaryColor,
 } from '../../../../styling/styleUtils';
 import {SearchResultType} from '../../../../types/itemTypes';
@@ -15,14 +17,19 @@ import {
   tentNeutralSvg,
   trailDefaultSvg,
 } from '../../../sharedComponents/svgIcons';
+import {yourLocationDatumId} from './localSuggestions';
 import {SearchResultDatum} from './Utils';
 
-const Root = styled.div`
+const StandardRoot = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1.5rem 1fr;
   grid-column-gap: 0.5rem;
   align-items: center;
+`;
+
+const LocalRoot = styled(StandardRoot)`
+  color: ${historyColor};
 `;
 
 const Content = styled.div`
@@ -38,7 +45,7 @@ const Subtitle = styled.div`
   opacity: 0.8;
 `;
 
-const IconContainer = styled.div`
+const StandardIconContainer = styled.div`
   margin-right: 0.25rem;
   margin-top: 0.1em;
   font-size: 0.85em;
@@ -59,6 +66,16 @@ const IconContainer = styled.div`
   }
 `;
 
+const LocalIconContainer = styled(StandardIconContainer)`
+  color: ${historyColor};
+
+  svg {
+    .fill-path {
+      fill: ${historyColor};
+    }
+  }
+`;
+
 interface Props {
   query: string;
   suggestion: SearchResultDatum;
@@ -67,6 +84,7 @@ interface Props {
 const SearchResult = ({query, suggestion}: Props) => {
   const getString = useFluent();
 
+  const IconContainer = suggestion.history ? LocalIconContainer : StandardIconContainer;
   let subtitleText: string;
   let icon: React.ReactElement<any> | null;
   if (suggestion.type === SearchResultType.mountain) {
@@ -121,6 +139,16 @@ const SearchResult = ({query, suggestion}: Props) => {
     subtitleText = '';
     icon = null;
   }
+  if (suggestion.id === yourLocationDatumId) {
+    icon = (
+      <IconContainer>
+        <FontAwesomeIcon icon={faStreetView} />
+      </IconContainer>
+    );
+  }
+  const Root = suggestion.history
+    ? LocalRoot
+    : StandardRoot;
   const safeQuery = new RegExp(query.replace(/[^\w\s]/gi, '').trim(), 'gi');
   return (
     <Root>

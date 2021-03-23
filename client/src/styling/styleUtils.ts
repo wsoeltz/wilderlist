@@ -39,6 +39,8 @@ export const warmRedColor = '#d92a21';
 
 export const lightBlue = '#f2f7fb';
 
+export const historyColor = '#684170';
+
 export interface ColorSet {
   primary: string;
   secondary: string;

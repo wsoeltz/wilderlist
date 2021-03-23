@@ -111,9 +111,11 @@ const SearchInput = (props: Props) => {
   const { push, location: {pathname} } = useHistory();
 
   const onFocus = (event: any) => {
-    inputProps.onFocus(event);
-    setIsFocused(true);
     clearSearch();
+    setTimeout(() => {
+      inputProps.onFocus(event);
+      setIsFocused(true);
+    }, 0);
   };
 
   const onBlur = (event: any) => {

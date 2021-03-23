@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import debounce from 'lodash/debounce';
+import uniqBy from 'lodash/uniqBy';
 import React, {useCallback, useMemo, useState} from 'react';
 import Autosuggest from 'react-autosuggest';
 import {useHistory} from 'react-router-dom';
@@ -21,6 +22,7 @@ import {
 import {SearchResultType} from '../../../../types/itemTypes';
 import {mobileSize} from '../../../../Utils';
 import BackButton from '../backButton';
+import {getLocalResults, pushToLocalResults} from './localSuggestions';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
 import {noResultsFoundClassName, SearchResultDatum} from './Utils';
@@ -141,22 +143,34 @@ const Search = () => {
         favor,
       );
       getSearchResults(url).then((res: {data: SearchResultDatum[]}) => {
+        const localResults = getLocalResults(value);
+        const allResults = uniqBy([...localResults, ...res.data], 'id').slice(0, 7);
         updateState(curr => ({
           ...curr,
           loading: false,
-          suggestions: res.data,
+          suggestions: allResults,
         }));
       });
   }, 200), [updateState, center, location]);
 
   const onChange = useCallback((_event: any, { newValue }: {newValue: string}) => {
-    updateState(curr => ({...curr, value: newValue}));
+    updateState(curr => ({
+      ...curr,
+      value: newValue,
+    }));
   }, [updateState]);
 
   const onSuggestionsFetchRequested = useCallback(({ value }: { value: string }) => {
     if (value.length > 2) {
       updateState(curr => ({...curr, loading: true}));
       loadSuggestions(value);
+    } else {
+      const localResults = getLocalResults(value);
+      updateState(curr => ({
+        ...curr,
+        loading: false,
+        suggestions: localResults,
+      }));
     }
   }, [updateState, loadSuggestions]);
 
@@ -165,6 +179,7 @@ const Search = () => {
   }, [updateState]);
 
   const onSuggestionSelected = useCallback((_event: any, {suggestion}: {suggestion: SearchResultDatum}) => {
+    pushToLocalResults(suggestion);
     const activeElement = document.activeElement;
     if (activeElement) {
       (activeElement as HTMLElement).blur();
@@ -223,7 +238,7 @@ const Search = () => {
   }), [state, onChange, placeholder]);
 
   const clearSearch = useCallback(
-    () => updateState({suggestions: [], value: '', loading: false}),
+    () => updateState(curr => ({suggestions: curr.suggestions, value: '', loading: false})),
     [updateState],
   );
 
@@ -253,6 +268,7 @@ const Search = () => {
         focusInputOnSuggestionClick={false}
         onSuggestionSelected={onSuggestionSelected}
         renderSuggestionsContainer={renderSuggestionsContainer}
+        shouldRenderSuggestions={() => true}
       />
     </Root>
   );
