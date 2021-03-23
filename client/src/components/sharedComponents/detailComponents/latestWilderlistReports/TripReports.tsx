@@ -195,7 +195,7 @@ const TripReports = ({id, name, type}: Props) => {
             </Section>
           ) : null;
 
-          const authorName = report.privacy && report.privacy !== TripReportPrivacy.Anonymous &&
+          const authorName = report.privacy !== TripReportPrivacy.Anonymous &&
             report.author !== null && report.author.hideProfileInSearch !== true
               ? report.author.name : getString('global-text-value-generic-user');
 
