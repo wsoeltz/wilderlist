@@ -43,7 +43,7 @@ export const pushToLocalResults = (value: SearchResultDatum) => {
   if (value.id !== yourLocationDatumId) {
     searchHistory.unshift(({...value, history: true}));
   }
-  if (searchHistory.length > 100) {
+  if (searchHistory.length > 300) {
     searchHistory.pop();
   }
   localforage.setItem(LOCALFORAGE_KEY, searchHistory);
