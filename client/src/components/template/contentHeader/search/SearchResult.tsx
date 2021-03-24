@@ -1,14 +1,17 @@
 import {
+  faCrosshairs,
+  faHistory,
   faList,
   faMapMarkerAlt,
-  faStreetView,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {rgba} from 'polished';
 import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {
   historyColor,
+  lightBaseColor,
   primaryColor,
 } from '../../../../styling/styleUtils';
 import {SearchResultType} from '../../../../types/itemTypes';
@@ -50,9 +53,13 @@ const StandardIconContainer = styled.div`
   margin-top: 0.1em;
   font-size: 0.85em;
   color: ${primaryColor};
+  background-color: ${rgba(lightBaseColor, 0.2)};
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 1000px;
 
   svg {
     width: 1rem;
@@ -68,12 +75,18 @@ const StandardIconContainer = styled.div`
 
 const LocalIconContainer = styled(StandardIconContainer)`
   color: ${historyColor};
+  background-color: transparent;
 
   svg {
     .fill-path {
       fill: ${historyColor};
     }
   }
+`;
+
+const YourLocationIconContainer = styled(StandardIconContainer)`
+  color: ${primaryColor};
+  background-color: ${rgba(primaryColor, 0.25)};
 `;
 
 interface Props {
@@ -84,7 +97,8 @@ interface Props {
 const SearchResult = ({query, suggestion}: Props) => {
   const getString = useFluent();
 
-  const IconContainer = suggestion.history ? LocalIconContainer : StandardIconContainer;
+  const IconContainer = suggestion.history && query.length < 3
+    ? LocalIconContainer : StandardIconContainer;
   let subtitleText: string;
   let icon: React.ReactElement<any> | null;
   if (suggestion.type === SearchResultType.mountain) {
@@ -139,14 +153,21 @@ const SearchResult = ({query, suggestion}: Props) => {
     subtitleText = '';
     icon = null;
   }
-  if (suggestion.id === yourLocationDatumId) {
+  if (suggestion.history && query.length < 3) {
     icon = (
       <IconContainer>
-        <FontAwesomeIcon icon={faStreetView} />
+        <FontAwesomeIcon icon={faHistory} />
       </IconContainer>
     );
   }
-  const Root = suggestion.history
+  if (suggestion.id === yourLocationDatumId) {
+    icon = (
+      <YourLocationIconContainer>
+        <FontAwesomeIcon icon={faCrosshairs} />
+      </YourLocationIconContainer>
+    );
+  }
+  const Root = suggestion.history && query.length < 3
     ? LocalRoot
     : StandardRoot;
   const safeQuery = new RegExp(query.replace(/[^\w\s]/gi, '').trim(), 'gi');

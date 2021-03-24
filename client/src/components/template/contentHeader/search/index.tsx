@@ -143,7 +143,7 @@ const Search = () => {
         favor,
       );
       getSearchResults(url).then((res: {data: SearchResultDatum[]}) => {
-        const localResults = getLocalResults(value);
+        const localResults = res.data.length > 2 ? getLocalResults(value).slice(0, 3) : getLocalResults(value);
         const allResults = uniqBy([...localResults, ...res.data], 'id').slice(0, 7);
         updateState(curr => ({
           ...curr,
