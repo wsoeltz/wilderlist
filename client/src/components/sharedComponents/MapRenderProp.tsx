@@ -167,7 +167,13 @@ const MapRenderProp = (props: Props) => {
       const type = props.type ? props.type : PeakListVariants.standard;
       if (mapContext.intialized) {
         if (center) {
-          mapContext.setNewCenter(center, 12);
+          const zoom = Number(Boolean(props.mountains && props.mountains.length === 1)) +
+            Number(Boolean(props.trails && props.trails.length === 1)) +
+            Number(Boolean(props.campsites && props.campsites.length === 1)) === 1 &&
+            mapContext.map.getZoom() > 12
+            ? mapContext.map.getZoom()
+            : 12;
+          mapContext.setNewCenter(center, zoom);
         } else if (bbox) {
           mapContext.setNewBounds(bbox);
         }
