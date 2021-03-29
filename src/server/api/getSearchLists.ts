@@ -1,6 +1,6 @@
 /* tslint:disable:await-promise */
 const { point } = require('@turf/helpers');
-const distance = require('@turf/distance');
+const distance = require('@turf/distance').default;
 import orderBy from 'lodash/orderBy';
 import {State as IState} from '../graphql/graphQLTypes';
 import {PeakList as IPeakList} from '../graphql/graphQLTypes';

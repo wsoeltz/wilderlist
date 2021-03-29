@@ -1,12 +1,11 @@
 import orderBy from 'lodash/orderBy';
-import partition from 'lodash/partition';
-import uniqBy from 'lodash/uniqBy';
 import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
 import useRoutesToPoint from '../../../../hooks/servicesHooks/pathfinding/useRoutesToPoint';
 import useFluent from '../../../../hooks/useFluent';
 import useMapContext from '../../../../hooks/useMapContext';
 import {RoutesToPointInput} from '../../../../routing/services';
+import {autoRouteDetailLink} from '../../../../routing/Utils';
 import {
   BlockHeader,
   CenteredHeader,
@@ -22,21 +21,26 @@ import {
   Subtext,
 } from '../../../../styling/styleUtils';
 import {Coordinate} from '../../../../types/graphQLTypes';
-import {TrailType} from '../../../../types/graphQLTypes';
-import {CoreItem, MapItem} from '../../../../types/itemTypes';
+import {CoreItem} from '../../../../types/itemTypes';
 import {slopeToSteepnessClass} from '../../../../utilities/trailUtils';
 import LoadingSimple from '../../LoadingSimple';
+import getTitle from './getTitle';
 import Title from './Title';
 
 interface Props {
+  id: string;
   coordinate: Coordinate;
+  sourceType: CoreItem;
   item: CoreItem;
   altCoordinate?: Coordinate;
   destination?: RoutesToPointInput['destination'];
 }
 
 const RoutesToPoint = (props: Props) => {
-  const {coordinate, altCoordinate, destination, item} = props;
+  const {
+    coordinate, altCoordinate, destination, item,
+    id, sourceType,
+  } = props;
   const getString = useFluent();
   const mapContext = useMapContext();
 
@@ -60,6 +64,7 @@ const RoutesToPoint = (props: Props) => {
     altLng: altCoordinate ? altCoordinate[0] : undefined,
     destination,
   });
+  let url: string = '#';
   if (loading) {
     let loadingText: string;
     if (destination === 'campsites') {
@@ -93,7 +98,8 @@ const RoutesToPoint = (props: Props) => {
   } else if (data !== undefined) {
     if (data.features.length) {
       const sortedRoutes = orderBy(data.features, ['properties.routeLength']);
-      const routes = sortedRoutes.map(({properties, geometry}, i) => {
+      const routes = sortedRoutes.map((feature, i) => {
+        const {properties, geometry} = feature;
         const {routeLength, elevationGain, elevationLoss, avgSlope, trails} = properties;
         let elevationDetails: React.ReactElement<any> | null;
         if (elevationGain !== undefined && elevationGain !== null &&
@@ -139,47 +145,8 @@ const RoutesToPoint = (props: Props) => {
 
         const onMouseEnter = () => {
           if (mapContext.intialized) {
-           let title: string;
-           let iconType: CoreItem | MapItem;
-           if (!destination || destination === 'parking') {
-              if (trails && trails.length) {
-                const uniqueTrails = uniqBy(trails.filter(t => t.name), 'name');
-                const [justTrails, justRoads] =
-                  partition(uniqueTrails, t => t.type && t.type !== TrailType.road && t.type !== TrailType.dirtroad);
-                const topTrailsString = justTrails.length
-                  ? justTrails.slice(0, 2).map(t => t.name).join(', ___')
-                  : justRoads.slice(0, 2).map(t => t.name).join(', ___');
-                if (topTrailsString.length) {
-                  const nameComponents = topTrailsString.split('___').map((t) => t);
-                  const remaining = uniqueTrails.length - nameComponents.length;
-                  if (remaining) {
-                    nameComponents.push(` & ${remaining} ${getString('global-text-value-others', {count: remaining})}`);
-                  }
-                  title = nameComponents.join('');
-                } else {
-                  title = trails.length + ' trails';
-                }
-              } else if (properties.destination.name) {
-                title = properties.destination.name;
-              } else if (properties.destination.type) {
-                title = properties.destination.type.split('_').join(' ');
-              } else {
-                title = trails.length + ' trails';
-              }
-              title = `via ${title}`;
-              iconType = MapItem.route;
-            } else {
-              const formattedType =
-                upperFirst(getString('global-formatted-anything-type', {type: properties.destination.type}));
-              iconType = item === CoreItem.trail && destination === 'mountains' ? CoreItem.mountain : item;
-              if (properties.destination.name) {
-                title = properties.destination.name;
-              } else {
-                title = formattedType;
-              }
-            }
-
-           mapContext.setExternalHoveredPopup(
+          const {title, iconType} = getTitle({destination, item, feature, getString});
+          mapContext.setExternalHoveredPopup(
               title,
               iconType,
               subtitle,
@@ -189,6 +156,20 @@ const RoutesToPoint = (props: Props) => {
           }
         };
 
+        if (!destination || destination === 'parking') {
+          url = autoRouteDetailLink.parkingToMountain(id, properties.destination._id);
+        } else if (destination === 'campsites') {
+          if (sourceType === CoreItem.mountain) {
+            url = autoRouteDetailLink.mountainToCampsite(id, properties.destination._id);
+          } else if (sourceType === CoreItem.campsite) {
+            url = autoRouteDetailLink.campsiteToCampsite(id, properties.destination._id);
+          } else if (sourceType === CoreItem.trail) {
+            url = autoRouteDetailLink.trailToCampsite(id, properties.destination._id);
+          }
+        } else if (destination === 'mountains') {
+          url = autoRouteDetailLink.trailToMountain(id, properties.destination._id);
+        }
+
         return (
           <HorizontalBlock key={'route-to-summit-' + i + properties.destination._id}
             onMouseEnter={onMouseEnter}
@@ -196,6 +177,7 @@ const RoutesToPoint = (props: Props) => {
           >
             <BlockHeader>
               <Title
+                id={id}
                 item={item}
                 trails={trails}
                 destination={properties.destination}
@@ -214,7 +196,7 @@ const RoutesToPoint = (props: Props) => {
               {elevationDetails}
             </Details>
             <Details>
-              <SmallLink to={'#'}>
+              <SmallLink to={url}>
                 {getString('global-text-value-view-route')}
               </SmallLink>
             </Details>

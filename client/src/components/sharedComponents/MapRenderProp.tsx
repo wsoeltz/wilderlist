@@ -149,11 +149,13 @@ interface Props {
     name: Trail['name'];
     type: Trail['type'];
     line: Trail['line'];
+    trailLengthText?: string;
     hikedCount?: number;
   }>;
   type?: PeakListVariants | 'comparison';
   center?: Coordinate;
   bbox?: PeakList['bbox'];
+  showTrailMileage?: boolean;
 }
 
 const MapRenderProp = (props: Props) => {
@@ -220,6 +222,7 @@ const MapRenderProp = (props: Props) => {
                 type: trail.type,
                 subtitle: trail.type,
                 id: trail.id,
+                trailLengthText: trail.trailLengthText,
                 color: getPercentColor(type, trail.hikedCount),
               });
               if (trail.type === TrailType.road || trail.type === TrailType.dirtroad) {
@@ -233,10 +236,10 @@ const MapRenderProp = (props: Props) => {
           });
         }
         if (trails.length) {
-          mapContext.setHighlightedTrails(featureCollection(trails));
+          mapContext.setHighlightedTrails(featureCollection(trails), props.showTrailMileage);
         }
         if (roads.length) {
-          mapContext.setHighlightedRoads(featureCollection(roads));
+          mapContext.setHighlightedRoads(featureCollection(roads), props.showTrailMileage);
         }
 
       }

@@ -11,22 +11,25 @@ import RoutesToPoint from '../../sharedComponents/detailComponents/routesToPoint
 import {mountainNeutralSvg, tentNeutralSvg} from '../../sharedComponents/svgIcons';
 
 interface Props {
+  id: string;
   start: Coordinate;
   center: Coordinate;
   end: Coordinate;
 }
 
 const RoutesAndDirections = (props: Props) => {
-  const {start, center, end} = props;
+  const {start, center, end, id} = props;
   const getString = useFluent();
   const panels: Panel[] = [
     {
       title: getString('detail-nearby-mountains'),
       reactNode: (
         <RoutesToPoint
+          id={id}
           coordinate={start}
           altCoordinate={end}
           item={CoreItem.trail}
+          sourceType={CoreItem.trail}
           destination={'mountains'}
         />
       ),
@@ -38,9 +41,11 @@ const RoutesAndDirections = (props: Props) => {
       title: getString('detail-nearby-camping'),
       reactNode: (
         <RoutesToPoint
+          id={id}
           coordinate={start}
           altCoordinate={end}
           item={CoreItem.campsite}
+          sourceType={CoreItem.trail}
           destination={'campsites'}
         />
       ),

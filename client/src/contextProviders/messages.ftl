@@ -1198,6 +1198,7 @@ snow-report-as-of = as of { $date }
 snow-report-source-stations = Source Stations
 snow-report-distance = { $miles }mi away, ele. { $elevation }ft
 
+detail-route-title = Hike to { $destination } from { $source }
 detail-route-to-summit = Routes to Summit
 detail-nearby-camping = Nearby Camping
 detail-nearby-mountains = Nearby Mountains

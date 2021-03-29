@@ -1,13 +1,35 @@
 import {Coordinate, CoordinateWithElevation} from '../../../../types/graphQLTypes';
 
-interface Feature {
+interface SegmentFeature {
+  type: 'Feature';
+  properties: {
+    name?: string | null,
+    type?: string | null,
+    id: string,
+    routeLength: number,
+    elevationGain?: number | null,
+    elevationLoss?: number | null,
+    elevationMin?: number | null,
+    elevationMax?: number | null,
+    avgSlope?: number | null,
+    maxSlope?: number | null,
+    minSlope?: number | null,
+  };
+  geometry: {
+    type: 'LineString',
+    coordinates: CoordinateWithElevation[],
+  };
+}
+
+export interface Feature {
   type: 'Feature';
   properties: {
     trails: Array<{
-      name?: string | null;
-      type?: string | null;
-      id: string;
+      name?: string | null,
+      type?: string | null,
+      id: string,
     }>,
+    trailSegments: SegmentFeature[],
     routeLength: number,
     elevationGain?: number | null,
     elevationLoss?: number | null,
@@ -25,7 +47,7 @@ interface Feature {
   };
   geometry: {
     type: 'LineString',
-    coordinates: CoordinateWithElevation[];
+    coordinates: CoordinateWithElevation[],
   };
 }
 

@@ -6,16 +6,20 @@ import {
   primaryColor,
   tertiaryColor,
 } from '../../../../styling/styleUtils';
-import {CoreItem} from '../../../../types/itemTypes';
+import {AutoItem, CoreItem} from '../../../../types/itemTypes';
 import EditFlagButton from './EditFlagButton';
 import StarButtonWrapper from './starButton';
 
-const Root = styled.div`
+const StandardRoot = styled.div`
   display: grid;
   grid-template-columns: 1fr 5.625rem;
   grid-column-gap: 0.35rem;
   margin-bottom: 1rem;
   margin-right: -1rem;
+`;
+
+const RouteRoot = styled.div`
+  margin-bottom: 1rem;
 `;
 
 const IconHeader = styled.h1`
@@ -57,7 +61,7 @@ interface Props {
   subtitle: string;
   actionLine?: React.ReactElement<any> | null;
   authorId: null | string;
-  type: CoreItem;
+  type: CoreItem | AutoItem;
   isParentTrail?: boolean;
 }
 
@@ -76,6 +80,27 @@ const SimpleHeader = (props: Props) => {
     <IconContainer $color={primaryColor}>
       <BasicIconInText icon={icon} />
     </IconContainer>
+  );
+
+  const Root = type === AutoItem.route ? RouteRoot : StandardRoot;
+
+  const settings = type === AutoItem.route ? null : (
+    <Settings>
+      <StarButtonWrapper
+        id={id}
+        name={title}
+        type={type}
+      />
+      <EditFlagButtonContainer>
+        <EditFlagButton
+          authorId={authorId}
+          type={type}
+          id={id}
+          name={title}
+          isParentTrail={isParentTrail}
+        />
+      </EditFlagButtonContainer>
+    </Settings>
   );
 
   return (
@@ -100,22 +125,7 @@ const SimpleHeader = (props: Props) => {
         </Subtitle>
         <div>{actionLine}</div>
       </div>
-      <Settings>
-        <StarButtonWrapper
-          id={id}
-          name={title}
-          type={type}
-        />
-        <EditFlagButtonContainer>
-          <EditFlagButton
-            authorId={authorId}
-            type={type}
-            id={id}
-            name={title}
-            isParentTrail={isParentTrail}
-          />
-        </EditFlagButtonContainer>
-      </Settings>
+      {settings}
     </Root>
   );
 };

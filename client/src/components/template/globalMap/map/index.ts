@@ -1,5 +1,8 @@
-const {point, lineString} = require('@turf/helpers');
+const {point, lineString, featureCollection} = require('@turf/helpers');
 const distance = require('@turf/distance').default;
+const length = require('@turf/length').default;
+const along = require('@turf/along').default;
+const bearing = require('@turf/bearing').default;
 const centroid = require('@turf/centroid').default;
 const bboxPolygon = require('@turf/bbox-polygon').default;
 const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
@@ -26,11 +29,15 @@ import initLayers, {
   defaultGeoJsonPoint,
   defaultGeoJsonPolygon,
   highlightedPointsLayerId,
+  highlightedRoadMileageLayerId,
   highlightedRoadsLayerId,
+  highlightedTrailMileageLayerId,
   highlightedTrailsLayerId,
   hoveredPointLayerId,
   hoveredShapeLayerId,
   hoveredTrailsLayerId,
+  roadMileMarkerPointsLayerId,
+  trailMileMarkerPointsLayerId,
 } from './layers';
 import setWeather, {getWeatherState, WeatherOverlay, WeatherState} from './weather';
 
@@ -63,8 +70,8 @@ export interface Output {
   setNewBounds: (bbox: [Longitude, Latitude, Longitude, Latitude]) => void;
   setHighlightedPoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
   setHoveredPrimitivePoints: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
-  setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
-  setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data']) => void;
+  setHighlightedTrails: (data: mapboxgl.GeoJSONSourceOptions['data'], showMileage?: boolean) => void;
+  setHighlightedRoads: (data: mapboxgl.GeoJSONSourceOptions['data'], showMileage?: boolean) => void;
   clearMap: (options?: {points?: boolean, lines?: boolean}) => void;
   clearHoveredPoints: () => void;
   setExternalHoveredPopup: (
@@ -126,6 +133,7 @@ const defaultZoom: number = storedCenter ? storedCenter.zoom : 3.5;
 let highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+let showMileage: boolean = false;
 let is3dModeOn: boolean = false;
 
 const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: Input): Output => {
@@ -180,10 +188,10 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
         setHighlightedPoints(highlightedPointsGeojson);
       }
       if (highlightedTrailsGeojson) {
-        setHighlightedTrails(highlightedTrailsGeojson);
+        setHighlightedTrails(highlightedTrailsGeojson, showMileage);
       }
       if (highlightedRoadsGeojson) {
-        setHighlightedRoads(highlightedRoadsGeojson);
+        setHighlightedRoads(highlightedRoadsGeojson, showMileage);
       }
       if (is3dModeOn) {
         is3dModeOn = false;
@@ -277,6 +285,7 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
 
   const clearHighlightedLines = () => {
     highlightedTrailsGeojson = undefined;
+    showMileage = false;
     highlightedRoadsGeojson = undefined;
     const highlightedTrailsSource = map.getSource(highlightedTrailsLayerId) as any;
     if (highlightedTrailsSource) {
@@ -285,6 +294,22 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     const highlightedRoadsSource = map.getSource(highlightedRoadsLayerId) as any;
     if (highlightedRoadsSource) {
       highlightedRoadsSource.setData(defaultGeoJsonLineString);
+    }
+    const highlightedTrailMileageSource = map.getSource(highlightedTrailMileageLayerId) as any;
+    if (highlightedTrailMileageSource) {
+      highlightedTrailMileageSource.setData(defaultGeoJsonPoint);
+    }
+    const highlightedRoadMileageSource = map.getSource(highlightedRoadMileageLayerId) as any;
+    if (highlightedRoadMileageSource) {
+      highlightedRoadMileageSource.setData(defaultGeoJsonPoint);
+    }
+    const highlightedTrailMileMarkersSource = map.getSource(trailMileMarkerPointsLayerId) as any;
+    if (highlightedTrailMileMarkersSource) {
+      highlightedTrailMileMarkersSource.setData(defaultGeoJsonPoint);
+    }
+    const highlightedRoadMileMarkersSource = map.getSource(roadMileMarkerPointsLayerId) as any;
+    if (highlightedRoadMileMarkersSource) {
+      highlightedRoadMileMarkersSource.setData(defaultGeoJsonPoint);
     }
   };
 
@@ -309,17 +334,75 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
-  const updateTrailSource = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+  const updateTrailSource = (data: mapboxgl.GeoJSONSourceOptions['data'], mileage: boolean) => {
     const highlightedTrailsSource = map.getSource(highlightedTrailsLayerId) as any;
     if (highlightedTrailsSource) {
       highlightedTrailsSource.setData(data);
     }
+    if (mileage) {
+      const highlightedTrailMileageSource = map.getSource(highlightedTrailMileageLayerId) as any;
+      const highlightedTrailMileMarkersSource = map.getSource(trailMileMarkerPointsLayerId) as any;
+      if (highlightedTrailMileageSource && highlightedTrailMileMarkersSource) {
+        const mileageTextPointFeatures: any[] = [];
+        const mileMarkers: any[] = [];
+        (data as any).features.forEach((f: any) => {
+          const trailLength = length(f, {units: 'miles'});
+          if (trailLength > 0.1) {
+            const midPoint = along(f, (trailLength * 0.5));
+            const point1 = along(f, (trailLength / 2) - 0.01);
+            const point2 = along(f, (trailLength / 2) + 0.01);
+            let textAngle = bearing(point1, point2);
+            textAngle = textAngle + 90;
+            if (textAngle > 90) {
+              textAngle = textAngle + 180;
+            }
+            if (textAngle < -90) {
+              textAngle = textAngle - 180;
+            }
+            mileMarkers.push(point(f.geometry.coordinates[0]));
+            mileMarkers.push(point(f.geometry.coordinates[f.geometry.coordinates.length - 1]));
+            mileageTextPointFeatures.push({...midPoint, properties: {...f.properties, textAngle}});
+          }
+        });
+        highlightedTrailMileageSource.setData(featureCollection(mileageTextPointFeatures));
+        highlightedTrailMileMarkersSource.setData(featureCollection(mileMarkers));
+      }
+    }
   };
 
-  const updateRoadSource = (data: mapboxgl.GeoJSONSourceOptions['data']) => {
+  const updateRoadSource = (data: mapboxgl.GeoJSONSourceOptions['data'],  mileage: boolean) => {
     const highlightedRoadsSource = map.getSource(highlightedRoadsLayerId) as any;
     if (highlightedRoadsSource) {
       highlightedRoadsSource.setData(data);
+    }
+    if (mileage) {
+      const highlightedRoadMileageSource = map.getSource(highlightedRoadMileageLayerId) as any;
+      const highlightedRoadMileMarkersSource = map.getSource(roadMileMarkerPointsLayerId) as any;
+      if (highlightedRoadMileageSource) {
+        const mileageTextPointFeatures: any[] = [];
+        const mileMarkers: any[] = [];
+        (data as any).features.forEach((f: any) => {
+          const trailLength = length(f, {units: 'miles'});
+          if (trailLength > 0.1) {
+            const midPoint = along(f, (trailLength * 0.5));
+            const point1 = along(f, (trailLength / 2) - 0.01);
+            const point2 = along(f, (trailLength / 2) + 0.01);
+            let textAngle = bearing(point1, point2);
+            textAngle = textAngle + 90;
+            if (textAngle > 90) {
+              textAngle = textAngle + 180;
+            }
+            if (textAngle < -90) {
+              textAngle = textAngle - 180;
+            }
+            mileMarkers.push(point(f.geometry.coordinates[0]));
+            mileMarkers.push(point(f.geometry.coordinates[f.geometry.coordinates.length - 1]));
+            mileageTextPointFeatures.push({...midPoint, properties: {...f.properties, textAngle}});
+          }
+        });
+        highlightedRoadMileageSource.setData(featureCollection(mileageTextPointFeatures));
+        highlightedRoadMileMarkersSource.setData(featureCollection(mileMarkers));
+      }
     }
   };
 
@@ -382,26 +465,28 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   };
 
-  function setHighlightedTrails(data: mapboxgl.GeoJSONSourceOptions['data']) {
+  function setHighlightedTrails(data: mapboxgl.GeoJSONSourceOptions['data'], mileage?: boolean) {
+    showMileage = mileage ? mileage : false;
     highlightedTrailsGeojson = data;
     if (mapLoaded) {
-      updateTrailSource(data);
+      updateTrailSource(data, showMileage);
     } else {
       const updateTrailSourceOnLoad = () => {
-        updateTrailSource(data);
+        updateTrailSource(data, showMileage);
         map.off('load', updateTrailSourceOnLoad);
       };
       map.on('load', updateTrailSourceOnLoad);
     }
   }
 
-  function setHighlightedRoads(data: mapboxgl.GeoJSONSourceOptions['data']) {
+  function setHighlightedRoads(data: mapboxgl.GeoJSONSourceOptions['data'], mileage?: boolean) {
+    showMileage = mileage ? mileage : false;
     highlightedRoadsGeojson = data;
     if (mapLoaded) {
-      updateRoadSource(data);
+      updateRoadSource(data, showMileage);
     } else {
       const updateRoadSourceOnLoad = () => {
-        updateRoadSource(data);
+        updateRoadSource(data, showMileage);
         map.off('load', updateRoadSourceOnLoad);
       };
       map.on('load', updateRoadSourceOnLoad);

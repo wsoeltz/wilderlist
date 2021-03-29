@@ -30,6 +30,13 @@ export enum Routes {
   CreateList = '/create-list',
   EditList = '/edit-list/:id',
 
+  AutoRouteDetail = '/route-detail',
+  AutoRouteDetailParkingToMountain = '/route-detail/mountain/:mountainId/start/:parkingId',
+  AutoRouteDetailMountainToCampsite = '/route-detail/mountain/:mountainId/campsite/:campsiteId',
+  AutoRouteDetailCampsiteToCampsite = '/route-detail/campsite/:campsiteId1/campsite/:campsiteId2',
+  AutoRouteDetailTrailToMountain = '/route-detail/trail/:trailId/mountain/:mountainId',
+  AutoRouteDetailTrailToCampsite = '/route-detail/trail/:trailId/campsite/:campsiteId',
+
   AddTripReport = '/add-trip-report',
   EditTripReport = '/edit-trip-report',
 

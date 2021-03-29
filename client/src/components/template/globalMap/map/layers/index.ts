@@ -14,9 +14,14 @@ export const defaultGeoJsonPoint: mapboxgl.GeoJSONSourceOptions['data'] = {
 
 export const hoveredShapeLayerId = 'temporary-highlight-shape-layer-id';
 export const hoveredPointLayerId = 'temporary-hovered-point-layer-id';
+export const trailMileMarkerPointsLayerId = 'temporary-trail-mile-marker-points-layer-id';
+export const roadMileMarkerPointsLayerId = 'temporary-road-mile-marker-points-layer-id';
 
 export const highlightedTrailsLayerId = 'temporary-highlight-trails-layer-id';
 const highlightedTrailsLayerTopId = 'temporary-highlight-trails-top-layer-id';
+
+export const highlightedTrailMileageLayerId = 'temporary-highlight-trail-mileage-layer-id';
+export const highlightedRoadMileageLayerId = 'temporary-highlight-road-mileage-layer-id';
 
 export const hoveredTrailsLayerId = 'temporary-hovered-trails-layer-id';
 const hoveredTrailsLayerTopId = 'temporary-hovered-trails-top-layer-id';
@@ -401,6 +406,122 @@ const initLayers = ({map, style}: Input) => {
         ],
       },
   });
+
+  map.addSource(trailMileMarkerPointsLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonPoint,
+  });
+  map.addLayer({
+    id: trailMileMarkerPointsLayerId,
+    type: 'circle',
+    source: trailMileMarkerPointsLayerId,
+    paint: {
+      'circle-color': '#fff',
+      'circle-stroke-color': primaryColor,
+      'circle-stroke-width': [
+          'interpolate',
+          ['linear', 1.96],
+          ['zoom'],
+          0, 0.75,
+          22, 4,
+        ],
+      'circle-radius': [
+          'interpolate',
+          ['linear', 1.96],
+          ['zoom'],
+          0, 0.75,
+          22, 6.5,
+        ],
+      },
+  }, 'campsites');
+
+  map.addSource(roadMileMarkerPointsLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonPoint,
+  });
+  map.addLayer({
+    id: roadMileMarkerPointsLayerId,
+    type: 'circle',
+    source: roadMileMarkerPointsLayerId,
+    paint: {
+      'circle-color': '#fff',
+      'circle-stroke-color': primaryColor,
+      'circle-stroke-width': [
+          'interpolate',
+          ['linear', 1.96],
+          ['zoom'],
+          0, 0.75,
+          22, 4,
+        ],
+      'circle-radius': [
+          'interpolate',
+          ['linear', 1.96],
+          ['zoom'],
+          0, 0.75,
+          22, 6.5,
+        ],
+      },
+  }, 'campsites');
+
+  map.addSource(highlightedRoadMileageLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonLineString,
+  });
+  map.addLayer({
+    id: highlightedRoadMileageLayerId,
+    type: 'symbol',
+    source: highlightedRoadMileageLayerId,
+      layout: {
+        'text-size': 12,
+        'text-font': [
+          'Source Sans Pro Bold',
+          'Arial Unicode MS Regular',
+        ],
+        'text-field': ['to-string', ['get', 'trailLengthText']],
+        'text-letter-spacing': 0.04,
+        'text-anchor': 'center',
+        'text-padding': 0,
+        'text-offset': [0, -1],
+        'text-rotate': ['get', 'textAngle'],
+        'text-allow-overlap': true,
+    },
+    paint: {
+        'text-halo-color': '#ffffff',
+        'text-halo-width': 1,
+        'text-halo-blur': 0.1,
+        'text-color': primaryColor,
+    },
+  }, 'campsites');
+
+  map.addSource(highlightedTrailMileageLayerId, {
+    type: 'geojson',
+    data: defaultGeoJsonLineString,
+  });
+  map.addLayer({
+    id: highlightedTrailMileageLayerId,
+    type: 'symbol',
+    source: highlightedTrailMileageLayerId,
+      layout: {
+        'text-size': 12,
+        'text-font': [
+          'Source Sans Pro Bold',
+          'Arial Unicode MS Regular',
+        ],
+        'text-field': ['to-string', ['get', 'trailLengthText']],
+        'text-letter-spacing': 0.04,
+        'text-anchor': 'center',
+        'text-padding': 0,
+        'text-offset': [0, -1],
+        'text-rotate': ['get', 'textAngle'],
+        'text-allow-overlap': true,
+    },
+    paint: {
+        'text-halo-color': textHaloColor,
+        'text-halo-width': 1,
+        'text-halo-blur': 0.1,
+        'text-color': hoveredHighlightedTextColor,
+    },
+  }, 'campsites');
 
 };
 

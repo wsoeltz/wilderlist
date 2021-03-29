@@ -8,6 +8,10 @@ export enum AggregateItem {
   list = 'list',
 }
 
+export enum AutoItem {
+  route = 'route',
+}
+
 export enum MapItem {
   route = 'route',
   directions = 'directions',

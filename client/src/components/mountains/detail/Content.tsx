@@ -34,6 +34,7 @@ const Content = (props: Props) => {
           snowReport={locationTextShort ? {location, stateAbbr: locationTextShort} : undefined}
         />
         <RoutesAndDirections
+          id={id}
           location={location}
         />
         <TripsNotesAndReports

@@ -62,6 +62,19 @@ export const editTrailLink = (id: string) => Routes.EditTrail.replace(':id', id)
 export const editTrailParentLink = (id: string) => Routes.EditTrailParent.replace(':id', id);
 export const editPeakListLink = (id: string) => Routes.EditList.replace(':id', id);
 
+export const autoRouteDetailLink = {
+  parkingToMountain: (mountainId: string, parkingId: string) =>
+    Routes.AutoRouteDetailParkingToMountain.replace(':mountainId', mountainId).replace(':parkingId', parkingId),
+  mountainToCampsite: (mountainId: string, campsiteId: string) =>
+    Routes.AutoRouteDetailMountainToCampsite.replace(':mountainId', mountainId).replace(':campsiteId', campsiteId),
+  campsiteToCampsite: (campsiteId1: string, campsiteId2: string) =>
+    Routes.AutoRouteDetailCampsiteToCampsite.replace(':campsiteId1', campsiteId1).replace(':campsiteId2', campsiteId2),
+  trailToMountain: (trailId: string, mountainId: string) =>
+    Routes.AutoRouteDetailTrailToMountain.replace(':trailId', trailId).replace(':mountainId', mountainId),
+  trailToCampsite: (trailId: string, campsiteId: string) =>
+    Routes.AutoRouteDetailTrailToCampsite.replace(':trailId', trailId).replace(':campsiteId', campsiteId),
+};
+
 export const preventNavigation = (e: React.SyntheticEvent) => {
   e.preventDefault();
   e.stopPropagation();

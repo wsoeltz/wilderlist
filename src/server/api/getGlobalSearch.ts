@@ -1,6 +1,6 @@
 /* tslint:disable:await-promise */
 const { point } = require('@turf/helpers');
-const distance = require('@turf/distance');
+const distance = require('@turf/distance').default;
 import axios from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import groupBy from 'lodash/groupBy';

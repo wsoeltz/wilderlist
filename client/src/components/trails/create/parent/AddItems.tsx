@@ -97,7 +97,7 @@ const AddItems = (props: Props) => {
   }, [mapContext, selectedTrails, setSelectedTrails]);
 
   const trails = selectedTrails.map(trail => {
-    const trailLength = trail.line && trail.line.length ? length(lineString(trail.line)) : 0;
+    const trailLength = trail.line && trail.line.length ? length(lineString(trail.line), {units: 'miles'}) : 0;
     return {
       ...trail,
       name: trail.name ? trail.name : upperFirst(getString('global-formatted-trail-type', {type: trail.type})),

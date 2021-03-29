@@ -36,6 +36,7 @@ const Content = (props: Props) => {
           snowReport={stateAbbr ? {location: center, stateAbbr} : undefined}
         />
         <RoutesAndDirections
+          id={id}
           start={line[0]}
           center={center}
           end={line[line.length - 1]}

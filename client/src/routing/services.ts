@@ -48,6 +48,20 @@ export const getRoutesToPointURL = ({coord, altCoord, destination}: RoutesToPoin
   return `${baseUrl}${ServicesRoutes.routesToPoint}` +
     `?lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}`;
 };
+export interface RouteDetailInput extends RoutesToPointInput {
+  destinationId: string;
+}
+export const getRouteDetailsURL = (input: RouteDetailInput) => {
+  const {coord, altCoord, destination, destinationId} = input;
+  let altCoordsParam: string = '';
+  if (altCoord) {
+    altCoordsParam = `&alt_lat=${altCoord[1]}&alt_lng=${altCoord[0]}`;
+  }
+  const destinationParam = destination ? `&destination=${destination}` : '';
+  return `${baseUrl}${ServicesRoutes.routesToPoint}` +
+    `?lat=${coord[1]}&lng=${coord[0]}${altCoordsParam}${destinationParam}` +
+    `&destination_id=${destinationId}&segments=true`;
+};
 
 export interface DirectionToParkingInput {
   start: Coordinate;

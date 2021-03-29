@@ -5,11 +5,12 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import useFluent from '../../../../hooks/useFluent';
 import {RoutesToPointInput} from '../../../../routing/services';
-import {campsiteDetailLink, mountainDetailLink} from '../../../../routing/Utils';
+import {autoRouteDetailLink, campsiteDetailLink, mountainDetailLink} from '../../../../routing/Utils';
 import {CampsiteType, ParkingType, TrailType} from '../../../../types/graphQLTypes';
 import {CoreItem} from '../../../../types/itemTypes';
 
 interface Props {
+  id: string;
   item: CoreItem;
   trails: Array<{
     id: string,
@@ -25,12 +26,13 @@ interface Props {
 }
 
 const Title = (props: Props) => {
-  const {trails, destinationType, destination} = props;
+  const {trails, destinationType, destination, id} = props;
   const getString = useFluent();
   let title: string | React.ReactElement<any>;
   let optionalSubtitle: React.ReactElement<any> | null = null;
   let url = '#';
   if (!destinationType || destinationType === 'parking') {
+    url = autoRouteDetailLink.parkingToMountain(id, destination._id);
     if (trails && trails.length) {
       const uniqueTrails = uniqBy(trails.filter(t => t.name), 'name');
       const [justTrails, justRoads] =

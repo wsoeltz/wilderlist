@@ -31,7 +31,15 @@ const RoutesAndDirections = (props: Props) => {
     },
     {
       title: getString('detail-nearby-camping'),
-      reactNode: <RoutesToPoint coordinate={location} item={CoreItem.campsite} destination={'campsites'} />,
+      reactNode: (
+        <RoutesToPoint
+          id={id}
+          coordinate={location}
+          item={CoreItem.campsite}
+          sourceType={CoreItem.campsite}
+          destination={'campsites'}
+        />
+      ),
       customIcon: true,
       icon: tentNeutralSvg,
       renderHiddenContent: true,

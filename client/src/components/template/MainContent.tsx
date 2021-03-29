@@ -1,13 +1,13 @@
 import 'cross-fetch/polyfill';
 import 'normalize.css';
-import React, { Suspense, useEffect, useRef } from 'react';
-import ReactGA from 'react-ga';
+import React, { Suspense, useRef } from 'react';
 import {
   Route,
   Switch,
 } from 'react-router-dom';
 import useScrollToTopOnRender from '../../hooks/useScrollToTopOnRender';
 import { Routes } from '../../routing/routes';
+import TrackedRoute from '../../routing/TrackedRoute';
 import {
   ContentBody,
   ContentContainer,
@@ -17,6 +17,7 @@ import CampsiteDetailPage from '../campsites/detail';
 import MountainDetailPage from '../mountains/detail';
 import SummitViewPage from '../mountains/detail/summitView';
 import PeakListDetailPage from '../peakLists/detail';
+import AutoRoutePage from '../routes/auto';
 import LoadingSuspense from '../sharedComponents/LoadingSuspense';
 import TrailDetailPage from '../trails/detail';
 import Header from './contentHeader';
@@ -37,18 +38,6 @@ const EditTrailParent = React.lazy(() => import('../trails/create/parent'));
 const ComparePeakListPage = React.lazy(() => import('../peakLists/compare'));
 const AddTripReport = React.lazy(() => import('../tripReports/form'));
 const AdminPanel = React.lazy(() => import('../admin'));
-
-const TrackedRoute = (props: any) => {
-  useEffect(() => {
-    const page = props.location.pathname;
-    ReactGA.set({page});
-    ReactGA.pageview(page);
-  }, [props.location.pathname]);
-
-  return (
-    <Route {...props}/>
-  );
-};
 
 const ContentRoutes = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -81,6 +70,7 @@ const ContentRoutes = () => {
           <TrackedRoute exact path={Routes.About} component={About} />
           <TrackedRoute exact path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
           <TrackedRoute exact path={Routes.TermsOfUse} component={TermsOfUse} />
+          <TrackedRoute path={Routes.AutoRouteDetail} component={AutoRoutePage} />
           {/* 404 Route -> */}
           <Route exact path={Routes.Admin} component={AdminPanel} />
           <Route component={PageNotFound} />
