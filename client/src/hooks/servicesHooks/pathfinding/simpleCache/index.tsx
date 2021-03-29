@@ -1,6 +1,6 @@
 import {Coordinate, CoordinateWithElevation} from '../../../../types/graphQLTypes';
 
-interface SegmentFeature {
+export interface SegmentFeature {
   type: 'Feature';
   properties: {
     name?: string | null,
@@ -21,6 +21,14 @@ interface SegmentFeature {
   };
 }
 
+export interface Destination {
+  _id: string;
+  name?: string | null;
+  type?: string | null;
+  elevation?: number | null;
+  location: Coordinate;
+}
+
 export interface Feature {
   type: 'Feature';
   properties: {
@@ -38,12 +46,7 @@ export interface Feature {
     avgSlope?: number | null,
     maxSlope?: number | null,
     minSlope?: number | null,
-    destination: {
-      _id: string,
-      name?: string | null,
-      type?: string | null,
-      location: Coordinate,
-    },
+    destination: Destination,
   };
   geometry: {
     type: 'LineString',

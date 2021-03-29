@@ -30,6 +30,7 @@ import getTitle from '../../sharedComponents/detailComponents/routesToPoint/getT
 import LoadingSimple, {LoadingContainer} from '../../sharedComponents/LoadingSimple';
 import MapRenderProp from '../../sharedComponents/MapRenderProp';
 import MoreInformation from './moreInformationPanel';
+import SegmentBreakdown from './segmentBreakdown';
 
 interface Props extends Input {
   sourceDatum: {
@@ -115,6 +116,12 @@ const Detail = ({sourceDatum, sourceRoute, ...input}: Props) => {
           id={sourceDatum.id}
           title={title}
           feature={feature}
+        />
+        <SegmentBreakdown
+          sourceDatum={sourceDatum}
+          sourceRoute={sourceRoute}
+          segements={feature.properties.trailSegments}
+          destination={destination}
         />
         <MapRenderProp
           id={sourceDatum.id + destination._id}

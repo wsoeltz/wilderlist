@@ -26,7 +26,7 @@ const RoutesAndDirections = (props: Props) => {
       icon: faChartArea,
     },
     {
-      title: getString('trail-detail-download-trail'),
+      title: getString('trail-detail-download-route'),
       reactNode: <DownloadGPX title={title} line={feature.geometry.coordinates} />,
       customIcon: false,
       icon: faDownload,

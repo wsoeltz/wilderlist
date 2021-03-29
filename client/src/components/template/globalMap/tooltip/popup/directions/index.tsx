@@ -25,10 +25,11 @@ const Root = styled(RootBase)`
 interface Props {
   destination: Coordinate;
   itemType: CoreItems;
+  alignLinkEnd?: boolean;
 }
 
 const DrivingDirections = (props: Props) => {
-  const {destination, itemType} = props;
+  const {destination, itemType, alignLinkEnd} = props;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const {location, updateLocation, getUsersLocation} = useDirectionsOrigin();
   const getString = useFluent();
@@ -47,6 +48,7 @@ const DrivingDirections = (props: Props) => {
         origin={location.data}
         considerDirect={itemType === CoreItems.campsites}
         changeOrigin={clearAndOpenOriginModal}
+        alignLinkEnd={Boolean(alignLinkEnd)}
       />
     );
   } else {

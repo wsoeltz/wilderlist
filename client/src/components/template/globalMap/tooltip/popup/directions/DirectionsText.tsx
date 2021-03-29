@@ -47,10 +47,11 @@ interface Props {
   destination: Coordinate;
   considerDirect: boolean | undefined;
   changeOrigin: () => void;
+  alignLinkEnd: boolean;
 }
 
 const DirectionsText = (props: Props) => {
-  const {destination, origin, considerDirect, changeOrigin} = props;
+  const {destination, origin, considerDirect, changeOrigin, alignLinkEnd} = props;
   const {loading, error, data} = useDirectionsToParking({
     start: origin.coordinates,
     end: destination,
@@ -96,7 +97,7 @@ const DirectionsText = (props: Props) => {
               <BasicIconAtEndOfTextCompact icon={faPencilAlt} />
             </LinkButton>
           </From>
-          <GoogleMapsLink>
+          <GoogleMapsLink style={alignLinkEnd ? {gridRow: 2} : undefined}>
             <a rel='noreferrer' href={googleUrl} target={'_blank'}>
               {getString('directions-google-maps')}
               <BasicIconAtEndOfTextCompact icon={faExternalLinkAlt} />

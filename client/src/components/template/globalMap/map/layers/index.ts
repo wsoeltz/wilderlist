@@ -415,6 +415,7 @@ const initLayers = ({map, style}: Input) => {
     id: trailMileMarkerPointsLayerId,
     type: 'circle',
     source: trailMileMarkerPointsLayerId,
+    minzoom: 12,
     paint: {
       'circle-color': '#fff',
       'circle-stroke-color': primaryColor,
@@ -443,6 +444,7 @@ const initLayers = ({map, style}: Input) => {
     id: roadMileMarkerPointsLayerId,
     type: 'circle',
     source: roadMileMarkerPointsLayerId,
+    minzoom: 12,
     paint: {
       'circle-color': '#fff',
       'circle-stroke-color': primaryColor,
@@ -471,27 +473,29 @@ const initLayers = ({map, style}: Input) => {
     id: highlightedRoadMileageLayerId,
     type: 'symbol',
     source: highlightedRoadMileageLayerId,
-      layout: {
-        'text-size': 12,
-        'text-font': [
-          'Source Sans Pro Bold',
-          'Arial Unicode MS Regular',
-        ],
-        'text-field': ['to-string', ['get', 'trailLengthText']],
-        'text-letter-spacing': 0.04,
-        'text-anchor': 'center',
-        'text-padding': 0,
-        'text-offset': [0, -1],
-        'text-rotate': ['get', 'textAngle'],
-        'text-allow-overlap': true,
+    minzoom: 12,
+    layout: {
+      'text-size': 12,
+      'text-font': [
+        'Source Sans Pro Bold',
+        'Arial Unicode MS Regular',
+      ],
+      'text-field': ['to-string', ['get', 'trailLengthText']],
+      'text-letter-spacing': 0.04,
+      'text-anchor': 'center',
+      'text-rotation-alignment': 'map',
+      'text-padding': 0,
+      'text-offset': [0, -1],
+      'text-rotate': ['get', 'textAngle'],
+      'text-allow-overlap': true,
     },
     paint: {
-        'text-halo-color': '#ffffff',
-        'text-halo-width': 1,
-        'text-halo-blur': 0.1,
-        'text-color': primaryColor,
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1,
+      'text-halo-blur': 0.1,
+      'text-color': primaryColor,
     },
-  }, 'campsites');
+  });
 
   map.addSource(highlightedTrailMileageLayerId, {
     type: 'geojson',
@@ -501,27 +505,29 @@ const initLayers = ({map, style}: Input) => {
     id: highlightedTrailMileageLayerId,
     type: 'symbol',
     source: highlightedTrailMileageLayerId,
-      layout: {
-        'text-size': 12,
-        'text-font': [
-          'Source Sans Pro Bold',
-          'Arial Unicode MS Regular',
-        ],
-        'text-field': ['to-string', ['get', 'trailLengthText']],
-        'text-letter-spacing': 0.04,
-        'text-anchor': 'center',
-        'text-padding': 0,
-        'text-offset': [0, -1],
-        'text-rotate': ['get', 'textAngle'],
-        'text-allow-overlap': true,
+    minzoom: 12,
+    layout: {
+      'text-size': 12,
+      'text-font': [
+        'Source Sans Pro Bold',
+        'Arial Unicode MS Regular',
+      ],
+      'text-field': ['to-string', ['get', 'trailLengthText']],
+      'text-letter-spacing': 0.04,
+      'text-anchor': 'center',
+      'text-rotation-alignment': 'map',
+      'text-padding': 0,
+      'text-offset': [0, -1],
+      'text-rotate': ['get', 'textAngle'],
+      'text-allow-overlap': true,
     },
     paint: {
-        'text-halo-color': textHaloColor,
-        'text-halo-width': 1,
-        'text-halo-blur': 0.1,
-        'text-color': hoveredHighlightedTextColor,
+      'text-halo-color': textHaloColor,
+      'text-halo-width': 1,
+      'text-halo-blur': 0.1,
+      'text-color': hoveredHighlightedTextColor,
     },
-  }, 'campsites');
+  });
 
 };
 
