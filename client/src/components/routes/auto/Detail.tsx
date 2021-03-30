@@ -120,7 +120,7 @@ const Detail = ({sourceDatum, sourceRoute, ...input}: Props) => {
         <SegmentBreakdown
           sourceDatum={sourceDatum}
           sourceRoute={sourceRoute}
-          segements={feature.properties.trailSegments}
+          segments={feature.properties.trailSegments}
           destination={destination}
         />
         <MapRenderProp

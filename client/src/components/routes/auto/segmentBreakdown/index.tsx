@@ -1,4 +1,6 @@
 import {faRoute} from '@fortawesome/free-solid-svg-icons';
+// import {extent} from 'd3-array';
+import {scaleLinear} from 'd3-scale';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
 import {Destination, SegmentFeature} from '../../../../hooks/servicesHooks/pathfinding/simpleCache';
@@ -9,6 +11,7 @@ import {CoreItem} from '../../../../types/itemTypes';
 import DetailSegment, {Panel} from '../../../sharedComponents/detailComponents/DetailSegment';
 import ItemBlock from './ItemBlock';
 import ParkingBlock from './ParkingBlock';
+import SegmentBlock from './SegmentBlock';
 
 interface Props {
   sourceDatum: {
@@ -19,12 +22,12 @@ interface Props {
     itemType: CoreItem;
   };
   sourceRoute: Routes;
-  segements: SegmentFeature[];
+  segments: SegmentFeature[];
   destination: Destination;
 }
 
 const SegmentBreakdown = (props: Props) => {
-  const {sourceRoute, destination, sourceDatum, segements} = props;
+  const {sourceRoute, destination, sourceDatum, segments} = props;
   const getString = useFluent();
 
   let startingBlock: React.ReactElement<any> | null;
@@ -44,7 +47,7 @@ const SegmentBreakdown = (props: Props) => {
   } else {
     const startDatum = sourceDatum.itemType === CoreItem.trail ? {
       ...sourceDatum,
-      location: segements[0].geometry.coordinates[0] as any as Coordinate,
+      location: segments[0].geometry.coordinates[0] as any as Coordinate,
     } : sourceDatum;
 
     startingBlock = (
@@ -66,8 +69,8 @@ const SegmentBreakdown = (props: Props) => {
     if (destination.elevation !== undefined && destination.elevation !== null) {
       elevation = destination.elevation;
     } else {
-      elevation = segements[segements.length - 1]
-        .geometry.coordinates[segements[segements.length - 1]
+      elevation = segments[segments.length - 1]
+        .geometry.coordinates[segments[segments.length - 1]
         .geometry.coordinates.length - 1][2];
     }
     const itemType = sourceRoute === Routes.AutoRouteDetailTrailToMountain ? CoreItem.mountain : CoreItem.campsite;
@@ -86,11 +89,23 @@ const SegmentBreakdown = (props: Props) => {
     );
   }
 
+  // const [min, max] = extent(segments.map(s => s.properties.routeLength)) as [number, number];
+  const max = Math.max(...segments.map(s => s.properties.routeLength));
+  const lengthScale = scaleLinear().domain([0.1, max]).range([0, 300]);
+  const segmentBlocks = segments.map((s, i) => (
+    <SegmentBlock
+      key={sourceRoute + sourceDatum.id + s.properties.id + i}
+      segment={s}
+      minHeight={lengthScale(s.properties.routeLength)}
+    />
+  ));
+
   const panel: Panel = {
     title: getString('global-text-details'),
     reactNode: (
       <>
         {startingBlock}
+        {segmentBlocks}
         {endingBlock}
       </>
     ),

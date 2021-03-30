@@ -3,7 +3,7 @@ import {
   BasicIconInText,
   IconContainer as IconContainerBase,
   lightBorderColor,
-  LinkButtonCompact,
+  primaryColor,
   secondaryColor,
 } from '../../../../styling/styleUtils';
 
@@ -13,6 +13,7 @@ export const SegmentRoot = styled.div`
   display: grid;
   grid-template-columns: 4rem 1fr;
   align-items: center;
+  box-sizing: border-box;
 `;
 
 export const ContentRoot = styled.div`
@@ -24,7 +25,6 @@ export const ContentRoot = styled.div`
 
 export const IconContainer = styled(IconContainerBase)`
   font-size: 1.5rem;
-  margin-right: 0.75rem;
 
   svg {
     width: 1.5rem;
@@ -48,5 +48,10 @@ export const IconBullet = styled(BasicIconInText)`
   font-size: 1rem;
 `;
 
-export const WeatherButton = styled(LinkButtonCompact)`
+export const SegementLine = styled.div`
+  width: 0.65rem;
+  height: 100%;
+  border-radius: 1000px;
+  margin: auto;
+  background-color: ${primaryColor};
 `;

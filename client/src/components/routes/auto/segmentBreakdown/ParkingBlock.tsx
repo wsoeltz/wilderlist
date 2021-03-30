@@ -10,6 +10,7 @@ import useFluent from '../../../../hooks/useFluent';
 import useMapContext from '../../../../hooks/useMapContext';
 import {
   BasicIconInTextCompact,
+  LinkButtonCompact,
   primaryColor,
 } from '../../../../styling/styleUtils';
 import {CoreItems, MapItem} from '../../../../types/itemTypes';
@@ -20,7 +21,6 @@ import {
   IconContainer,
   ListText,
   SegmentRoot,
-  WeatherButton,
 } from './styleUtils';
 
 interface Props {
@@ -88,10 +88,10 @@ const ParkingBlock = (props: Props) => {
             <div>
               {getString('global-text-value-start-at')} {destinationName}
             </div>
-            <WeatherButton onClick={openModal}>
+            <LinkButtonCompact onClick={openModal}>
               <BasicIconInTextCompact icon={faCloudSun} />
               {getString('weather-forecast-weather-at-start')}
-            </WeatherButton>
+            </LinkButtonCompact>
           </ContentRoot>
           <ContentRoot>
             <ListText>

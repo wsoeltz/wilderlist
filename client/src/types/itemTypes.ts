@@ -15,6 +15,7 @@ export enum AutoItem {
 export enum MapItem {
   route = 'route',
   directions = 'directions',
+  vehicleRoad = 'vehicle_road',
 }
 
 export enum CoreItems {

@@ -12,6 +12,7 @@ import useMapContext from '../../../../hooks/useMapContext';
 import {campsiteDetailLink, mountainDetailLink, trailDetailLink} from '../../../../routing/Utils';
 import {
   BasicIconInTextCompact,
+  LinkButtonCompact,
   primaryColor,
 } from '../../../../styling/styleUtils';
 import {Coordinate} from '../../../../types/graphQLTypes';
@@ -27,7 +28,6 @@ import {
   ListItem,
   ListText,
   SegmentRoot,
-  WeatherButton,
 } from './styleUtils';
 
 interface Props {
@@ -153,10 +153,10 @@ const ParkingBlock = (props: Props) => {
             <div>
               {end ? getString('global-text-value-end-at') : getString('global-text-value-start-at')} {title}
             </div>
-            <WeatherButton onClick={openModal}>
+            <LinkButtonCompact onClick={openModal}>
               <BasicIconInTextCompact icon={faCloudSun} />
               {end ? getString('weather-forecast-weather-at-end') : getString('weather-forecast-weather-at-start')}
-            </WeatherButton>
+            </LinkButtonCompact>
           </ContentRoot>
           <ContentRoot>
             <ListText>

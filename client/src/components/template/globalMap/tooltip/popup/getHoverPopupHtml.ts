@@ -1,6 +1,7 @@
 import DirectionsIcon from '../../../../../assets/images/icons/car-highlighted.svg';
 import ListIcon from '../../../../../assets/images/icons/list-highlighted.svg';
 import MountainIcon from '../../../../../assets/images/icons/mountain-highlighted.svg';
+import RoadIcon from '../../../../../assets/images/icons/road-highlighted.svg';
 import RouteIcon from '../../../../../assets/images/icons/route-highlighted.svg';
 import TentIcon from '../../../../../assets/images/icons/tent-highlighted.svg';
 import TrailIcon from '../../../../../assets/images/icons/trail-highlighted.svg';
@@ -21,6 +22,8 @@ const getHoverPopupHtml = (name: string, subtitle: string, type: CoreItem | MapI
     imgSrc = DirectionsIcon;
   } else if (type === AggregateItem.list) {
     imgSrc = ListIcon;
+  } else if (type === MapItem.vehicleRoad) {
+    imgSrc = RoadIcon;
   } else {
     imgSrc = MountainIcon;
   }

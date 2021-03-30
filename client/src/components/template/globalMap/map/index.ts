@@ -348,9 +348,9 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
         (data as any).features.forEach((f: any) => {
           const trailLength = length(f, {units: 'miles'});
           if (trailLength > 0.1) {
-            const midPoint = along(f, (trailLength * 0.5));
-            const point1 = along(f, (trailLength / 2) - 0.01);
-            const point2 = along(f, (trailLength / 2) + 0.01);
+            const midPoint = along(f, (trailLength * 0.5), {units: 'miles'});
+            const point1 = along(f, (trailLength / 2) - 0.01, {units: 'miles'});
+            const point2 = along(f, (trailLength / 2) + 0.01, {units: 'miles'});
             let textAngle = bearing(point1, point2);
             textAngle = textAngle + 90;
             if (textAngle > 90) {
