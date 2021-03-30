@@ -1,5 +1,4 @@
 import {faRoute} from '@fortawesome/free-solid-svg-icons';
-// import {extent} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
@@ -89,7 +88,6 @@ const SegmentBreakdown = (props: Props) => {
     );
   }
 
-  // const [min, max] = extent(segments.map(s => s.properties.routeLength)) as [number, number];
   const max = Math.max(...segments.map(s => s.properties.routeLength));
   const lengthScale = scaleLinear().domain([0.1, max]).range([0, 300]);
   const segmentBlocks = segments.map((s, i) => (

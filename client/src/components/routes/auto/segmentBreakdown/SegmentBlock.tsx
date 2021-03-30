@@ -13,6 +13,7 @@ import useMapContext from '../../../../hooks/useMapContext';
 import {trailDetailLink} from '../../../../routing/Utils';
 import {CoreItem, MapItem} from '../../../../types/itemTypes';
 import {slopeToSteepnessClass} from '../../../../utilities/trailUtils';
+import MiniElevationProfile from './MiniElevationProfile';
 import {
   ContentRoot,
   IconBullet,
@@ -103,6 +104,15 @@ const ParkingBlock = (props: Props) => {
     </ListItem>
   );
 
+  const elevationProfile = routeLength < 0.1 ? null : (
+    <div>
+      <MiniElevationProfile
+        feature={segment}
+        chartUniqueId={'mini-elevation-profile-' + segment + routeLength + name}
+      />
+    </div>
+  );
+
   return (
     <SegmentRoot
       onMouseEnter={onMouseEnter}
@@ -118,13 +128,12 @@ const ParkingBlock = (props: Props) => {
         <ContentRoot>
           <div>
             {title}
+            <ListText>
+              {lengthEl}
+              {incline}
+            </ListText>
           </div>
-        </ContentRoot>
-        <ContentRoot>
-          <ListText>
-            {lengthEl}
-            {incline}
-          </ListText>
+          {elevationProfile}
         </ContentRoot>
       </div>
     </SegmentRoot>

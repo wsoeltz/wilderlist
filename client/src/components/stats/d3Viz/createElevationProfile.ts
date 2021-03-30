@@ -32,6 +32,7 @@ interface Input {
   size: Dimensions;
   onMouseMove: (d: Datum) => void;
   onMouseOut: () => void;
+  noAxis: boolean;
 }
 
 const formatNumber = (n: number) => {
@@ -43,9 +44,9 @@ const formatMileage = (n: number) => {
 };
 
 const createLineChart = (input: Input) => {
-  const { svg, data, size, onMouseMove, onMouseOut } = input;
+  const { svg, data, size, onMouseMove, onMouseOut, noAxis } = input;
 
-  const margin = {top: 5, right: 0, bottom: 22, left: 37};
+  const margin = noAxis ? {top: 0, right: 10, bottom: 0, left: 10} : {top: 5, right: 0, bottom: 22, left: 37};
   const width = size.width - margin.left - margin.right;
   const height = size.height - margin.bottom - margin.top;
 
@@ -95,15 +96,17 @@ const createLineChart = (input: Input) => {
       .attr('d', elevationLine)
       .attr('transform', 'translate(' + margin.left + ', 0)');
 
-  // Add the x Axis
-  g.append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + height + ')')
-      .call(axisBottom(x).tickFormat(formatMileage as any).ticks(8));
+  if (!noAxis) {
+    // Add the x Axis
+    g.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + height + ')')
+        .call(axisBottom(x).tickFormat(formatMileage as any).ticks(8));
 
-  // Add the y Axis
-  g.append('g')
-      .call(axisLeft(y).tickFormat(formatNumber as any).ticks(8))
-      .attr('transform', 'translate(' + margin.left + ', 0)');
+    // Add the y Axis
+    g.append('g')
+        .call(axisLeft(y).tickFormat(formatNumber as any).ticks(8))
+        .attr('transform', 'translate(' + margin.left + ', 0)');
+  }
 
   g.style('transform', 'scale(0.95) translateY(' + margin.top + 'px)')
    .style('transform-origin', 'center');

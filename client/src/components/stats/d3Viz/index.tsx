@@ -48,6 +48,7 @@ type Props = BaseProps & (
     data: ElevationProfileDatum[];
     onMouseMove: (d: ElevationProfileDatum) => void;
     onMouseOut: () => void;
+    noAxis?: boolean;
   }
 );
 
@@ -88,6 +89,7 @@ const D3Viz = (props: Props) => {
           },
           onMouseMove: props.onMouseMove,
           onMouseOut: props.onMouseOut,
+          noAxis: Boolean(props.noAxis),
         });
       }
     }
