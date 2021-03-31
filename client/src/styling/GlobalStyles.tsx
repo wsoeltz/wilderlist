@@ -84,12 +84,12 @@ export const mapboxHoverPopupClassName = 'mapbox-gl-hovered-popup-container';
 
 const GlobalStyles = createGlobalStyle`
 
-  @media(max-width: 900px) {
+  @media (max-width: 900px), (max-height: 700px) {
     html {
       font-size: 14px;
     }
   }
-  @media(max-width: 450px) {
+  @media (max-width: 450px), (max-height: 600px) {
     html {
       font-size: 12px;
     }
