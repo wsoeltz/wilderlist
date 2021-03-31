@@ -1,5 +1,5 @@
 import {
-  faChartLine,
+  faChartBar,
   faList,
   faMap,
   faStar,
@@ -384,7 +384,7 @@ const Header = () => {
     route: Routes.YourStats,
     label: yourStatsText,
     customIcon: false,
-    icon: faChartLine,
+    icon: faChartBar,
   });
   const friendsLink = createLink({
     route: Routes.SearchUsers,

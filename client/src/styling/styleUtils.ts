@@ -770,3 +770,9 @@ export const SvgMiniImg = styled.img`
   margin-right: 0.6rem;
   top: 3px;
 `;
+
+export const DottedSegment = styled.div`
+  border-top: dashed 1px ${lightBorderColor};
+  padding: 1rem;
+  box-sizing: border-box;
+`;

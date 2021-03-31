@@ -7,8 +7,8 @@ meta-data-campsite-search-default-title = Search campsites - Wilderlist
 meta-data-trail-search-default-title = Search trails - Wilderlist
 meta-data-friend-search-default-title = Friends - Wilderlist
 meta-data-settings-default-title = Settings - Wilderlist
-meta-data-dashboard-default-title = Dashboard - Wilderlist
-meta-data-your-stats-default-title = Your Stats - Wilderlist
+meta-data-dashboard-default-title = Saved Items - Wilderlist
+meta-data-your-stats-default-title = Your Data - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
 meta-data-about-title = About - Wilderlist
 meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
@@ -201,6 +201,10 @@ global-text-value-distance = Distance
 global-text-value-duration = Duration
 global-text-value-average-incline = Average Incline
 global-text-value-total-segments = Total Segments
+global-text-value-totals = Totals
+global-text-value-progress = Progress
+global-text-value-contributions = Contributions
+global-text-value-timeline = Timeline
 global-text-value-incline = Incline
 global-text-value-max-incline = Max. Incline
 global-text-value-min-incline = Min. Incline
@@ -606,13 +610,13 @@ header-text-login-with-reddit = Login With Reddit
 header-text-login-with-facebook = Login With Facebook
 header-text-login-or-sign-up = Login or Sign up
 
-header-text-menu-item-dashboard = Dashboard
+header-text-menu-item-dashboard = Saved
 header-text-menu-item-lists = Hiking Lists
 header-text-menu-item-lists-short = Lists
 header-text-menu-item-mountains = Mountains
 header-text-menu-item-trails = Trails
 header-text-menu-item-camping = Camping
-header-text-menu-item-your-stats = Your Stats
+header-text-menu-item-your-stats = Your Data
 header-text-menu-item-about = About
 header-text-menu-item-your-stats-short = Stats
 header-text-menu-item-friends = Friends
@@ -626,7 +630,7 @@ header-text-menu-terms-of-use = Terms of Use
 notification-bar-ascent-marked = marked you as hiking
 notification-bar-camped-marked = marked you as camping at
 
-dashboard-title = Dashboard & Saved Items
+dashboard-title = Saved Items
 
 login-page-plan-your-trip-title = Plan your trip
 login-page-plan-your-trip-desc = ● Maps ● Trails ● Camping ● Weather Forecasts ● Trip Reports ● Driving Directions
@@ -675,7 +679,7 @@ dashboard-empty-state-no-saved-campsites = Find Campsites
 
 dashboard-back-to-dashboard = Back to Dashboard
 
-your-stats-title = Your Stats
+your-stats-title = Your Data
 
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)

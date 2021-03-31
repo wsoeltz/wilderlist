@@ -36,6 +36,7 @@
     "react-beforeunload": "^2.4.0",
     "react-datepicker": "^2.9.6",
     "react-dom": "^17.0.1",
+    "react-fast-charts": "^1.1.51",
     "react-ga": "^2.7.0",
     "react-helmet": "^5.2.1",
     "react-indiana-drag-scroll": "^1.8.0",

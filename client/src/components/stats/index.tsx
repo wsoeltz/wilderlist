@@ -1,9 +1,10 @@
+import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import Helmet from 'react-helmet';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import useFluent from '../../hooks/useFluent';
 import {
-  SectionTitleH3,
+  HighlightedIconInText,
 } from '../../styling/styleUtils';
 import Stats from './Stats';
 
@@ -17,11 +18,11 @@ const YourStats = () => {
         <Helmet>
           <title>{getString('meta-data-your-stats-default-title')}</title>
         </Helmet>
-        <SectionTitleH3>
-          {getString('your-stats-title')}
-        </SectionTitleH3>
+        <h1>
+          <HighlightedIconInText icon={faChartBar} /> &nbsp;{getString('your-stats-title')}
+        </h1>
+        <br />
         <Stats
-          userId={user._id}
         />
       </>
     );

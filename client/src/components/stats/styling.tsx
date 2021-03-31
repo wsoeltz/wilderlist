@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import {
+  baseColor,
   Card,
   lightBaseColor,
   primaryColor,
@@ -12,6 +13,14 @@ import AddHikingListSVG from './d3Viz/icons/add-hiking-list.svg';
 import AddMountainSVG from './d3Viz/icons/add-mountain.svg';
 import StarSVG from './d3Viz/icons/star.svg';
 import TripReportSVG from './d3Viz/icons/trip-report.svg';
+
+export const Title = styled.h3`
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: ${baseColor};
+  font-size: 1rem;
+`;
 
 export const Root = styled.div`
   margin-bottom: 4rem;

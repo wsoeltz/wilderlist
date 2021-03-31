@@ -198,6 +198,22 @@ const GlobalStyles = createGlobalStyle`
       -1px 1px 0 #fff,
        1px 1px 0 #fff;
   }
+
+  /**********
+      REACT-FAST-CHARTS CUSTOM STYLES
+  **********/
+  .react-fast-chart-tooltip {
+    font-size: 0.875rem;
+    .label-text {
+      color: ${lightBaseColor};
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .value-text {
+      font-weight: 800;
+    }
+  }
 `;
 
 export default GlobalStyles;
