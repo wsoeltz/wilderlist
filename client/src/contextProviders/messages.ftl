@@ -680,6 +680,22 @@ dashboard-empty-state-no-saved-campsites = Find Campsites
 dashboard-back-to-dashboard = Back to Dashboard
 
 your-stats-title = Your Data
+stats-percent-of-all-trips = Percent of all trips
+stats-total-trips-here = Total trips here
+stats-total-trips-title = Total trips per county and state
+stats-trips-seasons-title = Total trips in every season
+stats-trips-years-title = Total trips in every year
+stats-top-10-title = Top 10
+stats-total-vs-unique-title = Total vs Unique Points Hiked/Camped
+stats-total-hiked = Total hiked
+stats-total-camped = Total stayed at
+stats-unique-hiked = Unique hiked
+stats-unique-camped = Unique stayed at
+global-text-hiked-mountains = hiked mountains
+global-text-hiked-trails = hiked trails
+global-text-camped-at = camped at
+global-text-total = Total
+global-text-unique = Unique
 
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)

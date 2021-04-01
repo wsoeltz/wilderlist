@@ -1,4 +1,3 @@
-import {rgba} from 'polished';
 import React from 'react';
 import DataViz, {
   BarChartDatum,
@@ -6,19 +5,41 @@ import DataViz, {
   VizType,
 } from 'react-fast-charts';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
 import {
+  SectionTitle,
+} from '../../../styling/sharedContentStyles';
+import {
+  IconContainer,
   primaryColor,
 } from '../../../styling/styleUtils';
+import {
+  mountainNeutralSvg,
+  tentNeutralSvg,
+  trailDefaultSvg,
+} from '../../sharedComponents/svgIcons';
 import {
   Title,
 } from '../styling';
 
-const barChartBlue = rgba(primaryColor, 0.7);
+const barChartBlue = '#659dca';
 
 const BarChartContainer = styled.div`
   display: grid;
-  grid-template-columns: 2fr 0.65fr;
+  grid-template-columns: 1fr 1fr 1fr 0.5fr;
   align-items: center;
+`;
+
+const Column = styled.div`
+  text-align: center;
+`;
+
+const Label = styled.div`
+  margin-top: -1rem;
+`;
+
+const Icon = styled(IconContainer)`
+  margin: 0;
 `;
 
 interface Props {
@@ -39,22 +60,23 @@ const TotalVsUnique = (props: Props) => {
     totalCampsites,
     uniqueCampsites,
   } = props;
+  const getString = useFluent();
 
-  const totalVsUniqueData: BarChartDatum[][] = [
+  const totalVsUniqueMountainsData: BarChartDatum[][] = [
       [
         {
-          x: 'Mountains',
+          x: '',
           y: totalMountains,
           tooltipContentOnly: true,
           tooltipContent: `
             <div class="react-fast-chart-tooltip">
-              <strong>Mountains</strong>
+              <strong>${getString('global-text-value-mountains')}</strong>
               <div>
-                <span class="label-text">Total hiked:</span>
+                <span class="label-text">${getString('stats-total-hiked')}:</span>
                 <span class="value-text">${totalMountains}</span>
               </div>
               <div>
-                <span class="label-text">Unique hiked:</span>
+                <span class="label-text">${getString('stats-unique-hiked')}:</span>
                 <span class="value-text">${uniqueMountains}</span>
               </div>
             </div>
@@ -62,19 +84,44 @@ const TotalVsUnique = (props: Props) => {
           stroke: barChartBlue,
           fill: 'transparent',
         },
+      ],
+      [
         {
-          x: 'Trails',
+          x: '',
+          y: uniqueMountains,
+          tooltipContentOnly: true,
+          tooltipContent: `
+            <div class="react-fast-chart-tooltip">
+              <strong>${getString('global-text-value-mountains')}</strong>
+              <div>
+                <span class="label-text">${getString('stats-total-hiked')}:</span>
+                <span class="value-text">${totalMountains}</span>
+              </div>
+              <div>
+                <span class="label-text">${getString('stats-unique-hiked')}:</span>
+                <span class="value-text">${uniqueMountains}</span>
+              </div>
+            </div>
+          `,
+          fill: barChartBlue,
+        },
+      ],
+    ];
+  const totalVsUniqueTrailsData: BarChartDatum[][] = [
+      [
+        {
+          x: '',
           y: totalTrails,
           tooltipContentOnly: true,
           tooltipContent: `
             <div class="react-fast-chart-tooltip">
-              <strong>Trails</strong>
+              <strong>${getString('global-text-value-trails')}</strong>
               <div>
-                <span class="label-text">Total hiked:</span>
+                <span class="label-text">${getString('stats-total-hiked')}:</span>
                 <span class="value-text">${totalTrails}</span>
               </div>
               <div>
-                <span class="label-text">Unique hiked:</span>
+                <span class="label-text">${getString('stats-unique-hiked')}:</span>
                 <span class="value-text">${uniqueTrails}</span>
               </div>
             </div>
@@ -82,19 +129,44 @@ const TotalVsUnique = (props: Props) => {
           stroke: barChartBlue,
           fill: 'transparent',
         },
+      ],
+      [
         {
-          x: 'Campsites',
+          x: '',
+          y: uniqueTrails,
+          tooltipContentOnly: true,
+          tooltipContent: `
+            <div class="react-fast-chart-tooltip">
+              <strong>${getString('global-text-value-trails')}</strong>
+              <div>
+                <span class="label-text">${getString('stats-total-hiked')}:</span>
+                <span class="value-text">${totalTrails}</span>
+              </div>
+              <div>
+                <span class="label-text">${getString('stats-unique-hiked')}:</span>
+                <span class="value-text">${uniqueTrails}</span>
+              </div>
+            </div>
+          `,
+          fill: barChartBlue,
+        },
+      ],
+    ];
+  const totalVsUniqueCampsitesData: BarChartDatum[][] = [
+      [
+        {
+          x: '',
           y: totalCampsites,
           tooltipContentOnly: true,
           tooltipContent: `
             <div class="react-fast-chart-tooltip">
-              <strong>Campsites</strong>
+              <strong>${getString('global-text-value-campsites')}</strong>
               <div>
-                <span class="label-text">Total stayed at:</span>
+                <span class="label-text">${getString('stats-total-camped')}:</span>
                 <span class="value-text">${totalCampsites}</span>
               </div>
               <div>
-                <span class="label-text">Unique stayed at:</span>
+                <span class="label-text">${getString('stats-unique-hiked')}:</span>
                 <span class="value-text">${uniqueCampsites}</span>
               </div>
             </div>
@@ -105,56 +177,18 @@ const TotalVsUnique = (props: Props) => {
       ],
       [
         {
-          x: 'Mountains',
-          y: uniqueMountains,
-          tooltipContentOnly: true,
-          tooltipContent: `
-            <div class="react-fast-chart-tooltip">
-              <strong>Mountains</strong>
-              <div>
-                <span class="label-text">Total hiked:</span>
-                <span class="value-text">${totalMountains}</span>
-              </div>
-              <div>
-                <span class="label-text">Unique hiked:</span>
-                <span class="value-text">${uniqueMountains}</span>
-              </div>
-            </div>
-          `,
-          fill: barChartBlue,
-        },
-        {
-          x: 'Trails',
-          y: uniqueTrails,
-          tooltipContentOnly: true,
-          tooltipContent: `
-            <div class="react-fast-chart-tooltip">
-              <strong>Trails</strong>
-              <div>
-                <span class="label-text">Total hiked:</span>
-                <span class="value-text">${totalTrails}</span>
-              </div>
-              <div>
-                <span class="label-text">Unique hiked:</span>
-                <span class="value-text">${uniqueTrails}</span>
-              </div>
-            </div>
-          `,
-          fill: barChartBlue,
-        },
-        {
-          x: 'Campsites',
+          x: '',
           y: uniqueCampsites,
           tooltipContentOnly: true,
           tooltipContent: `
             <div class="react-fast-chart-tooltip">
-              <strong>Campsites</strong>
+              <strong>${getString('global-text-value-campsites')}</strong>
               <div>
-                <span class="label-text">Total stayed at:</span>
+                <span class="label-text">${getString('stats-total-camped')}:</span>
                 <span class="value-text">${totalCampsites}</span>
               </div>
               <div>
-                <span class="label-text">Unique stayed at:</span>
+                <span class="label-text">${getString('stats-unique-hiked')}:</span>
                 <span class="value-text">${uniqueCampsites}</span>
               </div>
             </div>
@@ -166,23 +200,65 @@ const TotalVsUnique = (props: Props) => {
 
   return (
     <>
-      <Title>Total vs Unique Points Hiked/Camped</Title>
+      <Title>{getString('stats-total-vs-unique-title')}</Title>
       <BarChartContainer>
-        <DataViz
-          id={'Total-vs-Unique-Points-Hiked-Camped'}
-          vizType={VizType.BarChart}
-          data={totalVsUniqueData}
-          height={300}
-        />
+        <Column>
+          <DataViz
+            id={'Total-vs-Unique-mountains-Hiked'}
+            vizType={VizType.BarChart}
+            data={totalVsUniqueMountainsData}
+            height={300}
+            axisMinMax={{minY: 0, maxY: totalMountains}}
+          />
+          <Label>
+            <Icon
+              dangerouslySetInnerHTML={{__html: mountainNeutralSvg}}
+              $color={primaryColor}
+            />
+            <SectionTitle>{getString('global-text-value-mountains')}</SectionTitle>
+          </Label>
+        </Column>
+        <Column>
+          <DataViz
+            id={'Total-vs-Unique-trails-Hiked'}
+            vizType={VizType.BarChart}
+            data={totalVsUniqueTrailsData}
+            height={300}
+            axisMinMax={{minY: 0, maxY: totalTrails}}
+          />
+          <Label>
+            <Icon
+              dangerouslySetInnerHTML={{__html: trailDefaultSvg}}
+              $color={primaryColor}
+            />
+            <SectionTitle>{getString('global-text-value-trails')}</SectionTitle>
+          </Label>
+        </Column>
+        <Column>
+          <DataViz
+            id={'Total-vs-Unique-campsites-Camped'}
+            vizType={VizType.BarChart}
+            data={totalVsUniqueCampsitesData}
+            height={300}
+            axisMinMax={{minY: 0, maxY: totalCampsites}}
+          />
+          <Label>
+            <Icon
+              dangerouslySetInnerHTML={{__html: tentNeutralSvg}}
+              $color={primaryColor}
+            />
+            <SectionTitle>{getString('global-text-value-campsites')}</SectionTitle>
+          </Label>
+        </Column>
         <Legend
           legendList={[
             {
-              label: 'Total',
+              label: getString('global-text-total'),
               stroke: barChartBlue,
               fill: 'transparent',
             },
             {
-              label: 'Unique',
+              label: getString('global-text-unique'),
               fill: barChartBlue,
               stroke: undefined,
             },

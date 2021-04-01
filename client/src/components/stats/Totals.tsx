@@ -12,6 +12,7 @@ import {getSeason, Seasons} from '../../Utils';
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
 import CountyTreemap from './fastChartVisualization/CountyTreemap';
 import SeasonsAndYears from './fastChartVisualization/SeasonsAndYears';
+import Top10 from './fastChartVisualization/Top10';
 import TotalVsUnique from './fastChartVisualization/TotalVsUnique';
 
 interface Trip extends DateObject {
@@ -25,7 +26,6 @@ const Totals = () => {
 
   const getString = useFluent();
 
-  console.log({loading, error, data});
   if (loading) {
     return <LoadingContainer><LoadingSimple /></LoadingContainer>;
   } else if (error !== undefined) {
@@ -144,19 +144,17 @@ const Totals = () => {
     const tripsGroupedByYear = groupBy(allTripsUniqueByDate, 'year');
     const tripCountsPerYear: Array<{year: number, count: number}> = [];
     for (const key in tripsGroupedByYear) {
-      const year = parseInt(key, 10);
-      if (!isNaN(year)) {
-        tripCountsPerYear.push({
-          year,
-          count: tripsGroupedByYear[key].length,
-        });
+      if (tripsGroupedByYear[key] !== undefined) {
+        const year = parseInt(key, 10);
+        if (!isNaN(year)) {
+          tripCountsPerYear.push({
+            year,
+            count: tripsGroupedByYear[key].length,
+          });
+        }
       }
     }
 
-    console.log({
-      allDatesNotUnique,
-      allTripsUniqueByDate,
-    });
     return (
       <>
         <DottedSegment style={{border: 'none'}}>
@@ -181,6 +179,13 @@ const Totals = () => {
         <DottedSegment>
           <CountyTreemap
             data={allDatesNotUnique}
+          />
+        </DottedSegment>
+        <DottedSegment>
+          <Top10
+            allMountains={allMountains}
+            allTrails={allTrails}
+            allCampsites={allCampsites}
           />
         </DottedSegment>
       </>

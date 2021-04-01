@@ -9,6 +9,7 @@ import DataViz, {
   VizType,
 } from 'react-fast-charts';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
 import {
   Title,
 } from '../styling';
@@ -105,7 +106,7 @@ interface Props {
 
 const CountyTreemap = (props: Props) => {
   const {data} = props;
-  console.log(colorScheme.length);
+  const getString = useFluent();
 
   const treemapData: RootDatum = {
     id: 'tree-map-top-level-parent',
@@ -123,25 +124,27 @@ const CountyTreemap = (props: Props) => {
       const countyGroups = groupBy(tripsGroupedByState[key], 'county');
       const children: LeafDatum[] = [];
       for (const county in countyGroups) {
-        const percent = parseFloat((countyGroups[county].length / total * 100).toFixed(1));
-        children.push({
-          id: county,
-          label: county + ', ' + key,
-          tooltipContent: `
-            <div class="react-fast-chart-tooltip">
-              <strong>${county}, ${key}</strong>
-              <div>
-                <span class="label-text">Percent of all trips:</span>
-                <span class="value-text">${percent}%</span>
+        if (countyGroups[county] !== undefined) {
+          const percent = parseFloat((countyGroups[county].length / total * 100).toFixed(1));
+          children.push({
+            id: county,
+            label: county + ', ' + key,
+            tooltipContent: `
+              <div class="react-fast-chart-tooltip">
+                <strong>${county}, ${key}</strong>
+                <div>
+                  <span class="label-text">${getString('stats-percent-of-all-trips')}:</span>
+                  <span class="value-text">${percent}%</span>
+                </div>
+                <div>
+                  <span class="label-text">${getString('stats-total-trips-here')}:</span>
+                  <span class="value-text">${countyGroups[county].length}</span>
+                </div>
               </div>
-              <div>
-                <span class="label-text">Total trips here:</span>
-                <span class="value-text">${countyGroups[county].length}</span>
-              </div>
-            </div>
-          `,
-          size: percent,
-        });
+            `,
+            size: percent,
+          });
+        }
       }
 
       treemapData.children.push({
@@ -170,7 +173,7 @@ const CountyTreemap = (props: Props) => {
 
   return (
     <Root>
-      <Title>Total trips per county and state</Title>
+      <Title>{getString('stats-total-trips-title')}</Title>
       <br />
       <DataViz
         id={'county-state-trip-tree-map'}

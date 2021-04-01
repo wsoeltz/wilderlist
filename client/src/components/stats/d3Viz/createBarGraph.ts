@@ -8,7 +8,7 @@ import {
   scaleLinear,
 } from 'd3-scale';
 import { Selection } from 'd3-selection';
-import { baseColor, lightBorderColor, linkColor } from '../../../styling/styleUtils';
+// import { primaryColor } from '../../../styling/styleUtils';
 
 export interface Datum {
   label: string;
@@ -72,7 +72,7 @@ const createBarGraph = (input: Input) => {
         return val !== undefined ? val : 0;
       })
       .attr('height', y.bandwidth())
-      .style('fill', lightBorderColor)
+      .style('fill', '#659dca')
       .style('cursor', (d) => {
         if (d.onClick) {
           return 'pointer';
@@ -99,27 +99,16 @@ const createBarGraph = (input: Input) => {
       .attr('height', y.bandwidth() / 2)
       .text(d => `${d.label} (${d.value})`)
       .style('font-size', '12px')
-      .style('text-transform', 'capitalize')
       .style('font-weight', '600')
-      .style('fill', (d) => {
-        if (d.onClick) {
-          return linkColor;
-        } else {
-          return baseColor;
-        }
-      })
+      .style('fill', '#333')
+      .style('stroke', '#fff')
+      .style('stroke-width', '3px')
+      .style('paint-order', 'stroke')
       .style('cursor', (d) => {
         if (d.onClick) {
           return 'pointer';
         } else {
           return 'auto';
-        }
-      })
-      .style('text-decoration', (d) => {
-        if (d.onClick) {
-          return 'underline';
-        } else {
-          return 'none';
         }
       })
       .on('click', (d) => {

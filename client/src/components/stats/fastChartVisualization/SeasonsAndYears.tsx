@@ -6,6 +6,7 @@ import DataViz, {
   VizType,
 } from 'react-fast-charts';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
 import {
   lightBorderColor,
   primaryColor,
@@ -39,6 +40,7 @@ interface Props {
 
 const SeasonsAndYears = (props: Props) => {
   const {summer, fall, winter, spring, years} = props;
+  const getString = useFluent();
   const seasonsData: ClusterChartDatum[] = [
     {
       name: 'Summer',
@@ -67,7 +69,9 @@ const SeasonsAndYears = (props: Props) => {
   ];
 
   const [min, max] = extent(years.map(y => y.count));
-  const yearsColorScale = scaleLinear().domain([min ? min : 0, max ? max : 1]).range([ '#cbe5ff' as any, primaryColor ]);
+  const yearsColorScale = scaleLinear()
+    .domain([min ? min : 0, max ? max : 1])
+    .range([ '#cbe5ff' as any, primaryColor ]);
   const yearsData: ClusterChartDatum[] = years.map(y => ({
     name: y.year.toString(),
     label: `${y.year}`,
@@ -78,7 +82,7 @@ const SeasonsAndYears = (props: Props) => {
   return (
     <Root>
       <Column>
-        <Title>Total trips in every season</Title>
+        <Title>{getString('stats-trips-seasons-title')}</Title>
         <DataViz
           id={'Total-trips-in-every-season'}
           vizType={VizType.ClusterChart}
@@ -87,7 +91,7 @@ const SeasonsAndYears = (props: Props) => {
         />
       </Column>
       <Column>
-        <Title>Total trips in every year</Title>
+        <Title>{getString('stats-trips-years-title')}</Title>
         <DataViz
           id={'Total-trips-in-for-every-year'}
           vizType={VizType.ClusterChart}

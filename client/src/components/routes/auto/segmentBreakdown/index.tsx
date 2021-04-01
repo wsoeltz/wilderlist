@@ -74,7 +74,7 @@ const SegmentBreakdown = (props: Props) => {
     }
     const itemType = sourceRoute === Routes.AutoRouteDetailTrailToMountain ? CoreItem.mountain : CoreItem.campsite;
     const endDatum = {
-      id: sourceDatum.id,
+      id: destination._id,
       name: destinationName,
       elevation,
       itemType,
