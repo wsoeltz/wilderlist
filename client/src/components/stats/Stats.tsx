@@ -7,6 +7,7 @@ import {
 import React from 'react';
 import useFluent from '../../hooks/useFluent';
 import DetailSegment, {Panel} from '../sharedComponents/detailComponents/DetailSegment';
+import HeatMapRenderProp from './HeatMapRenderProp';
 import Totals from './Totals';
 
 const RoutesAndDirections = () => {
@@ -39,10 +40,13 @@ const RoutesAndDirections = () => {
   ];
 
   return (
-    <DetailSegment
-      panels={panels}
-      panelId={'userStatsPanel'}
-    />
+    <>
+      <DetailSegment
+        panels={panels}
+        panelId={'userStatsPanel'}
+      />
+      <HeatMapRenderProp />
+    </>
   );
 };
 

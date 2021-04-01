@@ -70,7 +70,7 @@ interface SuccessResponse {
         name: Trail['name'];
         type: Trail['type'];
         trailLength: Trail['trailLength'];
-        line: Trail['locationText'];
+        line: Trail['line'];
         locationText: Trail['locationText'];
         locationTextShort: Trail['locationTextShort'];
       }

@@ -5,6 +5,7 @@ const along = require('@turf/along').default;
 const bearing = require('@turf/bearing').default;
 const centroid = require('@turf/centroid').default;
 const bboxPolygon = require('@turf/bbox-polygon').default;
+const getBbox = require('@turf/bbox').default;
 const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 import { GetString } from 'fluent-react/compat';
 import debounce from 'lodash/debounce';
@@ -39,6 +40,7 @@ import initLayers, {
   roadMileMarkerPointsLayerId,
   trailMileMarkerPointsLayerId,
 } from './layers';
+import {addHeatmap, removeHeatmap} from './layers/heatmap';
 import setWeather, {getWeatherState, WeatherOverlay, WeatherState} from './weather';
 
 // eslint-disable-next-line
@@ -89,6 +91,8 @@ export interface Output {
   disableSummitView: () => void;
   setTooltipCallback: (fn: ((input: CallbackInput) => void) | undefined) => void;
   setWeatherOverlay: (value: WeatherOverlay | null) => Promise<WeatherState | null>;
+  setHeatmap: (data: any, maxValue: number) => void;
+  unsetHeatmap: () => void;
 }
 
 const styles = {
@@ -133,6 +137,8 @@ const defaultZoom: number = storedCenter ? storedCenter.zoom : 3.5;
 let highlightedPointsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedTrailsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
 let highlightedRoadsGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+let heatmapGeojson: mapboxgl.GeoJSONSourceOptions['data'] | undefined;
+let heatmapMaxValue: number | undefined;
 let showMileage: boolean = false;
 let is3dModeOn: boolean = false;
 
@@ -192,6 +198,9 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
       }
       if (highlightedRoadsGeojson) {
         setHighlightedRoads(highlightedRoadsGeojson, showMileage);
+      }
+      if (heatmapGeojson && heatmapMaxValue) {
+        setHeatmap(heatmapGeojson, heatmapMaxValue);
       }
       if (is3dModeOn) {
         is3dModeOn = false;
@@ -688,11 +697,41 @@ const initMap = ({container, push, getString, onTooltipOpen, onTooltipClose}: In
     }
   }
 
+  function setHeatmap(data: any, maxValue: number) {
+    const initHeatMap = () => {
+      const bbox = getBbox(data);
+      setNewBounds(bbox);
+      addHeatmap({
+        map,
+        data,
+        maxValue,
+      });
+      heatmapGeojson = data;
+      heatmapMaxValue = maxValue;
+    };
+    if (map && mapLoaded) {
+      initHeatMap();
+    } else {
+      const initAndClearFn = () => {
+        initHeatMap();
+        map.off('load', initAndClearFn);
+      };
+      map.on('load', initAndClearFn);
+    }
+  }
+  function unsetHeatmap() {
+    if (map && mapLoaded) {
+      removeHeatmap(map);
+      heatmapGeojson = undefined;
+      heatmapMaxValue = undefined;
+    }
+  }
+
   return {
     map, setNewCenter, setNewBounds, setHighlightedPoints, clearMap, setHighlightedTrails,
     setHighlightedRoads, setExternalHoveredPopup, clearExternalHoveredPopup, setHoveredPrimitivePoints,
     clearHoveredPoints, setBaseMap, toggle3dTerrain, enableSummitView, disableSummitView,
-    setTooltipCallback, setWeatherOverlay,
+    setTooltipCallback, setWeatherOverlay, setHeatmap, unsetHeatmap,
   };
 };
 
