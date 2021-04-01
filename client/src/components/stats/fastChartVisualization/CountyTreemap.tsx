@@ -1,7 +1,8 @@
+import {faCheckSquare, faSquare} from '@fortawesome/free-regular-svg-icons';
 import groupBy from 'lodash/groupBy';
 import orderBy from 'lodash/orderBy';
 import uniqBy from 'lodash/uniqBy';
-import React from 'react';
+import React, {useState} from 'react';
 import DataViz, {
   HorizontalLegend,
   LeafDatum,
@@ -10,6 +11,11 @@ import DataViz, {
 } from 'react-fast-charts';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';
+import {
+  BasicIconInText,
+  ButtonPrimary,
+  primaryColor,
+} from '../../../styling/styleUtils';
 import {
   Title,
 } from '../styling';
@@ -62,6 +68,25 @@ const GhostMapRoot = styled.div`
     text-align: center;
     font-weight: 600;
     font-size: 0.875rem;
+  }
+`;
+
+const ToggleContainer = styled.div`
+  text-align: center;
+  padding: 0 0 1rem;
+`;
+const ToggleButton = styled(ButtonPrimary)<{$active: boolean}>`
+  width: 80px;
+  margin: 0 1rem;
+
+  ${({$active}) => $active ? '' :
+    'border: solid 1px ' + primaryColor + ';' +
+    'background-color: transparent;' +
+    'color:' + primaryColor + ';'
+  }
+
+  &:hover {
+    ${({$active}) => $active ? '' : 'color: #fff;'}
   }
 `;
 
@@ -181,12 +206,18 @@ const GhostTreeMap = () => {
   );
 };
 
+enum Mode {
+  county,
+  state,
+}
+
 interface Props {
   data: Array<{dateAsNumber: number, county: string, state: string}>;
 }
 
 const CountyTreemap = (props: Props) => {
   const {data} = props;
+  const [mode, setMode] = useState<Mode>(Mode.state);
   const getString = useFluent();
 
   const treemapData: RootDatum = {
@@ -224,7 +255,8 @@ const CountyTreemap = (props: Props) => {
               </div>
             `,
             size: percent,
-          });
+            value: countyGroups[county].length,
+          } as any as LeafDatum);
         }
       }
 
@@ -252,13 +284,65 @@ const CountyTreemap = (props: Props) => {
     };
   }), ['value'], ['desc']);
 
+  treemapData.children = mode === Mode.state
+    ? treemapData.children.map((c: RootDatum) => {
+      let totalTrips = 0;
+      const percent = (c as RootDatum).children.reduce((value, cc) => {
+        totalTrips += (cc as any).value;
+        return value += (cc as LeafDatum).size;
+      }, 0);
+      return {
+        id: c.id,
+        label: c.label,
+        fill: c.fill,
+        children: [{
+          id: c.id,
+          label: c.label,
+          fill: c.fill,
+          tooltipContent: `
+            <div class="react-fast-chart-tooltip">
+              <strong>${c.label}</strong>
+              <div>
+                <span class="label-text">${getString('stats-percent-of-all-trips')}:</span>
+                <span class="value-text">${parseFloat(percent.toFixed(1))}%</span>
+              </div>
+              <div>
+                <span class="label-text">${getString('stats-total-trips-here')}:</span>
+                <span class="value-text">${totalTrips}</span>
+              </div>
+            </div>
+          `,
+          size: parseFloat(percent.toFixed(1)),
+        }],
+      } as any as RootDatum;
+    })
+    : treemapData.children;
+
   const treemap = treemapData.children.length ? (
-    <DataViz
-      id={'county-state-trip-tree-map'}
-      vizType={VizType.TreeMap}
-      data={treemapData}
-      height={350}
-    />
+    <>
+      <ToggleContainer>
+        <ToggleButton
+          $active={mode === Mode.state}
+          onClick={() => setMode(Mode.state)}
+        >
+          <BasicIconInText icon={mode === Mode.state ? faCheckSquare : faSquare} />
+          State
+        </ToggleButton>
+        <ToggleButton
+          $active={mode === Mode.county}
+          onClick={() => setMode(Mode.county)}
+        >
+          <BasicIconInText icon={mode === Mode.county ? faCheckSquare : faSquare} />
+          County
+        </ToggleButton>
+      </ToggleContainer>
+      <DataViz
+        id={'county-state-trip-tree-map'}
+        vizType={VizType.TreeMap}
+        data={treemapData}
+        height={350}
+      />
+    </>
   ) : <GhostTreeMap />;
 
   return (

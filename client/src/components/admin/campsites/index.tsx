@@ -123,18 +123,33 @@ const AdminCampsites = () => {
           <SubNav>
             <NavButtonLink
               onClick={() => setCampsitesToShow(CampsitesToShow.all)}
+              style={{
+                fontWeight: campsitesToShow === CampsitesToShow.all ? 600 : undefined,
+                color: campsitesToShow === CampsitesToShow.all ? '#333' : undefined,
+                textDecoration: campsitesToShow === CampsitesToShow.all ? 'none' : undefined,
+              }}
             >
-              Newest campsites
+              Newest
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setCampsitesToShow(CampsitesToShow.pending)}
+              style={{
+                fontWeight: campsitesToShow === CampsitesToShow.pending ? 600 : undefined,
+                color: campsitesToShow === CampsitesToShow.pending ? '#333' : undefined,
+                textDecoration: campsitesToShow === CampsitesToShow.pending ? 'none' : undefined,
+              }}
             >
-              Pending campsites
+              Pending
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setCampsitesToShow(CampsitesToShow.flagged)}
+              style={{
+                fontWeight: campsitesToShow === CampsitesToShow.flagged ? 600 : undefined,
+                color: campsitesToShow === CampsitesToShow.flagged ? '#333' : undefined,
+                textDecoration: campsitesToShow === CampsitesToShow.flagged ? 'none' : undefined,
+              }}
             >
-              Flagged campsites
+              Flagged
             </NavButtonLink>
           </SubNav>
           <StandardSearch

@@ -1,4 +1,5 @@
 import { ApolloError, useMutation } from '@apollo/client';
+import {Types} from 'mongoose';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import {userProfileLink} from '../../../routing/Utils';
@@ -25,20 +26,22 @@ import { SuccessResponse, UserDatum } from './';
 
 const UserContent = styled.div`
   display: grid;
-  grid-template-columns: 50px 1fr;
+  grid-template-columns: 1fr 50px;
   grid-column-gap: 8px;
+  align-items: center;
 `;
 
 const UserImage = styled.img`
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 1;
   max-width: 100%;
   border-radius: 10000px;
+  margin: auto;
 `;
 
 const UserInfo = styled.div`
   grid-row: 1;
-  grid-column: 2;
+  grid-column: 1;
 `;
 
 interface Props {
@@ -136,52 +139,74 @@ const ListUsers = (props: Props) => {
                                   ? 0 : user.peakListPermissions;
       const permissions = user.permissions === PermissionTypes.admin
         ? <div><small>{user.permissions}</small></div> : null;
+      const hideEmail = user.hideEmail
+        ? <div><small><strong>Hidden Email </strong></small></div>
+        : null;
+      const hideProfilePicture = user.hideProfilePicture
+        ? <div><small><strong>Hidden Profile Picture</strong></small></div>
+        : null;
+      const hideProfileInSearch = user.hideProfileInSearch
+        ? <div><small><strong>Hidden Profile In Search</strong></small></div>
+        : null;
+      const disableEmailNotifications = user.disableEmailNotifications
+        ? <div><small><strong>Disabled Email Notifications</strong></small></div>
+        : null;
+      const joinedDate = new Types.ObjectId(user.id).getTimestamp();
+
       const content = (
         <UserContent>
           <UserInfo>
             {permissions}
-            <div><small>{user.email}</small></div>
+            <div>{user.email}</div>
+            <div>Joined: {joinedDate.toDateString()}</div>
+            <br />
+            {hideEmail}
+            {hideProfilePicture}
+            {hideProfileInSearch}
+            {disableEmailNotifications}
             <div><small>Mountain Permissions: {mountainPermissions}</small></div>
             <div><small>
               <LinkButton
                 onClick={() => grantMountainPermission(user.id)}
-              >{'Grant Mountain Privileges'}</LinkButton>
+              >{'Grant'}</LinkButton>
               {' | '}
               <LinkButton
                 onClick={() => resetMountainPermission(user.id)}
-              >{'Reset Mountain Privileges'}</LinkButton>
+              >{'Reset'}</LinkButton>
               {' | '}
               <LinkButton
                 onClick={() => revokeMountainPermission(user.id)}
-              >{'Revoke Mountain Privileges'}</LinkButton>
+              >{'Revoke'}</LinkButton>
             </small></div>
+            <br />
             <div><small>Campsite Permissions: {campsitePermissions}</small></div>
             <div><small>
               <LinkButton
                 onClick={() => grantCampsitePermission(user.id)}
-              >{'Grant Campsite Privileges'}</LinkButton>
+              >{'Grant'}</LinkButton>
               {' | '}
               <LinkButton
                 onClick={() => resetCampsitePermission(user.id)}
-              >{'Reset Campsite Privileges'}</LinkButton>
+              >{'Reset'}</LinkButton>
               {' | '}
               <LinkButton
                 onClick={() => revokeCampsitePermission(user.id)}
-              >{'Revoke Campsite Privileges'}</LinkButton>
+              >{'Revoke'}</LinkButton>
             </small></div>
+            <br />
             <div><small>PeakList Permissions: {peakListPermissions}</small></div>
             <div><small>
               <LinkButton
                 onClick={() => grantPeakListPermission(user.id)}
-              >{'Grant PeakList Privileges'}</LinkButton>
+              >{'Grant'}</LinkButton>
               {' | '}
               <LinkButton
                 onClick={() => resetPeakListPermission(user.id)}
-              >{'Reset PeakList Privileges'}</LinkButton>
+              >{'Reset'}</LinkButton>
               {' | '}
               <LinkButton
                 onClick={() => revokePeakListPermission(user.id)}
-              >{'Revoke PeakList Privileges'}</LinkButton>
+              >{'Revoke'}</LinkButton>
             </small></div>
           </UserInfo>
           <UserImage src={user.profilePictureUrl} />

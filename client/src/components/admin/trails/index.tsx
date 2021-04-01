@@ -53,6 +53,7 @@ const AdminTrails = () => {
 
   return (
     <>
+      <h3 style={{textAlign: 'center'}}>Flagged Trails</h3>
       <div>
         <div>
           <StandardSearch

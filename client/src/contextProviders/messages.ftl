@@ -682,7 +682,7 @@ dashboard-back-to-dashboard = Back to Dashboard
 your-stats-title = Your Data
 stats-percent-of-all-trips = Percent of all trips
 stats-total-trips-here = Total trips here
-stats-total-trips-title = Total trips per county and state
+stats-total-trips-title = Total trips by State & County
 stats-trips-seasons-title = Total trips in every season
 stats-trips-years-title = Total trips in every year
 stats-top-10-title = Top 10
@@ -696,6 +696,9 @@ global-text-hiked-trails = hiked trails
 global-text-camped-at = camped at
 global-text-total = Total
 global-text-unique = Unique
+
+stats-about-total = <strong>Total</strong> is the absolute amount of times you have logged a point and counts each repeated trip to a mountain, trail or campsite separately. If you have hiked a mountain 3 times it will be counted three times.
+stats-about-unique = <strong>Unique</strong> is the the number of distinct mountains, trails and campsites you have logged trips for. If you have hiked a mountain 3 times it will still only be counted once.
 
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)
@@ -1077,6 +1080,9 @@ map-completed-colored = colored by Completion
 map-completed-colored-winter = colored by Completion in Winter
 map-no-months = 0
 map-all-months = 12
+map-hiking-frequency = Highlighted by your hiking frequency
+map-least-hiked = Least hiked
+map-most-hiked = Most hiked
 
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Location To Center

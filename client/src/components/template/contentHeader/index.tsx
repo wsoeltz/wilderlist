@@ -40,6 +40,8 @@ const Header = () => {
     normalizedPathname = Routes.SearchTrails;
   } else if (pathname.includes('summit-view')) {
     normalizedPathname = Routes.SummitView;
+  } else if (pathname.includes(Routes.YourStats)) {
+    normalizedPathname = Routes.YourStats;
   } else {
     normalizedPathname = pathname;
   }
@@ -53,6 +55,7 @@ const Header = () => {
                           normalizedPathname !== Routes.SearchCampsites  &&
                           normalizedPathname !== Routes.SearchMountains &&
                           normalizedPathname !== Routes.AddTripReport &&
+                          normalizedPathname !== Routes.YourStats &&
                           normalizedPathname !== Routes.EditTripReport),
    [windowWidth, normalizedPathname],
   );

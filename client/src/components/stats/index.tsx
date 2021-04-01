@@ -6,6 +6,7 @@ import useFluent from '../../hooks/useFluent';
 import {
   HighlightedIconInText,
 } from '../../styling/styleUtils';
+import MapLegend from '../sharedComponents/detailComponents/header/MapLegend';
 import Stats from './Stats';
 
 const YourStats = () => {
@@ -18,6 +19,12 @@ const YourStats = () => {
         <Helmet>
           <title>{getString('meta-data-your-stats-default-title')}</title>
         </Helmet>
+        <MapLegend
+          type={'heatmap'}
+          hasMountains={true}
+          hasTrails={true}
+          hasCampsites={true}
+        />
         <h1>
           <HighlightedIconInText icon={faChartBar} /> &nbsp;{getString('your-stats-title')}
         </h1>

@@ -104,6 +104,7 @@ const Top10 = (props: Props) => {
             vizType={VizType.HorizontalBarChart}
             data={topPeaks}
           />
+          <small>Number of times hiked</small>
         </Column>
         <Column>
           <div>
@@ -118,6 +119,7 @@ const Top10 = (props: Props) => {
             vizType={VizType.HorizontalBarChart}
             data={topTrails}
           />
+          <small>Number of times hiked</small>
         </Column>
         <Column>
           <div>
@@ -132,6 +134,7 @@ const Top10 = (props: Props) => {
             vizType={VizType.HorizontalBarChart}
             data={topCampsites}
           />
+          <small>Number of times camped</small>
         </Column>
         {ghostOverlay}
       </Root>

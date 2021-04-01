@@ -139,18 +139,33 @@ const AdminPeakLists = () => {
           <SubNav>
             <NavButtonLink
               onClick={() => setPeakListsToShow(PeakListsToShow.all)}
+              style={{
+                fontWeight: peakListsToShow === PeakListsToShow.all ? 600 : undefined,
+                color: peakListsToShow === PeakListsToShow.all ? '#333' : undefined,
+                textDecoration: peakListsToShow === PeakListsToShow.all ? 'none' : undefined,
+              }}
             >
-              Newest peakLists
+              Newest
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setPeakListsToShow(PeakListsToShow.pending)}
+              style={{
+                fontWeight: peakListsToShow === PeakListsToShow.pending ? 600 : undefined,
+                color: peakListsToShow === PeakListsToShow.pending ? '#333' : undefined,
+                textDecoration: peakListsToShow === PeakListsToShow.pending ? 'none' : undefined,
+              }}
             >
-              Pending peakLists
+              Pending
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setPeakListsToShow(PeakListsToShow.flagged)}
+              style={{
+                fontWeight: peakListsToShow === PeakListsToShow.flagged ? 600 : undefined,
+                color: peakListsToShow === PeakListsToShow.flagged ? '#333' : undefined,
+                textDecoration: peakListsToShow === PeakListsToShow.flagged ? 'none' : undefined,
+              }}
             >
-              Flagged peakLists
+              Flagged
             </NavButtonLink>
           </SubNav>
           <StandardSearch

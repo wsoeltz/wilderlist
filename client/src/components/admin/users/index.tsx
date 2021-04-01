@@ -27,6 +27,10 @@ const GET_USERS = gql`
           id
         }
       }
+      hideEmail
+      hideProfilePicture
+      hideProfileInSearch
+      disableEmailNotifications
       mountainPermissions
       campsitePermissions
       peakListPermissions
@@ -54,6 +58,10 @@ export interface UserDatum {
   campsitePermissions: User['campsitePermissions'];
   peakListPermissions: User['peakListPermissions'];
   permissions: User['permissions'];
+  hideEmail: User['hideEmail'];
+  hideProfilePicture: User['hideProfilePicture'];
+  hideProfileInSearch: User['hideProfileInSearch'];
+  disableEmailNotifications: User['disableEmailNotifications'];
 }
 
 export interface SuccessResponse {
@@ -103,9 +111,10 @@ const AdminUsers = () => {
   };
   return (
     <>
+      <h3 style={{textAlign: 'center'}}>Users (sorted by date joined)</h3>
       <div>
         <StandardSearch
-          placeholder={'Filter trails'}
+          placeholder={'Search users'}
           setSearchQuery={filterUsers}
           focusOnMount={false}
           initialQuery={searchQuery}

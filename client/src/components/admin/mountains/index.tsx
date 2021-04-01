@@ -123,18 +123,33 @@ const AdminMountains = () => {
           <SubNav>
             <NavButtonLink
               onClick={() => setMountainsToShow(MountainsToShow.all)}
+              style={{
+                fontWeight: mountainsToShow === MountainsToShow.all ? 600 : undefined,
+                color: mountainsToShow === MountainsToShow.all ? '#333' : undefined,
+                textDecoration: mountainsToShow === MountainsToShow.all ? 'none' : undefined,
+              }}
             >
-              Newest mountains
+              Newest
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setMountainsToShow(MountainsToShow.pending)}
+              style={{
+                fontWeight: mountainsToShow === MountainsToShow.pending ? 600 : undefined,
+                color: mountainsToShow === MountainsToShow.pending ? '#333' : undefined,
+                textDecoration: mountainsToShow === MountainsToShow.pending ? 'none' : undefined,
+              }}
             >
-              Pending mountains
+              Pending
             </NavButtonLink>
             <NavButtonLink
               onClick={() => setMountainsToShow(MountainsToShow.flagged)}
+              style={{
+                fontWeight: mountainsToShow === MountainsToShow.flagged ? 600 : undefined,
+                color: mountainsToShow === MountainsToShow.flagged ? '#333' : undefined,
+                textDecoration: mountainsToShow === MountainsToShow.flagged ? 'none' : undefined,
+              }}
             >
-              Flagged mountains
+              Flagged
             </NavButtonLink>
           </SubNav>
           <StandardSearch

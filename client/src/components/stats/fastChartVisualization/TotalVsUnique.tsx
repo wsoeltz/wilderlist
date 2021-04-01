@@ -26,13 +26,25 @@ const barChartBlue = '#659dca';
 
 const BarChartContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 0.5fr;
+  grid-template-columns: 1fr 1fr 1fr 1.75fr;
   align-items: center;
   position: relative;
+
+  @media (max-width: 450px) {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
 `;
 
 const Column = styled.div`
   text-align: center;
+`;
+
+const AboutColumn = styled.div`
+  @media (max-width: 450px) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
 `;
 
 const Label = styled.div`
@@ -234,7 +246,7 @@ const TotalVsUnique = (props: Props) => {
             id={'Total-vs-Unique-mountains-Hiked'}
             vizType={VizType.BarChart}
             data={totalVsUniqueMountainsData}
-            height={300}
+            height={360}
             axisMinMax={{minY: 0, maxY: totalMountains > 10 ? totalMountains : 10}}
           />
           <Label>
@@ -250,7 +262,7 @@ const TotalVsUnique = (props: Props) => {
             id={'Total-vs-Unique-trails-Hiked'}
             vizType={VizType.BarChart}
             data={totalVsUniqueTrailsData}
-            height={300}
+            height={360}
             axisMinMax={{minY: 0, maxY: totalTrails > 10 ? totalTrails : 10}}
           />
           <Label>
@@ -266,7 +278,7 @@ const TotalVsUnique = (props: Props) => {
             id={'Total-vs-Unique-campsites-Camped'}
             vizType={VizType.BarChart}
             data={totalVsUniqueCampsitesData}
-            height={300}
+            height={360}
             axisMinMax={{minY: 0, maxY: totalCampsites > 10 ? totalCampsites : 10}}
           />
           <Label>
@@ -277,20 +289,28 @@ const TotalVsUnique = (props: Props) => {
             <SectionTitle>{getString('global-text-value-campsites')}</SectionTitle>
           </Label>
         </Column>
-        <Legend
-          legendList={[
-            {
-              label: getString('global-text-total'),
-              stroke: barChartBlue,
-              fill: 'transparent',
-            },
-            {
-              label: getString('global-text-unique'),
-              fill: barChartBlue,
-              stroke: undefined,
-            },
-          ]}
-        />
+        <AboutColumn>
+          <p>
+            <small dangerouslySetInnerHTML={{__html: getString('stats-about-total') }} />
+          </p>
+          <p>
+            <small dangerouslySetInnerHTML={{__html: getString('stats-about-unique') }} />
+          </p>
+          <Legend
+            legendList={[
+              {
+                label: getString('global-text-total'),
+                stroke: barChartBlue,
+                fill: 'transparent',
+              },
+              {
+                label: getString('global-text-unique'),
+                fill: barChartBlue,
+                stroke: undefined,
+              },
+            ]}
+          />
+        </AboutColumn>
         {ghostOverlay}
       </BarChartContainer>
     </>

@@ -6,6 +6,14 @@ interface Input {
   maxValue: number;
 }
 
+export const heatmapColorScheme = [
+  '#e9ffff',
+  '#b0dbe4',
+  '#7ab7ce',
+  '#4992bb',
+  '#206ca6',
+];
+
 const heatMapSourceLayerId = 'your-data-heatmap-layer-id';
 
 export const addHeatmap = ({map, data, maxValue}: Input) => {
@@ -37,11 +45,11 @@ export const addHeatmap = ({map, data, maxValue}: Input) => {
           'heatmap-color': [
             'interpolate', ['linear'], ['heatmap-density'],
             0, 'rgba(33,102,172,0)',
-            0.2, '#e9ffff',
-            0.4, '#b0dbe4',
-            0.6, '#7ab7ce',
-            0.8, '#4992bb',
-            1, '#206ca6',
+            0.2, heatmapColorScheme[0],
+            0.4, heatmapColorScheme[1],
+            0.6, heatmapColorScheme[2],
+            0.8, heatmapColorScheme[3],
+            1, heatmapColorScheme[4],
           ],
           'heatmap-radius': [
             'interpolate', ['linear'], ['zoom'],

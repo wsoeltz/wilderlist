@@ -13,6 +13,7 @@ export const SubNav = styled.nav`
 
 export const NavButtonLink = styled(LinkButton)`
   padding: 1rem;
+  font-size: 1.2rem;
 `;
 
 const ListItemRoot = styled.div`
@@ -23,6 +24,7 @@ const ListItemRoot = styled.div`
 
 const TitleContainer = styled.div`
   margin-bottom: 0.6rem;
+  font-size: 1.2rem;
 `;
 
 const ButtonContainer = styled.div`

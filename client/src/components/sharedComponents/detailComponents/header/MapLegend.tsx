@@ -16,6 +16,7 @@ import {
 } from '../../../../styling/styleUtils';
 import {PeakListVariants} from '../../../../types/graphQLTypes';
 import {mobileSize} from '../../../../Utils';
+import {heatmapColorScheme} from '../../../template/globalMap/map/layers/heatmap';
 
 const Root = styled.div`
   @media(max-width: ${mobileSize}px) {
@@ -90,7 +91,7 @@ const ColorBlockWithText = styled(ColorBlock)`
 `;
 
 interface Props {
-  type: PeakListVariants | 'comparison' | null;
+  type: PeakListVariants | 'comparison' | 'heatmap' | null;
   hasMountains: boolean;
   hasTrails: boolean;
   hasCampsites: boolean;
@@ -241,6 +242,31 @@ const MapLegend = (props: Props) => {
           </ColorBlockWithText>
         );
     });
+  } else if (type === 'heatmap') {
+    title = getString('map-hiking-frequency');
+    barValues = heatmapColorScheme
+      .map((backgroundColor) => (
+        <ColorBlock
+          key={'MapLegendKey' + backgroundColor}
+          style={{backgroundColor}}
+        />
+      ),
+    );
+
+    barValues.push(
+      <LegendTitleRight key={'MapLegend-global-text-value-done'}>
+        <Subtext>
+          {getString('map-most-hiked')}
+        </Subtext>
+      </LegendTitleRight>,
+    );
+    barValues.unshift(
+      <LegendTitleLeft key={'MapLegend-global-text-value-not-done'}>
+        <Subtext>
+          {getString('map-least-hiked')}
+        </Subtext>
+      </LegendTitleLeft>,
+    );
   }
 
   return (
