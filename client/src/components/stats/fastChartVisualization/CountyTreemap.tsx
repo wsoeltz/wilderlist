@@ -33,6 +33,38 @@ const LegendRoot = styled.div`
   }
 `;
 
+const GhostMapRoot = styled.div`
+  pointer-events: none;
+  position: relative;
+
+  svg {
+    text {
+      display: none;
+    }
+  }
+
+  &:before {
+    display: block;
+    content: "This will be a breakdown of the counties and states you\'ve hiked in";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+`;
+
 const colorScheme = [
   '#206ca6',
   '#0083b4',
@@ -99,6 +131,55 @@ const colorScheme = [
   '#bdb4ba',
   '#cecccf',
 ];
+
+const GhostTreeMap = () => {
+  const ghostData: RootDatum = {
+    id: 'tree-map-top-level-parent',
+    label: 'USA',
+    children: [
+      {
+        id: '1',
+        label: '',
+        size: 60,
+      },
+      {
+        id: '2',
+        label: '',
+        size: 40,
+      },
+      {
+        id: '3',
+        label: '',
+        size: 30,
+      },
+      {
+        id: '4',
+        label: '',
+        size: 20,
+      },
+      {
+        id: '5',
+        label: '',
+        size: 10,
+      },
+      {
+        id: '6',
+        label: '',
+        size: 9,
+      },
+    ],
+  };
+  return (
+    <GhostMapRoot>
+      <DataViz
+        id={'ghost-state-trip-tree-map'}
+        vizType={VizType.TreeMap}
+        data={ghostData}
+        height={350}
+      />
+    </GhostMapRoot>
+  );
+};
 
 interface Props {
   data: Array<{dateAsNumber: number, county: string, state: string}>;
@@ -171,16 +252,20 @@ const CountyTreemap = (props: Props) => {
     };
   }), ['value'], ['desc']);
 
+  const treemap = treemapData.children.length ? (
+    <DataViz
+      id={'county-state-trip-tree-map'}
+      vizType={VizType.TreeMap}
+      data={treemapData}
+      height={350}
+    />
+  ) : <GhostTreeMap />;
+
   return (
     <Root>
       <Title>{getString('stats-total-trips-title')}</Title>
       <br />
-      <DataViz
-        id={'county-state-trip-tree-map'}
-        vizType={VizType.TreeMap}
-        data={treemapData}
-        height={350}
-      />
+      {treemap}
       <LegendRoot>
         <HorizontalLegend
           legendList={legendList}

@@ -27,6 +27,7 @@ const Root = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   margin: 1rem -1rem 0;
+  position: relative;
 `;
 
 const Column = styled.div`
@@ -35,6 +36,30 @@ const Column = styled.div`
 
 const Icon = styled(IconContainer)`
   margin: 0;
+`;
+
+const GhostOverlay = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  &:before {
+    display: block;
+    content: "You haven\'t logged any trips yet";
+  }
 `;
 
 interface Props {
@@ -59,6 +84,9 @@ const Top10 = (props: Props) => {
     label: (i + 1) + '. ' + d.name, value: d.numDates,
     onClick: () => push(campsiteDetailLink(d.id)),
   })).reverse();
+
+  const ghostOverlay = !allMountains.length && !allTrails.length && !allCampsites.length ? <GhostOverlay /> : null;
+
   return (
     <>
       <Title>{getString('stats-top-10-title')}</Title>
@@ -105,6 +133,7 @@ const Top10 = (props: Props) => {
             data={topCampsites}
           />
         </Column>
+        {ghostOverlay}
       </Root>
     </>
   );

@@ -28,6 +28,7 @@ const BarChartContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 0.5fr;
   align-items: center;
+  position: relative;
 `;
 
 const Column = styled.div`
@@ -40,6 +41,30 @@ const Label = styled.div`
 
 const Icon = styled(IconContainer)`
   margin: 0;
+`;
+
+const GhostOverlay = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  &:before {
+    display: block;
+    content: "You haven\'t logged any trips yet";
+  }
 `;
 
 interface Props {
@@ -198,6 +223,8 @@ const TotalVsUnique = (props: Props) => {
       ],
     ];
 
+  const ghostOverlay = !totalMountains && !totalTrails && !totalCampsites ? <GhostOverlay /> : null;
+
   return (
     <>
       <Title>{getString('stats-total-vs-unique-title')}</Title>
@@ -208,7 +235,7 @@ const TotalVsUnique = (props: Props) => {
             vizType={VizType.BarChart}
             data={totalVsUniqueMountainsData}
             height={300}
-            axisMinMax={{minY: 0, maxY: totalMountains}}
+            axisMinMax={{minY: 0, maxY: totalMountains > 10 ? totalMountains : 10}}
           />
           <Label>
             <Icon
@@ -224,7 +251,7 @@ const TotalVsUnique = (props: Props) => {
             vizType={VizType.BarChart}
             data={totalVsUniqueTrailsData}
             height={300}
-            axisMinMax={{minY: 0, maxY: totalTrails}}
+            axisMinMax={{minY: 0, maxY: totalTrails > 10 ? totalTrails : 10}}
           />
           <Label>
             <Icon
@@ -240,7 +267,7 @@ const TotalVsUnique = (props: Props) => {
             vizType={VizType.BarChart}
             data={totalVsUniqueCampsitesData}
             height={300}
-            axisMinMax={{minY: 0, maxY: totalCampsites}}
+            axisMinMax={{minY: 0, maxY: totalCampsites > 10 ? totalCampsites : 10}}
           />
           <Label>
             <Icon
@@ -264,6 +291,7 @@ const TotalVsUnique = (props: Props) => {
             },
           ]}
         />
+        {ghostOverlay}
       </BarChartContainer>
     </>
 
