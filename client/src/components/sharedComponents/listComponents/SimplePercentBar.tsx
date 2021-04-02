@@ -34,12 +34,13 @@ const BarFill = styled.div`
   background-color: ${primaryColor};
 `;
 
-const SimplePercentBar = ({percent}: {percent: number}) => {
+const SimplePercentBar = ({percent, text}: {percent: number, text?: string}) => {
   const getString = useFluent();
+  const completeText = text !== undefined ? text : getString('global-text-value-complete');
   return (
     <Root>
       <Text>
-        <strong>{percent}%</strong> <CompleteText>{getString('global-text-value-complete')}</CompleteText>
+        <strong>{percent}%</strong> <CompleteText>{completeText}</CompleteText>
       </Text>
       <BarBackground>
         <BarFill style={{width: percent + '%'}} />

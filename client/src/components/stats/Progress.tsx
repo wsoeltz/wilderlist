@@ -16,7 +16,8 @@ import PeakProgressBar from '../peakLists/list/PeakProgressBar';
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
 import HikingListCompleteSVG from './d3Viz/icons/hiking-list-complete.svg';
 import HikingListProgressSVG from './d3Viz/icons/hiking-list-progress.svg';
-import ElevationProgress from './fastChartVisualization/ElevationProgress';
+import ProgressLineChart from './fastChartVisualization/ProgressLineChart';
+import {elevationGoals} from './goals';
 import {
   LargeStyledNumber,
   TwoColumns,
@@ -131,8 +132,12 @@ const Progress = () => {
           />
         </DottedSegment>
         <DottedSegment>
-          <ElevationProgress
-            elevationDataPoints={elevationDataPoints}
+          <ProgressLineChart
+            data={elevationDataPoints}
+            goals={elevationGoals}
+            units={'ft'}
+            title={getString('stats-total-lifetime-elevation')}
+            disclaimer={getString('stats-total-lifetime-context-note')}
           />
         </DottedSegment>
       </>

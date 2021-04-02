@@ -1,4 +1,4 @@
-import { bisector, extent, max } from 'd3-array';
+import { extent, max } from 'd3-array';
 import {
   axisBottom,
   axisLeft,
@@ -9,14 +9,18 @@ import {
 } from 'd3-scale';
 import {
   // @ts-expect-error d3 typing is inaccurate, mouse is in fact exported from this module
-  mouse,
+  event,
+  select,
   Selection,
 } from 'd3-selection';
 import { line } from 'd3-shape';
 import sortBy from 'lodash/sortBy';
 import {
-  primaryColor,
+  baseColor,
+  lightBorderColor,
+  secondaryColor,
 } from '../../../styling/styleUtils';
+import {formatNumber} from '../../../Utils';
 
 export interface Datum {
   date: Date;
@@ -31,6 +35,8 @@ interface Dimensions {
 export interface Goal {
   name: string;
   value: number;
+  image: string;
+  desc: string;
 }
 
 type GoalDatum = Goal & Datum;
@@ -42,30 +48,15 @@ interface Input {
   units: string;
   goals: Goal[];
 }
-const ranges = [
-  { divider: 1e18 , suffix: 'E' },
-  { divider: 1e15 , suffix: 'P' },
-  { divider: 1e12 , suffix: 'T' },
-  { divider: 1e9 , suffix: 'B' },
-  { divider: 1e6 , suffix: 'M' },
-  { divider: 1e3 , suffix: 'k' },
-];
 
 const createLineChart = (input: Input) => {
   const { svg, data, size, units, goals } = input;
 
-  const margin = {top: 15, right: 40, bottom: 22, left: 37};
+  const margin = {top: 0, right: 0, bottom: 22, left: 37};
   const width = size.width - margin.left - margin.right;
   const height = size.height - margin.bottom - margin.top;
 
-  const formatNumber = (n: number) => {
-    for (const range of ranges) {
-      if (n >= range.divider) {
-        return (n / range.divider).toString() + range.suffix + ' ' + units;
-      }
-    }
-    return n.toString() + ' ' + units;
-  };
+  const formatWithUnits = (value: number) => formatNumber(value) + ' ' + units;
 
   // set the ranges
   const x = scaleTime().range([0, width]);
@@ -137,23 +128,12 @@ const createLineChart = (input: Input) => {
       .data([allData])
       .attr('class', 'line')
       .attr('fill', 'none')
-      .attr('stroke', primaryColor)
-      .attr('stroke-width', 2)
+      .attr('stroke', secondaryColor)
+      .attr('stroke-width', 4)
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('d', valueLine)
       .attr('transform', 'translate(' + margin.left + ', 0)');
-
-  g.selectAll('circle')
-    .data(goalsWithInterpolatedDates)
-    .enter()
-    .append('circle')
-    .style('stroke', 'gray')
-    .style('fill', 'black')
-    .attr('r', 4)
-    .attr('cx', d => x(d.date))
-    .attr('cy', d => y(d.value))
-    .attr('transform', 'translate(' + margin.left + ', 0)');
 
   // Add the x Axis
   g.append('g')
@@ -162,125 +142,55 @@ const createLineChart = (input: Input) => {
 
   // Add the y Axis
   g.append('g')
-      .call(axisLeft(y).tickFormat(formatNumber as any).ticks(8))
+      .call(axisLeft(y).tickFormat(formatWithUnits as any).ticks(8))
       .attr('transform', 'translate(' + margin.left + ', 0)');
 
   g.style('transform', 'scale(0.95) translateY(' + margin.top + 'px)')
    .style('transform-origin', 'center');
 
-  const bisect = bisector(function(d: any) { return d.date; }).left;
-  // Create the circle that travels along the curve of chart
-  const focusLineVertical = g
-    .append('line')
-      .style('fill', 'none')
-      .attr('stroke', '#a7a7a7')
-      .attr('stroke-width', '0.5px')
-      .attr('x1', 0)
-      .attr('x2', 0)
-      .attr('y1', 0)
-      .attr('y2', height)
-      .style('opacity', 0);
-  const focusLineHorizontal = g
-    .append('line')
-      .style('fill', 'none')
-      .attr('stroke', '#a7a7a7')
-      .attr('stroke-width', '0.5px')
-      .attr('x1', margin.left)
-      .attr('x2', size.width)
-      .attr('y1', 0)
-      .attr('y2', 0)
-      .style('opacity', 0);
+  // Define the div for the tooltip
+  const tooltipDiv = select('body').append('div')
+    .style('position', 'absolute')
+    .style('text-align', 'center')
+    .style('display', 'none')
+    .style('padding', '8px 12px')
+    .style('background', '#fff')
+    .style('border-radius', '4px')
+    .style('color', secondaryColor)
+    .style('pointer-events', 'none')
+    .style('box-shadow', '0px 0px 3px -1px #b5b5b5')
+    .style('border', `solid 1px ${lightBorderColor}`);
 
-  // Create the text that travels along the curve of chart
-  const focusDateText = g
-    .append('g')
-    .append('text')
-      .style('opacity', 0)
-      .attr('y', height - 7)
-      .attr('text-anchor', 'left')
-      .attr('alignment-baseline', 'middle')
-      .style('font-weight', '600')
-      .style('font-size', '12px')
-      .attr('fill', '#333')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', '5px')
-      .attr('paint-order', 'stroke');
-  const focusValueText = g
-    .append('g')
-    .append('text')
-      .style('opacity', 0)
-      .attr('x', margin.left + 5)
-      .attr('text-anchor', 'left')
-      .attr('alignment-baseline', 'middle')
-      .style('font-weight', '600')
-      .style('font-size', '12px')
-      .attr('fill', '#333')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', '5px')
-      .attr('paint-order', 'stroke');
+  g.selectAll('image')
+    .data(goalsWithInterpolatedDates)
+    .enter()
+    .append('image')
+      .attr('xlink:href', d => d.image)
+      .attr('x', d => x(d.date) - 10)
+      .attr('y', d => y(d.value) - 10)
+      .attr('transform', 'translate(' + margin.left + ', 0)')
+      .attr('width', 20)
+      .attr('height', 20)
+      .on('mousemove', (d) => {
+        tooltipDiv
+            .style('display', 'block');
+        tooltipDiv.html(`
+          <div style="max-width: 110px;">
+            <img src="${d.image}" style="width: 90px; height: 90px;" />
+            <div style="margin: 0.65rem 0 0.25rem; font-size: 0.875rem; font-weight: 600; color: ${baseColor};">
+              ${d.name}
+            </div>
+            <div style="font-size: 0.75rem; margin-bottom: 0.35rem">${formatNumber(d.value)} ${units}</div>
+            <div style="font-size: 0.75rem; text-align: left; margin-bottom: 0.35rem">${d.desc}</div>
+          </div>`)
+            .style('left', (event.pageX) + 'px')
+            .style('top', (event.pageY) + 'px');
+      })
+      .on('mouseout', () => {
+          tooltipDiv
+              .style('display', 'none');
+      });
 
-  // Create a rect on top of the svg area: this rectangle recovers mouse position
-  g
-    .append('rect')
-    .style('fill', 'none')
-    .style('pointer-events', 'all')
-    .attr('width', size.width * 2)
-    .attr('height', size.height * 2)
-    .attr('x', -margin.left)
-    .attr('y', -margin.top * 2)
-    .attr('transform', 'translate(' + margin.left + ', 0)')
-    .on('mouseover', mouseover)
-    .on('mousemove', mousemove)
-    .on('mouseout', mouseout);
-
-    // What happens when the mouse move -> show the annotations at the right positions.
-  function mouseover() {
-    focusLineVertical.style('opacity', 1);
-    focusLineHorizontal.style('opacity', 1);
-    focusDateText.style('opacity', 1);
-    focusValueText.style('opacity', 1);
-  }
-
-  function mousemove() {
-    // recover coordinate we need
-    // @ts-expect-error this is correct
-    const x0 = x.invert(mouse(this)[0]);
-    const i = bisect(allData, x0, 1);
-    const selectedData = allData[i];
-    const maxI = i + 2 > allData.length - 1 ? allData.length - 1 : i + 2;
-    let variableI = 0;
-    while (i + variableI < maxI) {
-      if ((allData[i + variableI] as any) && (allData[i + variableI] as any).name) {
-        break;
-      }
-      variableI++;
-    }
-    const dataForTextValues = allData[i + variableI];
-    if (selectedData) {
-      focusLineVertical
-        .attr('x1', x(selectedData.date) + margin.left)
-        .attr('x2', x(selectedData.date) + margin.left);
-      focusLineHorizontal
-        .attr('y1', y(selectedData.value))
-        .attr('y2', y(selectedData.value));
-
-      const label = (dataForTextValues as any).name
-        ? (dataForTextValues as any).name + ' - ' + Math.round(dataForTextValues.value).toString() + units
-        : dataForTextValues.date.toDateString();
-      focusDateText
-        .html(label)
-        .attr('x', x(selectedData.date) + 5);
-      focusValueText
-        .html(Math.round(selectedData.value).toString() + units)
-        .attr('y', y(selectedData.value) - 10);
-    }
-  }
-  function mouseout() {
-    focusDateText.style('opacity', 0);
-    focusValueText.style('opacity', 0);
-    focusLineVertical.style('opacity', 0);
-    focusLineHorizontal.style('opacity', 0);
-  }
 };
 
 export default createLineChart;
