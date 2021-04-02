@@ -6,6 +6,7 @@ import createBarGraph, {Datum as BarGraphDatum} from './createBarGraph';
 import createBubbleChart, {Datum as BubbleChartDatum} from './createBubbleChart';
 import createElevationProfile, {Datum as ElevationProfileDatum} from './createElevationProfile';
 import createLineChart, {Datum as LineChartDatum} from './createLineChart';
+import createLineProgressChart, {Datum as LineProgressDatum, Goal} from './createLineProgressChart';
 
 const Root = styled.div`
   height: 450px;
@@ -22,6 +23,7 @@ export enum VizType {
   BubbleChart = 'BubbleChart',
   LineChart = 'LineChart',
   ElevationProfile = 'ElevationProfile',
+  LineProgressChart = 'LineProgressChart',
 }
 
 interface BaseProps {
@@ -49,6 +51,12 @@ type Props = BaseProps & (
     onMouseMove: (d: ElevationProfileDatum) => void;
     onMouseOut: () => void;
     noAxis?: boolean;
+  } |
+  {
+    vizType: VizType.LineProgressChart;
+    data: LineProgressDatum[];
+    units: string;
+    goals: Goal[];
   }
 );
 
@@ -90,6 +98,14 @@ const D3Viz = (props: Props) => {
           onMouseMove: props.onMouseMove,
           onMouseOut: props.onMouseOut,
           noAxis: Boolean(props.noAxis),
+        });
+      } else if (props.vizType === VizType.LineProgressChart) {
+        createLineProgressChart({
+          svg, data: props.data, size: {
+            width: sizingNode.clientWidth, height: sizingNode.clientHeight,
+          },
+          units: props.units,
+          goals: props.goals,
         });
       }
     }

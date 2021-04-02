@@ -84,7 +84,7 @@ export const addHeatmap = ({map, data, maxValue}: Input) => {
           ],
         },
       },
-    'admin-1-boundary-bg',
+    'temporary-hovered-trails-layer-id',
     );
   } catch (err) {
     console.error(err);

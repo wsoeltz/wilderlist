@@ -27,7 +27,6 @@ import {
 import {ListPrivacy, PeakListVariants} from '../../../types/graphQLTypes';
 import {AggregateItem} from '../../../types/itemTypes';
 import { getType } from '../../../utilities/dateUtils';
-import StarListButton from '../../peakLists/detail/StarListButton';
 import {mountainNeutralSvg, tentNeutralSvg, trailDefaultSvg} from '../../sharedComponents/svgIcons';
 import Tooltip from '../../sharedComponents/Tooltip';
 import MountainLogo from '../mountainLogo';
@@ -60,18 +59,8 @@ const ProgressContainer = styled.div`
 `;
 
 const Header = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 5.625rem;
-  grid-column-gap: 0.35rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
   margin-right: -1rem;
-`;
-
-const SavedContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
 `;
 
 const FlexRow = styled.div`
@@ -232,18 +221,6 @@ const PeakListCard = (props: Props) => {
       </Link>
     );
 
-  const starButton = profileId !== undefined ? null : (
-    <div>
-      <SavedContainer>
-        <StarListButton
-          peakListId={id}
-          peakListName={name}
-          compact={true}
-        />
-      </SavedContainer>
-    </div>
-  );
-
   return (
       <Root
         onMouseLeave={onMouseLeave}
@@ -255,7 +232,6 @@ const PeakListCard = (props: Props) => {
         <Content>
           <Header>
             {title}
-            {starButton}
           </Header>
           <MidFlexRow>
             {numMountainsCompleted}

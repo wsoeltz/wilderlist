@@ -8,6 +8,7 @@ import React from 'react';
 import useFluent from '../../hooks/useFluent';
 import DetailSegment, {Panel} from '../sharedComponents/detailComponents/DetailSegment';
 import HeatMapRenderProp from './HeatMapRenderProp';
+import Progress from './Progress';
 import Totals from './Totals';
 
 const RoutesAndDirections = () => {
@@ -21,7 +22,7 @@ const RoutesAndDirections = () => {
     },
     {
       title: getString('global-text-value-progress'),
-      reactNode: <div>Progress</div>,
+      reactNode: <Progress />,
       customIcon: false,
       icon: faPercentage,
     },

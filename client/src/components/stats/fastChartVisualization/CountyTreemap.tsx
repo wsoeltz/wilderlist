@@ -226,9 +226,8 @@ const CountyTreemap = (props: Props) => {
     children: [],
   };
 
-  const total = data.length;
-
   const allTripsUniqueByDateCountyState = uniqBy(data, d => d.dateAsNumber + d.county + d.state);
+  const total = allTripsUniqueByDateCountyState.length;
   const tripsGroupedByState = groupBy(allTripsUniqueByDateCountyState, 'state');
   let currentColor: number = 0;
   for (const key in tripsGroupedByState) {

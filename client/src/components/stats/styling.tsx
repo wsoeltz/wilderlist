@@ -3,7 +3,6 @@ import styled from 'styled-components/macro';
 import useFluent from '../../hooks/useFluent';
 import {
   baseColor,
-  Card,
   lightBaseColor,
   primaryColor,
   SvgImg,
@@ -30,25 +29,19 @@ export const SingleColumn = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const TwoColumns = styled(SingleColumn)`
+export const TwoColumns = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 1rem;
-  margin-bottom: 2rem;
-
-  @media (max-width: 450px) {
-    grid-template-columns: auto;
-    grid-template-rows: 1fr 1fr;
-    grid-row-gap: 1rem;
-  }
+  margin-bottom: 1rem;
 `;
 
-export const CardRoot = styled(Card)`
+export const CardRoot = styled.div`
   margin-bottom: 0;
   display: flex;
   justify-content: flex-start;
-  text-align: center;
-  flex-direction: column;
+  align-items: center;
+  text-align: left;
 
   &:hover {
     cursor: auto;
@@ -57,18 +50,17 @@ export const CardRoot = styled(Card)`
 `;
 
 const BigNumber = styled.div`
-  font-family: DeliciousRomanWeb;
-  font-size: 3rem;
+  font-size: 1.75rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: ${primaryColor};
+  margin-right: 0.75rem;
+  color: ${baseColor};
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 const Label = styled.div`
-  font-size: 1.4rem;
-  color: ${primaryColor};
+  font-size: 1rem;
+  color: ${baseColor};
 `;
 
 const SmallNumber = styled.div`
@@ -89,8 +81,8 @@ const SmallLabel = styled.div`
 export const LargeStyledNumber = (
   {value, label, svg}: {value: number, label: string, svg: string}) => (
     <CardRoot>
+      <SvgImg src={svg} alt={label} />
       <BigNumber>
-        <SvgImg src={svg} alt={label} />
         {value}
       </BigNumber>
       <Label>

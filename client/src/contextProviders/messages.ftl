@@ -730,11 +730,22 @@ stats-average-time-context-note-html = Average time is calculated based on the t
 stats-top-hiked-states = Top Hiked States
 stats-top-hiked-years = Top Hiked Years
 stats-top-hiked-seasons = Top Hiked Seasons
-stats-total-lifetime-elevation = Total Lifetime elevation
-stats-total-lifetime-context-note = Lifetime Elevation is calculated based on the total elevation of each peak hiked for a given day. Wilderlist does not currently take into account prominence or elevation gain.
+stats-total-lifetime-elevation = Your total summit elevation
+stats-total-lifetime-mileage = Your total trail mileage
+stats-total-lifetime-days-camped = Your total days camped
+stats-total-lifetime-context-note = Total elevation is calculated based on the total elevation of each peak hiked for a given trip. Wilderlist does not currently take into account prominence or elevation gain.
+stats-total-lifetime-mileage-context-note = Total mileage is calculated based on the total length of each logged trail on a given trip. Wilderlist does not yet support accurate route tracking.
 stats-your-lists = Your Hiking Lists
-stats-your-lists-pursued = Hiking lists being pursued
-stats-your-lists-complete = Hiking lists completed
+stats-your-lists-pursued = {
+  $count ->
+    [1] Hiking list being pursued
+    *[other] Hiking lists being pursued
+}
+stats-your-lists-complete = {
+  $count ->
+    [1] Hiking list completed
+    *[other] Hiking lists completed
+}
 stats-your-lists-percent = Percentage Complete For All Lists
 stats-no-average-time = You need more than one recorded hike with a full date to see your average.
 stats-average-time-since-start = Average time between hikes since { $start-date }

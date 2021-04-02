@@ -18,6 +18,7 @@ const GET_TOTALS = gql`
         mountain {
           id
           name
+          elevation
           location
           locationText
           locationTextShort
@@ -58,6 +59,7 @@ interface SuccessResponse {
       mountain: null | {
         id: Mountain['id'];
         name: Mountain['name'];
+        elevation: Mountain['elevation'];
         location: Mountain['locationText'];
         locationText: Mountain['locationText'];
         locationTextShort: Mountain['locationTextShort'];
