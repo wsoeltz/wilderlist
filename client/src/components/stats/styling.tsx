@@ -19,6 +19,8 @@ export const Title = styled.h3`
   margin-bottom: 0;
   color: ${baseColor};
   font-size: 1rem;
+  display: flex;
+  justify-content: center;
 `;
 
 export const Root = styled.div`

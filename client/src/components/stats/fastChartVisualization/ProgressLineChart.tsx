@@ -6,6 +6,7 @@ import {
 } from '../../../styling/sharedContentStyles';
 import {
   BasicIconInTextCompact,
+  IconContainer,
   lightBaseColor,
   primaryColor,
   secondaryFont,
@@ -24,7 +25,7 @@ import {
 const Root = styled.div`
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: 1fr 110px;
+  grid-template-columns: 1fr 115px;
   grid-column-gap: 0.5rem;
 `;
 
@@ -37,13 +38,13 @@ const GoalColumn = styled.div`
 
 const GoalTitle = styled(SectionTitle)`
   text-align: center;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 `;
 
 const Image = styled.img`
   width: 90px;
   height: 90px;
-  margin: 0.875rem auto;
+  margin: 0.5rem auto;
   display: block;
 `;
 
@@ -57,12 +58,12 @@ const GoalText = styled.div`
 const GoalValue = styled.div`
   text-align: center;
   font-size: 0.8rem;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.5rem;
   color: ${lightBaseColor};
 `;
 
 const GoalDesc = styled.div`
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: ${lightBaseColor};
   text-align: center;
 `;
@@ -79,10 +80,11 @@ interface Props {
   goals: Array<{name: string, image: string, desc: string, value: number}>;
   units: string;
   disclaimer: string;
+  icon: string;
 }
 
 const ProgressLineChart = (props: Props) => {
-  const {data, goals, units, title, disclaimer} = props;
+  const {data, goals, units, title, disclaimer, icon} = props;
   const maxValue = data && data.length && data[data.length - 1]
     ? data[data.length - 1].value : 0;
   let nextGoal = goals.find((g, i) => g.value > maxValue && (i === 0 || goals[i - 1].value <= maxValue));
@@ -108,6 +110,10 @@ const ProgressLineChart = (props: Props) => {
   return (
     <>
       <Title>
+        <IconContainer
+          $color={primaryColor}
+          dangerouslySetInnerHTML={{__html: icon}}
+        />
         {title}
       </Title>
       <Root>
@@ -117,7 +123,7 @@ const ProgressLineChart = (props: Props) => {
             vizType={VizType.LineProgressChart}
             data={data}
             units={units}
-            height={300}
+            height={320}
             goals={goals}
           />
         </div>

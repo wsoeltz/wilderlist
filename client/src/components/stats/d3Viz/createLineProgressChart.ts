@@ -14,7 +14,6 @@ import {
   Selection,
 } from 'd3-selection';
 import { line } from 'd3-shape';
-import sortBy from 'lodash/sortBy';
 import {
   baseColor,
   lightBorderColor,
@@ -52,7 +51,7 @@ interface Input {
 const createLineChart = (input: Input) => {
   const { svg, data, size, units, goals } = input;
 
-  const margin = {top: 0, right: 0, bottom: 22, left: 37};
+  const margin = {top: 0, right: 0, bottom: 22, left: 45};
   const width = size.width - margin.left - margin.right;
   const height = size.height - margin.bottom - margin.top;
 
@@ -90,7 +89,7 @@ const createLineChart = (input: Input) => {
 
   // Scale the range of the data
   x.domain([minDate, maxDate]);
-  y.domain([0, maxValue + 200]);
+  y.domain([0, maxValue]);
 
    //  Plot goals onto line
   const goalsWithInterpolatedDates: GoalDatum[] = [];
@@ -121,11 +120,9 @@ const createLineChart = (input: Input) => {
      }
    });
 
-  const allData: Array<Datum | GoalDatum> = sortBy([...data, ...goalsWithInterpolatedDates], ['date']);
-
   // Add the valueLine path.
   g.append('path')
-      .data([allData])
+      .data([data])
       .attr('class', 'line')
       .attr('fill', 'none')
       .attr('stroke', secondaryColor)
@@ -138,7 +135,9 @@ const createLineChart = (input: Input) => {
   // Add the x Axis
   g.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + height + ')')
-      .call(axisBottom(x));
+      .call(axisBottom(x).tickFormat(d => {
+        return (d as any).getFullYear() as any;
+      }).ticks(4));
 
   // Add the y Axis
   g.append('g')
@@ -173,7 +172,9 @@ const createLineChart = (input: Input) => {
       .attr('height', 20)
       .on('mousemove', (d) => {
         tooltipDiv
-            .style('display', 'block');
+            .style('display', 'block')
+            .style('transform', 'translate(-50%, -100%)')
+            .style('z-index', '1000');
         tooltipDiv.html(`
           <div style="max-width: 110px;">
             <img src="${d.image}" style="width: 90px; height: 90px;" />
@@ -181,7 +182,7 @@ const createLineChart = (input: Input) => {
               ${d.name}
             </div>
             <div style="font-size: 0.75rem; margin-bottom: 0.35rem">${formatNumber(d.value)} ${units}</div>
-            <div style="font-size: 0.75rem; text-align: left; margin-bottom: 0.35rem">${d.desc}</div>
+            <div style="font-size: 0.75rem; margin-bottom: 0.35rem">${d.desc}</div>
           </div>`)
             .style('left', (event.pageX) + 'px')
             .style('top', (event.pageY) + 'px');

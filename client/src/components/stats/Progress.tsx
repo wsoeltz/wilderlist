@@ -14,10 +14,19 @@ import {
 import {DateObject, parseDate} from '../../utilities/dateUtils';
 import PeakProgressBar from '../peakLists/list/PeakProgressBar';
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
+import {
+  mountainNeutralSvg,
+  tentNeutralSvg,
+  trailDefaultSvg,
+} from '../sharedComponents/svgIcons';
 import HikingListCompleteSVG from './d3Viz/icons/hiking-list-complete.svg';
 import HikingListProgressSVG from './d3Viz/icons/hiking-list-progress.svg';
 import ProgressLineChart from './fastChartVisualization/ProgressLineChart';
-import {elevationGoals} from './goals';
+import {
+  campedGoals,
+  elevationGoals,
+  mileageGoals,
+} from './goals';
 import {
   LargeStyledNumber,
   TwoColumns,
@@ -54,7 +63,7 @@ const Progress = () => {
     );
   } else if (lists.data !== undefined && stats.data !== undefined && stats.data.totals) {
     const {user: {peakLists}} = lists.data;
-    const {mountains} = stats.data.totals;
+    const {mountains, trails, campsites} = stats.data.totals;
 
     let totalCompletedTrips: number = 0;
     let totalRequiredTrips: number = 0;
@@ -109,6 +118,66 @@ const Progress = () => {
       }
     });
 
+    const allMileageDates: Array<DateObject & {mileage: number}> = [];
+    if (trails && trails.length) {
+      trails.forEach(({trail, dates}) => {
+        if (trail && dates.length) {
+          dates.forEach(d => {
+            if (d && trail.trailLength !== null) {
+              const dateObject = parseDate(d);
+              allMileageDates.push({...dateObject, mileage: trail.trailLength});
+            }
+          });
+        }
+      });
+    }
+    const sortedMileageDates = sortBy(allMileageDates, ['dateAsNumber']);
+    const mileageDataPoints: Array<{date: Date, value: number}> = [];
+    const groupedMileageDates = groupBy(sortedMileageDates, 'dateAsNumber');
+    let totalMileageSoFar = 0;
+    Object.entries(groupedMileageDates).forEach((val) => {
+      let totalMileageForDay: number = 0;
+      val[1].forEach(({mileage}) => {
+        totalMileageForDay += mileage;
+      });
+      totalMileageSoFar += totalMileageForDay;
+      const {day, month, year} = val[1][0];
+      const date = new Date(year, month - 1, day);
+      if (date instanceof Date && !isNaN(date as any)) {
+        mileageDataPoints.push({date, value: totalMileageSoFar});
+      }
+    });
+
+    const allNightsCampedDates: Array<DateObject & {numNights: number}> = [];
+    if (campsites && campsites.length) {
+      campsites.forEach(({campsite, dates}) => {
+        if (campsite && dates.length) {
+          dates.forEach(d => {
+            if (d) {
+              const dateObject = parseDate(d);
+              allNightsCampedDates.push({...dateObject, numNights: 1});
+            }
+          });
+        }
+      });
+    }
+    const sortedNightsCampedDates = sortBy(allNightsCampedDates, ['dateAsNumber']);
+    const numNightsDataPoints: Array<{date: Date, value: number}> = [];
+    const groupedNightsCampedDates = groupBy(sortedNightsCampedDates, 'dateAsNumber');
+    let totalNightsCampedSoFar = 0;
+    Object.entries(groupedNightsCampedDates).forEach((val) => {
+      let totalNightsCampedForDay: number = 0;
+      val[1].forEach(({numNights}) => {
+        totalNightsCampedForDay += numNights;
+      });
+      totalNightsCampedSoFar += totalNightsCampedForDay;
+      const {day, month, year} = val[1][0];
+      const date = new Date(year, month - 1, day);
+      if (date instanceof Date && !isNaN(date as any)) {
+        numNightsDataPoints.push({date, value: totalNightsCampedSoFar});
+      }
+    });
+
     return (
       <>
         <DottedSegment style={{border: 'none'}}>
@@ -138,6 +207,27 @@ const Progress = () => {
             units={'ft'}
             title={getString('stats-total-lifetime-elevation')}
             disclaimer={getString('stats-total-lifetime-context-note')}
+            icon={mountainNeutralSvg}
+          />
+        </DottedSegment>
+        <DottedSegment>
+          <ProgressLineChart
+            data={mileageDataPoints}
+            goals={mileageGoals}
+            units={'mi'}
+            title={getString('stats-total-lifetime-mileage')}
+            disclaimer={getString('stats-total-lifetime-mileage-context-note')}
+            icon={trailDefaultSvg}
+          />
+        </DottedSegment>
+        <DottedSegment>
+          <ProgressLineChart
+            data={numNightsDataPoints}
+            goals={campedGoals}
+            units={' days'}
+            title={getString('stats-total-lifetime-days-camped')}
+            disclaimer={''}
+            icon={tentNeutralSvg}
           />
         </DottedSegment>
       </>
