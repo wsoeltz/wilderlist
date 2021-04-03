@@ -9,6 +9,17 @@ import Olympus_MonsSVGURL from './d3Viz/icons/goals/elevation/Olympus_Mons.svg';
 import Ozone_LayerSVGURL from './d3Viz/icons/goals/elevation/Ozone_Layer.svg';
 import StratosphereSVGURL from './d3Viz/icons/goals/elevation/Stratosphere.svg';
 import ThermosphereSVGURL from './d3Viz/icons/goals/elevation/Thermosphere.svg';
+import AfricaSVGURL from './d3Viz/icons/goals/mileage/Africa.svg';
+import Appalachian_TrailSVGURL from './d3Viz/icons/goals/mileage/Appalachian_Trail.svg';
+import Colorado_TrailSVGURL from './d3Viz/icons/goals/mileage/Colorado_Trail.svg';
+import Continental_Divide_TrailSVGURL from './d3Viz/icons/goals/mileage/Continental_Divide_Trail.svg';
+import EarthSVGURL from './d3Viz/icons/goals/mileage/Earth.svg';
+import Long_TrailSVGURL from './d3Viz/icons/goals/mileage/Long_Trail.svg';
+import Longest_pathSVGURL from './d3Viz/icons/goals/mileage/Longest_path.svg';
+import North_and_South_AmericaSVGURL from './d3Viz/icons/goals/mileage/North_and_South_America.svg';
+import Pacific_Crest_TrailSVGURL from './d3Viz/icons/goals/mileage/Pacific_Crest_Trail.svg';
+import Pacific_Northwest_TrailSVGURL from './d3Viz/icons/goals/mileage/Pacific_Northwest_Trail.svg';
+import Triple_CrownSVGURL from './d3Viz/icons/goals/mileage/Triple_Crown.svg';
 
 export const elevationGoals: Array<{name: string, image: string, desc: string, value: number}> = [
   {
@@ -82,117 +93,75 @@ export const elevationGoals: Array<{name: string, image: string, desc: string, v
 export const mileageGoals: Array<{name: string, image: string, desc: string, value: number}> = [
   {
     name: 'Long Trail',
-    image: EverestSVGURL,
+    image: Long_TrailSVGURL,
     desc: 'Hike the cumulative distance of the Long Trail in Vermont, the oldest long-distance trail in the USA',
     value: 272,
   },
   {
     name: 'Colorado Trail',
-    image: EverestSVGURL,
+    image: Colorado_TrailSVGURL,
     desc: 'Hike the cumulative distance of the Colorado Trail in Colorado, built through the Rocky Mountains in 1973',
     value: 567,
   },
   {
     name: 'Pacific Northwest Trail (PNT)',
-    image: EverestSVGURL,
+    image: Pacific_Northwest_TrailSVGURL,
     desc: 'Hike the cumulative distance of the PNT, spanning from Montana to the Washington coast',
     value: 1_200,
   },
   {
-    name: 'AT',
-    image: EverestSVGURL,
+    name: 'Appalachian Trail (AT)',
+    image: Appalachian_TrailSVGURL,
     desc: 'Hike the cumulative distance of the Appalachian Trail',
     value: 2_190,
   },
   {
-    name: 'PCT',
-    image: EverestSVGURL,
+    name: 'Pacific Crest Trail (PCT)',
+    image: Pacific_Crest_TrailSVGURL,
     desc: 'Hike the cumulative distance of the Pacific Crest Trail Trail',
     value: 2650,
   },
   {
-    name: 'CDT',
-    image: EverestSVGURL,
+    name: 'Continental Divide Trail (CDT)',
+    image: Continental_Divide_TrailSVGURL,
     desc: 'Hike the cumulative distance of the Continental Divide Trail',
     value: 3_028,
   },
   {
     name: 'Africa',
-    image: EverestSVGURL,
+    image: AfricaSVGURL,
     desc: 'Hike the cumulative length of Africa (North to South)',
     value: 5_000,
   },
   {
     name: 'Circumference of the Moon',
-    image: EverestSVGURL,
+    image: MoonSVGURL,
     desc: 'Hike the cumulative circumference of the Moon',
     value: 6_786,
   },
   {
     name: 'Triple Crown',
-    image: EverestSVGURL,
+    image: Triple_CrownSVGURL,
     desc: 'Hike the cumulative distance of completing a Triple Crown (hiking the AT, PCT, and CDT)',
     value: 7_868,
   },
   {
     name: 'North and South America',
-    image: EverestSVGURL,
+    image: North_and_South_AmericaSVGURL,
     desc: 'Hike the cumulative length of North and South America (North to South)',
     value: 8_700,
   },
   {
-    name: 'Circumference of Mercury',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Mercury',
-    value: 9_522,
-  },
-  {
-    name: 'Circumference of Mars',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Mars',
-    value: 13_256,
-  },
-  {
     name: 'Longest walkable path on Earth',
-    image: EverestSVGURL,
+    image: Longest_pathSVGURL,
     desc: 'Hike the cumulative length of the longest walkable path on Earth. (from South Africa to northern Russia)',
     value: 14_000,
   },
   {
-    name: 'Circumference of Venus',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Venus',
-    value: 23_617,
-  },
-  {
     name: 'Circumference of Earth',
-    image: EverestSVGURL,
+    image: EarthSVGURL,
     desc: 'Hike the cumulative circumference of Earth',
     value: 24_901,
-  },
-  {
-    name: 'Circumference of Neptune',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Neptune',
-    value: 96_645,
-  },
-  {
-    name: 'Circumference of Uranus',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Uranus',
-    value: 99_739,
-  },
-  {
-    name: 'Circumference of Saturn',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Saturn',
-    value: 235_185,
-  },
-  {
-    name: 'Circumference of Jupiter',
-    image: EverestSVGURL,
-    desc: 'Hike the cumulative circumference of Jupiter',
-    value: 278_985,
   },
 ];
 
