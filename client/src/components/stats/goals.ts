@@ -1,3 +1,12 @@
+import AnishSVGURL from './d3Viz/icons/goals/days/Anish.svg';
+import Charles_DarwinSVGURL from './d3Viz/icons/goals/days/Charles_Darwin.svg';
+import Cheryl_StrayedSVGURL from './d3Viz/icons/goals/days/Cheryl_Strayed.svg';
+import Christopher_McCandlessSVGURL from './d3Viz/icons/goals/days/Christopher_McCandless.svg';
+import Grandma_GatewoodSVGURL from './d3Viz/icons/goals/days/Grandma_Gatewood.svg';
+import Henry_David_ThoreauSVGURL from './d3Viz/icons/goals/days/Henry_David_Thoreau.svg';
+import Lewis_and_ClarkSVGURL from './d3Viz/icons/goals/days/Lewis_and_Clark.svg';
+import WeekSVGURL from './d3Viz/icons/goals/days/Week.svg';
+import YearSVGURL from './d3Viz/icons/goals/days/Year.svg';
 import SevenSummitsSVGURL from './d3Viz/icons/goals/elevation/7-Summits.svg';
 import EverestSVGURL from './d3Viz/icons/goals/elevation/Everest.svg';
 import ExosphereSVGURL from './d3Viz/icons/goals/elevation/Exosphere.svg';
@@ -25,67 +34,68 @@ export const elevationGoals: Array<{name: string, image: string, desc: string, v
   {
     name: 'Everest',
     image: EverestSVGURL,
-    desc: 'Hike the cumulative elevation of the tallest mountain on Earth',
+    desc: 'Stand at the cumulative elevation of the tallest mountain on Earth',
     value: 29_032,
   },
   {
     name: 'Olympus Mons',
     image: Olympus_MonsSVGURL,
-    desc: 'Hike the cumulative elevation of the tallest mountain on Mars',
+    desc: 'Stand at the cumulative elevation of the tallest mountain on Mars',
     value: 69_841,
   },
   {
     name: 'Ozone Layer',
     image: Ozone_LayerSVGURL,
-    desc: 'Hike the cumulative altitude of the Ozone Layer, the part of the atmosphere that absorbs harmful ultraviolet light',
+    desc: 'Stand at the cumulative altitude of the Ozone Layer, the part of the atmosphere that absorbs harmful ultraviolet light',
     value: 116_160,
   },
   {
     name: 'Cumulative height of the 7-Summits',
     image: SevenSummitsSVGURL,
-    desc: 'Hike the cumulative elevation of all of the highest mountains on each of the seven continents',
+    desc: 'Stand at the cumulative elevation of all of the highest mountains on each of the seven continents',
     value: 142_114,
   },
   {
     name: 'End of the Stratosphere',
     image: StratosphereSVGURL,
-    desc: 'Hike the cumulative altitude of the stratosphere, where planes and jets fly within',
+    desc: 'Stand at the cumulative altitude of the stratosphere, where planes and jets fly within',
     value: 164_042,
   },
   {
     name: 'End of the Mesosphere',
     image: MesosphereSVGURL,
-    desc: 'Hike the cumulative altitude of the mesosphere, home to the polar aurora and where most meteor showers are seen',
+    desc: 'Stand at the cumulative altitude of the mesosphere, home to the polar aurora and where most meteor showers are seen',
     value: 262_467,
   },
   {
     name: 'Kármán line',
     image: Karman_LineSVGURL,
-    desc: 'Hike the cumulative altitude of the line at which "space" begins',
+    desc: 'Stand at the cumulative altitude of the line at which "space" begins',
     value: 330_000,
   },
   {
     name: 'International Space Station',
     image: International_Space_StationSVGURL,
-    desc: 'Hike the cumulative altitude of the height at which the ISS orbits the Earth',
+    desc: 'Stand at the cumulative altitude of the height at which the ISS orbits the Earth',
     value: 1_341_120,
   },
   {
     name: 'Edge of the Thermosphere',
     image: ThermosphereSVGURL,
-    desc: 'Hike the cumulative altitude of the thermosphere, the layer of atmosphere that most satellites are found',
+    desc:
+      'Stand at the cumulative altitude of the thermosphere, the layer of atmosphere that most satellites are found',
     value: 2_296_700,
   },
   {
     name: 'Edge of the Exosphere',
     image: ExosphereSVGURL,
-    desc: 'Hike the cumulative altitude of the exosphere, the absolute edge of Earth\'s atmosphere.',
+    desc: 'Stand at the cumulative altitude of the exosphere, the absolute edge of Earth\'s atmosphere.',
     value: 623_390_000,
   },
   {
     name: 'The Moon',
     image: MoonSVGURL,
-    desc: 'Hike the cumulative altitude of the Moon',
+    desc: 'Stand at the cumulative altitude of the Moon',
     value: 1_261_392_000,
   },
 ];
@@ -168,55 +178,55 @@ export const mileageGoals: Array<{name: string, image: string, desc: string, val
 export const campedGoals: Array<{name: string, image: string, desc: string, value: number}> = [
   {
     name: '1 week',
-    image: EverestSVGURL,
+    image: WeekSVGURL,
     desc: 'Spend a cumulative week sleeping in the woods',
     value: 7,
   },
   {
     name: 'Charles Darwin',
-    image: EverestSVGURL,
+    image: Charles_DarwinSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Darwin spent studying birds in the Galapagos',
     value: 35,
   },
   {
     name: 'Cheryl Strayed (Wild)',
-    image: EverestSVGURL,
+    image: Cheryl_StrayedSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Cheryl Strayed spent in her book \'Wild\'',
     value: 94,
   },
   {
     name: 'Christopher McCandless (Into the Wild)',
-    image: EverestSVGURL,
+    image: Christopher_McCandlessSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Christopher McCandless (from \'Into the Wild\')',
     value: 114,
   },
   {
     name: 'Grandma Gatewood (First Woman to Hike the AT)',
-    image: EverestSVGURL,
+    image: Grandma_GatewoodSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Grandma Gatewood\'s first trek of the Appalachian Trail',
     value: 146,
   },
   {
     name: 'Heather "Anish" Anderson\'s 1 year Triple Crown',
-    image: EverestSVGURL,
+    image: AnishSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Anish\'s record setting 1 year Triple Crown (AT + PCT + CDT)',
     value: 251,
   },
   {
     name: '1 year',
-    image: EverestSVGURL,
+    image: YearSVGURL,
     desc: 'Spend a cumulative year sleeping in the woods',
     value: 365,
   },
   {
-    name: 'Henry David Thoreau',
-    image: EverestSVGURL,
+    name: 'Henry David Thoreau (Walden)',
+    image: Henry_David_ThoreauSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Thoreau spent living at Walden Pond',
     value: 730,
   },
   {
     name: 'Lewis and Clark',
-    image: EverestSVGURL,
+    image: Lewis_and_ClarkSVGURL,
     desc: 'Spend a cumulative number of nights in the woods as Lewis and Clark spent on their expedition',
     value: 863,
   },

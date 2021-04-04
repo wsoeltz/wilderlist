@@ -29,6 +29,7 @@ import {
 } from './goals';
 import {
   LargeStyledNumber,
+  Title,
   TwoColumns,
 } from './styling';
 
@@ -193,6 +194,8 @@ const Progress = () => {
               svg={HikingListCompleteSVG}
             />
           </TwoColumns>
+          <Title>{getString('stats-your-lists-percent')}:</Title>
+          <br />
           <PeakProgressBar
             variant={PeakListVariants.grid}
             completed={percentOfAllLists}
