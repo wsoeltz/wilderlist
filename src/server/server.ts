@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 import bodyParser from 'body-parser';
+import compression from 'compression';
 import cookieSession from 'cookie-session';
 import cors from 'cors';
 import express from 'express';
@@ -51,6 +52,9 @@ import getWeatherData from './utilities/getWeather';
 require('./auth/passport');
 
 const app = express();
+
+// enable gzip compression
+app.use(compression());
 
 app.use(redirectToHTTPS([/localhost:(\d{4})/], undefined, 301));
 

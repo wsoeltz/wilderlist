@@ -11,15 +11,16 @@ import {
   ContentContainer,
   ContentHeader,
 } from '../../styling/Grid';
-import CampsiteDetailPage from '../campsites/detail';
 import Landing from '../landing';
-import MountainDetailPage from '../mountains/detail';
-import SummitViewPage from '../mountains/detail/summitView';
-import PeakListDetailPage from '../peakLists/detail';
-import AutoRoutePage from '../routes/auto';
 import LoadingSuspense from '../sharedComponents/LoadingSuspense';
-import TrailDetailPage from '../trails/detail';
 import Header from './contentHeader';
+
+const CampsiteDetailPage = React.lazy(() => import('../campsites/detail'));
+const MountainDetailPage = React.lazy(() => import('../mountains/detail'));
+const SummitViewPage = React.lazy(() => import('../mountains/detail/summitView'));
+const PeakListDetailPage = React.lazy(() => import('../peakLists/detail'));
+const AutoRoutePage = React.lazy(() => import('../routes/auto'));
+const TrailDetailPage = React.lazy(() => import('../trails/detail'));
 
 const PrivacyPolicy = React.lazy(() => import('../privacyPolicy'));
 const About = React.lazy(() => import('../about'));

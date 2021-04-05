@@ -1,8 +1,10 @@
 import React from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSimple, {LoadingContainer} from './LoadingSimple';
 
 const LoadingSuspense = () => (
-  <LoadingSpinner />
+  <LoadingContainer>
+    <LoadingSimple />
+  </LoadingContainer>
 );
 
 export default LoadingSuspense;
