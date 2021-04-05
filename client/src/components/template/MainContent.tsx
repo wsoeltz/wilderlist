@@ -1,5 +1,3 @@
-import 'cross-fetch/polyfill';
-import 'normalize.css';
 import React, { Suspense, useRef } from 'react';
 import {
   Route,
