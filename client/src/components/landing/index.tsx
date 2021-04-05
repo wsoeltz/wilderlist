@@ -80,7 +80,7 @@ const ContentParagraph = styled.p`
   margin-bottom: 1.5rem;
 `;
 
-const popupVersion = '0.2';
+const popupVersion = '0.3';
 const localstorageKey = 'landingPageFirstVisitPopupLocalstorageKey';
 
 const Landing = () => {

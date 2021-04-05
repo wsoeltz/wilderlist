@@ -135,6 +135,11 @@ export const FullWidthContainer = styled.div`
   margin: 0 -1rem;
 `;
 
+export const ContainerContent = styled.div`
+  padding: 0 1rem;
+`
+;
+
 export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
