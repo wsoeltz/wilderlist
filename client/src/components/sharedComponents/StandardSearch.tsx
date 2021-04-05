@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import useWindowWidth from '../../hooks/useWindowWidth';

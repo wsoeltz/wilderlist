@@ -1,4 +1,4 @@
-import {sortBy} from 'lodash';
+import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../hooks/useFluent';

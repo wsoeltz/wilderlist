@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import React, { useEffect, useRef } from 'react';
 import {
   TextareaBase,

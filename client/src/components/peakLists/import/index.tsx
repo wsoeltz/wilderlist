@@ -1,4 +1,5 @@
-import {intersection, sortBy} from 'lodash';
+import intersection from 'lodash/intersection';
+import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import SelectDatesGifUrl from '../../../assets/images/import-gifs/select-dates.gif';
