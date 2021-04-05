@@ -40,7 +40,7 @@ import Search from '../contentHeader/search';
 import {MapStyle, storageCheckedKeyId} from '../globalMap/map';
 import NotificationBar from './NotificationBar';
 import AddAscentButton from './toolsAndSettings/AddAscentButton';
-import CreateRouteButton from './toolsAndSettings/CreateRouteButton';
+// import CreateRouteButton from './toolsAndSettings/CreateRouteButton';
 import LayersAndTools from './toolsAndSettings/layersAndTools';
 import Toggle3dModeButton from './toolsAndSettings/Toggle3dModeButton';
 import UserMenu from './UserMenu';
@@ -468,7 +468,6 @@ const Header = () => {
             </SemanticLogoContainer>
             <div style={pathname.includes('summit-view') ? {display: 'none'} : undefined}>
               {addAscentButton}
-              <CreateRouteButton />
               <LineBreak />
               <Toggle3dModeButton />
               <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
@@ -496,7 +495,6 @@ const Header = () => {
     const utiltyButtons = pathname === Routes.Landing ? (
       <SideContent>
         <LogoImg src={MapBoxLogoSVG} />
-        <CreateRouteButton />
         <Toggle3dModeButton />
         <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
       </SideContent>

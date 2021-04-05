@@ -32,6 +32,7 @@ const linkStyles = css`
     box-shadow: none;
     flex-grow: 1;
     border-radius: 0;
+    justify-content: center;
   }
 `;
 

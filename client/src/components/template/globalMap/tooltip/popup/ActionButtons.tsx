@@ -1,4 +1,4 @@
-import {faArrowRight, faCloudSun, faRoute} from '@fortawesome/free-solid-svg-icons';
+import {faArrowRight, faCloudSun} from '@fortawesome/free-solid-svg-icons';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useFluent from '../../../../../hooks/useFluent';
@@ -15,8 +15,8 @@ import {
 } from './Utils';
 
 const Root = styled.div`
-  display: flex;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   background-color: ${tertiaryColor};
   border-top: solid 1px ${lightBorderColor};
   font-size: 0.85rem;
@@ -29,7 +29,6 @@ const Button = styled.button`
   padding: 0.5rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
   &:not(:last-of-type) {
     border-right: solid 1px ${lightBorderColor};
@@ -42,11 +41,16 @@ const Button = styled.button`
 
 const DetailButton = styled(Button)`
   background-color: ${primaryColor};
+  justify-content: flex-end;
   color: #fff;
 
   &:hover {
     background-color: ${primaryHoverColor};
   }
+`;
+
+const DetailText = styled.span`
+  margin-left: auto;
 `;
 
 const BlueIcon = styled(Icon)`
@@ -84,15 +88,13 @@ const ActionButtons = (props: Props) => {
       <Button
         onClick={openModal}
       >
-        <BlueIcon icon={faCloudSun} />
+      <BlueIcon icon={faCloudSun} />
         {getString('mountain-detail-get-weather')}
       </Button>
-      <Button>
-        <BlueIcon icon={faRoute} />
-        {getString('global-create-route')}
-      </Button>
       <DetailButton onClick={detailAction}>
-        {getString('mountain-card-view-details')}
+        <DetailText>
+          {getString('mountain-card-view-details')}
+        </DetailText>
         <WhiteIcon icon={faArrowRight} />
       </DetailButton>
       {weather}
