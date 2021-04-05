@@ -14,6 +14,7 @@ import {
   ContentHeader,
 } from '../../styling/Grid';
 import CampsiteDetailPage from '../campsites/detail';
+import Landing from '../landing';
 import MountainDetailPage from '../mountains/detail';
 import SummitViewPage from '../mountains/detail/summitView';
 import PeakListDetailPage from '../peakLists/detail';
@@ -87,7 +88,7 @@ const MainContent = () => {
         <Header />
       </ContentHeader>
       <Switch>
-        <TrackedRoute exact path={Routes.Landing} component={null} />
+        <TrackedRoute exact path={Routes.Landing} component={Landing} />
         <TrackedRoute exact path={Routes.SummitView} component={SummitViewPage} />
         <Route component={ContentRoutes} />
       </Switch>

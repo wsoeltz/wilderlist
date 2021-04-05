@@ -642,6 +642,8 @@ login-page-track-your-adventure-li-4 = ● Easily upload your existing hiking li
 login-page-track-your-adventure-li-5 = ● Create and share your own lists
 login-page-sign-up-for-free = Sign Up For Free
 
+landing-popup-welcome = Welcome to
+landing-popup-learn-more = Learn more about Wilderlist
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
 
