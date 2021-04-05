@@ -5,6 +5,7 @@ import {
   SectionTitle,
 } from '../../../styling/sharedContentStyles';
 import {
+  baseColor,
   BasicIconInTextCompact,
   IconContainer,
   lightBaseColor,
@@ -74,6 +75,27 @@ const PercentContainer = styled.div`
   margin-top: auto;
 `;
 
+const VizContainer = styled.div`
+  position: relative;
+`;
+
+const GhostChart = styled.div`
+  color: ${lightBaseColor};
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 320px;
+  background-color: rgba(255, 255, 255, 0.85);
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: ${baseColor};
+`;
+
 interface Props {
   title: string;
   data: Array<{date: Date, value: number}>;
@@ -81,10 +103,11 @@ interface Props {
   units: string;
   disclaimer: string;
   icon: string;
+  noDataMessage: string;
 }
 
 const ProgressLineChart = (props: Props) => {
-  const {data, goals, units, title, disclaimer, icon} = props;
+  const {data, goals, units, title, disclaimer, icon, noDataMessage} = props;
   const maxValue = data && data.length && data[data.length - 1]
     ? data[data.length - 1].value : 0;
   let nextGoal = goals.find((g, i) => g.value > maxValue && (i === 0 || goals[i - 1].value <= maxValue));
@@ -107,6 +130,11 @@ const ProgressLineChart = (props: Props) => {
       </PercentContainer>
     </GoalColumn>
   ) : null;
+  const ghostOverlay = data.length ? null : (
+    <GhostChart>
+      {noDataMessage}
+    </GhostChart>
+  );
   return (
     <>
       <Title>
@@ -117,7 +145,7 @@ const ProgressLineChart = (props: Props) => {
         {title}
       </Title>
       <Root>
-        <div>
+        <VizContainer>
           <DataViz
             id='lifetime-elevation-line-chart'
             vizType={VizType.LineProgressChart}
@@ -126,7 +154,8 @@ const ProgressLineChart = (props: Props) => {
             height={320}
             goals={goals}
           />
-        </div>
+          {ghostOverlay}
+        </VizContainer>
         {nextGoalEl}
       </Root>
       <Subtext><small>{disclaimer}</small></Subtext>

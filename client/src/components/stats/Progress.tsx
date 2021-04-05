@@ -211,6 +211,7 @@ const Progress = () => {
             title={getString('stats-total-lifetime-elevation')}
             disclaimer={getString('stats-total-lifetime-context-note')}
             icon={mountainNeutralSvg}
+            noDataMessage={'You haven\'t logged any mountains yet.'}
           />
         </DottedSegment>
         <DottedSegment>
@@ -221,6 +222,7 @@ const Progress = () => {
             title={getString('stats-total-lifetime-mileage')}
             disclaimer={getString('stats-total-lifetime-mileage-context-note')}
             icon={trailDefaultSvg}
+            noDataMessage={'You haven\'t logged any trails yet.'}
           />
         </DottedSegment>
         <DottedSegment>
@@ -231,6 +233,7 @@ const Progress = () => {
             title={getString('stats-total-lifetime-days-camped')}
             disclaimer={''}
             icon={tentNeutralSvg}
+            noDataMessage={'You haven\'t logged any campsites yet.'}
           />
         </DottedSegment>
       </>
