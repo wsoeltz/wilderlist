@@ -48,14 +48,14 @@ const Container = styled.div<{dimensions: Dimensions}>`
   height: ${({dimensions: {height}}) => height};
 
   @media(max-width: ${mobileWidth}px) {
-    max-height: 100%;
-    height: 100%;
-    width: 100%;
+    max-height: calc(100% - 1rem);
+    width: calc(100% - 1rem);
     max-width: 100%;
     overflow: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+
   }
 `;
 
@@ -93,7 +93,7 @@ const Actions = styled.div`
   @media(max-width: ${mobileWidth}px) {
     z-index: 100;
     padding: 0;
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -124,24 +124,12 @@ const Modal = (props: Props) => {
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
   const [isModalRendered, setIsModalRendered] = useState<boolean>(false);
   useEffect(() => {
-    window.history.pushState('forward', '', '');
     const node = document.querySelector<HTMLElement>(`#${overlayPortalContainerId}`);
     if (node !== null) {
       overlayPortalContainerNodeRef.current = node;
       setIsModalRendered(true);
     }
   }, []);
-
-  useEffect(() => {
-    const closeModalOnBackClick = (e: Event) => {
-      e.preventDefault();
-      onClose();
-    };
-    window.addEventListener('popstate', closeModalOnBackClick);
-    return () => {
-      window.removeEventListener('popstate', closeModalOnBackClick);
-    };
-  }, [onClose]);
 
   const windowWidth = useWindowWidth();
 
