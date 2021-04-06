@@ -4,14 +4,8 @@ import useFluent from '../../hooks/useFluent';
 import {
   baseColor,
   lightBaseColor,
-  primaryColor,
   SvgImg,
-  SvgSmallImg,
 } from '../../styling/styleUtils';
-import AddHikingListSVG from './d3Viz/icons/add-hiking-list.svg';
-import AddMountainSVG from './d3Viz/icons/add-mountain.svg';
-import StarSVG from './d3Viz/icons/star.svg';
-import TripReportSVG from './d3Viz/icons/trip-report.svg';
 
 export const Title = styled.h3`
   text-align: center;
@@ -65,21 +59,6 @@ const Label = styled.div`
   color: ${baseColor};
 `;
 
-const SmallNumber = styled.div`
-  font-family: DeliciousRomanWeb;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: ${primaryColor};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 0.6rem;
-`;
-const SmallLabel = styled.div`
-  font-size: 1rem;
-  color: ${primaryColor};
-`;
-
 export const LargeStyledNumber = (
   {value, label, svg}: {value: number, label: string, svg: string}) => (
     <CardRoot>
@@ -92,87 +71,6 @@ export const LargeStyledNumber = (
       </Label>
     </CardRoot>
   );
-
-const ContributionsRoot = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  grid-gap: 0.75rem;
-`;
-
-const TotalRoot = styled.div`
-  grid-column: 1;
-  grid-row: 1 / 4;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-right: 0.5rem;
-`;
-
-const Segment = styled.div`
-  grid-column: 2;
-`;
-
-const TotalNumber = styled(BigNumber)`
-  margin: 0;
-
-  &:after {
-    margin: 0;
-    border: none;
-  }
-`;
-
-export const ContributionsCard = (
-  {tripReports, mountains, lists}:
-  {tripReports: number, mountains: number, lists: number}) => {
-  const total = tripReports + mountains + lists;
-  const getString = useFluent();
-  return (
-    <CardRoot>
-      <ContributionsRoot>
-        <TotalRoot>
-          <TotalNumber>
-            <SvgImg
-              src={StarSVG}
-              alt={getString('stats-total-wilderlist-contributions')}
-            />
-            {total}
-          </TotalNumber>
-          <Label>
-            {getString('stats-total-wilderlist-contributions')}
-          </Label>
-        </TotalRoot>
-        <Segment>
-          <SmallNumber>
-            <SvgSmallImg src={TripReportSVG} alt={getString('stats-trip-reports-written')} />
-            {tripReports}
-          </SmallNumber>
-          <SmallLabel>
-            {getString('stats-trip-reports-written')}
-          </SmallLabel>
-        </Segment>
-        <Segment>
-          <SmallNumber>
-            <SvgSmallImg src={AddMountainSVG} alt={getString('stats-mountains-added')} />
-            {mountains}
-          </SmallNumber>
-          <SmallLabel>
-            {getString('stats-mountains-added')}
-          </SmallLabel>
-        </Segment>
-        <Segment>
-          <SmallNumber>
-            <SvgSmallImg src={AddHikingListSVG} alt={getString('stats-hiking-lists-created')} />
-            {lists}
-          </SmallNumber>
-          <SmallLabel>
-            {getString('stats-hiking-lists-created')}
-          </SmallLabel>
-        </Segment>
-      </ContributionsRoot>
-    </CardRoot>
-  );
-};
 
 const TimeLabel = styled.span`
   font-size: 1rem;
