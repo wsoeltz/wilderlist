@@ -28,8 +28,6 @@ import {
   WarningBox,
 } from './index';
 
-export const NH48_GRID_OBJECT_ID = '5d8952e6d9d8254dd40b7627';
-
 interface Mountain {
   name: string;
   id: string;

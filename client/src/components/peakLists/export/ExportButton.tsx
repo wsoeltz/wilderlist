@@ -9,7 +9,7 @@ import {
 } from '../../../styling/styleUtils';
 import {KeySortPair} from '../../sharedComponents/detailComponents/itemTable/ItemTable';
 import SignUpModal from '../../sharedComponents/SignUpModal';
-import { NH48_GRID_OBJECT_ID } from '../import/ImportGrid';
+import { NH48_GRID_OBJECT_ID } from '../import/ImportButton';
 import ExportModal, {SpecialExport} from './';
 
 const Link = styled(LinkButtonCompact)`

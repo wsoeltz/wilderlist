@@ -1,5 +1,5 @@
 import {faUpload} from '@fortawesome/free-solid-svg-icons';
-import React, {useState} from 'react';
+import React, {Suspense, useState} from 'react';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
 import {MountainDatum} from '../../../queries/lists/usePeakListMountains';
@@ -10,7 +10,10 @@ import {
 import {PeakListVariants} from '../../../types/graphQLTypes';
 import SignUpModal from '../../sharedComponents/SignUpModal';
 import ImportAscentsModal from './';
-import ImportGridModal, { NH48_GRID_OBJECT_ID } from './ImportGrid';
+
+const ImportGridModal = React.lazy(() => import('./ImportGrid'));
+
+export const NH48_GRID_OBJECT_ID = '5d8952e6d9d8254dd40b7627';
 
 interface Props {
   peakListId: string;
@@ -36,10 +39,12 @@ const ImportButton = (props: Props) => {
      ) ;
     } else if (variant === PeakListVariants.grid && peakListId === NH48_GRID_OBJECT_ID) {
       importAscentsModal = (
+        <Suspense fallback={<React.Fragment />}>
           <ImportGridModal
             userId={user._id}
             onCancel={() => setIsImportModalOpen(false)}
           />
+        </Suspense>
       );
     } else {
       importAscentsModal = null;
