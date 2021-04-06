@@ -29,7 +29,9 @@ const MountainNote = ({id, name}: Props) => {
 
   const mountainNote = data && data.user && data.user.mountainNote ? data.user.mountainNote : null;
   const defaultNoteText = mountainNote && mountainNote.text ? mountainNote.text : '';
-  const notesPlaceholderText = getString('user-notes-placeholder', {name});
+  const notesPlaceholderText = userId
+    ? getString('user-notes-placeholder', {name})
+    : getString('user-notes-placeholder-not-logged-in', {name});
 
   const saveNote = (text: string) => {
     if (userId) {

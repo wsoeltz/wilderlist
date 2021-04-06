@@ -29,7 +29,9 @@ const TrailNote = ({id, name}: Props) => {
 
   const trailNote = data && data.user && data.user.trailNote ? data.user.trailNote : null;
   const defaultNoteText = trailNote && trailNote.text ? trailNote.text : '';
-  const notesPlaceholderText = getString('user-notes-placeholder', {name});
+  const notesPlaceholderText = userId
+    ? getString('user-notes-placeholder', {name})
+    : getString('user-notes-placeholder-not-logged-in', {name});
 
   const saveNote = (text: string) => {
     if (userId) {

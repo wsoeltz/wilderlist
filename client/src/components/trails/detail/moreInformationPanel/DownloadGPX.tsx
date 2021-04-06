@@ -1,5 +1,6 @@
 import upperFirst from 'lodash/upperFirst';
-import React from 'react';
+import React, {useState} from 'react';
+import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
 import {useBasicTrailDetail} from '../../../../queries/trails/useBasicTrailDetail';
 import {trailDetailLink} from '../../../../routing/Utils';
@@ -12,6 +13,7 @@ import {
 import {ButtonPrimary} from '../../../../styling/styleUtils';
 import {downloadGPXString} from '../../../../utilities/trailUtils';
 import LoadingSimple from '../../../sharedComponents/LoadingSimple';
+import SignUpModal from '../../../sharedComponents/SignUpModal';
 
 interface Props {
   id: string;
@@ -20,6 +22,8 @@ interface Props {
 const TrailDetails = (props: Props) => {
   const {id} = props;
   const getString = useFluent();
+  const user = useCurrentUser();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const {loading, error, data} = useBasicTrailDetail(id);
 
   if (loading) {
@@ -51,12 +55,23 @@ const TrailDetails = (props: Props) => {
     }));
 
     const onClick = () => {
-      downloadGPXString({
-        line,
-        name,
-        url: 'https://wilderlist.app' + trailDetailLink(id),
-      });
+      if (user) {
+        downloadGPXString({
+          line,
+          name,
+          url: 'https://wilderlist.app' + trailDetailLink(id),
+        });
+      }  else {
+        setModalOpen(true);
+      }
     };
+
+    const signUp = modalOpen ? (
+      <SignUpModal
+        text={getString('global-text-value-modal-sign-up-today-download-gpx')}
+        onCancel={() => setModalOpen(false)}
+      />
+    ) : null;
 
     return (
       <CollapsedScrollContainer hideScrollbars={false} $noScroll={true}>
@@ -67,6 +82,7 @@ const TrailDetails = (props: Props) => {
             </ButtonPrimary>
           </p>
         </EmptyBlock>
+        {signUp}
       </CollapsedScrollContainer>
     );
   } else {

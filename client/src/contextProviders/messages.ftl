@@ -175,6 +175,7 @@ global-text-value-modal-sign-up-today = Start tracking progress on { $list-short
 global-text-value-modal-sign-up-today-save = Save { $list-short-name } for later with a free account
 global-text-value-modal-sign-up-today-import = Import your data and start tracking your progress in just a few clicks
 global-text-value-modal-sign-up-today-export = Export your data with a free account
+global-text-value-modal-sign-up-today-download-gpx = Download GPX tracks with a free account
 global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
 global-text-value-modal-sign-up-log-trips = Start logging trips with a free account
 

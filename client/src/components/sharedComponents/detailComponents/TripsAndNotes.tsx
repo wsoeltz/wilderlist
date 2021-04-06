@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/macro';
+import useCurrentUser from '../../../hooks/useCurrentUser';
 import LoggedTrips, {
   Props as LoggedTripsProps,
 } from './loggedTrips';
@@ -20,17 +21,24 @@ export type Props = LoggedTripsProps;
 
 const TripsAndNotes = (props: Props) => {
   const {id, name, item} = props;
+  const user = useCurrentUser();
+
+  const tripLogs = user ? (
+    <LoggedTrips
+      id={id}
+      name={name}
+      item={item}
+    />
+  ) : null;
+
   return (
-    <Root>
-      <LoggedTrips
-        id={id}
-        name={name}
-        item={item}
-      />
+    <Root style={user ? undefined : {gridTemplateColumns: 'auto'}}>
+      {tripLogs}
       <UsersNotes
         id={id}
         name={name}
         type={item}
+        isAlone={user ? undefined : true}
       />
     </Root>
   );

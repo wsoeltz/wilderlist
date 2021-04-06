@@ -1,11 +1,13 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/macro';
 import useCurrentUser from '../../../../hooks/useCurrentUser';
 import useFluent from '../../../../hooks/useFluent';
 import {addTripReportLink} from '../../../../routing/Utils';
 import {mobileSize} from '../../../../Utils';
+import SignUpModal from '../../../sharedComponents/SignUpModal';
 import {
+  FloatingButton,
   FloatingLinkButton,
   IconContainer,
   TextContainer as TextContainerBase,
@@ -23,6 +25,7 @@ const TextContainer = styled(TextContainerBase)`
 const AddAscentButton = () => {
   const user = useCurrentUser();
   const getString = useFluent();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   if (user) {
     return (
@@ -38,7 +41,25 @@ const AddAscentButton = () => {
       </>
     );
   } else {
-    return null;
+    const signUp = modalOpen ? (
+      <SignUpModal
+        text={getString('global-text-value-modal-sign-up-log-trips')}
+        onCancel={() => setModalOpen(false)}
+      />
+    ) : null;
+    return (
+      <>
+        <FloatingButton onClick={() => setModalOpen(true)}>
+          <IconContainer>
+            <FontAwesomeIcon icon='calendar-alt' />
+          </IconContainer>
+          <TextContainer
+            dangerouslySetInnerHTML={{__html: getString('global-add-trip-report')}}
+          />
+        </FloatingButton>
+        {signUp}
+      </>
+    );
   }
 
 };

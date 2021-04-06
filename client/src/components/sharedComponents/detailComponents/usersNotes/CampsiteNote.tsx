@@ -29,7 +29,9 @@ const CampsiteNote = ({id, name}: Props) => {
 
   const campsiteNote = data && data.user && data.user.campsiteNote ? data.user.campsiteNote : null;
   const defaultNoteText = campsiteNote && campsiteNote.text ? campsiteNote.text : '';
-  const notesPlaceholderText = getString('user-notes-placeholder', {name});
+  const notesPlaceholderText = userId
+    ? getString('user-notes-placeholder', {name})
+    : getString('user-notes-placeholder-not-logged-in', {name});
 
   const saveNote = (text: string) => {
     if (userId) {

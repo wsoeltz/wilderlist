@@ -454,7 +454,9 @@ const Header = () => {
   } else {
     notifications = null;
     userLinks = null;
-    addAscentButton = null;
+    addAscentButton = windowWidth > mobileSize ? (
+      <AddAscentButton />
+    ) : null;
   }
 
   if (windowWidth > mobileSize) {
