@@ -55,7 +55,6 @@ const Container = styled.div<{dimensions: Dimensions}>`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-
   }
 `;
 
@@ -78,7 +77,6 @@ const Content = styled.div`
   @media(max-width: ${mobileWidth}px) {
     overflow: visible;
     flex-grow: 1;
-    padding-bottom: 15vh;
   }
 `;
 
@@ -91,12 +89,7 @@ const Actions = styled.div`
   border-top: solid 1px ${lightBorderColor};
 
   @media(max-width: ${mobileWidth}px) {
-    z-index: 100;
     padding: 0;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
   }
 `;
 

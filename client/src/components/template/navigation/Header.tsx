@@ -243,6 +243,13 @@ const Copyright = styled.div`
   a {
     color: ${lightBaseColor};
   }
+
+  @media (max-width: 400px) {
+    font-size: 0.62rem;
+  }
+  @media (max-width: 310px) {
+    font-size: 0.5rem;
+  }
 `;
 
 const CustomIconInTextBase = styled(IconContainerBase)`
@@ -494,7 +501,7 @@ const Header = () => {
   } else {
     const utiltyButtons = pathname === Routes.Landing ? (
       <SideContent>
-        <LogoImg src={MapBoxLogoSVG} />
+        <LogoImg src={MapBoxLogoSVG} alt={'Mapbox'} title={'Mapbox'} />
         <Toggle3dModeButton />
         <LayersAndTools mapStyle={mapStyle} setMapStyle={setMapStyle} />
       </SideContent>
@@ -558,20 +565,6 @@ const Header = () => {
               {getString('global-text-value-wilderlist-name')}
             </Link>
             {' | '}
-            {' © '}
-            <a href='https://www.mapbox.com/about/maps/' target='_blank' rel='noreferrer'>
-              MapBox
-            </a>
-            {' | '}
-            {' © '}
-            <a href='http://www.openstreetmap.org/copyright' target='_blank' rel='noreferrer'>
-              OSM
-            </a>
-            {' | '}
-            <a href='https://www.mapbox.com/map-feedback/' target='_blank' rel='noreferrer'>
-              Improve this map
-            </a>
-            {' | '}
             <Link to={Routes.TermsOfUse}>
               {getString('header-text-menu-terms-of-use')}
             </Link>
@@ -579,6 +572,20 @@ const Header = () => {
             <Link to={Routes.PrivacyPolicy}>
               {getString('header-text-menu-privacy-policy')}
             </Link>
+            {' | '}
+            {' © '}
+            <a href='https://www.mapbox.com/about/maps/' target='_blank' rel='noopener noreferrer'>
+              MapBox
+            </a>
+            {' | '}
+            {' © '}
+            <a href='http://www.openstreetmap.org/copyright' target='_blank' rel='noopener noreferrer'>
+              OSM
+            </a>
+            {' | '}
+            <a href='https://www.mapbox.com/map-feedback/' target='_blank' rel='noopener noreferrer'>
+              Improve this map
+            </a>
           </Copyright>
         </BottomContent>
       </>

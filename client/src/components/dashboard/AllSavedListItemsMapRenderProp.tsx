@@ -1,6 +1,7 @@
 const {lineString, point, featureCollection} = require('@turf/helpers');
 const getBbox = require('@turf/bbox').default;
 import React, {useEffect} from 'react';
+import styled from 'styled-components/macro';
 import useMapContext from '../../hooks/useMapContext';
 import {useAllInProgressItems} from '../../queries/users/useAllInProgressItems';
 import useUsersProgress from '../../queries/users/useUsersProgress';
@@ -10,8 +11,15 @@ import {
   PeakListVariants,
   Trail,
 } from '../../types/graphQLTypes';
+import {mobileSize} from '../../Utils';
 import MapLegend from '../sharedComponents/detailComponents/header/MapLegend';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
+
+const LegendContainer = styled.div`
+  @media(max-width: ${mobileSize}px) {
+    display: none;
+  }
+`;
 
 interface Props {
   userId: string;
@@ -110,12 +118,14 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
             type={PeakListVariants.standard}
             bbox={bbox}
           />
-          <MapLegend
-            type={PeakListVariants.standard}
-            hasMountains={Boolean(mountains.length)}
-            hasTrails={Boolean(trails.length)}
-            hasCampsites={Boolean(campsites.length)}
-          />
+          <LegendContainer>
+            <MapLegend
+              type={PeakListVariants.standard}
+              hasMountains={Boolean(mountains.length)}
+              hasTrails={Boolean(trails.length)}
+              hasCampsites={Boolean(campsites.length)}
+            />
+          </LegendContainer>
         </>
       );
     }

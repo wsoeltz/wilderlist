@@ -127,7 +127,7 @@ const StandardSearch = (props: Props) => {
         autoComplete={'off'}
         style={{
           padding: noSearchIcon ? '0.4rem' : undefined,
-          paddingLeft: icon ? '3rem' : undefined,
+          paddingLeft: icon ? '3rem' : '0.5rem',
         }}
       />
       <ClearButton

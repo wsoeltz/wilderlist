@@ -57,7 +57,7 @@ export const ButtonWrapper = styled.div`
     height: 50px;
     align-items: stretch;
     z-index: 500;
-    padding: 1rem 2rem;
+    padding: 0.3rem 2rem;
     box-sizing: border-box;
   }
 `;

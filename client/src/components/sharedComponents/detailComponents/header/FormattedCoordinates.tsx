@@ -35,7 +35,7 @@ const FormattedCoordinates = ({coordinates, decimal, copyExact, noPadding}: Prop
     }
   }, [coordinates, copyExact, decimal, formatted]);
   const copyButton = coordinates ? (
-    <LinkButtonCompact onClick={onCopyClick}>
+    <LinkButtonCompact onClick={onCopyClick} aria-label='Copy'>
       <BasicIconAtEndOfText
         icon={faCopy}
       />

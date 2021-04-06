@@ -89,7 +89,10 @@ const SegmentBreakdown = (props: Props) => {
   }
 
   const max = Math.max(...segments.map(s => s.properties.routeLength));
-  const lengthScale = scaleLinear().domain([0.1, max]).range([0, 300]);
+  const lengthScale = scaleLinear().domain([
+    max < 0.1 ? 0 : 0.1,
+    max < 0.1 ? 0.1 : max,
+  ]).range([0, 300]);
   const segmentBlocks = segments.map((s, i) => (
     <SegmentBlock
       key={sourceRoute + sourceDatum.id + s.properties.id + i}

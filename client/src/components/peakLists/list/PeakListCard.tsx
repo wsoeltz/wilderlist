@@ -67,10 +67,16 @@ const FlexRow = styled.div`
   display: flex;
   font-size: 0.875rem;
   color: ${lightBaseColor};
+  align-items: center;
 `;
 
 const MidFlexRow = styled(FlexRow)`
   margin-bottom: 0.5rem;
+`;
+
+const ListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const ListItem = styled(FlexRow)`
@@ -80,6 +86,12 @@ const ListItem = styled(FlexRow)`
 const PullRight = styled(FlexRow)`
   margin-left: auto;
   align-items: center;
+
+  @media (max-width: 400px) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
 `;
 
 interface Props {
@@ -234,9 +246,11 @@ const PeakListCard = (props: Props) => {
             {title}
           </Header>
           <MidFlexRow>
-            {numMountainsCompleted}
-            {numTrailsCompleted}
-            {numCampsitesCompleted}
+            <ListContainer>
+              {numMountainsCompleted}
+              {numTrailsCompleted}
+              {numCampsitesCompleted}
+            </ListContainer>
             <PullRight>
               <SimpleTitle>
                 <BasicIconInTextCompact icon={faCalendarAlt} />

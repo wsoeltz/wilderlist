@@ -12,12 +12,12 @@ import {
   ContentHeader,
 } from '../../styling/Grid';
 import Landing from '../landing';
+import SummitViewPage from '../mountains/detail/summitView';
 import LoadingSuspense from '../sharedComponents/LoadingSuspense';
 import Header from './contentHeader';
 
 const CampsiteDetailPage = React.lazy(() => import('../campsites/detail'));
 const MountainDetailPage = React.lazy(() => import('../mountains/detail'));
-const SummitViewPage = React.lazy(() => import('../mountains/detail/summitView'));
 const PeakListDetailPage = React.lazy(() => import('../peakLists/detail'));
 const AutoRoutePage = React.lazy(() => import('../routes/auto'));
 const TrailDetailPage = React.lazy(() => import('../trails/detail'));

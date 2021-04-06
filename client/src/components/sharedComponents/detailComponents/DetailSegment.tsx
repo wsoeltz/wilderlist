@@ -31,9 +31,15 @@ const NavButton = styled.button`
   display: flex;
   align-items: center;
   border-bottom: solid 1px ${lightBorderColor};
+  text-align: center;
 
   &:not(:last-of-type) {
     border-right: solid 1px ${lightBorderColor};
+  }
+
+  @media(max-width: 450px) {
+    flex-direction: column;
+    justify-content: space-between;
   }
 `;
 

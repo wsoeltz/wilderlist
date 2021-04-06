@@ -6,4 +6,8 @@ export const BasicRoot = styled.div`
 
 export const BasicRootRight = styled(BasicRoot)`
   padding-left: 0;
+
+  @media (max-width: 500px) {
+    padding-left: 1rem;
+  }
 `;

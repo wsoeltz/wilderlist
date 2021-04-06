@@ -60,18 +60,20 @@ const ClearButton = styled(GhostButton)`
   }
 
   @media(max-width: 450px) {
-    top: 0.5rem;
+    right: 0.5rem;
+    top: 0.3rem;
   }
 `;
 
 const LoadingContainer = styled.div`
   position: absolute;
   z-index: 650;
-  top: 0.2rem;
-  right: 0;
+  top: 0.3rem;
+  right: -0.2rem;
 
   @media(max-width: 450px) {
-    top: 0.9rem;
+    top: 0.2rem;
+    right: 0;
   }
 `;
 

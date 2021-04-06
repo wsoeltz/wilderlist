@@ -482,7 +482,7 @@ global-type-official-classification-description = {
   [picnic_site] A place with picnic tables.
   [park] A place with greenspace for people to hang out or walk around in.
   [trailhead] The start of a trail.
-  [parking_space] A spot for a one or a very small number of cars.
+  [parking_space] A spot for one or a very small number of cars.
   [parking] An area for a number of cars to be parked.
   [intersection] A point at which a trail and a road cross each other.
   *[other] A point on the map.

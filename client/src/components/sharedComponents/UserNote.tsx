@@ -19,8 +19,8 @@ import {
 } from '../../styling/sharedContentStyles';
 import {
   ButtonWarningLow,
+  HelpUnderline,
   lightBorderColor,
-  lightFontWeight,
   lowWarningColor,
   placeholderColor,
 } from '../../styling/styleUtils';
@@ -54,7 +54,6 @@ const Textarea = styled.textarea`
   padding: 0.5rem;
   box-sizing: border-box;
   font-size: 1rem;
-  font-weight: ${lightFontWeight};
   width: 100%;
   min-height: ${defaultHeight}rem;
   line-height: 1.5;
@@ -64,7 +63,6 @@ const Textarea = styled.textarea`
   resize: vertical;
   flex-grow: 1;
   padding-bottom: 4rem;
-  font-family: monospace;
   color: #555;
   background-color: #fdfdfd;
 
@@ -227,7 +225,9 @@ const UserNote = (props: Props) => {
             <Tooltip
               explanation={getString('user-notes-tooltip')}
             >
-            <FontAwesomeIcon icon={faLock} /> {getString('global-text-value-private')}
+              <HelpUnderline>
+                <FontAwesomeIcon icon={faLock} /> {getString('global-text-value-private')}
+              </HelpUnderline>
             </Tooltip>
           </small>
         </div>

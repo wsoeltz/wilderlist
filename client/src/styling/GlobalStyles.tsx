@@ -86,12 +86,12 @@ const GlobalStyles = createGlobalStyle`
 
   @media (max-width: 900px), (max-height: 700px) {
     html {
-      font-size: 14px;
+      font-size: 15px;
     }
   }
   @media (max-width: 450px), (max-height: 600px) {
     html {
-      font-size: 12px;
+      font-size: 14px;
     }
   }
 

@@ -54,8 +54,8 @@ const SearchIcon = styled(FontAwesomeIcon)`
   pointer-events: none;
 
   @media(max-width: ${mobileSize}px) {
-    top: 1.1rem;
-    right: 0.65rem;
+    top: 0.85rem;
+    right: 0.3rem;
   }
 `;
 
@@ -70,11 +70,11 @@ const ClearButton = styled(GhostButton)`
 
   @media(max-width: ${mobileSize}px) {
     font-size: 1.6rem;
-    top: 0.6rem;
+    top: 0.4rem;
   }
 
   @media(max-width: 450px) {
-    top: 0.9rem;
+    top: 0.6rem;
   }
 `;
 
@@ -85,11 +85,13 @@ const LoadingContainer = styled.div`
   right: 0;
 
   @media(max-width: ${mobileSize}px) {
-    top: 0.6rem;
+    top: 0.4rem;
+    background-color: #fff;
   }
 
   @media(max-width: 450px) {
-    top: 0.9rem;
+    top: 0.6rem;
+    right: 0;
   }
 `;
 

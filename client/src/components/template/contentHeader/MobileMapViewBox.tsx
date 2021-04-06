@@ -49,7 +49,7 @@ const MobileMapViewBox = () => {
        ref={mobileMidViewboxRef}
        style={{height: `calc(80vh - ${mobileTopPadding * 2.1}px)`}}
      >
-       <LogoImg src={MapBoxLogoSVG} />
+       <LogoImg src={MapBoxLogoSVG} alt={'Mapbox'} title={'Mapbox'} />
      </ViewBox>
      <MobileTab />
    </>

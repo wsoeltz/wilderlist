@@ -79,7 +79,7 @@ const BackButton = ({clearSearch, mobileButton}: Props) => {
   const Root = mobileButton ? MobileButton : Button;
 
   return (
-    <Root onClick={onClick}>
+    <Root onClick={onClick} aria-label='Back'>
       <FontAwesomeIcon icon={faArrowLeft} />
     </Root>
   );

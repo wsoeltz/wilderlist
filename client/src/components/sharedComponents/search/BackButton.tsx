@@ -62,7 +62,7 @@ const BackButton = ({clearSearch}: {clearSearch: () => void}) => {
   }
 
   return (
-    <Button onClick={onClick}>
+    <Button onClick={onClick} aria-label='Back'>
       <FontAwesomeIcon icon={faArrowLeft} />
     </Button>
   );
