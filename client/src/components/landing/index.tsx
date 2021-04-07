@@ -50,6 +50,7 @@ const CloseButton = styled(GhostButton)`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: 1.5rem;
 `;
 
 const Header = styled.h1`
@@ -77,7 +78,7 @@ const Logo = styled.img`
 
 const ContentParagraph = styled.p`
   font-size: 0.9rem;
-  margin-bottom: 1.5rem;
+  margin: 0.75rem 0;
 `;
 
 const popupVersion = '0.3';
@@ -104,8 +105,9 @@ const Landing = () => {
           {getString('landing-popup-welcome')} <TitleText>Wilderlist</TitleText>
           <Logo src={LogoPng} alt='Wilderlist' title='Wilderlist' />
         </Header>
-        {/* eslint-disable-next-line */}
-        <ContentParagraph>{'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}</ContentParagraph>
+        <ContentParagraph>
+          {getString('landing-popup-desc')}
+        </ContentParagraph>
         <ButtonContainer>
           <AboutButton to={Routes.About}>
             {getString('landing-popup-learn-more')}

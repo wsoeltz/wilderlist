@@ -661,6 +661,7 @@ login-page-sign-up-for-free = Sign Up For Free
 
 landing-popup-welcome = Welcome to
 landing-popup-learn-more = Learn more about Wilderlist
+landing-popup-desc = Plan your trips and track your adventures with the ultimate tool for ardent hikers and peak-baggers. Explore our comprehensive database of mountains, trails and campsites complete with live weather forecasts, snow reports, driving directions, summit routes and much more. Log your trips and view your progress across a number of popular hiking lists or create your own.
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
 
