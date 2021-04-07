@@ -55,7 +55,6 @@ const ContentRoutes = () => {
           <TrackedRoute exact path={Routes.UserProfile} component={UserProfile} />
           <TrackedRoute exact path={Routes.UserSettings} component={UserSettings} />
           <TrackedRoute exact path={Routes.OtherUserPeakList} component={ComparePeakListPage} />
-          <TrackedRoute exact path={Routes.ComparePeakListIsolated} component={ComparePeakListPage} />
           <TrackedRoute exact path={Routes.AddTripReport} component={AddTripReport} />
           <TrackedRoute exact path={Routes.EditTripReport} component={AddTripReport} />
           <TrackedRoute exact path={Routes.CreateMountain} component={CreateMountain} />

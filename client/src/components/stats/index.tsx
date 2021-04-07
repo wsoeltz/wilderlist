@@ -7,6 +7,7 @@ import {
   HighlightedIconInText,
 } from '../../styling/styleUtils';
 import MapLegend from '../sharedComponents/detailComponents/header/MapLegend';
+import PleaseLogin from '../sharedComponents/PleaseLogin';
 import Stats from './Stats';
 
 const YourStats = () => {
@@ -33,6 +34,8 @@ const YourStats = () => {
         />
       </>
     );
+  } if (!user && user !== null) {
+    return <PleaseLogin />;
   } else {
     return null;
   }

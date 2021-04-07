@@ -12,6 +12,7 @@ import {useBasicTrailDetail} from '../../../../queries/trails/useBasicTrailDetai
 import {trailDetailLink} from '../../../../routing/Utils';
 import { ButtonSecondary, PlaceholderText } from '../../../../styling/styleUtils';
 import { PermissionTypes } from '../../../../types/graphQLTypes';
+import PageNotFound from '../../../sharedComponents/404';
 import LoadingSpinner from '../../../sharedComponents/LoadingSpinner';
 import Modal from '../../../sharedComponents/Modal';
 import TrailForm from './TrailForm';
@@ -57,7 +58,7 @@ const TrailCreatePage = () => {
 
   let trailForm: React.ReactElement<any> | null;
   if (!user) {
-    trailForm = null;
+    trailForm = <PageNotFound />;
   } else if (user.permissions !== PermissionTypes.admin) {
     trailForm = (
       <PlaceholderText>

@@ -4,7 +4,7 @@
 export enum Routes {
   Landing = '/',
 
-  Dashboard = '/dashboard',
+  Dashboard = '/saved',
 
   ListDetail = '/list/:id',
   SearchLists = '/list/search',
@@ -43,7 +43,6 @@ export enum Routes {
   SearchUsers = '/user/search',
   UserProfile = '/user/:id',
   OtherUserPeakList = '/user/:id/list/:peakListId',
-  ComparePeakListIsolated = '/compare/user/:id/list/:peakListId',
 
   UserSettings = '/user-settings',
 

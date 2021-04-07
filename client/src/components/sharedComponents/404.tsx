@@ -1,10 +1,15 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Image404Url from '../../assets/images/404.gif';
 import useFluent from '../../hooks/useFluent';
-import { listDetailLink, mountainDetailLink } from '../../routing/Utils';
+import {
+  campsiteDetailLink,
+  listDetailLink,
+  mountainDetailLink,
+  trailDetailLink,
+} from '../../routing/Utils';
 import {ContentContainer} from '../../styling/Grid';
-import { ButtonPrimaryLink } from '../../styling/styleUtils';
 
 const Root = styled(ContentContainer)`
   display: flex;
@@ -13,10 +18,12 @@ const Root = styled(ContentContainer)`
   align-items: center;
   text-align: center;
   padding: 1rem;
+  pointer-events: all;
 `;
 
-const Button = styled(ButtonPrimaryLink)`
-  margin: 0 1rem;
+const Button = styled(Link)`
+  margin: 0.5rem;
+  font-size: 0.875rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -28,6 +35,7 @@ const Image = styled.img`
   opacity: 0.75;
   max-width: 100%;
   width: 500px;
+  margin-bottom: 1rem;
 `;
 
 const PageNotFound = () => {
@@ -48,6 +56,12 @@ const PageNotFound = () => {
         </Button>
         <Button to={mountainDetailLink('search')}>
           {getString('global-text-value-search-mountains')}
+        </Button>
+        <Button to={trailDetailLink('search')}>
+          {getString('global-text-value-search-trails')}
+        </Button>
+        <Button to={campsiteDetailLink('search')}>
+          {getString('global-text-value-search-campsites')}
         </Button>
       </ButtonContainer>
       <p>

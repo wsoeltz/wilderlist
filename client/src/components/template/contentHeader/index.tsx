@@ -24,7 +24,7 @@ const Header = () => {
   const windowWidth = useWindowWidth();
 
   let normalizedPathname: string;
-  if (pathname.includes('dashboard')) {
+  if (pathname.includes('saved')) {
     normalizedPathname = Routes.Dashboard;
   } else if  (pathname.includes('your-stats')) {
     normalizedPathname = Routes.YourStats;

@@ -16,6 +16,7 @@ import {
 } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
+import PleaseLogin from '../../sharedComponents/PleaseLogin';
 import PeakListForm, {FormSource} from './PeakListForm';
 
 const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
@@ -45,8 +46,8 @@ const PeakListCreatePage = () => {
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
   let peakListForm: React.ReactElement<any> | null;
-  if (!user) {
-    return null;
+  if (!user && user !== null) {
+    return <PleaseLogin />;
   } else if (user && user.peakListPermissions === -1 && user.permissions !== PermissionTypes.admin) {
     peakListForm = (
       <PlaceholderText>

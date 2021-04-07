@@ -1,6 +1,8 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
+import PageNotFound from '../../sharedComponents/404';
+import PleaseLogin from '../../sharedComponents/PleaseLogin';
 import PeakListComparison from './PeakListComparison';
 
 const ComparePeakListPage = () => {
@@ -8,8 +10,10 @@ const ComparePeakListPage = () => {
   const userId = user ? user._id : null;
   const { id: profileId, peakListId }: any = useParams();
 
-  if (!peakListId) {
-    return null;
+  if (!user && user !== null) {
+    return <PleaseLogin />;
+  } else if (!peakListId) {
+    return <PageNotFound />;
   } else if (userId !== null) {
     return (
       <PeakListComparison

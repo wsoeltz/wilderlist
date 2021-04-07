@@ -16,6 +16,7 @@ import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
 import { PermissionTypes } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
+import PleaseLogin from '../../sharedComponents/PleaseLogin';
 import MountainForm, {InitialMountainDatum} from './MountainForm';
 
 interface QueryVariables {
@@ -60,7 +61,7 @@ const MountainCreatePage = () => {
 
   let mountainForm: React.ReactElement<any> | null;
   if (!user) {
-    mountainForm = null;
+    mountainForm = <PleaseLogin />;
   } else if (user.mountainPermissions === -1) {
     mountainForm = (
       <PlaceholderText>

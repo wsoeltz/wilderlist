@@ -606,10 +606,10 @@ global-text-information = Information
 global-text-amenities = Amenities
 
 
-header-text-login-with-google = Login With Google
-header-text-login-with-reddit = Login With Reddit
-header-text-login-with-facebook = Login With Facebook
-header-text-login-or-sign-up = Login or Sign up
+header-text-login-with-google = Log in with Google
+header-text-login-with-reddit = Log in with Reddit
+header-text-login-with-facebook = Log in with Facebook
+header-text-login-or-sign-up = Log in or Sign up
 
 header-text-menu-item-dashboard = Saved
 header-text-menu-item-lists = Hiking Lists
@@ -1418,3 +1418,6 @@ create-peak-list-selected-mountain-count = Selected mountains ({ $total } total)
 page-not-found-404-title = The page you are looking for seems to be off the trail.
 page-not-found-404-desc = Try searching what you are looking for at one of the following pages -
 page-not-found-404-contact = If you think this page should be here, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.
+
+please-login-title = You need to log in to access this page.
+please-login-contact = If you think this is in error, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.

@@ -76,6 +76,41 @@ const CloseButton = styled(GhostButton)`
   }
 `;
 
+export const StackedLoginButtons = () => {
+  const getString = useFluent();
+  return (
+    <>
+      <LoginButton href='/auth/google'>
+        <BrandIcon
+          icon={faGoogle as IconDefinition}
+          style={{color: googleBlue}}
+        />
+        <LoginText>
+          {getString('header-text-login-with-google')}
+        </LoginText>
+      </LoginButton>
+      <LoginButton href='/auth/facebook'>
+        <BrandIcon
+          icon={faFacebook as IconDefinition}
+          style={{color: facebookBlue}}
+        />
+        <LoginText>
+          {getString('header-text-login-with-facebook')}
+        </LoginText>
+      </LoginButton>
+      <LoginButton href='/auth/reddit'>
+        <BrandIcon
+          icon={faReddit as IconDefinition}
+          style={{color: redditRed}}
+        />
+        <LoginText>
+          {getString('header-text-login-with-reddit')}
+        </LoginText>
+      </LoginButton>
+    </>
+  );
+};
+
 interface Props {
   text: string;
   onCancel: () => void;
@@ -101,33 +136,7 @@ const SignUpModal = (props: Props) => {
     >
       <Root>
         <Title>{text}</Title>
-        <LoginButton href='/auth/google'>
-          <BrandIcon
-            icon={faGoogle as IconDefinition}
-            style={{color: googleBlue}}
-          />
-          <LoginText>
-            {getString('header-text-login-with-google')}
-          </LoginText>
-        </LoginButton>
-        <LoginButton href='/auth/facebook'>
-          <BrandIcon
-            icon={faFacebook as IconDefinition}
-            style={{color: facebookBlue}}
-          />
-          <LoginText>
-            {getString('header-text-login-with-facebook')}
-          </LoginText>
-        </LoginButton>
-        <LoginButton href='/auth/reddit'>
-          <BrandIcon
-            icon={faReddit as IconDefinition}
-            style={{color: redditRed}}
-          />
-          <LoginText>
-            {getString('header-text-login-with-reddit')}
-          </LoginText>
-        </LoginButton>
+        <StackedLoginButtons />
       </Root>
     </Modal>
   );
