@@ -592,6 +592,20 @@ global-text-value-list-tier-desc =
   <strong>Mountaineer</strong> lists may have any number of peaks <strong>and/or</strong> require a high fitness level and may require advanced mountaineering skills.
   </p>
 
+global-text-value-list-variant-desc =
+  <p>
+  <strong>Standard</strong> - tracks your progress towards logging a trip for every point on this list.
+  </p>
+  <p>
+  <strong>Winter</strong> - tracks your progress towards logging a trip in <strong><em>calendar winter</em></strong> for every point on this list.
+  </p>
+  <p>
+  <strong>4-Season</strong> - tracks your progress towards logging a trip in <strong><em>each season</em></strong> for every point on this list.
+  </p>
+  <p>
+  <strong>Grid</strong> - tracks your progress towards logging a trip in <strong><em>each month</em></strong> for every point on this list.
+  </p>
+
 
 global-add-trip-report = Log&nbsp;a Trip
 global-create-route = Plan a Route

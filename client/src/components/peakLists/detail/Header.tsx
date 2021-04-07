@@ -407,7 +407,9 @@ const Header = (props: Props) => {
           <ItemTitle>
             <BasicIconInText icon={faTasks} />
             <Tooltip
-              explanation={'about tracking types'}
+              explanation={
+                <div dangerouslySetInnerHTML={{__html: getString('global-text-value-list-variant-desc')}} />
+              }
             >
               <HelpUnderline>{getString('global-text-value-tracking-type')}</HelpUnderline>
             </Tooltip>
