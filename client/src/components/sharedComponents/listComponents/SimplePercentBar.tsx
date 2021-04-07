@@ -40,10 +40,10 @@ const SimplePercentBar = ({percent, text}: {percent: number, text?: string}) => 
   return (
     <Root>
       <Text>
-        <strong>{percent}%</strong> <CompleteText>{completeText}</CompleteText>
+        <strong>{isNaN(percent) ? 0 : percent}%</strong> <CompleteText>{completeText}</CompleteText>
       </Text>
       <BarBackground>
-        <BarFill style={{width: percent + '%'}} />
+        <BarFill style={{width: isNaN(percent) ? 0 : percent + '%'}} />
       </BarBackground>
     </Root>
   );

@@ -19,6 +19,7 @@ import {
   BasicIconInTextCompact,
   CompleteText,
   IconContainer,
+  IncompleteText,
   lightBaseColor,
   lightBorderColor,
   SemiBold,
@@ -233,6 +234,17 @@ const PeakListCard = (props: Props) => {
       </Link>
     );
 
+  const latestTripText = latestTrip ? (
+    <CompleteText>
+      <SemiBold>{latestTrip}</SemiBold>
+    </CompleteText>
+  ) : (
+
+    <IncompleteText>
+      <SemiBold>{getString('global-text-value-none-yet')}</SemiBold>
+    </IncompleteText>
+  );
+
   return (
       <Root
         onMouseLeave={onMouseLeave}
@@ -258,15 +270,13 @@ const PeakListCard = (props: Props) => {
                   {getString('global-text-value-last-trip')}:
                 </Subtext>
               </SimpleTitle>
-              <CompleteText>
-                <SemiBold>{latestTrip}</SemiBold>
-              </CompleteText>
+              {latestTripText}
             </PullRight>
           </MidFlexRow>
           <MidFlexRow>
             {locationText}
             <PullRight>
-              <strong>{percentageComplete}%</strong>
+              <strong>{isNaN(percentageComplete) ? 0 : percentageComplete}%</strong>
               <SimpleTitle>
                 &nbsp;
                 <Subtext>

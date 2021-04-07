@@ -298,6 +298,8 @@ const Header = (props: Props) => {
         }
       </SmallSemiBold>)
     : '';
+  const noPoints = !numMountains && !numCampsites && !numTrails
+    ? '0 points on list' : '';
 
   let areaText: string | null;
   if (stateOrRegionString === 'Across the US') {
@@ -420,6 +422,7 @@ const Header = (props: Props) => {
           {numMountainsText}
           {numTrailsText}
           {numCampsitesText}
+          {noPoints}
         </Column>
         <Column>
           <ItemTitle>

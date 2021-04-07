@@ -51,6 +51,13 @@ const AllItems = (props: Props) => {
     console.error(usersProgress.error);
     return null;
   } else if (items.data !== undefined && usersProgress.data !== undefined) {
+    if (
+      (!items.data.peakList.mountains || !items.data.peakList.mountains.length) &&
+      (!items.data.peakList.trails || !items.data.peakList.trails.length) &&
+      (!items.data.peakList.campsites || !items.data.peakList.campsites.length)
+    ) {
+      return null;
+    }
     const panels: Panel[] = [];
     const type = items.data.peakList.type;
     const {progress} = usersProgress.data;

@@ -164,6 +164,7 @@ global-error-retrieving-data = There was an error retrieving the data. Please tr
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
 global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at help@wilderlist.app
 global-text-value-none-avail = None Available
+global-text-value-none-yet = None Yet
 global-text-value-no-data = No Data
 
 global-text-value-modal-reddit = Reddit
@@ -248,6 +249,7 @@ global-text-value-neither-hiked = Neither have Hiked
 global-text-value-one-hiked = One has Hiked
 global-text-value-both-hiked = Both have Hiked
 
+global-text-value-not-done-dynamic = 
 global-text-value-not-done-dynamic = {
   $type ->
     [mountains] Not yet hiked
