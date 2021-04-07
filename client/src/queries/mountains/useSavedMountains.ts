@@ -59,16 +59,18 @@ interface MutationVariables {
   mountainId: string;
 }
 
+export interface MountainDatum {
+  id: Mountain['id'];
+  name: Mountain['name'];
+  elevation: Mountain['elevation'];
+  location: Mountain['location'];
+  locationTextShort: Mountain['locationTextShort'];
+}
+
 interface SuccessResponse {
   user: null | {
     id: User['id'];
-    savedMountains: Array<{
-      id: Mountain['id'];
-      name: Mountain['name'];
-      elevation: Mountain['elevation'];
-      location: Mountain['location'];
-      locationTextShort: Mountain['locationTextShort'];
-    }>;
+    savedMountains: Array<null | MountainDatum>;
   };
 }
 

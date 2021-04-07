@@ -68,19 +68,21 @@ interface MutationVariables {
   trailId: string;
 }
 
+export interface TrailDatum {
+  id: Trail['id'];
+  name: Trail['name'];
+  type: Trail['type'];
+  trailLength: Trail['trailLength'];
+  avgSlope: Trail['avgSlope'];
+  line: Trail['line'];
+  center: Trail['center'];
+  locationTextShort: Trail['locationTextShort'];
+}
+
 interface SuccessResponse {
   user: null | {
     id: User['id'];
-    savedTrails: Array<{
-      id: Trail['id'];
-      name: Trail['name'];
-      type: Trail['type'];
-      trailLength: Trail['trailLength'];
-      avgSlope: Trail['avgSlope'];
-      line: Trail['line'];
-      center: Trail['center'];
-      locationTextShort: Trail['locationTextShort'];
-    }>;
+    savedTrails: Array<null | TrailDatum>;
   };
 }
 

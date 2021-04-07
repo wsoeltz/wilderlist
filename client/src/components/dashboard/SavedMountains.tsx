@@ -3,7 +3,7 @@ const getBbox = require('@turf/bbox').default;
 import React, {useEffect} from 'react';
 import useFluent from '../../hooks/useFluent';
 import useMapContext from '../../hooks/useMapContext';
-import {useSavedMountains} from '../../queries/mountains/useSavedMountains';
+import {MountainDatum, useSavedMountains} from '../../queries/mountains/useSavedMountains';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {mountainDetailLink} from '../../routing/Utils';
 import {
@@ -57,7 +57,7 @@ const SavedMountains = () => {
     );
   } else if (data && data.user && data.user.savedMountains && data.user.savedMountains.length) {
     const allPoints: any[] = [];
-    const mountains = data.user.savedMountains.filter(t => t).map(t => {
+    const mountains = data.user.savedMountains.filter(t => t).map((t: MountainDatum) => {
       const name = t.name;
       const elevation = t.elevation ? t.elevation : 0;
       const elevationDisplay = elevation + 'ft';

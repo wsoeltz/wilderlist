@@ -59,16 +59,18 @@ interface MutationVariables {
   campsiteId: string;
 }
 
+export interface CampsiteDatum {
+  id: Campsite['id'];
+  name: Campsite['name'];
+  type: Campsite['type'];
+  location: Campsite['location'];
+  locationTextShort: Campsite['locationTextShort'];
+}
+
 interface SuccessResponse {
   user: null | {
     id: User['id'];
-    savedCampsites: Array<{
-      id: Campsite['id'];
-      name: Campsite['name'];
-      type: Campsite['type'];
-      location: Campsite['location'];
-      locationTextShort: Campsite['locationTextShort'];
-    }>;
+    savedCampsites: Array<null | CampsiteDatum>;
   };
 }
 

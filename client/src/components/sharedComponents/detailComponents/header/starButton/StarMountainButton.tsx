@@ -19,12 +19,12 @@ const StarMountainButton = ({name, id, compact}: Props) => {
   const {response: {loading, data}, saveMountainToUser, removeSavedMountainFromUser} = useSavedMountains();
 
   const [isActive, setIsActive] = useState<boolean>(
-    data && data.user ? Boolean(data.user.savedMountains.find(n => n.id === id)) : false,
+    data && data.user ? Boolean(data.user.savedMountains.find(n => n && n.id === id)) : false,
   );
 
   useEffect(() => {
     if (data && data.user) {
-      setIsActive(Boolean(data.user.savedMountains.find(n => n.id === id)));
+      setIsActive(Boolean(data.user.savedMountains.find(n => n && n.id === id)));
     }
   }, [data, id]);
 

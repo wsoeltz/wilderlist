@@ -4,7 +4,7 @@ import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
 import useFluent from '../../hooks/useFluent';
 import useMapContext from '../../hooks/useMapContext';
-import {useSavedCampsites} from '../../queries/campsites/useSavedCampsites';
+import {CampsiteDatum, useSavedCampsites} from '../../queries/campsites/useSavedCampsites';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {campsiteDetailLink} from '../../routing/Utils';
 import {
@@ -58,7 +58,7 @@ const SavedCampsites = () => {
     );
   } else if (data && data.user && data.user.savedCampsites && data.user.savedCampsites.length) {
     const allPoints: any[] = [];
-    const campsites = data.user.savedCampsites.filter(t => t).map(t => {
+    const campsites = data.user.savedCampsites.filter(t => t).map((t: CampsiteDatum) => {
 
       const formattedType = upperFirst(getString('global-formatted-campsite-type', {type: t.type}));
       const name = t.name ? t.name : formattedType;

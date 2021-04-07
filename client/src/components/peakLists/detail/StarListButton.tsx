@@ -25,7 +25,7 @@ const StarListButton = ({peakListId, peakListName, compact}: Props) => {
 
   useEffect(() => {
     if (data && data.user) {
-      setIsActive(Boolean(data.user.peakLists.find(n => n.id === peakListId)));
+      setIsActive(Boolean(data.user.peakLists.find(n => n && n.id === peakListId)));
     }
   }, [data, peakListId]);
 

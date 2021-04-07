@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
 import useMapContext from '../../hooks/useMapContext';
-import {useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
+import {CardPeakListDatum, useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
 import { listDetailLink } from '../../routing/Utils';
 import {
   BasicContentContainer,
@@ -91,7 +91,7 @@ const SavedLists = ({userId}: Props) => {
       peakListsList = (
         <>
           <ListPeakLists
-            peakListData={peakLists}
+            peakListData={peakLists.filter(p => p) as CardPeakListDatum[]}
             profileId={undefined}
             noResultsText={''}
           />

@@ -60,7 +60,7 @@ interface Variables {
 interface PeakListsSuccessResponse {
   user: {
     id: User['id'];
-    peakLists: CardPeakListDatum[];
+    peakLists: Array<CardPeakListDatum | null>;
   };
 }
 

@@ -19,12 +19,12 @@ const StarCampsiteButton = ({name, id, compact}: Props) => {
   const {response: {loading, data}, saveCampsiteToUser, removeSavedCampsiteFromUser} = useSavedCampsites();
 
   const [isActive, setIsActive] = useState<boolean>(
-    data && data.user ? Boolean(data.user.savedCampsites.find(n => n.id === id)) : false,
+    data && data.user ? Boolean(data.user.savedCampsites.find(n => n && n.id === id)) : false,
   );
 
   useEffect(() => {
     if (data && data.user) {
-      setIsActive(Boolean(data.user.savedCampsites.find(n => n.id === id)));
+      setIsActive(Boolean(data.user.savedCampsites.find(n => n && n.id === id)));
     }
   }, [data, id]);
 

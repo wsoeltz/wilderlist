@@ -4,7 +4,7 @@ import upperFirst from 'lodash/upperFirst';
 import React, {useEffect} from 'react';
 import useFluent from '../../hooks/useFluent';
 import useMapContext from '../../hooks/useMapContext';
-import {useSavedTrails} from '../../queries/trails/useSavedTrails';
+import {TrailDatum, useSavedTrails} from '../../queries/trails/useSavedTrails';
 import useUsersProgress from '../../queries/users/useUsersProgress';
 import {trailDetailLink} from '../../routing/Utils';
 import {
@@ -64,7 +64,7 @@ const SavedTrails = () => {
       line: Trail['line'];
       hikedCount: number;
     }> = [];
-    const trails = data.user.savedTrails.filter(t => t).map(t => {
+    const trails = data.user.savedTrails.filter(t => t).map((t: TrailDatum) => {
       const formattedType = upperFirst(getString('global-formatted-trail-type', {
         type: t.type ? t.type : 'parent_trail',
       }));
