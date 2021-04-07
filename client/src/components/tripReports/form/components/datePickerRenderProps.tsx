@@ -9,7 +9,7 @@ import {
 } from '../Utils';
 
 const CalendarHeaderRoot = styled.div`
-  margin: 10px;
+  padding: 10px 0;
   display: flex;
   justify-content: center;
 `;
