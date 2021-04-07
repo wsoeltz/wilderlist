@@ -1,13 +1,14 @@
 /* eslint-disable max-len */
 /* tslint:disable:max-line-length */
-import { faCode, faDatabase } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components/macro';
 import AboutImg from '../../assets/logo/about-profile.jpg';
 import useFluent from '../../hooks/useFluent';
+import PrivacyPolicy from '../privacyPolicy';
 import DetailSegment, {Panel} from '../sharedComponents/detailComponents/DetailSegment';
 import MobileTab from '../template/contentHeader/MobileTab';
+import TermsOfUse from '../termsOfUse';
 import AboutData from './AboutData';
 import ReleaseHistory from './ReleaseHistory';
 
@@ -23,20 +24,28 @@ const Container = styled.div`
   max-width: 750px;
 `;
 
+const Content = styled.div`
+  padding: 1rem;
+`;
+
 const About = () => {
   const getString = useFluent();
   const panels: Panel[] = [
     {
       title: 'Release History',
       reactNode: <ReleaseHistory />,
-      customIcon: false,
-      icon: faCode,
     },
     {
-      title: 'About the Data',
+      title: 'Terms of Use',
+      reactNode: <Content><TermsOfUse /></Content>,
+    },
+    {
+      title: 'Privacy Policy',
+      reactNode: <Content><PrivacyPolicy /></Content>,
+    },
+    {
+      title: 'Data Disclaimers',
       reactNode: <AboutData />,
-      customIcon: false,
-      icon: faDatabase,
     },
   ];
   return (

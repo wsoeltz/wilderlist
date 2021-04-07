@@ -27,7 +27,7 @@ const PrivacyPolicy = () => {
       </Helmet>
       <h1>Terms of Use</h1>
       <div>
-        <p><small>Last updated March 06, 2020</small></p>
+        <p><small>Last updated April 07, 2021</small></p>
         <h4><strong>Agreement To Terms</strong></h4>
 
         <p>These Terms of Use constitute a legally binding agreement made between you, whether personally or on behalf of an entity (“you”) and Wilderlist ("Company", “we”, “us”, or “our”), concerning your access to and use of the https://www.wilderlist.app website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the “Site”). You agree that by accessing the Site, you have read, understood, and agreed to be bound by all of these Terms of Use. IF YOU DO NOT AGREE WITH ALL OF THESE TERMS OF USE, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SITE AND YOU MUST DISCONTINUE USE IMMEDIATELY.</p>
@@ -37,6 +37,9 @@ const PrivacyPolicy = () => {
         <p>The information provided on the Site is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject us to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Site from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to the extent local laws are applicable.</p>
 
         <p>The Site is intended for users who are at least 18 years old. Persons under the age of 18 are not permitted to use or register for the Site.</p>
+
+        <p><strong>{'Wilderlist makes no warranties, expressed or implied, concerning the accuracy, completeness or suitability of the information and data provided through the application, and such information and data should not be construed or used as a legal description. Activities associated with the application can at times involve risk of injury, death, property damage, and other dangers associated with such activities. You understand that Wilderlist cannot and does not assume responsibility for any such personal injury, death, or property damage resulting from your use of the application. Wilderlist is not responsible for the misuse or misrepresentation of the information and/or data provided through the application, and any reliance you place on such information and/or data is therefore strictly at your own risk.'}</strong>
+        </p>
 
         <h4><strong>Intellectual Property Rights</strong></h4>
 
