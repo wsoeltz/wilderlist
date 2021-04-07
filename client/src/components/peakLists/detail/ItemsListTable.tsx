@@ -20,7 +20,7 @@ const UtilityBar = styled.div`
 `;
 
 const GridNoteText = styled.div`
-  padding: 0 1rem 0.75rem;
+  padding: 0.25rem 1rem 1.25rem;
   font-size: 0.7rem;
 `;
 
@@ -127,7 +127,6 @@ const ItemsListTable = (props: Props) => {
 
   return (
     <>
-      {gridText}
       <UtilityBarRoot>
         <ExportButton
           items={items}
@@ -138,6 +137,7 @@ const ItemsListTable = (props: Props) => {
         {importButton}
         {optionalCheckbox}
       </UtilityBarRoot>
+      {gridText}
       <ItemTable
         showIndex={true}
         items={filteredItems}

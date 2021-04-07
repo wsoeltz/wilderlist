@@ -33,7 +33,7 @@ const DescriptionAndNotes = (props: Props) => {
   let resources: ExternalResource[];
   if (details.data && details.data.peakList && items.data && items.data.peakList) {
     const {peakList} = details.data;
-    const {mountains} = items.data.peakList;
+    const {mountains, trails} = items.data.peakList;
     name = peakList.name;
     resources = peakList.resources ? peakList.resources : [];
     const stateOrRegionString = peakList.locationText;
@@ -42,10 +42,17 @@ const DescriptionAndNotes = (props: Props) => {
     } else {
       const isStateOrRegion = isState(stateOrRegionString) === true ? 'state' : 'region';
       const mountainsSortedByElevation = sortBy(mountains, ['elevation']).reverse();
+      const totalTrailLength: number = trails
+        ? trails.reduce((val, t) => t && t.trailLength ? val + t.trailLength : val, 0)
+        : 0;
+
       description = (
         <IntroText
           listName={peakList.name}
           numberOfPeaks={peakList.numMountains}
+          numberOfTrails={peakList.numTrails}
+          numberOfCampsites={peakList.numCampsites}
+          totalTrailLength={totalTrailLength}
           isStateOrRegion={isStateOrRegion}
           stateRegionName={FORMAT_STATE_REGION_FOR_TEXT(stateOrRegionString)}
           highestMountain={mountainsSortedByElevation[0]}
