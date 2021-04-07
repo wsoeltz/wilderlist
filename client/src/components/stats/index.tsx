@@ -14,7 +14,9 @@ const YourStats = () => {
   const user = useCurrentUser();
   const getString = useFluent();
 
-  if (user) {
+  if (!user && user !== null) {
+    return <PleaseLogin />;
+  } else if (user) {
     return (
       <>
         <Helmet>
@@ -34,8 +36,6 @@ const YourStats = () => {
         />
       </>
     );
-  } if (!user && user !== null) {
-    return <PleaseLogin />;
   } else {
     return null;
   }

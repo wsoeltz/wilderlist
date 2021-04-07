@@ -5,10 +5,10 @@ import SettingsPanel from './SettingsPanel';
 
 const Settings = () => {
   const user = useCurrentUser();
-  if (user) {
-    return <SettingsPanel userId={user._id} />;
-  } if (!user && user !== null) {
+  if (!user && user !== null) {
     return <PleaseLogin />;
+  } else if (user) {
+    return <SettingsPanel userId={user._id} />;
   } else {
     return null;
   }

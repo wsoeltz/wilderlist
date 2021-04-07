@@ -181,6 +181,7 @@ const getDates = (input: Input): Output => {
               [input.field + 's']: [input.item.id],
               listtype: input.type,
             })}
+            type={input.type}
           />
         );
         dates.hikedSortValue = 0;
@@ -208,6 +209,7 @@ const getDates = (input: Input): Output => {
                   month: key as Months,
                   season: key as Seasons,
                 })}
+                type={input.type}
               />
             );
             dates[key + 'SortValue'] = 0;
@@ -227,6 +229,7 @@ const getDates = (input: Input): Output => {
             month: displayKey.replace('DisplayValue', '') as Months,
             season: displayKey.replace('DisplayValue', '') as Seasons,
           })}
+          type={input.type}
         />
       );
       dates[sortKey as string] = 0;

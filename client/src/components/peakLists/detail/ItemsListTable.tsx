@@ -19,6 +19,11 @@ const UtilityBar = styled.div`
   align-items: center;
 `;
 
+const GridNoteText = styled.div`
+  padding: 0 1rem 0.75rem;
+  font-size: 0.7rem;
+`;
+
 const SoloUtilityBar = styled(UtilityBar)`
   padding-top: 0;
 `;
@@ -113,9 +118,16 @@ const ItemsListTable = (props: Props) => {
   ) : null;
 
   const UtilityBarRoot = soloPanel ? SoloUtilityBar : UtilityBar;
+  const gridText = variant === PeakListVariants.grid
+    ? (
+      <GridNoteText
+        dangerouslySetInnerHTML={{__html: getString('mountain-table-grid-date-note-text') }}
+      />
+    ) : null;
 
   return (
     <>
+      {gridText}
       <UtilityBarRoot>
         <ExportButton
           items={items}
