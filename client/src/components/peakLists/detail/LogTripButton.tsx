@@ -18,6 +18,7 @@ const Root = styled(Link)`
   text-decoration: none;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const SignUpButton = styled(LinkButtonCompact)`
@@ -27,6 +28,7 @@ const SignUpButton = styled(LinkButtonCompact)`
   text-decoration: none;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const LinkText = styled.span`

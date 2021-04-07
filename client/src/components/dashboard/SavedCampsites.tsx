@@ -19,6 +19,7 @@ import getDates from '../peakLists/detail/getDates';
 import ItemTable from '../sharedComponents/detailComponents/itemTable/ItemTable';
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
+import {SavedItemsLegend} from './AllSavedListItemsMapRenderProp';
 
 const SavedCampsites = () => {
   const getString = useFluent();
@@ -111,6 +112,11 @@ const SavedCampsites = () => {
             id={'dashboard-saved-campsites' + campsites.length}
             campsites={campsites}
             bbox={bbox}
+          />
+          <SavedItemsLegend
+            hasMountains={false}
+            hasTrails={false}
+            hasCampsites={true}
           />
         </>
       );

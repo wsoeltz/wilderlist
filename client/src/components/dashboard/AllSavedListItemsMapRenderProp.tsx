@@ -21,6 +21,20 @@ const LegendContainer = styled.div`
   }
 `;
 
+export const SavedItemsLegend = (
+  {hasMountains, hasTrails, hasCampsites}:
+  {hasMountains: boolean, hasTrails: boolean, hasCampsites: boolean},
+  ) => (
+  <LegendContainer>
+    <MapLegend
+      type={PeakListVariants.standard}
+      hasMountains={hasMountains}
+      hasTrails={hasTrails}
+      hasCampsites={hasCampsites}
+    />
+  </LegendContainer>
+);
+
 interface Props {
   userId: string;
 }
@@ -118,14 +132,11 @@ const AllSavedListItemsMapRenderProp = ({userId}: Props) => {
             type={PeakListVariants.standard}
             bbox={bbox}
           />
-          <LegendContainer>
-            <MapLegend
-              type={PeakListVariants.standard}
-              hasMountains={Boolean(mountains.length)}
-              hasTrails={Boolean(trails.length)}
-              hasCampsites={Boolean(campsites.length)}
-            />
-          </LegendContainer>
+          <SavedItemsLegend
+            hasMountains={Boolean(mountains.length)}
+            hasTrails={Boolean(trails.length)}
+            hasCampsites={Boolean(campsites.length)}
+          />
         </>
       );
     }

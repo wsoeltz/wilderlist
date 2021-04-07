@@ -19,6 +19,7 @@ import getDates from '../peakLists/detail/getDates';
 import ItemTable from '../sharedComponents/detailComponents/itemTable/ItemTable';
 import LoadingSimple, {LoadingContainer} from '../sharedComponents/LoadingSimple';
 import MapRenderProp from '../sharedComponents/MapRenderProp';
+import {SavedItemsLegend} from './AllSavedListItemsMapRenderProp';
 
 const SavedTrails = () => {
   const getString = useFluent();
@@ -106,11 +107,18 @@ const SavedTrails = () => {
       const bbox = getBbox(featureCollection(allPoints));
 
       const map = trailsForMap.length ? (
-        <MapRenderProp
-          id={'dashboard-saved-trails' + trails.length}
-          trails={trailsForMap}
-          bbox={bbox}
-        />
+        <>
+          <MapRenderProp
+            id={'dashboard-saved-trails' + trails.length}
+            trails={trailsForMap}
+            bbox={bbox}
+          />
+          <SavedItemsLegend
+            hasMountains={false}
+            hasTrails={true}
+            hasCampsites={false}
+          />
+        </>
       ) : null;
 
       return (
