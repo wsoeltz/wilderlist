@@ -35,6 +35,7 @@ import {
 import {
   CoreItem,
 } from '../../../types/itemTypes';
+import AllClassificationsModal from '../..//sharedComponents/detailComponents/classificationBlock/AllClassificationsModal';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
@@ -516,6 +517,7 @@ const CampsiteForm = (props: Props) => {
                   {upperFirst(getString('global-formatted-campsite-type', {type: CampsiteType.rockShelter}))}
                 </option>
               </SelectBox>
+              <AllClassificationsModal />
             </FullColumn>
           </Grid>
         </DetailBoxWithMargin>
