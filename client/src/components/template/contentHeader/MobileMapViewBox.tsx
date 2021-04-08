@@ -50,6 +50,7 @@ const ScrollDownIcon = styled.button`
 `;
 
 const viewBoxId = 'mobile-map-viewbox-id';
+let windowHeight = window.innerHeight;
 
 export const useMapViewBoxScroll = (dependency: any) => {
   useEffect(() => {
@@ -90,6 +91,10 @@ const MobileMapViewBox = () => {
     return () => document.removeEventListener('scroll', windowScrollFn);
   }, [contentTopRef]);
 
+  useEffect(() => {
+    windowHeight = window.innerHeight;
+  }, []);
+
   const onScrollButtonClick = () => {
     const node = contentTopRef.current;
     if (node) {
@@ -104,12 +109,12 @@ const MobileMapViewBox = () => {
   return (
     <>
      <div
-       style={{height: '8vh'}}
+       style={{height: windowHeight * 0.08}}
      />
      <ViewBox
        id={viewBoxId}
        ref={mobileMidViewboxRef}
-       style={{height: `calc(80vh - ${(mobileTopPadding * 2.1)}px)`}}
+       style={{height: (windowHeight * 0.8) - (mobileTopPadding * 2.1)}}
      >
        <LogoImg src={MapBoxLogoSVG} alt={'Mapbox'} title={'Mapbox'} />
      </ViewBox>
