@@ -13,6 +13,7 @@ import {
 } from '../../graphQLTypes';
 import TripReportType, { TripReport } from '../queryTypes/tripReportType';
 import { User } from '../queryTypes/userType';
+import addEditTripReport, {Input} from './tripReport/addEditTripReport';
 
 interface AddTripReportVariables extends ITripReport {
   id: never;
@@ -20,7 +21,7 @@ interface AddTripReportVariables extends ITripReport {
 
 const conditionsExist = (input: AddTripReportVariables) => {
   const {
-    mountains, users, notes, link,
+    mountains, trails, campsites, parent, privacy, users, notes, link,
     mudMinor, mudMajor, waterSlipperyRocks, waterOnTrail, leavesSlippery,
     iceBlack, iceBlue, iceCrust, snowIceFrozenGranular, snowIceMonorailStable,
     snowIceMonorailUnstable, snowIcePostholes, snowMinor, snowPackedPowder,
@@ -28,12 +29,13 @@ const conditionsExist = (input: AddTripReportVariables) => {
     obstaclesOther,
   } = input;
   return (
-    (mountains && mountains.length > 1) || (users && users.length > 0) || notes || link ||
+    (mountains && mountains.length > 1) || (trails && trails.length > 1) ||
+    (campsites && campsites.length > 1) || (users && users.length > 0) || notes || link ||
     mudMinor || mudMajor || waterSlipperyRocks || waterOnTrail || leavesSlippery ||
     iceBlack || iceBlue || iceCrust || snowIceFrozenGranular || snowIceMonorailStable ||
     snowIceMonorailUnstable || snowIcePostholes || snowMinor || snowPackedPowder ||
     snowUnpackedPowder || snowDrifts || snowSticky || snowSlush || obstaclesBlowdown ||
-    obstaclesOther
+    obstaclesOther || parent || privacy
   );
 };
 
@@ -44,7 +46,10 @@ const tripReportMutations: any = {
       date: { type: GraphQLNonNull(GraphQLString) },
       author: { type: GraphQLNonNull(GraphQLID) },
       mountains: { type: new GraphQLList(GraphQLID)},
+      trails: { type: new GraphQLList(GraphQLID)},
+      campsites: { type: new GraphQLList(GraphQLID)},
       users: { type: new GraphQLList(GraphQLID)},
+      privacy: { type: GraphQLString },
       notes: { type: GraphQLString },
       link: { type: GraphQLString },
       mudMinor: { type: GraphQLBoolean },
@@ -99,7 +104,10 @@ const tripReportMutations: any = {
       date: { type: GraphQLNonNull(GraphQLString) },
       author: { type: GraphQLNonNull(GraphQLID) },
       mountains: { type: new GraphQLList(GraphQLID)},
+      trails: { type: new GraphQLList(GraphQLID)},
+      campsites: { type: new GraphQLList(GraphQLID)},
       users: { type: new GraphQLList(GraphQLID)},
+      privacy: { type: GraphQLString },
       notes: { type: GraphQLString },
       link: { type: GraphQLString },
       mudMinor: { type: GraphQLBoolean },
@@ -163,6 +171,61 @@ const tripReportMutations: any = {
           throw new Error('Invalid user match');
         }
         return TripReport.findByIdAndDelete(id);
+      } catch (err) {
+        return err;
+      }
+    },
+  },
+  addEditTripReport: {
+    type: TripReportType,
+    args: {
+      id: { type: GraphQLID },
+      date: { type: GraphQLString },
+      author: { type: GraphQLNonNull(GraphQLID) },
+      mountains: { type: new GraphQLList(GraphQLID)},
+      trails: { type: new GraphQLList(GraphQLID)},
+      campsites: { type: new GraphQLList(GraphQLID)},
+      users: { type: new GraphQLList(GraphQLID)},
+      privacy: { type: GraphQLString },
+      notes: { type: GraphQLString },
+      link: { type: GraphQLString },
+      mudMinor: { type: GraphQLBoolean },
+      mudMajor: { type: GraphQLBoolean },
+      waterSlipperyRocks: { type: GraphQLBoolean },
+      waterOnTrail: { type: GraphQLBoolean },
+      leavesSlippery: { type: GraphQLBoolean },
+      iceBlack: { type: GraphQLBoolean },
+      iceBlue: { type: GraphQLBoolean },
+      iceCrust: { type: GraphQLBoolean },
+      snowIceFrozenGranular: { type: GraphQLBoolean },
+      snowIceMonorailStable: { type: GraphQLBoolean },
+      snowIceMonorailUnstable: { type: GraphQLBoolean },
+      snowIcePostholes: { type: GraphQLBoolean },
+      snowMinor: { type: GraphQLBoolean },
+      snowPackedPowder: { type: GraphQLBoolean },
+      snowUnpackedPowder: { type: GraphQLBoolean },
+      snowDrifts: { type: GraphQLBoolean },
+      snowSticky: { type: GraphQLBoolean },
+      snowSlush: { type: GraphQLBoolean },
+      obstaclesBlowdown: { type: GraphQLBoolean },
+      obstaclesOther: { type: GraphQLBoolean },
+      // additional inputs not directly in TripReport:
+      originalDate: { type: GraphQLString },
+      originalMountains: { type: new GraphQLList(GraphQLID)},
+      originalTrails: { type: new GraphQLList(GraphQLID)},
+      originalCampsites: { type: new GraphQLList(GraphQLID)},
+    },
+    async resolve(_unused: any, input: Input, {user}: {user: IUser | undefined | null}) {
+      try {
+        const authorDoc = await User.findById(input.author);
+        if (!isCorrectUser(user, authorDoc)) {
+          throw new Error('Invalid user match');
+        }
+        if (authorDoc) {
+          return await addEditTripReport({...input, authorDoc});
+        } else {
+          throw new Error('Could not find author');
+        }
       } catch (err) {
         return err;
       }

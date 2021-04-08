@@ -3,7 +3,12 @@ import {
   pack,
   stratify,
 } from 'd3-hierarchy';
-import { event, select, Selection } from 'd3-selection';
+import {
+  // @ts-expect-error d3 typing is inaccurate, event is in fact exported from this module
+  event,
+  select,
+  Selection,
+} from 'd3-selection';
 import {
   lightBorderColor,
   primaryColor,
@@ -39,7 +44,7 @@ interface Input {
   size: Dimensions;
 }
 
-export default (input: Input) => {
+const createBubbleChart = (input: Input) => {
   const { svg, size, data } = input;
 
   const srcData: SrcData = data.map(d => ({
@@ -63,8 +68,8 @@ export default (input: Input) => {
 
   const stratData = stratify()(srcData);
   const root = hierarchy(stratData)
-      .sum(function(d: any) { return d.data.size; })
-      .sort(function(a: any, b: any) { return b.value - a.value; });
+      .sum((d: any) => d.data.size)
+      .sort((a: any, b: any) => b.value - a.value);
   const nodes = root.descendants();
 
   layout(root);
@@ -87,18 +92,18 @@ export default (input: Input) => {
     .enter()
     .filter((d) => d.parent !== null )
     .append('circle')
-    .attr('cx', function(d: any) { return d.x; })
-    .attr('cy', function(d: any) { return d.y; })
-    .attr('r', function(d: any) { return d.r; })
+    .attr('cx', (d: any) => d.x)
+    .attr('cy', (d: any) => d.y)
+    .attr('r', (d: any) => d.r)
     .style('fill', primaryColor)
     .on('mousemove', ({value, data: {data: {name}}}: any) => {
-        const ascents = value === 1 ? 'ascent' : 'ascents';
-        tooltipDiv
-            .style('display', 'block');
-        tooltipDiv.html(`${name} - ${value} ${ascents}`)
-            .style('left', (event.pageX) + 'px')
-            .style('top', (event.pageY - 28) + 'px');
-        })
+      const ascents = value === 1 ? 'ascent' : 'ascents';
+      tooltipDiv
+          .style('display', 'block');
+      tooltipDiv.html(`${name} - ${value} ${ascents}`)
+          .style('left', (event.pageX) + 'px')
+          .style('top', (event.pageY - 28) + 'px');
+    })
     .on('mouseout', () => {
         tooltipDiv
             .style('display', 'none');
@@ -109,8 +114,8 @@ export default (input: Input) => {
     .enter()
     .filter((d) => d.parent !== null )
     .append('text')
-    .attr('x', function(d: any) { return d.x; })
-    .attr('y', function(d: any) { return d.y; })
+    .attr('x', (d: any) => d.x)
+    .attr('y', (d: any) => d.y)
     .text(d => {
       if (d.data.id) {
         return d.data.id;
@@ -145,3 +150,5 @@ export default (input: Input) => {
     })
    .style('transform-origin', 'center');
 };
+
+export default createBubbleChart;

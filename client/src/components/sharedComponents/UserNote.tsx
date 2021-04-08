@@ -4,21 +4,26 @@ import {
   faGoogle,
   faReddit,
 } from '@fortawesome/free-brands-svg-icons';
-import { GetString } from 'fluent-react/compat';
-import {rgba} from 'polished';
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import styled from 'styled-components';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+  faLock,
+} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {rgba} from 'polished';
+import React, {useEffect, useRef, useState} from 'react';
+import styled from 'styled-components/macro';
+import useBeforeUnload from '../../hooks/useBeforeUnload';
+import useCurrentUser from '../../hooks/useCurrentUser';
+import useFluent from '../../hooks/useFluent';
+import {
+  ItemTitle,
+} from '../../styling/sharedContentStyles';
 import {
   ButtonWarningLow,
+  HelpUnderline,
   lightBorderColor,
-  lightFontWeight,
   lowWarningColor,
   placeholderColor,
 } from '../../styling/styleUtils';
-import { UserContext } from '../App';
 import {
   BrandIcon,
   facebookBlue,
@@ -27,18 +32,39 @@ import {
   LoginText as LoginTextBase,
   redditRed,
 } from './SignUpModal';
+import Tooltip from './Tooltip';
+
+const defaultHeight = 4.75; // in rem
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: ${defaultHeight}rem;
+  position: relative;
+`;
+
+const Title = styled(ItemTitle)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
 const Textarea = styled.textarea`
   padding: 0.5rem;
   box-sizing: border-box;
   font-size: 1rem;
-  font-weight: ${lightFontWeight};
   width: 100%;
-  min-height: 4.75rem;
+  min-height: ${defaultHeight}rem;
   line-height: 1.5;
   border: solid 1px ${rgba(lightBorderColor, 0.6)};
   outline: none;
   display: block;
+  resize: vertical;
+  flex-grow: 1;
+  padding-bottom: 4rem;
+  color: #555;
+  background-color: #fdfdfd;
 
   &::placeholder {
     color: ${placeholderColor};
@@ -47,6 +73,15 @@ const Textarea = styled.textarea`
   &:focus {
     border-color: ${lightBorderColor};
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+`;
+
+export const PlaceholderTextarea = styled(Textarea)`
+  cursor: wait;
 `;
 
 const ButtonContainer = styled.div`
@@ -55,6 +90,9 @@ const ButtonContainer = styled.div`
   transition: all 0.2s ease;
   box-sizing: border-box;
   padding: 0.125rem;
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.4rem;
 `;
 
 const openContainerStyles: React.CSSProperties = {
@@ -67,12 +105,16 @@ const LoginButton = styled(LoginButtonBase)`
   max-width: 200px;
   max-height: 50px;
   border: 1px solid ${lightBorderColor};
+  flex-grow: 1;
 `;
 
 const LoginText = styled(LoginTextBase)`
-  @media (max-width: 500px) {
-    font-size: 0.9rem;
-  }
+  font-size: 0.8rem;
+`;
+
+const LoginButtonsContainer = styled.div`
+  margin: 0 -0.5rem;
+  display: flex;
 `;
 
 const charLimit = 5000;
@@ -97,10 +139,11 @@ const UserNote = (props: Props) => {
     setIsLoading(false);
   }, [textAreaRef, defaultValue]);
 
-  const user = useContext(UserContext);
+  const user = useCurrentUser();
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
+
+  useBeforeUnload(!((!defaultValue && !value) || (defaultValue === value)));
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
@@ -114,12 +157,12 @@ const UserNote = (props: Props) => {
   } else if (defaultValue === value) {
     buttonText = (
       <small>
-        <em>{getFluentString('global-text-value-all-changes-saved')}</em>
+        <em>{getString('global-text-value-all-changes-saved')}</em>
       </small>
     );
   } else {
     const innerText = isLoading
-      ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save-changes');
+      ? getString('global-text-value-saving') + '...' : getString('global-text-value-save-changes');
     const onClick = () => {
       onSave(value.substring(0, charLimit));
       setIsLoading(true);
@@ -136,14 +179,14 @@ const UserNote = (props: Props) => {
   }
 
   const buttons = !user ? (
-    <ButtonContainer>
+    <LoginButtonsContainer>
       <LoginButton href='/auth/google'>
         <BrandIcon
           icon={faGoogle as IconDefinition}
           style={{color: googleBlue}}
         />
         <LoginText>
-          {getFluentString('header-text-login-with-google')}
+          {getString('header-text-login-with-google')}
         </LoginText>
       </LoginButton>
       <LoginButton href='/auth/facebook'>
@@ -152,7 +195,7 @@ const UserNote = (props: Props) => {
           style={{color: facebookBlue}}
         />
         <LoginText>
-          {getFluentString('header-text-login-with-facebook')}
+          {getString('header-text-login-with-facebook')}
         </LoginText>
       </LoginButton>
       <LoginButton href='/auth/reddit'>
@@ -161,10 +204,10 @@ const UserNote = (props: Props) => {
           style={{color: redditRed}}
         />
         <LoginText>
-          {getFluentString('header-text-login-with-reddit')}
+          {getString('header-text-login-with-reddit')}
         </LoginText>
       </LoginButton>
-    </ButtonContainer>
+    </LoginButtonsContainer>
     ) : (
     <ButtonContainer
       style={defaultValue === value ? {} : openContainerStyles}
@@ -174,17 +217,32 @@ const UserNote = (props: Props) => {
   );
 
   return (
-    <>
+    <Root>
+      <Title>
+        <div>{getString('user-notes-title')}:</div>
+        <div>
+          <small>
+            <Tooltip
+              explanation={getString('user-notes-tooltip')}
+            >
+              <HelpUnderline>
+                <FontAwesomeIcon icon={faLock} /> {getString('global-text-value-private')}
+              </HelpUnderline>
+            </Tooltip>
+          </small>
+        </div>
+      </Title>
       <Textarea
         placeholder={placeholder}
         value={value}
         onChange={onChange}
         maxLength={charLimit}
         ref={textAreaRef}
+        disabled={!user}
         style={{height, borderColor: defaultValue !== value ? lowWarningColor : undefined}}
       />
       {buttons}
-    </>
+    </Root>
   );
 };
 

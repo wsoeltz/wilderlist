@@ -1,29 +1,50 @@
 require('dotenv').config();
 
 import bodyParser from 'body-parser';
+import compression from 'compression';
 import cookieSession from 'cookie-session';
 import cors from 'cors';
 import express from 'express';
 import expressGraphQL from 'express-graphql';
 import { redirectToHTTPS } from 'express-http-to-https';
 import fs from 'fs';
+import upperFirst from 'lodash/upperFirst';
 import mongoose from 'mongoose';
 import passport from 'passport';
+import getCampsite from './api/getCampsite';
+import getGeoSearch from './api/getGeoSearch';
+import getGlobalSearch from './api/getGlobalSearch';
+import getMountain from './api/getMountain';
+import getNearestTrail from './api/getNearestTrail';
+import getSearchCampsites from './api/getSearchCampsites';
+import getSearchLists from './api/getSearchLists';
+import getSearchMountains from './api/getSearchMountains';
+import getSearchTrails from './api/getSearchTrails';
+import getTrail, {
+  getNamedParent,
+} from './api/getTrail';
 import facebookAuth from './auth/facebook';
 import googleAuth from './auth/google';
 import redditAuth from './auth/reddit';
 import buildDataloaders from './dataloaders';
+import {Trail} from './graphql/graphQLTypes';
 import schema from './graphql/schema';
 import {State} from './graphql/schema/queryTypes/stateType';
 import {getStatesOrRegion} from './graphql/Utils';
 import requireLogin from './middleware/requireLogin';
 import notificationRoutes from './notifications';
 import {
+  formatType,
+  getAutoRouteDescription,
+  getAutoRouteTitle,
+  getCampsiteDescription,
   getListData,
   getListDescription,
   getMountainData,
   getMtnDescription,
-  getStateData,
+  getParkingData,
+  getSummitViewDescription,
+  getTrailDescription,
   getType,
   Routes,
 } from './routing';
@@ -38,6 +59,9 @@ import getWeatherData from './utilities/getWeather';
 require('./auth/passport');
 
 const app = express();
+
+// enable gzip compression
+app.use(compression());
 
 app.use(redirectToHTTPS([/localhost:(\d{4})/], undefined, 301));
 
@@ -109,6 +133,185 @@ app.use('/graphql', requireLogin, expressGraphQL((req: any) => ({
 // Send invites to ascent added emails
 notificationRoutes(app);
 
+app.get('/api/global-search', async (req, res) => {
+  try {
+    const lat = req.query && req.query.lat ? parseFloat(req.query.lat) : undefined;
+    const lng = req.query && req.query.lng ? parseFloat(req.query.lng) : undefined;
+    const search = req.query && req.query.search ? req.query.search : undefined;
+    const favor = req.query && req.query.favor ? req.query.favor : undefined;
+    const user = req.res && req.res.req ? req.res.req.user : undefined;
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getGlobalSearch({lat, lng, search, favor, user});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/mountain-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    const ignore = req.body && req.body.ignore ? req.body.ignore : [];
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getSearchMountains({lat, lng, search, ignore});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/trail-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    const ignore = req.body && req.body.ignore ? req.body.ignore : [];
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getSearchTrails({lat, lng, search, ignore});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/campsite-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    const ignore = req.body && req.body.ignore ? req.body.ignore : [];
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getSearchCampsites({lat, lng, search, ignore});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/hiking-list-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    const ignore = req.body && req.body.ignore ? req.body.ignore : [];
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getSearchLists({lat, lng, search, ignore});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/geo-search', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const search = req.body && req.body.search ? req.body.search : undefined;
+    if (lat !== undefined && lng !== undefined && search !== undefined) {
+      const searchData = await getGeoSearch({lat, lng, search});
+      res.json(searchData);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/nearest-trail', async (req, res) => {
+  try {
+    const lat = req.body && req.body.lat ? parseFloat(req.body.lat) : undefined;
+    const lng = req.body && req.body.lng ? parseFloat(req.body.lng) : undefined;
+    const name = req.body && req.body.name && req.body.name.length
+      ? req.body.name : null;
+    const ignoreTypes = req.body && req.body.ignoreTypes && req.body.ignoreTypes.length
+      ? req.body.ignoreTypes : [];
+    if (lat !== undefined && lng !== undefined) {
+      const trail = await getNearestTrail({
+        coord: [lng, lat],
+        name,
+        ignoreTypes,
+      });
+      res.json(trail);
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/named-parent-trail', async (req, res) => {
+  try {
+    const id = req.body && req.body.id && req.body.id.length
+      ? req.body.id : null;
+    const trail = await getTrail(id);
+    if (trail) {
+      const parent = await getNamedParent(trail as unknown as Trail);
+      if (parent) {
+        res.json(parent);
+      } else {
+        res.json(trail);
+      }
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+app.post('/api/get-item', async (req, res) => {
+  try {
+    const id = req.body && req.body.id && req.body.id.length
+      ? req.body.id : null;
+    const type = req.body && req.body.itemType
+      ? req.body.itemType : null;
+    if (id !== null) {
+      if (type === 'trails') {
+        const trail = await getTrail(id);
+        res.json(trail);
+      } else if (type === 'mountains') {
+        const mountain = await getMountain(id);
+        res.json(mountain);
+      } else if (type === 'campsites') {
+        const campsite = await getCampsite(id);
+        res.json(campsite);
+      }
+    } else {
+      throw new Error('Missing parameters');
+    }
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
 app.get('/api/weather', async (req, res) => {
   try {
     const lat = req.query && req.query.lat ? req.query.lat : undefined;
@@ -170,11 +373,52 @@ app.get(mountainOgImageUrl, async (req, res) => {
     const mtnData = await getMountainData(req.params.mountainId);
     const name = mtnData && mtnData.name ? mtnData.name : '';
     const elevation = mtnData && mtnData.elevation ? mtnData.elevation + 'ft' : '';
-    const stateData = mtnData && mtnData.state !== null ?
-      await getStateData(mtnData.state as unknown as string) : null;
-    const state = stateData && stateData.name
-      ? stateData.name + ' | ' : '';
+    const state = mtnData && mtnData.locationTextShort
+      ? mtnData.locationTextShort + ' | ' : '';
     const subtext = state + elevation;
+    const result = await getOgImage({text: name, subtext});
+    res.type('image/jpeg');
+    res.send(result);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+const trailOgImageUrl = '/og-image/trail/:trailId/image.jpg';
+const setTrailOgImageUrl = (id: string) => trailOgImageUrl.replace(':trailId', id);
+app.get(trailOgImageUrl, async (req, res) => {
+  try {
+    const trailData = await getTrail(req.params.trailId);
+    const formattedType = upperFirst(formatType(trailData && trailData.type ? trailData.type : 'parent_trail'));
+    const name = trailData && trailData.name ? trailData.name : formattedType;
+    const trailLength = trailData && trailData.trailLength ? trailData.trailLength : 0;
+    const numericDistance = trailLength < 0.1
+      ? Math.round(trailLength * 5280)
+      : parseFloat(trailLength.toFixed(1));
+    const distanceUnit = trailLength < 0.1 ? 'ft' : 'mi';
+    const state = trailData && trailData.locationTextShort
+      ? trailData.locationTextShort + ' | ' : '';
+    const subtext = state + numericDistance + distanceUnit;
+    const result = await getOgImage({text: name, subtext});
+    res.type('image/jpeg');
+    res.send(result);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+const campsiteOgImageUrl = '/og-image/campsite/:campsiteId/image.jpg';
+const setCampsiteOgImageUrl = (id: string) => campsiteOgImageUrl.replace(':campsiteId', id);
+app.get(campsiteOgImageUrl, async (req, res) => {
+  try {
+    const campsiteData = await getCampsite(req.params.campsiteId);
+    const formattedType = upperFirst(formatType(campsiteData ? campsiteData.type : ''));
+    const name = campsiteData && campsiteData.name ? campsiteData.name : formattedType;
+    const state = campsiteData && campsiteData.locationTextShort
+      ? campsiteData.locationTextShort + ' | ' : '';
+    const subtext = state + formattedType;
     const result = await getOgImage({text: name, subtext});
     res.type('image/jpeg');
     res.send(result);
@@ -284,7 +528,7 @@ if (process.env.NODE_ENV === 'production') {
     }
   });
 
-  app.get(Routes.Login, (req, res) => {
+  app.get(Routes.Landing, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
     const canonicalUrl = baseUrl + req.path;
 
@@ -350,10 +594,28 @@ if (process.env.NODE_ENV === 'production') {
     });
 
   });
+  app.get(Routes.About, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
 
-  app.get([
-    Routes.ListDetail, Routes.ListsWithDetail,
-    ], (req, res) => {
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, 'About - Wilderlist');
+      data = data.replace(/\$CANONICAL_URL/g,
+        `https://www.wilderlist.app/list/${Routes.TermsOfUse}`,
+      );
+      data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+      const result  = data.replace(/\$OG_DESCRIPTION/g, 'Learn more about Wilderlist.');
+      res.send(result);
+    });
+
+  });
+
+  app.get(Routes.ListDetail, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
 
     // read in the index.html file
@@ -368,7 +630,7 @@ if (process.env.NODE_ENV === 'production') {
         const result  =
           data.replace(/\$OG_DESCRIPTION/g,
             /* tslint:disable */
-            'Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.');
+            'Search for popular hiking lists across the USA.');
           /* tslint:enable */
         res.send(result);
       } else {
@@ -383,7 +645,7 @@ if (process.env.NODE_ENV === 'production') {
               `https://www.wilderlist.app/list/${req.params.id}`,
             );
             data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
-            const description = await getListDescription(listData);
+            const description = getListDescription(listData);
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
@@ -408,7 +670,70 @@ if (process.env.NODE_ENV === 'production') {
 
   });
 
-  app.get(Routes.ListDetailWithMountainDetail, (req, res) => {
+  app.get([
+    Routes.DEPRECATED_ListsWithDetail,
+    Routes.DEPRECATED_ListDetailWithMountainDetail,
+  ], (req, res) => {
+    res.redirect(Routes.ListDetail.replace(':id', req.params.id));
+  });
+
+  app.get([
+    Routes.DEPRECATED_MountainSearchWithDetail,
+  ], (req, res) => {
+    res.redirect(Routes.MountainDetail.replace(':id', req.params.id));
+  });
+
+  app.get(Routes.MountainDetail, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (req.params.id === 'search') {
+        data = data.replace(/\$OG_TITLE/g, 'Search Mountains - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/mountain/search`);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  =
+          data.replace(/\$OG_DESCRIPTION/g, 'Search for mountains and find maps, trails, weather and trip reports.');
+        res.send(result);
+      } else {
+        try {
+          const mtnData = await getMountainData(req.params.id);
+          if (mtnData !== null) {
+            // replace the special strings with server generated strings
+            const title = `${mtnData.name}, ${mtnData.locationTextShort} - Wilderlist`;
+            data = data.replace(/\$OG_TITLE/g, title);
+            data = data.replace(/\$CANONICAL_URL/g,
+              `https://www.wilderlist.app/mountain/${req.params.id}`,
+            );
+            data = data.replace(/\$OG_IMAGE/g, setMountainOgImageUrl(req.params.id));
+            const description = await getMtnDescription(mtnData);
+            const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+            res.send(result);
+          } else {
+            throw new Error('Incorrect List ID ' + req.params.id);
+          }
+
+        } catch (err) {
+
+          console.error(err);
+          // replace the special strings with the default generated strings
+          const canonicalUrl = baseUrl + req.path;
+          data = data.replace(/\$OG_TITLE/g, defaultTitle);
+          data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+          res.send(result);
+
+        }
+      }
+
+    });
+
+  });
+  app.get(Routes.SummitView, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
 
     // read in the index.html file
@@ -417,19 +742,19 @@ if (process.env.NODE_ENV === 'production') {
         return console.error(err);
       }
       try {
-        const listData = await getListData(req.params.id);
-        if (listData !== null) {
-          const mtnData = await getMountainData(req.params.mountainId);
-          const mtnName = mtnData && mtnData.name ? '/' + mtnData.name : '';
+        const mtnData = await getMountainData(req.params.id);
+        if (mtnData !== null) {
           // replace the special strings with server generated strings
-          data = data.replace(/\$OG_TITLE/g,
-            `${listData.name + getType(listData.type) + mtnName} - Wilderlist`,
-          );
+          const title = `Summit view of ${mtnData.name}, ${mtnData.locationTextShort} - Wilderlist`;
+          data = data.replace(/\$OG_TITLE/g, title);
+          const lat = req.params.lat;
+          const lng = req.params.lng;
+          const altitude = req.params.altitude;
           data = data.replace(/\$CANONICAL_URL/g,
-            `https://www.wilderlist.app/list/${req.params.id}`,
+            `https://www.wilderlist.app//summit-view/${lat}/${lng}/${altitude}/${req.params.id}`,
           );
-          data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
-          const description = await getListDescription(listData);
+          data = data.replace(/\$OG_IMAGE/g, setMountainOgImageUrl(req.params.id));
+          const description = getSummitViewDescription(mtnData);
           const result  = data.replace(/\$OG_DESCRIPTION/g, description);
           res.send(result);
         } else {
@@ -452,10 +777,7 @@ if (process.env.NODE_ENV === 'production') {
     });
 
   });
-
-  app.get([
-    Routes.MountainSearchWithDetail, Routes.MountainDetail,
-    ], (req, res) => {
+  app.get(Routes.CampsiteDetail, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
 
     // read in the index.html file
@@ -464,28 +786,27 @@ if (process.env.NODE_ENV === 'production') {
         return console.error(err);
       }
       if (req.params.id === 'search') {
-        data = data.replace(/\$OG_TITLE/g, 'Search Mountains - Wilderlist');
-        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/mountains/search`);
+        data = data.replace(/\$OG_TITLE/g, 'Search Campsites - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/campsite/search`);
         data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
         const result  =
-          data.replace(/\$OG_DESCRIPTION/g, 'Search for mountains and find maps, trails, weather and trip reports.');
+          data.replace(/\$OG_DESCRIPTION/g,
+            'Search for campsites and find maps, directions, local trails, weather and trip reports.');
         res.send(result);
       } else {
         try {
-          const mtnData = await getMountainData(req.params.id);
-          if (mtnData !== null) {
-            const stateData = mtnData.state !== null ?
-              await getStateData(mtnData.state as unknown as string) : null;
-            const state = stateData && stateData.name
-              ? `, ${stateData.name}` : '';
+          const campsiteData = await getCampsite(req.params.id);
+          if (campsiteData !== null && campsiteData !== undefined) {
             // replace the special strings with server generated strings
-            const title = `${mtnData.name + state} - Wilderlist`;
+            const formattedType = formatType(campsiteData.type);
+            const name = campsiteData.name ? campsiteData.name : upperFirst(formattedType);
+            const title = `${name}, ${campsiteData.locationTextShort} - Wilderlist`;
             data = data.replace(/\$OG_TITLE/g, title);
             data = data.replace(/\$CANONICAL_URL/g,
-              `https://www.wilderlist.app/mountain/${req.params.id}`,
+              `https://www.wilderlist.app/campsite/${req.params.id}`,
             );
-            data = data.replace(/\$OG_IMAGE/g, setMountainOgImageUrl(req.params.id));
-            const description = await getMtnDescription(mtnData, stateData);
+            data = data.replace(/\$OG_IMAGE/g, setCampsiteOgImageUrl(req.params.id));
+            const description = getCampsiteDescription(campsiteData);
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
@@ -504,6 +825,344 @@ if (process.env.NODE_ENV === 'production') {
           res.send(result);
 
         }
+      }
+
+    });
+
+  });
+
+  app.get(Routes.TrailDetail, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (req.params.id === 'search') {
+        data = data.replace(/\$OG_TITLE/g, 'Search Trails - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/trail/search`);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  =
+          data.replace(/\$OG_DESCRIPTION/g,
+            'Search for trails and find maps, directions, local campsites, weather and trip reports.');
+        res.send(result);
+      } else {
+        try {
+          const trailData = await getTrail(req.params.id);
+          if (trailData !== null && trailData !== undefined) {
+            // replace the special strings with server generated strings
+            const formattedType = formatType(trailData.type ? trailData.type : 'trail');
+            const name = trailData.name ? trailData.name : upperFirst(formattedType);
+            const title = `${name}, ${trailData.locationTextShort} - Wilderlist`;
+            data = data.replace(/\$OG_TITLE/g, title);
+            data = data.replace(/\$CANONICAL_URL/g,
+              `https://www.wilderlist.app/trail/${req.params.id}`,
+            );
+            data = data.replace(/\$OG_IMAGE/g, setTrailOgImageUrl(req.params.id));
+            const description = getTrailDescription(trailData as Trail);
+            const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+            res.send(result);
+          } else {
+            throw new Error('Incorrect List ID ' + req.params.id);
+          }
+
+        } catch (err) {
+
+          console.error(err);
+          // replace the special strings with the default generated strings
+          const canonicalUrl = baseUrl + req.path;
+          data = data.replace(/\$OG_TITLE/g, defaultTitle);
+          data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+          res.send(result);
+
+        }
+      }
+
+    });
+
+  });
+
+  app.get(Routes.AutoRouteDetailParkingToMountain, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const mountainId = req.params.mountainId;
+        const parkingId = req.params.parkingId;
+        const mountainData = await getMountain(mountainId);
+        const parkingData = await getParkingData(parkingId);
+        if (mountainData !== null && mountainData !== undefined &&
+            parkingData !== null && parkingData !== undefined) {
+          // replace the special strings with server generated strings
+          let destinationName: string;
+          const formattedType =
+            upperFirst(formatType(parkingData.type ? parkingData.type : ''));
+          if (parkingData.name) {
+            destinationName = parkingData.name;
+          } else {
+            destinationName = formattedType;
+          }
+          const name = mountainData && mountainData.name ? mountainData.name : 'Mountain';
+          const title = getAutoRouteTitle(destinationName, name);
+          data = data.replace(/\$OG_TITLE/g, title);
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app/route-detail/mountain/${mountainId}/start/${parkingId}`,
+          );
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const description = getAutoRouteDescription(destinationName, name);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+          res.send(result);
+        } else {
+          throw new Error('Incorrect value ' + mountainId + ' ' + parkingId);
+        }
+
+      } catch (err) {
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
+      }
+
+    });
+
+  });
+
+  app.get(Routes.AutoRouteDetailMountainToCampsite, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const mountainId = req.params.mountainId;
+        const campsiteId = req.params.campsiteId;
+        const mountainData = await getMountain(mountainId);
+        const campsiteData = await getCampsite(campsiteId);
+        if (mountainData !== null && mountainData !== undefined &&
+            campsiteData !== null && campsiteData !== undefined) {
+          // replace the special strings with server generated strings
+          let destinationName: string;
+          const formattedType =
+            upperFirst(formatType(campsiteData.type ? campsiteData.type : ''));
+          if (campsiteData.name) {
+            destinationName = campsiteData.name;
+          } else {
+            destinationName = formattedType;
+          }
+          const name = mountainData && mountainData.name ? mountainData.name : 'Mountain';
+          const title = getAutoRouteTitle(name, destinationName);
+          data = data.replace(/\$OG_TITLE/g, title);
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app/route-detail/mountain/${mountainId}/campsite/${campsiteId}`,
+          );
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const description = getAutoRouteDescription(name, destinationName);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+          res.send(result);
+        } else {
+          throw new Error('Incorrect value ' + mountainId + ' ' + campsiteId);
+        }
+
+      } catch (err) {
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
+      }
+
+    });
+
+  });
+
+  app.get(Routes.AutoRouteDetailCampsiteToCampsite, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const campsiteId1 = req.params.campsiteId1;
+        const campsiteId2 = req.params.campsiteId2;
+        const campsite1Data = await getCampsite(campsiteId1);
+        const campsite2Data = await getCampsite(campsiteId2);
+        if (campsite2Data !== null && campsite2Data !== undefined &&
+            campsite1Data !== null && campsite1Data !== undefined) {
+          // replace the special strings with server generated strings
+          let destinationName: string;
+          const destinationType =
+            upperFirst(formatType(campsite2Data.type ? campsite2Data.type : ''));
+          if (campsite2Data.name) {
+            destinationName = campsite2Data.name;
+          } else {
+            destinationName = destinationType;
+          }
+          let sourceName: string;
+          const sourceType =
+            upperFirst(formatType(campsite1Data.type ? campsite1Data.type : ''));
+          if (campsite1Data.name) {
+            sourceName = campsite1Data.name;
+          } else {
+            sourceName = sourceType;
+          }
+          const title = getAutoRouteTitle(sourceName, destinationName);
+          data = data.replace(/\$OG_TITLE/g, title);
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app/route-detail/campsite/${campsiteId1}/campsite/${campsiteId2}`,
+          );
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const description = getAutoRouteDescription(sourceName, destinationName);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+          res.send(result);
+        } else {
+          throw new Error('Incorrect value ' + campsiteId1 + ' ' + campsiteId2);
+        }
+
+      } catch (err) {
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
+      }
+
+    });
+
+  });
+
+  app.get(Routes.AutoRouteDetailTrailToMountain, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const mountainId = req.params.mountainId;
+        const trailId = req.params.trailId;
+        const mountainData = await getMountain(mountainId);
+        const trailData = await getTrail(trailId);
+        if (mountainData !== null && mountainData !== undefined &&
+            trailData !== null && trailData !== undefined) {
+          // replace the special strings with server generated strings
+          let destinationName: string;
+          const formattedType =
+            upperFirst(formatType(trailData.type ? trailData.type : ''));
+          if (trailData.name) {
+            destinationName = trailData.name;
+          } else {
+            destinationName = formattedType;
+          }
+          const name = mountainData && mountainData.name ? mountainData.name : 'Mountain';
+          const title = getAutoRouteTitle(destinationName, name);
+          data = data.replace(/\$OG_TITLE/g, title);
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app/route-detail/trail/${trailId}/mountain/${mountainId}`,
+          );
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const description = getAutoRouteDescription(destinationName, name);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+          res.send(result);
+        } else {
+          throw new Error('Incorrect value ' + mountainId + ' ' + trailId);
+        }
+
+      } catch (err) {
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
+      }
+
+    });
+
+  });
+
+  app.get(Routes.AutoRouteDetailTrailToCampsite, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const trailId = req.params.trailId;
+        const campsiteId = req.params.campsiteId;
+        const trailData = await getTrail(trailId);
+        const campsiteData = await getCampsite(campsiteId);
+        if (trailData !== null && trailData !== undefined &&
+            campsiteData !== null && campsiteData !== undefined) {
+          // replace the special strings with server generated strings
+          let destinationName: string;
+          const destinationType =
+            upperFirst(formatType(campsiteData.type ? campsiteData.type : ''));
+          if (campsiteData.name) {
+            destinationName = campsiteData.name;
+          } else {
+            destinationName = destinationType;
+          }
+          let sourceName: string;
+          const sourceType =
+            upperFirst(formatType(trailData.type ? trailData.type : ''));
+          if (trailData.name) {
+            sourceName = trailData.name;
+          } else {
+            sourceName = sourceType;
+          }
+          const title = getAutoRouteTitle(sourceName, destinationName);
+          data = data.replace(/\$OG_TITLE/g, title);
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app/route-detail/trail/${trailId}/campsite/${campsiteId}`,
+          );
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const description = getAutoRouteDescription(sourceName, destinationName);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+          res.send(result);
+        } else {
+          throw new Error('Incorrect value ' + trailId + ' ' + campsiteId);
+        }
+
+      } catch (err) {
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
       }
 
     });

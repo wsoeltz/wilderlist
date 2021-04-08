@@ -1,92 +1,46 @@
-import { useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
-import { Types } from 'mongoose';
+import {
+  faUserEdit,
+} from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Helmet from 'react-helmet';
-import { RouteComponentProps, withRouter } from 'react-router';
+import {useHistory, useParams} from 'react-router-dom';
+import styled from 'styled-components/macro';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import useFluent from '../../../hooks/useFluent';
+import { UserDatum, useUserSearch } from '../../../queries/users/useUserSearch';
+import { userProfileLink } from '../../../routing/Utils';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { friendsWithUserProfileLink } from '../../../routing/Utils';
-import {
-  ContentBody,
-  ContentLeftSmall,
-  ContentRightLarge,
-  SearchContainer,
-} from '../../../styling/Grid';
-import {
+  FullWidthContainer,
   Next,
   PaginationContainer,
   PlaceholderText,
   Prev,
+  primaryColor,
 } from '../../../styling/styleUtils';
-import { User } from '../../../types/graphQLTypes';
 import StandardSearch from '../../sharedComponents/StandardSearch';
-import UserProfile from '../detail/UserProfile';
 import GhostUserCard from './GhostUserCard';
-import { FriendDatum, UserDatum } from './ListUsers';
 import ListUsers from './ListUsers';
 
-const SEARCH_USERS = gql`
-  query searchUsers(
-    $id: ID!
-    $searchQuery: String!,
-    $pageNumber: Int!,
-    $nPerPage: Int!
-  ) {
-    users: usersSearch(
-      searchQuery: $searchQuery,
-      pageNumber: $pageNumber,
-      nPerPage: $nPerPage,
-    ) {
-      id
-      name
-      profilePictureUrl
-      hideProfilePicture
-    }
-    me: user(id: $id) {
-      id
-      friends {
-        user {
-          id
-          name
-          profilePictureUrl
-          hideProfilePicture
-        }
-        status
-      }
-    }
-  }
+const Root = styled.div`
+  position: relative;
 `;
 
-interface QuerySuccessResponse {
-  users: UserDatum[];
-  me: {
-    id: User['id'];
-    friends: FriendDatum[];
-  };
-}
+const SearchRoot = styled(FullWidthContainer)`
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1;
+`;
 
-interface QueryVariables {
-  id: string;
-  searchQuery: string;
-  pageNumber: number;
-  nPerPage: number;
-}
+const UserList = () => {
+  const user = useCurrentUser();
+  const userId = user ? user._id : null;
+  const history = useHistory();
+  const { id }: any = useParams();
+  const { query, page } = queryString.parse(history.location.search);
 
-interface Props extends RouteComponentProps {
-  userId: string;
-}
-
-const UserList = (props: Props) => {
-  const { userId, match, history, location } = props;
-  const { id }: any = match.params;
-  const { query, page } = queryString.parse(location.search);
-
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [initialSearchQuery, setInitialSearchQuery] = useState<string>('');
@@ -94,13 +48,13 @@ const UserList = (props: Props) => {
   const incrementPageNumber = () => {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
-    const url = friendsWithUserProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = userProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
   const decrementPageNumber = () => {
     const newPageNumber = pageNumber - 1;
     setPageNumber(newPageNumber);
-    const url = friendsWithUserProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
+    const url = userProfileLink(id) + '?query=' + searchQuery + '&page=' + newPageNumber;
     history.push(url);
   };
   const nPerPage = 15;
@@ -121,13 +75,11 @@ const UserList = (props: Props) => {
   const searchUsers = (value: string) => {
     setSearchQuery(value);
     setPageNumber(1);
-    const url = friendsWithUserProfileLink(id) + '?query=' + value + '&page=' + 1;
+    const url = userProfileLink(id) + '?query=' + value + '&page=' + 1;
     history.push(url);
   };
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, QueryVariables>(SEARCH_USERS, {
-    variables: { id: userId, searchQuery, pageNumber, nPerPage },
-  });
+  const {loading, error, data} = useUserSearch(userId, searchQuery, pageNumber, nPerPage);
 
   const userListContainerElm = useRef<HTMLDivElement>(null);
 
@@ -149,14 +101,14 @@ const UserList = (props: Props) => {
     console.error(error);
     list = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
-  } else if (data !== undefined) {
+  } else if (data !== undefined && userId !== null) {
     const { users, me: {friends} } = data;
     let userData: UserDatum[] | null;
     if (searchQuery === '') {
-      const friendsData = friends.map(({user}) => user);
+      const friendsData = friends.map(f => f.user);
       if (friendsData && friendsData.length) {
         userData = friendsData;
       } else {
@@ -167,16 +119,16 @@ const UserList = (props: Props) => {
     }
     const nextBtn = searchQuery !== '' && userData && userData.length === nPerPage ? (
       <Next onClick={incrementPageNumber}>
-        {getFluentString('global-text-value-navigation-next')}
+        {getString('global-text-value-navigation-next')}
       </Next> ) : null;
     const prevBtn = pageNumber > 1 ? (
       <Prev onClick={decrementPageNumber}>
-        {getFluentString('global-text-value-navigation-prev')}
+        {getString('global-text-value-navigation-prev')}
       </Prev> ) : null;
-    const noResultsText = getFluentString('global-text-value-no-users-found-for-term', {
+    const noResultsText = getString('global-text-value-no-users-found-for-term', {
       term: searchQuery,
     });
-    const noFriendsText = getFluentString('dashboard-empty-state-no-friends-text');
+    const noFriendsText = getString('dashboard-empty-state-no-friends-text');
     list = (
       <>
         <ListUsers
@@ -186,8 +138,7 @@ const UserList = (props: Props) => {
           friendsList={friends}
           noResultsText={noResultsText}
           noFriendsText={noFriendsText}
-          openInSidebar={true}
-          sortByStatus={false}
+          sortByStatus={true}
         />
         <PaginationContainer>
           {prevBtn}
@@ -198,40 +149,26 @@ const UserList = (props: Props) => {
   } else {
     list = null;
   }
-  const userProfile = !Types.ObjectId.isValid(id)
-  ? (
-      <PlaceholderText>
-        {getFluentString('user-list-no-user-selected-text')}
-      </PlaceholderText>
-    )
-  : (
-    <UserProfile userId={userId} id={id} history={history} />
-    );
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-friend-search-default-title')}</title>
+        <title>{getString('meta-data-friend-search-default-title')}</title>
       </Helmet>
-      <ContentLeftSmall>
-        <SearchContainer>
+      <Root ref={userListContainerElm}>
+        <SearchRoot>
           <StandardSearch
             placeholder='Search users'
             setSearchQuery={searchUsers}
             focusOnMount={true}
             initialQuery={initialSearchQuery}
+            icon={faUserEdit}
+            iconColor={primaryColor}
           />
-        </SearchContainer>
-        <ContentBody ref={userListContainerElm}>
-          {list}
-        </ContentBody>
-      </ContentLeftSmall>
-      <ContentRightLarge>
-        <ContentBody>
-          {userProfile}
-        </ContentBody>
-      </ContentRightLarge>
+        </SearchRoot>
+        {list}
+      </Root>
     </>
   );
 };
 
-export default withRouter(UserList);
+export default UserList;

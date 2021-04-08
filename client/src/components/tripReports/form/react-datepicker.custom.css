@@ -1,0 +1,66 @@
+.react-datepicker-wrapper input {
+  padding: 8px;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: solid 1px #dcdcdc;
+  font-size: 1rem;
+  font-weight: 200;
+  width: 100%;
+}
+
+.mountain-completion-modal-datepicker {
+  margin: auto;
+  background-color: transparent;
+  border: none;
+  font-family: 'Source Sans Pro', sans-serif;
+  width: 100%;
+}
+
+.mountain-completion-modal-datepicker .react-datepicker__month-container {
+  float: none;
+}
+
+.mountain-completion-modal-datepicker .react-datepicker__header {
+  background-color: #f3f3f3;
+  border-color: #dcdcdc;
+  border-radius: 0;
+}
+
+.mountain-completion-modal-datepicker .react-datepicker__today-button {
+  background-color: #f3f3f3;
+  border-color: #dcdcdc;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #333;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+}
+.mountain-completion-modal-datepicker .react-datepicker__today-button:hover {
+  background-color: #f3f3f3;
+}
+.mountain-completion-modal-datepicker .react-datepicker__day--outside-month {
+  opacity: 0.5;
+}
+
+
+.mountain-completion-modal-datepicker .react-datepicker__day-name,
+.mountain-completion-modal-datepicker .react-datepicker__day,
+.mountain-completion-modal-datepicker .react-datepicker__time-name {
+  margin: 0;
+  width: 1.6rem;
+}
+@media(max-width: 470px) {
+  .mountain-completion-modal-datepicker .react-datepicker__day-name,
+  .mountain-completion-modal-datepicker .react-datepicker__day,
+  .mountain-completion-modal-datepicker .react-datepicker__time-name {
+    margin: 0.166rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+    padding: 0.4rem;
+    box-sizing: border-box;
+  }
+  .mountain-completion-modal-datepicker .react-datepicker__today-button {
+    font-size: 1rem;
+  }
+}

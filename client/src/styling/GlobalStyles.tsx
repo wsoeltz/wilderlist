@@ -53,6 +53,7 @@ import {
   faTrophy,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
+import {rgba} from 'polished';
 import { createGlobalStyle } from 'styled-components/macro';
 import {
   baseColor,
@@ -60,6 +61,7 @@ import {
   linkStyles,
   primaryFont,
   semiBoldFontBoldWeight,
+  tertiaryColor,
 } from './styleUtils';
 
 // Add all font awesome icons here
@@ -78,16 +80,18 @@ library.add(
   faArrowRight, faExclamationTriangle,
 );
 
+export const mapboxHoverPopupClassName = 'mapbox-gl-hovered-popup-container';
+
 const GlobalStyles = createGlobalStyle`
 
-  @media(max-width: 600px) {
+  @media (max-width: 900px), (max-height: 700px) {
     html {
-      font-size: 14px;
+      font-size: 15px;
     }
   }
-  @media(max-width: 450px) {
+  @media (max-width: 450px), (max-height: 600px) {
     html {
-      font-size: 12px;
+      font-size: 14px;
     }
   }
 
@@ -98,7 +102,9 @@ const GlobalStyles = createGlobalStyle`
 
   h1 {
     font-weight: ${semiBoldFontBoldWeight};
-    font-size: 1.7rem;
+   margin-bottom: 0.5rem;
+    margin-top: 0;
+    font-size: 1.25rem;
   }
 
   a {
@@ -138,6 +144,75 @@ const GlobalStyles = createGlobalStyle`
         padding: 0;
     }
 
+  }
+
+  /********
+      MAPBOX CUSTOM STYLES
+  ********/
+  .mapboxgl-popup {
+    .mapboxgl-popup-content {
+      padding: 0;
+      font-family: ${primaryFont};
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .mapboxgl-popup-close-button {
+      outline: none;
+    }
+
+    .mapboxgl-popup-tip {
+      border-top-color: ${tertiaryColor};
+      border-bottom-color: ${tertiaryColor};
+    }
+
+    &.${mapboxHoverPopupClassName} {
+      background-color: transparent;
+      backdrop-filter: blur(1px);
+
+      .mapboxgl-popup-content {
+        background-color: ${rgba(tertiaryColor, 0.75)};
+      }
+      .mapboxgl-popup-tip {
+        opacity: 0.95;
+        position: absolute;
+        bottom: 0;
+        transform: translate(0, 100%);
+      }
+    }
+  }
+
+  .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+    background-color: transparent;
+  }
+  .mapboxgl-ctrl-attrib-inner {
+    font-family: ${primaryFont};
+    max-width: 50vw;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 0.8rem;
+    text-shadow:
+       1px 1px 0 #fff,
+     -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px 1px 0 #fff,
+       1px 1px 0 #fff;
+  }
+
+  /**********
+      REACT-FAST-CHARTS CUSTOM STYLES
+  **********/
+  .react-fast-chart-tooltip {
+    font-size: 0.875rem;
+    .label-text {
+      color: ${lightBaseColor};
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .value-text {
+      font-weight: 800;
+    }
   }
 `;
 

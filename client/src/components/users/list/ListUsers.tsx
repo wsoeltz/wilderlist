@@ -1,19 +1,9 @@
+import sortBy from 'lodash/sortBy';
 import React from 'react';
+import { FriendDatum, UserDatum } from '../../../queries/users/useUserSearch';
 import { NoResults } from '../../../styling/styleUtils';
-import { FriendStatus, User } from '../../../types/graphQLTypes';
+import { FriendStatus } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  profilePictureUrl: User['profilePictureUrl'];
-  hideProfilePicture: User['hideProfilePicture'];
-}
-
-export interface FriendDatum {
-  user: UserDatum;
-  status: FriendStatus;
-}
 
 interface Props {
   userData: UserDatum[] | null;
@@ -22,14 +12,13 @@ interface Props {
   showCurrentUser: boolean;
   noResultsText: string;
   noFriendsText: string;
-  openInSidebar: boolean;
   sortByStatus: boolean;
 }
 
 const ListUsers = (props: Props) => {
   const {
     userData, currentUserId, showCurrentUser, friendsList, noResultsText,
-    openInSidebar, sortByStatus, noFriendsText,
+    sortByStatus, noFriendsText,
   } = props;
 
   if (userData === null) {
@@ -40,7 +29,7 @@ const ListUsers = (props: Props) => {
   }
   const usersAwaitingYourResponse: Array<React.ReactElement<any>> = [];
   const usersAwaitingTheirRespone: Array<React.ReactElement<any>> = [];
-  const users = userData.map(user => {
+  const users = sortBy(userData, ['name']).map(user => {
     if (showCurrentUser === false && currentUserId === user.id) {
       return null;
     } else {
@@ -61,7 +50,6 @@ const ListUsers = (props: Props) => {
           user={user}
           friendStatus={friendStatus}
           currentUserId={currentUserId}
-          openInSidebar={openInSidebar}
           key={user.id}
         />
       );
@@ -79,11 +67,11 @@ const ListUsers = (props: Props) => {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;
   }
   return (
-    <>
+    <div>
       {usersAwaitingYourResponse}
       {users}
       {usersAwaitingTheirRespone}
-    </>
+    </div>
   );
 };
 

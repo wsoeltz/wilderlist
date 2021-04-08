@@ -1,10 +1,12 @@
 // Modified from https://sayasuhendra.github.io/graphql-js/7-using-data-loaders/
 // Fixed incorrect IDS with https://github.com/graphql/dataloader/issues/65
 import DataLoader from 'dataloader';
+import { Campsite } from './graphql/schema/queryTypes/campsiteType';
 import { Mountain } from './graphql/schema/queryTypes/mountainType';
 import { PeakList } from './graphql/schema/queryTypes/peakListType';
 import { Region } from './graphql/schema/queryTypes/regionType';
 import { State } from './graphql/schema/queryTypes/stateType';
+import { Trail } from './graphql/schema/queryTypes/trailType';
 import { TripReport } from './graphql/schema/queryTypes/tripReportType';
 import { User } from './graphql/schema/queryTypes/userType';
 
@@ -42,6 +44,18 @@ export default () => ({
   tripReportLoader: new DataLoader(
     async keys => Promise.all(
       keys.map(key => TripReport.findOne({_id: key})),
+    ),
+    {cacheKeyFn: (key: any) => key.toString()},
+  ),
+  trailLoader: new DataLoader(
+    async keys => Promise.all(
+      keys.map(key => Trail.findOne({_id: key})),
+    ),
+    {cacheKeyFn: (key: any) => key.toString()},
+  ),
+  campsiteLoader: new DataLoader(
+    async keys => Promise.all(
+      keys.map(key => Campsite.findOne({_id: key})),
     ),
     {cacheKeyFn: (key: any) => key.toString()},
   ),

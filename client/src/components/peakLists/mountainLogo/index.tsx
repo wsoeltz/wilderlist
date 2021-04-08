@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import React from 'react';
 import styled from 'styled-components/macro';
@@ -28,7 +29,7 @@ const Root = styled.div`
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr;
-
+  user-select: none;
   justify-content: center;
 `;
 
@@ -110,8 +111,8 @@ const VariantName = styled.svg`
   }
 `;
 
-const variantEnumToString = (variantEnum: PeakListVariants) => {
-  if (variantEnum === PeakListVariants.standard) {
+const variantEnumToString = (variantEnum: PeakListVariants | null) => {
+  if (!variantEnum || variantEnum === PeakListVariants.standard) {
     return '';
   } else if (variantEnum === PeakListVariants.fourSeason) {
     return '4-season';
@@ -124,7 +125,7 @@ interface Props {
   id: string;
   title: string;
   shortName: string;
-  variant: PeakListVariants;
+  variant: PeakListVariants | null;
   active: boolean | null;
   completed: boolean;
 }
@@ -132,11 +133,11 @@ interface Props {
 const MountainLogo = (props: Props) => {
   const { id, title, shortName, variant, active, completed } = props;
   const titleId = 'mountainLogoTitle-' + id;
-  const colorSet = active === true || active === null ? getColorSetFromVariant(variant) : colorSetGray;
+  const colorSet = (active === true || active === null) && variant ? getColorSetFromVariant(variant) : colorSetGray;
   const numberOfWs = shortName.split('').filter(char => char.toLowerCase() === 'w').length;
   const wMultiplier = 1 - (numberOfWs * 0.02);
-  const shortNameSize = shortName.length > 7 ? 0.7 * wMultiplier : 1 * wMultiplier;
-  const shortNameStroke = shortName.length > 7 ? '0.4' : '0.7';
+  const shortNameSize = shortName.length > 5 ? 0.7 * wMultiplier : 1 * wMultiplier;
+  const shortNameStroke = shortName.length > 5 ? '0.4' : '0.7';
   const variantColor = (completed === false || active === false) ? colorSet.primary : '#fff';
   const variantStroke = (completed === false || active === false) ? 'none' : colorSet.primary;
   const variantYPos = (completed === false || active === false) ? '90%' : '75%';

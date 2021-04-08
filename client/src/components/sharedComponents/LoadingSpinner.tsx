@@ -1,9 +1,6 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled, {keyframes} from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   lightBaseColor,
   lightBorderColor,
@@ -83,28 +80,27 @@ interface Props {
 
 const LoadingSpinner = (props: Props) => {
   const {message, hideText} = props;
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const initialMessage = message && message.basic !== undefined
-    ? message.basic : getFluentString('global-text-value-loading');
+    ? message.basic : getString('global-text-value-loading');
 
   const [loadingMessage, setLoadingMessage] = useState<string>(initialMessage);
 
   useEffect(() => {
     const mediumTimer = setTimeout(() => {
       const newMessage = message && message.medium !== undefined
-        ? message.medium : getFluentString('global-text-value-loading-medium');
+        ? message.medium : getString('global-text-value-loading-medium');
       setLoadingMessage(newMessage);
     }, 2500);
     const longTimer = setTimeout(() => {
       const newMessage = message && message.long !== undefined
-        ? message.long : getFluentString('global-text-value-loading-long');
+        ? message.long : getString('global-text-value-loading-long');
       setLoadingMessage(newMessage);
     }, 8000);
     const extraLongTimer = setTimeout(() => {
       const newMessage = message && message.extraLong !== undefined
-        ? message.extraLong : getFluentString('global-text-value-loading-extra-long');
+        ? message.extraLong : getString('global-text-value-loading-extra-long');
       setLoadingMessage(newMessage);
     }, 15000);
     return () => {

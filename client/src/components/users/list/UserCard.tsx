@@ -1,176 +1,60 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
 import BackupImage from '../../../assets/images/default-user-image.jpg';
+import useFluent from '../../../hooks/useFluent';
+import { CardPeakListDatum } from '../../../queries/lists/getUsersPeakLists';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { comparePeakListLink, friendsWithUserProfileLink, preventNavigation } from '../../../routing/Utils';
+  useAcceptFriendRequestMutation,
+  useRemoveFriendMutation,
+  useSendFriendRequestMutation,
+} from '../../../queries/users/friendRequestMutations';
+import {usePeakListDataForUser} from '../../../queries/users/usePeakListDataForUser';
+import { UserDatum } from '../../../queries/users/useUserSearch';
+import { preventNavigation, userProfileLink } from '../../../routing/Utils';
 import {
   ButtonPrimary,
-  Card,
   GhostButton,
   lightBaseColor,
+  lightBorderColor,
+  SemiBold,
 } from '../../../styling/styleUtils';
 import {
   FriendStatus,
   PeakListVariants,
-  User,
 } from '../../../types/graphQLTypes';
-import { failIfValidOrNonExhaustive } from '../../../Utils';
-import { CardPeakListDatum } from '../../peakLists/list/ListPeakLists';
 import {
   formatDate,
   getDates,
   getType,
-} from '../../peakLists/Utils';
-import DynamicLink from '../../sharedComponents/DynamicLink';
-import { UserDatum } from './ListUsers';
-
-const GET_PEAK_LIST_DATA_FOR_USER = gql`
-  query getPeakListDataForUser($id: ID!) {
-    user(id: $id) {
-      id
-      peakLists {
-        id
-        name
-        shortName
-        type
-        parent {
-          id
-        }
-        numMountains
-        numCompletedAscents(userId: $id)
-        latestAscent(userId: $id)
-        isActive(userId: $id)
-      }
-      latestAscent {
-        mountain {
-          id
-          name
-        }
-        dates
-      }
-    }
-  }
-`;
-
-interface PeakListsForUserVariables {
-  id: string;
-}
-
-interface PeakListsForUserResponse {
-  user: {
-    id: User['id'];
-    peakLists: CardPeakListDatum[];
-    latestAscent: User['latestAscent'];
-  };
-}
-
-export const SEND_FRIEND_REQUEST = gql`
-  mutation sendFriendRequest($userId: ID!, $friendId: ID!) {
-  sendFriendRequest(userId: $userId, friendId: $friendId) {
-    id
-    friends {
-      status
-      user {
-        id
-        friends {
-          user {
-            id
-          }
-          status
-        }
-      }
-    }
-  }
-}
-`;
-
-export const ACCEPT_FRIEND_REQUEST = gql`
-  mutation acceptFriendRequest($userId: ID!, $friendId: ID!) {
-  acceptFriendRequest(userId: $userId, friendId: $friendId) {
-    id
-    friends {
-      status
-      user {
-        id
-        friends {
-          user {
-            id
-          }
-          status
-        }
-      }
-    }
-  }
-}
-`;
-
-export const REMOVE_FRIEND = gql`
-  mutation removeFriend($userId: ID!, $friendId: ID!) {
-  removeFriend(userId: $userId, friendId: $friendId) {
-    id
-    friends {
-      status
-      user {
-        id
-        friends {
-          user {
-            id
-          }
-          status
-        }
-      }
-    }
-  }
-}
-`;
-
-export interface FriendRequestVariables {
-  userId: string;
-  friendId: string;
-}
-
-export interface FriendRequestSuccessResponse {
-  id: User['id'];
-  friends: Array<{
-    user: {
-      id: User['id'];
-      friends: Array<{
-        user: {
-          id: User['id'];
-        }
-        status: FriendStatus;
-      }>;
-    },
-    status: FriendStatus;
-  }>;
-}
-
-const LinkWrapper = styled(DynamicLink)`
-  display: block;
-  color: inherit;
-  text-decoration: inherit;
-  grid-row: span 3;
-  grid-column: span 2;
-
-  &:hover {
-    color: inherit;
-  }
-`;
-
-export const Root = styled(Card)`
+} from '../../../utilities/dateUtils';
+import { failIfValidOrNonExhaustive } from '../../../Utils';
+const InlineCard = styled.div`
+  margin: 0 -1rem;
+  padding: 1rem;
+  border-top: solid 1px ${lightBorderColor};
   display: grid;
-  grid-template-columns: 6rem 1fr;
-  grid-template-rows: 1fr auto;
-  grid-column-gap: 1.1rem;
+  grid-template-columns: 4rem 1fr;
+  grid-column-gap: 1rem;
+
+  &:last-of-type {
+    border-bottom: solid 1px ${lightBorderColor};
+  }
+`;
+const FlexRow = styled.div`
+  display: flex;
+  font-size: 0.875rem;
+  color: ${lightBaseColor};
+`;
+
+const PullRight = styled.div`
+  margin-left: auto;
+  padding-left: 2rem;
+  white-space: nowrap;
 `;
 
 export const Title = styled.h1`
-  font-size: 1.3rem;
+  font-size: 1rem;
   margin-top: 0;
   margin-bottom: 0.4rem;
 `;
@@ -201,14 +85,6 @@ const TextTitle = styled.strong`
   text-transform: uppercase;
 `;
 
-const ButtonContainer = styled.div`
-  grid-column: 2
-  grid-row: 2;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-`;
-
 const DeclineButton = styled(GhostButton)`
   margin-right: 0.6rem;
 `;
@@ -217,20 +93,26 @@ const getListsInProgress =
   (peakLists: CardPeakListDatum[]) => {
     const completedLists: string[] = [];
     const listsInProgress: string[] = [];
-    peakLists.forEach(({numMountains, numCompletedAscents, type, shortName}) => {
-      let totalRequiredAscents: number;
+    peakLists.forEach(peakList => {
+      const {numCompletedTrips, type, shortName} = peakList;
+      const numMountains = peakList.numMountains ? peakList.numMountains : 0;
+      const numTrails = peakList.numTrails ? peakList.numTrails : 0;
+      const numCampsites = peakList.numCampsites ? peakList.numCampsites : 0;
+      const numItems = numMountains + numTrails + numCampsites;
+
+      let totalRequiredTrips: number;
       if (type === PeakListVariants.standard || type === PeakListVariants.winter) {
-        totalRequiredAscents = numMountains;
+        totalRequiredTrips = numItems;
       } else if (type === PeakListVariants.fourSeason) {
-        totalRequiredAscents = numMountains * 4;
+        totalRequiredTrips = numItems * 4;
       } else if (type === PeakListVariants.grid) {
-        totalRequiredAscents = numMountains * 12;
+        totalRequiredTrips = numItems * 12;
       } else {
+        totalRequiredTrips = 0;
         failIfValidOrNonExhaustive(type, 'Invalid value for type ' + type);
-        totalRequiredAscents = 0;
       }
 
-      if (totalRequiredAscents > 0 && numCompletedAscents === totalRequiredAscents) {// list complete
+      if (totalRequiredTrips > 0 && numCompletedTrips === totalRequiredTrips) {// list complete
         completedLists.push(shortName + getType(type));
       } else { // list is incomplete
         listsInProgress.push(shortName + getType(type));
@@ -248,29 +130,21 @@ interface Props {
   user: UserDatum;
   friendStatus: FriendStatus | null;
   currentUserId: string;
-  openInSidebar: boolean;
 }
 
 const UserCard = (props: Props) => {
-  const { user, friendStatus, currentUserId, openInSidebar} = props;
+  const { user, friendStatus, currentUserId} = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
-  const {loading, error, data} =
-    useQuery<PeakListsForUserResponse, PeakListsForUserVariables>(GET_PEAK_LIST_DATA_FOR_USER, {
-      variables: { id: user.id },
-    });
+  const {loading, error, data} = usePeakListDataForUser(user.id);
 
   const initialProfilePictureUrl = user.hideProfilePicture ? BackupImage : user.profilePictureUrl;
   const [profilePictureUrl, setProfilePictureUrl] = useState<string>(initialProfilePictureUrl);
 
-  const [sendFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(SEND_FRIEND_REQUEST);
-  const [acceptFriendRequestMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(ACCEPT_FRIEND_REQUEST);
-  const [removeFriendMutation] =
-    useMutation<FriendRequestSuccessResponse, FriendRequestVariables>(REMOVE_FRIEND);
+  const sendFriendRequestMutation = useSendFriendRequestMutation();
+  const acceptFriendRequestMutation = useAcceptFriendRequestMutation();
+  const removeFriendMutation = useRemoveFriendMutation();
 
   const sendFriendRequest = (e: React.SyntheticEvent) => {
     preventNavigation(e);
@@ -285,6 +159,8 @@ const UserCard = (props: Props) => {
     preventNavigation(e);
     removeFriendMutation({variables: {userId: currentUserId, friendId: user.id}});
   };
+
+  const url = userProfileLink(user.id);
 
   const numListsToShow = 3;
   let completedListsElement: React.ReactElement<any> | null;
@@ -325,13 +201,13 @@ const UserCard = (props: Props) => {
           listShortNames =
             listShortNames + ' & ' +
             (completedLists.length - numListsToShow) + ' ' +
-            getFluentString('global-text-value-more');
+            getString('global-text-value-more');
         }
       }
       completedListsElement = (
         <SubtitleSmall>
           <TextTitle>
-            {getFluentString('user-card-completed')}: </TextTitle>
+            {getString('user-card-completed')}: </TextTitle>
           {listShortNames}
         </SubtitleSmall>
       );
@@ -339,8 +215,8 @@ const UserCard = (props: Props) => {
     if (listsInProgress.length === 0) {
       listsInProgressElement = (
         <SubtitleSmall>
-          <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
-          {getFluentString('user-card-not-currently-working-on')}
+          <TextTitle>{getString('user-card-working-on')}: </TextTitle>
+          {getString('user-card-not-currently-working-on')}
         </SubtitleSmall>
       );
     } else {
@@ -364,12 +240,12 @@ const UserCard = (props: Props) => {
           listShortNames =
             listShortNames + ' & ' +
             (listsInProgress.length - numListsToShow) + ' ' +
-            getFluentString('global-text-value-more');
+            getString('global-text-value-more');
         }
       }
       listsInProgressElement = (
         <SubtitleSmall>
-          <TextTitle>{getFluentString('user-card-working-on')}: </TextTitle>
+          <TextTitle>{getString('user-card-working-on')}: </TextTitle>
           {listShortNames}
         </SubtitleSmall>
       );
@@ -389,13 +265,13 @@ const UserCard = (props: Props) => {
         preposition = Preposition.on;
       }
 
-      ascentText = getFluentString('user-profile-latest-ascents', {
+      ascentText = getString('user-profile-latest-ascents', {
         'mountain-name': mountain.name,
-        'preposition': preposition,
+        preposition,
         'date': formatDate(date),
       });
     } else {
-      ascentText = getFluentString('user-profile-no-recent-ascents');
+      ascentText = getString('user-profile-no-recent-ascents');
     }
 
   } else {
@@ -407,27 +283,27 @@ const UserCard = (props: Props) => {
   let cardContent: React.ReactElement<any> | null;
   if (friendStatus === null) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-        <ButtonContainer>
+        <PullRight>
           <ButtonPrimary onClick={sendFriendRequest}>
-            {getFluentString('user-profile-requests-add-friend')}
+            {getString('user-profile-requests-add-friend')}
           </ButtonPrimary>
-        </ButtonContainer>
-      </>
+        </PullRight>
+      </FlexRow>
     );
   } else if (friendStatus === FriendStatus.friends) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           <Subtitle>
             {ascentText}
@@ -435,56 +311,56 @@ const UserCard = (props: Props) => {
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-      </>
+      </FlexRow>
     );
   } else if (friendStatus === FriendStatus.sent) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           <Subtitle>
-            {getFluentString('user-profile-requests-pending-request')}
+            {getString('user-profile-requests-pending-request')}
           </Subtitle>
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-        <ButtonContainer>
+        <PullRight>
           <GhostButton onClick={removeFriend}>
-            {getFluentString('user-profile-requests-cancel-request')}
+            {getString('user-profile-requests-cancel-request')}
           </GhostButton>
-        </ButtonContainer>
-      </>
+        </PullRight>
+      </FlexRow>
     );
   } else if (friendStatus === FriendStatus.recieved) {
     cardContent = (
-      <>
+      <FlexRow>
         <TextContainer>
           <Title>
-            {user.name}
+            <Link to={url}><SemiBold>{user.name}</SemiBold></Link>
           </Title>
           <Subtitle>
-            {getFluentString('user-profile-sent-you-a-friend-request', {
+            {getString('user-profile-sent-you-a-friend-request', {
               name: user.name,
             })}
           </Subtitle>
           {completedListsElement}
           {listsInProgressElement}
         </TextContainer>
-        <ButtonContainer>
+        <PullRight>
           <DeclineButton onClick={removeFriend}>
-            {getFluentString('user-profile-requests-decline-request')}
+            {getString('user-profile-requests-decline-request')}
           </DeclineButton>
           <ButtonPrimary onClick={acceptFriendRequest}>
-            {getFluentString('user-profile-requests-accept-request')}
+            {getString('user-profile-requests-accept-request')}
           </ButtonPrimary>
-        </ButtonContainer>
-      </>
+        </PullRight>
+      </FlexRow>
     );
   } else {
-    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
     cardContent = null;
+    failIfValidOrNonExhaustive(friendStatus, 'Invalid value for friendStatus ' + friendStatus);
   }
 
   const opacity = friendStatus === FriendStatus.friends ? 1 : 0.2;
@@ -495,16 +371,9 @@ const UserCard = (props: Props) => {
     }
   };
 
-  const desktopURL = openInSidebar === true
-    ? friendsWithUserProfileLink(user.id) + window.location.search
-    : comparePeakListLink(user.id, 'none');
-
   return (
-    <LinkWrapper
-      mobileURL={comparePeakListLink(user.id, 'none')}
-      desktopURL={desktopURL}
-    >
-      <Root>
+    <InlineCard>
+      <Link to={url}>
         <ProfilePicture
           src={profilePictureUrl}
           style={{opacity}}
@@ -512,9 +381,11 @@ const UserCard = (props: Props) => {
           title={user.name}
           onError={onImageError}
         />
+      </Link>
+      <div>
         {cardContent}
-      </Root>
-    </LinkWrapper>
+      </div>
+    </InlineCard>
   );
 };
 

@@ -8,7 +8,7 @@ import {
   scaleLinear,
 } from 'd3-scale';
 import { Selection } from 'd3-selection';
-import { baseColor, lightBorderColor, linkColor } from '../../../styling/styleUtils';
+// import { primaryColor } from '../../../styling/styleUtils';
 
 export interface Datum {
   label: string;
@@ -27,7 +27,7 @@ interface Input {
   size: Dimensions;
 }
 
-export default (input: Input) => {
+const createBarGraph = (input: Input) => {
   const { svg, data, size } = input;
 
   const margin = {top: 10, right: 10, bottom: 10, left: 10};
@@ -53,28 +53,26 @@ export default (input: Input) => {
           'translate(' + margin.left + ',' + margin.top + ')');
 
   // format the data
-  data.forEach(function(d) {
-    d.value = +d.value;
-  });
+  data.forEach(d => d.value = +d.value);
 
   // Scale the range of the data in the domains
-  const maxXValue = max(data, function(d) { return d.value; });
+  const maxXValue = max(data, d => d.value);
   const definedMaxXValue = maxXValue !== undefined ? maxXValue : 0;
   x.domain([0,  definedMaxXValue]);
-  y.domain(data.map(function(d) { return d.label; }));
+  y.domain(data.map(d => d.label));
 
   // append the rectangles for the bar chart
   svg.selectAll()
       .data(data)
     .enter().append('rect')
-      .attr('width', function(d) {return x(d.value); } )
+      .attr('width', (d) => x(d.value))
       .attr('transform', 'translate(' + margin.left + ', ' + 0 + ')')
       .attr('y', function(d) {
         const val = y(d.label);
         return val !== undefined ? val : 0;
       })
       .attr('height', y.bandwidth())
-      .style('fill', lightBorderColor)
+      .style('fill', '#659dca')
       .style('cursor', (d) => {
         if (d.onClick) {
           return 'pointer';
@@ -92,7 +90,7 @@ export default (input: Input) => {
   svg.selectAll()
       .data(data)
     .enter().append('text')
-      .attr('width', function(d) {return x(d.value); } )
+      .attr('width', d => x(d.value))
       .attr('transform', 'translate(' + (margin.left + 10) + ', ' + (y.bandwidth() * .7) + ')')
       .attr('y', function(d) {
         const val = y(d.label);
@@ -101,27 +99,16 @@ export default (input: Input) => {
       .attr('height', y.bandwidth() / 2)
       .text(d => `${d.label} (${d.value})`)
       .style('font-size', '12px')
-      .style('text-transform', 'capitalize')
       .style('font-weight', '600')
-      .style('fill', (d) => {
-        if (d.onClick) {
-          return linkColor;
-        } else {
-          return baseColor;
-        }
-      })
+      .style('fill', '#333')
+      .style('stroke', '#fff')
+      .style('stroke-width', '3px')
+      .style('paint-order', 'stroke')
       .style('cursor', (d) => {
         if (d.onClick) {
           return 'pointer';
         } else {
           return 'auto';
-        }
-      })
-      .style('text-decoration', (d) => {
-        if (d.onClick) {
-          return 'underline';
-        } else {
-          return 'none';
         }
       })
       .on('click', (d) => {
@@ -146,3 +133,5 @@ export default (input: Input) => {
   svg.append('g')
       .attr('transform', 'translate(' + margin.left + ', 0)');
 };
+
+export default createBarGraph;

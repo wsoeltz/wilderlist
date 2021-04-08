@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 import React from 'react';
 import styled from 'styled-components/macro';
@@ -14,6 +15,8 @@ const Root = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-column-gap: 0.5rem;
+  transform: translateX(-0.5rem);
 `;
 
 const Percentage = styled.div<{colorSet: ColorSet}>`
@@ -23,7 +26,8 @@ const Percentage = styled.div<{colorSet: ColorSet}>`
   z-index: 100;
   font-family: ${secondaryFont};
   padding: 2px;
-  font-size: 2rem;
+  font-size: 1.25rem;
+  line-height: 0;
   color: ${({colorSet}) => colorSet.secondary};
 `;
 
@@ -42,7 +46,7 @@ const SvgBase = styled.svg`
   }
 
   .${clipPathId}background {
-    opacity: 0.3;
+    opacity: 0.2;
     transition: all 0.2s ease-in-out;
   }
   .${clipPathId}foreground {
@@ -55,14 +59,15 @@ interface Props {
   completed: number;
   total: number;
   id: string;
+  hidePercentage?: boolean;
 }
 
 const PeakProgressBar = (props: Props) => {
-  const { id, total, completed, variant } = props;
+  const { id, total, completed, variant, hidePercentage } = props;
   const percentage = (completed / total) * 100;
-  const roundedPercentage = roundPercentToSingleDecimal(completed, total);
+  const roundedPercentage = isNaN(percentage) ? 0 : roundPercentToSingleDecimal(completed, total);
   const colorSet = variant === null ? colorSetGray : getColorSetFromVariant(variant);
-  const percentageElm = roundedPercentage > 0 ? <Percentage colorSet={colorSet}>{roundedPercentage}%</Percentage> : null;
+  const percentageElm = !hidePercentage ? <Percentage colorSet={colorSet}>{roundedPercentage}%</Percentage> : null;
   return (
     <Root>
       <SvgContainer>
@@ -70,7 +75,7 @@ const PeakProgressBar = (props: Props) => {
            viewBox='0 0 545 29.8'>
           <defs>
             <clipPath id={`${clipPathId}${id}`}>
-              <rect x='0' y='0' width={`${percentage}%`} height='100%'></rect>
+              <rect x='0' y='0' width={`${isNaN(percentage) ? 0 : percentage}%`} height='100%'></rect>
             </clipPath>
           </defs>
           <g className={`${clipPathId}background`}>

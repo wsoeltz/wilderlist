@@ -1,5 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
+import { createPortal } from 'react-dom';
+import styled from 'styled-components/macro';
+import { overlayPortalContainerId } from '../../Utils';
 import LoadingSimple from './LoadingSimple';
 
 const Root = styled.div`
@@ -18,13 +20,10 @@ const Root = styled.div`
   cursor: progress;
 `;
 
-const LoadingSuspense = () => {
-
-  return (
-    <Root>
-      <LoadingSimple size={60} />
-    </Root>
-  );
-};
+const LoadingSuspense = () => createPortal((
+  <Root>
+    <LoadingSimple size={60} />
+  </Root>
+), document.querySelector(`#${overlayPortalContainerId}`) as Element);
 
 export default LoadingSuspense;

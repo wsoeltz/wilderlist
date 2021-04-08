@@ -3,12 +3,18 @@ global-text-value-default-meta-description = Track, plan and share your hiking a
 
 meta-data-list-search-default-title = Search hiking lists - Wilderlist
 meta-data-mtn-search-default-title = Search mountains - Wilderlist
+meta-data-campsite-search-default-title = Search campsites - Wilderlist
+meta-data-trail-search-default-title = Search trails - Wilderlist
 meta-data-friend-search-default-title = Friends - Wilderlist
 meta-data-settings-default-title = Settings - Wilderlist
-meta-data-dashboard-default-title = Dashboard - Wilderlist
-meta-data-your-stats-default-title = Your Stats - Wilderlist
+meta-data-dashboard-default-title = Saved Items - Wilderlist
+meta-data-your-stats-default-title = Your Data - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
 meta-data-about-title = About - Wilderlist
+meta-data-log-trip-title = Log a Trip - Wilderlist
+meta-data-log-add-list = Create Hiking List - Wilderlist
+meta-data-log-add-mountain = Add Mountain - Wilderlist
+meta-data-log-add-campsite = Add Campsite - Wilderlist
 meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
 meta-data-detail-default-title = { $title }{
   $type ->
@@ -26,17 +32,28 @@ meta-data-compare-peak-list-title = Comparing { $title }{
   } with { $user } - Wilderlist
 meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
 
-meta-data-mountain-detail-description = { $name }{ $state } stands at { $elevation }ft high{ $additionaltext }. View trails, camping, directions, weather, and trip reports for { $name }.
+meta-data-mountain-detail-description = { $name }, { $state } stands at { $elevation }ft high. View trails, camping, directions, weather, and trip reports for { $name }.
+
+meta-data-campsite-detail-description = { $name } is { $a } { $type } in { $location }.
+
+meta-data-trail-detail-description = { $name } is a { $length } long { $type } in { $location }.
+
+meta-data-summit-view-title = Summit view of { $name } - Wilderlist
+meta-data-summit-view-description = View a 360 degree interactive summit for { $name }
+
+meta-data-auto-route-description = Explore maps, elevation profiles, weather reports and more for a { $title-lower-case }
 
 meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
-meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
+meta-data-peak-list-search-description = Search for popular hiking lists across the USA.
+meta-data-campsite-search-description = Search for campsites and find maps, directions, local trails, weather and trip reports.
+meta-data-trail-search-description = Search for trails and find maps, directions, local campsites, weather and trip reports.
 
 meta-data-peak-list-detail-description = {
   $type ->
-  *[standard] Plan and track your ascents of { $list-name } ({ $list-short-name }) with maps, weather, trip reports and directions for all { $num-mountains } peaks{ $state-or-region-string }.
-  [winter] Plan and track your ascents of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions for all { $num-mountains } peaks.
-  [fourSeason] Plan and track your 4-Season ascents on the peaks of the { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
-  [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and robust tracking tools.
+  *[standard] Plan and track your trips on { $list-name } ({ $list-short-name }) with maps, trails, weather, trip reports, directions and more.
+  [winter] Plan and track your trips of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions.
+  [fourSeason] Plan and track your 4-Season trips on { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
+  [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and tracking tools.
 }
 
 meta-data-privacy-policy-description = Read Wilderlist's Privacy Policy.
@@ -50,13 +67,65 @@ global-text-value-detail-view = Detail
 
 global-text-value-search-hiking-lists = Search hiking lists
 global-text-value-search-mountains = Search mountains
+global-text-value-search-trails = Search trails
+global-text-value-search-campsites = Search campsites
 global-text-value-search-users = Search users
+global-text-value-search-geo = Search for a location
 
 global-text-value-generic-user = Wilderlist User
 global-text-value-private = Private
+global-text-value-private-list = This list is private
 
+global-text-value-search-mountains-to-add = Search for mountains to add
+global-text-value-search-trails-to-add = Search for trails to add
+global-text-value-search-campsites-to-add = Search for campsites to add
 
+global-text-value-view-route = View route
+
+global-text-value-fitler-items = Filter {
+  $type ->
+    [mountain] mountains
+    [campsite] campsites
+    [trail] trails
+    *[other] items
+} on list
+
+global-text-value-miles-to = {
+  $miles ->
+    [1] mile
+    *[else] miles
+} to {
+  $type ->
+    [mountain] summit
+    [campsite] campsite
+    [trail] summit
+    *[other] point
+}
+global-text-value-feet-to = {
+  $feet ->
+    [1] foot
+    *[else] feet
+} to {
+  $type ->
+    [mountain] summit
+    [campsite] campsite
+    [trail] summit
+    *[other] point
+}
+
+global-text-value-no-routes-to = No {
+  $type ->
+    [mountain] routes to summit
+    [campsite] nearby campsites
+    [trail] nearby mountains
+    *[other] routes to point
+} found
+
+global-text-value-results-near-center = Showing { $type } near map center
+global-text-value-results-bottom-of-results = Move the map or use the search bar to find more { $type }
 global-text-value-no-results-found = No results found.
+global-text-value-no-items-found = No { $type } found.
+global-text-value-no-items-found-map = No { $type } found near this location.
 global-text-value-no-results-found-for-term = No results found for&#32;<strong>{ $term }</strong>
 global-text-value-no-users-found-for-term = No users found for&#32;<strong>{ $term }</strong>
 global-text-value-are-you-sure-modal = Please Confirm
@@ -66,13 +135,32 @@ global-text-value-modal-create-trip-report = Create Trip Report
 global-text-value-modal-cancel = Cancel
 global-text-value-cancel-delete-request = Cancel delete request
 global-text-value-modal-close = Close
-global-text-value-modal-mark-complete = Log Ascent
+global-text-value-modal-close-menu = Close Menu
+global-text-value-modal-close-panel = Close Panel
+global-text-value-modal-mark-complete = Log Trip
 global-text-value-description = Description
 global-text-value-directions = Directions
+global-text-value-start-at = Start at
+global-text-value-end-at = End at
+global-text-value-yes = Yes
+global-text-value-no = No
 global-text-value-more = more
+global-text-value-or = or
+global-text-value-in = in
+global-text-value-to = to
+global-text-value-from = from
+global-text-value-others = {
+  $count ->
+    [1] other
+    *[other] others
+}
 global-text-value-on = on
 global-text-value-back = Back
 global-text-value-loading = Loading
+global-text-value-loading-routes = Finding routes
+global-text-value-loading-campsites = Finding campsites
+global-text-value-loading-mountains = Finding mountains
+global-text-value-loading-directions = Finding directions
 global-text-value-loading-medium =  This is taking awhile, please don't get lost
 global-text-value-loading-long =  Our bearing seems to be off, sorry about the wait
 global-text-value-loading-extra-long =  Hmmm, I don't know how we got here. Contact us at help@wilderlist.app if these loading times continue
@@ -81,10 +169,12 @@ global-text-value-contact = Contact
 global-text-value-phone = Phone
 global-text-value-website = Website
 
-
 global-error-retrieving-data = There was an error retrieving the data. Please try refreshing or accessing a different page. If the problem persists, contact us at help@wilderlist.app
 global-error-saving-data = There was a network error trying to save the data. Please try again. If the problem persists, contact us at help@wilderlist.app
 global-text-value-no-permission = You do not have permission to access this page. If you think this is in error, please contact us at help@wilderlist.app
+global-text-value-none-avail = None Available
+global-text-value-none-yet = None Yet
+global-text-value-no-data = No Data
 
 global-text-value-modal-reddit = Reddit
 global-text-value-modal-email = Email
@@ -92,35 +182,98 @@ global-text-value-modal-email-address = Email Address
 global-text-value-name = Name
 global-text-value-profile-picture = Profile Picture
 global-text-value-modal-sign-up-today = Start tracking progress on { $list-short-name } with a free account
-global-text-value-modal-sign-up-today-import = Import your data for { $list-short-name } in just a few clicks
-global-text-value-modal-sign-up-today-export = Export your data for { $list-short-name } with a free account
+global-text-value-modal-sign-up-today-save = Save { $list-short-name } for later with a free account
+global-text-value-modal-sign-up-today-import = Import your data and start tracking your progress in just a few clicks
+global-text-value-modal-sign-up-today-export = Export your data with a free account
+global-text-value-modal-sign-up-today-download-gpx = Download GPX tracks with a free account
 global-text-value-modal-sign-up-today-ascents-list = Start tracking ascents for { $mountain-name } and other peaks with a free account
+global-text-value-modal-sign-up-log-trips = Start logging trips with a free account
 
 global-text-value-modal-cancel-request-text = This will cancel your request to have { $name } deleted.
 global-text-value-modal-request-delete-title = Request delete
 global-text-value-modal-request-delete-text = This will submit a request to have { $name } deleted. Are you sure you want to continue?
 
+global-text-value-unsaved-changes = You have changes that won't be saved if you leave. Are you sure you want to continue?
+
 global-text-value-mountain = Mountain
 global-text-value-mountains = Mountains
+global-text-value-trails = Trails
+global-text-value-campsite = Campsite
+global-text-value-campsites = Campsites
+global-text-value-camping = Camping
+global-text-value-parking = Parking
 global-text-value-ascents = ascents
 global-text-value-dates = Dates
 global-text-value-date = Date
 global-text-value-regions = Regions
 global-text-value-state = State
+global-text-value-length = Length
+global-text-value-distance = Distance
+global-text-value-duration = Duration
+global-text-value-average-incline = Average Incline
+global-text-value-total-segments = Total Segments
+global-text-value-totals = Totals
+global-text-value-progress = Progress
+global-text-value-contributions = Contributions
+global-text-value-timeline = Timeline
+global-text-value-incline = Incline
+global-text-value-max-incline = Max. Incline
+global-text-value-min-incline = Min. Incline
+global-text-value-max = Max
+global-text-value-min = Min
+global-text-value-loss = Loss
+global-text-value-gain = Gain
 global-text-value-elevation = Elevation
 global-text-value-elevation-gain = Elevation Gain
 global-text-value-high-point = Highest Point
 global-text-value-low-point = Lowest Point
 global-text-value-trail = Trail
+global-text-value-trail-segments = Trail Segments
 global-text-value-feet = feet
+global-text-value-meters = meters
 global-text-value-latitude = Latitude
 global-text-value-longitude = Longitude
 global-text-value-prominence = Prominence
 global-text-value-location = Location
 global-text-value-everywhere = Everywhere
 global-text-value-ascent-dates = Your Ascents
+global-text-value-item-notes-and-dates = Your notes and {
+  $type ->
+    [mountain] Ascents
+    [campsite] Trips
+    [trail] Hikes
+    *[other] Trips
+}
+global-text-value-item-dates = Your {
+  $type ->
+    [mountain] Ascents
+    [campsite] Trips
+    [trail] Hikes
+    *[other] Trips
+}
 global-text-value-done = Hiked
 global-text-value-not-done = Not Hiked
+
+global-text-value-neither-hiked = Neither have Hiked
+global-text-value-one-hiked = One has Hiked
+global-text-value-both-hiked = Both have Hiked
+
+global-text-value-not-done-dynamic = 
+global-text-value-not-done-dynamic = {
+  $type ->
+    [mountains] Not yet hiked
+    [campsites] Not yet camped
+    [trails] Not yet hiked
+    *[other] Not yet visited
+}
+global-text-value-last-trip-dynamic = {
+  $type ->
+    [mountains] You last hiked on
+    [campsites] You last camped on
+    [trails] You last hiked on
+    *[other] Your last trip on
+}
+global-text-value-last-trip = Last trip
 global-text-value-today = Today
 global-text-value-yesterday = Yesterday
 global-text-value-summer = Summer
@@ -156,6 +309,22 @@ global-formatted-text-date = {
   [12] December
 } { $day }, { $year }
 
+global-formatted-text-date-compact = {
+  $month ->
+  *[1] Jan
+  [2] Feb
+  [3] Mar
+  [4] Apr
+  [5] May
+  [6] Jun
+  [7] Jul
+  [8] Aug
+  [9] Sep
+  [10] Oct
+  [11] Nov
+  [12] Dec
+} { $day }, { $year }
+
 global-formatted-text-date-day-month = {
   $month ->
   *[1] January
@@ -188,6 +357,151 @@ global-formatted-text-month-year = {
   [12] December
 } { $year }
 
+global-formatted-trail-type = {
+  $type ->
+  *[trail] trail
+  [dirtroad] dirt road
+  [path] path
+  [stairs] path
+  [cycleway] bike trail
+  [road] road
+  [hiking] trail
+  [bridleway] trail
+  [demanding_mountain_hiking] trail
+  [mountain_hiking] trail
+  [herdpath] herd path
+  [alpine_hiking] alpine trail
+  [demanding_alpine_hiking] alpine trail
+  [difficult_alpine_hiking] alpine trail
+  [parent_trail] feature route
+}
+
+global-formatted-campsite-type = {
+  $type ->
+  *[camp_site] campsite
+  [caravan_site] campground
+  [weather_shelter] shelter
+  [camp_pitch] tentsite
+  [lean_to] lean-to
+  [wilderness_hut] wilderness hut
+  [alpine_hut] alpine hut
+  [basic_hut] hut
+  [rock_shelter] rock shelter
+}
+
+global-formatted-anything-type = {
+  $type ->
+  [camp_site] campsite
+  [caravan_site] campground
+  [weather_shelter] weather shelter
+  [camp_pitch] tentsite
+  [lean_to] lean-to
+  [wilderness_hut] wilderness hut
+  [alpine_hut] alpine hut
+  [basic_hut] basic hut
+  [rock_shelter] rock shelter
+  [trail] trail
+  [dirtroad] dirt road
+  [path] path
+  [stairs] path
+  [cycleway] bike trail
+  [road] road
+  [hiking] trail
+  [bridleway] trail
+  [demanding_mountain_hiking] trail
+  [mountain_hiking] trail
+  [herdpath] herd path
+  [alpine_hiking] alpine trail
+  [demanding_alpine_hiking] alpine trail
+  [difficult_alpine_hiking] alpine trail
+  [parent_trail] feature route
+  [information_board] information board
+  [information_map] information map
+  [picnic_site] picnic site
+  [park] park
+  [trailhead] trailhead
+  [parking_space] parking area
+  [parking] parking lot
+  [intersection] trail/road crossing
+  *[other] point
+}
+
+global-type-official-classification = {
+  $type ->
+  [camp_site] campsite
+  [caravan_site] campground
+  [weather_shelter] weather shelter
+  [camp_pitch] tentsite
+  [lean_to] lean-to
+  [wilderness_hut] wilderness hut
+  [alpine_hut] alpine hut
+  [basic_hut] basic hut
+  [rock_shelter] rock shelter
+  [trail] trail
+  [dirtroad] dirt road
+  [path] path
+  [stairs] stairs
+  [cycleway] bike trail
+  [road] road
+  [hiking] hiking trail
+  [bridleway] horse trail
+  [demanding_mountain_hiking] demanding mountain hiking trail
+  [mountain_hiking] mountain hiking trail
+  [herdpath] herd path
+  [alpine_hiking] alpine trail
+  [demanding_alpine_hiking] demanding alpine trail
+  [difficult_alpine_hiking] difficult alpine trail
+  [parent_trail] parent route
+  [information_board] information board
+  [information_map] information map
+  [picnic_site] picnic site
+  [park] park
+  [trailhead] trailhead
+  [parking_space] parking area
+  [parking] parking lot
+  [intersection] trail/road crossing
+  *[other] point
+}
+
+global-type-official-classification-description = {
+  $type ->
+  [camp_site] An area that has space for multiple tents.
+  [caravan_site] A vehicle accessible camping area. It likely has at least some basic facilities and RVs may be allowed.
+  [weather_shelter] Designed to protect people from the elements.
+  [camp_pitch] An area for a single tent or a few small tents.
+  [lean_to] A simple shelter for sleeping in, typically designed with three walls and a roof.
+  [wilderness_hut] A backcountry building designed for sleeping in. It often includes some basic amenities.
+  [alpine_hut] A backcountry building designed for sleeping in. It often includes some basic amenities.
+  [basic_hut] A building designed for sleeping in. It may includes some basic amenities.
+  [rock_shelter] A basic structure designed to protect from the elements.
+  [trail] A primarily foot-accessible pathway.
+  [dirtroad] An unpaved road. Vehicles may be allowed.
+  [path] A foot-accessible pathway that could be a trail, sidewalk, road or other.
+  [stairs] A vertical series of steps over an incline.
+  [cycleway] A bike-accessible trail or road.
+  [road] A vehicle accessible road. Foot travel may also be permitted.
+  [hiking] A primarily foot-accessible trail.
+  [bridleway] A horse-accessible trail or road.
+  [demanding_mountain_hiking] A very difficult hiking trail in the mountains.
+  [mountain_hiking] A difficult hiking trail in the mountains.
+  [herdpath] A trail that has formed primarily by the repeated use of people or animals. Often not maintained.
+  [alpine_hiking] An advanced hiking trail in the mountains. Use of hands may be necessary.
+  [demanding_alpine_hiking] An advanced hiking trail in the mountains. May require climbing equipment.
+  [difficult_alpine_hiking] An expert level hiking trail in the mountains. Requires climbing equipment and experience.
+  [parent_trail] A feature route linking together a number of other trails.
+  [information_board] A board with information about the area.
+  [information_map] A board with a map of the area.
+  [picnic_site] A place with picnic tables.
+  [park] A place with greenspace for people to hang out or walk around in.
+  [trailhead] The start of a trail.
+  [parking_space] A spot for one or a very small number of cars.
+  [parking] An area for a number of cars to be parked.
+  [intersection] A point at which a trail and a road cross each other.
+  *[other] A point on the map.
+}
+
+global-view-all-classifications = View all classifications
+
 global-text-value-weeks = weeks
 global-text-value-week = week
 global-text-value-days = days
@@ -206,12 +520,17 @@ global-text-value-completed-in-every-month = Completed in every month
 global-text-value-completed-in-every-season = Completed in every season
 global-text-value-mountain-not-being-pursued = This mountain is not being pursued
 
+global-text-value-appears-on = Find { $name } on:
+
 global-text-value-submit = Submit
 global-text-value-clear = Clear
 
+global-text-value-copy = Copy
 global-text-value-edit = Edit
+global-text-value-change = Change
 global-text-value-save-and-add = Save and Add Another
 global-text-value-save = Save
+global-text-value-saved = Saved
 global-text-value-save-changes = Save Changes
 global-text-value-saving = Saving
 global-text-value-all-changes-saved = All Changes Saved
@@ -220,12 +539,17 @@ global-form-html-required-note = <span class="red-text">*</span> Indicates a req
 
 global-text-value-selected = Selected
 
+global-text-value-your-location = Your Location
+
 global-text-value-delete = Delete
 global-text-value-remove = Remove
 
-global-text-value-flag = Flag
+global-text-value-flag = Report Issue
 global-text-value-optional = Optional
 global-text-value-parent = Parent
+
+global-text-value-privacy = Privacy
+global-text-value-visibility = Visibility
 
 global-text-value-other-list-versions = Other Version of this list
 
@@ -235,6 +559,7 @@ global-text-value-add-external-resources = Add Another Resource
 global-text-value-resource-title = Resource Title
 global-text-value-resource-url = http://example.com
 
+global-text-value-tracking-type = Tracking Type
 global-text-value-type = Type
 global-text-value-list-type = {
   $type ->
@@ -276,16 +601,48 @@ global-text-value-list-tier-desc =
   <strong>Mountaineer</strong> lists may have any number of peaks <strong>and/or</strong> require a high fitness level and may require advanced mountaineering skills.
   </p>
 
+global-text-value-list-variant-desc =
+  <p>
+  <strong>Standard</strong> - tracks your progress towards logging a trip for every point on this list.
+  </p>
+  <p>
+  <strong>Winter</strong> - tracks your progress towards logging a trip in <strong><em>calendar winter</em></strong> for every point on this list.
+  </p>
+  <p>
+  <strong>4-Season</strong> - tracks your progress towards logging a trip in <strong><em>each season</em></strong> for every point on this list.
+  </p>
+  <p>
+  <strong>Grid</strong> - tracks your progress towards logging a trip in <strong><em>each month</em></strong> for every point on this list.
+  </p>
 
-header-text-login-with-google = Login With Google
-header-text-login-with-reddit = Login With Reddit
-header-text-login-with-facebook = Login With Facebook
 
-header-text-menu-item-dashboard = Dashboard
+global-add-trip-report = Log&nbsp;a Trip
+global-create-route = Plan a Route
+global-plan-trip = Plan&nbsp;a Trip
+global-3d-mode-on = Turn&nbsp;on 3D&nbsp;Mode
+global-3d-mode-off = Turn&nbsp;off 3D&nbsp;Mode
+global-map-layers = Layers
+global-tools-and-settings = Tools
+
+global-text-details = Details
+global-text-nearby = Nearby
+global-text-classification = Classification
+global-text-information = Information
+global-text-amenities = Amenities
+
+
+header-text-login-with-google = Log in with Google
+header-text-login-with-reddit = Log in with Reddit
+header-text-login-with-facebook = Log in with Facebook
+header-text-login-or-sign-up = Log in or Sign up
+
+header-text-menu-item-dashboard = Saved
 header-text-menu-item-lists = Hiking Lists
 header-text-menu-item-lists-short = Lists
 header-text-menu-item-mountains = Mountains
-header-text-menu-item-your-stats = Your Stats
+header-text-menu-item-trails = Trails
+header-text-menu-item-camping = Camping
+header-text-menu-item-your-stats = Your Data
 header-text-menu-item-about = About
 header-text-menu-item-your-stats-short = Stats
 header-text-menu-item-friends = Friends
@@ -297,6 +654,9 @@ header-text-menu-privacy-policy = Privacy Policy
 header-text-menu-terms-of-use = Terms of Use
 
 notification-bar-ascent-marked = marked you as hiking
+notification-bar-camped-marked = marked you as camping at
+
+dashboard-title = Saved Items
 
 login-page-plan-your-trip-title = Plan your trip
 login-page-plan-your-trip-desc = ● Maps ● Trails ● Camping ● Weather Forecasts ● Trip Reports ● Driving Directions
@@ -308,6 +668,9 @@ login-page-track-your-adventure-li-4 = ● Easily upload your existing hiking li
 login-page-track-your-adventure-li-5 = ● Create and share your own lists
 login-page-sign-up-for-free = Sign Up For Free
 
+landing-popup-welcome = Welcome to
+landing-popup-learn-more = Learn more about Wilderlist
+landing-popup-desc = Plan your trips and track your adventures with the ultimate tool for ardent hikers and peak-baggers. Explore our comprehensive database of mountains, trails and campsites complete with live weather forecasts, snow reports, driving directions, summit routes and much more. Log your trips and view your progress across a number of popular hiking lists or create your own.
 
 settings-page-sync-your-account-help = To update your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">name</a>, email, or <a href="https://support.google.com/mail/answer/35529?hl=en&ref_topic=3394219" target="__blank">profile picture</a>, you must change it from your <a href="https://support.google.com/mail/answer/8158?hl=en" target="__blank">Google Account</a> and then log back in here. If you made changes and they are not showing up, try <a href="/api/logout">logging out</a> out and then logging back in.
 
@@ -326,15 +689,45 @@ settings-page-notification-settings-email = Email Notifications
 settings-page-delete-account = Delete your Account
 settings-page-delete-account-text = If you no longer wish to have an account on Wilderlist, you may contact us at <strong>help@wilderlist.app</strong> and we will delete your account. <strong>This action is permanent and CANNOT be undone. All your data will be deleted.</strong>
 
-dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them with the green 'Start Tracking' button to save them to your profile. Any mountains you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+dashboard-empty-state-no-active-lists-text = You haven't added any active lists yet. Search for lists and add them by clicking the blue star button to save them to your account. Any mountains, trails, or campsites you mark done will be tracked across every list on Wilderlist, regardless of whether you have started it or not. Happy hiking!
+
+dashboard-empty-state-no-saved-mountains-text = You haven't saved any mountains yet. Search for mountains and add them by clicking the blue star button to save them to your account.
+
+dashboard-empty-state-no-saved-trails-text = You haven't saved any trails yet. Search for trails and add them by clicking the blue star button to save them to your account.
+
+dashboard-empty-state-no-saved-campsites-text = You haven't saved any campsites yet. Search for campsites and add them by clicking the blue star button to save them to your account.
+
 dashboard-empty-state-no-active-lists-button = Find Hiking Lists
 dashboard-empty-state-no-friends-text = You haven't added any friends yet.
 dashboard-empty-state-no-friends-button = Find Friends
 dashboard-suggested-lists = Suggested Lists
 
+dashboard-empty-state-no-saved-mountains = Find Mountains
+dashboard-empty-state-no-saved-trails = Find Trails
+dashboard-empty-state-no-saved-campsites = Find Campsites
+
 dashboard-back-to-dashboard = Back to Dashboard
 
-your-stats-title = Your Stats
+your-stats-title = Your Data
+stats-percent-of-all-trips = Percent of all trips
+stats-total-trips-here = Total trips here
+stats-total-trips-title = Total trips by State & County
+stats-trips-seasons-title = Total trips in every season
+stats-trips-years-title = Total trips in every year
+stats-top-10-title = Top 10
+stats-total-vs-unique-title = Total vs Unique Points Hiked/Camped
+stats-total-hiked = Total hiked
+stats-total-camped = Total stayed at
+stats-unique-hiked = Unique hiked
+stats-unique-camped = Unique stayed at
+global-text-hiked-mountains = hiked mountains
+global-text-hiked-trails = hiked trails
+global-text-camped-at = camped at
+global-text-total = Total
+global-text-unique = Unique
+
+stats-about-total = <strong>Total</strong> is the absolute amount of times you have logged a point and counts each repeated trip to a mountain, trail or campsite separately. If you have hiked a mountain 3 times it will be counted three times.
+stats-about-unique = <strong>Unique</strong> is the the number of distinct mountains, trails and campsites you have logged trips for. If you have hiked a mountain 3 times it will still only be counted once.
 
 stats-mountain-panel = All In Progress & Completed Mountains
 stats-total-mountains = ({ $total } total)
@@ -366,11 +759,22 @@ stats-average-time-context-note-html = Average time is calculated based on the t
 stats-top-hiked-states = Top Hiked States
 stats-top-hiked-years = Top Hiked Years
 stats-top-hiked-seasons = Top Hiked Seasons
-stats-total-lifetime-elevation = Total Lifetime elevation
-stats-total-lifetime-context-note = Lifetime Elevation is calculated based on the total elevation of each peak hiked for a given day. Wilderlist does not currently take into account prominence or elevation gain.
+stats-total-lifetime-elevation = Your total summit elevation
+stats-total-lifetime-mileage = Your total trail mileage
+stats-total-lifetime-days-camped = Your total nights camped
+stats-total-lifetime-context-note = Total elevation is calculated based on the total elevation of each peak hiked for a given trip. Wilderlist does not currently take into account prominence or elevation gain.
+stats-total-lifetime-mileage-context-note = Total mileage is calculated based on the total length of each logged trail on a given trip. Wilderlist does not yet support accurate route tracking.
 stats-your-lists = Your Hiking Lists
-stats-your-lists-pursued = Hiking lists being pursued
-stats-your-lists-complete = Hiking lists completed
+stats-your-lists-pursued = {
+  $count ->
+    [1] Hiking list being pursued
+    *[other] Hiking lists being pursued
+}
+stats-your-lists-complete = {
+  $count ->
+    [1] Hiking list completed
+    *[other] Hiking lists completed
+}
 stats-your-lists-percent = Percentage Complete For All Lists
 stats-no-average-time = You need more than one recorded hike with a full date to see your average.
 stats-average-time-since-start = Average time between hikes since { $start-date }
@@ -393,10 +797,13 @@ peak-list-text-latest-ascent = {
     *[false] in
     [true] on
 }
-peak-list-text-no-completed-ascent = No completed ascents yet
+peak-list-text-no-completed-ascent = No logged hikes yet
 peak-list-text-completed-ascent = Completed Ascents
+peak-list-text-total-points = Total Points
 peak-list-text-total-ascents = Total Ascents
 peak-list-text-across-the-us = Across the US
+
+peak-list-text-last-hiked = You last hiked on
 
 peak-list-detail-text-modal-remove-confirm = Remove&#32;<strong>{ $peak-list-name }</strong>&#32;from your active lists?
 peak-list-detail-text-begin-list = Start Tracking
@@ -406,65 +813,64 @@ peak-list-detail-filter-mountains = Filter mountains
 
 peak-list-detail-list-overview-empty = { $list-name } does not yet have any mountains associated with it.
 
-peak-list-detail-list-standard-para-1 = The { $list-name } {
-  $type ->
-    *[standard] {""}
-    [winter] in the Winter
-    [fourSeason] 4-Season
-    [grid] Grid
-} is a list with {
-  $number-of-peaks ->
-    [1] 1 mountain that is
-    *[other] { $number-of-peaks } mountains that are
-} located ⁨{
+global-item-count = {
+  $count ->
+    [1] 1 { $type }
+    *[other] { $count } { $type }s
+}
+global-of-trail = {
+  $count ->
+    [1] of trail
+    *[other] of trails
+}
+
+peak-list-detail-list-standard-para-1 = { $list-name } is a hiking list that contains { $mountains-trails-campsites } located ⁨{
   $state-or-region ->
     [state] within
     *[region] throughout
-} { $state-region-name }. Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest point on the { $list-name }. The smallest mountain is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
+} { $state-region-name }.
 
-peak-list-detail-list-standard-para-2 = Explore the different peaks and track your progress towards completing the { $list-name } below.
+peak-list-detail-list-standard-para-1-mountains = Sitting at { $highest-mountain-elevation }ft, ⁨{ $highest-mountain-name } is the highest mountain on the list. The smallest is { $smallest-mountain-name } at { $smallest-mountain-elevation }ft.
 
-peak-list-detail-list-winter-has-parent-para-1 = The { $list-name } In the Winter ({ $short-name } - Winter) takes the standard { $parent-list-name } list to the next level. Just like it's any-season counterpart, { $short-name } - Winter spans {
-  $number-of-peaks ->
-    [1] 1 peak
-    *[other] { $number-of-peaks } peaks
-} in { $state-region-name }. Each mountain stands at over { $min-elevation-rounded } feet of elevation, ranging from { $smallest-mountain-name } at { $smallest-mountain-elevation } feet tall to { $highest-mountain-name } at { $highest-mountain-elevation } feet.
+peak-list-detail-list-standard-para-2 = Explore the different { $mountains-trails-campsites } and track your progress towards completing { $list-name } below.
 
-peak-list-detail-list-winter-para-2 = Winter conditions can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the mountains of the { $list-name } in the winter. In order for an ascent to count towards { $short-name } - Winter, it must be completed during the official calendar winter between the solstice and spring equinox. For this { $current-or-upcoming } season, those dates are between { $solstice } and { $equinox }. Wilderlist automatically tracks any ascent recorded in this time frame for you, across all of your past hikes of any year.
+peak-list-detail-list-winter-has-parent-para-1 = { $list-name } In the Winter ({ $short-name } - Winter) tracks your progress towards completing the { $mountains-trails-campsites-no-count } of the standard { $parent-list-name }, but only for calendar winter. It spans { $mountains-trails-campsites } in { $state-region-name }.
 
-peak-list-detail-list-winter-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } In the Winter below.
+peak-list-detail-list-winter-has-parent-para-1-mountains = Each mountain stands at over { $min-elevation-rounded } feet of elevation, ranging from { $smallest-mountain-name } at { $smallest-mountain-elevation } feet tall to { $highest-mountain-name } at { $highest-mountain-elevation } feet.
 
-peak-list-detail-list-4-season-has-parent-para-1 = The { $list-name } 4-Season ({ $short-name } - 4-Season) gives you the experience of seeing the mountains of the { $parent-list-name } through the ever changing seasons. Just like it's standard counterpart, { $short-name } - 4-Season includes {
-  $number-of-peaks ->
-    [1] 1 peak
-    *[other] { $number-of-peaks } peaks
-} in { $state-region-name }. Each mountain stands at over { $min-elevation-rounded } feet of elevation, ranging from { $smallest-mountain-name } at { $smallest-mountain-elevation } feet tall to { $highest-mountain-name } at { $highest-mountain-elevation } feet.
+peak-list-detail-list-winter-para-2 = Winter conditions can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the { $mountains-trails-campsites-no-count } of { $list-name } in the winter. In order for a trip to count, it must be completed during the official calendar winter between the solstice and spring equinox. For this { $current-or-upcoming } season, those dates are between { $solstice } and { $equinox }. Wilderlist automatically tracks any ascent recorded in this time frame for you, across all of your past hikes of any year.
 
-peak-list-detail-list-4-season-para-2 = Mountain conditions in the late fall, winter, and spring can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the mountains of the { $list-name } in those times of the year. Ascents for each season in { $short-name } - 4-Season are counted based on the official calendar seasons of a given year. For { $current-year }, spring starts on { $first-day-of-spring }, summer starts on { $first-day-of-summer }, fall starts on { $first-day-of-fall }, and winter starts on { $first-day-of-winter }. Wilderlist automatically tracks any ascents recorded in their respective seasons, across all of your hikes for any and all years.
+peak-list-detail-list-winter-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing { $list-name } In the Winter below.
 
-peak-list-detail-list-4-season-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } 4-Season below.
+peak-list-detail-list-4-season-has-parent-para-1 = { $list-name } 4-Season ({ $short-name } - 4-Season) tracks your progress towards completing the { $mountains-trails-campsites-no-count } of the standard { $parent-list-name }, but across every season. It spans { $mountains-trails-campsites } in { $state-region-name }.
 
-peak-list-detail-list-grid-has-parent-para-1 = The { $list-name } Grid ({ $short-name } Grid) is the the ultimate hiking challenge for the { $parent-list-name }. { $short-name } Grid includes the same {
-  $number-of-peaks ->
-    [1] 1 peak
-    *[other] { $number-of-peaks } peaks
-} in { $state-region-name } as found on the standard list. But to finish the Grid, you must complete each of these peaks every month of the year, for a total of { $total-ascents } ascents.
+peak-list-detail-list-4-season-para-2 = Mountain conditions in the late fall, winter, and spring can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the { $mountains-trails-campsites-no-count } of { $list-name } in those times of the year. Ascents for each season are counted based on the official calendar seasons of a given year. For { $current-year }, spring starts on { $first-day-of-spring }, summer starts on { $first-day-of-summer }, fall starts on { $first-day-of-fall }, and winter starts on { $first-day-of-winter }. Wilderlist automatically tracks any ascents recorded in their respective seasons, across all of your hikes for any and all years.
 
-peak-list-detail-list-grid-para-2 = Mountain conditions in the late fall, winter, and spring can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the mountains of the { $list-name } in those times of the year. Wilderlist automatically tracks any ascents recorded in their respective months, across all of your hikes for any and all years. The { $list-name } Grid often takes people years to complete.
+peak-list-detail-list-4-season-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing { $list-name } 4-Season below.
 
-peak-list-detail-list-grid-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing the { $list-name } Grid below.
+peak-list-detail-list-grid-has-parent-para-1 = { $list-name } Grid ({ $short-name } - Grid) tracks your progress towards completing the { $mountains-trails-campsites-no-count } of the standard { $parent-list-name }, but across every month. It spans { $mountains-trails-campsites } in { $state-region-name }. To finish the Grid, you must complete each of these { $mountains-trails-campsites-no-count } every month of the year.
+
+peak-list-detail-list-grid-para-2 = Mountain conditions in the late fall, winter, and spring can be a lot more difficult with much more dangerous weather patterns. Special gear, more advanced knowledge, and greater physical capabilities may be required to safely hike the { $mountains-trails-campsites-no-count } of { $list-name } in those times of the year. Wilderlist automatically tracks any ascents recorded in their respective months, across all of your hikes for any and all years. Grids often take people years to complete.
+
+peak-list-detail-list-grid-para-3 = Explore the different peaks, get updates on the conditions and weather reports, and track your progress towards completing { $list-name } Grid below.
 
 peak-list-detail-friend-viewing-list = Viewing list for
 peak-list-detail-friend-view-your-progress-button = View your progress
+peak-list-detail-your-progress = Your progress
+compare-progress-for = Compare Progress For
 
 peak-list-detail-text-optional-mountains = Optional Mountains
 peak-list-detail-text-optional-mountains-desc = The following mountains are considered optional for this list. They fit the criteria needed to be on here, but for one reason or another they are not required for completion. Common reasons include the peak being on private property or requiring special permissions to be able to climb. Optional peaks do not count towards a 100% completion for this list.
 
+peak-list-detail-text-optional-toggle = Show optional { $type }s
+peak-list-detail-text-optional-items-desc = Optional { $type }s are included below but do not count towards 100% completion for this list. Common reasons include the { $type } being on private property or requiring special permissions to be able to access, or they might just be fun or informative add ons to the list.
+
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
-user-notes-title = Notes
+user-notes-title = Your Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
+user-notes-placeholder-not-logged-in = Create a free account to keep your own personal notes for { $name } here.
 
 mountain-search-no-results-mobile = No mountains found near { $map-center-text }. Use the search above or go to the map view to explore.
 mountain-search-no-results-map = No mountains found here. Try moving the map or using the search above.
@@ -474,9 +880,12 @@ mountain-search-map-text = Showing mountains near { $map-center-text }
 mountain-search-mobile-nav-list = List View
 mountain-search-mobile-nav-map = Map View
 
-mountain-card-crow-flies-tooltip = Caclulated as-the-Crow-flies. For driving directions, select an individual mountain.
-mountain-card-view-details = View details
+mountain-card-view-details = View Details
 mountain-card-show-on-map = Show on map
+
+crow-flies-distance = { $distance } mi to { $name }
+crow-flies = as the crow flies
+crow-flies-tooltip = "As the crow flies" is the straight-line distance between two locations. For driving directions or route lengths, select an individual item.
 
 mountain-completion-modal-toggle-btn-full-date = Full Date
 mountain-completion-modal-toggle-btn-month-year = Month / Year
@@ -492,7 +901,9 @@ mountain-completion-modal-text-note-four-season =
 mountain-completion-modal-text-note-grid =
   <strong>Grid</strong> lists require dates to be a day within the specified month. You may still enter other dates here and they will be added to your overall ascent record. But they will not appear on this list if they do not match the criteria.
 
-mountain-completion-modal-text-people-hiked-with = People Hiked With
+mountain-completion-modal-text-details = Details
+mountain-completion-modal-text-required-text = At least one mountain, trail or campsite is required to log a trip
+mountain-completion-modal-text-people-hiked-with = Friends on Trip
 mountain-completion-modal-text-add-wilderlist-friends = Wilderlist Friends
 mountain-completion-modal-text-add-other-friends = Other Friends
 mountain-completion-modal-text-add-other-friends-note = Enter the email address of anyone who isn't on Wilderlist to add them
@@ -503,14 +914,22 @@ mountain-completion-modal-add-remove-people = Add/Remove People
 mountain-completion-modal-done-adding-people = Done Updating People
 
 mountain-completion-modal-text-no-friends-yet = You haven't added any friends yet
+trip-log-delete-trip = Delete Trip
+trip-log-add-another = Log & Add Next Day
 
 mountain-table-grid-date-note-text =
   <div>Date is shown in <em>DD,'YY</em> format in order to better fit on screen.</div>
   <div>For example, <em>March 9, 2014</em> would show as <em>9, '14</em> under the <strong>March</strong> column.</div>
-mountain-table-import-button = Import Ascents from Spreadsheet
-mountain-table-export-button = Download Ascent Data
+mountain-table-import-button = Import from spreadsheet
+mountain-table-export-button = Download data
 download-csv-button = Download CSV
-download-official-grid-xlsx-button = Download Official Grid Application
+download-gpx-button = Download GPX file
+download-official-grid-xlsx-button = Download Grid application with your dates
+
+mountain-detail-summit-view = Summit View
+mountain-detail-summit-view-for = Summit View for { $name }
+mountain-detail-summit-back = Back to mountain details
+mountain-detail-summit-help = Move your mouse to rotate the view
 
 mountain-detail-remove-ascent-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your ascents?
 mountain-detail-add-another-ascent = Add another ascent
@@ -519,6 +938,59 @@ mountain-detail-remove-ascent = Remove Ascent
 mountain-detail-no-ascents-text = You have not yet hiked { $mountain-name }.
 mountain-detail-lists-mountain-appears-on = Lists { $mountain-name } appears on:
 mountain-detail-lists-mountain-appears-on-ranks =  — { $elevation-rank } largest peak
+
+item-detail-remove-trip-modal-text = Remove&#32;<strong>{ $date }</strong>&#32;from your {
+  $type ->
+    [mountain] ascents
+    [trail] hikes
+    *[campsite] trips
+}?
+item-detail-log-trip = Log {
+  $type ->
+    [mountain] ascent
+    [trail] hike
+    *[campsite] trip
+}
+item-detail-remove-trip = Remove {
+  $type ->
+    [mountain] ascent
+    [trail] hike
+    *[campsite] trip
+}
+item-detail-no-ascents-text = You have not yet {
+  $type ->
+    [mountain] hiked
+    [trail] hiked
+    [campsite] camped at
+    *[else] been to
+} { $name }.
+
+directions-select-origin = Select your starting point
+directions-your-location = Use your location
+directions-nothing-found = Could not find directions to point
+directions-open-in-google-maps = Open in Google Maps
+directions-google-maps = Google Maps
+directions-driving-duration = {
+  $hours ->
+    [0] {""}
+    [1] 1 hr
+    *[else] { $hours } hrs
+} {
+  $minutes ->
+    [0] {""}
+    [1] 1 min
+    *[else] { $minutes } mins
+}
+directions-driving-distance = {
+  $miles ->
+    [1] 1 mile
+    *[else] { $miles } miles
+}
+distance-feet-formatted = {
+  $feet ->
+    [1] 1 foot
+    *[else] { $feet } feet
+}
 
 mountain-detail-enable-driving-distances = Enable Driving Distances
 mountain-detail-driving-distance = {
@@ -545,7 +1017,58 @@ mountain-detail-pending-approval = This mountain is pending confirmation
 mountain-detail-weather-and-reports = Summit Weather & Trip Reports
 mountain-detail-snow-depth = Last 7-Day Snowfall & Snow Depth
 mountain-detail-notes-and-ascents = Notes & Ascents
+mountain-detail-get-weather = Get Weather
 
+trail-detail-subtitle = { $type } { 
+  $segment ->
+    [0] {""}
+    *[else] segment
+} in { $state }
+trail-child-segments = This route is the connecting parent for { $count } other trails
+trail-parent-links = Part of
+trail-parent-full-trail = full trail
+trail-detail-allows-bikes = Allows Bikes
+trail-detail-allows-horses = Allows Horses
+trail-detail-water-crossing = Water Crossing
+trail-detail-ski-trail = Ski Trail
+trail-detail-elevation-profile = Elevation Profile
+trail-detail-download-trail = Download Trail
+trail-detail-download-route = Download Route
+
+global-text-value-ownership = Ownership
+campsite-formatted-ownership = {
+  $ownership ->
+    [private] Privately Run
+    [federal] Federally Run
+    [state] State Run
+    *[else] {""}
+}
+
+campsite-detail-subtitle = {
+  $ownership ->
+    [private] Privately Run
+    [federal] Federally Run
+    [state] State Run
+    *[else] {""}
+} { $type } {
+  $location ->
+    [null] {""}
+    *[else] in { $location }
+}
+
+campsite-detail-elevation = Elevation
+campsite-detail-reservation = Reservation
+campsite-detail-required-fee = Required Fee
+campsite-detail-allows-tents = Allows Tents
+campsite-detail-max-capacity = Max Capacity
+campsite-detail-max-tents = Max Tents
+
+campsite-detail-electricity = Electricity
+campsite-detail-toilets = Toilets
+campsite-detail-drinking-water = Drinking Water
+campsite-detail-showers = Showers
+campsite-detail-internet-access = Internet Access
+campsite-detail-allows-fires = Allows Fires
 
 user-list-no-user-selected-text = Select a user on the left to see more details
 user-profile-requests-add-friend = Add Friend
@@ -582,12 +1105,17 @@ map-completed = You Completed On
 map-completed-other-user = Completed On
 map-completed-in-winter = Completed in winter
 map-add-ascent = Add Ascent
-map-number-of-seasons = Number of Seasons Hiked
+map-number-of-seasons = colored by number of seasons you’ve hiked
 map-no-seasons = 0
 map-all-seasons = 4
-map-number-of-months = Number of Months Hiked
+map-number-of-months = colored by number of months you’ve hiked
+map-completed-colored = colored by Completion
+map-completed-colored-winter = colored by Completion in Winter
 map-no-months = 0
 map-all-months = 12
+map-hiking-frequency = Highlighted by your hiking frequency
+map-least-hiked = Least hiked
+map-most-hiked = Most hiked
 
 map-coordinates-at-center = Coordinates at Center
 map-set-lat-long-value = Set Location To Center
@@ -688,11 +1216,20 @@ import-grid-img-alt-publish-link = Copy the generated link
 
 import-ascents-notification-text = Already have a spreadsheet of ascents?
 
+weather-forecast-summit-weather = Summit Forecast
+weather-forecast-valley-weather = Valley Forecast
 weather-forecast-weather = Weather
+weather-forecast-weather-at-start = Weather at start
+weather-forecast-weather-at-end = Weather at end
+weather-forecast-weather-forecast = Weather Forecast
+weather-forecast-weather-trail-center = Weather (at trail center)
 weather-forecast-high = High
 weather-forecast-low = Low
 weather-forecast-wind = Wind
+weather-forecast-sunrise-and-set = Sunrise & set
 weather-forecast-chance-precip = chance of precipitation
+weather-forecast-precipitation = precipitation
+weather-forecast-chance = chance
 weather-forecast-detailed-report = Detailed Report
 weather-forecast-feels-like = Feels like
 weather-forecast-network-error = Weather for this location is not available at this time.
@@ -711,14 +1248,24 @@ weather-forecast-rain-volume = { $rain }mm of rainfall
 weather-forecast-snow-volume = { $snow }mm of snow
 weather-forecast-wind-gust = gusts up to { $wind_gust }mph
 
+snow-report-title = Snow Report
 snow-report-network-error = Unable to get snow report for this location at this time.
 snow-report-loading = Getting your snow report
 snow-report-snowfall-attr = Snowfall is for { $station } Station, { $county } County, { $state }
 snow-report-snowdepth-attr = Snow depth is for { $station } Station, { $county } County, { $state }
 snow-report-full-attr = Snow report is for { $station } Station, { $county } County, { $state }
 snow-report-location-details = { $distance }mi away, elevation of { $elevation }ft
-snow-report-new-snow = New snow
-snow-report-current-depth = Current depth
+snow-report-new-snow = New Snowfall
+snow-report-current-depth = Total Snow Depth
+snow-report-7-day-total = 7 day total, as of { $date }
+snow-report-as-of = as of { $date }
+snow-report-source-stations = Source Stations
+snow-report-distance = { $miles }mi away, ele. { $elevation }ft
+
+detail-route-title = Hike to { $destination } from { $source }
+detail-route-to-summit = Routes to Summit
+detail-nearby-camping = Nearby Camping
+detail-nearby-mountains = Nearby Mountains
 
 local-trails-hiking-project-feet-elevation = { $miles } miles, { $elevation }ft elevation gain
 local-trails-hiking-project-nearby-route = Nearby Routes
@@ -730,8 +1277,9 @@ local-trails-hiking-project-network-error = There was a network error retrieving
 local-trails-nearby-trails-title = Nearby Trails
 local-trails-all-trails-link-text = View trails for { $mountain-name } on
 
+trip-report-latest-title = Latest Wilderlist Trip Reports
 trip-report-title = Trip Report
-trip-report-tooltip = Create an optional trip report for your records and to help the next hiker along. All trip reports are public, however you can remove your name from them by adjusting your privacy settings.
+trip-report-privacy-disclaimer = Public trip reports can help fellow hikers plan their hikes with insights from your experience. If you don’t want to share your trip publicly, you can set the visibility to “Private”  or simply leave this section blank.
 
 trip-report-conditions-title = Conditions
 
@@ -762,7 +1310,9 @@ trip-report-condition-name = {
 }
 
 trip-report-add-additional-mtns-title = Mountains Hiked
-trip-report-add-additional-mtns-desc = Only add peaks ascended on this day. For multi-day trips, add those ascents separately.
+trip-report-add-additional-mtns-desc = Click mountains on the map to add them or search below
+trip-report-add-additional-trails-desc = Click trails on the map to add them or search below
+trip-report-add-additional-campsites-desc = Click campsites on the map to add them or search below
 trip-report-add-mtns-btn = Add Mountains
 trip-report-add-remove-mtns-btn = Add/Remove Mountains
 trip-report-add-mtns-done = Done Updating Mountains
@@ -787,6 +1337,8 @@ trip-reports-view-edit-button = View/Edit Report
 create-mountain-title-create = Add Mountain
 create-mountain-title-edit = Edit Mountain: { $mountain-name }
 
+create-campsite-title-create = Add Campsite
+
 create-mountain-title-create-question = Can't find the mountain you're looking for?
 create-mountain-title-create-new = Add New Mountain
 
@@ -795,10 +1347,15 @@ create-mountain-title-create-question-optional = Can't find the optional mountai
 create-mountain-map-your-mountain = Your Mountain
 create-mountain-map-nearby-mountains = Nearby Mountains
 create-mountain-mountain-name-placeholder = Mountain Name
+create-campsite-name-placeholder = Campsite Name
 create-mountain-name-title = Name of Mountain
+create-campsite-name-title = Name of Campsite
 create-mountain-location-title = Location Information
 create-mountain-location-loading = Determining location data...
 create-mountain-location-error = We were unable to automatically determine all of the location information. Please fill out the fields manually.
+
+create-trail-name-title = Trail Name
+create-trail-name-placeholder = Name of trail
 
 create-mountain-location-note = Use the map {
   $position ->
@@ -811,16 +1368,16 @@ create-mountain-latitude-placeholder = Enter the latitude in decimal format
 create-mountain-longitude-placeholder = Enter the longitude in decimal format
 create-mountain-elevation-placeholder = Enter the elevation in feet
 create-mountain-optional-title = OPTIONAL: Additional Information
+create-item-campsite-contact-title = OPTIONAL: Campsite Contact Information
 create-mountain-optional-note = The following fields are optional and may be left blank.
 create-mountain-optional-description = Enter an optional description for the mountain here.
 
 create-mountain-check-your-work = I have checked the map to make sure my information is accurate. I have double-checked nearby mountains (in gray) to make sure I am not adding a duplicate (duplicates will be removed). I understand that repeated inaccurate or duplicate submissions could result in my losing the ability to post new mountains.
 
-flag-mountain-title = Submit a Flag for { $name }
-flag-mountain-text = If something seems wrong about this mountain, submit a flag and an administrator will take a look at it ASAP
-flag-mountain-thanks = Thank you for submitting your flag. An administrator will be looking into it shortly.
+flag-mountain-title = Report an issue for { $name }
+flag-mountain-thanks = Thank you for submitting your report. An administrator will be looking into it shortly.
 
-flag-mountain-select-issue = Please select an issue from the box below
+flag-mountain-select-issue = Please describe the issue below
 flag-mountain-select-issue-description = {
   $issue ->
     [location] Location - The location (latitude/longitude) is incorrect
@@ -832,7 +1389,7 @@ flag-mountain-select-issue-description = {
     *[other] Other - There is a problem not specified in this list
 }
 
-flag-peak-list-text = If something seems wrong about this list, submit a flag and an administrator will take a look at it ASAP
+flag-item-text = If something seems wrong about this { $type }, submit an issue report and an administrator will take a look at it ASAP
 
 flag-peak-list-select-issue = Please select an issue from the box below
 flag-peak-list-select-issue-description = {
@@ -843,7 +1400,7 @@ flag-peak-list-select-issue-description = {
     *[other] Other - There is a problem not specified in this list
 }
 
-create-peak-list-title-create = Create List
+create-peak-list-title-create = Create a hiking list
 
 create-peak-list-title-edit = Edit { $list-name }
 create-peak-list-peak-list-name-label = Hiking List Details
@@ -851,6 +1408,7 @@ create-peak-list-peak-list-name-placeholder = i.e. New Hampshire 4000 Footers
 create-peak-list-peak-list-short-name-label = Abbreviation
 create-peak-list-peak-list-short-name-note = max 8 characters
 create-peak-list-peak-list-short-name-placeholder = i.e. NH48
+create-peak-list-cycle-image = Cycle Image
 create-peak-list-peak-list-details-title = List Details
 create-peak-list-peak-list-mountains-note = Select mountains directly on the map or by clicking {
   $number-mountains ->
@@ -865,7 +1423,10 @@ create-peak-list-peak-list-optional-mountains = OPTIONAL: Optional Mountains
 create-peak-list-peak-list-optional-mountains-note = Optional mountains allow for additional mountains to be on this list that do not count towards 100% completion.
 create-peak-list-peak-list-optional-description-label = Optional Mountains Description
 create-peak-list-select-parent-modal-button = Copy Mountains From Another List
+create-peak-list-select-parent-title = Copy { $type } From Another List
 create-peak-list-copy-mountains-button = Copy Mountains
+
+create-peak-list-copy-from-list-button = Copy From Another List
 
 create-peak-list-has-parent-mountains = This list will reflect the same mountains as the selected parent
 create-peak-list-has-parent-optional-mountains = This list will reflect the same optional mountains as the selected parent
@@ -876,3 +1437,6 @@ create-peak-list-selected-mountain-count = Selected mountains ({ $total } total)
 page-not-found-404-title = The page you are looking for seems to be off the trail.
 page-not-found-404-desc = Try searching what you are looking for at one of the following pages -
 page-not-found-404-contact = If you think this page should be here, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.
+
+please-login-title = You need to log in to access this page.
+please-login-contact = If you think this is in error, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.

@@ -1,5 +1,6 @@
 /* tslint:disable:await-promise */
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLInt,
@@ -8,15 +9,18 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { CreatedItemStatus } from '../graphQLTypes';
+import { CreatedItemStatus, ListPrivacy, TripReportPrivacy, User as IUser } from '../graphQLTypes';
 import {
   buildNearSphereQuery,
   GeoSphereInput,
+  TextPlusGeoWithinInput,
 } from './geospatial/utils';
+import CampsiteType, { Campsite } from './queryTypes/campsiteType';
 import MountainType, { Mountain } from './queryTypes/mountainType';
 import PeakListType, { PeakList } from './queryTypes/peakListType';
 import RegionType, { Region } from './queryTypes/regionType';
 import StateType, { State } from './queryTypes/stateType';
+import TrailType, { Trail } from './queryTypes/trailType';
 import TripReportType, { TripReport } from './queryTypes/tripReportType';
 import UserType, { User } from './queryTypes/userType';
 
@@ -45,6 +49,52 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(PeakListType),
       async resolve() {
         return PeakList.find({});
+      },
+    },
+    newestPeakLists: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        nPerPage: { type: GraphQLInt },
+      },
+      async resolve(_parentValue, {nPerPage}) {
+        return PeakList
+          .find({})
+          .sort( [['_id', -1]] )
+          .limit(nPerPage ? nPerPage : 50);
+      },
+    },
+    newestMountains: {
+      type: new GraphQLList(MountainType),
+      args: {
+        nPerPage: { type: GraphQLInt },
+      },
+      async resolve(_parentValue, {nPerPage}) {
+        return Mountain
+          .find({})
+          .sort( [['_id', -1]] )
+          .limit(nPerPage ? nPerPage : 50);
+      },
+    },
+    newestCampsites: {
+      type: new GraphQLList(CampsiteType),
+      args: {
+        nPerPage: { type: GraphQLInt },
+      },
+      async resolve(_parentValue, {nPerPage}) {
+        return Campsite
+          .find({})
+          .sort( [['_id', -1]] )
+          .limit(nPerPage ? nPerPage : 50);
+      },
+    },
+    appearsIn: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        id: { type: GraphQLID },
+        field: { type: GraphQLString },
+      },
+      async resolve(parentValue, {id, field}) {
+        return PeakList.find({[field]: id});
       },
     },
     peakListsSearch: {
@@ -164,6 +214,24 @@ const RootQuery = new GraphQLObjectType({
           .sort({ name: 1 });
       },
     },
+    usersSearchByNewest: {
+      type: new GraphQLList(UserType),
+      args: {
+        searchQuery: { type: new GraphQLNonNull(GraphQLString) },
+        nPerPage: { type: GraphQLNonNull(GraphQLInt) },
+        pageNumber: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve(parentValue, { searchQuery, pageNumber, nPerPage}) {
+        return User
+          .find({
+            hideProfileInSearch: { $ne: true },
+            name: { $regex: searchQuery, $options: 'i' },
+          })
+          .limit(nPerPage)
+          .skip( pageNumber > 0 ? ( ( pageNumber - 1 ) * nPerPage ) : 0 )
+          .sort( [['_id', -1]] );
+      },
+    },
     mountainSearch: {
       type: new GraphQLList(MountainType),
       args: {
@@ -251,6 +319,28 @@ const RootQuery = new GraphQLObjectType({
         }
       },
     },
+    trail: {
+      type: TrailType,
+      args: { id: { type: GraphQLID } },
+      resolve(parentValue, { id }) {
+        if (id === null) {
+          return null;
+        } else {
+          return Trail.findById(id);
+        }
+      },
+    },
+    campsite: {
+      type: CampsiteType,
+      args: { id: { type: GraphQLID } },
+      resolve(parentValue, { id }) {
+        if (id === null) {
+          return null;
+        } else {
+          return Campsite.findById(id);
+        }
+      },
+    },
     state: {
       type: StateType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
@@ -286,31 +376,56 @@ const RootQuery = new GraphQLObjectType({
         return TripReport.findById(id);
       },
     },
-    tripReportByAuthorDateAndMountain: {
+    tripReportByAuthorDateAndItems: {
       type: TripReportType,
       args: {
         author: { type: GraphQLNonNull(GraphQLID) },
         date: { type: GraphQLNonNull(GraphQLString) },
-        mountain: { type: GraphQLNonNull(GraphQLID) },
+        mountain: { type: GraphQLID },
+        trail: { type: GraphQLID },
+        campsite: { type: GraphQLID },
       },
-      resolve(parentValue, { author, date, mountain}) {
+      resolve(parentValue, { author, date, mountain, trail, campsite}) {
+        let item: any = {};
+        if (mountain) {
+          item = {mountains: mountain};
+        }
+        if (trail) {
+          item = {trails: trail};
+        }
+        if (campsite) {
+          item = {campsites: campsite};
+        }
         return TripReport
           .findOne({
+            ...item,
             author, date,
-            mountains: mountain,
           });
       },
     },
-    tripReportsForMountain: {
+    tripReportsForItem: {
       type: new GraphQLList(TripReportType),
       args: {
-        mountain: { type: GraphQLNonNull(GraphQLID) },
+        mountain: { type: GraphQLID },
+        trail: { type: GraphQLID },
+        campsite: { type: GraphQLID },
         nPerPage: { type: GraphQLNonNull(GraphQLInt) },
       },
-      resolve(parentValue, {mountain, nPerPage}) {
+      resolve(parentValue, {mountain, trail, campsite, nPerPage}) {
+        let item: any = {};
+        if (mountain) {
+          item = {mountains: mountain};
+        }
+        if (trail) {
+          item = {trails: trail};
+        }
+        if (campsite) {
+          item = {campsites: campsite};
+        }
         return TripReport
           .find({
-            mountains: mountain,
+            ...item,
+            privacy: { $in: [TripReportPrivacy.Public, TripReportPrivacy.Anonymous]},
             $or: [
               {notes: { $ne: null }},
               {link: { $ne: null }},
@@ -371,6 +486,24 @@ const RootQuery = new GraphQLObjectType({
         return Mountain.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
+    flaggedTrails: {
+      type: new GraphQLList(TrailType),
+      resolve() {
+        return Trail.find({ flag: { $ne: null } });
+      },
+    },
+    flaggedCampsites: {
+      type: new GraphQLList(CampsiteType),
+      resolve() {
+        return Campsite.find({ flag: { $ne: null } });
+      },
+    },
+    pendingCampsites: {
+      type: new GraphQLList(CampsiteType),
+      resolve() {
+        return Campsite.find({ status: { $eq: CreatedItemStatus.pending } });
+      },
+    },
     flaggedPeakLists: {
       type: new GraphQLList(PeakListType),
       resolve() {
@@ -383,26 +516,123 @@ const RootQuery = new GraphQLObjectType({
         return PeakList.find({ status: { $eq: CreatedItemStatus.pending } });
       },
     },
-    geoSphereMountains: {
+    geoNearMountains: {
       type: new GraphQLList(MountainType),
       args: {
         latitude: { type: GraphQLNonNull(GraphQLFloat) },
         longitude: { type: GraphQLNonNull(GraphQLFloat) },
         maxDistance: { type: GraphQLFloat },
-        minDistance: { type: GraphQLFloat },
         limit: {type: GraphQLNonNull(GraphQLInt)},
-        searchText: {type: GraphQLString},
       },
-      resolve(parentValue, { latitude, longitude, maxDistance, minDistance, limit, searchText }: GeoSphereInput) {
+      resolve(parentValue, { latitude, longitude, maxDistance, limit}: GeoSphereInput) {
         const query = buildNearSphereQuery({
-          field: 'location',
+          locationField: 'location',
           longitude,
           latitude,
           maxDistance,
-          minDistance,
-          searchText,
         });
         return Mountain.find(query).limit(limit);
+      },
+    },
+    geoNearPeakLists: {
+      type: new GraphQLList(PeakListType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+      },
+      resolve(
+        parentValue,
+        { latitude, longitude, maxDistance, limit }: GeoSphereInput,
+        {user}: {user: IUser | undefined | null}) {
+        const userId = user ? user._id : null;
+        const query = buildNearSphereQuery({
+          locationField: 'center',
+          longitude,
+          latitude,
+          maxDistance,
+        });
+        return PeakList.find({
+          ...query,
+          $or: [
+            {privacy: {$ne: ListPrivacy.Private}},
+            {author: userId},
+          ],
+        }).limit(limit);
+      },
+    },
+    geoNearTrails: {
+      type: new GraphQLList(TrailType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+        hasName: {type: GraphQLBoolean},
+      },
+      resolve(parentValue,
+              { latitude, longitude, maxDistance, searchText, limit, hasName }:
+        TextPlusGeoWithinInput & {hasName: boolean | null}) {
+        const geoQuery = buildNearSphereQuery({
+          locationField: 'center',
+          longitude,
+          latitude,
+          maxDistance,
+        });
+        const query = hasName ? {...geoQuery, name: {$ne: null}} : geoQuery;
+        return Trail.find(query)
+        .limit(limit);
+      },
+    },
+    geoNearCampsites: {
+      type: new GraphQLList(CampsiteType),
+      args: {
+        latitude: { type: GraphQLNonNull(GraphQLFloat) },
+        longitude: { type: GraphQLNonNull(GraphQLFloat) },
+        maxDistance: { type: GraphQLFloat },
+        limit: {type: GraphQLNonNull(GraphQLInt)},
+        hasName: {type: GraphQLBoolean},
+      },
+      resolve(parentValue,
+              { latitude, longitude, maxDistance, searchText, limit, hasName }:
+        TextPlusGeoWithinInput & {hasName: boolean | null}) {
+        const geoQuery = buildNearSphereQuery({
+          locationField: 'location',
+          longitude,
+          latitude,
+          maxDistance,
+        });
+        const query = hasName ? {...geoQuery, name: {$ne: null}} : geoQuery;
+        return Campsite.find(query)
+        .limit(limit);
+      },
+    },
+    mountainsIn: {
+      type: new GraphQLList(MountainType),
+      args: {
+        ids: { type: GraphQLList(GraphQLID) },
+      },
+      resolve(parentValue, {ids}) {
+        return Mountain.find({_id: {$in: ids}});
+      },
+    },
+    trailsIn: {
+      type: new GraphQLList(TrailType),
+      args: {
+        ids: { type: GraphQLList(GraphQLID) },
+      },
+      resolve(parentValue, {ids}) {
+        return Trail.find({_id: {$in: ids}});
+      },
+    },
+    campsitesIn: {
+      type: new GraphQLList(CampsiteType),
+      args: {
+        ids: { type: GraphQLList(GraphQLID) },
+      },
+      resolve(parentValue, {ids}) {
+        return Campsite.find({_id: {$in: ids}});
       },
     },
   }),

@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLID,
@@ -49,7 +50,12 @@ const MountainSchema = new Schema({
     url: { type: String },
   }],
   location: [{type: Number}],
+  trailAccessible: {type: Boolean},
+  locationText: { type: String },
+  locationTextShort: { type: String },
 });
+
+MountainSchema.index({ location: '2dsphere' });
 
 MountainSchema.statics.findState = function(id: string) {
   return this.findById(id)
@@ -70,36 +76,6 @@ export const CreatedItemStatus = new GraphQLEnumType({
     },
     accepted: {
       value: 'accepted',
-    },
-  },
-});
-
-export const MountainFlag = new GraphQLEnumType({
-  name: 'MountainFlag',
-  values: {
-    location: {
-      value: 'location',
-    },
-    elevation: {
-      value: 'elevation',
-    },
-    state: {
-      value: 'state',
-    },
-    duplicate: {
-      value: 'duplicate',
-    },
-    data: {
-      value: 'data',
-    },
-    abuse: {
-      value: 'abuse',
-    },
-    other: {
-      value: 'other',
-    },
-    deleteRequest: {
-      value: 'deleteRequest',
     },
   },
 });
@@ -153,7 +129,7 @@ const MountainType: any = new GraphQLObjectType({
         try {
           if (parentValue.author) {
             const res = await userLoader.load(parentValue.author);
-            if (res._id.toString() !== parentValue.author.toString()) {
+            if (res && res._id && res._id.toString() !== parentValue.author.toString()) {
               throw new Error('IDs do not match' + res);
             }
             return res;
@@ -166,10 +142,13 @@ const MountainType: any = new GraphQLObjectType({
       },
     },
     status: { type: CreatedItemStatus },
-    flag: { type: MountainFlag },
+    flag: { type: GraphQLString },
     description: { type: GraphQLString },
     resources: { type: new GraphQLList(ExternalResourcesType) },
     location: { type: new GraphQLList(GraphQLFloat) },
+    trailAccessible: { type: GraphQLBoolean },
+    locationText: { type: GraphQLString },
+    locationTextShort: { type: GraphQLString },
   }),
 });
 

@@ -1,202 +1,72 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
 import queryString from 'query-string';
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import React, {useCallback, useEffect, useState} from 'react';
+import Helmet from 'react-helmet';
+import {useHistory, useParams} from 'react-router-dom';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import useFluent from '../../../hooks/useFluent';
+import useMapContext from '../../../hooks/useMapContext';
+import {useMountainAndAllStates} from '../../../queries/compound/getMountainsAndStates';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+  BaseMountainVariables,
+  useAddMountain,
+  useEditMountain,
+} from '../../../queries/mountains/addRemoveMountain';
 import {Routes} from '../../../routing/routes';
 import {mountainDetailLink} from '../../../routing/Utils';
-import {
-  ContentBody,
-  ContentHeader,
-  ContentLeftSmall,
-  ContentRightLarge,
-} from '../../../styling/Grid';
 import { ButtonSecondary, PlaceholderText } from '../../../styling/styleUtils';
-import { ExternalResource, Mountain, PermissionTypes, User } from '../../../types/graphQLTypes';
-import { mobileSize } from '../../../Utils';
-import { AppContext } from '../../App';
-import BackButton from '../../sharedComponents/BackButton';
+import { PermissionTypes } from '../../../types/graphQLTypes';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
 import Modal from '../../sharedComponents/Modal';
-import MountainForm, {InitialMountainDatum, StateDatum} from './MountainForm';
-
-const mountainQuery = `
-      id
-      name
-      elevation
-      latitude
-      longitude
-      description
-      resources {
-        title
-        url
-      }
-      state {
-        id
-        name
-        abbreviation
-        regions {
-          id
-          name
-          states {
-            id
-          }
-        }
-      }
-      author {
-        id
-      }
-      flag
-`;
-
-const GET_MOUNTAIN_AND_STATES = gql`
-  query getMountain($id: ID) {
-    mountain(id: $id) {
-      ${mountainQuery}
-    }
-    states {
-      id
-      name
-      abbreviation
-    }
-  }
-`;
-
-const mountainVariableTypes = `
-  $name: String!,
-  $elevation: Float!,
-  $latitude: Float!,
-  $longitude: Float!,
-  $state: ID!,
-  $description: String,
-  $resources: [ExternalResourcesInputType],
-`;
-
-const mountainBaseVariables = `
-  name: $name,
-  elevation: $elevation,
-  latitude: $latitude,
-  longitude: $longitude,
-  state: $state,
-  description: $description,
-  resources: $resources,
-`;
-
-export const ADD_MOUNTAIN = gql`
-  mutation(
-    $author: ID!,
-    ${mountainVariableTypes}
-  ) {
-    mountain: addMountain(
-      ${mountainBaseVariables}
-      author: $author,
-    ) {
-      ${mountainQuery}
-    }
-  }
-`;
-const EDIT_MOUNTAIN = gql`
-  mutation(
-    $id: ID!,
-    ${mountainVariableTypes}
-  ) {
-    mountain: updateMountain(
-      id: $id,
-      ${mountainBaseVariables}
-    ) {
-      ${mountainQuery}
-    }
-  }
-`;
-
-export interface MountainSuccessResponse {
-  mountain: null | {
-    id: Mountain['id'];
-    name: Mountain['name'];
-    elevation: Mountain['elevation'];
-    latitude: Mountain['latitude'];
-    longitude: Mountain['longitude'];
-    state: Mountain['state'];
-    description: Mountain['description'];
-    resources: Mountain['resources'];
-    author: null | {
-      id: User['id'];
-    }
-    flag: Mountain['flag'];
-  };
-}
-
-interface QuerySuccessResponse extends MountainSuccessResponse {
-  states: null | StateDatum[];
-}
-
-export interface BaseMountainVariables {
-  name: string;
-  elevation: number;
-  latitude: number;
-  longitude: number;
-  state: string;
-  description: string | null;
-  resources: ExternalResource[] | null;
-}
-
-export interface AddMountainVariables extends BaseMountainVariables {
-  author: string;
-}
-interface EditMountainVariables extends BaseMountainVariables {
-  id: string;
-}
+import PleaseLogin from '../../sharedComponents/PleaseLogin';
+import MountainForm, {InitialMountainDatum} from './MountainForm';
 
 interface QueryVariables {
   lat?: string;
   lng?: string;
 }
 
-interface Props extends RouteComponentProps {
-  user: User;
-  mountainPermissions: null | number;
-}
+const ModalActions = ({closeErrorModal}: {closeErrorModal: () => void}) => {
+  const getString = useFluent();
+  return (
+    <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
+      {getString('global-text-value-modal-close')}
+    </ButtonSecondary>
+  );
+};
 
-const MountainCreatePage = (props: Props) => {
-  const { user, mountainPermissions, match, history, location } = props;
-  const { id }: any = match.params;
-  const {lat, lng}: QueryVariables = queryString.parse(location.search);
+const MemoedActions = React.memo(ModalActions);
 
-  const userId = user._id;
-
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
-
-  const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
-  const { windowWidth } = useContext(AppContext);
-  const mapContainerNodeRef = useRef<HTMLDivElement | null>(null);
+const MountainCreatePage = () => {
+  const user = useCurrentUser();
+  const { id }: any = useParams();
+  const history = useHistory();
+  const {lat, lng}: QueryVariables = queryString.parse(history.location.search);
+  const mapContext = useMapContext();
 
   useEffect(() => {
-    if (windowWidth >= mobileSize && mapContainerNodeRef.current !== null) {
-      setMapContainer(mapContainerNodeRef.current);
-    } else {
-      setMapContainer(null);
+    const latitude = lat ? parseFloat(lat) : NaN;
+    const longitude = lng ? parseFloat(lng) : NaN;
+    if (mapContext.intialized && !isNaN(latitude) && !isNaN(longitude)) {
+      mapContext.setNewCenter([longitude, latitude], 12);
     }
-  }, [windowWidth]);
+  }, [mapContext, lat, lng]);
+
+  const getString = useFluent();
 
   const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
+  const closeErrorModal = useCallback(() => setIsErrorModalVisible(false), []);
 
-  const {loading, error, data} = useQuery<QuerySuccessResponse, {id: string | null}>(GET_MOUNTAIN_AND_STATES,
-    {variables: { id: id ? id : null },
-  });
-
-  const [addMountain] = useMutation<MountainSuccessResponse, AddMountainVariables>(ADD_MOUNTAIN);
-  const [editMountain] = useMutation<MountainSuccessResponse, EditMountainVariables>(EDIT_MOUNTAIN);
+  const {loading, error, data} = useMountainAndAllStates({ id: id ? id : null });
+  const addMountain = useAddMountain();
+  const editMountain = useEditMountain();
 
   let mountainForm: React.ReactElement<any> | null;
-  if (mountainPermissions === -1) {
+  if (!user) {
+    mountainForm = <PleaseLogin />;
+  } else if (user.mountainPermissions === -1) {
     mountainForm = (
       <PlaceholderText>
-        {getFluentString('global-text-value-no-permission')}
+        {getString('global-text-value-no-permission')}
       </PlaceholderText>
     );
   } else if (loading === true) {
@@ -205,11 +75,12 @@ const MountainCreatePage = (props: Props) => {
     console.error(error);
     mountainForm = (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
     const states = data.states ? data.states : [];
+    const userId = user ? user._id : null;
 
     const submitMountainForm = (addAnother: boolean) => async (input: BaseMountainVariables) => {
       try {
@@ -254,23 +125,16 @@ const MountainCreatePage = (props: Props) => {
         (data.mountain.author && data.mountain.author.id === userId) ||
         user.permissions === PermissionTypes.admin)
       ) {
-      const {mountain: {name, state, flag, description, resources}, mountain} = data;
-      const nonNullResources: ExternalResource[] = [];
-      if (resources) {
-        resources.forEach(rsrc => {
-          if (rsrc !== null && rsrc.title.length && rsrc.url.length) {
-            nonNullResources.push({title: rsrc.title, url: rsrc.url});
-          }
-        });
-      }
+      const {mountain: {name, state, flag, locationText, locationTextShort}, mountain} = data;
+
       const initialMountain: InitialMountainDatum = {
         id: mountain.id,
         name,
         latitude: mountain.latitude.toString(),
         longitude: mountain.longitude.toString(),
         elevation: mountain.elevation.toString(),
-        description: description ? description : '',
-        resources: nonNullResources,
+        locationText: locationText ? locationText : '',
+        locationTextShort: locationTextShort ? locationTextShort : '',
         state, flag,
       };
       mountainForm = (
@@ -279,14 +143,13 @@ const MountainCreatePage = (props: Props) => {
           initialData={initialMountain}
           onSubmit={submitMountainForm(false)}
           onSubmitAndAddAnother={null}
-          mapContainer={mapContainer}
           onCancel={history.goBack}
         />
       );
     } else if (data.mountain) {
         mountainForm = (
         <PlaceholderText>
-          {getFluentString('global-text-value-no-permission')}
+          {getString('global-text-value-no-permission')}
         </PlaceholderText>
       );
     } else {
@@ -300,8 +163,8 @@ const MountainCreatePage = (props: Props) => {
         elevation: '',
         state: null,
         flag: null,
-        description: '',
-        resources: [],
+        locationText: '',
+        locationTextShort: '',
       };
       mountainForm = (
         <MountainForm
@@ -309,7 +172,6 @@ const MountainCreatePage = (props: Props) => {
           initialData={initialMountain}
           onSubmit={submitMountainForm(false)}
           onSubmitAndAddAnother={submitMountainForm(true)}
-          mapContainer={mapContainer}
           onCancel={history.goBack}
         />
       );
@@ -317,39 +179,26 @@ const MountainCreatePage = (props: Props) => {
   } else {
     mountainForm = null;
   }
-  const closeErrorModal = () => setIsErrorModalVisible(false);
   const errorModal = isErrorModalVisible === false ? null : (
     <Modal
       onClose={closeErrorModal}
       width={'600px'}
       height={'auto'}
-      actions={(
-        <ButtonSecondary onClick={closeErrorModal} mobileExtend={true}>
-          {getFluentString('global-text-value-modal-close')}
-        </ButtonSecondary>
-        )}
+      actions={MemoedActions}
     >
-      <p>{getFluentString('global-error-saving-data')}</p>
+      <p>{getString('global-error-saving-data')}</p>
     </Modal>
   );
 
   return (
     <>
-      <ContentLeftSmall>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody style={{paddingBottom: 0}}>
-          {mountainForm}
-        </ContentBody>
-        {errorModal}
-      </ContentLeftSmall>
-      <ContentRightLarge>
-        <ContentBody ref={mapContainerNodeRef}>
-        </ContentBody>
-      </ContentRightLarge>
+      <Helmet>
+        <title>{getString('meta-data-log-add-mountain')}</title>
+      </Helmet>
+      {mountainForm}
+      {errorModal}
     </>
   );
 };
 
-export default withRouter(MountainCreatePage);
+export default MountainCreatePage;

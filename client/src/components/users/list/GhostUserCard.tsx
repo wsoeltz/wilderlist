@@ -2,10 +2,17 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import { lightBorderColor } from '../../../styling/styleUtils';
 import {
-  Root,
   TextContainer,
   Title,
 } from './UserCard';
+
+const Root = styled.div`
+  margin: 1rem -1rem;
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  grid-template-rows: 1fr auto;
+  grid-column-gap: 1.1rem;
+`;
 
 const PlaceholderRoot = styled(Root)`
   opacity: 0.7;
@@ -33,17 +40,15 @@ const ProfilePicture = styled(PlaceholderBase)`
   border-radius: 4000px;
 `;
 
-const GhostPeakListCard = () => {
-  return (
-    <PlaceholderRoot>
-      <TextContainer>
-        <PlaceholderTitle />
-        <PlaceholderText style={{width: '68%'}} />
-        <PlaceholderText style={{width: '40%'}} />
-      </TextContainer>
-      <ProfilePicture />
-    </PlaceholderRoot>
-  );
-};
+const GhostPeakListCard = () => (
+  <PlaceholderRoot>
+    <TextContainer>
+      <PlaceholderTitle />
+      <PlaceholderText style={{width: '68%'}} />
+      <PlaceholderText style={{width: '40%'}} />
+    </TextContainer>
+    <ProfilePicture />
+  </PlaceholderRoot>
+);
 
 export default GhostPeakListCard;
