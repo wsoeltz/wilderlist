@@ -1,18 +1,19 @@
 /* tslint:disable:await-promise */
 /* eslint-disable max-len */
 /* tslint:disable:max-line-length */
+import upperFirst from 'lodash/upperFirst';
 import {
+  Campsite as ICampsite,
   Mountain as IMountain,
   PeakList as IPeakList,
   PeakListVariants,
-  State as IState,
+  Trail as ITrail,
 } from '../graphql/graphQLTypes';
 import { Mountain } from '../graphql/schema/queryTypes/mountainType';
 import { PeakList } from '../graphql/schema/queryTypes/peakListType';
 import { State } from '../graphql/schema/queryTypes/stateType';
 import {
   failIfValidOrNonExhaustive,
-  getStatesOrRegion,
 } from '../graphql/Utils';
 
 // This should always reflect the routes found in
@@ -24,8 +25,22 @@ import {
 
 export enum Routes {
   Landing = '/',
+
   ListDetail = '/list/:id',
   MountainDetail = '/mountain/:id',
+  CampsiteDetail = '/campsite/:id',
+  TrailDetail = '/trail/:id',
+
+  SummitView = '/summit-view/:lat/:lng/:altitude/:id',
+
+  AutoRouteDetail = '/route-detail',
+  AutoRouteDetailParkingToMountain = '/route-detail/mountain/:mountainId/start/:parkingId',
+  AutoRouteDetailMountainToCampsite = '/route-detail/mountain/:mountainId/campsite/:campsiteId',
+  AutoRouteDetailCampsiteToCampsite = '/route-detail/campsite/:campsiteId1/campsite/:campsiteId2',
+  AutoRouteDetailTrailToMountain = '/route-detail/trail/:trailId/mountain/:mountainId',
+  AutoRouteDetailTrailToCampsite = '/route-detail/trail/:trailId/campsite/:campsiteId',
+
+  About = '/about',
   PrivacyPolicy = '/privacy-policy',
   TermsOfUse = '/terms-of-use',
 
@@ -118,7 +133,95 @@ const ordinalNumber = ([input]: [number]): string => {
   return input + ordinalSuffix([input]);
 };
 
-export const getMtnDescription = async (mtn: IMountain, state: IState | null) => {
+const formatOwnership = (ownership: string | null) => {
+  switch (ownership) {
+    case 'private':
+      return 'privately run ';
+    case 'federal':
+      return 'federally run ';
+    case 'state':
+      return 'state run ';
+    default:
+      return '';
+  }
+};
+
+export const formatType = (type: string) => {
+  switch (type) {
+    case 'camp_site':
+      return 'campsite';
+    case 'caravan_site':
+      return 'campground';
+    case 'weather_shelter':
+      return 'weather shelter';
+    case 'camp_pitch':
+      return 'tentsite';
+    case 'lean_to':
+      return 'lean-to';
+    case 'wilderness_hut':
+      return 'wilderness hut';
+    case 'alpine_hut':
+      return 'alpine hut';
+    case 'basic_hut':
+      return 'basic hut';
+    case 'rock_shelter':
+      return 'rock shelter';
+    case 'trail':
+      return 'trail';
+    case 'dirtroad':
+      return 'dirt road';
+    case 'path':
+      return 'path';
+    case 'stairs':
+      return 'path';
+    case 'cycleway':
+      return 'bike trail';
+    case 'road':
+      return 'road';
+    case 'hiking':
+      return 'trail';
+    case 'bridleway':
+      return 'trail';
+    case 'demanding_mountain_hiking':
+      return 'trail';
+    case 'mountain_hiking':
+      return 'trail';
+    case 'herdpath':
+      return 'herd path';
+    case 'alpine_hiking':
+      return 'alpine trail';
+    case 'demanding_alpine_hiking':
+      return 'alpine trail';
+    case 'difficult_alpine_hiking':
+      return 'alpine trail';
+    case 'parent_trail':
+      return 'feature route';
+    case 'information_board':
+      return 'information board';
+    case 'information_map':
+      return 'information map';
+    case 'picnic_site':
+      return 'picnic site';
+    case 'park':
+      return 'park';
+    case 'trailhead':
+      return 'trailhead';
+    case 'parking_space':
+      return 'parking area';
+    case 'parking':
+      return 'parking lot';
+    case 'intersection':
+      return 'trail/road crossing';
+    default:
+      return 'point';
+  }
+};
+
+function isVowel(c: string) {
+    return ['a', 'e', 'i', 'o', 'u'].indexOf(c.toLowerCase()) !== -1;
+}
+
+export const getMtnDescription = async (mtn: IMountain) => {
   let listData: any | null;
   if (mtn.lists && mtn.lists.length) {
     listData = await getMostPopularListsData(mtn);
@@ -129,7 +232,7 @@ export const getMtnDescription = async (mtn: IMountain, state: IState | null) =>
   let placeText: string;
   if (listData) {
     mountainsList = listData.mountains;
-    placeText = `on the ${listData.name}`;
+    placeText = `on ${listData.name}`;
   } else {
     mountainsList = [];
     placeText = '';
@@ -148,25 +251,33 @@ export const getMtnDescription = async (mtn: IMountain, state: IState | null) =>
     positionText = ordinalNumber([position + 1]) + ' largest';
   }
   const additionalText = positionText && placeText ? ` and is the ${positionText} point ${placeText}` : '';
-  const stateText = state && state.abbreviation
-    ? `, ${state.abbreviation}` : '';
-  return `${mtn.name}${stateText} stands at ${mtn.elevation}ft high${additionalText}. View trails, camping, directions, weather, and trip reports for ${mtn.name}.`;
+  return `${mtn.name} of ${mtn.locationText} stands at ${mtn.elevation}ft high${additionalText}. View trails, camping, directions, weather, and trip reports for ${mtn.name}.`;
 };
 
-export const getListDescription = async (list: IPeakList) => {
-  const { id, type, states } = list;
-  const stateData = await State.find({_id: {$in: states}});
-  const stateOrRegionText = await getStatesOrRegion(stateData as any, undefined, id);
-  let areaText: string;
-  if (stateOrRegionText === 'Across the US') {
-    areaText = ' across the US';
-  } else if (stateOrRegionText) {
-    areaText = ' throughout ' + stateOrRegionText;
-  } else {
-    areaText = '';
-  }
+export const getCampsiteDescription = (campsite: ICampsite) => {
+  const formattedType = formatType(campsite.type);
+  const name = campsite.name ? campsite.name : upperFirst(formattedType);
+  const ownership = formatOwnership(campsite.ownership);
+  const typeString = ownership + formattedType;
+  const a = isVowel(typeString[0]) ? 'an' : 'a';
+  return `${name} is ${a} ${typeString} in ${campsite.locationText}.`;
+};
+
+export const getTrailDescription = (trail: ITrail) => {
+  const formattedType = formatType(trail.type ? trail.type : 'trail');
+  const name = trail.name ? trail.name : upperFirst(formattedType);
+  const trailLength = trail.trailLength ? trail.trailLength : 0;
+  const numericDistance = trailLength < 0.1
+    ? Math.round(trailLength * 5280)
+    : parseFloat(trailLength.toFixed(1));
+  const distanceUnit = trailLength < 0.1 ? 'ft' : 'mi';
+  return `${name} is a ${numericDistance}${distanceUnit} long ${formattedType} in ${trail.locationText}.`;
+};
+
+export const getListDescription = (list: IPeakList) => {
+  const { type } = list;
   if (type === PeakListVariants.standard) {
-    return `Plan and track your ascents of the ${list.name} (${list.shortName}) with maps, weather, trip reports and directions for all ${list.mountains.length} peaks${areaText}.`;
+    return `Plan and track your trips on ${list.name} (${list.shortName}) with maps, trails, weather, trip reports, directions and more.`;
   } else if (type === PeakListVariants.winter) {
     return `Plan and track your ascents of ${list.name} (${list.shortName}) in the winter with maps, weather, trip reports and directions for all ${list.mountains.length} peaks.`;
   } else if (type === PeakListVariants.fourSeason) {

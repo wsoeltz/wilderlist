@@ -8,6 +8,7 @@ import express from 'express';
 import expressGraphQL from 'express-graphql';
 import { redirectToHTTPS } from 'express-http-to-https';
 import fs from 'fs';
+import upperFirst from 'lodash/upperFirst';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import getCampsite from './api/getCampsite';
@@ -33,11 +34,13 @@ import {getStatesOrRegion} from './graphql/Utils';
 import requireLogin from './middleware/requireLogin';
 import notificationRoutes from './notifications';
 import {
+  formatType,
+  getCampsiteDescription,
   getListData,
   getListDescription,
   getMountainData,
   getMtnDescription,
-  getStateData,
+  getTrailDescription,
   getType,
   Routes,
 } from './routing';
@@ -366,11 +369,52 @@ app.get(mountainOgImageUrl, async (req, res) => {
     const mtnData = await getMountainData(req.params.mountainId);
     const name = mtnData && mtnData.name ? mtnData.name : '';
     const elevation = mtnData && mtnData.elevation ? mtnData.elevation + 'ft' : '';
-    const stateData = mtnData && mtnData.state !== null ?
-      await getStateData(mtnData.state as unknown as string) : null;
-    const state = stateData && stateData.name
-      ? stateData.name + ' | ' : '';
+    const state = mtnData && mtnData.locationTextShort
+      ? mtnData.locationTextShort + ' | ' : '';
     const subtext = state + elevation;
+    const result = await getOgImage({text: name, subtext});
+    res.type('image/jpeg');
+    res.send(result);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+const trailOgImageUrl = '/og-image/trail/:trailId/image.jpg';
+const setTrailOgImageUrl = (id: string) => trailOgImageUrl.replace(':trailId', id);
+app.get(trailOgImageUrl, async (req, res) => {
+  try {
+    const trailData = await getTrail(req.params.trailId);
+    const formattedType = upperFirst(formatType(trailData && trailData.type ? trailData.type : 'parent_trail'));
+    const name = trailData && trailData.name ? trailData.name : formattedType;
+    const trailLength = trailData && trailData.trailLength ? trailData.trailLength : 0;
+    const numericDistance = trailLength < 0.1
+      ? Math.round(trailLength * 5280)
+      : parseFloat(trailLength.toFixed(1));
+    const distanceUnit = trailLength < 0.1 ? 'ft' : 'mi';
+    const state = trailData && trailData.locationTextShort
+      ? trailData.locationTextShort + ' | ' : '';
+    const subtext = state + numericDistance + distanceUnit;
+    const result = await getOgImage({text: name, subtext});
+    res.type('image/jpeg');
+    res.send(result);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
+  }
+});
+
+const campsiteOgImageUrl = '/og-image/campsite/:campsiteId/image.jpg';
+const setCampsiteOgImageUrl = (id: string) => campsiteOgImageUrl.replace(':campsiteId', id);
+app.get(campsiteOgImageUrl, async (req, res) => {
+  try {
+    const campsiteData = await getCampsite(req.params.campsiteId);
+    const formattedType = upperFirst(formatType(campsiteData ? campsiteData.type : ''));
+    const name = campsiteData && campsiteData.name ? campsiteData.name : formattedType;
+    const state = campsiteData && campsiteData.locationTextShort
+      ? campsiteData.locationTextShort + ' | ' : '';
+    const subtext = state + formattedType;
     const result = await getOgImage({text: name, subtext});
     res.type('image/jpeg');
     res.send(result);
@@ -546,6 +590,26 @@ if (process.env.NODE_ENV === 'production') {
     });
 
   });
+  app.get(Routes.About, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      if (err) {
+        return console.error(err);
+      }
+
+      // replace the special strings with server generated strings
+      data = data.replace(/\$OG_TITLE/g, 'About - Wilderlist');
+      data = data.replace(/\$CANONICAL_URL/g,
+        `https://www.wilderlist.app/list/${Routes.TermsOfUse}`,
+      );
+      data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+      const result  = data.replace(/\$OG_DESCRIPTION/g, 'Learn more about Wilderlist.');
+      res.send(result);
+    });
+
+  });
 
   app.get(Routes.ListDetail, (req, res) => {
     const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
@@ -562,7 +626,7 @@ if (process.env.NODE_ENV === 'production') {
         const result  =
           data.replace(/\$OG_DESCRIPTION/g,
             /* tslint:disable */
-            'Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.');
+            'Search for popular hiking lists across the USA.');
           /* tslint:enable */
         res.send(result);
       } else {
@@ -577,7 +641,7 @@ if (process.env.NODE_ENV === 'production') {
               `https://www.wilderlist.app/list/${req.params.id}`,
             );
             data = data.replace(/\$OG_IMAGE/g, setPeakListOgImageUrl(req.params.id));
-            const description = await getListDescription(listData);
+            const description = getListDescription(listData);
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
@@ -625,7 +689,7 @@ if (process.env.NODE_ENV === 'production') {
       }
       if (req.params.id === 'search') {
         data = data.replace(/\$OG_TITLE/g, 'Search Mountains - Wilderlist');
-        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/mountains/search`);
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/mountain/search`);
         data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
         const result  =
           data.replace(/\$OG_DESCRIPTION/g, 'Search for mountains and find maps, trails, weather and trip reports.');
@@ -634,18 +698,121 @@ if (process.env.NODE_ENV === 'production') {
         try {
           const mtnData = await getMountainData(req.params.id);
           if (mtnData !== null) {
-            const stateData = mtnData.state !== null ?
-              await getStateData(mtnData.state as unknown as string) : null;
-            const state = stateData && stateData.name
-              ? `, ${stateData.name}` : '';
             // replace the special strings with server generated strings
-            const title = `${mtnData.name + state} - Wilderlist`;
+            const title = `${mtnData.name}, ${mtnData.locationTextShort} - Wilderlist`;
             data = data.replace(/\$OG_TITLE/g, title);
             data = data.replace(/\$CANONICAL_URL/g,
               `https://www.wilderlist.app/mountain/${req.params.id}`,
             );
             data = data.replace(/\$OG_IMAGE/g, setMountainOgImageUrl(req.params.id));
-            const description = await getMtnDescription(mtnData, stateData);
+            const description = await getMtnDescription(mtnData);
+            const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+            res.send(result);
+          } else {
+            throw new Error('Incorrect List ID ' + req.params.id);
+          }
+
+        } catch (err) {
+
+          console.error(err);
+          // replace the special strings with the default generated strings
+          const canonicalUrl = baseUrl + req.path;
+          data = data.replace(/\$OG_TITLE/g, defaultTitle);
+          data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+          res.send(result);
+
+        }
+      }
+
+    });
+
+  });
+  app.get(Routes.CampsiteDetail, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (req.params.id === 'search') {
+        data = data.replace(/\$OG_TITLE/g, 'Search Campsites - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/campsite/search`);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  =
+          data.replace(/\$OG_DESCRIPTION/g,
+            'Search for campsites and find maps, directions, local trails, weather and trip reports.');
+        res.send(result);
+      } else {
+        try {
+          const campsiteData = await getCampsite(req.params.id);
+          if (campsiteData !== null && campsiteData !== undefined) {
+            // replace the special strings with server generated strings
+            const formattedType = formatType(campsiteData.type);
+            const name = campsiteData.name ? campsiteData.name : upperFirst(formattedType);
+            const title = `${name}, ${campsiteData.locationTextShort} - Wilderlist`;
+            data = data.replace(/\$OG_TITLE/g, title);
+            data = data.replace(/\$CANONICAL_URL/g,
+              `https://www.wilderlist.app/campsite/${req.params.id}`,
+            );
+            data = data.replace(/\$OG_IMAGE/g, setCampsiteOgImageUrl(req.params.id));
+            const description = getCampsiteDescription(campsiteData);
+            const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+            res.send(result);
+          } else {
+            throw new Error('Incorrect List ID ' + req.params.id);
+          }
+
+        } catch (err) {
+
+          console.error(err);
+          // replace the special strings with the default generated strings
+          const canonicalUrl = baseUrl + req.path;
+          data = data.replace(/\$OG_TITLE/g, defaultTitle);
+          data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+          data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+          res.send(result);
+
+        }
+      }
+
+    });
+
+  });
+
+  app.get(Routes.TrailDetail, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (req.params.id === 'search') {
+        data = data.replace(/\$OG_TITLE/g, 'Search Trails - Wilderlist');
+        data = data.replace(/\$CANONICAL_URL/g, `https://www.wilderlist.app/trail/search`);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  =
+          data.replace(/\$OG_DESCRIPTION/g,
+            'Search for trails and find maps, directions, local campsites, weather and trip reports.');
+        res.send(result);
+      } else {
+        try {
+          const trailData = await getTrail(req.params.id);
+          if (trailData !== null && trailData !== undefined) {
+            // replace the special strings with server generated strings
+            const formattedType = formatType(trailData.type ? trailData.type : 'trail');
+            const name = trailData.name ? trailData.name : upperFirst(formattedType);
+            const title = `${name}, ${trailData.locationTextShort} - Wilderlist`;
+            data = data.replace(/\$OG_TITLE/g, title);
+            data = data.replace(/\$CANONICAL_URL/g,
+              `https://www.wilderlist.app/trail/${req.params.id}`,
+            );
+            data = data.replace(/\$OG_IMAGE/g, setTrailOgImageUrl(req.params.id));
+            const description = getTrailDescription(trailData as Trail);
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
