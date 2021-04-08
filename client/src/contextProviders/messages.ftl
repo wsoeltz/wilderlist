@@ -81,6 +81,8 @@ global-text-value-search-trails-to-add = Search for trails to add
 global-text-value-search-campsites-to-add = Search for campsites to add
 
 global-text-value-view-route = View route
+global-text-value-view-route-to-summit = View route to summit
+global-text-value-view-route-to-campsite = View route to site
 
 global-text-value-fitler-items = Filter {
   $type ->

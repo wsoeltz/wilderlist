@@ -156,18 +156,24 @@ const RoutesToPoint = (props: Props) => {
           }
         };
 
+        let viewRouteText = getString('global-text-value-view-route');
         if (!destination || destination === 'parking') {
           url = autoRouteDetailLink.parkingToMountain(id, properties.destination._id);
+          viewRouteText = getString('global-text-value-view-route-to-summit');
         } else if (destination === 'campsites') {
           if (sourceType === CoreItem.mountain) {
             url = autoRouteDetailLink.mountainToCampsite(id, properties.destination._id);
+            viewRouteText = getString('global-text-value-view-route-to-campsite');
           } else if (sourceType === CoreItem.campsite) {
             url = autoRouteDetailLink.campsiteToCampsite(id, properties.destination._id);
+            viewRouteText = getString('global-text-value-view-route-to-campsite');
           } else if (sourceType === CoreItem.trail) {
             url = autoRouteDetailLink.trailToCampsite(id, properties.destination._id);
+            viewRouteText = getString('global-text-value-view-route-to-campsite');
           }
         } else if (destination === 'mountains') {
           url = autoRouteDetailLink.trailToMountain(id, properties.destination._id);
+          viewRouteText = getString('global-text-value-view-route-to-summit');
         }
 
         return (
@@ -197,7 +203,7 @@ const RoutesToPoint = (props: Props) => {
             </Details>
             <Details>
               <SmallLink to={url}>
-                {getString('global-text-value-view-route')}
+                {viewRouteText}
               </SmallLink>
             </Details>
           </HorizontalBlock>
