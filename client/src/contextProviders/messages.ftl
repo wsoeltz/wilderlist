@@ -7,7 +7,7 @@ meta-data-campsite-search-default-title = Search campsites - Wilderlist
 meta-data-trail-search-default-title = Search trails - Wilderlist
 meta-data-friend-search-default-title = Friends - Wilderlist
 meta-data-settings-default-title = Settings - Wilderlist
-meta-data-dashboard-default-title = Saved Items - Wilderlist
+meta-data-dashboard-default-title = Your Saved Items - Wilderlist
 meta-data-your-stats-default-title = Your Data - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
 meta-data-about-title = About - Wilderlist
@@ -656,7 +656,7 @@ header-text-menu-terms-of-use = Terms of Use
 notification-bar-ascent-marked = marked you as hiking
 notification-bar-camped-marked = marked you as camping at
 
-dashboard-title = Saved Items
+dashboard-title = Your Saved Items
 
 login-page-plan-your-trip-title = Plan your trip
 login-page-plan-your-trip-desc = ● Maps ● Trails ● Camping ● Weather Forecasts ● Trip Reports ● Driving Directions
