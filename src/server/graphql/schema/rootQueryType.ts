@@ -425,7 +425,7 @@ const RootQuery = new GraphQLObjectType({
         return TripReport
           .find({
             ...item,
-            privacy: { $in: [TripReportPrivacy.Public, TripReportPrivacy.Anonymous]},
+            privacy: { $ne: TripReportPrivacy.Private },
             $or: [
               {notes: { $ne: null }},
               {link: { $ne: null }},

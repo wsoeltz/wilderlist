@@ -144,7 +144,7 @@ const EditAscentReport = (props: Props) => {
           }}
           initialTripNotes={notes ? notes : ''}
           initialLink={link ? link : ''}
-          initialPrivacy={privacy ? privacy : TripReportPrivacy.Private}
+          initialPrivacy={privacy ? privacy : TripReportPrivacy.Public}
         />
       );
     }
