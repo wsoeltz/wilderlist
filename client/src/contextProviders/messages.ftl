@@ -868,6 +868,7 @@ peak-list-detail-text-optional-items-desc = Optional { $type }s are included bel
 peak-list-export-grid-special-link = Export your Wilderlist ascents to the official Grid Application
 
 user-notes-title = Your Notes
+user-notes-personal-title = Your Personal Notes
 user-notes-placeholder = Keep your own personal notes for { $name } here.
 user-notes-tooltip = Your personal notes are private to your account and are not viewable by anyone else.
 user-notes-placeholder-not-logged-in = Create a free account to keep your own personal notes for { $name } here.

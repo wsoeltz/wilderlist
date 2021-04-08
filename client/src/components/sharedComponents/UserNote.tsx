@@ -1,4 +1,3 @@
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faFacebook,
   faGoogle,
@@ -7,7 +6,6 @@ import {
 import {
   faLock,
 } from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {rgba} from 'polished';
 import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components/macro';
@@ -18,6 +16,7 @@ import {
   ItemTitle,
 } from '../../styling/sharedContentStyles';
 import {
+  BasicIconInTextCompact,
   ButtonWarningLow,
   HelpUnderline,
   lightBorderColor,
@@ -182,7 +181,7 @@ const UserNote = (props: Props) => {
     <LoginButtonsContainer>
       <LoginButton href='/auth/google'>
         <BrandIcon
-          icon={faGoogle as IconDefinition}
+          icon={faGoogle as any}
           style={{color: googleBlue}}
         />
         <LoginText>
@@ -191,7 +190,7 @@ const UserNote = (props: Props) => {
       </LoginButton>
       <LoginButton href='/auth/facebook'>
         <BrandIcon
-          icon={faFacebook as IconDefinition}
+          icon={faFacebook as any}
           style={{color: facebookBlue}}
         />
         <LoginText>
@@ -200,7 +199,7 @@ const UserNote = (props: Props) => {
       </LoginButton>
       <LoginButton href='/auth/reddit'>
         <BrandIcon
-          icon={faReddit as IconDefinition}
+          icon={faReddit as any}
           style={{color: redditRed}}
         />
         <LoginText>
@@ -219,14 +218,15 @@ const UserNote = (props: Props) => {
   return (
     <Root>
       <Title>
-        <div>{getString('user-notes-title')}:</div>
+        <div>{getString('user-notes-personal-title')}:</div>
         <div>
           <small>
             <Tooltip
               explanation={getString('user-notes-tooltip')}
             >
+              <BasicIconInTextCompact icon={faLock} />
               <HelpUnderline>
-                <FontAwesomeIcon icon={faLock} /> {getString('global-text-value-private')}
+                {getString('global-text-value-private')}
               </HelpUnderline>
             </Tooltip>
           </small>
