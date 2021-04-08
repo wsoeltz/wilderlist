@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { FriendDatum, UserDatum } from '../../../queries/users/useUserSearch';
-import { NoResults } from '../../../styling/styleUtils';
+import { NoResults, PlaceholderText } from '../../../styling/styleUtils';
 import { FriendStatus } from '../../../types/graphQLTypes';
 import UserCard from './UserCard';
 
@@ -22,7 +22,12 @@ const ListUsers = (props: Props) => {
   } = props;
 
   if (userData === null) {
-    return <NoResults dangerouslySetInnerHTML={{__html: noFriendsText}} />;
+    return (
+      <>
+        <br />
+        <PlaceholderText dangerouslySetInnerHTML={{__html: noFriendsText}} />
+      </>
+    );
   }
   if (userData.length === 0) {
     return <NoResults dangerouslySetInnerHTML={{__html: noResultsText}} />;

@@ -70,9 +70,9 @@ const SavedLists = ({userId}: Props) => {
             {getString('user-profile-lists-in-progress')}
           </CenterdLightTitle>
           <BasicContentContainer>
-            <p>
-              {getString('dashboard-empty-state-no-active-lists-text')}
-            </p>
+            <PlaceholderText dangerouslySetInnerHTML={{
+              __html: getString('dashboard-empty-state-no-active-lists-text')}}
+            />
           </BasicContentContainer>
           <p style={{textAlign: 'center'}}>
             <ButtonPrimaryLink

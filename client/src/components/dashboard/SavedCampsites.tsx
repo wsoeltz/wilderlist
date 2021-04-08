@@ -12,6 +12,7 @@ import {
 } from '../../styling/sharedContentStyles';
 import {
   ButtonPrimaryLink,
+  PlaceholderText,
 } from '../../styling/styleUtils';
 import {PeakListVariants} from '../../types/graphQLTypes';
 import {CoreItem} from '../../types/itemTypes';
@@ -125,9 +126,9 @@ const SavedCampsites = () => {
   return (
     <div>
       <BasicContentContainer>
-        <p>
-          {getString('dashboard-empty-state-no-saved-campsites-text')}
-        </p>
+        <PlaceholderText dangerouslySetInnerHTML={{
+          __html: getString('dashboard-empty-state-no-saved-campsites-text')}}
+        />
       </BasicContentContainer>
       <p style={{textAlign: 'center'}}>
         <ButtonPrimaryLink

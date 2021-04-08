@@ -639,16 +639,14 @@ export const HighlightedIconInText = styled(IconInTextBase)`
 `;
 
 export const PlaceholderText = styled.div`
-  width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-style: italic;
-  color: ${placeholderColor};
-  background-color: rgb(245, 245, 245);
+  color: ${lightBaseColor};
+  padding: 1.25rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: ${tertiaryColor};
+  border: solid 1px ${lightBorderColor};
   position: relative;
+  border-radius: 8px;
 `;
 
 export const NoResults = styled.div`
