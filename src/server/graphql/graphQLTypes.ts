@@ -162,6 +162,14 @@ export interface Trail {
   latestTrip: string | null;
 }
 
+export interface Parking {
+  _id: string;
+  name: string | null;
+  osmId: string | null;
+  type: string | null;
+  location: Coordinate;
+}
+
 export enum ParkingType {
   informationBoard = 'information_board',
   informationMap = 'information_map',

@@ -57,7 +57,7 @@ const CampsiteSchema = new Schema({
   status: { type: String },
 });
 
-CampsiteSchema.index({ center: '2dsphere' });
+CampsiteSchema.index({ location: '2dsphere' });
 CampsiteSchema.index({ name: 'text' });
 
 export const Campsite: CampsiteModelType = mongoose.model<CampsiteModelType, any>('campsite', CampsiteSchema);

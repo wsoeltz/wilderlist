@@ -10,6 +10,7 @@ import {
   Trail as ITrail,
 } from '../graphql/graphQLTypes';
 import { Mountain } from '../graphql/schema/queryTypes/mountainType';
+import { Parking } from '../graphql/schema/queryTypes/parkingType';
 import { PeakList } from '../graphql/schema/queryTypes/peakListType';
 import { State } from '../graphql/schema/queryTypes/stateType';
 import {
@@ -95,6 +96,16 @@ export const getMountainData = async (id: string) => {
 export const getStateData = async (id: string) => {
   try {
     const res = await State.findById(id);
+    return res;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getParkingData = async (id: string) => {
+  try {
+    const res = await Parking.findById(id);
     return res;
   } catch (err) {
     console.error(err);
@@ -289,6 +300,10 @@ export const getListDescription = (list: IPeakList) => {
   }
 };
 
-export const getSummitViewDescription = (mtn: IMountain) => {
-  return `View a 360 degree interactive summit for ${mtn.name} (${mtn.locationText}).`;
-};
+export const getSummitViewDescription = (mtn: IMountain) =>
+  `View a 360 degree interactive summit for ${mtn.name} (${mtn.locationText})`;
+
+export const getAutoRouteTitle = (source: string, dest: string) =>
+  `Hike to ${dest} from ${source} - Wilderlist`;
+export const getAutoRouteDescription = (source: string, dest: string) =>
+  `Explore maps, elevation profiles, weather reports and more for a hike to ${dest} from ${source}`;
