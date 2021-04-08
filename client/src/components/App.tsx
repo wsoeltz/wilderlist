@@ -10,6 +10,7 @@ import '../styling/fonts/fonts.css';
 import GlobalStyles from '../styling/GlobalStyles';
 import { Root } from '../styling/Grid';
 import { overlayPortalContainerId } from '../Utils';
+import ErrorBoundary from './sharedComponents/ErrorComponent';
 import GlobalMap from './template/globalMap';
 import MainContent from './template/MainContent';
 import Header from './template/navigation/Header';
@@ -47,11 +48,13 @@ const App: React.FC = () => {
       </Helmet>
       <GlobalStyles />
       <Root>
-        <GlobalMap>
-          <Header />
-          <MainContent />
-          <OverlayPortal id={overlayPortalContainerId} />
-        </GlobalMap>
+        <ErrorBoundary>
+          <GlobalMap>
+            <Header />
+            <MainContent />
+            <OverlayPortal id={overlayPortalContainerId} />
+          </GlobalMap>
+        </ErrorBoundary>
       </Root>
     </UserContext.Provider>
   );

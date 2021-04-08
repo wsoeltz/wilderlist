@@ -1439,5 +1439,9 @@ page-not-found-404-title = The page you are looking for seems to be off the trai
 page-not-found-404-desc = Try searching what you are looking for at one of the following pages -
 page-not-found-404-contact = If you think this page should be here, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.
 
+page-error-title = Uh-oh there seems to have been an error.
+page-error-desc = Try refreshing or accessing another page.
+page-error-contact = If this persists, please contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.
+
 please-login-title = You need to log in to access this page.
 please-login-contact = If you think this is in error, contact us at <a href='mailto: help@wilderlist.app'>help@wilderlist.app</a>.

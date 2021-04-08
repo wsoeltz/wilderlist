@@ -6,6 +6,7 @@ import MapContext, {MapState} from '../../../contextProviders/mapContext';
 import useFluent from '../../../hooks/useFluent';
 import useUsersLocation from '../../../hooks/useUsersLocation';
 import {Routes} from '../../../routing/routes';
+import ErrorBoundary from '../../sharedComponents/ErrorComponent';
 import initMap, {getStoredMapCenter} from './map';
 import Tooltip, {Props as TooltipState} from './tooltip';
 
@@ -60,7 +61,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
   }, [mapState, initialCenter]);
 
   return (
-    <>
+    <ErrorBoundary>
       <Tooltip
         node={tootlipState.node}
         item={tootlipState.item}
@@ -78,7 +79,7 @@ const GlobalMap = ({children}: {children: React.ReactNode}) => {
       <MapContext.Provider value={mapState}>
         {children}
       </MapContext.Provider>
-    </>
+    </ErrorBoundary>
   );
 };
 
