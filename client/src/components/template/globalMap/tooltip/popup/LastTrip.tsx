@@ -1,7 +1,8 @@
 import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, {useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import styled from 'styled-components/macro';
+import useCurrentUser from '../../../../../hooks/useCurrentUser';
 import useFluent from '../../../../../hooks/useFluent';
 import useUsersProgress from '../../../../../queries/users/useUsersProgress';
 import {
@@ -18,6 +19,7 @@ import {
   formatDate,
   getDates,
 } from '../../../../../utilities/dateUtils';
+import SignUpModal from '../../../../sharedComponents/SignUpModal';
 import SimpleTextLoading from '../../../../sharedComponents/SimpleTextLoading';
 import {
   Icon,
@@ -52,9 +54,11 @@ interface Props {
 
 const LastTrip = ({id, itemType, close}: Props) => {
   const getString = useFluent();
+  const user = useCurrentUser();
   const {loading, data} = useUsersProgress();
   const item = (itemType as string).slice(0, itemType.length - 1) as CoreItem;
   const history = useHistory();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   let lastHikedText: React.ReactElement<any> | null;
   if (loading) {
@@ -105,19 +109,30 @@ const LastTrip = ({id, itemType, close}: Props) => {
   }
 
   const onAddAscent = () => {
-    let tripReportUrl: string;
-    if (itemType === CoreItems.mountains) {
-      tripReportUrl = addTripReportLink({mountains: id});
-    } else if (itemType === CoreItems.trails) {
-      tripReportUrl = addTripReportLink({trails: id});
-    } else if (itemType === CoreItems.campsites) {
-      tripReportUrl = addTripReportLink({campsites: id});
+    if (user) {
+      let tripReportUrl: string;
+      if (itemType === CoreItems.mountains) {
+        tripReportUrl = addTripReportLink({mountains: id});
+      } else if (itemType === CoreItems.trails) {
+        tripReportUrl = addTripReportLink({trails: id});
+      } else if (itemType === CoreItems.campsites) {
+        tripReportUrl = addTripReportLink({campsites: id});
+      } else {
+        tripReportUrl = addTripReportLink({});
+      }
+      history.push(tripReportUrl);
+      close();
     } else {
-      tripReportUrl = addTripReportLink({});
+      setModalOpen(true);
     }
-    history.push(tripReportUrl);
-    close();
   };
+
+  const signUp = modalOpen ? (
+    <SignUpModal
+      text={getString('global-text-value-modal-sign-up-log-trips')}
+      onCancel={() => setModalOpen(false)}
+    />
+  ) : null;
   return (
     <Root>
       <Icon icon={faCalendarAlt} />
@@ -135,6 +150,7 @@ const LastTrip = ({id, itemType, close}: Props) => {
           {getString('item-detail-log-trip', {type: item})}
         </div>
       </AscentButton>
+      {signUp}
     </Root>
   );
 };
