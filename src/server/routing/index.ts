@@ -290,11 +290,11 @@ export const getListDescription = (list: IPeakList) => {
   if (type === PeakListVariants.standard) {
     return `Plan and track your trips on ${list.name} (${list.shortName}) with maps, trails, weather, trip reports, directions and more.`;
   } else if (type === PeakListVariants.winter) {
-    return `Plan and track your ascents of ${list.name} (${list.shortName}) in the winter with maps, weather, trip reports and directions for all ${list.mountains.length} peaks.`;
+    return `Plan and track your trips of ${list.name} (${list.shortName}) in the winter with maps, weather, trip reports and directions.`;
   } else if (type === PeakListVariants.fourSeason) {
-    return `Plan and track your 4-Season ascents on the peaks of the ${list.name} (${list.shortName}) with trail maps, weather and trip reports, and robust tracking tools.`;
+    return `Plan and track your 4-Season trips on ${list.name} (${list.shortName}) with trail maps, weather and trip reports, and robust tracking tools.`;
   } else if (type === PeakListVariants.grid) {
-    return `The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the ${list.name} Grid with trail maps, weather and trip reports, and robust tracking tools.`;
+    return `The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards ${list.name} Grid with trail maps, weather and trip reports, and tracking tools.`;
   } else {
     failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
   }

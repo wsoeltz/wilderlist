@@ -11,6 +11,10 @@ meta-data-dashboard-default-title = Saved Items - Wilderlist
 meta-data-your-stats-default-title = Your Data - Wilderlist
 meta-data-privacy-default-title = Privacy Policy - Wilderlist
 meta-data-about-title = About - Wilderlist
+meta-data-log-trip-title = Log a Trip - Wilderlist
+meta-data-log-add-list = Create Hiking List - Wilderlist
+meta-data-log-add-mountain = Add Mountain - Wilderlist
+meta-data-log-add-campsite = Add Campsite - Wilderlist
 meta-data-terms-of-use-default-title = Terms of Use - Wilderlist
 meta-data-detail-default-title = { $title }{
   $type ->
@@ -28,23 +32,28 @@ meta-data-compare-peak-list-title = Comparing { $title }{
   } with { $user } - Wilderlist
 meta-data-compare-all-title = Comparing all ascents with { $user } - Wilderlist
 
-meta-data-mountain-detail-description = { $name }{ $state } stands at { $elevation }ft high{ $additionaltext }. View trails, camping, directions, weather, and trip reports for { $name }.
+meta-data-mountain-detail-description = { $name }, { $state } stands at { $elevation }ft high. View trails, camping, directions, weather, and trip reports for { $name }.
 
-meta-data-campsite-detail-description = { $name } is a { $type } in { $state }. Explore nearby trails, mountains, directions, weather, and trip reports for { $name }.
+meta-data-campsite-detail-description = { $name } is { $a } { $type } in { $location }.
 
-meta-data-trail-detail-description = { $name } is a { $type } in { $state }. Find nearby camping, mountains, directions, weather, and trip reports for { $name }.
+meta-data-trail-detail-description = { $name } is a { $length } long { $type } in { $location }.
+
+meta-data-summit-view-title = Summit view of { $name } - Wilderlist
+meta-data-summit-view-description = View a 360 degree interactive summit for { $name }
+
+meta-data-auto-route-description = Explore maps, elevation profiles, weather reports and more for a { $title-lower-case }
 
 meta-data-mountain-search-description = Search for mountains and find maps, trails, weather and trip reports.
-meta-data-peak-list-search-description = Search for hiking lists like the New Hampshire 4000 Footers, New England 100 Highest, the Adirondack 46ers, and many more.
-meta-data-campsite-search-description = Search for campsites and find maps, trails, weather and trip reports.
-meta-data-trail-search-description = Search for trails and find maps, trails, weather and trip reports.
+meta-data-peak-list-search-description = Search for popular hiking lists across the USA.
+meta-data-campsite-search-description = Search for campsites and find maps, directions, local trails, weather and trip reports.
+meta-data-trail-search-description = Search for trails and find maps, directions, local campsites, weather and trip reports.
 
 meta-data-peak-list-detail-description = {
   $type ->
-  *[standard] Plan and track your ascents of { $list-name } ({ $list-short-name }) with maps, weather, trip reports and directions for all { $num-mountains } peaks{ $state-or-region-string }.
-  [winter] Plan and track your ascents of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions for all { $num-mountains } peaks.
-  [fourSeason] Plan and track your 4-Season ascents on the peaks of the { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
-  [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and robust tracking tools.
+  *[standard] Plan and track your trips on { $list-name } ({ $list-short-name }) with maps, trails, weather, trip reports, directions and more.
+  [winter] Plan and track your trips of { $list-name } ({ $list-short-name }) in the winter with maps, weather, trip reports and directions.
+  [fourSeason] Plan and track your 4-Season trips on { $list-name } ({ $list-short-name }) with trail maps, weather and trip reports, and robust tracking tools.
+  [grid] The 12-month Grid, the ultimate hiking challenge. Plan and track your ascents as you work towards the { $list-name } Grid with trail maps, weather and trip reports, and tracking tools.
 }
 
 meta-data-privacy-policy-description = Read Wilderlist's Privacy Policy.

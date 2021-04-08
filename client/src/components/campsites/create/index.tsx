@@ -1,5 +1,6 @@
 import queryString from 'query-string';
 import React, {useCallback, useEffect, useState} from 'react';
+import Helmet from 'react-helmet';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
@@ -207,6 +208,9 @@ const CampsiteCreatePage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{getString('meta-data-log-add-campsite')}</title>
+      </Helmet>
       {campsiteForm}
       {errorModal}
     </>

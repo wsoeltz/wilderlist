@@ -1,6 +1,5 @@
 import {faCheckDouble} from '@fortawesome/free-solid-svg-icons';
 import React, {useEffect} from 'react';
-import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
 import useMapContext from '../../hooks/useMapContext';
 import {CardPeakListDatum, useUsersPeakLists} from '../../queries/lists/getUsersPeakLists';
@@ -108,9 +107,6 @@ const SavedLists = ({userId}: Props) => {
 
   return (
     <>
-      <Helmet>
-        <title>{getString('meta-data-dashboard-default-title')}</title>
-      </Helmet>
       {peakListsList}
       <AllSavedListItemsMapRenderProp
         userId={userId}

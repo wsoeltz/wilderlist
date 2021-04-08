@@ -5,9 +5,11 @@ import {
   faEye,
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import Helmet from 'react-helmet';
 import useFluent from '../../../hooks/useFluent';
 import {useBasicMountainDetails} from '../../../queries/mountains/useBasicMountainDetails';
-import {summitViewLink} from '../../../routing/Utils';
+import {setMountainOgImageUrl} from '../../../routing/routes';
+import {mountainDetailLink, summitViewLink} from '../../../routing/Utils';
 import {
   Column,
   ItemTitle,
@@ -81,8 +83,36 @@ const MountainDetail = (props: Props) => {
     </SmallLink>
   );
 
+  const metaDescription = data && data.mountain
+    ? getString('meta-data-mountain-detail-description', {
+      name: data.mountain.name,
+      state: data.mountain.locationTextShort,
+      elevation: data.mountain.elevation,
+    })
+    : null;
+  const metaTitle = data && data.mountain ? getString('meta-data-detail-default-title', {
+    title: data.mountain.name + ', ' + data.mountain.locationTextShort, type: '',
+  }) : '';
+  const metaData = metaDescription && data && data.mountain ? (
+    <Helmet>
+      <title>{metaTitle}</title>
+      <meta
+        name='description'
+        content={metaDescription}
+      />
+      <meta property='og:title' content={metaTitle} />
+      <meta
+        property='og:description'
+        content={metaDescription}
+      />
+      <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + mountainDetailLink(id)} />
+      <meta property='og:image' content={setMountainOgImageUrl(id)} />
+    </Helmet>
+  ) : null;
+
   return (
     <>
+      {metaData}
       <SimpleHeader
         id={id}
         loading={loading}

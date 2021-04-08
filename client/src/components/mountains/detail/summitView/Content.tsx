@@ -3,11 +3,13 @@ import {
   faMousePointer,
 } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import Helmet from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import styled, {css} from 'styled-components/macro';
 import useFluent from '../../../../hooks/useFluent';
 import {useBasicMountainDetails} from '../../../../queries/mountains/useBasicMountainDetails';
+import {setMountainOgImageUrl} from '../../../../routing/routes';
 import {mountainDetailLink} from '../../../../routing/Utils';
 import {
   baseColor,
@@ -125,8 +127,34 @@ const Content = ({id}: {id: string}) => {
         </ExitLink>
       );
 
+    const metaDescription = data && data.mountain
+      ? getString('meta-data-summit-view-description', {
+        name: data.mountain.name,
+      })
+      : null;
+    const metaTitle = data && data.mountain ? getString('meta-data-summit-view-title', {
+      name: data.mountain.name,
+    }) : '';
+    const metaData = metaDescription && data && data.mountain ? (
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta
+          name='description'
+          content={metaDescription}
+        />
+        <meta property='og:title' content={metaTitle} />
+        <meta
+          property='og:description'
+          content={metaDescription}
+        />
+        <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + window.location.pathname} />
+        <meta property='og:image' content={setMountainOgImageUrl(id)} />
+      </Helmet>
+    ) : null;
+
     return (
       <Root>
+        {metaData}
         <Container>
           <Title>
             {getString('mountain-detail-summit-view-for', {name})}

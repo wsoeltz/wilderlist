@@ -1,5 +1,6 @@
 import {Types} from 'mongoose';
 import React, {useState} from 'react';
+import Helmet from 'react-helmet';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
@@ -159,6 +160,9 @@ const PeakListCreatePage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{getString('meta-data-log-add-list')}</title>
+      </Helmet>
       {peakListForm}
       {errorModal}
     </>

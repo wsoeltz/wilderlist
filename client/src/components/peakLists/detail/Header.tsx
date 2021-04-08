@@ -314,22 +314,20 @@ const Header = (props: Props) => {
     ? getString('meta-data-peak-list-detail-description', {
       'list-name': name,
       'type': type,
-      'num-mountains': numMountains,
       'list-short-name': shortName,
-      'state-or-region-string': areaText,
     })
     : null;
-
+  const metaTitle = name && type ? getString('meta-data-detail-default-title', {
+    title: name, type,
+  }) : '';
   const metaData = metaDescription && name && type ? (
     <Helmet>
-      <title>{getString('meta-data-detail-default-title', {
-        title: name, type,
-      })}</title>
+      <title>{metaTitle}</title>
       <meta
         name='description'
         content={metaDescription}
       />
-      <meta property='og:title' content='Wilderlist' />
+      <meta property='og:title' content={metaTitle} />
       <meta
         property='og:description'
         content={metaDescription}

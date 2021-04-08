@@ -10,9 +10,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
+import Helmet from 'react-helmet';
 import {Link} from 'react-router-dom';
 import useFluent from '../../../hooks/useFluent';
 import {useBasicTrailDetail} from '../../../queries/trails/useBasicTrailDetail';
+import {setTrailOgImageUrl} from '../../../routing/routes';
 import {trailDetailLink} from '../../../routing/Utils';
 import {
   Column,
@@ -57,6 +59,7 @@ const TrailDetail = (props: Props) => {
   let relatedTrails: React.ReactElement<any> | null = null;
   let hasChildren: boolean = false;
   let trailLengthText: string = '----';
+  let formattedType: string = '';
   let map: React.ReactElement<any> | null = null;
   let centerColumn: React.ReactElement<any> = (
     <Column>
@@ -100,7 +103,7 @@ const TrailDetail = (props: Props) => {
         ? getString('distance-feet-formatted', {feet: Math.round(trailLength * 5280)}) // miles to feet conversion
         : getString('directions-driving-distance', {miles: parseFloat(trailLength.toFixed(1))});
 
-      const formattedType = upperFirst(getString('global-formatted-trail-type', {type}));
+      formattedType = upperFirst(getString('global-formatted-trail-type', {type}));
       name = trail.name ? trail.name : formattedType;
 
       const _in = locationText && locationText.toLowerCase().includes('across') ? ' ' : ' in ';
@@ -232,8 +235,37 @@ const TrailDetail = (props: Props) => {
       />
   ) : null;
 
+  const metaDescription = data && data.trail
+    ? getString('meta-data-trail-detail-description', {
+      name,
+      location: data.trail.locationText,
+      length: trailLengthText,
+      type: formattedType.toLowerCase(),
+    })
+    : null;
+  const metaTitle = data && data.trail ? getString('meta-data-detail-default-title', {
+      title: data.trail.name, type: '',
+    }) : '';
+  const metaData = metaTitle && metaDescription && data && data.trail ? (
+    <Helmet>
+      <title>{metaTitle}</title>
+      <meta
+        name='description'
+        content={metaDescription}
+      />
+      <meta property='og:title' content='Wilderlist' />
+      <meta
+        property='og:description'
+        content={metaDescription}
+      />
+      <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + trailDetailLink(id)} />
+      <meta property='og:image' content={setTrailOgImageUrl(id)} />
+    </Helmet>
+  ) : null;
+
   return (
     <>
+      {metaData}
       {completionLeged}
       <SimpleHeader
         id={id}

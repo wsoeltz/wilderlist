@@ -1,5 +1,6 @@
 import { faList, faStar } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import Helmet from 'react-helmet';
 import useFluent from '../../hooks/useFluent';
 import {HighlightedIconInText} from '../../styling/styleUtils';
 import DetailSegment, {Panel} from '../sharedComponents/detailComponents/DetailSegment';
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const Dashboard = ({userId}: Props) => {
-  const getString = useFluent ();
+  const getString = useFluent();
 
   const panels: Panel[] = [
     {
@@ -44,6 +45,9 @@ const Dashboard = ({userId}: Props) => {
   ];
   return (
     <>
+      <Helmet>
+        <title>{getString('meta-data-dashboard-default-title')}</title>
+      </Helmet>
       <h1>
         <HighlightedIconInText icon={faStar} /> &nbsp;{getString('dashboard-title')}
       </h1>

@@ -1,5 +1,6 @@
 import queryString from 'query-string';
 import React, {useCallback, useEffect, useState} from 'react';
+import Helmet from 'react-helmet';
 import {useHistory, useParams} from 'react-router-dom';
 import useCurrentUser from '../../../hooks/useCurrentUser';
 import useFluent from '../../../hooks/useFluent';
@@ -191,6 +192,9 @@ const MountainCreatePage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{getString('meta-data-log-add-mountain')}</title>
+      </Helmet>
       {mountainForm}
       {errorModal}
     </>

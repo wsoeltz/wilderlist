@@ -6,8 +6,10 @@ import {
   faHiking,
   faShoePrints,
 } from '@fortawesome/free-solid-svg-icons';
+import lowerFirst from 'lodash/lowerFirst';
 import upperFirst from 'lodash/upperFirst';
 import React from 'react';
+import Helmet from 'react-helmet';
 import useRouteDetail, {Input} from '../../../hooks/servicesHooks/pathfinding/useRouteDetail';
 import useFluent from '../../../hooks/useFluent';
 import {Routes} from '../../../routing/routes';
@@ -135,8 +137,31 @@ const Detail = ({sourceDatum, sourceRoute, ...input}: Props) => {
   } else {
     return <PageNotFound />;
   }
+  const metaDescription = data ? getString('meta-data-auto-route-description', {
+      'title-lower-case': lowerFirst(title),
+    })
+    : null;
+  const metaTitle = data ? getString('meta-data-detail-default-title', {
+    title, type: '',
+  }) : '';
+  const metaData = metaTitle && metaDescription ? (
+    <Helmet>
+      <title>{metaTitle}</title>
+      <meta
+        name='description'
+        content={metaDescription}
+      />
+      <meta property='og:title' content={metaTitle} />
+      <meta
+        property='og:description'
+        content={metaDescription}
+      />
+      <link rel='canonical' href={process.env.REACT_APP_DOMAIN_NAME + window.location.pathname} />
+    </Helmet>
+  ) : null;
   return (
     <>
+      {metaData}
       <SimpleHeader
         id={sourceDatum.id}
         loading={loading}

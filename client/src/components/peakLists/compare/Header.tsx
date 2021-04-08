@@ -243,9 +243,7 @@ const Header = (props: Props) => {
     ? getString('meta-data-peak-list-detail-description', {
       'list-name': name,
       'type': type,
-      'num-mountains': numMountains,
       'list-short-name': shortName,
-      'state-or-region-string': areaText,
     })
     : null;
 

@@ -14,6 +14,8 @@ const regionsThatDontStartWithThe = [
   'new england',
 ];
 
+export const isVowel = (c: string) => ['a', 'e', 'i', 'o', 'u'].indexOf(c.toLowerCase()) !== -1;
+
 export const FORMAT_STATE_REGION_FOR_TEXT = (name: string | null): string => {
   if (name === null) {
     return 'the world';
