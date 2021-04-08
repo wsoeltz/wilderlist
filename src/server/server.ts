@@ -40,6 +40,7 @@ import {
   getListDescription,
   getMountainData,
   getMtnDescription,
+  getSummitViewDescription,
   getTrailDescription,
   getType,
   Routes,
@@ -724,6 +725,50 @@ if (process.env.NODE_ENV === 'production') {
           res.send(result);
 
         }
+      }
+
+    });
+
+  });
+  app.get(Routes.SummitView, (req, res) => {
+    const filePath = path.resolve(__dirname, '../../client', 'build', 'index.html');
+
+    // read in the index.html file
+    fs.readFile(filePath, 'utf8', async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      try {
+        const mtnData = await getMountainData(req.params.id);
+        if (mtnData !== null) {
+          // replace the special strings with server generated strings
+          const title = `Summit view of ${mtnData.name}, ${mtnData.locationTextShort} - Wilderlist`;
+          data = data.replace(/\$OG_TITLE/g, title);
+          const lat = req.params.lat;
+          const lng = req.params.lng;
+          const altitude = req.params.altitude;
+          data = data.replace(/\$CANONICAL_URL/g,
+            `https://www.wilderlist.app//summit-view/${lat}/${lng}/${altitude}/${req.params.id}`,
+          );
+          data = data.replace(/\$OG_IMAGE/g, setMountainOgImageUrl(req.params.id));
+          const description = getSummitViewDescription(mtnData);
+          const result  = data.replace(/\$OG_DESCRIPTION/g, description);
+          res.send(result);
+        } else {
+          throw new Error('Incorrect List ID ' + req.params.id);
+        }
+
+      } catch (err) {
+
+        console.error(err);
+        // replace the special strings with the default generated strings
+        const canonicalUrl = baseUrl + req.path;
+        data = data.replace(/\$OG_TITLE/g, defaultTitle);
+        data = data.replace(/\$CANONICAL_URL/g, canonicalUrl);
+        data = data.replace(/\$OG_IMAGE/g, defaultOgImageUrl);
+        const result  = data.replace(/\$OG_DESCRIPTION/g, defaultDescription);
+        res.send(result);
+
       }
 
     });

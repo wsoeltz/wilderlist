@@ -288,3 +288,7 @@ export const getListDescription = (list: IPeakList) => {
     failIfValidOrNonExhaustive(type, 'Invalid PeakListVariants ' + type);
   }
 };
+
+export const getSummitViewDescription = (mtn: IMountain) => {
+  return `View a 360 degree interactive summit for ${mtn.name} (${mtn.locationText}).`;
+};
