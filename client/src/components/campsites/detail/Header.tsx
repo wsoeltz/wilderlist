@@ -24,11 +24,11 @@ import {
 import {
   BasicIconInText,
   BasicIconInTextCompact,
-  PlaceholderText,
   SmallSemiBold,
   Subtext,
 } from '../../../styling/styleUtils';
 import {CoreItem, CoreItems} from '../../../types/itemTypes';
+import PageNotFound from '../../sharedComponents/404';
 import FormattedCoordinates from '../../sharedComponents/detailComponents/header/FormattedCoordinates';
 import LastHikedText from '../../sharedComponents/detailComponents/header/LastHikedText';
 import SimpleHeader from '../../sharedComponents/detailComponents/header/SimpleHeader';
@@ -59,9 +59,7 @@ const CampsiteDetail = (props: Props) => {
     const { campsite } = data;
     if (!campsite) {
       return (
-        <PlaceholderText>
-          {getString('global-error-retrieving-data')}
-        </PlaceholderText>
+        <PageNotFound />
       );
     } else {
       formattedType = upperFirst(getString('global-formatted-campsite-type', {type: campsite.type}));

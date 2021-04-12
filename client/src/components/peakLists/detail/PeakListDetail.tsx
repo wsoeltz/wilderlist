@@ -17,8 +17,10 @@ const PeakListDetail = (props: Props) => {
   const userId = user ? user._id : null;
   const {data} = useBasicListDetails(id, userId);
 
-  if (data && data.peakList && data.peakList.privacy === ListPrivacy.Private &&
-      (!user || !data.peakList.author || user._id !== data.peakList.author.id)) {
+  if ((data && data.peakList && data.peakList.privacy === ListPrivacy.Private &&
+        (!user || !data.peakList.author || user._id !== data.peakList.author.id)) ||
+        (data && data.peakList === null)
+    ) {
     return <PageNotFound />;
   }
 

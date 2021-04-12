@@ -30,13 +30,13 @@ import {
   IconContainer,
   IncompleteText,
   lightBaseColor,
-  PlaceholderText,
   SmallSemiBold,
 } from '../../../styling/styleUtils';
 import {PeakListVariants, TrailType} from '../../../types/graphQLTypes';
 import {CoreItem, CoreItems} from '../../../types/itemTypes';
 import { formatDate, parseDate } from '../../../utilities/dateUtils';
 import {slopeToSteepnessClass} from '../../../utilities/trailUtils';
+import PageNotFound from '../../sharedComponents/404';
 import LastHikedText from '../../sharedComponents/detailComponents/header/LastHikedText';
 import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
 import SimpleHeader from '../../sharedComponents/detailComponents/header/SimpleHeader';
@@ -85,9 +85,7 @@ const TrailDetail = (props: Props) => {
     const { trail } = data;
     if (!trail) {
       return (
-        <PlaceholderText>
-          {getString('global-error-retrieving-data')}
-        </PlaceholderText>
+        <PageNotFound />
       );
     } else {
       const {
@@ -244,7 +242,7 @@ const TrailDetail = (props: Props) => {
     })
     : null;
   const metaTitle = data && data.trail ? getString('meta-data-detail-default-title', {
-      title: data.trail.name, type: '',
+      title: name, type: '',
     }) : '';
   const metaData = metaTitle && metaDescription && data && data.trail ? (
     <Helmet>
@@ -253,7 +251,7 @@ const TrailDetail = (props: Props) => {
         name='description'
         content={metaDescription}
       />
-      <meta property='og:title' content='Wilderlist' />
+      <meta property='og:title' content={metaTitle} />
       <meta
         property='og:description'
         content={metaDescription}

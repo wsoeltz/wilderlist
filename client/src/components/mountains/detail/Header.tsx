@@ -19,11 +19,11 @@ import {
 import {
   BasicIconInText,
   BasicIconInTextCompact,
-  PlaceholderText,
   SmallLink,
   SmallSemiBold,
 } from '../../../styling/styleUtils';
 import {CoreItem} from '../../../types/itemTypes';
+import PageNotFound from '../../sharedComponents/404';
 import FormattedCoordinates from '../../sharedComponents/detailComponents/header/FormattedCoordinates';
 import FormattedElevation from '../../sharedComponents/detailComponents/header/FormattedElevation';
 import LastHikedText from '../../sharedComponents/detailComponents/header/LastHikedText';
@@ -50,9 +50,7 @@ const MountainDetail = (props: Props) => {
     const { mountain } = data;
     if (!mountain) {
       return (
-        <PlaceholderText>
-          {getString('global-error-retrieving-data')}
-        </PlaceholderText>
+        <PageNotFound />
       );
     } else {
       title = mountain.name;
