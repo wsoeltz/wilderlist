@@ -18,6 +18,7 @@ import {
 } from '../../../../styling/sharedContentStyles';
 import {
   CompactButtonPrimaryLink,
+  lightBaseColor,
   SemiBold,
 } from '../../../../styling/styleUtils';
 import { CoreItem, CoreItems } from '../../../../types/itemTypes';
@@ -33,6 +34,13 @@ const AddAscentButton = styled(CompactButtonPrimaryLink)`
 const CalendarButton = styled(FontAwesomeIcon)`
   color: #fff;
   margin-right: 0.5rem;
+`;
+
+const NoTripsText = styled.em`
+  font-size: 0.8rem;
+  color: ${lightBaseColor};
+  display: block;
+  padding: 0.5rem 0;
 `;
 
 interface Props {
@@ -116,7 +124,7 @@ const AscentsList = (props: Props) => {
     output = (
       <>
         <BasicListItem>
-          <em>{getString('item-detail-no-ascents-text', {name, type})}</em>
+          <NoTripsText>{getString('item-detail-no-ascents-text', {name, type})}</NoTripsText>
         </BasicListItem>
         <AddAscentButton to={addTripReportUrl}>
           <CalendarButton icon='calendar-alt' />
