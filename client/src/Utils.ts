@@ -141,12 +141,6 @@ export const convertFieldsToDate = (day: string, month: string, year: string) =>
   return {error: undefined, date: `${validYear}-${validMonth}-${validDay}-XX-XX`};
 };
 
-export const formatNumberWithCommas = (num: number) => {
-    const parts = num.toString().split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
-};
-
 export enum Months {
   january = 'january',
   february = 'february',
@@ -168,6 +162,28 @@ export enum Seasons {
   winter = 'winter',
   spring = 'spring',
 }
+
+export const monthsArray: Months[] = [
+  Months.january,
+  Months.february,
+  Months.march,
+  Months.april,
+  Months.may,
+  Months.june,
+  Months.july,
+  Months.august,
+  Months.september,
+  Months.october,
+  Months.november,
+  Months.december,
+];
+
+export const seasonsArray: Seasons[] = [
+  Seasons.summer,
+  Seasons.fall,
+  Seasons.winter,
+  Seasons.spring,
+];
 
 export const getSeason = (year: number, month: number, day: number): Seasons | undefined => {
   const season = getSeasonUtility(year, month, day);
@@ -223,9 +239,7 @@ interface SeasonStartDates {
   firstDayOfSpring: string;
 }
 
-export const getSolsticeAndEquinox = (year: number) => {
-  return getSolsticeAndEquinoxUtility(year) as SeasonStartDates;
-};
+export const getSolsticeAndEquinox = (year: number) => getSolsticeAndEquinoxUtility(year) as SeasonStartDates;
 
 function toDegreesMinutesAndSeconds(coordinate: number) {
     const absolute = Math.abs(coordinate);
@@ -245,27 +259,6 @@ export const convertDMS = (lat: number, lng: number) => {
     const longitudeCardinal = lng >= 0 ? 'E' : 'W';
 
     return { lat: `${latitude} ${latitudeCardinal}`, long: `${longitude} ${longitudeCardinal}`};
-};
-
-export const getBrowser = () => {
-  const { userAgent } = navigator;
-  let tem;
-  let M = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-  if ( /trident/i.test(M[1]) ) {
-    tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
-    return { browser: 'IE', version: parseFloat(`${(tem[1] || '')}`) };
-  }
-  if ( M[1] === 'Chrome' ) {
-      tem = userAgent.match(/\b(OPR|Edge)\/(\d+)/);
-      if (tem !== null) {
-        return { browser: tem[1], version: parseFloat(tem[2]) };
-      }
-  }
-
-  M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-  tem = userAgent.match(/version\/(\d+)/i);
-  if ( tem !== null) { M.splice(1, 1, tem[1]); }
-  return { browser: M[0], version: parseFloat(M[1]) };
 };
 
 export const states = [
@@ -321,9 +314,8 @@ export const states = [
   'wyoming',
 ];
 
-export const roundPercentToSingleDecimal = (numerator: number, denominator: number) => {
-  return Math.round((100 * (numerator / denominator)) * 10) / 10;
-};
+export const roundPercentToSingleDecimal = (numerator: number, denominator: number) =>
+  Math.round((100 * (numerator / denominator)) * 10) / 10;
 
 /* distance formula from
 https://stackoverflow.com/
@@ -360,8 +352,6 @@ export const isValidURL = (link: string) => {
   return urlRegex.test(link);
 };
 
-export const latLonKey = ({lat, lon}: {lat: number, lon: number}) => lat.toString() + lon.toString();
-
 // https://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
 export function isTouchDevice() {
   const prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
@@ -377,3 +367,21 @@ export function isTouchDevice() {
   const query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
   return mq(query);
 }
+
+const ranges = [
+  { divider: 1e18 , suffix: 'E' },
+  { divider: 1e15 , suffix: 'P' },
+  { divider: 1e12 , suffix: 'T' },
+  { divider: 1e9 , suffix: 'B' },
+  { divider: 1e6 , suffix: 'M' },
+  { divider: 1e3 , suffix: 'k' },
+];
+
+export const formatNumber = (n: number) => {
+  for (const range of ranges) {
+    if (n >= range.divider) {
+      return parseFloat((n / range.divider).toFixed(2)) + range.suffix;
+    }
+  }
+  return n.toString();
+};

@@ -1,21 +1,10 @@
 import React from 'react';
-import {
-  ContentBody,
-  ContentFull,
-} from '../../styling/Grid';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSimple, {LoadingContainer} from './LoadingSimple';
 
-const LoadingSuspense = () => {
-
-  return (
-    <>
-      <ContentFull>
-        <ContentBody>
-          <LoadingSpinner />
-        </ContentBody>
-      </ContentFull>
-    </>
-  );
-};
+const LoadingSuspense = () => (
+  <LoadingContainer>
+    <LoadingSimple />
+  </LoadingContainer>
+);
 
 export default LoadingSuspense;

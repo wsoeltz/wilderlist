@@ -10,20 +10,17 @@ import { isAdmin, isCorrectUser, isLoggedIn } from '../../authorization';
 import {
   CreatedItemStatus as CreatedItemStatusEnum,
   Mountain as IMountain,
-  MountainFlag as MountainFlagEnum,
   PermissionTypes,
   User as IUser,
 } from '../../graphQLTypes';
-import { removeConnections } from '../../Utils';
+import { removeItemFromAllLists } from '../../Utils';
 import MountainType, {
   CreatedItemStatus,
   Mountain,
-  MountainFlag,
 } from '../queryTypes/mountainType';
 import { PeakList } from '../queryTypes/peakListType';
 import { State } from '../queryTypes/stateType';
 import { User } from '../queryTypes/userType';
-import { ExternalResourcesInputType } from './peakListMutations';
 
 const mountainMutations: any = {
   addMountain: {
@@ -36,14 +33,14 @@ const mountainMutations: any = {
       prominence: { type: GraphQLFloat },
       state: { type: GraphQLID },
       lists: { type: new GraphQLList(GraphQLID)},
-      description: { type: GraphQLString },
-      resources: { type: new GraphQLList(ExternalResourcesInputType) },
+      locationText: { type: GraphQLNonNull(GraphQLString) },
+      locationTextShort: { type: GraphQLNonNull(GraphQLString) },
       author: { type: GraphQLNonNull(GraphQLID) },
     },
     async resolve(_unused: any, input: IMountain, {user}: {user: IUser | undefined | null}) {
       const {
         name, state, lists, latitude, longitude, elevation,
-        prominence, author, description, resources,
+        prominence, author, locationText, locationTextShort,
       } = input;
       const authorObj = await User.findById(author);
       if (!isCorrectUser(user, authorObj)) {
@@ -64,7 +61,7 @@ const mountainMutations: any = {
       }
       const newMountain = new Mountain({
         name, state, lists, latitude, longitude, elevation, prominence, author, status,
-        description, resources,
+        locationText, locationTextShort, location: [longitude, latitude],
       });
       try {
         if ( name !== '') {
@@ -103,7 +100,7 @@ const mountainMutations: any = {
         await State.findOneAndUpdate({ mountains: { $eq: id } },
           { $pull: {mountains: id} }, function(err: any, model: any) {
             if (err) { console.error(err); } } );
-        await removeConnections(Mountain, id, 'lists', PeakList, 'mountains');
+        await removeItemFromAllLists(id, 'mountains');
         return Mountain.findByIdAndDelete(id);
       } catch (err) {
         return err;
@@ -173,13 +170,13 @@ const mountainMutations: any = {
       elevation: { type: GraphQLNonNull(GraphQLFloat) },
       prominence: { type: GraphQLFloat },
       state: { type: GraphQLID },
-      description: { type: GraphQLString },
-      resources: { type: new GraphQLList(ExternalResourcesInputType) },
+      locationText: { type: GraphQLNonNull(GraphQLString) },
+      locationTextShort: { type: GraphQLNonNull(GraphQLString) },
     },
     async resolve(_unused: any, input: IMountain, {user}: {user: IUser | undefined | null}) {
       const {
         id, name, state: stateId, latitude, longitude, elevation, prominence,
-        description, resources,
+        locationText, locationTextShort,
       } = input;
       try {
         const mountain = await Mountain.findById(id);
@@ -211,8 +208,14 @@ const mountainMutations: any = {
             },
           );
           const fields = prominence !== undefined
-            ? { name, state: stateId, latitude, longitude, elevation, prominence, description, resources }
-            : { name, state: stateId, latitude, longitude, elevation, description, resources };
+            ? {
+                name, state: stateId, latitude, longitude, elevation, prominence,
+                locationText, locationTextShort, location: [longitude, latitude],
+              }
+            : {
+                name, state: stateId, latitude, longitude, elevation,
+                locationText, locationTextShort, location: [longitude, latitude],
+              };
           const newMountain = await Mountain.findOneAndUpdate({
               _id: id,
             },
@@ -221,8 +224,14 @@ const mountainMutations: any = {
           return newMountain;
         } else if (mountain !== null) {
           const fields = prominence !== undefined
-            ? { name, latitude, longitude, elevation, prominence, description, resources }
-            : { name, latitude, longitude, elevation, description, resources };
+            ? {
+                name, latitude, longitude, elevation, prominence,
+                locationText, locationTextShort, location: [longitude, latitude],
+              }
+            : {
+                name, latitude, longitude, elevation,
+                locationText, locationTextShort, location: [longitude, latitude],
+              };
           const newMountain = await Mountain.findOneAndUpdate({
               _id: id,
             },
@@ -263,18 +272,21 @@ const mountainMutations: any = {
     type: MountainType,
     args: {
       id: { type: GraphQLNonNull(GraphQLID) },
-      flag: { type: MountainFlag },
+      flag: { type: GraphQLString },
     },
     async resolve(_unused: any,
-                  { id, flag }: { id: string , flag: MountainFlagEnum | null},
+                  { id, flag }: { id: string , flag: string | null},
                   {dataloaders, user}: {dataloaders: any, user: IUser | undefined | null}) {
       if (!isLoggedIn(user)) {
         throw new Error('You must be logged in');
       }
       try {
+        const flagWithAuthor = user && flag
+          ? flag + '__USERID__' + user._id + '__USERNAME__' + user.name
+          : flag;
         const mountain = await Mountain.findOneAndUpdate(
         { _id: id },
-        { flag },
+        { flag: flagWithAuthor },
         {new: true});
         dataloaders.mountainLoader.clear(id).prime(id, mountain);
         return mountain;

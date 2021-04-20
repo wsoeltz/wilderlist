@@ -1,116 +1,23 @@
-import { useQuery } from '@apollo/react-hooks';
-import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
-import React, {useContext} from 'react';
+import React, {useState} from 'react';
 import Helmet from 'react-helmet';
+import useFluent from '../../../hooks/useFluent';
+import {useComparePeakList} from '../../../queries/lists/useComparePeakList';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
-import { PlaceholderText } from '../../../styling/styleUtils';
-import { Mountain, PeakList, User } from '../../../types/graphQLTypes';
+  PlaceholderText,
+} from '../../../styling/styleUtils';
+import { ListPrivacy, PeakListVariants } from '../../../types/graphQLTypes';
+import {
+  getSeason,
+  Months,
+  monthsArray,
+  Seasons,
+} from '../../../Utils';
+import PageNotFound from '../../sharedComponents/404';
+import MapLegend from '../../sharedComponents/detailComponents/header/MapLegend';
 import LoadingSpinner from '../../sharedComponents/LoadingSpinner';
-import Header from '../detail/Header';
-import {
-  MountainDatum,
-  PeakListDatum,
-} from '../detail/PeakListDetail';
-import ComparisonTable from './ComparisonTable';
-
-const GET_PEAK_LIST = gql`
-  query getPeakList($id: ID!, $userId: ID!, $friendId: ID!) {
-    peakList(id: $id) {
-      id
-      name
-      shortName
-      type
-      parent {
-        id
-        name
-        type
-      }
-      children {
-        id
-        name
-        type
-      }
-      siblings {
-        id
-        name
-        type
-      }
-      stateOrRegionString
-      mountains {
-        id
-        name
-        latitude
-        longitude
-        elevation
-      }
-    }
-    user(id: $friendId) {
-      id
-      name
-      permissions
-      peakLists {
-        id
-        type
-        mountains {
-          id
-        }
-      }
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-    me: user(id: $userId) {
-      id
-      name
-      permissions
-      peakLists {
-        id
-        type
-        mountains {
-          id
-        }
-      }
-      mountains {
-        mountain {
-          id
-        }
-        dates
-      }
-    }
-  }
-`;
-
-export interface UserDatum {
-  id: User['id'];
-  name: User['name'];
-  permissions: User['permissions'];
-  peakLists: Array<{
-    id: PeakList['id'];
-    type: PeakList['type'];
-    mountains: Array<{
-      id: Mountain['id'];
-    }>;
-  }>;
-  mountains: User['mountains'];
-}
-
-interface SuccessResponse {
-  peakList: PeakListDatum;
-  user: UserDatum;
-  me: UserDatum;
-}
-
-interface Variables {
-  id: string;
-  userId: string;
-  friendId: string;
-}
+import AllItems from './AllItems';
+import Header from './Header';
+import MonthOrSeasonSelectBox from './MonthOrSeasonSelectBox';
 
 interface Props {
   userId: string;
@@ -121,56 +28,93 @@ interface Props {
 const ComparePeakListPage = (props: Props) => {
   const { userId, friendId, peakListId } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
+  const [monthOrSeason, setMonthOrSeason] = useState<Months | Seasons | null>(null);
 
-  const {loading, error, data} = useQuery<SuccessResponse, Variables>(GET_PEAK_LIST, {
-    variables: { id: peakListId, userId, friendId },
-  });
+  const {loading, error, data} = useComparePeakList(peakListId, userId, friendId);
   if (loading === true) {
     return <LoadingSpinner />;
   } else if (error !== undefined) {
     console.error(error);
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   } else if (data !== undefined) {
+
     const { peakList, user, me } = data;
     if (!peakList || !user || !me) {
       return (
         <PlaceholderText>
-          {getFluentString('global-error-retrieving-data')}
+          {getString('global-error-retrieving-data')}
         </PlaceholderText>
       );
     } else {
-      const mountains: MountainDatum[] = peakList.mountains !== null ? peakList.mountains : [];
-      const userCompletedAscents = user.mountains !== null ? user.mountains : [];
-      const myCompletedAscents = me.mountains !== null ? me.mountains : [];
+      if (peakList.privacy === ListPrivacy.Private &&
+          (!me || !data.peakList.author || me.id !== data.peakList.author.id)) {
+        return <PageNotFound />;
+      }
+      let value: Months | Seasons | null;
+      let dropdownBox: React.ReactElement<any> | null;
 
+      if (peakList.type === PeakListVariants.standard || peakList.type === PeakListVariants.winter) {
+        value = null;
+        dropdownBox = null;
+      } else if (peakList.type === PeakListVariants.fourSeason) {
+        const today = new Date();
+        const season = getSeason(today.getFullYear(), today.getMonth() + 1, today.getDate());
+        value = monthOrSeason === null && season ? season : monthOrSeason;
+        dropdownBox = value ? (
+          <MonthOrSeasonSelectBox
+            value={value}
+            setValue={setMonthOrSeason}
+            type={peakList.type}
+          />
+        ) : null;
+      } else if (peakList.type === PeakListVariants.grid) {
+        const today = new Date();
+        const month = monthsArray[today.getMonth()];
+        value = monthOrSeason === null ? month : monthOrSeason;
+        dropdownBox = value ? (
+          <MonthOrSeasonSelectBox
+            value={value}
+            setValue={setMonthOrSeason}
+            type={peakList.type}
+          />
+        ) : null;
+      } else {
+        value = null;
+        dropdownBox = null;
+      }
       return (
         <>
           <Helmet>
-            <title>{getFluentString('meta-data-compare-peak-list-title', {
+            <title>{getString('meta-data-compare-peak-list-title', {
               title: peakList.name,
               type: peakList.type,
               user: user.name,
             })}</title>
           </Helmet>
-          <Header
-            user={me}
-            mountains={mountains}
-            peakList={peakList}
-            completedAscents={myCompletedAscents}
-            comparisonUser={user}
-            comparisonAscents={userCompletedAscents}
+          <MapLegend
+            type={'comparison'}
+            hasMountains={Boolean(peakList.numMountains)}
+            hasTrails={Boolean(peakList.numTrails)}
+            hasCampsites={Boolean(peakList.numCampsites)}
           />
-          <ComparisonTable
-            user={user}
-            me={me}
-            mountains={mountains}
-            peakListId={peakListId}
+          <Header
+            peakListId={peakList.id}
+            comparisonUserId={user.id}
+            comparisonUserName={user.name}
+          />
+          {dropdownBox}
+          <AllItems
+            peakListId={peakList.id}
+            showOnlyFor={value}
+            secondaryUserId={user.id}
+            secondaryUserName={user.name}
+            primaryUserName={me.name}
+            bbox={peakList.bbox}
           />
         </>
       );
@@ -178,7 +122,7 @@ const ComparePeakListPage = (props: Props) => {
   } else {
     return (
       <PlaceholderText>
-        {getFluentString('global-error-retrieving-data')}
+        {getString('global-error-retrieving-data')}
       </PlaceholderText>
     );
   }

@@ -1,35 +1,17 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  ContentBody,
-  ContentFull,
-  ContentHeader,
-} from '../../../styling/Grid';
-import BackButton from '../../sharedComponents/BackButton';
+import {useParams} from 'react-router-dom';
+import MountainList from '../list';
 import MountainDetail from './MountainDetail';
 
-interface Props extends RouteComponentProps {
-  userId: string | null;
-}
-
-const MountainDetailPage = (props: Props) => {
-  const { userId, match } = props;
-  const { id, mountainId: possibleMountainId }: any = match.params;
+const MountainDetailPage = () => {
+  const { id, mountainId: possibleMountainId }: any = useParams();
   const mountainId = possibleMountainId ? possibleMountainId : id;
-  const peakListId = possibleMountainId ? id : null;
 
-  return (
-    <>
-      <ContentFull>
-        <ContentHeader>
-          <BackButton />
-        </ContentHeader>
-        <ContentBody>
-          <MountainDetail userId={userId} id={mountainId} peakListId={peakListId} setOwnMetaData={true} />
-        </ContentBody>
-      </ContentFull>
-    </>
-  );
+  if (mountainId === 'search') {
+    return <MountainList />;
+  } else {
+    return <MountainDetail id={mountainId} />;
+  }
 };
 
-export default withRouter(MountainDetailPage);
+export default MountainDetailPage;

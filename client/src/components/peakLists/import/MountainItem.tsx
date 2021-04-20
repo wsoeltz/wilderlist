@@ -1,10 +1,10 @@
-import { GetString } from 'fluent-react/compat';
-import {sortBy} from 'lodash';
+import sortBy from 'lodash/sortBy';
 import React, {useState} from 'react';
 import styled from 'styled-components/macro';
+import useFluent from '../../../hooks/useFluent';
+import {MountainDatum} from '../../../queries/lists/usePeakListMountains';
 import { baseColor, InputBase, lightBorderColor, warningColor } from '../../../styling/styleUtils';
-import { TableCellBase } from '../detail/MountainRow';
-import { DateDatum, MountainDatum } from './index';
+import { DateDatum } from './index';
 
 export const gridCols = {
   userInput: 1,
@@ -12,6 +12,13 @@ export const gridCols = {
   userDate: 3,
   expectedDate: 4,
 };
+const TableCellBase = styled.div`
+  font-weight: 600;
+  padding: 0.8rem 0.6rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+`;
 
 const TableCell = styled(TableCellBase)`
   justify-content: center;
@@ -95,14 +102,14 @@ interface Props {
   date: DateDatum | null | undefined;
   dateInput: string;
   index: number;
-  getFluentString: GetString;
 }
 
 const MountainItem = (props: Props) => {
   const {
     officialMountain, userInput, mountains, fixMountain,
-    duplicate, date, dateInput, index, fixDate, getFluentString,
+    duplicate, date, dateInput, index, fixDate,
   } = props;
+  const getString = useFluent();
   const sortedMountains = sortBy(mountains, ['name', 'elevation']);
   const options = sortedMountains.map(mtn => {
     const abbreviation = mtn.state ? `(${mtn.state.abbreviation})` : '';
@@ -154,11 +161,11 @@ const MountainItem = (props: Props) => {
   );
   let dateInputText: React.ReactElement<any> | null;
   if (date === undefined) {
-    dateInputText = <LightText>{getFluentString('import-ascents-no-date-specified')}</LightText>;
+    dateInputText = <LightText>{getString('import-ascents-no-date-specified')}</LightText>;
   } else if (date === null) {
     dateInputText = (
       <WarningText>
-        {getFluentString('import-ascents-date-specified-but-could-not-get')}
+        {getString('import-ascents-date-specified-but-could-not-get')}
         <br />
         <strong>{dateInput}</strong>
       </WarningText>);
@@ -170,7 +177,7 @@ const MountainItem = (props: Props) => {
   const color = duplicate === true ? warningColor : baseColor;
   const duplicateWarning = duplicate === true ? (
     <WarningText
-      dangerouslySetInnerHTML={{__html: getFluentString('import-ascents-duplicate-text-warning')}}
+      dangerouslySetInnerHTML={{__html: getString('import-ascents-duplicate-text-warning')}}
     />
     ) : null;
   return (

@@ -16,11 +16,13 @@ import {
   User as IUser,
 } from '../../graphQLTypes';
 import { asyncForEach } from '../../Utils';
+import CampsiteType from './campsiteType';
 import MountainType, {Mountain} from './mountainType';
 import PeakListType, {PeakList} from './peakListType';
+import TrailType from './trailType';
 import TripReportType, {TripReport} from './tripReportType';
 
-type UserSchemaType = mongoose.Document & IUser;
+export type UserSchemaType = mongoose.Document & IUser;
 
 const UserSchema = new Schema({
   googleId: { type: String},
@@ -45,10 +47,36 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'list',
   }],
+  savedMountains: [{
+    type: Schema.Types.ObjectId,
+    ref: 'mountain',
+  }],
+  savedTrails: [{
+    type: Schema.Types.ObjectId,
+    ref: 'trail',
+  }],
+  savedCampsites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'campsite',
+  }],
   mountains: [{
     mountain: {
       type: Schema.Types.ObjectId,
       ref: 'mountain',
+    },
+    dates: [{ type: String }],
+  }],
+  trails: [{
+    trail: {
+      type: Schema.Types.ObjectId,
+      ref: 'trail',
+    },
+    dates: [{ type: String }],
+  }],
+  campsites: [{
+    campsite: {
+      type: Schema.Types.ObjectId,
+      ref: 'campsite',
     },
     dates: [{ type: String }],
   }],
@@ -60,6 +88,28 @@ const UserSchema = new Schema({
     mountain: {
       type: Schema.Types.ObjectId,
       ref: 'mountain',
+    },
+    date: { type: String },
+  }],
+  trailNotifications: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    trail: {
+      type: Schema.Types.ObjectId,
+      ref: 'trail',
+    },
+    date: { type: String },
+  }],
+  campsiteNotifications: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    campsite: {
+      type: Schema.Types.ObjectId,
+      ref: 'campsite',
     },
     date: { type: String },
   }],
@@ -77,7 +127,22 @@ const UserSchema = new Schema({
     },
     text: { type: String },
   }],
+  trailNotes: [{
+    trail: {
+      type: Schema.Types.ObjectId,
+      ref: 'trail',
+    },
+    text: { type: String },
+  }],
+  campsiteNotes: [{
+    campsite: {
+      type: Schema.Types.ObjectId,
+      ref: 'campsite',
+    },
+    text: { type: String },
+  }],
   mountainPermissions: { type: Number },
+  campsitePermissions: { type: Number },
   peakListPermissions: { type: Number },
 });
 
@@ -93,6 +158,44 @@ const CompletedMountainsType = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    dates: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+});
+
+const CompletedTrailsType = new GraphQLObjectType({
+  name: 'CompletedTrailsType',
+  fields: () => ({
+    trail: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.load(parentValue.trail);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    dates: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+});
+
+const CompletedCampsitesType = new GraphQLObjectType({
+  name: 'CompletedCampsitesType',
+  fields: () => ({
+    campsite: {
+      type: CampsiteType,
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.load(parentValue.campsite);
         } catch (err) {
           return err;
         }
@@ -153,6 +256,66 @@ const AscentNotificationType: any = new GraphQLObjectType({
   }),
 });
 
+const TrailNotificationType: any = new GraphQLObjectType({
+  name: 'TrailNotificationType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    trail: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.load(parentValue.trail);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    date: {
+      type: GraphQLString,
+    },
+  }),
+});
+
+const CampsiteNotificationType: any = new GraphQLObjectType({
+  name: 'CampsiteNotificationType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    user: {
+      type: UserType,
+      async resolve(parentValue, args, {dataloaders: {userLoader}}) {
+        try {
+          return await userLoader.load(parentValue.user);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsite: {
+      type: CampsiteType,
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.load(parentValue.campsite);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    date: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const PeakListNotesType: any = new GraphQLObjectType({
   name: 'PeakListNotesType',
   fields: () => ({
@@ -182,6 +345,44 @@ const MountainNotesType: any = new GraphQLObjectType({
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.load(parentValue.mountain);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    text: {
+      type: GraphQLString,
+    },
+  }),
+});
+const TrailNotesType: any = new GraphQLObjectType({
+  name: 'TrailNotesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    trail: {
+      type: TrailType,
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.load(parentValue.trail);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    text: {
+      type: GraphQLString,
+    },
+  }),
+});
+const CampsiteNotesType: any = new GraphQLObjectType({
+  name: 'CampsiteNotesType',
+  fields: () => ({
+    id: { type: GraphQLID },
+    campsite: {
+      type: CampsiteType,
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.load(parentValue.campsite);
         } catch (err) {
           return err;
         }
@@ -223,8 +424,42 @@ const UserType: any = new GraphQLObjectType({
         }
       },
     },
+    savedMountains: {
+      type: new GraphQLList(MountainType),
+      async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
+        try {
+          return await mountainLoader.loadMany(parentValue.savedMountains);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    savedTrails: {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.loadMany(parentValue.savedTrails);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    savedCampsites: {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.loadMany(parentValue.savedCampsites);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
     mountains: { type: new GraphQLList(CompletedMountainsType) },
+    trails: { type: new GraphQLList(CompletedTrailsType) },
+    campsites: { type: new GraphQLList(CompletedCampsitesType) },
     ascentNotifications: { type: new GraphQLList(AscentNotificationType) },
+    trailNotifications: { type: new GraphQLList(TrailNotificationType) },
+    campsiteNotifications: { type: new GraphQLList(CampsiteNotificationType) },
     peakListNotes: { type: new GraphQLList(PeakListNotesType) },
     peakListNote: {
       type: PeakListNotesType,
@@ -280,6 +515,64 @@ const UserType: any = new GraphQLObjectType({
         }
       },
     },
+    trailNotes: { type: new GraphQLList(TrailNotesType) },
+    trailNote: {
+      type: TrailNotesType,
+      args: {
+        trailId: { type: GraphQLID },
+      },
+      resolve(parentValue, {trailId}) {
+        if (!trailId) {
+          return null;
+        }
+        try {
+          const { trailNotes } = parentValue;
+          if (trailNotes && trailNotes.length) {
+            const targetTrailNote = trailNotes.find((note: any) => {
+              return note.trail.toString() === trailId.toString();
+            });
+            if (targetTrailNote) {
+              return targetTrailNote;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsiteNotes: { type: new GraphQLList(CampsiteNotesType) },
+    campsiteNote: {
+      type: CampsiteNotesType,
+      args: {
+        campsiteId: { type: GraphQLID },
+      },
+      resolve(parentValue, {campsiteId}) {
+        if (!campsiteId) {
+          return null;
+        }
+        try {
+          const { campsiteNotes } = parentValue;
+          if (campsiteNotes && campsiteNotes.length) {
+            const targetCampsiteNote = campsiteNotes.find((note: any) => {
+              return note.campsite.toString() === campsiteId.toString();
+            });
+            if (targetCampsiteNote) {
+              return targetCampsiteNote;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        } catch (err) {
+          return err;
+        }
+      },
+    },
     authoredMountains: {
       type: new GraphQLList(MountainType),
       resolve(parentValue) {
@@ -314,6 +607,7 @@ const UserType: any = new GraphQLObjectType({
       },
     },
     mountainPermissions: { type: GraphQLInt },
+    campsitePermissions: { type: GraphQLInt },
     peakListPermissions: { type: GraphQLInt },
     latestAscent: {
       type: CompletedMountainsType,
@@ -371,6 +665,96 @@ const UserType: any = new GraphQLObjectType({
             }
             const uniqueMountainIds = uniqBy(mountainIds, (id) => id.toString());
             return await mountainLoader.loadMany(uniqueMountainIds);
+          }
+        } catch (err) {
+          return err;
+        }
+        return null;
+      },
+    },
+    allInProgressTrails: {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, _args, {dataloaders: {peakListLoader, trailLoader}}) {
+        const trailIds: string[] = [];
+        try {
+          const { peakLists, trails } = parentValue;
+          if (trails) {
+            trails.forEach(({trail, dates}: {trail: any, dates: any[]}) => {
+              if (dates.length) {
+                trailIds.push(trail);
+              }
+            });
+          }
+          if (peakLists) {
+            const listData = await peakListLoader.loadMany(peakLists);
+            if (listData) {
+              await asyncForEach(listData,
+                async (list: {trails: any[], optionalTrails: any[], parent: any}) => {
+                  if (list.parent) {
+                    const hasParent = peakLists.find(
+                      (parentList: any) => parentList.toString() === list.parent.toString(),
+                    );
+                    if (!hasParent) {
+                      const parentListData = await peakListLoader.load(list.parent);
+                      if (parentListData) {
+                        trailIds.push(...parentListData.trails);
+                        trailIds.push(...parentListData.optionalTrails);
+                      }
+                    }
+                  } else {
+                    trailIds.push(...list.trails);
+                    trailIds.push(...list.optionalTrails);
+                  }
+                },
+              );
+            }
+            const uniqueTrailIds = uniqBy(trailIds, (id) => id.toString());
+            return await trailLoader.loadMany(uniqueTrailIds);
+          }
+        } catch (err) {
+          return err;
+        }
+        return null;
+      },
+    },
+    allInProgressCampsites: {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, _args, {dataloaders: {peakListLoader, campsiteLoader}}) {
+        const campsiteIds: string[] = [];
+        try {
+          const { peakLists, campsites } = parentValue;
+          if (campsites) {
+            campsites.forEach(({campsite, dates}: {campsite: any, dates: any[]}) => {
+              if (dates.length) {
+                campsiteIds.push(campsite);
+              }
+            });
+          }
+          if (peakLists) {
+            const listData = await peakListLoader.loadMany(peakLists);
+            if (listData) {
+              await asyncForEach(listData,
+                async (list: {campsites: any[], optionalCampsites: any[], parent: any}) => {
+                  if (list.parent) {
+                    const hasParent = peakLists.find(
+                      (parentList: any) => parentList.toString() === list.parent.toString(),
+                    );
+                    if (!hasParent) {
+                      const parentListData = await peakListLoader.load(list.parent);
+                      if (parentListData) {
+                        campsiteIds.push(...parentListData.campsites);
+                        campsiteIds.push(...parentListData.optionalCampsites);
+                      }
+                    }
+                  } else {
+                    campsiteIds.push(...list.campsites);
+                    campsiteIds.push(...list.optionalCampsites);
+                  }
+                },
+              );
+            }
+            const uniqueCampsiteIds = uniqBy(campsiteIds, (id) => id.toString());
+            return await campsiteLoader.loadMany(uniqueCampsiteIds);
           }
         } catch (err) {
           return err;

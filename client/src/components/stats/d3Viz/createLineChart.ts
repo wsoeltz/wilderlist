@@ -47,7 +47,7 @@ const formatNumber = (n: number) => {
   return n.toString() + ' ft';
 };
 
-export default (input: Input) => {
+const createLineChart = (input: Input) => {
   const { svg, data, size } = input;
 
   const margin = {top: 20, right: 15, bottom: 30, left: 40};
@@ -60,8 +60,8 @@ export default (input: Input) => {
 
   // define the line
   const valueline: any = line()
-    .x(function(d: any) { return x(d.date); })
-    .y(function(d: any) { return y(d.value); });
+    .x((d: any) => x(d.date))
+    .y((d: any) => y(d.value));
 
   // append the svg obgect to the body of the page
   // appends a 'group' element to 'svg'
@@ -105,9 +105,11 @@ export default (input: Input) => {
 
   // Add the y Axis
   g.append('g')
-      .call(axisLeft(y).tickFormat(formatNumber))
+      .call(axisLeft(y).tickFormat(formatNumber as any))
       .attr('transform', 'translate(' + margin.left + ', 0)');
 
   g.style('transform', 'scale(0.95) translateY(' + margin.top + 'px)')
    .style('transform-origin', 'center');
 };
+
+export default createLineChart;

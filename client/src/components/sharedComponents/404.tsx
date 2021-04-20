@@ -1,25 +1,29 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
-import styled from 'styled-components';
+import React from 'react';
+import {Link} from 'react-router-dom';
+import styled from 'styled-components/macro';
 import Image404Url from '../../assets/images/404.gif';
+import useFluent from '../../hooks/useFluent';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
-import { searchListDetailLink, searchMountainsDetailLink } from '../../routing/Utils';
-import {ContentFull} from '../../styling/Grid';
-import { ButtonPrimaryLink } from '../../styling/styleUtils';
+  campsiteDetailLink,
+  listDetailLink,
+  mountainDetailLink,
+  trailDetailLink,
+} from '../../routing/Utils';
+import {ContentContainer} from '../../styling/Grid';
 
-const Root = styled(ContentFull)`
+const Root = styled(ContentContainer)`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding: 1rem;
+  pointer-events: all;
 `;
 
-const Button = styled(ButtonPrimaryLink)`
-  margin: 0 1rem;
+const Button = styled(Link)`
+  margin: 0.5rem;
+  font-size: 0.875rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -31,32 +35,38 @@ const Image = styled.img`
   opacity: 0.75;
   max-width: 100%;
   width: 500px;
+  margin-bottom: 1rem;
 `;
 
 const PageNotFound = () => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   return (
     <Root>
       <Image src={Image404Url} />
       <h1>
-        {getFluentString('page-not-found-404-title')}
+        {getString('page-not-found-404-title')}
       </h1>
       <p>
-        {getFluentString('page-not-found-404-desc')}
+        {getString('page-not-found-404-desc')}
       </p>
       <ButtonContainer>
-        <Button to={searchListDetailLink('search')}>
-          {getFluentString('global-text-value-search-hiking-lists')}
+        <Button to={listDetailLink('search')}>
+          {getString('global-text-value-search-hiking-lists')}
         </Button>
-        <Button to={searchMountainsDetailLink('search')}>
-          {getFluentString('global-text-value-search-mountains')}
+        <Button to={mountainDetailLink('search')}>
+          {getString('global-text-value-search-mountains')}
+        </Button>
+        <Button to={trailDetailLink('search')}>
+          {getString('global-text-value-search-trails')}
+        </Button>
+        <Button to={campsiteDetailLink('search')}>
+          {getString('global-text-value-search-campsites')}
         </Button>
       </ButtonContainer>
       <p>
         <small
-          dangerouslySetInnerHTML={{__html: getFluentString('page-not-found-404-contact')}}
+          dangerouslySetInnerHTML={{__html: getString('page-not-found-404-contact')}}
         />
       </p>
     </Root>

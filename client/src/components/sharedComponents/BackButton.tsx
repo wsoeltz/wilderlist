@@ -1,11 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components/macro';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
+import useFluent from '../../hooks/useFluent';
 import {
   GhostButton,
 } from '../../styling/styleUtils';
@@ -26,11 +23,10 @@ interface Props extends RouteComponentProps {
 const BackButton = (props: Props) => {
   const { history } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
   const onClick = props.onClick !== undefined ? props.onClick : history.goBack;
-  const text = props.text ? props.text : getFluentString('global-text-value-back');
+  const text = props.text ? props.text : getString('global-text-value-back');
 
   return (
     <Button onClick={onClick}>

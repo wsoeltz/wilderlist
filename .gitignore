@@ -14,3 +14,5 @@ mongodb-compass-connection-strings.md
 
 .DS_store
 .DS_Store
+.eslintcache
+tslint-to-eslint-config.log

@@ -1,9 +1,9 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../hooks/useWindowWidth';
 import { borderRadius, lightBorderColor } from '../../styling/styleUtils';
 import { overlayPortalContainerId } from '../../Utils';
-import {AppContext} from '../App';
 import BackButton from './BackButton';
 
 export const mobileWidth = 600; // in px
@@ -48,9 +48,8 @@ const Container = styled.div<{dimensions: Dimensions}>`
   height: ${({dimensions: {height}}) => height};
 
   @media(max-width: ${mobileWidth}px) {
-    max-height: 100%;
-    height: 100%;
-    width: 100%;
+    max-height: calc(100% - 1rem);
+    width: calc(100% - 1rem);
     max-width: 100%;
     overflow: auto;
     display: flex;
@@ -78,7 +77,6 @@ const Content = styled.div`
   @media(max-width: ${mobileWidth}px) {
     overflow: visible;
     flex-grow: 1;
-    padding-bottom: 15vh;
   }
 `;
 
@@ -91,13 +89,12 @@ const Actions = styled.div`
   border-top: solid 1px ${lightBorderColor};
 
   @media(max-width: ${mobileWidth}px) {
-    z-index: 100;
     padding: 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
   }
+`;
+
+export const ButtonWrapper = styled.div`
+  text-align: right;
 `;
 
 const BackButtonContainer = styled.div`
@@ -120,7 +117,6 @@ const Modal = (props: Props) => {
   const overlayPortalContainerNodeRef = useRef<HTMLElement | null>(null);
   const [isModalRendered, setIsModalRendered] = useState<boolean>(false);
   useEffect(() => {
-    window.history.pushState('forward', '', '');
     const node = document.querySelector<HTMLElement>(`#${overlayPortalContainerId}`);
     if (node !== null) {
       overlayPortalContainerNodeRef.current = node;
@@ -128,18 +124,7 @@ const Modal = (props: Props) => {
     }
   }, []);
 
-  useEffect(() => {
-    const closeModalOnBackClick = (e: Event) => {
-      e.preventDefault();
-      onClose();
-    };
-    window.addEventListener('popstate', closeModalOnBackClick);
-    return () => {
-      window.removeEventListener('popstate', closeModalOnBackClick);
-    };
-  }, [onClose]);
-
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   const actions = props.actions === null ? null : (
     <Actions>

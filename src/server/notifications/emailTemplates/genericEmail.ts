@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 
 export interface GenericEmailNotificationInput {

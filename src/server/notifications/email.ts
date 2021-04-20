@@ -26,13 +26,14 @@ const transport = createTransport({
 
 export const sendAscentEmailNotification = (input: AscentTemplateContent) => {
   const {
-    mountainName, user, userEmail, date,
+    mountainName, user, userEmail, date, camping,
   } = input;
   const firstName = user.split(' ').shift();
+  const actionText = camping ? 'camping at' : 'hiking';
   const mailOptions = {
     from: `${firstName} via Wilderlist <${process.env.GMAIL_USERNAME}>`,
     to: userEmail,
-    subject: `${user} marked you as hiking ${mountainName} on ${date}`,
+    subject: `${user} marked you as ${actionText} ${mountainName} on ${date}`,
     html: ascentEmailTemplate(input),
   };
   transport.sendMail(mailOptions, (error) => {

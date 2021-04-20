@@ -1,85 +1,44 @@
-import { GetString } from 'fluent-react/compat';
-import React, {useContext} from 'react';
+import {faChartBar} from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
 import Helmet from 'react-helmet';
+import useCurrentUser from '../../hooks/useCurrentUser';
+import useFluent from '../../hooks/useFluent';
 import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
-import {
-  ContentBody,
-  ContentLeftLarge,
-  ContentRightSmall,
-} from '../../styling/Grid';
-import {
-  SectionTitleH3,
+  HighlightedIconInText,
 } from '../../styling/styleUtils';
-import { mobileSize } from '../../Utils';
-import { AppContext } from '../App';
-import AllMountains from '../stats/AllMountains';
+import MapLegend from '../sharedComponents/detailComponents/header/MapLegend';
+import PleaseLogin from '../sharedComponents/PleaseLogin';
 import Stats from './Stats';
 
-interface Props {
-  userId: string;
-}
+const YourStats = () => {
+  const user = useCurrentUser();
+  const getString = useFluent();
 
-const YourStats = (props: Props) => {
-  const { userId } = props;
-
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
-
-  const { windowWidth } = useContext(AppContext);
-
-  let content: React.ReactElement<any> | null;
-  if (windowWidth < mobileSize) {
-    content = (
+  if (!user && user !== null) {
+    return <PleaseLogin />;
+  } else if (user) {
+    return (
       <>
-        <ContentLeftLarge>
-          <ContentBody>
-            <SectionTitleH3>
-              {getFluentString('your-stats-title')}
-            </SectionTitleH3>
-            <Stats
-              userId={userId}
-            />
-            <AllMountains
-              userId={userId}
-            />
-          </ContentBody>
-        </ContentLeftLarge>
+        <Helmet>
+          <title>{getString('meta-data-your-stats-default-title')}</title>
+        </Helmet>
+        <MapLegend
+          type={'heatmap'}
+          hasMountains={true}
+          hasTrails={true}
+          hasCampsites={true}
+        />
+        <h1>
+          <HighlightedIconInText icon={faChartBar} /> &nbsp;{getString('your-stats-title')}
+        </h1>
+        <br />
+        <Stats
+        />
       </>
     );
-  }  else {
-    content = (
-      <>
-        <ContentLeftLarge>
-          <ContentBody>
-            <SectionTitleH3>
-              {getFluentString('your-stats-title')}
-            </SectionTitleH3>
-            <Stats
-              userId={userId}
-            />
-          </ContentBody>
-        </ContentLeftLarge>
-        <ContentRightSmall>
-          <ContentBody>
-            <AllMountains
-              userId={userId}
-            />
-          </ContentBody>
-        </ContentRightSmall>
-      </>
-    );
+  } else {
+    return null;
   }
-
-  return (
-    <>
-      <Helmet>
-        <title>{getFluentString('meta-data-your-stats-default-title')}</title>
-      </Helmet>
-      {content}
-    </>
-  );
 };
 
 export default YourStats;

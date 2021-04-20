@@ -1,17 +1,21 @@
-import { GetString } from 'fluent-react/compat';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
+import useFluent from '../../hooks/useFluent';
 import {
-  Card,
+  baseColor,
   lightBaseColor,
-  primaryColor,
   SvgImg,
-  SvgSmallImg,
 } from '../../styling/styleUtils';
-import AddHikingListSVG from './d3Viz/icons/add-hiking-list.svg';
-import AddMountainSVG from './d3Viz/icons/add-mountain.svg';
-import StarSVG from './d3Viz/icons/star.svg';
-import TripReportSVG from './d3Viz/icons/trip-report.svg';
+
+export const Title = styled.h3`
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: ${baseColor};
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+`;
 
 export const Root = styled.div`
   margin-bottom: 4rem;
@@ -21,25 +25,19 @@ export const SingleColumn = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const TwoColumns = styled(SingleColumn)`
+export const TwoColumns = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 1rem;
-  margin-bottom: 2rem;
-
-  @media (max-width: 450px) {
-    grid-template-columns: auto;
-    grid-template-rows: 1fr 1fr;
-    grid-row-gap: 1rem;
-  }
+  margin-bottom: 1rem;
 `;
 
-export const CardRoot = styled(Card)`
+export const CardRoot = styled.div`
   margin-bottom: 0;
   display: flex;
   justify-content: flex-start;
-  text-align: center;
-  flex-direction: column;
+  align-items: center;
+  text-align: left;
 
   &:hover {
     cursor: auto;
@@ -48,41 +46,24 @@ export const CardRoot = styled(Card)`
 `;
 
 const BigNumber = styled.div`
-  font-family: DeliciousRomanWeb;
-  font-size: 3rem;
+  font-size: 1.75rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: ${primaryColor};
+  margin-right: 0.75rem;
+  color: ${baseColor};
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 const Label = styled.div`
-  font-size: 1.4rem;
-  color: ${primaryColor};
-`;
-
-const SmallNumber = styled.div`
-  font-family: DeliciousRomanWeb;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: ${primaryColor};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 0.6rem;
-`;
-const SmallLabel = styled.div`
   font-size: 1rem;
-  color: ${primaryColor};
+  color: ${baseColor};
 `;
 
 export const LargeStyledNumber = (
-  {value, label, svg}: {value: number, label: string, svg: string}) => {
-  return (
+  {value, label, svg}: {value: number, label: string, svg: string}) => (
     <CardRoot>
+      <SvgImg src={svg} alt={label} />
       <BigNumber>
-        <SvgImg src={svg} alt={label} />
         {value}
       </BigNumber>
       <Label>
@@ -90,87 +71,6 @@ export const LargeStyledNumber = (
       </Label>
     </CardRoot>
   );
-};
-
-const ContributionsRoot = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  grid-gap: 0.75rem;
-`;
-
-const TotalRoot = styled.div`
-  grid-column: 1;
-  grid-row: 1 / 4;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-right: 0.5rem;
-`;
-
-const Segment = styled.div`
-  grid-column: 2;
-`;
-
-const TotalNumber = styled(BigNumber)`
-  margin: 0;
-
-  &:after {
-    margin: 0;
-    border: none;
-  }
-`;
-
-export const ContributionsCard = (
-  {tripReports, mountains, lists, getFluentString}:
-  {tripReports: number, mountains: number, lists: number, getFluentString: GetString}) => {
-  const total = tripReports + mountains + lists;
-  return (
-    <CardRoot>
-      <ContributionsRoot>
-        <TotalRoot>
-          <TotalNumber>
-            <SvgImg
-              src={StarSVG}
-              alt={getFluentString('stats-total-wilderlist-contributions')}
-            />
-            {total}
-          </TotalNumber>
-          <Label>
-            {getFluentString('stats-total-wilderlist-contributions')}
-          </Label>
-        </TotalRoot>
-        <Segment>
-          <SmallNumber>
-            <SvgSmallImg src={TripReportSVG} alt={getFluentString('stats-trip-reports-written')} />
-            {tripReports}
-          </SmallNumber>
-          <SmallLabel>
-            {getFluentString('stats-trip-reports-written')}
-          </SmallLabel>
-        </Segment>
-        <Segment>
-          <SmallNumber>
-            <SvgSmallImg src={AddMountainSVG} alt={getFluentString('stats-mountains-added')} />
-            {mountains}
-          </SmallNumber>
-          <SmallLabel>
-            {getFluentString('stats-mountains-added')}
-          </SmallLabel>
-        </Segment>
-        <Segment>
-          <SmallNumber>
-            <SvgSmallImg src={AddHikingListSVG} alt={getFluentString('stats-hiking-lists-created')} />
-            {lists}
-          </SmallNumber>
-          <SmallLabel>
-            {getFluentString('stats-hiking-lists-created')}
-          </SmallLabel>
-        </Segment>
-      </ContributionsRoot>
-    </CardRoot>
-  );
-};
 
 const TimeLabel = styled.span`
   font-size: 1rem;
@@ -187,13 +87,14 @@ export const ContextNote = styled.small`
 `;
 
 export const AverageTimeCard = (
-  {avgTime, startDate, getFluentString}:
-  {avgTime: number | undefined, startDate: string | undefined, getFluentString: GetString}) => {
+  {avgTime, startDate}:
+  {avgTime: number | undefined, startDate: string | undefined}) => {
+  const getString = useFluent();
   if (!startDate || !avgTime) {
     return (
       <CardRoot>
         <Label>
-          {getFluentString('stats-no-average-time')}
+          {getString('stats-no-average-time')}
         </Label>
       </CardRoot>
     );
@@ -209,7 +110,7 @@ export const AverageTimeCard = (
     const weeksText = weeks > 1 ? 'global-text-value-weeks' : 'global-text-value-week';
     calcTime.push(
       <React.Fragment key={weeks + 'weeks'}>
-        {weeks}<TimeLabel>{getFluentString(weeksText)}</TimeLabel>
+        {weeks}<TimeLabel>{getString(weeksText)}</TimeLabel>
         {' '}
       </React.Fragment>,
     );
@@ -218,7 +119,7 @@ export const AverageTimeCard = (
     const daysText = days > 1 ? 'global-text-value-days' : 'global-text-value-day';
     calcTime.push(
       <React.Fragment key={days + 'days'}>
-        {days}<TimeLabel>{getFluentString(daysText)}</TimeLabel>
+        {days}<TimeLabel>{getString(daysText)}</TimeLabel>
         {' '}
       </React.Fragment>,
     );
@@ -227,7 +128,7 @@ export const AverageTimeCard = (
     const hoursText = hours > 1 ? 'global-text-value-hours' : 'global-text-value-hour';
     calcTime.push(
       <React.Fragment key={hours + 'hours'}>
-        {hours}<TimeLabel>{getFluentString(hoursText)}</TimeLabel>
+        {hours}<TimeLabel>{getString(hoursText)}</TimeLabel>
       </React.Fragment>,
     );
   }
@@ -235,7 +136,7 @@ export const AverageTimeCard = (
     <CardRoot>
       <BigNumber>{calcTime}</BigNumber>
       <Label>
-        {getFluentString('stats-average-time-since-start', {'start-date': startDate})}
+        {getString('stats-average-time-since-start', {'start-date': startDate})}
       </Label>
     </CardRoot>
   );
@@ -260,13 +161,13 @@ const CountLabel = styled.small`
 `;
 
 export const TopFourValuesList = (
-  {val1, val2, val3, val4, getFluentString}:
+  {val1, val2, val3, val4}:
   { val1: {label: string, count: number} | undefined,
     val2: {label: string, count: number} | undefined,
     val3: {label: string, count: number} | undefined,
-    val4: {label: string, count: number} | undefined,
-    getFluentString: GetString}) => {
-  const ascentsText = getFluentString('global-text-value-ascents');
+    val4: {label: string, count: number} | undefined}) => {
+  const getString = useFluent();
+  const ascentsText = getString('global-text-value-ascents');
   const label1 = val1 ? (
     <ValueListLabel>
       <ValueLabel>

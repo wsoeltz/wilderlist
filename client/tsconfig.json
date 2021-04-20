@@ -28,7 +28,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "react"
   },
   "include": [
     "src"
@@ -36,6 +36,7 @@
   "exclude": [
     "build",
     "node_modules",
-    "src/setupProxy.js"
+    "src/setupProxy.js",
+    "src/hooks/servicesHooks/pathfinding/geojson-path-finder"
   ]
 }

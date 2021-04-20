@@ -1,152 +1,123 @@
-import { useMutation } from '@apollo/react-hooks';
+const {point, featureCollection} = require('@turf/helpers');
+const centroid = require('@turf/centroid').default;
+const getBbox = require('@turf/bbox').default;
 import {
   faCheck,
-  faEdit,
-  faHiking,
-  faMountain,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
-import { GetString } from 'fluent-react/compat';
-import gql from 'graphql-tag';
-import React, {useContext, useState} from 'react';
-import { createPortal } from 'react-dom';
-import { RouteComponentProps, withRouter } from 'react-router';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../../contextProviders/getFluentLocalizationContext';
+import {Types} from 'mongoose';
+import React, {useCallback, useState} from 'react';
+import {useHistory} from 'react-router-dom';
+import useBeforeUnload from '../../../hooks/useBeforeUnload';
+import useFluent from '../../../hooks/useFluent';
+import {SuccessResponse, Variables} from '../../../queries/lists/addEditPeakList';
+import {useUpdatePeakListFlag} from '../../../queries/lists/flagPeakList';
+import {Routes} from '../../../routing/routes';
+import {listDetailLink} from '../../../routing/Utils';
 import {
   BasicIconInText,
-  ButtonPrimary,
-  ButtonSecondary,
-  DetailBoxTitle,
-  DetailBoxWithMargin,
-  GhostButton,
-  Label,
-  LabelContainer,
-  Section,
-  SelectBox,
-  SmallTextNote,
+  ButtonWrapper,
+  CancelButton,
 } from '../../../styling/styleUtils';
 import {
   ExternalResource,
-  PeakList,
-  PeakListFlag,
+  ListPrivacy,
   PeakListTier,
-  PeakListVariants,
 } from '../../../types/graphQLTypes';
-import CreateMountainModal from '../../mountains/create/CreateMountainModal';
 import AreYouSureModal, {
   Props as AreYouSureModalProps,
 } from '../../sharedComponents/AreYouSureModal';
-import CollapsibleDetailBox from '../../sharedComponents/CollapsibleDetailBox';
-import DelayedInput from '../../sharedComponents/DelayedInput';
-import DelayedTextarea from '../../sharedComponents/DelayedTextarea';
 import {
-  ActionButtons,
-  ButtonWrapper,
   DeleteButton,
-  FullColumn,
-  ResourceContainer,
-  Root as Grid,
   SaveButton,
-  Sublabel,
-  Wrapper,
 } from '../../sharedComponents/formUtils';
-import Map, {MapContainer} from '../../sharedComponents/map';
-import {CoordinateWithDates} from '../../sharedComponents/map/types';
-import Tooltip from '../../sharedComponents/Tooltip';
-import AddMountains from './AddMountains';
-import {MountainDatum} from './MountainSelectionModal';
-import ParentModal from './ParentModal';
+import AddItems, {
+  CampsiteDatum,
+  MountainDatum,
+  TrailDatum,
+} from './AddItems';
+import FormDetails from './FormDetails';
+import FormHeader from './FormHeader';
 
-export const FLAG_PEAK_LIST = gql`
-  mutation($id: ID!, $flag: PeakListFlag) {
-    peakList: updatePeakListFlag(id: $id, flag: $flag) {
-      id
-      flag
-    }
-  }
-`;
-
-export interface FlagSuccessResponse {
-  peakList: null | {
-    id: PeakList['id'];
-    flag: PeakList['flag'];
-  };
+export enum FormSource {
+  Create = 'create',
+  Edit = 'edit',
 }
 
-export interface FlagVariables {
-  id: string;
-  flag: PeakListFlag | null;
-}
-
-export interface InitialPeakListDatum {
-  id: string | undefined;
-  name: string;
-  shortName: string;
-  description: string;
-  optionalPeaksDescription: string;
-  type: PeakListVariants;
-  mountains: MountainDatum[];
-  optionalMountains: MountainDatum[];
-  flag: PeakListFlag | null;
-  tier: PeakListTier | undefined;
-  resources: ExternalResource[];
-  parent: null;
-}
-
-export interface FormInput {
-  name: string;
-  shortName: string;
-  description: string | null;
-  optionalPeaksDescription: string | null;
-  type: PeakListVariants;
-  mountains: string[];
-  optionalMountains: string[];
-  parent: null;
-  states: string[];
-  resources: ExternalResource[] | null;
-  tier: PeakListTier | null;
-}
-
-interface Props extends RouteComponentProps {
-  initialData: InitialPeakListDatum;
-  onSubmit: (input: FormInput) => void;
-  mapContainer: HTMLDivElement | null;
-  states: Array<{id: string, abbreviation: string}>;
+interface Props {
+  initialData: SuccessResponse['peakList'];
+  onSubmit: (input: Variables) => void;
+  source: FormSource;
 }
 
 const PeakListForm = (props: Props) => {
-  const { initialData, onSubmit, history, mapContainer, states } = props;
+  const { initialData, onSubmit, source } = props;
 
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const history = useHistory();
+  const getString = useFluent();
 
+  const initialMountains = initialData.mountains.filter(d => d !== null).map((d) => ({
+    ...d, optional: false,
+  })) as MountainDatum[];
+  const initialOptionalMountains = initialData.optionalMountains.filter(d => d !== null).map((d) => ({
+    ...d, optional: true,
+  })) as MountainDatum[];
+
+  const initialTrails = initialData.trails.filter(d => d !== null).map(d => ({
+    ...d, optional: false,
+  })) as TrailDatum[];
+  const initialOptionalTrails = initialData.optionalTrails.filter(d => d !== null).map((d) => ({
+    ...d, optional: true,
+  })) as TrailDatum[];
+
+  const initialCampsites = initialData.campsites.filter(d => d !== null).map(d => ({
+    ...d, optional: false,
+  })) as CampsiteDatum[];
+  const initialOptionalCampsites = initialData.optionalCampsites.filter(d => d !== null).map((d) => ({
+    ...d, optional: true,
+  })) as CampsiteDatum[];
+
+  const [listId, setListId] = useState<string | Types.ObjectId>(initialData.id);
   const [name, setName] = useState<string>(initialData.name);
   const [shortName, setShortName] = useState<string>(initialData.shortName);
-  const [parentModalOpen, setParentModalOpen] = useState<boolean>(false);
-  const [tier, setTier] = useState<PeakListTier | undefined>(initialData.tier);
-  const [description, setDescription] = useState<string>(initialData.description);
-  const [optionalPeaksDescription, setOptionalPeaksDescription] =
-    useState<string>(initialData.optionalPeaksDescription);
-  const [mountains, setMountains] = useState<MountainDatum[]>(initialData.mountains);
-  const [optionalMountains, setOptionalMountains] = useState<MountainDatum[]>(initialData.optionalMountains);
+  const [tier, setTier] = useState<PeakListTier | null>(initialData.tier);
+  const [privacy, setPrivacy] = useState<ListPrivacy | null>(
+    initialData.privacy ? initialData.privacy : ListPrivacy.Public,
+  );
+  const [description, setDescription] = useState<string>(initialData.description ? initialData.description : '');
+  const [mountains, setMountains] = useState<MountainDatum[]>([...initialMountains, ...initialOptionalMountains]);
+  const [trails, setTrails] = useState<TrailDatum[]>([...initialTrails, ...initialOptionalTrails]);
+  const [campsites, setCampsites] = useState<CampsiteDatum[]>([...initialCampsites, ...initialOptionalCampsites]);
   const [externalResources, setExternalResources] =
-    useState<ExternalResource[]>([...initialData.resources, {title: '', url: ''}]);
-  const [createMountainModalOpen, setCreateMountainModalOpen] = useState<boolean>(false);
+    useState<ExternalResource[]>(
+      initialData.resources ? [...initialData.resources, {title: '', url: ''}] : [{title: '', url: ''}]);
 
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const closeAreYouSureModal = () => {
-    setDeleteModalOpen(false);
+  const checkIfModified = () => {
+    return !loadingSubmit &&
+    (
+      name !== initialData.name ||
+      shortName !== initialData.shortName ||
+      tier !== initialData.tier ||
+      privacy !== initialData.privacy ||
+      description !== initialData.description ||
+      mountains.length !== (initialMountains.length + initialOptionalMountains.length) ||
+      trails.length !== (initialTrails.length + initialOptionalTrails.length) ||
+      campsites.length !== (initialCampsites.length + initialOptionalCampsites.length)
+    ) ? true : false;
   };
 
-  const [updatePeakListFlag] = useMutation<FlagSuccessResponse, FlagVariables>(FLAG_PEAK_LIST);
+  useBeforeUnload(checkIfModified);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const closeAreYouSureModal = useCallback(() => setDeleteModalOpen(false), []);
+  const openDeleteModal = useCallback(() => setDeleteModalOpen(true), []);
+
+  const updatePeakListFlag = useUpdatePeakListFlag();
   const flagForDeletion = (id: string | undefined) => {
     if (id) {
-      updatePeakListFlag({variables: {id, flag: PeakListFlag.deleteRequest}});
+      updatePeakListFlag({variables: {id, flag: 'DELETE REQUEST'}});
     }
     closeAreYouSureModal();
   };
@@ -158,24 +129,24 @@ const PeakListForm = (props: Props) => {
   };
 
   const areYouSureProps: AreYouSureModalProps =
-    initialData.flag === PeakListFlag.deleteRequest ? {
+    initialData.flag && initialData.flag.includes('DELETE REQUEST') ? {
     onConfirm: () => clearFlag(initialData.id),
     onCancel: closeAreYouSureModal,
-    title: getFluentString('global-text-value-cancel-delete-request'),
-    text: getFluentString('global-text-value-modal-cancel-request-text', {
+    title: getString('global-text-value-cancel-delete-request'),
+    text: getString('global-text-value-modal-cancel-request-text', {
       name: initialData.name,
     }),
-    confirmText: getFluentString('global-text-value-modal-confirm'),
-    cancelText: getFluentString('global-text-value-modal-cancel'),
+    confirmText: getString('global-text-value-modal-confirm'),
+    cancelText: getString('global-text-value-modal-cancel'),
   } : {
     onConfirm: () => flagForDeletion(initialData.id),
     onCancel: closeAreYouSureModal,
-    title: getFluentString('global-text-value-modal-request-delete-title'),
-    text: getFluentString('global-text-value-modal-request-delete-text', {
+    title: getString('global-text-value-modal-request-delete-title'),
+    text: getString('global-text-value-modal-request-delete-text', {
       name: initialData.name,
     }),
-    confirmText: getFluentString('global-text-value-modal-confirm'),
-    cancelText: getFluentString('global-text-value-modal-cancel'),
+    confirmText: getString('global-text-value-modal-confirm'),
+    cancelText: getString('global-text-value-modal-cancel'),
   };
 
   const areYouSureModal = deleteModalOpen === false ? null : (
@@ -183,42 +154,102 @@ const PeakListForm = (props: Props) => {
   );
 
   const statesArray: Array<{id: string, abbreviation: string}> = [];
-  [...mountains, ...optionalMountains].forEach(mtn => {
-    if (mtn.state !== null) {
-      const mtnStateId = mtn.state.id;
-      if (statesArray.filter(state => state && state.id === mtnStateId).length === 0) {
-        statesArray.push(mtn.state);
+  [...mountains, ...campsites].forEach(datum => {
+    if (datum.state !== null) {
+      const datumStateId = datum.state.id;
+      if (statesArray.filter(state => state && state.id === datumStateId).length === 0) {
+        statesArray.push(datum.state);
       }
     }
   });
+  trails.forEach(trail => {
+    if (trail.states !== null && trail.states.length) {
+      trail.states.forEach(trailState => {
+        const trailStateId = trailState.id;
+        if (statesArray.filter(state => state && state.id === trailStateId).length === 0) {
+          statesArray.push(trailState);
+        }
+      });
+    }
+  });
 
-  const verify = () => name && shortName && tier && mountains.length && !loadingSubmit
-    ? true : false;
+  const verify = () => name && shortName && tier && privacy && !loadingSubmit && (
+    mountains.length || trails.length || campsites.length
+  ) ? true : false;
 
   const validateAndSave = () => {
-    if (verify() && tier) {
-      const mountainIds = mountains.map(mtn => mtn.id);
-      const optionalMountainIds = optionalMountains.map(mtn => mtn.id);
+    if (verify() && tier && privacy) {
+      const mountainIds: string[] = [];
+      const optionalMountainIds: string[] = [];
+      mountains.forEach(mtn => {
+        if (mtn.optional) {
+          optionalMountainIds.push(mtn.id);
+        } else {
+          mountainIds.push(mtn.id);
+        }
+      });
+      const trailIds: string[] = [];
+      const optionalTrailIds: string[] = [];
+      trails.forEach(trail => {
+        if (trail.optional) {
+          optionalTrailIds.push(trail.id);
+        } else {
+          trailIds.push(trail.id);
+        }
+      });
+      const campsiteIds: string[] = [];
+      const optionalCampsiteIds: string[] = [];
+      campsites.forEach(campsite => {
+        if (campsite.optional) {
+          optionalCampsiteIds.push(campsite.id);
+        } else {
+          campsiteIds.push(campsite.id);
+        }
+      });
       const stateIds = statesArray.map(state => state.id);
       setLoadingSubmit(true);
-      const resources = externalResources.filter(resource => resource.title.length && resource.url.length);
+      const resources = externalResources
+        .filter(resource => resource.title.length && resource.url.length)
+        // Map is required to remove any unknown keys added to the resource object
+        .map(resource => ({title: resource.title, url: resource.url}));
+      const allPoints = featureCollection([
+        ...mountains.map(mtn => point(mtn.location)),
+        ...campsites.map(campsite => point(campsite.location)),
+        ...trails.map(trail => point(trail.center)),
+      ]);
+      const center = centroid(allPoints);
+      const bbox = getBbox(allPoints);
       onSubmit({
+        id: listId as unknown as string,
         name,
         shortName,
-        type: initialData.type ? initialData.type : PeakListVariants.standard,
         description,
-        optionalPeaksDescription,
         mountains: mountainIds,
         optionalMountains: optionalMountainIds,
+        trails: trailIds,
+        optionalTrails: optionalTrailIds,
+        campsites: campsiteIds,
+        optionalCampsites: optionalCampsiteIds,
         states: stateIds,
         tier,
         resources,
-        parent: null,
+        privacy,
+        center: center.geometry.coordinates.map((c: number) => parseFloat(c.toFixed(3))),
+        bbox,
       });
     }
   };
 
-  const setStringToPeakListTier = (value: string) => {
+  const onCancel = useCallback(() => {
+    if (source === FormSource.Edit) {
+      history.push(listDetailLink(initialData.id));
+    } else {
+      history.push(Routes.SearchLists);
+    }
+  }, [source, history, initialData.id]);
+
+  const setStringToPeakListTier = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
     if (value === 'casual') {
       return setTier(PeakListTier.casual);
     } else if (value === 'advanced') {
@@ -228,408 +259,84 @@ const PeakListForm = (props: Props) => {
     } else if (value === 'mountaineer') {
       return setTier(PeakListTier.mountaineer);
     }
-    return setTier(undefined);
-  };
+    return setTier(null);
+  }, [setTier]);
+
+  const setStringToListPrivacy = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === 'public') {
+      return setPrivacy(ListPrivacy.Public);
+    } else if (value === 'private') {
+      return setPrivacy(ListPrivacy.Private);
+    }
+    return setPrivacy(ListPrivacy.Public);
+  }, [setPrivacy]);
 
   const saveButtonText = loadingSubmit === true
-    ? getFluentString('global-text-value-saving') + '...' : getFluentString('global-text-value-save');
+    ? getString('global-text-value-saving') + '...' : getString('global-text-value-save');
 
-  const deleteButtonText = initialData.flag !== PeakListFlag.deleteRequest
-    ? getFluentString('global-text-value-delete')
-    : getFluentString('global-text-value-cancel-delete-request');
+  const deleteButtonText = !initialData.flag || !initialData.flag.includes('DELETE REQUEST')
+    ? getString('global-text-value-delete')
+    : getString('global-text-value-cancel-delete-request');
 
-  const deleteButton = !initialData.id ? null : (
+  const deleteButton = !initialData.id || source === FormSource.Create ? null : (
     <DeleteButton
-      onClick={() => setDeleteModalOpen(true)}
-      mobileExtend={true}
+      onClick={openDeleteModal}
     >
       <BasicIconInText icon={faTrash} />
       {deleteButtonText}
     </DeleteButton>
   );
 
-  const mountainCoordinates = [...mountains, ...optionalMountains].map(mtn => ({...mtn, completionDates: null }));
-
-  const addMountainToList = (mtnToAdd: CoordinateWithDates) => {
-    if (!mountains.find(mtn => mtn.id === mtnToAdd.id)) {
-      axios.post('/graphql', {
-        query: `query GetMountainDatum($id: ID) {
-          mountain(id: $id) {
-            id
-            name
-            state {
-              id
-              abbreviation
-            }
-            elevation
-            latitude
-            longitude
-          }
-        }`,
-        variables: {id: mtnToAdd.id} },
-        { headers: {'Content-Type': 'application/json'},
-      }).then((res) => {
-        if (res && res.data && res.data.data && res.data.data.mountain) {
-          const newMountain: MountainDatum = res.data.data.mountain;
-          setMountains([...mountains, newMountain]);
-        }
-      }).catch(e => console.error(e));
-    }
-  };
-  const removeMountainFromList = (mountainToRemove: CoordinateWithDates) => {
-    const updatedMtnList = mountains.filter(mtn => mtn.id !== mountainToRemove.id);
-    if (updatedMtnList.length === mountains.length) {
-      const updatedOptionalMtnList = optionalMountains.filter(mtn => mtn.id !== mountainToRemove.id);
-      setOptionalMountains([...updatedOptionalMtnList]);
-    } else {
-      setMountains([...updatedMtnList]);
-    }
-  };
-  const addRemoveMountains = {
-    addText: 'Add to List',
-    onAdd: addMountainToList,
-    removeText: 'Remove from List',
-    onRemove: removeMountainFromList,
-  };
-
-  const addNewMountainButton = (
-    <div style={{textAlign: 'center'}}>
-      <Section>
-        <SmallTextNote>
-          {getFluentString('create-mountain-title-create-question')}
-        </SmallTextNote>
-      </Section>
-      <ButtonPrimary onClick={() => setCreateMountainModalOpen(true)}>
-        {getFluentString('create-mountain-title-create-new')}
-      </ButtonPrimary>
-    </div>
-  );
-  let map: React.ReactElement<any> | null;
-  if (mapContainer !== null) {
-    map = createPortal((
-      <FullColumn style={{height: '100%'}}>
-        <Map
-          mountainId={null}
-          peakListId={null}
-          coordinates={mountainCoordinates}
-          userId={null}
-          isOtherUser={true}
-          colorScaleColors={[]}
-          colorScaleSymbols={[]}
-          fillSpace={true}
-          completedAscents={[]}
-          showOtherMountains={true}
-          defaultOtherMountainsOn={true}
-          addRemoveMountains={addRemoveMountains}
-          primaryMountainLegendCopy={'Mountains on this list'}
-          customScaleContentBottom={addNewMountainButton}
-          key={'create-peak-list-key'}
-        />
-      </FullColumn>
-    ), mapContainer);
-  } else {
-    map = (
-      <FullColumn>
-        <MapContainer>
-          <Map
-            mountainId={null}
-            peakListId={null}
-            coordinates={mountainCoordinates}
-            userId={null}
-            isOtherUser={true}
-            colorScaleColors={[]}
-            colorScaleSymbols={[]}
-            completedAscents={[]}
-            showOtherMountains={true}
-            defaultOtherMountainsOn={true}
-            addRemoveMountains={addRemoveMountains}
-            primaryMountainLegendCopy={'Mountains on this list'}
-            customScaleContentBottom={addNewMountainButton}
-            key={'create-peak-list-key'}
-          />
-        </MapContainer>
-      </FullColumn>
-    );
-  }
-
-  const handleExternalResourceChange = (value: string) =>
-    (field: keyof ExternalResource, index: number) =>
-      setExternalResources(
-        externalResources.map((resource, _index) => {
-          if (resource[field] === value || index !== _index) {
-            return resource;
-          } else {
-            return {...resource, [field]: value};
-          }
-        },
-      ),
-    );
-
-  const deleteResource = (e: React.MouseEvent<HTMLButtonElement>) => (index: number) => {
-    e.preventDefault();
-    setExternalResources(externalResources.filter((_v, i) => i !== index));
-  };
-
-  const resourceInputs = externalResources.map((resource, i) => (
-    <ResourceContainer key={i}>
-      <DelayedInput
-        initialValue={resource.title}
-        setInputValue={value => handleExternalResourceChange(value)('title', i)}
-        placeholder={getFluentString('global-text-value-resource-title')}
-      />
-      <DelayedInput
-        initialValue={resource.url}
-        setInputValue={value => handleExternalResourceChange(value)('url', i)}
-        placeholder={getFluentString('global-text-value-resource-url')}
-      />
-      <GhostButton onClick={e => deleteResource(e)(i)}>
-        ×
-      </GhostButton>
-    </ResourceContainer>
-  ));
-
-  const copyMountains = (mountainArray: MountainDatum[], optionalMountainArray: MountainDatum[]) => {
-    const uniqueMountains = mountainArray.filter(mtn1 => !mountains.find(mtn2 => mtn1.id === mtn2.id));
-    setMountains([...mountains, ...uniqueMountains]);
-    const uniqueOptionalMountains =
-      optionalMountainArray.filter(mtn1 => !optionalMountains.find(mtn2 => mtn1.id === mtn2.id));
-    setOptionalMountains([...optionalMountains, ...uniqueOptionalMountains]);
-  };
-
-  const parentModal = parentModalOpen === false ? null : (
-    <ParentModal
-      copyMountains={copyMountains}
-      onCancel={() => setParentModalOpen(false)}
-    />
-  );
-
-  const onNewMountainCreate = (mtn: MountainDatum) => setMountains([...mountains, mtn]);
-  const createMountainModal = createMountainModalOpen === false ? null : (
-    <CreateMountainModal
-      onCancel={() => setCreateMountainModalOpen(false)}
-      onSuccess={onNewMountainCreate}
-    />
-  );
+  const toggleId = useCallback(() => setListId(new Types.ObjectId()), [setListId]);
 
   return (
     <>
-      <Wrapper>
-        <DetailBoxTitle>
-          <BasicIconInText icon={faHiking} />
-          {getFluentString('create-peak-list-peak-list-name-label')}
-        </DetailBoxTitle>
-        <DetailBoxWithMargin>
-          <Section>
-            <LabelContainer htmlFor={'create-peak-list-name'}>
-              <Label>
-                {getFluentString('global-text-value-name')}
-              </Label>
-            </LabelContainer>
-            <DelayedInput
-              id={'create-peak-list-name'}
-              type={'text'}
-              initialValue={name}
-              setInputValue={value => setName(value)}
-              placeholder={getFluentString('create-peak-list-peak-list-name-placeholder')}
-              /* autoComplete='off' is ignored in Chrome, but other strings aren't */
-              maxLength={1000}
-            />
-          </Section>
-          <Grid>
-            <div>
-              <LabelContainer htmlFor={'create-peak-list-short-name'}>
-                <Label>
-                  {getFluentString('create-peak-list-peak-list-short-name-label')}
-                  {' '}
-                  <Sublabel>({getFluentString('create-peak-list-peak-list-short-name-note')})</Sublabel>
-                </Label>
-              </LabelContainer>
-              <DelayedInput
-                id={'create-peak-list-short-name'}
-                type={'text'}
-                initialValue={shortName}
-                setInputValue={value => setShortName(value)}
-                placeholder={getFluentString('create-peak-list-peak-list-short-name-placeholder')}
-                maxLength={8}
-              />
-            </div>
-            <div>
-              <LabelContainer htmlFor={'create-peak-list-select-tier'}>
-                <Label>
-                  {getFluentString('global-text-value-difficulty')}
-                </Label>
-                <Tooltip
-                  explanation={
-                    <div dangerouslySetInnerHTML={{__html: getFluentString('global-text-value-list-tier-desc')}} />
-                  }
-                />
-              </LabelContainer>
-              <SelectBox
-                id={'create-peak-list-select-tier'}
-                value={tier || ''}
-                onChange={e => setStringToPeakListTier(e.target.value)}
-                placeholder={getFluentString('global-text-value-tier')}
-              >
-                <option value=''></option>
-                <option value={PeakListTier.casual}>
-                  {getFluentString('global-text-value-list-tier', {
-                    tier: PeakListTier.casual,
-                  })}
-                </option>
-                <option value={PeakListTier.advanced}>
-                  {getFluentString('global-text-value-list-tier', {
-                    tier: PeakListTier.advanced,
-                  })}
-                </option>
-                <option value={PeakListTier.expert}>
-                  {getFluentString('global-text-value-list-tier', {
-                    tier: PeakListTier.expert,
-                  })}
-                </option>
-                <option value={PeakListTier.mountaineer}>
-                  {getFluentString('global-text-value-list-tier', {
-                    tier: PeakListTier.mountaineer,
-                  })}
-                </option>
-              </SelectBox>
-            </div>
-          </Grid>
-        </DetailBoxWithMargin>
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faMountain} />
-              {getFluentString('global-text-value-mountains')}
-              {' '}({mountains.length})
-            </>
-          }
-        >
-          <Section>
-            <SmallTextNote>
-              {getFluentString('create-peak-list-peak-list-mountains-note', {
-                'number-mountains': mountains.length,
-              })}
-            </SmallTextNote>
-          </Section>
-          <div>
-            <AddMountains
-              selectedMountains={mountains}
-              setSelectedMountains={setMountains}
-              openParentModal={() => setParentModalOpen(true)}
-              states={states}
-            />
-          </div>
-        </CollapsibleDetailBox>
-        {map}
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faEdit} />
-              {getFluentString('create-mountain-optional-title')}
-            </>
-          }
-          defaultHidden={true}
-        >
-          <div style={{marginBottom: '1rem'}}>
-            <LabelContainer htmlFor={'create-peak-list-description'}>
-              <Label>
-                {getFluentString('create-peak-list-peak-list-description-label')}
-              </Label>
-            </LabelContainer>
-            <DelayedTextarea
-              id={'create-peak-list-description'}
-              rows={6}
-              initialValue={description}
-              setInputValue={value => setDescription(value)}
-              placeholder={getFluentString('create-peak-list-peak-description')}
-              maxLength={5000}
-            />
-          </div>
-          <div>
-            <LabelContainer>
-              <Label>
-                {getFluentString('global-text-value-external-resources')}
-              </Label>
-            </LabelContainer>
-            {resourceInputs}
-            <div>
-              <ButtonSecondary onClick={e => {
-                e.preventDefault();
-                setExternalResources([...externalResources, {title: '', url: ''}]);
-              }}>
-                {getFluentString('global-text-value-add-external-resources')}
-              </ButtonSecondary>
-            </div>
-          </div>
-        </CollapsibleDetailBox>
+      <FormHeader
+        id={listId.toString()}
+        name={name}
+        setName={setName}
+        shortName={shortName}
+        setShortName={setShortName}
+        tier={tier}
+        setStringToPeakListTier={setStringToPeakListTier}
+        privacy={privacy}
+        setStringToListPrivacy={setStringToListPrivacy}
+        toggleId={source === FormSource.Create ? toggleId : null}
+      />
+      <FormDetails
+        description={description}
+        setDescription={setDescription}
+        externalResources={externalResources}
+        setExternalResources={setExternalResources}
+      />
+      <AddItems
+        selectedMountains={mountains}
+        setSelectedMountains={setMountains}
+        selectedTrails={trails}
+        setSelectedTrails={setTrails}
+        selectedCampsites={campsites}
+        setSelectedCampsites={setCampsites}
+      />
 
-        <CollapsibleDetailBox
-          title={
-            <>
-              <BasicIconInText icon={faMountain} style={{opacity: 0.5}}/>
-              {getFluentString('create-peak-list-peak-list-optional-mountains')}
-              {' '}({optionalMountains.length})
-            </>
-          }
-          defaultHidden={true}
+      <ButtonWrapper>
+        {deleteButton}
+        <CancelButton
+          onClick={onCancel}
         >
-          <Section>
-            <SmallTextNote>{getFluentString('create-peak-list-peak-list-optional-mountains-note')}</SmallTextNote>
-          </Section>
-          <Section>
-            <LabelContainer htmlFor={'create-peak-list-optional-description'}>
-              <Label>
-                {getFluentString('create-peak-list-peak-list-optional-description-label')}
-              </Label>
-            </LabelContainer>
-            <DelayedTextarea
-              id={'create-peak-list-optional-description'}
-              rows={6}
-              initialValue={optionalPeaksDescription}
-              setInputValue={value => setOptionalPeaksDescription(value)}
-              placeholder={getFluentString('create-peak-list-peak-optional-description')}
-              maxLength={5000}
-            />
-          </Section>
-          <div>
-            <LabelContainer>
-              <Label>
-                {getFluentString('peak-list-detail-text-optional-mountains')}
-              </Label>
-            </LabelContainer>
-            <AddMountains
-              selectedMountains={optionalMountains}
-              setSelectedMountains={setOptionalMountains}
-              states={states}
-            />
-          </div>
-        </CollapsibleDetailBox>
-      </Wrapper>
-
-      <ActionButtons>
-        <ButtonWrapper>
-          {deleteButton}
-          <GhostButton
-            onClick={history.goBack}
-            mobileExtend={true}
-          >
-            {getFluentString('global-text-value-modal-cancel')}
-          </GhostButton>
-          <SaveButton
-            disabled={!verify()}
-            onClick={validateAndSave}
-            mobileExtend={true}
-          >
-            <BasicIconInText icon={faCheck} />
-            {saveButtonText}
-          </SaveButton>
-        </ButtonWrapper>
-      </ActionButtons>
-      {parentModal}
+          {getString('global-text-value-modal-cancel')}
+        </CancelButton>
+        <SaveButton
+          disabled={!verify()}
+          onClick={validateAndSave}
+        >
+          <BasicIconInText icon={faCheck} />
+          {saveButtonText}
+        </SaveButton>
+      </ButtonWrapper>
       {areYouSureModal}
-      {createMountainModal}
     </>
   );
 };
 
-export default withRouter(PeakListForm);
+export default PeakListForm;

@@ -7,14 +7,6 @@
 }
 
 @font-face {
-    font-family: 'DeliciousRomanWeb';
-    src: url('delicious-roman-webfont.woff2') format('woff2'),
-         url('delicious-roman-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
     font-family: 'Source Sans Pro';
     src: url('SourceSansPro-SemiBold.woff2') format('woff2'),
         url('SourceSansPro-SemiBold.woff') format('woff');
@@ -49,3 +41,4 @@
     font-style: normal;
     font-display: swap;
 }
+

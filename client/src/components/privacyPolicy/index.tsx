@@ -1,39 +1,32 @@
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
-import { GetString } from 'fluent-react/compat';
-import React, { useContext } from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import {
-  AppLocalizationAndBundleContext,
-} from '../../contextProviders/getFluentLocalizationContext';
-import {
-  ContentBody,
-  ContentFull,
-} from '../../styling/Grid';
+import useFluent from '../../hooks/useFluent';
+import MobileTab from '../template/contentHeader/MobileTab';
 
 const PrivacyPolicy = () => {
-  const {localization} = useContext(AppLocalizationAndBundleContext);
-  const getFluentString: GetString = (...args) => localization.getString(...args);
+  const getString = useFluent();
 
-  const metaDescription = getFluentString('meta-data-privacy-policy-description');
+  const metaDescription = getString('meta-data-privacy-policy-description');
 
   return (
     <>
       <Helmet>
-        <title>{getFluentString('meta-data-privacy-default-title')}</title>
+        <title>{getString('meta-data-privacy-default-title')}</title>
         <meta
           name='description'
           content={metaDescription}
         />
-        <meta property='og:title' content={getFluentString('meta-data-privacy-default-title')} />
+        <meta property='og:title' content={getString('meta-data-privacy-default-title')} />
         <meta
           property='og:description'
           content={metaDescription}
         />
       </Helmet>
-      <ContentFull>
-        <ContentBody>
-          <h1>{getFluentString('header-text-menu-privacy-policy')}</h1>
-          <div>
+      <MobileTab hideTab={true} />
+      <div>
+          <h1>{getString('header-text-menu-privacy-policy')}</h1>
           <p><small>Last Update: March 6, 2020</small></p>
 
           <p>It is Wilderlist's policy to respect your privacy regarding any information we may collect while operating our website. This Privacy Policy applies to <a href='https://www.wilderlist.app'>https://www.wilderlist.app</a> (hereinafter, "us", "we", or "https://www.wilderlist.app"). We respect your privacy and are committed to protecting personally identifiable information you may provide us through the Website. We have adopted this privacy policy ("Privacy Policy") to explain what information may be collected on our Website, how we use this information, and under what circumstances we may disclose the information to third parties. This Privacy Policy applies only to information we collect through the Website and does not apply to our collection of information from other sources.</p>
@@ -104,9 +97,7 @@ const PrivacyPolicy = () => {
 
           <p><small>This privacy policy was created in part and with the aid of <a href='https://privacytermsgenerator.com/' title='Privacy policy template generator' target='_blank' rel='noopener noreferrer'>privacytermsgenerator.com</a>. If you have any questions about this Privacy Policy, please contact us via <a href='mailto:help@wilderlist.app'>help@wilderlist.app</a>.</small></p>
 
-          </div>
-        </ContentBody>
-      </ContentFull>
+      </div>
     </>
   );
 };

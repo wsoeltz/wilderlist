@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { darken } from 'polished';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components/macro';
-import DynamicLink from '../components/sharedComponents/DynamicLink';
 import { PeakListVariants } from '../types/graphQLTypes';
-import { failIfValidOrNonExhaustive, mediumSize, mobileSize } from '../Utils';
+import { mediumSize, mobileSize } from '../Utils';
 
 export const primaryFont = '"Source Sans Pro", sans-serif';
 export const secondaryFont = 'DeliciousWeb, sans-serif';
@@ -13,15 +13,16 @@ export const lightBaseColor = '#7c7c7c'; // light gray color for subtitles and c
 export const placeholderColor = '#a7a7a7'; // light gray color for placeholder text
 export const lightBorderColor = '#dcdcdc'; // really light gray color for subtle borders between elements
 
-export const primaryColor = '#668434'; // primary green color for buttons and other highlighted elements
+export const primaryColor = '#206ca6'; // primary blue color for buttons and other highlighted elements
 export const secondaryColor = '#696969'; // gray color for use with buttons or other clickable items
-export const primaryHoverColor = '#86a651'; // hover variant of primaryColor
+export const primaryHoverColor = '#0580ca'; // hover variant of primaryColor
 export const secondaryHoverColor = '#908d8d'; // hover variant of secondaryColor
 
 export const tertiaryColor = '#f3f3f3'; // really light gray color for use as a hover background color on cards
+export const offWhite = '#fdfdfd';
 
-export const linkColor = '#2b5b37'; // greenish blue color for use with links
-export const linkHoverColor = '#3dad15'; // hover color for links, light green
+export const linkColor = primaryColor; // greenish blue color for use with links
+export const linkHoverColor = primaryHoverColor; // hover color for links, light green
 export const warningColor = '#b9161a'; // bright red for warning buttons
 export const warningHoverColor = '#db363a'; // bright red for warning buttons
 export const lowWarningColorLight = '#f2e4b3';
@@ -36,9 +37,9 @@ export const successColorLight = '#d0e3b1';
 export const coolBlueColor = '#3a29c3';
 export const warmRedColor = '#d92a21';
 
-export const lightBlue = '#d1e2e9';
+export const lightBlue = '#f2f7fb';
 
-export const locationColor = '#206ca6';
+export const historyColor = '#684170';
 
 export interface ColorSet {
   primary: string;
@@ -76,6 +77,40 @@ export const colorSetGray: ColorSet = {
   tertiary: '#dddddd',
 };
 
+export const incompleteColor = '#d94728';
+export const completeColor = '#145500';
+
+export const completionColorScaleArray = [
+  incompleteColor,
+  '#d17728',
+  '#cd932b',
+  '#c99e2c',
+  '#c7ab2d',
+  '#c4b52f',
+  '#b4bf35',
+  '#99ba3c',
+  '#89b13f',
+  '#7caa41',
+  '#619a41',
+  '#4b8a3f',
+  '#145500',
+];
+export const completionColorScale = {
+  0: completionColorScaleArray[0],
+  8: completionColorScaleArray[1],
+  17: completionColorScaleArray[2],
+  25: completionColorScaleArray[3],
+  33: completionColorScaleArray[4],
+  42: completionColorScaleArray[5],
+  50: completionColorScaleArray[6],
+  58: completionColorScaleArray[7],
+  67: completionColorScaleArray[8],
+  75: completionColorScaleArray[9],
+  83: completionColorScaleArray[10],
+  92: completionColorScaleArray[11],
+  100: completionColorScaleArray[12],
+};
+
 export const getColorSetFromVariant = (variant: PeakListVariants) => {
   if (variant === PeakListVariants.standard) {
     return colorSetGreen;
@@ -86,7 +121,7 @@ export const getColorSetFromVariant = (variant: PeakListVariants) => {
   } else if (variant === PeakListVariants.grid) {
     return colorSetBlack;
   } else {
-    failIfValidOrNonExhaustive(variant, 'Invalid variant ' + variant);
+    console.error(variant, 'Invalid variant ' + variant);
     return colorSetGray;
   }
 };
@@ -96,16 +131,49 @@ export const regularFontWeight = 400;
 export const semiBoldFontBoldWeight = 600;
 export const boldFontWeight = 700;
 
+export const FullWidthContainer = styled.div`
+  margin: 0 -1rem;
+`;
+
+export const ContainerContent = styled.div`
+  padding: 0 1rem;
+`
+;
+
 export const SemiBold = styled.strong`
   font-weight: ${semiBoldFontBoldWeight};
 `;
 
-export const Section = styled.div`
-  margin-bottom: 1rem;
+export const HelpUnderline = styled.u`
+  text-decoration: none;
+  border-bottom: dashed 1px ${lightBaseColor};
 `;
 
-export const Block = styled.div`
-  margin: 2rem 0;
+export const SmallSemiBold = styled(SemiBold)`
+  font-size: 0.85rem;
+`;
+
+export const SmallLink = styled(Link)`
+  font-size: 0.7rem;
+`;
+
+export const SmallExternalLink = styled.a`
+  font-size: 0.7rem;
+`;
+
+export const Subtext = styled.small`
+color: ${lightBaseColor};
+`;
+
+export const IncompleteText = styled.span`
+  color: #b21616;
+`;
+export const CompleteText = styled.span`
+  color: ${completeColor};
+`;
+
+export const Section = styled.div`
+  margin-bottom: 1rem;
 `;
 
 export const SectionTitle = styled.div`
@@ -120,6 +188,20 @@ export const SectionTitleH3 = styled.h3`
   text-transform: uppercase;
   color: ${lightBaseColor};
   margin: 0 0 1.2rem;
+`;
+
+export const IconTitle = styled.h1`
+  display: flex;
+  align-items: center;
+  margin: 0 0 0.75rem;
+
+  @media(max-width: ${mobileSize}px) {
+    margin-top: 1rem;
+  }
+`;
+
+export const TitleText = styled.span`
+  padding-left: 1rem;
 `;
 
 export const standardContainerPadding = '1rem';
@@ -142,6 +224,17 @@ export const LinkButton = styled.button`
   ${linkStyles}
 `;
 
+export const LinkButtonCompact = styled.button`
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+
+  ${linkStyles}
+`;
+
 export const CardBase = styled.div`
   padding: 0.7rem;
   border: solid 1px ${lightBorderColor};
@@ -158,95 +251,6 @@ export const Card = styled(CardBase)`
   }
 `;
 
-export const CardLinkWrapper = styled(DynamicLink)`
-  display: block;
-  color: inherit;
-  text-decoration: inherit;
-
-  &:hover {
-    color: inherit;
-  }
-`;
-
-export const StackableCardSection = styled(Card)`
-  box-shadow: none;
-  border-bottom: none;
-  margin-bottom: 0;
-`;
-
-export const StackableCardFooter = styled(Card)`
-  background-color: ${tertiaryColor};
-  box-shadow: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-`;
-
-const cardFooterLinkStyles = `
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  box-sizing: border-box;
-  font-size: 0.875rem;
-  line-height: 1;
-  padding: 0.25rem;
-
-  &:not(:last-child) {
-    border-right: solid 1px ${lightBorderColor};
-  }
-`;
-
-interface ColorProps {
-  color: string;
-  $isActive: boolean;
-}
-
-export const CardFooterLink = styled(DynamicLink)<ColorProps>`
-  ${cardFooterLinkStyles}
-  color: ${(p) => p.$isActive ? '#fff' : p.color};
-  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
-  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
-
-  &:hover {
-    color: #fff;
-    background-color: ${({color}) => color};
-    text-decoration: none;
-  }
-`;
-export const CardFooterButton = styled.button<ColorProps>`
-  ${cardFooterLinkStyles}
-  color: ${(p) => p.$isActive ? '#fff' : p.color};
-  background-color: ${(p) => p.$isActive ? p.color : 'transparent'};
-  text-decoration: ${(p) => p.$isActive ? 'none' : 'underline'};
-
-  &:hover {
-    color: #fff;
-    background-color: ${({color}) => color};
-    text-decoration: none;
-  }
-`;
-
-export const StackedCardWrapper = styled(CardLinkWrapper)`
-  box-shadow: 0px 0px 3px -1px #b5b5b5;
-`;
-
-export const CardTitle = styled.h1`
-  font-size: 1.1rem;
-  margin-top: 0;
-  margin-bottom: 0.4rem;
-`;
-
-export const CardSubtitle = styled.div`
-  color: ${lightBaseColor};
-  font-size: 0.95rem;
-  margin: 0.4rem 0;
-  display: flex;
-  justify-content: space-between;
-`;
 export const Seperator = styled.span`
   color: ${lightBaseColor};
   opacity: 0.45;
@@ -254,22 +258,14 @@ export const Seperator = styled.span`
   margin: 0 0.2rem;
 `;
 
-export const InlineTitle = styled.h3`
-  color: ${baseColor};
-  margin: 0.5rem 0;
-`;
-
-export const DetailBox = styled.div`
+export const DetailBoxWithMargin = styled.div`
   border: 1px solid ${lightBorderColor};
   background-color: ${tertiaryColor};
   padding: 1rem;
-`;
-
-export const DetailBoxWithMargin = styled(DetailBox)`
   margin-bottom: 1rem;
 `;
 
-export const DetailBoxTitle = styled(InlineTitle)`
+export const DetailBoxTitle = styled.h3`
   border: 1px solid ${lightBorderColor};
   border-bottom: none;
   background-color: #d7d7d7;
@@ -281,18 +277,45 @@ export const DetailBoxTitle = styled(InlineTitle)`
   align-items: center;
 `;
 
-export const DetailBoxFooter = styled.h4`
+export const FullWidthBreak = styled.div`
+  margin: 0.5rem -1rem;
+  height: 0;
+  border-top: solid 1px ${lightBorderColor};
+`;
+
+export const Basket = styled.div`
   border: 1px solid ${lightBorderColor};
-  border-top: none;
-  background-color: #d7d7d7;
+  background-color: ${tertiaryColor};
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const ComponentTitle = styled.h3`
   margin: 0;
-  padding: 0.15rem 1rem;
-  color: ${baseColor};
+  font-weight: 600;
+  padding: 0 0 0.5rem;
+  color: ${lightBaseColor};
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+
+export const BasketTitle = styled(ComponentTitle)`
+  justify-content: center;
+  text-align: center;
+  padding: 0 0.5rem 0.5rem;
+  box-sizing: border-box;
 `;
 
 export const SmallTextNote = styled.div`
   font-size: 0.8rem;
-  color: ${lightBaseColor};
+  color: ${placeholderColor};
+  text-align: center;
+  font-style: italic;
+  margin: 1rem 0;
+  border-radius: 8px;
 `;
 
 export const SmallTextNoteWithMargin = styled(SmallTextNote)`
@@ -301,18 +324,22 @@ export const SmallTextNoteWithMargin = styled(SmallTextNote)`
 
 export const borderRadius = 6; // in px
 
-export const ButtonBase = styled.button<{mobileExtend?: boolean; }>`
+const ButtonBase = styled.button<{mobileExtend?: boolean}>`
   padding: 0.4rem;
-  text-transform: uppercase;
   color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
   font-weight: ${semiBoldFontBoldWeight};
   font-size: 0.8rem;
+  letter-spacing: 0.01rem;
 
   &:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+  }
+
+  @media (max-width: ${mobileSize}px) {
+    font-size: 0.9rem;
   }
 
   ${({mobileExtend}) => mobileExtend ? `
@@ -342,6 +369,16 @@ export const ButtonSecondary = styled(ButtonBase)`
   }
 `;
 
+export const ButtonOutline = styled(ButtonBase)`
+  background-color: #fff;
+  color: ${baseColor};
+  border: solid 1px ${lightBorderColor};
+
+  &:hover {
+    background-color: ${tertiaryColor};
+  }
+`;
+
 export const CompactButtonPrimary = styled(ButtonPrimary)`
   font-size: 0.7rem;
   padding: 0.35rem;
@@ -349,17 +386,6 @@ export const CompactButtonPrimary = styled(ButtonPrimary)`
 export const CompactButtonSecondary = styled(ButtonSecondary)`
   font-size: 0.7rem;
   padding: 0.35rem;
-`;
-
-export const ButtonTertiary = styled(ButtonBase)`
-  color: ${secondaryColor};
-  background-color: ${tertiaryColor};
-  border: solid 1px ${lightBorderColor};
-
-
-  &:hover {
-    background-color: ${lightBorderColor};
-  }
 `;
 
 export const ButtonWarning = styled(ButtonBase)`
@@ -379,9 +405,8 @@ export const ButtonWarningLow = styled(ButtonBase)`
   }
 `;
 
-export const ButtonPrimaryLink = styled(DynamicLink)`
+export const ButtonPrimaryLink = styled(Link)`
   padding: 0.6rem;
-  text-transform: uppercase;
   color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
@@ -396,9 +421,8 @@ export const ButtonPrimaryLink = styled(DynamicLink)`
     background-color: ${primaryHoverColor};
   }
 `;
-export const ButtonSecondaryLink = styled(DynamicLink)`
+export const ButtonSecondaryLink = styled(Link)`
   padding: 0.6rem;
-  text-transform: uppercase;
   color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
@@ -414,20 +438,21 @@ export const ButtonSecondaryLink = styled(DynamicLink)`
   }
 `;
 
-export const GhostButtonLink = styled(DynamicLink)`
-  padding: 0.6rem;
-  text-transform: uppercase;
-  color: ${secondaryColor};
+export const CompactButtonPrimaryLink = styled(Link)`
+  color: #fff;
   text-align: center;
   border-radius: ${borderRadius}px;
   font-weight: ${semiBoldFontBoldWeight};
-  font-size: 0.8rem;
-  background-color: transparent;
+  background-color: ${primaryColor};
   display: inline-block;
   text-decoration: none;
+  font-size: 0.7rem;
+  padding: 0.4rem;
+  line-height: 1.3;
 
   &:hover {
-    color: ${secondaryHoverColor};
+    color: #fff;
+    background-color: ${primaryHoverColor};
   }
 `;
 
@@ -440,13 +465,36 @@ export const GhostButton = styled(ButtonBase)`
   }
 `;
 
-export const CompactGhostButton = styled(GhostButton)`
-  font-size: 0.7rem;
-  padding: 0.35rem;
+export const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: sticky;
+  bottom: -1rem;
+  margin: 0 -1rem -1rem;
+  margin-top: auto;
+  background-color: ${tertiaryColor};
+  border-top: solid 1px ${lightBorderColor};
+  padding: 0.7rem 1rem;
+  box-shadow: 0px 0px 3px -1px #b5b5b5;
+
+  @media(max-width: ${mobileSize}px) {
+    position: fixed;
+    bottom: 1.4rem;
+    border-bottom: solid 1px ${lightBorderColor};
+    margin-bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    align-items: stretch;
+    z-index: 500;
+    padding: 0.3rem 2rem;
+    box-sizing: border-box;
+  }
 `;
-export const CompactGhostButtonLink = styled(GhostButtonLink)`
-  font-size: 0.7rem;
-  padding: 0.35rem;
+
+export const CancelButton = styled(GhostButton)`
+  margin-right: auto;
 `;
 
 export const FloatingButtonContainer = styled.div`
@@ -460,7 +508,7 @@ export const FloatingButtonContainer = styled.div`
 `;
 
 export const FloatingButton = styled(ButtonPrimaryLink)`
-  font-size: 0.75rem;
+  font-size: 1rem;
   border-radius: 15px;
   border-bottom: 3px solid ${darken(0.12, primaryColor)};
   border-right: 3px solid ${darken(0.12, primaryColor)};
@@ -481,17 +529,29 @@ export const InputBase = styled.input`
   }
 `;
 
+export const InputBaseCompact = styled(InputBase)`
+  font-size: 0.9rem;
+  padding: 4px 8px;
+`;
+
 export const TextareaBase = styled.textarea`
   padding: 8px;
   box-sizing: border-box;
   border: solid 1px ${lightBorderColor};
   font-size: 1rem;
+  line-height: 1.25;
   font-weight: ${lightFontWeight};
   width: 100%;
+  resize: vertical;
 
   &::placeholder {
     color: ${placeholderColor};
   }
+`;
+
+export const TextareaBaseCompact = styled(TextareaBase)`
+  font-size: 0.9rem;
+  padding: 4px 8px;
 `;
 
 export const Label = styled.span`
@@ -508,7 +568,7 @@ export const LabelContainer = styled.label`
 
 export const PaginationContainer = styled.div`
   display: flex;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 `;
 
 export const Next = styled(ButtonSecondary)`
@@ -536,50 +596,65 @@ export const Prev = styled(ButtonSecondary)`
   }
 `;
 
-export const PlusIcon = styled.span`
-  font-size: 1.3rem;
-  height: 0;
-  display: inline-block;
-  line-height: 0;
-  position: relative;
-  top: 2px;
-`;
-
 const IconInTextBase = styled(FontAwesomeIcon)`
   position: relative;
-  top: -1px;
 `;
 
+export const BasicIconInTextCompact = styled(IconInTextBase)`
+  margin-right: 0.25rem;
+`;
 export const BasicIconInText = styled(IconInTextBase)`
   margin-right: 0.6rem;
 `;
 export const BasicIconAtEndOfText = styled(IconInTextBase)`
   margin-left: 0.6rem;
 `;
+export const BasicIconAtEndOfTextCompact = styled(IconInTextBase)`
+  margin-left: 0.25rem;
+`;
+
+export const IconContainer = styled.div<{$color: string}>`
+  margin-right: 0.25rem;
+  margin-top: 0.1em;
+  font-size: 0.85em;
+  color: ${({$color}) => $color};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 1rem;
+
+    .fill-path {
+      fill: ${({$color}) => $color};
+    }
+    .stroke-path {
+      fill: #fff;
+    }
+  }
+`;
+
+export const HighlightedIconInText = styled(IconInTextBase)`
+  color: ${primaryColor};
+`;
 
 export const PlaceholderText = styled.div`
-  width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-style: italic;
-  color: ${placeholderColor};
-  background-color: rgb(245, 245, 245);
+  color: ${lightBaseColor};
+  padding: 1.25rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: ${tertiaryColor};
+  border: solid 1px ${lightBorderColor};
   position: relative;
+  border-radius: 8px;
 `;
 
 export const NoResults = styled.div`
   font-style: italic;
   color: ${placeholderColor};
   text-align: center;
+  margin-top: 1.2rem;
   margin-bottom: 1.2rem;
-`;
-
-export const CheckboxRoot = styled.div`
-  display: block;
-  position: relative;
 `;
 
 export const CheckboxInput = styled.input`
@@ -590,16 +665,6 @@ export const CheckboxInput = styled.input`
   margin: auto;
 `;
 
-export const CheckboxLabel = styled.label`
-  padding: 8px 8px 8px 30px;
-  display: block;
-
-  &:hover {
-    background-color: #eee;
-    cursor: pointer;
-  }
-`;
-
 export const CheckboxList = styled.div`
   max-height: 200px;
   margin-top: 1rem;
@@ -607,6 +672,10 @@ export const CheckboxList = styled.div`
   list-style: none;
   padding: 0;
   border: 1px solid ${lightBorderColor};
+
+  @media(max-width: ${mobileSize}px) {
+    max-height: initial;
+  }
 `;
 
 export const CheckboxListItem = styled.label`
@@ -629,10 +698,7 @@ export const CheckboxListCheckbox = styled.input`
   margin-right: 1rem;
 `;
 
-export const RemoveIcon = styled.div`
-  margin-left: auto;
-`;
-
+/* eslint-disable max-len */
 /* tslint:disable:max-line-length */
 export const SelectBox = styled.select`
   -moz-appearance: none;
@@ -678,18 +744,19 @@ export const ResourceList = styled.ul`
 `;
 
 export const SimpleListItem = styled.li`
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-bottom: 0.5rem;
+  line-height: 1.5;
 `;
 
 export const ResourceItem = styled(SimpleListItem)`
-  padding-left: 1rem;
+  padding-left: 0.7rem;
   position: relative;
 
   &:before {
     content: '›';
     position: absolute;
-    left: 0.5rem;
+    left: 0;
   }
 `;
 
@@ -700,10 +767,6 @@ export const RequiredNote = styled.div`
   span.red-text {
     color: ${warningColor};
   }
-`;
-
-export const Required = styled.span`
-  color: ${warningColor};
 `;
 
 export const SvgImg = styled.img`
@@ -727,19 +790,8 @@ export const SvgMiniImg = styled.img`
   top: 3px;
 `;
 
-export const SecondaryNavigationContainer = styled.div`
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-auto-flow: column;
-  width: 100%;
-`;
-export const SecondaryNavigationButton = styled.button`
-  padding: 0.75rem;
-  text-align: center;
-  color: ${secondaryColor};
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  background-color: #fff;
-  border: solid 1px ${lightBorderColor};
-  border-top: none;
+export const DottedSegment = styled.div`
+  border-top: dashed 1px ${lightBorderColor};
+  padding: 1rem;
+  box-sizing: border-box;
 `;

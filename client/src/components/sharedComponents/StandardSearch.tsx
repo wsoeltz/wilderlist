@@ -1,14 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { debounce } from 'lodash';
-import React, { useContext, useEffect, useRef } from 'react';
+import debounce from 'lodash/debounce';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import useWindowWidth from '../../hooks/useWindowWidth';
 import {
   GhostButton,
   lightBorderColor,
   lightFontWeight,
   placeholderColor,
 } from '../../styling/styleUtils';
-import { AppContext } from '../App';
 
 const SearchContainer = styled.label`
   position: relative;
@@ -59,14 +59,19 @@ interface Props {
   focusOnMount: boolean;
   type?: string;
   noSearchIcon?: boolean;
+  icon?: any;
+  iconColor?: string;
 }
 
 const StandardSearch = (props: Props) => {
-  const { placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon, type } = props;
+  const {
+    placeholder, setSearchQuery, initialQuery, focusOnMount, noSearchIcon,
+    type, icon, iconColor,
+  } = props;
 
   const searchEl = useRef<HTMLInputElement | null>(null);
   const clearEl = useRef<HTMLButtonElement | null>(null);
-  const { windowWidth } = useContext(AppContext);
+  const windowWidth = useWindowWidth();
 
   const onChange = debounce(() => {
     if (searchEl !== null && searchEl.current !== null) {
@@ -102,7 +107,14 @@ const StandardSearch = (props: Props) => {
     }
   }, [searchEl, focusOnMount, windowWidth, initialQuery]);
 
-  const searchIcon = noSearchIcon ? null : <SearchIcon icon='search' />;
+  const searchIcon = noSearchIcon ? null : (
+    <SearchIcon
+      icon={icon ? icon : 'search'}
+      style={{
+        color: iconColor ? iconColor : undefined,
+      }}
+    />
+  );
 
   return (
     <SearchContainer>
@@ -113,7 +125,10 @@ const StandardSearch = (props: Props) => {
         placeholder={placeholder}
         onChange={onChange}
         autoComplete={'off'}
-        style={{padding: noSearchIcon ? '0.4rem' : undefined}}
+        style={{
+          padding: noSearchIcon ? '0.4rem' : undefined,
+          paddingLeft: icon || !noSearchIcon ? '3rem' : '0.5rem',
+        }}
       />
       <ClearButton
         ref={clearEl}

@@ -7,7 +7,9 @@ import {
 } from 'graphql';
 import mongoose, { Schema } from 'mongoose';
 import { TripReport as ITripReport } from '../../graphQLTypes';
+import CampsiteType from './campsiteType';
 import MountainType from './mountainType';
+import TrailType from './trailType';
 import UserType from './userType';
 
 type TripReportSchemaType = mongoose.Document & ITripReport;
@@ -17,14 +19,24 @@ export type TripReportModelType = mongoose.Model<TripReportSchemaType> & TripRep
 const TripReportSchema = new Schema({
   date: { type: String, required: true },
   author: { type: Schema.Types.ObjectId, ref: 'user' },
+  parent: { type: Schema.Types.ObjectId, ref: 'tripReport' },
   mountains: [{
     type: Schema.Types.ObjectId,
     ref: 'mountain',
+  }],
+  trails: [{
+    type: Schema.Types.ObjectId,
+    ref: 'trail',
+  }],
+  campsites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'campsite',
   }],
   users: [{
     type: Schema.Types.ObjectId,
     ref: 'user',
   }],
+  privacy: { type: String },
   notes: { type: String },
   link: { type: String },
   mudMinor: { type: Boolean },
@@ -66,11 +78,41 @@ const TripReportType: any = new GraphQLObjectType({
         }
       },
     },
+    parent: {
+      type: TripReportType,
+      async resolve(parentValue, args, {dataloaders: {tripReportLoader}}) {
+        try {
+          return await tripReportLoader.load(parentValue.author);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
     mountains:  {
       type: new GraphQLList(MountainType),
       async resolve(parentValue, args, {dataloaders: {mountainLoader}}) {
         try {
           return await mountainLoader.loadMany(parentValue.mountains);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    trails:  {
+      type: new GraphQLList(TrailType),
+      async resolve(parentValue, args, {dataloaders: {trailLoader}}) {
+        try {
+          return await trailLoader.loadMany(parentValue.trails);
+        } catch (err) {
+          return err;
+        }
+      },
+    },
+    campsites:  {
+      type: new GraphQLList(CampsiteType),
+      async resolve(parentValue, args, {dataloaders: {campsiteLoader}}) {
+        try {
+          return await campsiteLoader.loadMany(parentValue.campsites);
         } catch (err) {
           return err;
         }
@@ -86,6 +128,7 @@ const TripReportType: any = new GraphQLObjectType({
         }
       },
     },
+    privacy: { type: GraphQLString },
     notes: { type: GraphQLString },
     link: { type: GraphQLString },
     mudMinor: { type: GraphQLBoolean },
