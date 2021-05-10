@@ -69,7 +69,7 @@
     "express-graphql": "^0.9.0",
     "express-http-to-https": "^1.1.4",
     "graphql": "^15.4.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mongoose": "^5.7.5",
     "nodemailer": "^6.3.1",
     "passport": "^0.4.0",
