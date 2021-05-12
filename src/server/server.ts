@@ -101,21 +101,32 @@ if (process.env.MONGO_AUTH_SOURCE === undefined) {
 if (process.env.MONGO_DATABASE_NAME === undefined) {
   throw new Error('You must provide a dbName');
 }
-
-mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGO_URI, {
+const mongodbUri = process.env.MONGO_URI;
+const mongodbOpt = {
   authSource: process.env.MONGO_AUTH_SOURCE,
   dbName: process.env.MONGO_DATABASE_NAME,
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+};
+
+mongoose.Promise = global.Promise;
+const connect = function() {
+  mongoose.connect(mongodbUri, mongodbOpt);
+};
+connect();
 
 mongoose.connection
   // tslint:disable-next-line
-    .once('open', () => console.log('Connected to MongoLab instance.'))
+    .on('open', () => console.log('Connected to MongoLab instance.'));
   // tslint:disable-next-line
-    .on('error', error => console.log('Error connecting to MongoLab:', error));
+mongoose.connection
+    .on('error', error => console.error('Error connecting to MongoLab:', error));
+
+mongoose.connection.on('disconnected', () => {
+    console.error('MongoLab disconnected');
+    setTimeout(connect, 5000);
+});
 
 const graphiql = process.env.NODE_ENV === 'development' ? true : false;
 const dataloaders = buildDataloaders();
@@ -713,7 +724,7 @@ if (process.env.NODE_ENV === 'production') {
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
-            throw new Error('Incorrect List ID ' + req.params.id);
+            throw new Error('Incorrect Mountain ID ' + req.params.id);
           }
 
         } catch (err) {
@@ -758,7 +769,7 @@ if (process.env.NODE_ENV === 'production') {
           const result  = data.replace(/\$OG_DESCRIPTION/g, description);
           res.send(result);
         } else {
-          throw new Error('Incorrect List ID ' + req.params.id);
+          throw new Error('Incorrect Mountain ID ' + req.params.id);
         }
 
       } catch (err) {
@@ -810,7 +821,7 @@ if (process.env.NODE_ENV === 'production') {
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
-            throw new Error('Incorrect List ID ' + req.params.id);
+            throw new Error('Incorrect Campsite ID ' + req.params.id);
           }
 
         } catch (err) {
@@ -864,7 +875,7 @@ if (process.env.NODE_ENV === 'production') {
             const result  = data.replace(/\$OG_DESCRIPTION/g, description);
             res.send(result);
           } else {
-            throw new Error('Incorrect List ID ' + req.params.id);
+            throw new Error('Incorrect Trail ID ' + req.params.id);
           }
 
         } catch (err) {
